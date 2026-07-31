@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #dcddef;
+  --ink: #0b0b10;
+  --rec: #f5310b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+}
+
+::selection {
+  background-color: var(--rec);
+  color: #ffffff;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--paper);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b7b8d2;
+  border-radius: 9999px;
+}
+
+/* reveal-on-scroll (used together with Reveal.tsx / IntersectionObserver) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* auto-scrolling showreel filmstrip, paused on hover */
+.reel-track {
+  animation: roll 32s linear infinite;
+}
+
+.reel:hover .reel-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel-track {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
