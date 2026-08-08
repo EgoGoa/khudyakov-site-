@@ -1,5 +1,7 @@
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
+import Eyebrow from "@/components/ui/Eyebrow";
+import GlassCard from "@/components/ui/GlassCard";
 
 const reasons = [
   {
@@ -19,68 +21,60 @@ const reasons = [
   },
 ];
 
-const testimonials = [
-  {
-    quote: "Я кайфую от вашего сервиса!",
-    description:
-      "На любой адекватный запрос вы услышите от нас «да». Около 60% заказов — это клиенты, которые возвращаются снова.",
-  },
-  {
-    quote: "Я поражен качеством исполнения!",
-    description:
-      "Режиссура кино-уровня, визуальная упаковка по последнему слову дизайна, фотореалистичный рендеринг и VFX-эффекты.",
-  },
-  {
-    quote: "Я удивлен скоростью работы!",
-    description:
-      "Решаем сложные задачи в сжатые сроки — работаем по принципу продюсерского центра.",
-  },
-];
+const chips = ["Съёмка полного цикла", "3D/VFX", "Motion design", "Продюсерский центр"];
 
 export default function Why() {
   return (
-    <section id="why" className="border-b border-ink/10 bg-ink py-24 text-paper sm:py-32">
+    <section id="why" className="border-b border-paper/10 py-16 sm:py-24">
       <Container>
-        <Reveal>
-          <span className="mb-3 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-rec">
-            02 · Почему мы
-          </span>
-          <h2 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl md:text-5xl">
-            Почему его создадим мы?
-          </h2>
-        </Reveal>
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
+          <Reveal>
+            <Eyebrow index="02" label="Почему мы" />
+            <h2 className="mt-2 font-display text-3xl uppercase leading-[1.02] tracking-tight text-paper sm:text-4xl md:text-5xl">
+              Почему его
+              <br />
+              создадим мы?
+            </h2>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-paper/60">
+              Мы работаем как продюсерский центр — от идеи до готового ролика
+              в нужных форматах. На любой адекватный запрос вы услышите от
+              нас «да», а около 60% заказов — это клиенты, которые
+              возвращаются снова.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {chips.map((chip) => (
+                <span
+                  key={chip}
+                  className="rounded-full border border-paper/10 bg-paper/[0.03] px-3 py-1.5 text-xs text-paper/70"
+                >
+                  {chip}
+                </span>
+              ))}
+            </div>
+          </Reveal>
 
-        <div className="mt-14 grid gap-4 sm:grid-cols-3">
-          {reasons.map((reason, index) => (
-            <Reveal key={reason.title} delay={index * 0.08}>
-              <div className="h-full rounded-xl border border-paper/10 bg-paper/5 p-7">
-                <h3 className="font-display text-lg uppercase text-paper">
-                  {reason.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-paper/60">
-                  {reason.description}
-                </p>
+          <Reveal delay={0.1}>
+            <GlassCard className="p-5">
+              <div className="font-mono text-xs uppercase tracking-[0.15em] text-paper/40">
+                За 5 лет · 200+ клиентов
               </div>
-            </Reveal>
-          ))}
-        </div>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
-          {testimonials.map((item, index) => (
-            <Reveal key={item.quote} delay={index * 0.08}>
-              <div className="h-full rounded-xl border border-rec/20 bg-rec/5 p-7">
-                <div className="mb-3 font-mono text-xs uppercase tracking-[0.1em] text-rec">
-                  Отзыв
-                </div>
-                <p className="font-display text-lg uppercase text-paper">
-                  «{item.quote}»
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-paper/60">
-                  {item.description}
-                </p>
+              <div className="mt-4 space-y-3">
+                {reasons.map((reason, index) => (
+                  <div key={reason.title} className="liquid-glass rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-paper">
+                      <span className="font-mono text-xs text-glow">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      {reason.title}
+                    </div>
+                    <p className="mt-2 text-sm leading-relaxed text-paper/60">
+                      {reason.description}
+                    </p>
+                  </div>
+                ))}
               </div>
-            </Reveal>
-          ))}
+            </GlassCard>
+          </Reveal>
         </div>
       </Container>
     </section>

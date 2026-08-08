@@ -35,3 +35,6 @@ next-env.d.ts
 
 # local tool config
 .claude/settings.local.json
+
+# duplicated copy of public/video/bg-showreel.mp4, kept locally for the standalone demo
+reference/scroll-scrub-demo/assets/

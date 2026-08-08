@@ -6,6 +6,8 @@
   --paper: #dcddef;
   --ink: #0b0b10;
   --rec: #f5310b;
+  --glow: #00d2ff;
+  --glow-deep: #0b2551;
 }
 
 html {
@@ -13,7 +15,41 @@ html {
 }
 
 body {
-  background-color: var(--paper);
+  background-color: var(--ink);
+}
+
+/* liquid-glass card treatment: hairline gradient border via mask, faint
+   luminosity fill so it reads correctly over the fixed dark backdrop */
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.03);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.15) 80%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 ::selection {
@@ -26,11 +62,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--paper);
+  background: var(--ink);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #b7b8d2;
+  background-color: #34343f;
   border-radius: 9999px;
 }
 
@@ -63,5 +99,197 @@ body {
 
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* equaliser bars on the hero's neon sound toggle */
+@keyframes eq {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 14px;
+  }
+}
+
+/* cinematic pricing section: giant noise-textured watermark headline behind
+   three liquid-glass tier cards (see Pricing.tsx) */
+.c3-pricing-section {
+  position: relative;
+  padding: 40px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+.c3-watermark-container {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  text-align: center;
+  margin-top: 40px;
+  z-index: 2;
+}
+
+.c3-watermark-main {
+  font-size: 7rem;
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  filter: url(#khud-noise-watermark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.c3-watermark-line-1 {
+  color: rgba(220, 221, 239, 0.9);
+}
+
+.c3-watermark-line-2 {
+  background: linear-gradient(to right, #7dd3fc 0%, #a4f4fd 40%, #00d2ff 70%, #a4f4fd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.c3-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 60px;
+  position: relative;
+  z-index: 3;
+}
+
+.c3-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 32px;
+  padding: 44px 28px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.c3-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 50%);
+  pointer-events: none;
+}
+
+.c3-card:hover {
+  border-color: rgba(0, 210, 255, 0.5);
+  transform: translateY(-10px);
+}
+
+.c3-card-pro {
+  background: linear-gradient(135deg, rgba(245, 49, 11, 0.12), rgba(0, 0, 0, 0.2));
+  border-color: rgba(245, 49, 11, 0.4);
+}
+
+.c3-card-pro:hover {
+  border-color: rgba(245, 49, 11, 0.7);
+}
+
+.c3-tier-small {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(220, 221, 239, 0.45);
+}
+
+.c3-tier-large {
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin-top: 10px;
+}
+
+.c3-team {
+  font-size: 0.82rem;
+  color: rgba(220, 221, 239, 0.4);
+  margin-top: 4px;
+}
+
+.c3-desc {
+  font-size: 0.88rem;
+  color: rgba(220, 221, 239, 0.55);
+  min-height: 3.2em;
+  margin-top: 16px;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.c3-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: rgba(220, 221, 239, 0.85);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.c3-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 210, 255, 0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.c3-card-pro .c3-check {
+  background: rgba(245, 49, 11, 0.18);
+}
+
+@media (max-width: 1024px) {
+  .c3-watermark-main {
+    font-size: 3rem;
+    filter: none;
+  }
+
+  .c3-watermark-line-2 {
+    background: none;
+    -webkit-text-fill-color: #00d2ff;
+    color: #00d2ff;
+  }
+
+  .c3-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    width: 100vw;
+    padding: 0 20px;
+    gap: 16px;
+    scrollbar-width: none;
+  }
+
+  .c3-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .c3-card {
+    flex: 0 0 300px;
+    scroll-snap-align: center;
   }
 }

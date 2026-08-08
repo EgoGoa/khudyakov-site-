@@ -16,11 +16,13 @@ export default function FloatingCta() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const href = pathname === "/" ? "#contact" : "/#contact";
+  const href = "/brief";
+  // pointless to float a link to the page you are already on
+  const onBrief = pathname === "/brief";
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && !onBrief && (
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}

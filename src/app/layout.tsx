@@ -3,6 +3,7 @@ import { Oswald, Montserrat, Azeret_Mono } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FloatingCta from "@/components/layout/FloatingCta";
+import BackgroundFX from "@/components/layout/BackgroundFX";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -45,11 +46,14 @@ export default function RootLayout({
       lang="ru"
       className={`${montserrat.variable} ${bebas.variable} ${azeretMono.variable}`}
     >
-      <body className="bg-paper font-sans text-ink antialiased">
-        <Header />
-        <main>{children}</main>
-        <Footer />
-        <FloatingCta />
+      <body className="relative bg-ink font-sans text-paper antialiased">
+        <BackgroundFX />
+        <div className="relative z-10">
+          <Header />
+          <main>{children}</main>
+          <Footer />
+          <FloatingCta />
+        </div>
       </body>
     </html>
   );

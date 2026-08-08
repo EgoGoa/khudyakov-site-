@@ -5,12 +5,12 @@ const loop = [...frames, ...frames];
 
 export default function Reel() {
   return (
-    <section className="reel overflow-hidden border-y border-ink/10 bg-ink py-4">
+    <section className="reel overflow-hidden border-y border-paper/10 py-4">
       <div className="reel-track flex w-max gap-3">
         {loop.map((n, i) => (
           <div
             key={`${n}-${i}`}
-            className="flex h-24 w-40 shrink-0 items-center justify-center rounded-md border border-paper/10 bg-ink-soft font-mono text-xs uppercase tracking-[0.2em] text-paper/40 sm:h-32 sm:w-56"
+            className="liquid-glass flex h-24 w-40 shrink-0 items-center justify-center rounded-md font-mono text-xs uppercase tracking-[0.2em] text-paper/40 sm:h-32 sm:w-56"
           >
             Кадр {String(n).padStart(2, "0")}
           </div>

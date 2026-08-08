@@ -1,5 +1,10 @@
+"use client";
+
+import Link from "next/link";
+import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
+import Eyebrow from "@/components/ui/Eyebrow";
 
 const tiers = [
   {
@@ -12,7 +17,7 @@ const tiers = [
       "Несложные презентации с элементами 2D/3D-анимации",
       "Создание логотипа и анимированной заставки",
     ],
-    highlighted: false,
+    pro: false,
   },
   {
     name: "Профессиональный",
@@ -24,7 +29,7 @@ const tiers = [
       "Анимированные ролики",
       "3D-визуализация со сложной детализацией",
     ],
-    highlighted: true,
+    pro: true,
   },
   {
     name: "Премиальный",
@@ -36,18 +41,24 @@ const tiers = [
       "VFX и спецэффекты",
       "Съёмка и графика высшего уровня",
     ],
-    highlighted: false,
+    pro: false,
   },
 ];
 
+function CheckIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 6L9 17l-5-5" />
+    </svg>
+  );
+}
+
 export default function Pricing() {
   return (
-    <section id="pricing" className="border-b border-ink/10 bg-ink py-24 text-paper sm:py-32">
+    <section id="pricing" className="border-b border-paper/10 py-16 text-paper sm:py-24">
       <Container>
         <Reveal>
-          <span className="mb-3 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-rec">
-            06 · Цены
-          </span>
+          <Eyebrow index="06" label="Цены" />
           <h2 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl md:text-5xl">
             Ориентировочная стоимость
           </h2>
@@ -56,53 +67,69 @@ export default function Pricing() {
             индивидуальное. Точную стоимость считаем по ТЗ. Вот несколько
             примеров с ориентировочными ценами.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/calculator"
+              className="rounded-full border border-glow/40 px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
+            >
+              Посчитать свой бюджет →
+            </Link>
+            <Link
+              href="/brief"
+              className="rounded-full border border-paper/20 px-6 py-3 text-sm font-medium text-paper/80 transition hover:border-paper/50 hover:text-paper"
+            >
+              Заполнить бриф
+            </Link>
+          </div>
         </Reveal>
+      </Container>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+      <div className="c3-pricing-section">
+        <div className="c3-watermark-container">
+          <div className="c3-watermark-main">
+            <span className="c3-watermark-line-1">Видеопродакшн.</span>
+            <span className="c3-watermark-line-2">Который не пропускают</span>
+          </div>
+        </div>
+
+        <div className="c3-grid">
           {tiers.map((tier, index) => (
-            <Reveal key={tier.name} delay={index * 0.1}>
-              <div
-                className={`flex h-full flex-col rounded-xl border p-8 ${
-                  tier.highlighted
-                    ? "border-rec bg-rec text-white"
-                    : "border-paper/15 bg-paper/5 text-paper"
+            <motion.div
+              key={tier.name}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className={`c3-card ${tier.pro ? "c3-card-pro" : ""}`}
+            >
+              <span className="c3-tier-small">{tier.tagline}</span>
+              <div className="c3-tier-large">{tier.name}</div>
+              <div className="mt-2 text-lg font-semibold text-paper">{tier.price}</div>
+              <div className="c3-team mb-8">{tier.team}</div>
+              <ul className="c3-list">
+                {tier.features.map((feature) => (
+                  <li key={feature}>
+                    <span className="c3-check text-paper">
+                      <CheckIcon />
+                    </span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#contact"
+                className={`mt-auto self-center rounded-full px-8 py-2.5 text-sm font-semibold transition ${
+                  tier.pro
+                    ? "bg-rec text-white hover:bg-rec-light"
+                    : "bg-paper text-ink hover:bg-white"
                 }`}
               >
-                <span
-                  className={`font-mono text-xs uppercase tracking-[0.15em] ${
-                    tier.highlighted ? "text-white/70" : "text-paper/40"
-                  }`}
-                >
-                  {tier.tagline}
-                </span>
-                <h3 className="mt-3 font-display text-2xl uppercase">
-                  {tier.name}
-                </h3>
-                <div className="mt-4 text-xl font-semibold">{tier.price}</div>
-                <div
-                  className={`mt-1 text-sm ${
-                    tier.highlighted ? "text-white/70" : "text-paper/50"
-                  }`}
-                >
-                  {tier.team}
-                </div>
-                <ul
-                  className={`mt-6 flex-1 space-y-3 text-sm leading-relaxed ${
-                    tier.highlighted ? "text-white/85" : "text-paper/70"
-                  }`}
-                >
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex gap-2">
-                      <span>—</span>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Reveal>
+                Выбрать план
+              </a>
+            </motion.div>
           ))}
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

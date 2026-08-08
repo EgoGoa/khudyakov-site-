@@ -6,7 +6,7 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-paper/10 bg-ink text-paper">
-      <Container className="flex flex-col gap-10 py-16 md:flex-row md:items-start md:justify-between">
+      <Container className="flex flex-col gap-8 py-12 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm">
           <div className="flex items-center gap-2 font-display text-lg uppercase text-paper">
             <span className="h-2 w-2 rounded-full bg-rec" />
@@ -18,24 +18,34 @@ export default function Footer() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
           <div>
             <div className="font-mono text-xs uppercase tracking-[0.2em] text-paper/40">
               Навигация
             </div>
             <ul className="mt-4 space-y-3 text-sm">
               <li>
-                <Link className="text-paper/60 hover:text-rec" href="#works">
+                <Link className="text-paper/60 hover:text-rec" href="/#works">
                   Работы
                 </Link>
               </li>
               <li>
-                <Link className="text-paper/60 hover:text-rec" href="#services">
+                <Link className="text-paper/60 hover:text-rec" href="/#services">
                   Услуги
                 </Link>
               </li>
               <li>
-                <Link className="text-paper/60 hover:text-rec" href="#contact">
+                <Link className="text-paper/60 hover:text-rec" href="/calculator">
+                  Калькулятор
+                </Link>
+              </li>
+              <li>
+                <Link className="text-paper/60 hover:text-rec" href="/brief">
+                  Заполнить бриф
+                </Link>
+              </li>
+              <li>
+                <Link className="text-paper/60 hover:text-rec" href="/#contact">
                   Контакты
                 </Link>
               </li>

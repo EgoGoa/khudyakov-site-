@@ -5,6 +5,7 @@ import type { ChangeEvent, FormEvent, ReactNode } from "react";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
+import Eyebrow from "@/components/ui/Eyebrow";
 
 const projectTypes = [
   "Рекламный ролик",
@@ -41,7 +42,7 @@ const initialState: FormState = {
 type Errors = Partial<Record<keyof FormState, string>>;
 
 const inputClass =
-  "w-full rounded-lg border border-ink/15 bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 focus:border-rec focus:outline-none";
+  "w-full rounded-lg border border-paper/15 bg-paper/[0.04] px-4 py-3 text-sm text-paper placeholder:text-paper/40 focus:border-glow focus:outline-none";
 
 export default function Contact() {
   const [form, setForm] = useState<FormState>(initialState);
@@ -73,16 +74,14 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="border-b border-ink/10 py-24 sm:py-32">
+    <section id="contact" className="border-b border-paper/10 py-16 sm:py-24">
       <Container className="max-w-4xl">
         <Reveal>
-          <span className="mb-3 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-rec">
-            07 · Контакты
-          </span>
-          <h2 className="font-display text-3xl uppercase tracking-tight text-ink sm:text-4xl md:text-5xl">
+          <Eyebrow index="07" label="Контакты" />
+          <h2 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl md:text-5xl">
             Расскажите о проекте
           </h2>
-          <p className="mt-4 max-w-2xl text-sm text-ink/60 sm:text-base">
+          <p className="mt-4 max-w-2xl text-sm text-paper/60 sm:text-base">
             Начнём с бесплатной консультации, сметы и подготовки концепций.
             Ответим в течение одного рабочего дня.
           </p>
@@ -94,15 +93,15 @@ export default function Contact() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mt-10 rounded-2xl border border-ink/10 bg-white p-10 text-center sm:p-16"
+              className="liquid-glass mt-8 p-8 text-center sm:p-12"
             >
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rec/15 text-2xl text-rec">
                 ✓
               </div>
-              <h3 className="mt-6 font-display text-2xl uppercase text-ink sm:text-3xl">
+              <h3 className="mt-6 font-display text-2xl uppercase text-paper sm:text-3xl">
                 Заявка отправлена
               </h3>
-              <p className="mt-3 text-ink/60">
+              <p className="mt-3 text-paper/60">
                 Спасибо, {form.name}! Мы изучим бриф и свяжемся с вами по
                 контакту «{form.contact}» в течение одного рабочего дня.
               </p>
@@ -111,7 +110,7 @@ export default function Contact() {
             <form
               onSubmit={handleSubmit}
               noValidate
-              className="mt-10 grid gap-6 rounded-2xl border border-ink/10 bg-white p-6 sm:p-10 md:grid-cols-2"
+              className="liquid-glass mt-8 grid gap-5 p-6 sm:p-8 md:grid-cols-2"
             >
               <Field label="Имя / компания" required error={errors.name}>
                 <input
@@ -168,7 +167,7 @@ export default function Contact() {
               <div className="md:col-span-2">
                 <button
                   type="submit"
-                  className="w-full rounded-full bg-ink px-8 py-4 text-sm font-medium text-paper transition hover:bg-rec sm:w-auto"
+                  className="w-full rounded-full bg-rec px-8 py-4 text-sm font-medium text-white transition hover:bg-rec-light sm:w-auto"
                 >
                   Отправить
                 </button>
@@ -196,7 +195,7 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-2 block text-sm font-medium text-ink/70">
+      <span className="mb-2 block text-sm font-medium text-paper/70">
         {label}
         {required && <span className="text-rec"> *</span>}
       </span>

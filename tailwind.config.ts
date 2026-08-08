@@ -25,6 +25,11 @@ const config: Config = {
           light: "#FF6644",
           dark: "#C7280A",
         },
+        glow: {
+          DEFAULT: "#00D2FF",
+          deep: "#0B2551",
+          pale: "#A4F4FD",
+        },
       },
       fontFamily: {
         sans: ["var(--font-montserrat)", "system-ui", "sans-serif"],
@@ -43,10 +48,15 @@ const config: Config = {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
         },
+        shiny: {
+          "0%": { backgroundPosition: "-200% center" },
+          "100%": { backgroundPosition: "200% center" },
+        },
       },
       animation: {
         "pulse-rec": "pulse-rec 1.6s ease-in-out infinite",
         roll: "roll 32s linear infinite",
+        shiny: "shiny 6s linear infinite",
       },
     },
   },

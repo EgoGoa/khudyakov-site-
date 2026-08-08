@@ -5,6 +5,8 @@ import type { FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
+import Eyebrow from "@/components/ui/Eyebrow";
+import GlassCard from "@/components/ui/GlassCard";
 import { SendIcon } from "@/components/ui/Icons";
 
 type Message = {
@@ -68,17 +70,15 @@ export default function AiConsult() {
   };
 
   return (
-    <section id="ai" className="border-b border-ink/10 bg-paper py-24 sm:py-32">
+    <section id="ai" className="border-b border-paper/10 py-16 sm:py-24">
       <Container>
-        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-20">
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
           <Reveal>
-            <span className="mb-3 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-rec">
-              04 · Скоро
-            </span>
-            <h2 className="font-display text-3xl uppercase tracking-tight text-ink sm:text-4xl md:text-5xl">
+            <Eyebrow index="04" label="Скоро" tone="glow" />
+            <h2 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl md:text-5xl">
               Консультация с ИИ-агентом
             </h2>
-            <p className="mt-6 max-w-md text-base leading-relaxed text-ink/60 sm:text-lg">
+            <p className="mt-4 max-w-md text-base leading-relaxed text-paper/60 sm:text-lg">
               Мы разрабатываем ИИ-агента, который поможет предварительно
               оценить бюджет и формат съёмки в чате — на этой странице уже
               можно посмотреть, как это будет выглядеть.
@@ -86,22 +86,22 @@ export default function AiConsult() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm">
-              <div className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
+            <GlassCard className="overflow-hidden">
+              <div className="flex items-center justify-between border-b border-paper/10 px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rec/15 font-mono text-sm font-semibold text-rec">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-glow/15 font-mono text-sm font-semibold text-glow">
                     AI
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-ink">
+                    <div className="text-sm font-medium text-paper">
                       Ассистент KHUDYAKOV.AGENCY
                     </div>
-                    <div className="font-mono text-xs text-ink/40">Демо-версия</div>
+                    <div className="font-mono text-xs text-paper/40">Демо-версия</div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex h-80 flex-col gap-3 overflow-y-auto bg-paper/40 px-5 py-5">
+              <div className="flex h-80 flex-col gap-3 overflow-y-auto px-5 py-5">
                 <AnimatePresence initial={false}>
                   {messages.map((message) => (
                     <motion.div
@@ -111,7 +111,7 @@ export default function AiConsult() {
                       transition={{ duration: 0.3 }}
                       className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                         message.role === "assistant"
-                          ? "self-start bg-white text-ink/80 shadow-sm"
+                          ? "self-start liquid-glass text-paper/80"
                           : "self-end bg-rec text-white"
                       }`}
                     >
@@ -124,20 +124,20 @@ export default function AiConsult() {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="self-start rounded-2xl bg-white px-4 py-3 text-sm text-ink/40 shadow-sm"
+                    className="liquid-glass self-start px-4 py-3 text-sm text-paper/40"
                   >
                     печатает…
                   </motion.div>
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-2 border-t border-ink/10 px-5 py-3">
+              <div className="flex flex-wrap gap-2 border-t border-paper/10 px-5 py-3">
                 {suggestions.map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => sendMessage(s)}
-                    className="rounded-full border border-ink/10 px-3 py-1.5 text-xs text-ink/60 transition hover:border-rec/50 hover:text-rec"
+                    className="rounded-full border border-paper/10 px-3 py-1.5 text-xs text-paper/60 transition hover:border-glow/50 hover:text-glow"
                   >
                     {s}
                   </button>
@@ -146,13 +146,13 @@ export default function AiConsult() {
 
               <form
                 onSubmit={handleSubmit}
-                className="flex items-center gap-3 border-t border-ink/10 px-5 py-4"
+                className="flex items-center gap-3 border-t border-paper/10 px-5 py-4"
               >
                 <input
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
                   placeholder="Напишите сообщение…"
-                  className="flex-1 bg-transparent text-sm text-ink placeholder:text-ink/40 focus:outline-none"
+                  className="flex-1 bg-transparent text-sm text-paper placeholder:text-paper/40 focus:outline-none"
                 />
                 <button
                   type="submit"
@@ -163,7 +163,7 @@ export default function AiConsult() {
                   <SendIcon />
                 </button>
               </form>
-            </div>
+            </GlassCard>
           </Reveal>
         </div>
       </Container>

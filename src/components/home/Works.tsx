@@ -4,15 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
+import Eyebrow from "@/components/ui/Eyebrow";
 import VideoPlayer from "@/components/ui/VideoPlayer";
 import { CloseIcon } from "@/components/ui/Icons";
 import { works } from "@/lib/data";
 
 const swatches = [
   "bg-rec/20",
-  "bg-ink/70",
-  "bg-paper-dark",
-  "bg-ink/40",
+  "bg-glow/15",
+  "bg-paper/10",
+  "bg-ink-soft",
   "bg-rec/10",
 ];
 
@@ -47,27 +48,25 @@ export default function Works() {
   }, [lightboxIndex, filtered.length]);
 
   return (
-    <section id="works" className="border-b border-ink/10 py-24 sm:py-32">
+    <section id="works" className="border-b border-paper/10 py-16 sm:py-24">
       <Container>
         <Reveal>
-          <span className="mb-3 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-rec">
-            01 · Работы
-          </span>
-          <h2 className="font-display text-3xl uppercase tracking-tight text-ink sm:text-4xl md:text-5xl">
+          <Eyebrow index="01" label="Работы" />
+          <h2 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl md:text-5xl">
             Портфолио
           </h2>
         </Reveal>
 
         <Reveal delay={0.05}>
-          <div className="mt-8 flex flex-wrap gap-2">
+          <div className="mt-6 flex flex-wrap gap-2">
             {categories.map((c) => (
               <button
                 key={c}
                 onClick={() => setFilter(c)}
                 className={`rounded-full border px-4 py-1.5 font-mono text-xs uppercase tracking-[0.1em] transition ${
                   filter === c
-                    ? "border-ink bg-ink text-paper"
-                    : "border-ink/15 text-ink/60 hover:border-ink/40"
+                    ? "border-paper bg-paper text-ink"
+                    : "border-paper/15 text-paper/60 hover:border-paper/40"
                 }`}
               >
                 {c}
@@ -76,14 +75,14 @@ export default function Works() {
           </div>
         </Reveal>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((work, index) => (
             <Reveal key={work.id} delay={(index % 6) * 0.06}>
               <button
                 onClick={() => setLightboxIndex(index)}
                 className={`group relative aspect-video w-full overflow-hidden rounded-xl text-left ${
                   swatches[index % swatches.length]
-                } ring-1 ring-ink/10 transition hover:ring-rec`}
+                } ring-1 ring-paper/10 transition hover:ring-glow`}
               >
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent p-4">
                   <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-paper/60">
