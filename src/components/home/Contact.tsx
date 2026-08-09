@@ -75,7 +75,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="border-b border-paper/10 py-10 sm:py-14">
+    <section id="contact" className="py-10 sm:py-14">
       <Container className="max-w-4xl">
         <Reveal>
           <Eyebrow index="07" label="Контакты" />

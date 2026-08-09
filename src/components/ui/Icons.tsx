@@ -106,3 +106,21 @@ export function SendIcon() {
     </svg>
   );
 }
+
+export function PhoneIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M4.5 4h3.2l1.6 4.4-2 1.6a13 13 0 0 0 6.7 6.7l1.6-2 4.4 1.6v3.2c0 1-.8 1.5-1.7 1.4A17.5 17.5 0 0 1 3.1 5.7C3 4.8 3.5 4 4.5 4z" />
+    </svg>
+  );
+}

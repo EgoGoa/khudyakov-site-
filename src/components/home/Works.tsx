@@ -35,7 +35,7 @@ export default function Works() {
   }, [activeId]);
 
   return (
-    <section id="works" className="border-b border-paper/10 py-10 sm:py-14">
+    <section id="works" className="py-10 sm:py-14">
       <Container>
         <Reveal>
           <Eyebrow index="01" label="Работы" />

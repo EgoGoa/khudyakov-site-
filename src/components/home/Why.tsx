@@ -25,7 +25,7 @@ const chips = ["Съёмка полного цикла", "3D/VFX", "Motion desig
 
 export default function Why() {
   return (
-    <section id="why" className="border-b border-paper/10 py-10 sm:py-14">
+    <section id="why" className="py-10 sm:py-14">
       <Container>
         <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
           <Reveal>

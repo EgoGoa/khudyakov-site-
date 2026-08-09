@@ -26,7 +26,7 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="border-b border-paper/10 py-10 sm:py-14">
+    <section className="py-10 sm:py-14">
       <Container>
         <Reveal>
           <Eyebrow label="Отзывы" />

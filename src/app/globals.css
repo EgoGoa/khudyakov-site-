@@ -141,39 +141,45 @@ body {
   animation: typewriter 2.5s steps(28, end) infinite;
 }
 
-/* neon glass CTA button */
-.btn-neon {
-  background: rgba(0, 210, 255, 0.08);
-  border: 1.5px solid rgba(0, 210, 255, 0.4);
-  color: #a4f4fd;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 10px 22px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  animation: neon-pulse 3s ease-in-out infinite;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  white-space: nowrap;
-}
+/* neon glass CTA button
+   NOTE: kept inside @layer components so Tailwind utilities (e.g. the
+   "hidden sm:inline-flex" pattern used to show/hide this button per
+   breakpoint) still win the cascade — plain CSS here would sit after
+   @tailwind utilities in the compiled output and always beat "hidden". */
+@layer components {
+  .btn-neon {
+    background: rgba(0, 210, 255, 0.08);
+    border: 1.5px solid rgba(0, 210, 255, 0.4);
+    color: #a4f4fd;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 10px 22px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: neon-pulse 3s ease-in-out infinite;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
 
-.btn-neon:hover {
-  background: rgba(0, 210, 255, 0.12);
-  border-color: rgba(0, 210, 255, 0.6);
-  color: #00d2ff;
-  box-shadow: 0 0 16px rgba(0, 210, 255, 0.8), 0 0 40px rgba(0, 210, 255, 0.5), inset 0 0 20px rgba(0, 210, 255, 0.3);
-}
+  .btn-neon:hover {
+    background: rgba(0, 210, 255, 0.12);
+    border-color: rgba(0, 210, 255, 0.6);
+    color: #00d2ff;
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.8), 0 0 40px rgba(0, 210, 255, 0.5), inset 0 0 20px rgba(0, 210, 255, 0.3);
+  }
 
-.btn-neon:active {
-  transform: scale(0.96);
+  .btn-neon:active {
+    transform: scale(0.96);
+  }
 }
 
 /* cinematic pricing section: giant noise-textured watermark headline behind
@@ -327,8 +333,13 @@ body {
 
 @media (max-width: 1024px) {
   .c3-watermark-main {
-    font-size: 3rem;
+    /* 3rem reads fine at tablet widths but a single long word like
+       "ВИДЕОПРОДАКШН." can still overrun a narrow phone viewport — clamp
+       scales it down further as the viewport shrinks below tablet. */
+    font-size: clamp(1.7rem, 8vw, 3rem);
     filter: none;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .c3-watermark-line-2 {

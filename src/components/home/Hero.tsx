@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import ShinyText from "@/components/ui/ShinyText";
+import { PhoneIcon } from "@/components/ui/Icons";
 
 const SHOWREEL_YOUTUBE_ID = "HC5SMCQuoms";
 
@@ -80,7 +81,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="top" className="relative overflow-hidden pb-0 pt-16 text-paper sm:pt-20">
+    <section id="top" className="relative flex min-h-screen flex-col overflow-hidden pb-0 pt-16 text-paper sm:pt-20">
       {/* showreel behind the headline, full width across the top of the
           site — playing on a loop, softly blurred at rest so the type stays
           readable and snapping sharp on hover */}
@@ -103,7 +104,7 @@ export default function Hero() {
         />
       </div>
 
-      <Container>
+      <Container className="flex flex-1 flex-col justify-center">
         <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-rec">
           <span className="h-2 w-2 animate-pulse-rec rounded-full bg-rec" />
           REC {timecode}
@@ -141,12 +142,10 @@ export default function Hero() {
           >
             Смотреть работы
           </Link>
-          <Link
-            href="/brief"
-            className="btn-neon"
-          >
-            Заполнить бриф
-          </Link>
+          <a href="tel:+79822750529" className="btn-neon">
+            <PhoneIcon className="animate-pulse" />
+            Заказать звонок
+          </a>
         </motion.div>
       </Container>
 
@@ -155,9 +154,9 @@ export default function Hero() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.6 }}
-        className="pointer-events-none absolute bottom-24 right-0 z-10 w-full"
+        className="pointer-events-none relative z-10 mt-6 w-full sm:absolute sm:bottom-24 sm:right-0 sm:mt-0"
       >
-        <Container className="flex justify-end">
+        <Container className="flex justify-start sm:justify-end">
           <button
             type="button"
             onClick={toggleSound}
@@ -201,7 +200,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.9 }}
-        className="relative mt-16 h-10 border-y border-paper/10 bg-ink/40 backdrop-blur-md sm:mt-20"
+        className="relative mt-16 h-10 shrink-0 border-y border-paper/10 bg-ink/40 backdrop-blur-md sm:mt-auto"
       >
         <Container className="flex h-full items-center justify-between gap-3 overflow-hidden text-xs">
           <div className="flex min-w-0 items-center gap-4 whitespace-nowrap text-paper/70">

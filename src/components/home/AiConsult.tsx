@@ -70,7 +70,7 @@ export default function AiConsult() {
   };
 
   return (
-    <section id="ai" className="border-b border-paper/10 py-10 sm:py-14">
+    <section id="ai" className="py-10 sm:py-14">
       <Container>
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
           <Reveal>

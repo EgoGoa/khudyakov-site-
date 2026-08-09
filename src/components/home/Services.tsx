@@ -5,7 +5,7 @@ import { services } from "@/lib/data";
 
 export default function Services() {
   return (
-    <section id="services" className="border-b border-paper/10 py-10 sm:py-14">
+    <section id="services" className="py-10 sm:py-14">
       <Container>
         <Reveal>
           <Eyebrow index="03" label="Наше предложение" />

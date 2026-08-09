@@ -35,7 +35,7 @@ const reasons = [
 export default function CalculatorPage() {
   return (
     <>
-      <section className="border-b border-paper/10 py-16 sm:py-24">
+      <section className="py-16 sm:py-24">
         <Container>
           <Reveal>
             <Eyebrow label="Калькулятор стоимости" />
@@ -64,7 +64,7 @@ export default function CalculatorPage() {
         </Container>
       </section>
 
-      <section className="border-b border-paper/10 py-12 sm:py-16">
+      <section className="py-12 sm:py-16">
         <Container>
           <Reveal className="grid gap-4 sm:grid-cols-3">
             {reasons.map((reason, index) => (

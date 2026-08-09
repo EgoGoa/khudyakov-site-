@@ -55,7 +55,7 @@ function CheckIcon() {
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="border-b border-paper/10 py-10 text-paper sm:py-14">
+    <section id="pricing" className="py-10 text-paper sm:py-14">
       <Container>
         <Reveal>
           <Eyebrow index="06" label="Цены" />

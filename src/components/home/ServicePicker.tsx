@@ -40,7 +40,7 @@ export default function ServicePicker() {
   return (
     <section
       id="service-picker"
-      className="relative flex min-h-[520px] items-center overflow-hidden border-b border-paper/10"
+      className="relative flex min-h-screen items-center overflow-hidden"
     >
       <div className="absolute inset-0 -z-10">
         {categories.map((cat, i) => (

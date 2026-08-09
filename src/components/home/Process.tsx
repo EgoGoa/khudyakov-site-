@@ -23,7 +23,7 @@ const steps = [
 
 export default function Process() {
   return (
-    <section id="process" className="border-b border-paper/10 py-10 sm:py-14">
+    <section id="process" className="py-10 sm:py-14">
       <Container>
         <Reveal>
           <Eyebrow index="05" label="Как мы работаем" />

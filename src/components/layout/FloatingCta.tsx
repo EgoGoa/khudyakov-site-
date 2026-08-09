@@ -38,10 +38,11 @@ export default function FloatingCta() {
         >
           <Link
             href={href}
-            className="btn-neon"
+            aria-label="AI ассистент"
+            className="btn-neon !h-12 !w-12 !p-0 sm:!h-auto sm:!w-auto sm:!px-[22px] sm:!py-[10px]"
           >
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
-            AI ассистент
+            <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-current" />
+            <span className="hidden sm:inline">AI ассистент</span>
           </Link>
         </motion.div>
       )}

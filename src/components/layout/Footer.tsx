@@ -55,7 +55,7 @@ export default function Footer() {
             <div className="font-mono text-xs uppercase tracking-[0.2em] text-paper/40">
               Контакты
             </div>
-            <ul className="mt-4 space-y-3 text-sm text-paper/60">
+            <ul className="mt-4 space-y-3 break-words text-sm text-paper/60">
               <li>khudyakov.yegor@gmail.com</li>
               <li>+7 (982) 275-05-29 — звонки</li>
               <li>+7 (992) 511-18-12 — Telegram / WhatsApp</li>
