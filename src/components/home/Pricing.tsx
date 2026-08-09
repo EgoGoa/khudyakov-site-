@@ -55,11 +55,11 @@ function CheckIcon() {
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="border-b border-paper/10 py-16 text-paper sm:py-24">
+    <section id="pricing" className="border-b border-paper/10 py-10 text-paper sm:py-14">
       <Container>
         <Reveal>
           <Eyebrow index="06" label="Цены" />
-          <h2 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl md:text-5xl">
+          <h2 className="font-sans text-3xl font-light uppercase tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
             Ориентировочная стоимость
           </h2>
           <p className="mt-4 max-w-2xl text-sm text-paper/60 sm:text-base">
@@ -76,7 +76,7 @@ export default function Pricing() {
             </Link>
             <Link
               href="/brief"
-              className="rounded-full border border-paper/20 px-6 py-3 text-sm font-medium text-paper/80 transition hover:border-paper/50 hover:text-paper"
+              className="btn-neon"
             >
               Заполнить бриф
             </Link>

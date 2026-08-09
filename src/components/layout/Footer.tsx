@@ -5,16 +5,15 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-paper/10 bg-ink text-paper">
+    <footer id="footer" className="border-t border-paper/10 bg-ink text-paper">
       <Container className="flex flex-col gap-8 py-12 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm">
           <div className="flex items-center gap-2 font-display text-lg uppercase text-paper">
             <span className="h-2 w-2 rounded-full bg-rec" />
-            KHUDYAKOV<span className="text-rec">.AGENCY</span>
+            HDKV<span className="text-rec">.AGENCY</span>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-paper/50">
-            Агентство видеопроизводства полного цикла. 5 лет на рынке, 450+
-            созданных видеороликов, 200+ довольных клиентов.
+            Диджитал-агентство полного цикла: продакшн, брендинг, SMM и AI-контент. 5 лет на рынке, 450+ проектов, 200+ клиентов.
           </p>
         </div>
 
@@ -57,8 +56,9 @@ export default function Footer() {
               Контакты
             </div>
             <ul className="mt-4 space-y-3 text-sm text-paper/60">
-              <li>hello@khudyakov.agency</li>
-              <li>+7 (999) 000-00-00</li>
+              <li>khudyakov.yegor@gmail.com</li>
+              <li>+7 (982) 275-05-29 — звонки</li>
+              <li>+7 (992) 511-18-12 — Telegram / WhatsApp</li>
             </ul>
           </div>
 

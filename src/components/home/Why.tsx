@@ -5,14 +5,14 @@ import GlassCard from "@/components/ui/GlassCard";
 
 const reasons = [
   {
-    title: "Качество и количество оборудования",
+    title: "Оборудование и технологии под задачу",
     description:
-      "Предлагаем оптимальный баланс между качеством и стоимостью используемого оборудования.",
+      "Предлагаем оптимальный баланс между качеством и стоимостью — от профессиональной съёмочной техники до AI-инструментов там, где они ускоряют результат.",
   },
   {
-    title: "Мощные идеи",
+    title: "Идеи, которые работают на результат",
     description:
-      "Разрабатываем бесплатно 2–3 творческие концепции с реализацией под ключ.",
+      "Разрабатываем бесплатно 2–3 творческие концепции с реализацией под ключ — не просто снимаем по сценарию, а создаём идею вместе с клиентом.",
   },
   {
     title: "Выгода для клиента",
@@ -21,25 +21,20 @@ const reasons = [
   },
 ];
 
-const chips = ["Съёмка полного цикла", "3D/VFX", "Motion design", "Продюсерский центр"];
+const chips = ["Съёмка полного цикла", "3D/VFX", "Motion design", "AI-продакшн", "Продюсерский центр"];
 
 export default function Why() {
   return (
-    <section id="why" className="border-b border-paper/10 py-16 sm:py-24">
+    <section id="why" className="border-b border-paper/10 py-10 sm:py-14">
       <Container>
         <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
           <Reveal>
             <Eyebrow index="02" label="Почему мы" />
-            <h2 className="mt-2 font-display text-3xl uppercase leading-[1.02] tracking-tight text-paper sm:text-4xl md:text-5xl">
-              Почему его
-              <br />
-              создадим мы?
+            <h2 className="mt-2 font-sans text-3xl font-light uppercase leading-[1.02] tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
+              Почему именно мы?
             </h2>
             <p className="mt-6 max-w-md text-base leading-relaxed text-paper/60">
-              Мы работаем как продюсерский центр — от идеи до готового ролика
-              в нужных форматах. На любой адекватный запрос вы услышите от
-              нас «да», а около 60% заказов — это клиенты, которые
-              возвращаются снова.
+              Мы работаем как продюсерский центр — от идеи до готового ролика в нужных форматах, усиленные AI-инструментами там, где это ускоряет процесс без потери качества. На любой адекватный запрос вы услышите от нас «да», а около 60% заказов — это клиенты, которые возвращаются снова.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               {chips.map((chip) => (

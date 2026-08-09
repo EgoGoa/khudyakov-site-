@@ -80,7 +80,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="top" className="relative overflow-hidden pb-0 pt-28 text-paper sm:pt-36">
+    <section id="top" className="relative overflow-hidden pb-0 pt-16 text-paper sm:pt-20">
       {/* showreel behind the headline, full width across the top of the
           site — playing on a loop, softly blurred at rest so the type stays
           readable and snapping sharp on hover */}
@@ -113,11 +113,11 @@ export default function Hero() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="mt-6 max-w-4xl font-display text-5xl uppercase leading-[0.95] tracking-tight text-paper sm:text-7xl md:text-8xl"
+          className="mt-6 max-w-4xl font-sans text-3xl font-light uppercase leading-[0.95] tracking-[0.01em] text-paper sm:text-5xl md:text-6xl"
         >
-          Видеопродакшн,
+          Диджитал, который
           <br />
-          <ShinyText>который не пропускают</ShinyText>
+          <ShinyText>думает быстрее рынка</ShinyText>
         </motion.h1>
 
         <motion.p
@@ -126,9 +126,7 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="mt-5 max-w-xl text-base leading-relaxed text-paper/70 sm:text-lg"
         >
-          Пробиваемся через информационный шум, цепляем внимание и держим
-          зрителя до конца — снимаем видео, которое повышает узнаваемость и
-          запоминаемость бренда.
+          Продакшн, брендинг и SMM — усиленные AI там, где это ускоряет результат, а не там, где модно. Снимаем, придумываем и запускаем контент, который бренды не могут себе позволить не заметить.
         </motion.p>
 
         <motion.div
@@ -145,9 +143,9 @@ export default function Hero() {
           </Link>
           <Link
             href="/brief"
-            className="rounded-full border border-paper/25 px-7 py-3.5 text-sm font-medium text-paper transition hover:border-paper/60"
+            className="btn-neon"
           >
-            Обсудить проект
+            Заполнить бриф
           </Link>
         </motion.div>
       </Container>

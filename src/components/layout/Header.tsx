@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { CloseIcon, MenuIcon } from "@/components/ui/Icons";
+import { useFullpage } from "@/lib/fullpage";
 
 const sections = [
   { id: "works", label: "Работы", short: "Работы" },
@@ -23,19 +24,35 @@ const pages = [
   { href: "/brief", label: "Бриф", short: "Бриф" },
 ];
 
+// the desktop bar only has room for a curated subset — the burger menu
+// still lists every section, and the CTA already covers the brief
+const desktopSections = ["works", "services", "pricing"];
+
 export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const api = useFullpage();
+  const fullpageActive = isHome && (api?.ready ?? false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState<string>("");
 
+  // On the homepage, navigation is a fullpage slide deck (see
+  // src/lib/fullpage.tsx) — there is no real document scroll to watch, so
+  // both "has the visitor moved past the first slide" and "which section is
+  // current" come from that shared state instead of window.scrollY /
+  // IntersectionObserver.
   useEffect(() => {
+    if (fullpageActive) {
+      setScrolled((api?.activeIndex ?? 0) > 0);
+      setActive(api?.activeId ?? "");
+      return;
+    }
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [fullpageActive, api?.activeIndex, api?.activeId]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -54,8 +71,10 @@ export default function Header() {
     };
   }, [menuOpen]);
 
+  // Non-fullpage routes (or before the slide deck has registered) fall back
+  // to plain in-page anchors / IntersectionObserver-free scroll-spy.
   useEffect(() => {
-    if (!isHome) return;
+    if (!isHome || fullpageActive) return;
     const elements = sections
       .map((s) => document.getElementById(s.id))
       .filter((el): el is HTMLElement => Boolean(el));
@@ -71,9 +90,23 @@ export default function Header() {
     );
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [isHome]);
+  }, [isHome, fullpageActive]);
 
   const hrefFor = (id: string) => (isHome ? `#${id}` : `/#${id}`);
+
+  const navigateTo = (e: React.MouseEvent, id: string) => {
+    if (fullpageActive) {
+      e.preventDefault();
+      api!.goTo(id);
+    }
+  };
+
+  const navigateHome = (e: React.MouseEvent) => {
+    if (fullpageActive) {
+      e.preventDefault();
+      api!.goToIndex(0);
+    }
+  };
 
   return (
     <header
@@ -88,32 +121,36 @@ export default function Header() {
       <Container className="relative z-10 flex h-16 items-center justify-between sm:h-20">
         <Link
           href="/"
+          onClick={navigateHome}
           className="flex min-w-0 items-center gap-2.5 py-2 font-display uppercase leading-none tracking-tight text-paper transition active:scale-[0.97] sm:gap-3"
         >
           <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full bg-rec sm:h-2.5 sm:w-2.5" />
           <span className="truncate text-[clamp(1.1rem,4vw,1.75rem)]">
-            KHUDYAKOV<span className="text-rec">.AGENCY</span>
+            HDKV<span className="text-rec">.AGENCY</span>
           </span>
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex">
-          {sections.slice(0, -1).map((s, i) => (
-            <motion.div
-              key={s.id}
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 + i * 0.05 }}
-            >
-              <Link
-                href={hrefFor(s.id)}
-                className={`text-sm font-medium transition-colors ${
-                  active === s.id ? "text-glow" : "text-paper/70 hover:text-paper"
-                }`}
+          {sections
+            .filter((s) => desktopSections.includes(s.id))
+            .map((s, i) => (
+              <motion.div
+                key={s.id}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.05 }}
               >
-                {s.label}
-              </Link>
-            </motion.div>
-          ))}
+                <Link
+                  href={hrefFor(s.id)}
+                  onClick={(e) => navigateTo(e, s.id)}
+                  className={`text-sm font-medium transition-colors ${
+                    active === s.id ? "text-glow" : "text-paper/70 hover:text-paper"
+                  }`}
+                >
+                  {s.label}
+                </Link>
+              </motion.div>
+            ))}
           {pages.map((p, i) => (
             <motion.div
               key={p.href}
@@ -136,12 +173,9 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
             href="/brief"
-            className="group hidden items-center gap-2 rounded-full bg-rec px-5 py-2.5 font-mono text-xs uppercase tracking-[0.15em] text-white transition-all duration-150 hover:bg-rec-light active:scale-95 sm:inline-flex"
+            className="hidden btn-neon sm:inline-flex"
           >
-            Обсудить проект
-            <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
-              →
-            </span>
+            Заполнить бриф
           </Link>
 
           <motion.button
@@ -170,7 +204,10 @@ export default function Header() {
                 <Link
                   key={s.id}
                   href={hrefFor(s.id)}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={(e) => {
+                    navigateTo(e, s.id);
+                    setMenuOpen(false);
+                  }}
                   className={`group flex items-baseline gap-3 border-b border-paper/10 py-3 transition-all duration-150 active:translate-x-1 sm:gap-5 sm:py-4 ${
                     active === s.id ? "text-glow" : "text-paper hover:text-glow"
                   }`}
@@ -210,9 +247,9 @@ export default function Header() {
               <Link
                 href="/brief"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center justify-center rounded-full bg-rec px-5 py-3.5 text-center font-mono text-sm uppercase tracking-[0.1em] text-white transition-all duration-150 hover:bg-rec-light active:scale-95"
+                className="btn-neon w-full"
               >
-                Обсудить проект
+                Заполнить бриф
               </Link>
             </div>
           </motion.div>

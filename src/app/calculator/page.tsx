@@ -5,9 +5,9 @@ import Eyebrow from "@/components/ui/Eyebrow";
 import Calculator from "@/components/calculator/Calculator";
 
 export const metadata: Metadata = {
-  title: "Калькулятор стоимости — KHUDYAKOV.AGENCY",
+  title: "Калькулятор стоимости — HDKV.AGENCY",
   description:
-    "Посчитайте ориентировочный бюджет видеопроизводства онлайн: тип ролика, хронометраж и дополнительные опции. KHUDYAKOV.AGENCY — 5 лет на рынке, 450+ роликов, 200+ клиентов.",
+    "Посчитайте ориентировочный бюджет проекта онлайн: тип ролика, хронометраж и дополнительные опции. HDKV.AGENCY — 5 лет на рынке, 450+ проектов, 200+ клиентов.",
 };
 
 const stats = [
@@ -42,13 +42,10 @@ export default function CalculatorPage() {
             <h1 className="font-display text-4xl uppercase leading-[1.02] tracking-tight text-paper sm:text-5xl md:text-6xl">
               Сколько стоит
               <br />
-              ваш ролик?
+              ваш проект?
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-paper/60 sm:text-lg">
-              KHUDYAKOV.AGENCY — продюсерский центр полного цикла: снимаем
-              рекламу, имиджевые видео, контент для соцсетей и мероприятия.
-              Посчитайте ориентировочный бюджет ниже — точную смету пришлём
-              после короткого брифа.
+              HDKV.AGENCY — диджитал-агентство полного цикла: снимаем рекламу, имиджевые видео, контент для соцсетей и мероприятия, усиливаем результат AI-инструментами. Посчитайте ориентировочный бюджет ниже — точную смету пришлём после короткого брифа.
             </p>
           </Reveal>
 

@@ -1,14 +1,14 @@
 import type { ElementType, ReactNode } from "react";
 
+// noise-filter treatment removed for readability — keeps just the shiny
+// cyan gradient sweep (see design_handoff_homepage_updates)
 const gradientStyle = {
-  backgroundImage:
-    "linear-gradient(to right, #DCDDEF 0%, #7DD3FC 20%, #A4F4FD 40%, #00D2FF 50%, #A4F4FD 60%, #7DD3FC 80%, #DCDDEF 100%)",
+  backgroundImage: "linear-gradient(to right, #7DD3FC, #00D2FF, #7DD3FC)",
   backgroundSize: "200% auto",
   WebkitBackgroundClip: "text" as const,
   backgroundClip: "text" as const,
   color: "transparent",
   WebkitTextFillColor: "transparent",
-  filter: "url(#khud-noise-headline)",
 };
 
 export default function ShinyText({

@@ -1,6 +1,5 @@
 import Hero from "@/components/home/Hero";
-import ProjectMockup from "@/components/home/ProjectMockup";
-import Reel from "@/components/home/Reel";
+import ServicePicker from "@/components/home/ServicePicker";
 import Stats from "@/components/home/Stats";
 import Works from "@/components/home/Works";
 import Why from "@/components/home/Why";
@@ -12,13 +11,13 @@ import Process from "@/components/home/Process";
 import Pricing from "@/components/home/Pricing";
 import FinalCTA from "@/components/home/FinalCTA";
 import Contact from "@/components/home/Contact";
+import Footer from "@/components/layout/Footer";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <ProjectMockup />
-      <Reel />
+      <ServicePicker />
       <Stats />
       <Works />
       <Why />
@@ -30,6 +29,7 @@ export default function HomePage() {
       <Pricing />
       <FinalCTA />
       <Contact />
+      <Footer />
     </>
   );
 }

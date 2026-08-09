@@ -36,7 +36,7 @@ export default function ProjectMockup() {
   const active = listItems.find((w) => w.id === activeId) ?? listItems[0];
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-10 md:py-14">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -107,7 +107,6 @@ export default function ProjectMockup() {
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-paper">{item.client}</span>
-                    <span className="font-mono text-[11px] text-paper/35">{item.year}</span>
                   </div>
                   <div className="mt-0.5 text-sm text-paper/70">{item.title}</div>
                   <div className="mt-1 truncate text-xs text-paper/40">
@@ -137,7 +136,6 @@ export default function ProjectMockup() {
                     {active.client.charAt(0)}
                   </span>
                   <span className="text-sm text-paper/70">{active.client}</span>
-                  <span className="text-xs text-paper/35">· бриф-встреча {active.year}</span>
                   <span className="ml-auto rounded-full border border-paper/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-paper/50">
                     {active.category}
                   </span>
@@ -156,8 +154,8 @@ export default function ProjectMockup() {
                 <div className="mt-5 space-y-3 text-sm leading-relaxed text-paper/60">
                   <p>Команда на проекте: продюсер, оператор, режиссёр монтажа.</p>
                   <p>
-                    Формат — {active.category.toLowerCase()}, съёмка {active.year} года для{" "}
-                    {active.client}. Следующий шаг фиксируем в резюме выше.
+                    Формат — {active.category.toLowerCase()} для {active.client}. Следующий
+                    шаг фиксируем в резюме выше.
                   </p>
                   <p className="text-paper/40">— команда KHUDYAKOV.AGENCY</p>
                 </div>

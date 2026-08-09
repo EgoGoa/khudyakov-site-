@@ -70,18 +70,16 @@ export default function AiConsult() {
   };
 
   return (
-    <section id="ai" className="border-b border-paper/10 py-16 sm:py-24">
+    <section id="ai" className="border-b border-paper/10 py-10 sm:py-14">
       <Container>
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
           <Reveal>
             <Eyebrow index="04" label="Скоро" tone="glow" />
-            <h2 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl md:text-5xl">
-              Консультация с ИИ-агентом
+            <h2 className="font-sans text-3xl font-light uppercase tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
+              AI-агент под рукой, а не где-то в разработке
             </h2>
             <p className="mt-4 max-w-md text-base leading-relaxed text-paper/60 sm:text-lg">
-              Мы разрабатываем ИИ-агента, который поможет предварительно
-              оценить бюджет и формат съёмки в чате — на этой странице уже
-              можно посмотреть, как это будет выглядеть.
+              Наш AI-агент уже помогает прикинуть формат и бюджет ролика прямо в чате — до брифа и без ожидания менеджера. Попробуйте сейчас, это демо-версия того, что скоро станет частью каждой заявки.
             </p>
           </Reveal>
 

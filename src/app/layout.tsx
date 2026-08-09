@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Oswald, Montserrat, Azeret_Mono } from "next/font/google";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import FloatingCta from "@/components/layout/FloatingCta";
 import BackgroundFX from "@/components/layout/BackgroundFX";
+import { FullpageProvider } from "@/lib/fullpage";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -31,9 +32,9 @@ const azeretMono = Azeret_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KHUDYAKOV.AGENCY — видеопродакшн полного цикла",
+  title: "HDKV.AGENCY — AI-диджитал агентство полного цикла",
   description:
-    "Агентство видеопроизводства KHUDYAKOV.AGENCY: рекламные ролики, имиджевые видео, съёмка мероприятий и motion design. 5 лет на рынке, 450+ роликов, 200+ клиентов.",
+    "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HDKV.AGENCY соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 5 лет опыта, 450+ проектов, 200+ клиентов.",
 };
 
 export default function RootLayout({
@@ -48,12 +49,14 @@ export default function RootLayout({
     >
       <body className="relative bg-ink font-sans text-paper antialiased">
         <BackgroundFX />
-        <div className="relative z-10">
-          <Header />
-          <main>{children}</main>
-          <Footer />
-          <FloatingCta />
-        </div>
+        <FullpageProvider>
+          <div className="relative z-10">
+            <Header />
+            <main>{children}</main>
+            <ConditionalFooter />
+            <FloatingCta />
+          </div>
+        </FullpageProvider>
       </body>
     </html>
   );

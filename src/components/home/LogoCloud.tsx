@@ -13,7 +13,7 @@ const clients = [
 
 export default function LogoCloud() {
   return (
-    <section className="border-b border-paper/10 py-14 sm:py-16">
+    <section className="border-b border-paper/10 py-8 sm:py-10">
       <Container>
         <p className="text-center font-mono text-xs uppercase tracking-[0.25em] text-paper/40">
           Нам доверяют

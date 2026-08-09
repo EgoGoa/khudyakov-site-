@@ -6,14 +6,14 @@ import Container from "@/components/ui/Container";
 
 export default function FinalCTA() {
   return (
-    <section className="py-16 sm:py-24">
+    <section className="py-10 sm:py-14">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="liquid-glass relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:py-20"
+          className="liquid-glass relative overflow-hidden rounded-3xl px-8 py-12 text-center sm:py-14"
         >
           <div
             className="pointer-events-none absolute inset-0 opacity-40"
@@ -23,7 +23,7 @@ export default function FinalCTA() {
             }}
           />
           <div className="relative">
-            <h2 className="font-display text-4xl uppercase leading-[1.02] tracking-tight text-paper sm:text-6xl">
+            <h2 className="font-sans text-4xl font-light uppercase leading-[1.02] tracking-[0.01em] text-paper sm:text-6xl">
               Готовы к съёмке?
               <br />
               Расскажите о проекте.
@@ -35,9 +35,9 @@ export default function FinalCTA() {
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/brief"
-                className="rounded-full bg-rec px-7 py-3.5 text-sm font-medium text-white transition hover:bg-rec-light"
+                className="btn-neon"
               >
-                Обсудить проект
+                Заполнить бриф
               </Link>
               <a
                 href="mailto:hello@khudyakov.agency"

@@ -30,7 +30,7 @@ export const SCENE_NAMES: Record<number, string> = {
   5: "Логистика",
 };
 
-export const BRIEF_EMAIL = "hello@khudyakov.agency";
+export const BRIEF_EMAIL = "khudyakov.yegor@gmail.com";
 
 export const STEPS: BriefStep[] = [
   {
@@ -85,6 +85,7 @@ export const STEPS: BriefStep[] = [
       "Контент для соцсетей",
       "Съёмка мероприятия",
       "Motion design / анимация",
+      "AI-контент",
       "Другое",
     ],
     required: true,

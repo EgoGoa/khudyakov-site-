@@ -8,7 +8,5 @@ export type Work = {
   title: string;
   client: string;
   category: string;
-  year: string;
-  videoSrc: string;
-  gradient: string;
+  youtubeId: string;
 };
