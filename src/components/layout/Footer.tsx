@@ -25,7 +25,9 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer id="footer" className="bg-ink text-paper">
+    <footer id="footer" className="text-paper" style={{
+      background: "linear-gradient(135deg, rgba(11,11,16,1) 0%, rgba(11,11,16,0.95) 25%, rgba(192,28,40,0.06) 50%, rgba(11,11,16,0.95) 75%, rgba(11,11,16,1) 100%)"
+    }}>
       {/* CTA band — mirrors the "ready to discuss your project" strip from
           the reference, but pointed at our own real channels */}
       <div className="border-b border-paper/10">
