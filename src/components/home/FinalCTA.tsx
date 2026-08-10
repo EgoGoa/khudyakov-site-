@@ -25,8 +25,6 @@ export default function FinalCTA() {
           <div className="relative">
             <h2 className="font-sans text-4xl font-light uppercase leading-[1.02] tracking-[0.01em] text-paper sm:text-6xl">
               Готовы к съёмке?
-              <br />
-              Расскажите о проекте.
             </h2>
             <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-paper/60 sm:text-base">
               Присоединяйтесь к 200+ брендам, которые доверили нам своё
@@ -40,7 +38,7 @@ export default function FinalCTA() {
                 Заполнить бриф
               </Link>
               <a
-                href="mailto:hello@khudyakov.agency"
+                href="mailto:khudyakov.yegor@gmail.com"
                 className="rounded-full border border-paper/15 px-7 py-3.5 text-sm font-medium text-paper transition hover:bg-paper/5"
               >
                 Написать на почту →

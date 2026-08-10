@@ -142,7 +142,7 @@ export default function Hero() {
           >
             Смотреть работы
           </Link>
-          <a href="tel:+79822750529" className="btn-neon">
+          <a href="tel:+79925111812" className="btn-neon">
             <PhoneIcon className="animate-pulse" />
             Заказать звонок
           </a>
