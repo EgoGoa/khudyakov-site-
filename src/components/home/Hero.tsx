@@ -90,7 +90,7 @@ export default function Hero() {
           ref={frameRef}
           className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 blur-[6px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[300%] md:w-[220%] lg:w-[190%]"
           src={`https://www.youtube.com/embed/${SHOWREEL_YOUTUBE_ID}?autoplay=1&mute=1&loop=1&playlist=${SHOWREEL_YOUTUBE_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
-          title="Шоурил KHUDYAKOV.AGENCY"
+          title="Шоурил HDKV.AGENCY"
           allow="autoplay; encrypted-media; picture-in-picture"
           referrerPolicy="strict-origin-when-cross-origin"
           loading="eager"
@@ -206,7 +206,7 @@ export default function Hero() {
           <div className="flex min-w-0 items-center gap-4 whitespace-nowrap text-paper/70">
             <span className="flex shrink-0 items-center gap-1.5 font-semibold text-paper">
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-rec" />
-              KHUDYAKOV.AGENCY
+              HDKV.AGENCY
             </span>
             {menuItems.map((item, i) => (
               <span

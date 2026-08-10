@@ -19,7 +19,7 @@ const initialMessages: Message[] = [
   {
     id: "m1",
     role: "assistant",
-    text: "Привет! Я ИИ-консультант KHUDYAKOV.AGENCY. Помогу быстро прикинуть формат и бюджет ролика ещё до брифа.",
+    text: "Привет! Я ИИ-консультант HDKV.AGENCY. Помогу быстро прикинуть формат и бюджет ролика ещё до брифа.",
   },
 ];
 
@@ -92,7 +92,7 @@ export default function AiConsult() {
                   </div>
                   <div>
                     <div className="text-sm font-medium text-paper">
-                      Ассистент KHUDYAKOV.AGENCY
+                      Ассистент HDKV.AGENCY
                     </div>
                     <div className="font-mono text-xs text-paper/40">Демо-версия</div>
                   </div>

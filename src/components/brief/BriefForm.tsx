@@ -91,7 +91,7 @@ export default function BriefForm() {
   };
 
   const mailtoHref = () => {
-    const lines: string[] = ["БРИФ НА ВИДЕОПРОДАКШН — KHUDYAKOV.AGENCY", ""];
+    const lines: string[] = ["БРИФ НА ВИДЕОПРОДАКШН — HDKV.AGENCY", ""];
     const seen: number[] = [];
     STEPS.forEach((step) => {
       if (!seen.includes(step.scene)) {

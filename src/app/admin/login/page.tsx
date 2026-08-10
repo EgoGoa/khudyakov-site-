@@ -4,7 +4,7 @@ import Eyebrow from "@/components/ui/Eyebrow";
 import { login } from "../actions";
 
 export const metadata: Metadata = {
-  title: "Вход в панель — KHUDYAKOV.AGENCY",
+  title: "Вход в панель — HDKV.AGENCY",
   robots: { index: false, follow: false },
 };
 

@@ -157,7 +157,7 @@ export default function ProjectMockup() {
                     Формат — {active.category.toLowerCase()} для {active.client}. Следующий
                     шаг фиксируем в резюме выше.
                   </p>
-                  <p className="text-paper/40">— команда KHUDYAKOV.AGENCY</p>
+                  <p className="text-paper/40">— команда HDKV.AGENCY</p>
                 </div>
 
                 <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-paper/10 bg-paper/5 px-3 py-1.5 text-xs text-paper/60">

@@ -20,6 +20,7 @@ export default function HomePage() {
       <ServicePicker />
       <Stats />
       <Works />
+      <FinalCTA />
       <Why />
       <Testimonials />
       <LogoCloud />
@@ -27,7 +28,6 @@ export default function HomePage() {
       <AiConsult />
       <Process />
       <Pricing />
-      <FinalCTA />
       <Contact />
       <Footer />
     </>
