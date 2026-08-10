@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
-import ShinyText from "@/components/ui/ShinyText";
 import { PhoneIcon } from "@/components/ui/Icons";
 
 const SHOWREEL_YOUTUBE_ID = "HC5SMCQuoms";
@@ -59,7 +58,20 @@ export default function Hero() {
   const timecode = useTimecode();
   const clock = useClock();
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const titleWrapRef = useRef<HTMLDivElement>(null);
   const [soundOn, setSoundOn] = useState(false);
+
+  // Track the cursor as CSS custom properties (not React state) so the
+  // glow can follow the mouse every frame without triggering re-renders.
+  const handleTitleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const el = titleWrapRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    el.style.setProperty("--mx", `${x}%`);
+    el.style.setProperty("--my", `${y}%`);
+  };
 
   // YouTube's iframe accepts player commands over postMessage as long as the
   // embed was created with enablejsapi=1 — that avoids pulling in the whole
@@ -110,16 +122,26 @@ export default function Hero() {
           REC {timecode}
         </div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="mt-6 max-w-4xl font-sans text-3xl font-light uppercase leading-[0.95] tracking-[0.01em] text-paper sm:text-5xl md:text-6xl"
+        <div
+          ref={titleWrapRef}
+          onMouseMove={handleTitleMouseMove}
+          className="hero-title-wrap relative mt-6"
         >
-          Диджитал, который
-          <br />
-          <ShinyText>думает быстрее рынка</ShinyText>
-        </motion.h1>
+          <div className="hero-title-glow" aria-hidden="true" />
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="relative max-w-4xl font-sans text-3xl font-extrabold uppercase leading-[0.95] tracking-[0.06em] sm:text-5xl md:text-6xl"
+          >
+            <span className="hero-neon-word">DIGITAL AI</span>
+            <span className="hero-gradient-text">
+              , который
+              <br />
+              быстрее рынка
+            </span>
+          </motion.h1>
+        </div>
 
         <motion.p
           initial={{ opacity: 0, y: 24 }}

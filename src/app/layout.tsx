@@ -11,7 +11,7 @@ const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
   variable: "--font-montserrat",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 // Bebas Neue has no Cyrillic glyphs, so Russian headlines would silently
