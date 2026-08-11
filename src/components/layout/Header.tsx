@@ -7,8 +7,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { CloseIcon, MenuIcon } from "@/components/ui/Icons";
 import { useFullpage } from "@/lib/fullpage";
-import { useService } from "@/lib/service-context";
-import { serviceMeta } from "@/lib/service-content";
 
 const sections = [
   { id: "works", label: "Работы", short: "Работы" },
@@ -26,14 +24,19 @@ const pages = [
   { href: "/brief", label: "Бриф", short: "Бриф" },
 ];
 
+// the section anchors above exist on every /content, /ai, /sites, /smm
+// page identically — jumping there should stay on whichever one you're
+// already viewing instead of bouncing to the default service
+const landingSlugs = ["content", "ai", "sites", "smm"];
+
 // the desktop bar only has room for a curated subset — the burger menu
 // still lists every section, and the CTA already covers the brief
 const desktopSections = ["works", "services", "pricing"];
 
 export default function Header() {
-  const { active: activeService } = useService();
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isLanding = landingSlugs.includes(pathname.replace(/^\//, ""));
   const api = useFullpage();
   const fullpageActive = isHome && (api?.ready ?? false);
   const [scrolled, setScrolled] = useState(false);
@@ -77,7 +80,7 @@ export default function Header() {
   // Non-fullpage routes (or before the slide deck has registered) fall back
   // to plain in-page anchors / IntersectionObserver-free scroll-spy.
   useEffect(() => {
-    if (!isHome || fullpageActive) return;
+    if (!isLanding || fullpageActive) return;
     const elements = sections
       .map((s) => document.getElementById(s.id))
       .filter((el): el is HTMLElement => Boolean(el));
@@ -93,9 +96,9 @@ export default function Header() {
     );
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [isHome, fullpageActive]);
+  }, [isLanding, fullpageActive]);
 
-  const hrefFor = (id: string) => (isHome ? `#${id}` : `/#${id}`);
+  const hrefFor = (id: string) => (isLanding ? `#${id}` : `/content#${id}`);
 
   const navigateTo = (e: React.MouseEvent, id: string) => {
     if (fullpageActive) {
@@ -132,11 +135,6 @@ export default function Header() {
             HDKV<span className="text-rec">.AGENCY</span>
           </span>
         </Link>
-
-        <span className="hidden shrink-0 items-center gap-1.5 rounded-full border border-glow/30 bg-glow/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-glow/90 md:flex">
-          <span className="h-1.5 w-1.5 rounded-full bg-glow" />
-          {serviceMeta[activeService].label}
-        </span>
 
         <nav className="hidden items-center gap-6 lg:flex">
           {sections

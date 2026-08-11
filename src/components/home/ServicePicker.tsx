@@ -1,17 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import Container from "@/components/ui/Container";
-import { useService } from "@/lib/service-context";
-import { serviceMeta, serviceOrder } from "@/lib/service-content";
+import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 
 export default function ServicePicker() {
-  const { active, setActive } = useService();
-  const index = serviceOrder.indexOf(active);
-  const count = serviceOrder.length;
-  const activeMeta = serviceMeta[active];
+  const pathname = usePathname();
+  const router = useRouter();
 
-  const go = (delta: number) => setActive(serviceOrder[(index + delta + count) % count]);
+  const activeKey: ServiceKey =
+    serviceOrder.find((key) => `/${serviceMeta[key].slug}` === pathname) ?? "content";
+  const index = serviceOrder.indexOf(activeKey);
+  const count = serviceOrder.length;
+  const activeMeta = serviceMeta[activeKey];
+
+  const go = (delta: number) => {
+    const next = serviceOrder[(index + delta + count) % count];
+    router.push(`/${serviceMeta[next].slug}`);
+  };
 
   return (
     <section
@@ -27,8 +34,8 @@ export default function ServicePicker() {
             aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out"
             style={{
-              opacity: key === active ? 1 : 0,
-              transform: key === active ? "scale(1)" : "scale(1.06)",
+              opacity: key === activeKey ? 1 : 0,
+              transform: key === activeKey ? "scale(1)" : "scale(1.06)",
             }}
           />
         ))}
@@ -70,24 +77,16 @@ export default function ServicePicker() {
 
         <div className="mt-5 flex gap-2">
           {serviceOrder.map((key) => (
-            <button
+            <Link
               key={key}
-              type="button"
-              onClick={() => setActive(key)}
+              href={`/${serviceMeta[key].slug}`}
               aria-label={serviceMeta[key].label}
               className={`h-2 w-2 rounded-full transition-colors ${
-                key === active ? "bg-glow" : "bg-paper/25 hover:bg-paper/50"
+                key === activeKey ? "bg-glow" : "bg-paper/25 hover:bg-paper/50"
               }`}
             />
           ))}
         </div>
-
-        <Link
-          href={`/services/${activeMeta.slug}`}
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-glow/40 px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
-        >
-          Подробнее об услуге →
-        </Link>
       </Container>
     </section>
   );
