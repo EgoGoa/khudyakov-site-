@@ -212,6 +212,138 @@ body {
   }
 }
 
+/* welcome overlay — independent per-line opacity breathing, so the wave
+   feels alive at rest, not just when its energy tier changes */
+@keyframes voice-wave-shimmer {
+  0%,
+  100% {
+    opacity: var(--shimmer-min, 0.55);
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* welcome overlay — each line drifts up/down at rest (and always), its own
+   range and rhythm set per line via --float-range, so the packet reads as
+   floating rather than a frozen static shape even when energy is low */
+@keyframes voice-wave-float {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--float-range, -4px));
+  }
+}
+
+.voice-wave-svg {
+  transform: scaleY(calc(var(--energy, 1) * var(--hover-boost, 1)));
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* welcome overlay — each line's own height pulse, registered so it tweens
+   smoothly instead of jumping between keyframe stops. Lives on the <g>
+   wrapping each path (not the shared svg) so the four lines pulse on their
+   own independent rhythm/range instead of all jumping together. */
+@property --pulse-range {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@keyframes voice-wave-line-pulse {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(var(--pulse-range, 1.2));
+  }
+}
+
+/* welcome overlay — hovering the wave makes it visibly react: a quick
+   trembling jitter plus a brightness lift, like it noticed you */
+@keyframes voice-wave-vibrate {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-1.5px, 1px);
+  }
+  40% {
+    transform: translate(1.5px, -1px);
+  }
+  60% {
+    transform: translate(-1px, -1.5px);
+  }
+  80% {
+    transform: translate(1px, 1.5px);
+  }
+}
+
+.voice-wave-wrap {
+  transition: filter 0.3s ease;
+}
+
+.voice-wave-wrap:hover {
+  animation: voice-wave-vibrate 0.15s ease-in-out infinite;
+  filter: brightness(1.25) saturate(1.15);
+  cursor: pointer;
+}
+
+.voice-wave-wrap:hover .voice-wave-svg {
+  --hover-boost: 1.15;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-wave-wrap:hover {
+    animation: none;
+  }
+  .voice-wave-svg g,
+  .voice-wave-svg path {
+    animation: none !important;
+  }
+}
+
+/* welcome overlay — expanding ripple while the mic is listening */
+@keyframes mic-ripple {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* welcome overlay — mic button's soft neon halo, a conic gradient rotating
+   behind it so the color visibly drifts around the rim ("переливается")
+   even at rest; brighter, faster and more saturated on hover/press/listening */
+@keyframes mic-halo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mic-halo-wrap .mic-halo {
+  animation: mic-halo-spin 10s linear infinite;
+  transition: filter 0.3s ease;
+}
+
+.mic-halo-wrap:hover .mic-halo,
+.mic-halo-wrap:focus-visible .mic-halo,
+.mic-halo-wrap.is-active .mic-halo {
+  animation-duration: 3s;
+  filter: blur(9px) brightness(1.5) saturate(1.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic-halo-wrap .mic-halo {
+    animation: none;
+  }
+}
+
 /* typewriter effect for status bar */
 @keyframes typewriter {
   from {

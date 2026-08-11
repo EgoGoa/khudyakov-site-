@@ -10,16 +10,18 @@ import AiConsult from "@/components/home/AiConsult";
 import Process from "@/components/home/Process";
 import Pricing from "@/components/home/Pricing";
 import Contact from "@/components/home/Contact";
+import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
-  title: "Сайты — HDKV.AGENCY",
+  title: "Vibe сайты — HDKV.AGENCY",
   description: "Разработка сайтов и лендингов под задачи бренда.",
 };
 
 export default function SitesServicePage() {
   return (
     <ServiceProvider forcedValue="sites">
+      <ServiceMenuOverlay service="sites" />
       <Stats />
       <Works />
       <FinalCTA />

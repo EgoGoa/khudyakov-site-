@@ -22,7 +22,7 @@ export const serviceMeta: Record<
     description: "Внедряем ИИ-инструменты в продакшн и коммуникацию с клиентами.",
   },
   sites: {
-    label: "Сайты",
+    label: "Vibe сайты",
     slug: "sites",
     image: "/images/service-video.jpg",
     description: "Разработка сайтов и лендингов под задачи бренда.",

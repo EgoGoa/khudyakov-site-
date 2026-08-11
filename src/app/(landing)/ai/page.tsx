@@ -10,6 +10,7 @@ import AiConsult from "@/components/home/AiConsult";
 import Process from "@/components/home/Process";
 import Pricing from "@/components/home/Pricing";
 import Contact from "@/components/home/Contact";
+import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
 export default function AiServicePage() {
   return (
     <ServiceProvider forcedValue="ai">
+      <ServiceMenuOverlay service="ai" />
       <Stats />
       <Works />
       <FinalCTA />

@@ -12,7 +12,7 @@ import type { ServiceKey } from "@/lib/service-content";
 const watermark: Record<ServiceKey, [string, string]> = {
   content: ["Видеопродакшн.", "Который не пропускают"],
   ai: ["AI-решения.", "Которые окупаются"],
-  sites: ["Сайты.", "Которые продают"],
+  sites: ["Vibe сайты.", "Которые продают"],
   smm: ["SMM.", "Который вовлекает"],
 };
 
