@@ -51,7 +51,7 @@ export default function Footer() {
         </Container>
       </div>
 
-      <Container className="grid gap-12 py-14 sm:py-16 lg:grid-cols-[1.1fr_1fr_1fr]">
+      <Container className="grid gap-10 py-14 sm:grid-cols-3 sm:py-16 sm:gap-x-8 lg:grid-cols-[1.1fr_1fr_1fr] lg:gap-12">
         <div className="max-w-sm">
           <div className="flex items-center gap-2 font-display text-lg uppercase text-paper">
             <span className="h-2 w-2 rounded-full bg-rec" />

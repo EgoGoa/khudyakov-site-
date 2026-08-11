@@ -5,6 +5,7 @@ import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import FloatingCta from "@/components/layout/FloatingCta";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import { FullpageProvider } from "@/lib/fullpage";
+import { ServiceProvider } from "@/lib/service-context";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -49,14 +50,16 @@ export default function RootLayout({
     >
       <body className="relative bg-ink font-sans text-paper antialiased">
         <BackgroundFX />
-        <FullpageProvider>
-          <div className="relative z-10">
-            <Header />
-            <main>{children}</main>
-            <ConditionalFooter />
-            <FloatingCta />
-          </div>
-        </FullpageProvider>
+        <ServiceProvider>
+          <FullpageProvider>
+            <div className="relative z-10">
+              <Header />
+              <main>{children}</main>
+              <ConditionalFooter />
+              <FloatingCta />
+            </div>
+          </FullpageProvider>
+        </ServiceProvider>
       </body>
     </html>
   );

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
+import { useService } from "@/lib/service-context";
+import { projectTypeByCategory } from "@/lib/service-content";
 
 const projectTypes = [
   "Рекламный ролик",
@@ -14,6 +16,7 @@ const projectTypes = [
   "Motion design",
   "Контент для соцсетей",
   "AI-контент",
+  "AI-решения и автоматизация",
   "Другое",
 ];
 
@@ -46,9 +49,21 @@ const inputClass =
   "w-full rounded-lg border border-paper/15 bg-paper/[0.04] px-4 py-3 text-sm text-paper placeholder:text-paper/40 focus:border-glow focus:outline-none";
 
 export default function Contact() {
+  const { active } = useService();
   const [form, setForm] = useState<FormState>(initialState);
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
+
+  // prefill "project type" to match whichever service is active on the
+  // homepage picker, but only before the visitor has touched the form —
+  // don't clobber a choice they already made
+  useEffect(() => {
+    setForm((prev) =>
+      prev.projectType === initialState.projectType
+        ? { ...prev, projectType: projectTypeByCategory[active] }
+        : prev
+    );
+  }, [active]);
 
   const update =
     (field: keyof FormState) =>

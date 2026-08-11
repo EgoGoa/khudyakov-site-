@@ -7,6 +7,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { CloseIcon, MenuIcon } from "@/components/ui/Icons";
 import { useFullpage } from "@/lib/fullpage";
+import { useService } from "@/lib/service-context";
+import { serviceMeta } from "@/lib/service-content";
 
 const sections = [
   { id: "works", label: "Работы", short: "Работы" },
@@ -29,6 +31,7 @@ const pages = [
 const desktopSections = ["works", "services", "pricing"];
 
 export default function Header() {
+  const { active: activeService } = useService();
   const pathname = usePathname();
   const isHome = pathname === "/";
   const api = useFullpage();
@@ -129,6 +132,11 @@ export default function Header() {
             HDKV<span className="text-rec">.AGENCY</span>
           </span>
         </Link>
+
+        <span className="hidden shrink-0 items-center gap-1.5 rounded-full border border-glow/30 bg-glow/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-glow/90 md:flex">
+          <span className="h-1.5 w-1.5 rounded-full bg-glow" />
+          {serviceMeta[activeService].label}
+        </span>
 
         <nav className="hidden items-center gap-6 lg:flex">
           {sections

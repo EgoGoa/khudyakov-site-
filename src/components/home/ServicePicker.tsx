@@ -1,41 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import Container from "@/components/ui/Container";
-import Eyebrow from "@/components/ui/Eyebrow";
-
-// File names in the design handoff don't match their actual contents (e.g.
-// "service-video.jpg" is a browser-window render, not a camera clapperboard)
-// — mapped here by what each image actually shows, not by its filename.
-const categories = [
-  {
-    label: "Создание контента",
-    image: "/images/service-smm.jpg", // clapperboard render
-    description: "Съёмка и монтаж роликов под ваш формат и площадку.",
-  },
-  {
-    label: "AI-решения",
-    image: "/images/service-ai.jpg", // eye/chip render
-    description: "Внедряем ИИ-инструменты в продакшн и коммуникацию с клиентами.",
-  },
-  {
-    label: "Сайты",
-    image: "/images/service-video.jpg", // browser-window render
-    description: "Разработка сайтов и лендингов под задачи бренда.",
-  },
-  {
-    label: "SMM",
-    image: "/images/service-sites.jpg", // hearts/likes render
-    description: "Контент и продвижение в социальных сетях на регулярной основе.",
-  },
-];
+import { useService } from "@/lib/service-context";
+import { serviceMeta, serviceOrder } from "@/lib/service-content";
 
 export default function ServicePicker() {
-  const [index, setIndex] = useState(0);
-  const count = categories.length;
-  const active = categories[index];
+  const { active, setActive } = useService();
+  const index = serviceOrder.indexOf(active);
+  const count = serviceOrder.length;
+  const activeMeta = serviceMeta[active];
 
-  const go = (delta: number) => setIndex((i) => (i + delta + count) % count);
+  const go = (delta: number) => setActive(serviceOrder[(index + delta + count) % count]);
 
   return (
     <section
@@ -43,16 +19,16 @@ export default function ServicePicker() {
       className="relative flex min-h-screen items-center overflow-hidden"
     >
       <div className="absolute inset-0 -z-10">
-        {categories.map((cat, i) => (
+        {serviceOrder.map((key) => (
           <img
-            key={cat.label}
-            src={cat.image}
+            key={key}
+            src={serviceMeta[key].image}
             alt=""
             aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out"
             style={{
-              opacity: i === index ? 1 : 0,
-              transform: i === index ? "scale(1)" : "scale(1.06)",
+              opacity: key === active ? 1 : 0,
+              transform: key === active ? "scale(1)" : "scale(1.06)",
             }}
           />
         ))}
@@ -65,50 +41,53 @@ export default function ServicePicker() {
         />
       </div>
 
+      <button
+        type="button"
+        onClick={() => go(-1)}
+        aria-label="Предыдущее"
+        className="service-arrow-left absolute left-4 top-1/2 z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-glow/50 bg-ink/50 text-3xl text-glow backdrop-blur-md transition-colors hover:border-glow hover:bg-glow/10 sm:left-8 sm:h-20 sm:w-20"
+      >
+        ‹
+      </button>
+
+      <button
+        type="button"
+        onClick={() => go(1)}
+        aria-label="Следующее"
+        className="service-arrow-right absolute right-4 top-1/2 z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-glow/50 bg-ink/50 text-3xl text-glow backdrop-blur-md transition-colors hover:border-glow hover:bg-glow/10 sm:right-8 sm:h-20 sm:w-20"
+      >
+        ›
+      </button>
+
       <Container className="flex flex-col items-center py-10 text-center">
-        <Eyebrow label="Что вас интересует?" tone="glow" />
-
-        <div className="mt-6 flex w-full items-center justify-center gap-4 sm:gap-6">
-          <button
-            type="button"
-            onClick={() => go(-1)}
-            aria-label="Предыдущее"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-paper/25 bg-ink/40 text-lg text-paper backdrop-blur-md transition hover:border-glow hover:text-glow"
-          >
-            ‹
-          </button>
-
-          <h3 className="min-w-[220px] font-sans text-[clamp(1.8rem,4.5vw,2.8rem)] font-light uppercase tracking-[0.02em] text-paper sm:min-w-[260px]">
-            {active.label}
-          </h3>
-
-          <button
-            type="button"
-            onClick={() => go(1)}
-            aria-label="Следующее"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-paper/25 bg-ink/40 text-lg text-paper backdrop-blur-md transition hover:border-glow hover:text-glow"
-          >
-            ›
-          </button>
-        </div>
+        <h3 className="font-sans text-[clamp(1.8rem,4.5vw,2.8rem)] font-light uppercase tracking-[0.02em] text-paper">
+          {activeMeta.label}
+        </h3>
 
         <p className="mt-3.5 max-w-[440px] text-sm leading-relaxed text-paper/75">
-          {active.description}
+          {activeMeta.description}
         </p>
 
         <div className="mt-5 flex gap-2">
-          {categories.map((cat, i) => (
+          {serviceOrder.map((key) => (
             <button
-              key={cat.label}
+              key={key}
               type="button"
-              onClick={() => setIndex(i)}
-              aria-label={cat.label}
+              onClick={() => setActive(key)}
+              aria-label={serviceMeta[key].label}
               className={`h-2 w-2 rounded-full transition-colors ${
-                i === index ? "bg-glow" : "bg-paper/25 hover:bg-paper/50"
+                key === active ? "bg-glow" : "bg-paper/25 hover:bg-paper/50"
               }`}
             />
           ))}
         </div>
+
+        <Link
+          href={`/services/${activeMeta.slug}`}
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-glow/40 px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
+        >
+          Подробнее об услуге →
+        </Link>
       </Container>
     </section>
   );

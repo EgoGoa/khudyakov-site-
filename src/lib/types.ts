@@ -8,5 +8,19 @@ export type Work = {
   title: string;
   client: string;
   category: string;
-  youtubeId: string;
+  youtubeId?: string;
+};
+
+export type ProcessStep = {
+  title: string;
+  description: string;
+};
+
+export type PricingTier = {
+  name: string;
+  price: string;
+  tagline: string;
+  team: string;
+  features: string[];
+  pro: boolean;
 };

@@ -5,45 +5,16 @@ import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
+import { useService } from "@/lib/service-context";
+import { pricingByCategory, serviceMeta } from "@/lib/service-content";
+import type { ServiceKey } from "@/lib/service-content";
 
-const tiers = [
-  {
-    name: "Стартовый",
-    price: "от 35 000 до 75 000 ₽",
-    tagline: "Видеопродукт базового уровня",
-    team: "Команда от 5 человек",
-    features: [
-      "Эксплейнеры и обучающие видеоуроки",
-      "Несложные презентации с элементами 2D/3D-анимации",
-      "Создание логотипа и анимированной заставки",
-    ],
-    pro: false,
-  },
-  {
-    name: "Профессиональный",
-    price: "от 75 000 до 255 000 ₽",
-    tagline: "Креативное видео на заказ",
-    team: "Команда от 10 человек",
-    features: [
-      "Рекламное видео для ТВ и запуска на YouTube",
-      "Анимированные ролики",
-      "3D-визуализация со сложной детализацией",
-    ],
-    pro: true,
-  },
-  {
-    name: "Премиальный",
-    price: "от 900 000 ₽",
-    tagline: "Эксклюзивный видеоролик на заказ",
-    team: "Команда от 15 человек",
-    features: [
-      "Самые сложные и комплексные задачи",
-      "VFX и спецэффекты",
-      "Съёмка и графика высшего уровня",
-    ],
-    pro: false,
-  },
-];
+const watermark: Record<ServiceKey, [string, string]> = {
+  content: ["Видеопродакшн.", "Который не пропускают"],
+  ai: ["AI-решения.", "Которые окупаются"],
+  sites: ["Сайты.", "Которые продают"],
+  smm: ["SMM.", "Который вовлекает"],
+};
 
 function CheckIcon() {
   return (
@@ -54,6 +25,10 @@ function CheckIcon() {
 }
 
 export default function Pricing() {
+  const { active } = useService();
+  const tiers = pricingByCategory[active];
+  const [line1, line2] = watermark[active];
+
   return (
     <section id="pricing" className="py-10 text-paper sm:py-14">
       <Container>
@@ -87,11 +62,18 @@ export default function Pricing() {
       <div className="c3-pricing-section">
         <div className="c3-watermark-container">
           <div className="c3-watermark-main">
-            <span className="c3-watermark-line-1">Видеопродакшн.</span>
-            <span className="c3-watermark-line-2">Который не пропускают</span>
+            <span className="c3-watermark-line-1">{line1}</span>
+            <span className="c3-watermark-line-2">{line2}</span>
           </div>
         </div>
 
+        {tiers.length === 0 ? (
+          <Container>
+            <p className="max-w-lg text-sm leading-relaxed text-paper/50">
+              Тарифы по этому направлению скоро появятся здесь.
+            </p>
+          </Container>
+        ) : (
         <div className="c3-grid">
           {tiers.map((tier, index) => (
             <motion.div
@@ -129,6 +111,7 @@ export default function Pricing() {
             </motion.div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

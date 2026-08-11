@@ -6,7 +6,8 @@ import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { CloseIcon } from "@/components/ui/Icons";
-import { works } from "@/lib/data";
+import { useService } from "@/lib/service-context";
+import { worksByCategory } from "@/lib/service-content";
 
 // hqdefault always exists for any YouTube video; maxresdefault looks much
 // sharper but isn't guaranteed, so the <img> below falls back to hqdefault
@@ -47,9 +48,11 @@ function sizeFor(index: number) {
 const COLLAPSED_HEIGHT = 520;
 
 export default function Works() {
+  const { active: activeService } = useService();
+  const works = worksByCategory[activeService];
   const categories = useMemo(
     () => ["Всё", ...Array.from(new Set(works.map((w) => w.category)))],
-    []
+    [works]
   );
   const [filter, setFilter] = useState("Всё");
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -57,9 +60,13 @@ export default function Works() {
   const [fullHeight, setFullHeight] = useState<number | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    setFilter("Всё");
+  }, [activeService]);
+
   const filtered = useMemo(
     () => (filter === "Всё" ? works : works.filter((w) => w.category === filter)),
-    [filter]
+    [filter, works]
   );
 
   const active = works.find((w) => w.id === activeId) ?? null;
@@ -103,6 +110,14 @@ export default function Works() {
           </h2>
         </Reveal>
 
+        {works.length === 0 ? (
+          <Reveal delay={0.05}>
+            <p className="mt-8 max-w-lg text-sm leading-relaxed text-paper/50">
+              Портфолио по этому направлению скоро появится здесь.
+            </p>
+          </Reveal>
+        ) : (
+        <>
         <Reveal delay={0.05}>
           <div className="mt-6 flex flex-wrap gap-2">
             {categories.map((c) => (
@@ -152,10 +167,10 @@ export default function Works() {
                 >
                   <div className="relative min-h-0 flex-1 overflow-hidden">
                     <img
-                      src={maxThumb(work.youtubeId)}
+                      src={work.youtubeId ? maxThumb(work.youtubeId) : ""}
                       onError={(e) => {
                         const img = e.currentTarget;
-                        if (img.dataset.fallback) return;
+                        if (img.dataset.fallback || !work.youtubeId) return;
                         img.dataset.fallback = "1";
                         img.src = fallbackThumb(work.youtubeId);
                       }}
@@ -210,6 +225,8 @@ export default function Works() {
               </span>
             </button>
           </div>
+        )}
+        </>
         )}
       </Container>
 

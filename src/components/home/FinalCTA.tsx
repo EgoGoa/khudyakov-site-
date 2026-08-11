@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
+import { useService } from "@/lib/service-context";
+import { finalCtaByCategory } from "@/lib/service-content";
 
 export default function FinalCTA() {
+  const { active } = useService();
+  const cta = finalCtaByCategory[active];
+
   return (
     <section className="py-10 sm:py-14">
       <Container>
@@ -24,11 +29,10 @@ export default function FinalCTA() {
           />
           <div className="relative">
             <h2 className="font-sans text-4xl font-light uppercase leading-[1.02] tracking-[0.01em] text-paper sm:text-6xl">
-              Готовы к съёмке?
+              {cta.title}
             </h2>
             <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-paper/60 sm:text-base">
-              Присоединяйтесь к 200+ брендам, которые доверили нам своё
-              видео — от идеи до сдачи в эфир.
+              {cta.description}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link

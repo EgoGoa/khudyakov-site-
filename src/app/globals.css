@@ -123,6 +123,36 @@ body {
   }
 }
 
+/* ServicePicker prev/next arrows — pinned to the block edges regardless of
+   the label's width, blinking neon and nudging toward the direction they
+   navigate. */
+@keyframes arrow-nudge-left {
+  0%, 100% {
+    transform: translate(0, -50%);
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.35), 0 0 20px rgba(0, 210, 255, 0.18);
+  }
+  50% {
+    transform: translate(-8px, -50%);
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.75), 0 0 36px rgba(0, 210, 255, 0.4);
+  }
+}
+@keyframes arrow-nudge-right {
+  0%, 100% {
+    transform: translate(0, -50%);
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.35), 0 0 20px rgba(0, 210, 255, 0.18);
+  }
+  50% {
+    transform: translate(8px, -50%);
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.75), 0 0 36px rgba(0, 210, 255, 0.4);
+  }
+}
+.service-arrow-left {
+  animation: arrow-nudge-left 1.8s ease-in-out infinite;
+}
+.service-arrow-right {
+  animation: arrow-nudge-right 1.8s ease-in-out infinite;
+}
+
 /* hero headline hover effect — a soft glow follows the cursor behind the
    letters (position driven by --mx/--my, set on mousemove in Hero.tsx),
    and the warm gradient brightens smoothly. Everything here is a plain
