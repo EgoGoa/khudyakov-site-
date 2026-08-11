@@ -1,24 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Container from "@/components/ui/Container";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 
 export default function ServicePicker() {
   const pathname = usePathname();
-  const router = useRouter();
-
-  const activeKey: ServiceKey =
+  const currentKey: ServiceKey =
     serviceOrder.find((key) => `/${serviceMeta[key].slug}` === pathname) ?? "content";
-  const index = serviceOrder.indexOf(activeKey);
-  const count = serviceOrder.length;
-  const activeMeta = serviceMeta[activeKey];
 
-  const go = (delta: number) => {
-    const next = serviceOrder[(index + delta + count) % count];
-    router.push(`/${serviceMeta[next].slug}`);
-  };
+  // Arrows/dots only preview a service here — they don't navigate. The
+  // visitor commits to actually visiting that service's page (and its own
+  // portfolio/pricing/etc below) via the "Подробнее" button.
+  const [previewKey, setPreviewKey] = useState<ServiceKey>(currentKey);
+  const index = serviceOrder.indexOf(previewKey);
+  const count = serviceOrder.length;
+  const previewMeta = serviceMeta[previewKey];
+
+  const go = (delta: number) => setPreviewKey(serviceOrder[(index + delta + count) % count]);
 
   return (
     <section
@@ -34,8 +35,8 @@ export default function ServicePicker() {
             aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out"
             style={{
-              opacity: key === activeKey ? 1 : 0,
-              transform: key === activeKey ? "scale(1)" : "scale(1.06)",
+              opacity: key === previewKey ? 1 : 0,
+              transform: key === previewKey ? "scale(1)" : "scale(1.06)",
             }}
           />
         ))}
@@ -68,25 +69,33 @@ export default function ServicePicker() {
 
       <Container className="flex flex-col items-center py-10 text-center">
         <h3 className="font-sans text-[clamp(1.8rem,4.5vw,2.8rem)] font-light uppercase tracking-[0.02em] text-paper">
-          {activeMeta.label}
+          {previewMeta.label}
         </h3>
 
         <p className="mt-3.5 max-w-[440px] text-sm leading-relaxed text-paper/75">
-          {activeMeta.description}
+          {previewMeta.description}
         </p>
 
         <div className="mt-5 flex gap-2">
           {serviceOrder.map((key) => (
-            <Link
+            <button
               key={key}
-              href={`/${serviceMeta[key].slug}`}
+              type="button"
+              onClick={() => setPreviewKey(key)}
               aria-label={serviceMeta[key].label}
               className={`h-2 w-2 rounded-full transition-colors ${
-                key === activeKey ? "bg-glow" : "bg-paper/25 hover:bg-paper/50"
+                key === previewKey ? "bg-glow" : "bg-paper/25 hover:bg-paper/50"
               }`}
             />
           ))}
         </div>
+
+        <Link
+          href={`/${previewMeta.slug}`}
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-glow/40 px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
+        >
+          Подробнее об услуге →
+        </Link>
       </Container>
     </section>
   );
