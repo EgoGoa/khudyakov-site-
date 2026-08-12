@@ -547,7 +547,7 @@ export default function WelcomeOverlay() {
                   animate="show"
                   exit="hidden"
                   variants={LIST_VARIANTS}
-                  className="mx-auto mt-10 flex w-full max-w-[280px] flex-col gap-3"
+                  className="mx-auto mt-8 flex w-full max-w-[280px] flex-col gap-3 sm:mt-10"
                 >
                   {serviceOrder.map((key) => (
                     <motion.div key={key} variants={ITEM_VARIANTS}>
@@ -563,30 +563,28 @@ export default function WelcomeOverlay() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
 
-          <div className="absolute inset-x-0 bottom-28 flex justify-center">
-            <AnimatePresence>
-              {done && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: EASE, delay: 0.3 }}
-                >
-                  <VoiceMicButton onTranscript={handleVoiceTranscript} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+            <div className="mt-12 flex w-full flex-col items-center gap-6 sm:mt-14">
+              <AnimatePresence>
+                {done && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: EASE, delay: 0.3 }}
+                  >
+                    <VoiceMicButton onTranscript={handleVoiceTranscript} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-          <div className="absolute inset-x-0 bottom-8 flex justify-center">
-            <button
-              type="button"
-              onClick={goToSite}
-              className="whitespace-nowrap rounded-full border border-paper/20 bg-ink/40 px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-paper/60 backdrop-blur-md transition hover:border-glow/50 hover:text-paper"
-            >
-              Перейти на сайт →
-            </button>
+              <button
+                type="button"
+                onClick={goToSite}
+                className="whitespace-nowrap rounded-full border border-paper/20 bg-ink/40 px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-paper/60 backdrop-blur-md transition hover:border-glow/50 hover:text-paper"
+              >
+                Перейти на сайт →
+              </button>
+            </div>
           </div>
         </motion.div>
       )}
