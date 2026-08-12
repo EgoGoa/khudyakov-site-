@@ -158,7 +158,7 @@ const WAVE_LINES = [
     floatDuration: 8.2,
     floatDelay: 0,
     pulseIdle: { range: 1.1, duration: 5.6 },
-    pulseTyping: { range: 1.6, duration: 0.34 },
+    pulseTyping: { range: 1.6, duration: 0.19 },
     pulseDelay: 0,
   },
   {
@@ -173,7 +173,7 @@ const WAVE_LINES = [
     floatDuration: 5.3,
     floatDelay: 0.6,
     pulseIdle: { range: 1.16, duration: 3.3 },
-    pulseTyping: { range: 1.85, duration: 0.19 },
+    pulseTyping: { range: 1.85, duration: 0.11 },
     pulseDelay: 0.9,
   },
   {
@@ -188,7 +188,7 @@ const WAVE_LINES = [
     floatDuration: 6.8,
     floatDelay: 1.1,
     pulseIdle: { range: 1.12, duration: 4.4 },
-    pulseTyping: { range: 1.95, duration: 0.27 },
+    pulseTyping: { range: 1.95, duration: 0.15 },
     pulseDelay: 1.5,
   },
   {
@@ -203,7 +203,7 @@ const WAVE_LINES = [
     floatDuration: 3.6,
     floatDelay: 1.4,
     pulseIdle: { range: 1.2, duration: 2.5 },
-    pulseTyping: { range: 1.7, duration: 0.15 },
+    pulseTyping: { range: 1.7, duration: 0.08 },
     pulseDelay: 0.45,
   },
 ];
