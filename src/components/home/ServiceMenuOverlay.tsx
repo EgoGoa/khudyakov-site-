@@ -107,6 +107,8 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
     }, 200);
   };
 
+  const goToSite = () => scrollToSection("top");
+
   return (
     <AnimatePresence>
       {visible && (
@@ -216,7 +218,7 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
           <div className="absolute inset-x-0 bottom-8 flex justify-center">
             <button
               type="button"
-              onClick={close}
+              onClick={goToSite}
               className="whitespace-nowrap rounded-full border border-paper/20 bg-ink/40 px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-paper/60 backdrop-blur-md transition hover:border-glow/50 hover:text-paper"
             >
               Перейти на сайт →

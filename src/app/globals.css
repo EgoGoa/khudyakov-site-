@@ -237,7 +237,7 @@ body {
 }
 
 .voice-wave-svg {
-  transform: scaleY(calc(var(--energy, 1) * var(--hover-boost, 1)));
+  transform: scaleY(var(--energy, 1));
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -260,45 +260,7 @@ body {
   }
 }
 
-/* welcome overlay — hovering the wave makes it visibly react: a quick
-   trembling jitter plus a brightness lift, like it noticed you */
-@keyframes voice-wave-vibrate {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  20% {
-    transform: translate(-1.5px, 1px);
-  }
-  40% {
-    transform: translate(1.5px, -1px);
-  }
-  60% {
-    transform: translate(-1px, -1.5px);
-  }
-  80% {
-    transform: translate(1px, 1.5px);
-  }
-}
-
-.voice-wave-wrap {
-  transition: filter 0.3s ease;
-}
-
-.voice-wave-wrap:hover {
-  animation: voice-wave-vibrate 0.15s ease-in-out infinite;
-  filter: brightness(1.25) saturate(1.15);
-  cursor: pointer;
-}
-
-.voice-wave-wrap:hover .voice-wave-svg {
-  --hover-boost: 1.15;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .voice-wave-wrap:hover {
-    animation: none;
-  }
   .voice-wave-svg g,
   .voice-wave-svg path {
     animation: none !important;

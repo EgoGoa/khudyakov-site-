@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import FloatingCta from "@/components/layout/FloatingCta";
 import BackgroundFX from "@/components/layout/BackgroundFX";
+import CursorGlow from "@/components/layout/CursorGlow";
 import { FullpageProvider } from "@/lib/fullpage";
 import "./globals.css";
 
@@ -49,6 +50,7 @@ export default function RootLayout({
     >
       <body className="relative bg-ink font-sans text-paper antialiased">
         <BackgroundFX />
+        <CursorGlow />
         <FullpageProvider>
           <div className="relative z-10">
             <Header />

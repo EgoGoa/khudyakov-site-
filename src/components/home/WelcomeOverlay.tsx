@@ -147,64 +147,64 @@ function buildEnvelopedWave(period: number, peakAmplitude: number, sharpness: nu
 // as one shape pulsing in place.
 const WAVE_LINES = [
   {
-    d: buildEnvelopedWave(140, 61, 1.6, 0),
-    color: "rgba(0,120,255,0.32)",
-    width: 3.4,
-    blur: 6,
+    d: buildEnvelopedWave(158, 42, 1.4, 0.2),
+    color: "rgba(0,120,255,0.34)",
+    width: 4.4,
+    blur: 8,
     glow: false,
-    shimmer: 5.5,
+    shimmer: 6.4,
     shimmerDelay: 0,
-    floatRange: -9,
-    floatDuration: 7,
+    floatRange: -11,
+    floatDuration: 8.2,
     floatDelay: 0,
-    pulseIdle: { range: 1.06, duration: 5 },
-    pulseTyping: { range: 1.55, duration: 0.3 },
+    pulseIdle: { range: 1.1, duration: 5.6 },
+    pulseTyping: { range: 1.6, duration: 0.34 },
     pulseDelay: 0,
   },
   {
-    d: buildEnvelopedWave(118, 49, 1.8, Math.PI * 0.6),
-    color: "rgba(0,150,255,0.48)",
-    width: 2.9,
-    blur: 3.5,
+    d: buildEnvelopedWave(101, 33, 2.1, Math.PI * 0.7),
+    color: "rgba(0,150,255,0.5)",
+    width: 3.6,
+    blur: 5,
     glow: false,
-    shimmer: 4.6,
-    shimmerDelay: 0.3,
-    floatRange: -6,
-    floatDuration: 6,
-    floatDelay: 0.5,
-    pulseIdle: { range: 1.08, duration: 4.2 },
-    pulseTyping: { range: 1.75, duration: 0.23 },
+    shimmer: 4.1,
+    shimmerDelay: 0.35,
+    floatRange: -7,
+    floatDuration: 5.3,
+    floatDelay: 0.6,
+    pulseIdle: { range: 1.16, duration: 3.3 },
+    pulseTyping: { range: 1.85, duration: 0.19 },
     pulseDelay: 0.9,
   },
   {
-    d: buildEnvelopedWave(96, 38, 2, Math.PI * 1.3),
-    color: "rgba(0,205,255,0.62)",
-    width: 2.3,
-    blur: 1.2,
+    d: buildEnvelopedWave(176, 26, 1.8, Math.PI * 1.4),
+    color: "rgba(0,205,255,0.64)",
+    width: 3,
+    blur: 3,
     glow: false,
-    shimmer: 3.8,
-    shimmerDelay: 0.6,
-    floatRange: 8,
-    floatDuration: 5,
-    floatDelay: 1,
-    pulseIdle: { range: 1.1, duration: 3.4 },
-    pulseTyping: { range: 1.9, duration: 0.17 },
-    pulseDelay: 1.6,
+    shimmer: 5.2,
+    shimmerDelay: 0.65,
+    floatRange: 9,
+    floatDuration: 6.8,
+    floatDelay: 1.1,
+    pulseIdle: { range: 1.12, duration: 4.4 },
+    pulseTyping: { range: 1.95, duration: 0.27 },
+    pulseDelay: 1.5,
   },
   {
-    d: buildEnvelopedWave(132, 29, 2.3, 0.4),
-    color: "rgba(235,244,255,0.95)",
-    width: 1.9,
-    blur: 0,
+    d: buildEnvelopedWave(122, 20, 2.5, 0.5),
+    color: "rgba(235,244,255,0.9)",
+    width: 2.4,
+    blur: 1.4,
     glow: true,
-    shimmer: 3,
-    shimmerDelay: 0.9,
+    shimmer: 2.6,
+    shimmerDelay: 0.95,
     floatRange: -5,
-    floatDuration: 4.4,
+    floatDuration: 3.6,
     floatDelay: 1.4,
-    pulseIdle: { range: 1.07, duration: 2.8 },
-    pulseTyping: { range: 1.65, duration: 0.13 },
-    pulseDelay: 0.4,
+    pulseIdle: { range: 1.2, duration: 2.5 },
+    pulseTyping: { range: 1.7, duration: 0.15 },
+    pulseDelay: 0.45,
   },
 ];
 
@@ -223,7 +223,7 @@ const WAVE_MASK =
 // baseline, so the four strands visually converge into one calm, almost
 // flat horizontal line instead of four small waves.
 export type WavePhaseEnergy = "typing" | "holding" | "idle";
-const WAVE_ENERGY: Record<WavePhaseEnergy, number> = { typing: 1, holding: 0.045, idle: 0.045 };
+const WAVE_ENERGY: Record<WavePhaseEnergy, number> = { typing: 1, holding: 0.09, idle: 0.09 };
 
 // The graphic renders much bigger than the space it reserves in the layout:
 // the wrap keeps a fixed, modest height (nothing below it moves), while the
@@ -296,7 +296,7 @@ export function VoiceWave({ energy }: { energy: WavePhaseEnergy }) {
                   {
                     animation: `voice-wave-shimmer ${line.shimmer}s ease-in-out ${line.shimmerDelay}s infinite, voice-wave-float ${line.floatDuration}s ease-in-out ${line.floatDelay}s infinite alternate`,
                     filter: line.glow
-                      ? "drop-shadow(0 0 8px rgba(0,210,255,0.9))"
+                      ? "drop-shadow(0 0 3px rgba(255,255,255,0.85)) drop-shadow(0 0 12px rgba(0,210,255,0.75)) drop-shadow(0 0 26px rgba(0,150,255,0.4))"
                       : line.blur
                       ? `blur(${line.blur}px)`
                       : undefined,
@@ -351,14 +351,6 @@ function matchService(transcript: string): ServiceKey | null {
 }
 
 type MicState = "idle" | "listening" | "nomatch" | "error" | "unsupported";
-
-const MIC_HINTS: Record<MicState, string> = {
-  idle: "Спросить голосом",
-  listening: "Слушаю…",
-  nomatch: "Не расслышал — выбери кнопкой",
-  error: "Нет доступа к микрофону",
-  unsupported: "Голос пока недоступен в этом браузере",
-};
 
 const MIC_HALO_GRADIENT =
   "conic-gradient(from 0deg, rgba(0,210,255,0.8), rgba(255,102,68,0.6) 35%, rgba(0,210,255,0.18) 55%, rgba(255,102,68,0.65) 80%, rgba(0,210,255,0.8))";
@@ -458,7 +450,6 @@ function VoiceAgentButton({ onMatched }: { onMatched: (key: ServiceKey) => void 
           <MicIcon />
         </span>
       </button>
-      <p className="h-4 text-[11px] uppercase tracking-[0.15em] text-paper/50">{MIC_HINTS[state]}</p>
     </div>
   );
 }
@@ -490,6 +481,15 @@ export default function WelcomeOverlay() {
   const done = phase === "done";
   const close = () => setVisible(false);
 
+  const goToSite = () => {
+    close();
+    // wait for the overlay's own exit + the body scroll-lock release before
+    // scrolling, otherwise the browser has nowhere to scroll to yet
+    setTimeout(() => {
+      document.getElementById("top")?.scrollIntoView({ behavior: "smooth" });
+    }, 200);
+  };
+
   const handleVoiceMatch = (key: ServiceKey) => {
     close();
     router.push(`/${serviceMeta[key].slug}`);
@@ -506,7 +506,7 @@ export default function WelcomeOverlay() {
           role="dialog"
           aria-modal="true"
           aria-label="Приветствие HDKV AGENCY"
-          className="fixed inset-0 z-[100] flex justify-center overflow-y-auto bg-ink/90 px-6 pb-24 pt-[9vh] backdrop-blur-2xl sm:pt-[11vh]"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-ink/90 px-6 py-24 backdrop-blur-2xl"
         >
           <div className="flex h-fit w-full max-w-xl flex-col items-center text-center">
             <div className="mb-2 flex items-center gap-2" aria-hidden="true">
@@ -578,7 +578,7 @@ export default function WelcomeOverlay() {
           <div className="absolute inset-x-0 bottom-8 flex justify-center">
             <button
               type="button"
-              onClick={close}
+              onClick={goToSite}
               className="whitespace-nowrap rounded-full border border-paper/20 bg-ink/40 px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-paper/60 backdrop-blur-md transition hover:border-glow/50 hover:text-paper"
             >
               Перейти на сайт →
