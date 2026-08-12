@@ -29,7 +29,7 @@ const PHRASES: { text: string; charDelay: number }[] = [
   { text: "Что тебя интересует?", charDelay: 75 },
 ];
 
-const HOLD_MS = 2500;
+const HOLD_MS = 500;
 const FADE_MS = 450;
 
 type Phase = "typing" | "holding" | "leaving" | "done";
@@ -315,7 +315,7 @@ export function VoiceWave({ energy }: { energy: WavePhaseEnergy }) {
   );
 }
 
-// ---------- voice-driven direction picker (Web Speech API) ----------
+// ---------- voice mic button (Web Speech API) — generic, caller decides what a transcript means ----------
 
 interface MinimalSpeechRecognition extends EventTarget {
   lang: string;
@@ -355,7 +355,10 @@ type MicState = "idle" | "listening" | "nomatch" | "error" | "unsupported";
 const MIC_HALO_GRADIENT =
   "conic-gradient(from 0deg, rgba(0,210,255,0.8), rgba(255,102,68,0.6) 35%, rgba(0,210,255,0.18) 55%, rgba(255,102,68,0.65) 80%, rgba(0,210,255,0.8))";
 
-function VoiceAgentButton({ onMatched }: { onMatched: (key: ServiceKey) => void }) {
+// `onTranscript` decides what the spoken text means and does the actual
+// action (navigate, scroll, open a panel...); it returns whether it found a
+// match so this button can show "didn't catch that" when it didn't.
+export function VoiceMicButton({ onTranscript }: { onTranscript: (transcript: string) => boolean }) {
   const [state, setState] = useState<MicState>("idle");
   const recognitionRef = useRef<MinimalSpeechRecognition | null>(null);
 
@@ -377,10 +380,8 @@ function VoiceAgentButton({ onMatched }: { onMatched: (key: ServiceKey) => void 
 
     recognition.onresult = (event) => {
       const transcript = event.results[0]?.[0]?.transcript ?? "";
-      const matched = matchService(transcript);
-      if (matched) {
-        onMatched(matched);
-      } else {
+      const matched = onTranscript(transcript);
+      if (!matched) {
         setState("nomatch");
         setTimeout(() => setState("idle"), 2500);
       }
@@ -490,9 +491,12 @@ export default function WelcomeOverlay() {
     }, 200);
   };
 
-  const handleVoiceMatch = (key: ServiceKey) => {
+  const handleVoiceTranscript = (transcript: string) => {
+    const key = matchService(transcript);
+    if (!key) return false;
     close();
     router.push(`/${serviceMeta[key].slug}`);
+    return true;
   };
 
   return (
@@ -569,7 +573,7 @@ export default function WelcomeOverlay() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: EASE, delay: 0.3 }}
                 >
-                  <VoiceAgentButton onMatched={handleVoiceMatch} />
+                  <VoiceMicButton onTranscript={handleVoiceTranscript} />
                 </motion.div>
               )}
             </AnimatePresence>

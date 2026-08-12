@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { UserIcon } from "@/components/ui/Icons";
-import { VoiceWave } from "@/components/home/WelcomeOverlay";
+import { VoiceWave, VoiceMicButton } from "@/components/home/WelcomeOverlay";
 import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const TELEGRAM_URL = "https://t.me/+79925111812";
 const PHRASE = "С чего начнём?";
-const CHAR_DELAY_MS = 55;
+const CHAR_DELAY_MS = 95;
 
 // Types PHRASE once, driving both the visible text and (via the caller) the
 // wave's energy — same pattern as the welcome overlay's greeting, just a
@@ -74,7 +75,22 @@ const MENU_ITEMS: MenuItem[] = [
   { key: "ai", label: "AI поддержка", type: "anchor", targetId: "ai" },
 ];
 
+const VOICE_MENU_KEYWORDS: Record<string, string[]> = {
+  cases: ["кейс", "работ", "портфолио", "пример"],
+  pricing: ["стоимост", "цена", "цены", "бюджет", "сколько стоит", "прайс"],
+  brief: ["бриф", "заявк", "анкет"],
+  creative: ["креатив", "продюсер", "сесси", "идея"],
+  ai: ["ai", "аи", "поддержк", "консультац", "помощь"],
+};
+
+function matchMenuItem(transcript: string): MenuItem | null {
+  const t = transcript.toLowerCase();
+  const found = MENU_ITEMS.find((item) => VOICE_MENU_KEYWORDS[item.key]?.some((kw) => t.includes(kw)));
+  return found ?? null;
+}
+
 export default function ServiceMenuOverlay({ service }: { service: ServiceKey }) {
+  const router = useRouter();
   const [visible, setVisible] = useState(true);
   const [creativeOpen, setCreativeOpen] = useState(false);
   const [reduced, setReduced] = useState(false);
@@ -108,6 +124,20 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
   };
 
   const goToSite = () => scrollToSection("top");
+
+  const handleVoiceTranscript = (transcript: string) => {
+    const item = matchMenuItem(transcript);
+    if (!item) return false;
+    if (item.type === "anchor") {
+      scrollToSection(item.targetId);
+    } else if (item.type === "link") {
+      close();
+      router.push(item.href);
+    } else {
+      setCreativeOpen(true);
+    }
+    return true;
+  };
 
   return (
     <AnimatePresence>
@@ -210,6 +240,20 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
                       Открыть чат в Telegram
                     </a>
                   </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="absolute inset-x-0 bottom-28 flex justify-center">
+            <AnimatePresence>
+              {typed && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: EASE, delay: 0.3 }}
+                >
+                  <VoiceMicButton onTranscript={handleVoiceTranscript} />
                 </motion.div>
               )}
             </AnimatePresence>
