@@ -12,7 +12,7 @@ import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 const EASE = [0.22, 1, 0.36, 1] as const;
 const TELEGRAM_URL = "https://t.me/+79925111812";
 const PHRASE = "С чего начнём?";
-const CHAR_DELAY_MS = 95;
+const CHAR_DELAY_MS = 120;
 
 // Types PHRASE once, driving both the visible text and (via the caller) the
 // wave's energy — same pattern as the welcome overlay's greeting, just a
