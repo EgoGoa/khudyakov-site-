@@ -212,58 +212,97 @@ body {
   }
 }
 
-/* welcome overlay — independent per-line opacity breathing, so the wave
-   feels alive at rest, not just when its energy tier changes */
-@keyframes voice-wave-shimmer {
+/* welcome overlay — voice orb's scale reacts to speech energy; cheap
+   (transform + opacity only), replacing the old multi-layer SVG wave */
+.voice-orb {
+  transform: scale(var(--orb-scale, 1));
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* pulses in time with typing — overridden by the keyframe below while active */
+@keyframes voice-orb-pulse {
   0%,
   100% {
-    opacity: var(--shimmer-min, 0.55);
+    transform: scale(var(--orb-scale, 1));
   }
   50% {
-    opacity: 1;
+    transform: scale(calc(var(--orb-scale, 1) * 1.09));
   }
 }
 
-/* welcome overlay — each line drifts up/down at rest (and always), its own
-   range and rhythm set per line via --float-range, so the packet reads as
-   floating rather than a frozen static shape even when energy is low */
-@keyframes voice-wave-float {
-  from {
-    transform: translateY(0);
-  }
+.voice-orb.is-typing {
+  animation: voice-orb-pulse 0.55s ease-in-out infinite;
+}
+
+/* the orb: two crisp, thin brush-stroke loops — not a blurred halo. Each
+   loop is a gradient-only ring (conic-gradient border, cut hollow via
+   mask-composite exclude so only the stroke itself paints, same trick as
+   the earlier rim version) with a slightly irregular, hand-drawn contour
+   (asymmetric border-radius, not a perfect circle) and its own gradient
+   start angle. The two loops rotate at different speeds/directions and
+   cross at shifting points — that crossing, plus each loop's own color
+   sweep, is what reads as a painterly double-stroke instead of a flat ring. */
+@keyframes voice-orb-ring-spin {
   to {
-    transform: translateY(var(--float-range, -4px));
+    transform: rotate(360deg);
   }
 }
 
-.voice-wave-svg {
-  transform: scaleY(var(--energy, 1));
-  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+.voice-orb-ring {
+  border-radius: 47% 53% 60% 40% / 43% 47% 53% 57%;
+  border: 1.75px solid transparent;
+  background: conic-gradient(
+      from 0deg,
+      #00d2ff 0deg,
+      #3aa0ff 55deg,
+      #8b5cf6 130deg,
+      #d946ef 195deg,
+      #3aa0ff 280deg,
+      #00d2ff 360deg
+    )
+    border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: blur(0.4px) drop-shadow(0 0 2.5px rgba(0, 210, 255, 1)) drop-shadow(0 0 6px rgba(139, 92, 246, 0.85));
+  animation: voice-orb-ring-spin 22s linear infinite;
+  transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
-/* welcome overlay — each line's own height pulse, registered so it tweens
-   smoothly instead of jumping between keyframe stops. Lives on the <g>
-   wrapping each path (not the shared svg) so the four lines pulse on their
-   own independent rhythm/range instead of all jumping together. */
-@property --pulse-range {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 1;
+.voice-orb-ring-b {
+  border-radius: 58% 42% 39% 61% / 56% 60% 40% 44%;
+  background: conic-gradient(
+      from 160deg,
+      #00d2ff 0deg,
+      #3aa0ff 55deg,
+      #8b5cf6 130deg,
+      #d946ef 195deg,
+      #3aa0ff 280deg,
+      #00d2ff 360deg
+    )
+    border-box;
+  opacity: 0.85;
+  animation-duration: 17s;
+  animation-direction: reverse;
 }
 
-@keyframes voice-wave-line-pulse {
-  from {
-    transform: scaleY(1);
-  }
-  to {
-    transform: scaleY(var(--pulse-range, 1.2));
-  }
+.voice-orb.is-typing .voice-orb-ring {
+  animation-duration: 5.5s;
+  filter: blur(0.4px) drop-shadow(0 0 3.5px rgba(0, 210, 255, 1)) drop-shadow(0 0 9px rgba(139, 92, 246, 1))
+    brightness(1.3);
+}
+
+.voice-orb.is-typing .voice-orb-ring-b {
+  animation-duration: 4.2s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .voice-wave-svg g,
-  .voice-wave-svg path {
-    animation: none !important;
+  .voice-orb {
+    transition: none;
+  }
+  .voice-orb.is-typing,
+  .voice-orb-ring {
+    animation: none;
   }
 }
 
@@ -303,6 +342,42 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .mic-halo-wrap .mic-halo {
     animation: none;
+  }
+}
+
+/* welcome overlay — the two frosted-glass choice buttons: a gentle
+   breathing glow at rest (own --glow-min/--glow-max per instance),
+   brighter and faster on hover/focus */
+@keyframes glass-btn-glow {
+  0%,
+  100% {
+    box-shadow: var(--glow-min);
+  }
+  50% {
+    box-shadow: var(--glow-max);
+  }
+}
+
+.glass-choice-btn {
+  box-shadow: var(--glow-min);
+  animation: glass-btn-glow 3.6s ease-in-out infinite;
+  transition: filter 0.3s ease, transform 0.15s ease;
+}
+
+.glass-choice-btn:hover,
+.glass-choice-btn:focus-visible {
+  animation-duration: 1.6s;
+  filter: brightness(1.18) saturate(1.15);
+}
+
+.glass-choice-btn:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-choice-btn {
+    animation: none;
+    box-shadow: var(--glow-min);
   }
 }
 

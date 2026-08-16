@@ -8,6 +8,7 @@ import { UserIcon } from "@/components/ui/Icons";
 import { VoiceWave, VoiceMicButton } from "@/components/home/WelcomeOverlay";
 import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
+import { useWelcomeGate } from "@/lib/welcome-gate";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const TELEGRAM_URL = "https://t.me/+79925111812";
@@ -17,11 +18,14 @@ const CHAR_DELAY_MS = 120;
 // Types PHRASE once, driving both the visible text and (via the caller) the
 // wave's energy — same pattern as the welcome overlay's greeting, just a
 // single phrase with no hold/dissolve since there's nothing after it.
-function useTypeOnce(text: string, reduced: boolean) {
+// `active` holds it at rest (no timers, no state churn) while the welcome
+// overlay is still on top of it.
+function useTypeOnce(text: string, reduced: boolean, active: boolean) {
   const [rendered, setRendered] = useState("");
   const [done, setDone] = useState(false);
 
   useEffect(() => {
+    if (!active) return;
     if (reduced) {
       setRendered(text);
       setDone(true);
@@ -48,7 +52,7 @@ function useTypeOnce(text: string, reduced: boolean) {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [text, reduced]);
+  }, [text, reduced, active]);
 
   return { rendered, done };
 }
@@ -91,12 +95,14 @@ function matchMenuItem(transcript: string): MenuItem | null {
 
 export default function ServiceMenuOverlay({ service }: { service: ServiceKey }) {
   const router = useRouter();
+  const { welcomeOpen, skippedToSite, setSkippedToSite } = useWelcomeGate();
   const [visible, setVisible] = useState(true);
   const [creativeOpen, setCreativeOpen] = useState(false);
   const [reduced, setReduced] = useState(false);
   const close = () => setVisible(false);
+  const active = visible && !welcomeOpen && !skippedToSite;
 
-  useBodyScrollLock(visible);
+  useBodyScrollLock(active);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -104,15 +110,15 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
   }, []);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!active) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setVisible(false);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [visible]);
+  }, [active]);
 
-  const { rendered, done: typed } = useTypeOnce(PHRASE, reduced);
+  const { rendered, done: typed } = useTypeOnce(PHRASE, reduced, active);
 
   const scrollToSection = (id: string) => {
     close();
@@ -123,7 +129,10 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
     }, 200);
   };
 
-  const goToSite = () => scrollToSection("top");
+  const goToSite = () => {
+    setSkippedToSite(true);
+    scrollToSection("top");
+  };
 
   const handleVoiceTranscript = (transcript: string) => {
     const item = matchMenuItem(transcript);
@@ -138,6 +147,10 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
     }
     return true;
   };
+
+  // Nothing renders (no backdrop-blur, no animated graphic, no speech-recognition
+  // setup) until the welcome overlay is actually gone — see welcome-gate.tsx.
+  if (welcomeOpen || skippedToSite) return null;
 
   return (
     <AnimatePresence>
