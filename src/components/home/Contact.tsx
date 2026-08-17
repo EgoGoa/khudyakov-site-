@@ -8,6 +8,7 @@ import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { useService } from "@/lib/service-context";
 import { projectTypeByCategory } from "@/lib/service-content";
+import { BRIEF_EMAIL } from "@/lib/brief";
 
 const projectTypes = [
   "Рекламный ролик",
@@ -80,11 +81,30 @@ export default function Contact() {
     return next;
   };
 
+  // no server/database behind this site — same "mailto" approach as
+  // /brief: build the email client-side and hand it to the visitor's own
+  // mail app to send, instead of silently pretending it went somewhere
+  const mailtoHref = () => {
+    const lines = [
+      `Имя / компания: ${form.name}`,
+      `Контакт: ${form.contact}`,
+      `Тип проекта: ${form.projectType}`,
+      `Бюджет: ${form.budget}`,
+      "",
+      form.message,
+    ];
+    const subject = `Заявка с сайта — ${form.name}`;
+    return `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+      lines.join("\n")
+    )}`;
+  };
+
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     const validation = validate();
     setErrors(validation);
     if (Object.keys(validation).length === 0) {
+      window.location.href = mailtoHref();
       setSubmitted(true);
     }
   };
@@ -115,11 +135,17 @@ export default function Contact() {
                 ✓
               </div>
               <h3 className="mt-6 font-display text-2xl uppercase text-paper sm:text-3xl">
-                Заявка отправлена
+                Открываем почтовый клиент
               </h3>
               <p className="mt-3 text-paper/60">
-                Спасибо, {form.name}! Мы изучим бриф и свяжемся с вами по
-                контакту «{form.contact}» в течение одного рабочего дня.
+                Спасибо, {form.name}! Должно было открыться письмо на{" "}
+                {BRIEF_EMAIL}, уже заполненное вашими ответами — останется
+                нажать «отправить» в своей почте. Если окно не появилось,
+                напишите нам напрямую:{" "}
+                <a href={mailtoHref()} className="text-glow hover:underline">
+                  {BRIEF_EMAIL}
+                </a>
+                .
               </p>
             </motion.div>
           ) : (

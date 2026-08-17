@@ -1,10 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Container from "@/components/ui/Container";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
+
+// Only the "sites" slide has a video background — playing it only while its
+// slide is actually the visible one (not just opacity:0'd behind the others)
+// keeps the other three plain <img> slides free of any decode/CPU cost.
+function SlideVideo({ src, poster, active }: { src: string; poster: string; active: boolean }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (active) video.play().catch(() => {});
+    else video.pause();
+  }, [active]);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      poster={poster}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      aria-hidden="true"
+      className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out"
+      style={{ opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(1.06)" }}
+    />
+  );
+}
 
 export default function ServicePicker() {
   const pathname = usePathname();
@@ -27,19 +56,28 @@ export default function ServicePicker() {
       className="relative flex min-h-screen items-center overflow-hidden"
     >
       <div className="absolute inset-0 -z-10">
-        {serviceOrder.map((key) => (
-          <img
-            key={key}
-            src={serviceMeta[key].image}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out"
-            style={{
-              opacity: key === previewKey ? 1 : 0,
-              transform: key === previewKey ? "scale(1)" : "scale(1.06)",
-            }}
-          />
-        ))}
+        {serviceOrder.map((key) =>
+          serviceMeta[key].video ? (
+            <SlideVideo
+              key={key}
+              src={serviceMeta[key].video!}
+              poster={serviceMeta[key].image}
+              active={key === previewKey}
+            />
+          ) : (
+            <img
+              key={key}
+              src={serviceMeta[key].image}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out"
+              style={{
+                opacity: key === previewKey ? 1 : 0,
+                transform: key === previewKey ? "scale(1)" : "scale(1.06)",
+              }}
+            />
+          )
+        )}
         <div
           className="absolute inset-0"
           style={{

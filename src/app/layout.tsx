@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Oswald, Montserrat, Azeret_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import FloatingCta from "@/components/layout/FloatingCta";
@@ -59,6 +60,7 @@ export default function RootLayout({
             <FloatingCta />
           </div>
         </FullpageProvider>
+        <Analytics />
       </body>
     </html>
   );

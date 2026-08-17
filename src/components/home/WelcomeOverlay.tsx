@@ -56,6 +56,23 @@ const GLASS_BTN = {
   },
 } as const;
 
+// shared by every "VIBE САЙТ" pill across the site (welcome overlay,
+// floating CTA) — one definition so the gradient/glow can't drift between
+// copies
+export const VIBE_BUTTON_CLASS = "glass-choice-btn rounded-full text-sm font-bold uppercase tracking-[0.14em]";
+export function vibeButtonStyle(): CSSProperties {
+  return {
+    background: GLASS_BTN.vibe.fill,
+    border: GLASS_BTN.vibe.border,
+    color: GLASS_BTN.vibe.text,
+    backdropFilter: "blur(10px)",
+    WebkitBackdropFilter: "blur(10px)",
+    textShadow: "0 1px 4px rgba(0,0,0,0.3)",
+    "--glow-min": GLASS_BTN.vibe.glowMin,
+    "--glow-max": GLASS_BTN.vibe.glowMax,
+  } as CSSProperties;
+}
+
 // Two separate single-phrase instances, not one auto-advancing sequence:
 // the greeting always types on mount; the "what are you after" phrase only
 // starts once the visitor picks Personal Vibe (see `active` below) — the
@@ -466,19 +483,8 @@ export default function WelcomeOverlay() {
                     <button
                       type="button"
                       onClick={() => setPersonalVibe(true)}
-                      className="glass-choice-btn w-full rounded-full px-8 py-4 text-sm font-bold uppercase tracking-[0.14em]"
-                      style={
-                        {
-                          background: GLASS_BTN.vibe.fill,
-                          border: GLASS_BTN.vibe.border,
-                          color: GLASS_BTN.vibe.text,
-                          backdropFilter: "blur(10px)",
-                          WebkitBackdropFilter: "blur(10px)",
-                          textShadow: "0 1px 4px rgba(0,0,0,0.3)",
-                          "--glow-min": GLASS_BTN.vibe.glowMin,
-                          "--glow-max": GLASS_BTN.vibe.glowMax,
-                        } as CSSProperties
-                      }
+                      className={`${VIBE_BUTTON_CLASS} w-full px-8 py-4`}
+                      style={vibeButtonStyle()}
                     >
                       VIBE САЙТ
                     </button>

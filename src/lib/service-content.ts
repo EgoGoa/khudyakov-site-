@@ -7,7 +7,7 @@ export const serviceOrder: ServiceKey[] = ["content", "ai", "sites", "smm"];
 
 export const serviceMeta: Record<
   ServiceKey,
-  { label: string; slug: string; image: string; description: string }
+  { label: string; slug: string; image: string; video?: string; description: string }
 > = {
   content: {
     label: "Создание контента",
@@ -19,12 +19,16 @@ export const serviceMeta: Record<
     label: "AI-решения",
     slug: "ai",
     image: "/images/service-ai.jpg",
+    video: "/video/bg-ai.mp4",
     description: "Внедряем ИИ-инструменты в продакшн и коммуникацию с клиентами.",
   },
   sites: {
     label: "Vibe сайты",
     slug: "sites",
     image: "/images/service-video.jpg",
+    // background loop instead of the static image on this slide only —
+    // `image` stays as a poster/fallback for the video element below
+    video: "/video/bg-sites.mp4",
     description: "Разработка сайтов и лендингов под задачи бренда.",
   },
   smm: {
