@@ -42,6 +42,7 @@ export const serviceMeta: Record<
     label: "SMM",
     slug: "smm",
     image: "/images/service-sites.jpg",
+    video: "/video/bg-smm.mp4",
     description: "Контент и продвижение в социальных сетях на регулярной основе.",
   },
 };
