@@ -132,7 +132,7 @@ export function VoiceWave({ energy }: { energy: WavePhaseEnergy }) {
           width: ORB_SIZE * 2.1,
           height: ORB_SIZE * 2.1,
           background:
-            "radial-gradient(circle, rgba(0,210,255,0.6), rgba(139,92,246,0.32) 38%, rgba(217,70,239,0.14) 58%, transparent 74%)",
+            "radial-gradient(circle, rgba(0,210,255,0.55), rgba(255,102,68,0.24) 42%, transparent 74%)",
           filter: "blur(14px)",
           opacity: Math.min(value + 0.5, 1),
           transition: `opacity 0.4s ${EASE_CSS}`,
@@ -454,7 +454,11 @@ export default function WelcomeOverlay() {
                   </motion.div>
 
                   <motion.div variants={CHOICE_ITEM_VARIANTS} className="w-full">
-                    <button type="button" onClick={goToSite} className="btn-neon w-full justify-center py-4 text-sm">
+                    <button
+                      type="button"
+                      onClick={goToSite}
+                      className="btn-neon mx-auto w-[70%] justify-center py-[11px] text-[10px]"
+                    >
                       Обычная версия
                     </button>
                   </motion.div>
