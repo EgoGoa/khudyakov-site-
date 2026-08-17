@@ -104,58 +104,89 @@ function useTypedPhrase(phrase: { text: string; charDelay: number }, reduced: bo
   return { text, phase };
 }
 
-// ---------- voice orb (reacts to speech; deliberately cheap to render) ----------
-// Replaces the old multi-line SVG wave (and, before that, a dotted-glass
-// orb with a crisp spinning rim). This version is a soft blurred iridescent
-// ring — a hollow, near-black core with a thick out-of-focus halo blending
-// cyan/blue through violet into a warm pink/orange edge — matching the
-// reference photo, not a glassy sphere. Two conic-gradient rings, each
-// masked to a ring shape and heavily blurred, rotating at different speeds
-// so the color mix drifts rather than looking static.
+// ---------- voice waveform (reacts to speech; deliberately cheap to render) ----------
+// Replaces the rotating gradient ring, which animated continuously and so
+// said nothing about whether the assistant was actually speaking. This is a
+// speech trace instead: a symmetric bar waveform mirrored around a centre
+// axis, whose three states each mean something.
+//   • at rest      — every bar collapses onto the axis as a still dot row.
+//                    Nothing animates; silence looks like silence.
+//   • while typing — each bar breathes on its own duration and a negative
+//                    delay, so they never fall into lockstep, under a
+//                    centre-weighted envelope that concentrates the energy
+//                    mid-row the way a real voice trace does.
+//   • on hover     — one ripple travels left to right and settles back to
+//                    the dot row: a touch reflex, not a state change.
+// Only `scaleY` and `opacity` animate, so the whole row stays on the
+// compositor no matter how many bars it has.
 export type WavePhaseEnergy = "typing" | "holding" | "idle";
-const ORB_ENERGY: Record<WavePhaseEnergy, number> = { typing: 1, holding: 0.4, idle: 0.4 };
-const ORB_SIZE = 56;
-const ORB_SLOT_H = 64;
+const BAR_COUNT = 27;
+const WAVE_W = 196;
+const WAVE_H = 44;
+const WAVE_SLOT_H = 64;
+
+// Deterministic value hash — NOT Math.random(), which would generate one
+// profile on the server and a different one in the browser and so break
+// hydration. Same index always yields the same bar.
+const barHash = (i: number) => Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
+
+const WAVE_EDGE = [0, 210, 255] as const; // brand cyan, at the quiet edges
+const WAVE_CORE = [255, 102, 68] as const; // brand orange, at the loud centre
+
+const WAVE_BARS = Array.from({ length: BAR_COUNT }, (_, i) => {
+  const t = i / (BAR_COUNT - 1); // 0..1 across the row
+  const envelope = Math.sin(t * Math.PI); // 0 at both edges, 1 dead centre
+  const warmth = envelope ** 1.6;
+  return {
+    // how far this bar throws while speaking, and where it sits at rest
+    peak: 0.2 + envelope ** 1.35 * (0.55 + barHash(i) * 0.45),
+    rest: 0.05 + envelope * 0.05,
+    duration: `${(0.46 + barHash(i + 91) * 0.5).toFixed(3)}s`,
+    delay: `${(-barHash(i + 7) * 0.9).toFixed(3)}s`,
+    color: `rgb(${WAVE_EDGE.map((c, k) => Math.round(c + (WAVE_CORE[k] - c) * warmth)).join(",")})`,
+  };
+});
 
 export function VoiceWave({ energy }: { energy: WavePhaseEnergy }) {
-  const value = ORB_ENERGY[energy];
   const active = energy === "typing";
   return (
     <div
       className="relative mx-auto mb-6 flex w-full items-center justify-center sm:mb-8"
-      style={{ height: ORB_SLOT_H }}
-      aria-hidden="true"
+      style={{ height: WAVE_SLOT_H }}
     >
-      <div
-        className="pointer-events-none absolute rounded-full"
-        style={{
-          width: ORB_SIZE * 2.1,
-          height: ORB_SIZE * 2.1,
-          background:
-            "radial-gradient(circle, rgba(0,210,255,0.55), rgba(255,102,68,0.24) 42%, transparent 74%)",
-          filter: "blur(14px)",
-          opacity: Math.min(value + 0.5, 1),
-          transition: `opacity 0.4s ${EASE_CSS}`,
-        }}
-      />
-      {/* entrance-only grow animation lives on this wrapper — framer-motion
-          manages `transform`/`opacity` via inline style, which would
-          otherwise fight the CSS `.voice-orb` energy-scale and pulse
-          keyframe (inline style always wins over a stylesheet rule,
-          silently breaking whichever one loses) */}
+      {/* entrance-only reveal lives on this wrapper — framer-motion drives
+          `transform`/`opacity` through inline style, which would otherwise
+          silently override the bars' own CSS scaleY keyframes */}
       <motion.div
-        initial={{ scale: 0.4, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
+        initial={{ scaleX: 0.55, opacity: 0 }}
+        animate={{ scaleX: 1, opacity: 1 }}
+        transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
       >
         <div
-          className={`voice-orb relative${active ? " is-typing" : ""}`}
-          style={{ width: ORB_SIZE, height: ORB_SIZE, "--orb-scale": active ? 1.08 : 1 } as CSSProperties}
+          className={`voice-wave${active ? " is-active" : ""}`}
+          style={{ width: WAVE_W, height: WAVE_H }}
+          aria-hidden="true"
         >
-          {/* two crisp brush-stroke loops, independently rotating so they
-              cross at shifting points instead of looking like one static ring */}
-          <span className="voice-orb-ring voice-orb-ring-a absolute inset-0" aria-hidden="true" />
-          <span className="voice-orb-ring voice-orb-ring-b absolute inset-0" aria-hidden="true" />
+          <span className="voice-wave-glow" />
+          <span className="voice-wave-axis" />
+          <span className="voice-wave-bars">
+            {WAVE_BARS.map((bar, i) => (
+              <span
+                key={i}
+                className="voice-wave-bar"
+                style={
+                  {
+                    background: bar.color,
+                    "--peak": bar.peak.toFixed(3),
+                    "--rest": bar.rest.toFixed(3),
+                    "--dur": bar.duration,
+                    "--delay": bar.delay,
+                    "--i": i,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </span>
         </div>
       </motion.div>
     </div>

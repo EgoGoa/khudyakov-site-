@@ -212,88 +212,124 @@ body {
   }
 }
 
-/* welcome overlay — voice orb's scale reacts to speech energy; cheap
-   (transform + opacity only), replacing the old multi-layer SVG wave */
-.voice-orb {
-  transform: scale(var(--orb-scale, 1));
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+/* welcome overlay — the assistant's speech trace: a bar waveform mirrored
+   around a centre axis. Idle is a deliberate state, not a paused animation
+   (every bar sits still on the axis as a dot), speaking is a desynchronised
+   per-bar breathe, and hover is a one-shot ripple. See VoiceWave in
+   WelcomeOverlay.tsx for where each bar's --peak/--rest/--dur/--delay
+   custom properties come from. */
+.voice-wave {
+  position: relative;
+  isolation: isolate;
 }
 
-/* pulses in time with typing — overridden by the keyframe below while active */
-@keyframes voice-orb-pulse {
-  0%,
-  100% {
-    transform: scale(var(--orb-scale, 1));
+/* one blurred wash behind the whole row rather than a shadow per bar —
+   27 individual box-shadows would repaint on every frame of the breathe */
+.voice-wave-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 132%;
+  height: 210%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(0, 210, 255, 0.24), rgba(255, 102, 68, 0.11) 45%, transparent 72%);
+  filter: blur(16px);
+  opacity: 0.45;
+  transition: opacity 0.55s ease;
+  pointer-events: none;
+}
+
+.voice-wave.is-active .voice-wave-glow {
+  opacity: 1;
+}
+
+/* the hairline the bars are mirrored around — keeps the dot row reading as
+   a signal at rest instead of a stray line of specks */
+.voice-wave-axis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 210, 255, 0.22) 20%,
+    rgba(255, 102, 68, 0.3) 50%,
+    rgba(0, 210, 255, 0.22) 80%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.voice-wave-bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.35));
+  transition: filter 0.55s ease;
+}
+
+.voice-wave.is-active .voice-wave-bars {
+  filter: drop-shadow(0 0 6px rgba(0, 210, 255, 0.6)) drop-shadow(0 0 13px rgba(255, 102, 68, 0.4));
+}
+
+.voice-wave-bar {
+  width: 2px;
+  height: 100%;
+  border-radius: 999px;
+  /* scaling from the centre is what mirrors each bar above and below the
+     axis, the way a real waveform reads */
+  transform-origin: center;
+  transform: scaleY(var(--rest));
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* speaking: alternate + a per-bar duration and negative delay means the row
+   is already mid-cycle and out of phase on the first frame, so it never
+   looks like one synchronised block */
+@keyframes voice-wave-speak {
+  from {
+    transform: scaleY(calc(var(--peak) * 0.26));
   }
-  50% {
-    transform: scale(calc(var(--orb-scale, 1) * 1.09));
-  }
-}
-
-.voice-orb.is-typing {
-  animation: voice-orb-pulse 0.55s ease-in-out infinite;
-}
-
-/* the orb: two crisp, thin loops — not a blurred halo. Each loop is a
-   gradient-only ring (conic-gradient border, cut hollow via mask-composite
-   exclude so only the stroke itself paints) sharing the mic button's own
-   cyan/orange palette. A perfect circle (not the earlier asymmetric
-   border-radius) — that irregular radius was what produced the visible
-   glitches at the four box corners, since a uniform-width border can't
-   follow unevenly-curved corners cleanly. The second loop is offset a few
-   percent off-center instead, so the two circles overlap into a soft
-   crescent rather than perfectly stacking — still reads as a double
-   stroke, without any corner artifacts. Both spin slowly and calmly. */
-@keyframes voice-orb-ring-spin {
   to {
-    transform: rotate(360deg);
+    transform: scaleY(var(--peak));
   }
 }
 
-.voice-orb-ring {
-  border-radius: 50%;
-  border: 1.75px solid transparent;
-  background: conic-gradient(
-      from 0deg,
-      #00d2ff 0deg,
-      #3aa0ff 90deg,
-      #ff6644 180deg,
-      #3aa0ff 270deg,
-      #00d2ff 360deg
-    )
-    border-box;
-  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  filter: blur(0.6px) drop-shadow(0 0 2.5px rgba(0, 210, 255, 0.9)) drop-shadow(0 0 6px rgba(255, 102, 68, 0.6));
-  animation: voice-orb-ring-spin 42s linear infinite;
-  transition: filter 0.4s ease, opacity 0.4s ease;
+.voice-wave.is-active .voice-wave-bar {
+  animation: voice-wave-speak var(--dur) var(--delay) ease-in-out infinite alternate;
+  transition: none;
 }
 
-.voice-orb-ring-b {
-  inset: -3% 3% 3% -3%;
-  opacity: 0.75;
-  animation-duration: 34s;
-  animation-direction: reverse;
+/* hover reflex — one ripple left to right, then back to rest. Scoped away
+   from the speaking state so a passing cursor can't interrupt real output. */
+@keyframes voice-wave-touch {
+  0% {
+    transform: scaleY(var(--rest));
+  }
+  38% {
+    transform: scaleY(calc(var(--peak) * 0.7));
+  }
+  100% {
+    transform: scaleY(var(--rest));
+  }
 }
 
-.voice-orb.is-typing .voice-orb-ring {
-  animation-duration: 16s;
-  filter: blur(0.6px) drop-shadow(0 0 3.5px rgba(0, 210, 255, 1)) drop-shadow(0 0 9px rgba(255, 102, 68, 0.85))
-    brightness(1.2);
-}
-
-.voice-orb.is-typing .voice-orb-ring-b {
-  animation-duration: 13s;
+.voice-wave:not(.is-active):hover .voice-wave-bar {
+  animation: voice-wave-touch 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 16ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .voice-orb {
-    transition: none;
-  }
-  .voice-orb.is-typing,
-  .voice-orb-ring {
+  .voice-wave-bar,
+  .voice-wave.is-active .voice-wave-bar,
+  .voice-wave:not(.is-active):hover .voice-wave-bar {
     animation: none;
+    transition: none;
   }
 }
 
