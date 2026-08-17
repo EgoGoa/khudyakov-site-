@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
@@ -8,66 +8,154 @@ import Eyebrow from "@/components/ui/Eyebrow";
 import { CloseIcon } from "@/components/ui/Icons";
 import { useService } from "@/lib/service-context";
 import { worksByCategory } from "@/lib/service-content";
+import type { Work } from "@/lib/types";
 
 // hqdefault always exists for any YouTube video; maxresdefault looks much
 // sharper but isn't guaranteed, so the <img> below falls back to hqdefault
-// on load error rather than risk a broken thumbnail in the mosaic.
+// on load error rather than risk a broken thumbnail in the grid.
 const maxThumb = (youtubeId: string) => `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
 const fallbackThumb = (youtubeId: string) => `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
 
-// Repeating span pattern that produces the collage/mosaic rhythm — a couple
-// of big feature tiles among standard ones. Only col+row spans that scale
-// TOGETHER (1x1, 2x2) are used — a lone col-span-2 with row-span-1 (or vice
-// versa) stretches the thumbnail into a wide banner far from 16:9, which
-// reads as broken video framing, so that combination is intentionally never
-// produced here. Written as literal Tailwind class strings (not
-// interpolated) so the JIT scanner picks them up regardless of how the
-// array is indexed at runtime.
-const SIZE_PATTERN = [
-  "col-span-2 row-span-2",
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-1",
-  "col-span-2 row-span-2",
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-1",
-  "col-span-2 row-span-2",
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-1",
-];
-
-function sizeFor(index: number) {
-  return SIZE_PATTERN[index % SIZE_PATTERN.length];
+function swapToFallback(img: HTMLImageElement, youtubeId?: string) {
+  if (img.dataset.fallback || !youtubeId) return;
+  img.dataset.fallback = "1";
+  img.src = fallbackThumb(youtubeId);
 }
 
-// collapsed height keeps the section compact (roughly two rows) — visitors
-// expand it on purpose instead of the whole page being pushed down by a
-// 17-tile mosaic on first load.
-const COLLAPSED_HEIGHT = 520;
+const ALL = "Все работы";
+const ALL_SPHERES = "Все сферы";
+
+// Одна ось фильтра: подпись + плоский список значений через слэш.
+function FilterAxis({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  return (
+    <div>
+      <div className="font-sans text-sm text-paper/45">{label}</div>
+      <div className="mt-3 font-mono text-[11px] uppercase leading-[1.9] tracking-[0.1em] sm:text-xs">
+        {options.map((option, i) => (
+          <span key={option}>
+            {i > 0 && <span className="mx-1.5 text-paper/20">/</span>}
+            <button
+              onClick={() => onChange(option)}
+              className={`transition-colors duration-300 ${
+                value === option
+                  ? "text-glow [text-shadow:0_0_14px_rgba(0,210,255,0.5)]"
+                  : "text-paper/55 hover:text-paper"
+              }`}
+            >
+              {option}
+            </button>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// How many cards are on screen before the visitor asks for more. The tiles are
+// full-width 16:9 frames and the catalogue is ~80 items, so this is a count
+// limit rather than the previous height clamp — it also keeps the page from
+// requesting 80 thumbnails on first paint.
+const PAGE_SIZE = 8;
+
+function allCategories(work: Work) {
+  return work.tags?.length ? [work.category, ...work.tags] : [work.category];
+}
+
+function formatDuration(seconds?: number) {
+  if (!seconds) return null;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return `${h ? `${h}:` : ""}${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function formatDate(date?: string) {
+  if (!date) return null;
+  const [y, m, d] = date.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+// «1 работа», «2 работы», «5 работ» — обычные русские правила для счётного
+// существительного.
+function plural(count: number) {
+  const mod100 = count % 100;
+  const mod10 = count % 10;
+  if (mod100 >= 11 && mod100 <= 14) return "РАБОТ";
+  if (mod10 === 1) return "РАБОТА";
+  if (mod10 >= 2 && mod10 <= 4) return "РАБОТЫ";
+  return "РАБОТ";
+}
 
 export default function Works() {
   const { active: activeService } = useService();
   const works = worksByCategory[activeService];
-  const categories = useMemo(
-    () => ["Всё", ...Array.from(new Set(works.map((w) => w.category)))],
-    [works]
-  );
-  const [filter, setFilter] = useState("Всё");
+  // Основные рубрики идут в том порядке, в котором сгруппированы работы в
+  // data.ts; рубрики, встречающиеся только как доп. тег, добавляются в конец,
+  // чтобы тег на одной карточке не выдёргивал рубрику в начало списка.
+  const categories = useMemo(() => {
+    const primary: string[] = [];
+    works.forEach((w) => {
+      if (!primary.includes(w.category)) primary.push(w.category);
+    });
+    const extra: string[] = [];
+    works.forEach((w) =>
+      w.tags?.forEach((t) => {
+        if (!primary.includes(t) && !extra.includes(t)) extra.push(t);
+      })
+    );
+    return [ALL, ...primary, ...extra];
+  }, [works]);
+  // Сферы упорядочены по числу работ: сначала то, чем агентство занимается
+  // чаще всего, — в data.ts порядок задан форматами, и сферы там перемешаны.
+  const spheres = useMemo(() => {
+    const count = new Map<string, number>();
+    works.forEach((w) => {
+      if (w.sphere) count.set(w.sphere, (count.get(w.sphere) ?? 0) + 1);
+    });
+    const sorted = Array.from(count.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ru"))
+      .map(([name]) => name);
+    return sorted.length ? [ALL_SPHERES, ...sorted] : [];
+  }, [works]);
+  const [filter, setFilter] = useState(ALL);
+  const [sphere, setSphere] = useState(ALL_SPHERES);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState(false);
-  const [fullHeight, setFullHeight] = useState<number | null>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(PAGE_SIZE);
 
   useEffect(() => {
-    setFilter("Всё");
+    setFilter(ALL);
+    setSphere(ALL_SPHERES);
   }, [activeService]);
 
+  // Две оси независимы и складываются: формат И сфера.
   const filtered = useMemo(
-    () => (filter === "Всё" ? works : works.filter((w) => w.category === filter)),
-    [filter, works]
+    () =>
+      works.filter(
+        (w) =>
+          (filter === ALL || allCategories(w).includes(filter)) &&
+          (sphere === ALL_SPHERES || w.sphere === sphere)
+      ),
+    [filter, sphere, works]
   );
+
+  // Collapse back to the first page whenever the visible set changes, so the
+  // section never stays 80 tiles tall after the visitor switches filters.
+  useEffect(() => {
+    setVisible(PAGE_SIZE);
+  }, [filter, sphere, activeService]);
+
+  const shown = filtered.slice(0, visible);
+  const hasMore = filtered.length > shown.length;
 
   const active = works.find((w) => w.id === activeId) ?? null;
 
@@ -79,26 +167,6 @@ export default function Works() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [activeId]);
-
-  // re-measure whenever the tile set changes (filter switch, image loads
-  // reflowing row heights, viewport resize) so the expanded height and the
-  // "does this even need a toggle" check both stay accurate.
-  useLayoutEffect(() => {
-    setExpanded(false);
-    const el = gridRef.current;
-    if (!el) return;
-    const measure = () => setFullHeight(el.scrollHeight);
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [filtered]);
-
-  const needsToggle = (fullHeight ?? 0) > COLLAPSED_HEIGHT + 40;
 
   return (
     <section id="works" className="py-10 sm:py-14">
@@ -117,116 +185,153 @@ export default function Works() {
             </p>
           </Reveal>
         ) : (
-        <>
-        <Reveal delay={0.05}>
-          <div className="mt-6 flex flex-wrap gap-2">
-            {categories.map((c) => (
-              <button
-                key={c}
-                onClick={() => setFilter(c)}
-                className={`relative rounded-full border px-4 py-1.5 font-mono text-xs uppercase tracking-[0.1em] transition-all duration-300 ${
-                  filter === c
-                    ? "border-glow bg-glow/15 text-paper shadow-[0_0_16px_rgba(0,210,255,0.35),0_0_40px_rgba(0,210,255,0.12)]"
-                    : "border-paper/15 text-paper/60 hover:border-glow/50 hover:text-paper hover:shadow-[0_0_12px_rgba(0,210,255,0.15)]"
-                }`}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-        </Reveal>
+          <>
+            <Reveal delay={0.05}>
+              <div className="mt-8 font-mono text-xs uppercase tracking-[0.18em] text-paper">
+                {filtered.length} {plural(filtered.length)} НАЙДЕНО
+              </div>
+            </Reveal>
 
-        <div
-          className="relative mt-8 overflow-hidden transition-[max-height] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
-          style={{
-            maxHeight: expanded ? (fullHeight ?? 4000) : Math.min(COLLAPSED_HEIGHT, fullHeight ?? COLLAPSED_HEIGHT),
-          }}
-        >
-          <div
-            ref={gridRef}
-            className="grid auto-rows-[140px] grid-cols-2 gap-3 [grid-auto-flow:dense] sm:auto-rows-[175px] sm:grid-cols-3 sm:gap-4 lg:auto-rows-[222px] lg:grid-cols-4"
-          >
-            <AnimatePresence mode="popLayout">
-              {filtered.map((work, index) => (
-                <motion.button
-                  key={work.id}
-                  layout
-                  initial={{ opacity: 0, y: 24, scale: 0.94 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
-                  transition={{
-                    duration: 0.5,
-                    delay: Math.min(index * 0.045, 0.4),
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  whileHover={{ scale: 1.015 }}
-                  onClick={() => setActiveId(work.id)}
-                  className={`group relative flex flex-col overflow-hidden rounded-xl bg-ink-soft text-left transition-shadow duration-300 hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.8),0_0_40px_-8px_rgba(0,210,255,0.3)] ${sizeFor(
-                    index
-                  )}`}
-                >
-                  <div className="relative min-h-0 flex-1 overflow-hidden">
+            {/* Две оси фильтра плоскими списками через слэш, как в референсе,
+                а не капсулами: при 13 рубриках капсулы занимают четыре строки. */}
+            <Reveal delay={0.1}>
+              <div className="mt-8 grid gap-8 border-t border-paper/10 pt-6 lg:grid-cols-2 lg:gap-10">
+                <FilterAxis
+                  label="По формату"
+                  options={categories}
+                  value={filter}
+                  onChange={setFilter}
+                />
+                {spheres.length > 0 && (
+                  <FilterAxis
+                    label="По сферам"
+                    options={spheres}
+                    value={sphere}
+                    onChange={setSphere}
+                  />
+                )}
+              </div>
+            </Reveal>
+
+            <div className="mt-10 grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2">
+              <AnimatePresence mode="popLayout">
+                {shown.map((work, index) => (
+                  <motion.button
+                    key={work.id}
+                    layout
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, transition: { duration: 0.18 } }}
+                    transition={{
+                      duration: 0.5,
+                      delay: Math.min((index % PAGE_SIZE) * 0.05, 0.35),
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    onClick={() => setActiveId(work.id)}
+                    className="group relative aspect-[16/10] overflow-hidden rounded-2xl bg-ink-soft text-left transition-shadow duration-300 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85),0_0_50px_-12px_rgba(0,210,255,0.3)]"
+                  >
                     <img
                       src={work.youtubeId ? maxThumb(work.youtubeId) : ""}
-                      onError={(e) => {
-                        const img = e.currentTarget;
-                        if (img.dataset.fallback || !work.youtubeId) return;
-                        img.dataset.fallback = "1";
-                        img.src = fallbackThumb(work.youtubeId);
+                      onError={(e) => swapToFallback(e.currentTarget, work.youtubeId)}
+                      // maxresdefault отсутствует у части видео, но YouTube
+                      // отвечает не пустым 404, а серой заглушкой 120×90 —
+                      // onError на неё не срабатывает, поэтому подмену делаем
+                      // и по факту загрузки слишком маленькой картинки.
+                      onLoad={(e) => {
+                        if (e.currentTarget.naturalWidth <= 120) {
+                          swapToFallback(e.currentTarget, work.youtubeId);
+                        }
                       }}
                       alt=""
                       loading="lazy"
-                      className="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-[1.06]"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
                     />
-                    <div className="absolute inset-0 bg-ink/10 transition-colors duration-300 group-hover:bg-ink/25" />
-                    <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
-                      <span className="flex h-12 w-12 scale-75 items-center justify-center rounded-full bg-ink/60 text-paper shadow-[0_0_24px_rgba(0,210,255,0.5)] backdrop-blur-sm transition-transform duration-300 group-hover:scale-100 sm:h-14 sm:w-14">
+                    {/* Подписи лежат прямо на кадре, как в референсе, поэтому
+                        затемняем только те полосы, где они стоят: сплошной
+                        градиент по всей высоте читается как леттербокс. */}
+                    <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-ink/75 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/90 via-ink/45 to-transparent" />
+
+                    {formatDate(work.date) && (
+                      <span className="absolute left-4 top-4 font-mono text-[11px] tracking-[0.08em] text-paper/75 sm:left-5 sm:top-5">
+                        {formatDate(work.date)}
+                      </span>
+                    )}
+
+                    <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <span className="flex h-14 w-14 scale-75 items-center justify-center rounded-full bg-ink/60 text-paper shadow-[0_0_28px_rgba(0,210,255,0.5)] backdrop-blur-sm transition-transform duration-300 group-hover:scale-100">
                         ▶
                       </span>
                     </span>
-                  </div>
 
-                  <div className="shrink-0 bg-paper/[0.04] px-3 py-2.5 backdrop-blur-xl backdrop-saturate-150 sm:px-4 sm:py-3">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 sm:inset-x-5 sm:bottom-5">
                       <div className="min-w-0">
-                        <div className="truncate font-mono text-[9px] uppercase tracking-[0.15em] text-paper/45 transition-colors duration-300 group-hover:text-glow sm:text-[10px]">
-                          {work.category}
-                        </div>
-                        <div className="mt-0.5 truncate font-sans text-xs font-medium uppercase tracking-[0.01em] text-paper transition-[text-shadow] duration-300 sm:text-sm group-hover:[text-shadow:0_0_14px_rgba(0,210,255,0.55)]">
+                        <div className="font-sans text-base font-medium leading-snug text-paper transition-[text-shadow] duration-300 group-hover:[text-shadow:0_0_16px_rgba(0,210,255,0.55)] sm:text-lg">
                           {work.title}
                         </div>
+                        {formatDuration(work.duration) && (
+                          <div className="mt-1 font-mono text-[11px] tracking-[0.08em] text-paper/65">
+                            {formatDuration(work.duration)}
+                          </div>
+                        )}
                       </div>
-                      <span className="hidden shrink-0 font-mono text-[10px] uppercase tracking-[0.1em] text-paper/40 transition-colors duration-300 group-hover:text-glow sm:inline">
-                        смотреть ↗
-                      </span>
+                      <div className="flex shrink-0 flex-wrap justify-end gap-1.5">
+                        {/* Сфера — нейтральным чипом, чтобы не путать оси:
+                            подсвеченные чипы = формат. */}
+                        {work.sphere && (
+                          <span className="rounded-full bg-paper/10 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-paper/70 ring-1 ring-inset ring-paper/15 backdrop-blur-sm sm:text-[10px]">
+                            {work.sphere}
+                          </span>
+                        )}
+                        {allCategories(work).map((c) => (
+                          <span
+                            key={c}
+                            className="rounded-full bg-glow/15 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-glow ring-1 ring-inset ring-glow/30 backdrop-blur-sm sm:text-[10px]"
+                          >
+                            {c}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </motion.button>
-              ))}
-            </AnimatePresence>
-          </div>
+                  </motion.button>
+                ))}
+              </AnimatePresence>
+            </div>
 
-          {!expanded && needsToggle && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink to-transparent" />
-          )}
-        </div>
+            {/* Оси складываются, поэтому пересечение вполне может быть пустым —
+                например «Обучающие» + «Авто». */}
+            {filtered.length === 0 && (
+              <div className="mt-8 flex flex-wrap items-center gap-4">
+                <p className="text-sm text-paper/50">
+                  На этом пересечении фильтров работ нет.
+                </p>
+                <button
+                  onClick={() => {
+                    setFilter(ALL);
+                    setSphere(ALL_SPHERES);
+                  }}
+                  className="rounded-full border border-paper/15 px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-paper/70 transition-colors duration-300 hover:border-glow/60 hover:text-glow"
+                >
+                  Сбросить фильтры
+                </button>
+              </div>
+            )}
 
-        {needsToggle && (
-          <div className="mt-6 flex justify-center">
-            <button
-              onClick={() => setExpanded((v) => !v)}
-              className="inline-flex items-center gap-2 rounded-full border border-paper/15 px-6 py-2.5 font-mono text-xs uppercase tracking-[0.15em] text-paper/70 transition-all duration-300 hover:border-glow/60 hover:text-glow hover:shadow-[0_0_16px_rgba(0,210,255,0.2)]"
-            >
-              {expanded ? "Свернуть" : "Показать все работы"}
-              <span
-                className={`inline-block transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
-              >
-                ↓
-              </span>
-            </button>
-          </div>
-        )}
-        </>
+            {hasMore && (
+              <div className="mt-8 flex justify-center">
+                <button
+                  onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                  className="inline-flex items-center gap-2 rounded-full border border-paper/15 px-6 py-2.5 font-mono text-xs uppercase tracking-[0.15em] text-paper/70 transition-all duration-300 hover:border-glow/60 hover:text-glow hover:shadow-[0_0_16px_rgba(0,210,255,0.2)]"
+                >
+                  Показать ещё
+                  <span className="font-mono text-paper/40">
+                    {filtered.length - shown.length}
+                  </span>
+                  <span className="inline-block">↓</span>
+                </button>
+              </div>
+            )}
+          </>
         )}
       </Container>
 
@@ -266,12 +371,20 @@ export default function Works() {
               <div className="mt-4 flex flex-wrap items-end justify-between gap-4 text-paper">
                 <div>
                   <div className="font-mono text-xs uppercase tracking-[0.15em] text-rec">
-                    {active.category}
+                    {allCategories(active).join(" / ")}
+                    {active.sphere && (
+                      <span className="text-paper/40"> · {active.sphere}</span>
+                    )}
                   </div>
                   <h3 className="mt-2 font-sans text-2xl font-light uppercase tracking-[0.01em] sm:text-3xl">
                     {active.title}
                   </h3>
-                  <p className="mt-1 text-sm text-paper/60">{active.client}</p>
+                  <p className="mt-1 text-sm text-paper/60">
+                    {active.client}
+                    {formatDuration(active.duration) && (
+                      <span className="text-paper/40"> · {formatDuration(active.duration)}</span>
+                    )}
+                  </p>
                 </div>
                 <div className="font-mono text-xs text-paper/40">Esc закрыть</div>
               </div>

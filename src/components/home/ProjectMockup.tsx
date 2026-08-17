@@ -110,7 +110,8 @@ export default function ProjectMockup() {
                   </div>
                   <div className="mt-0.5 text-sm text-paper/70">{item.title}</div>
                   <div className="mt-1 truncate text-xs text-paper/40">
-                    {item.category} · {summaries[item.id]}
+                    {item.category}
+                    {summaries[item.id] ? ` · ${summaries[item.id]}` : ""}
                   </div>
                 </button>
               ))}
