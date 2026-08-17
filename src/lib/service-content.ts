@@ -13,6 +13,13 @@ export const serviceMeta: Record<
     label: "Создание контента",
     slug: "content",
     image: "/images/service-smm.jpg",
+    // forward pass + a reversed copy of itself, concatenated (see the
+    // ffmpeg `reverse`+`concat` note on SlideVideo in ServicePicker.tsx) —
+    // native <video> can't play backwards smoothly, so the boomerang is
+    // baked into the file itself; native `loop` then joins seamlessly
+    // because the reversed half ends on the exact frame the forward half
+    // starts on
+    video: "/video/bg-content.mp4",
     description: "Съёмка и монтаж роликов под ваш формат и площадку.",
   },
   ai: {
