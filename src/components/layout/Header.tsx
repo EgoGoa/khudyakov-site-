@@ -8,18 +8,19 @@ import Container from "@/components/ui/Container";
 import { CloseIcon, MenuIcon } from "@/components/ui/Icons";
 import { useFullpage } from "@/lib/fullpage";
 
+// The six cinematic chapters of a service page (see (landing)/content/page.tsx)
 const sections = [
+  { id: "opening", label: "Начало", short: "Начало" },
   { id: "works", label: "Работы", short: "Работы" },
   { id: "why", label: "Почему мы", short: "Почему" },
-  { id: "services", label: "Услуги", short: "Услуги" },
-  { id: "ai", label: "ИИ-ассистент", short: "ИИ" },
-  { id: "process", label: "Процесс", short: "Процесс" },
-  { id: "pricing", label: "Цены", short: "Цены" },
-  { id: "contact", label: "Контакты", short: "Контакты" },
+  { id: "services", label: "Что делаем", short: "Услуги" },
+  { id: "process", label: "Как работаем", short: "Процесс" },
+  { id: "contact", label: "Цены и заявка", short: "Заявка" },
 ];
 
 // standalone pages, kept out of the scroll-spy list above
 const pages = [
+  { href: "/works", label: "Все работы", short: "Каталог" },
   { href: "/calculator", label: "Калькулятор", short: "Калькулятор" },
   { href: "/brief", label: "Бриф", short: "Бриф" },
 ];
@@ -31,7 +32,7 @@ const landingSlugs = ["content", "ai", "sites", "smm"];
 
 // the desktop bar only has room for a curated subset — the burger menu
 // still lists every section, and the CTA already covers the brief
-const desktopSections = ["works", "services", "pricing"];
+const desktopSections = ["works", "services", "contact"];
 
 export default function Header() {
   const pathname = usePathname();

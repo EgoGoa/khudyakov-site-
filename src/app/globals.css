@@ -212,6 +212,72 @@ body {
   }
 }
 
+/* Chapter icons (ChapterIcon.tsx): one line-icon language across the six
+   chapters. They draw themselves on when their chapter takes the stage, then
+   hold a slow halo breathe so the frame never looks frozen. The halo is a
+   drop-shadow rather than a box-shadow so it follows the strokes, not a box. */
+.chapter-icon {
+  color: #b8ecff;
+  filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.75))
+    drop-shadow(0 0 14px rgba(0, 210, 255, 0.35));
+}
+
+.chapter-icon.is-active {
+  animation: chapter-icon-breathe 4.5s ease-in-out 0.9s infinite;
+}
+
+/* Every path/circle/rect in the icon shares one dash length. 120 units is
+   longer than the longest single path on the 24-unit grid, so each stroke is
+   fully hidden at the start and fully drawn at the end regardless of shape. */
+.chapter-icon.is-active > * {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: chapter-icon-draw 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.chapter-icon.is-active > *:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.chapter-icon.is-active > *:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+@keyframes chapter-icon-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes chapter-icon-breathe {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.75))
+      drop-shadow(0 0 14px rgba(0, 210, 255, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 0 7px rgba(0, 210, 255, 0.95))
+      drop-shadow(0 0 26px rgba(0, 210, 255, 0.5));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-icon.is-active,
+  .chapter-icon.is-active > * {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Chapter headings on the cinematic service pages carry the same cyan neon as
+   the hero's "DIGITAL AI" word, so the two read as one typographic system.
+   The glow is dialled back from the hero's: these sit over live footage rather
+   than a darkened still, and the hero's full halo bloomed into the picture. */
+.chapter-neon {
+  color: #b8ecff;
+  text-shadow: 0 0 6px rgba(0, 210, 255, 0.7), 0 0 18px rgba(0, 210, 255, 0.45),
+    0 0 40px rgba(0, 210, 255, 0.22), 0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
 /* welcome overlay — the assistant's speech trace: a bar waveform mirrored
    around a centre axis. Idle is a deliberate state, not a paused animation
    (every bar sits still on the axis as a dot), speaking is a desynchronised
@@ -434,7 +500,9 @@ body {
 @layer components {
   .btn-neon {
     background: rgba(0, 210, 255, 0.08);
-    border: 1.5px solid rgba(0, 210, 255, 0.4);
+    /* Edge comes from the .grad-border ring, not a flat stroke — the class is
+       applied on the element alongside .btn-neon. */
+    border: none;
     color: #a4f4fd;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -457,13 +525,331 @@ body {
 
   .btn-neon:hover {
     background: rgba(0, 210, 255, 0.12);
-    border-color: rgba(0, 210, 255, 0.6);
     color: #00d2ff;
     box-shadow: 0 0 16px rgba(0, 210, 255, 0.8), 0 0 40px rgba(0, 210, 255, 0.5), inset 0 0 20px rgba(0, 210, 255, 0.3);
   }
 
   .btn-neon:active {
-    transform: scale(0.96);
+    transform: translateY(1px) scale(0.985);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 2px 6px rgba(0, 0, 0, 0.45),
+      0 0 14px rgba(0, 210, 255, 0.45);
+  }
+}
+
+/* Volumetric control surface.
+   A pill is given real thickness the way a physical key has it: a light top
+   edge where a light source would catch it, a dark bottom edge in its own
+   shade, a cast shadow under it, and a top-to-bottom gradient across the face.
+   Pressing it drops the cast shadow and pushes the highlight inward, so the
+   key reads as travelling down rather than merely shrinking.
+
+   This is the one place the design leans skeuomorphic, and it is deliberate:
+   these are the page's actions (brief, calculator, consultation) and the
+   thickness is what separates them from the flat type they sit beside. */
+.btn-3d {
+  position: relative;
+  border-radius: 999px;
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.04) 46%,
+    rgba(0, 0, 0, 0.14) 100%
+  );
+  box-shadow:
+    /* catch light along the top edge */ inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    /* self-shade along the bottom edge */ inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    /* the body of the key */ 0 1px 0 rgba(0, 0, 0, 0.5), 0 6px 18px -6px rgba(0, 0, 0, 0.75);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease,
+    border-color 0.18s ease, color 0.18s ease;
+}
+
+.btn-3d:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 2px 0 rgba(0, 0, 0, 0.5), 0 12px 26px -8px rgba(0, 0, 0, 0.8),
+    0 0 22px -4px rgba(0, 210, 255, 0.4);
+}
+
+.btn-3d:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 7px rgba(0, 0, 0, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* The .btn-neon variant already carries its own cyan rim and pulse; layering
+   the thickness on top of that would double the glow, so its 3D form is
+   quieter and leans on the rim it already has. */
+.btn-neon.btn-3d {
+  animation: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(0, 0, 0, 0.45), 0 8px 20px -8px rgba(0, 0, 0, 0.8),
+    0 0 18px -6px rgba(0, 210, 255, 0.55);
+}
+
+.btn-neon.btn-3d:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 2px 0 rgba(0, 0, 0, 0.45), 0 14px 28px -10px rgba(0, 0, 0, 0.85),
+    0 0 26px rgba(0, 210, 255, 0.7), 0 0 60px rgba(0, 210, 255, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-3d {
+    transition: none;
+  }
+  .btn-3d:hover,
+  .btn-3d:active {
+    transform: none;
+  }
+}
+
+/* Ultra-realistic glass tile.
+   The earlier version was a flat panel with a uniform 1px ring, which is what
+   made it read as cheap: real glass has no uniform edge. Four things are doing
+   the work here, all of them directional, as if one light sits up and to the
+   left:
+     1. the pane itself refracts what is behind it — blur plus saturate plus a
+        touch of brightness, so the footage bends through the tile instead of
+        being hidden by it;
+     2. the rim is a gradient, bright where the light hits the top-left bevel
+        and nearly gone at the bottom-right;
+     3. inset shadows give the pane thickness: a hard specular line along the
+        top edge, a soft bounce along the bottom, and shade pooling inside the
+        lower half;
+     4. a gloss sweep across the upper-left face, cut off on a diagonal the way
+        a reflection of a window would be.
+   The tile is deliberately not opaque — the whole effect depends on seeing
+   through it, and the stage's own grade behind it is what keeps the numbers
+   legible. */
+.glass-tile {
+  position: relative;
+  isolation: isolate;
+  border-radius: 18px;
+  background-image: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, 0.05) 38%,
+    rgba(255, 255, 255, 0.02) 62%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  backdrop-filter: blur(18px) saturate(165%) brightness(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(165%) brightness(1.06);
+  box-shadow:
+    /* specular line along the top bevel */ inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    /* light bouncing back off the bottom bevel */ inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    /* glow just inside the top face */ inset 0 10px 26px -14px rgba(255, 255, 255, 0.5),
+    /* shade pooling in the lower half — this is what gives it depth */
+      inset 0 -16px 28px -18px rgba(0, 0, 0, 0.85),
+    /* the pane sitting above the picture */ 0 2px 6px -2px rgba(0, 0, 0, 0.6),
+    0 16px 38px -16px rgba(0, 0, 0, 0.85);
+}
+
+/* Directional bevel: a masked gradient ring, brightest at the top-left corner
+   where the light lands and fading to almost nothing at the bottom-right. */
+.glass-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.28) 22%,
+    rgba(255, 255, 255, 0.06) 48%,
+    rgba(255, 255, 255, 0.02) 70%,
+    rgba(255, 255, 255, 0.18) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Gloss: the reflection of a light source across the upper-left face, ending
+   on a diagonal rather than fading evenly — an even fade reads as a gradient
+   overlay, a hard-ish diagonal reads as a reflection. */
+.glass-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    143deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.09) 26%,
+    rgba(255, 255, 255, 0) 42%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Gradient hairline borders.
+   Every control used to carry a flat 1.5px solid rim, which reads as a drawn
+   outline rather than as an edge catching light. This is the same masked
+   pseudo-element trick as .liquid-glass::before — a gradient painted into a
+   1.4px ring by XOR-masking the padding box out of the border box — but the
+   gradient is a conic one whose angle animates, so the highlight travels
+   slowly around the control instead of sitting still.
+   The angle is a registered custom property: an unregistered one cannot be
+   interpolated, so the rotation would jump between keyframes instead of
+   sweeping. */
+@property --grad-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* .btn-neon and .seg-pill carry the ring by class rather than by opt-in, so
+   every existing call site picks it up without being edited.
+
+   :where() gives this rule zero specificity on purpose. A plain class selector
+   here beat Tailwind's own `absolute` utility and dropped absolutely
+   positioned controls back into the flow — it stacked the service picker's two
+   arrows on top of each other. At zero specificity any positioning utility on
+   the element wins, and unpositioned elements still get the containing block
+   the ring needs. */
+:where(.grad-border, .btn-neon, .seg-pill) {
+  position: relative;
+}
+
+.grad-border {
+  border-color: transparent !important;
+}
+
+.grad-border::before,
+.btn-neon::before,
+.seg-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: conic-gradient(
+    from var(--grad-angle),
+    rgba(0, 210, 255, 0.06) 0deg,
+    rgba(0, 210, 255, 0.5) 60deg,
+    rgba(164, 244, 253, 0.95) 100deg,
+    rgba(0, 210, 255, 0.42) 150deg,
+    rgba(220, 221, 239, 0.14) 230deg,
+    rgba(0, 210, 255, 0.06) 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  /* Slow enough to register as a drift rather than a spinner. */
+  animation: grad-border-sweep 9s linear infinite;
+  transition: opacity 0.35s ease, filter 0.35s ease;
+}
+
+.grad-border:hover::before,
+.btn-neon:hover::before,
+.seg-pill:hover::before {
+  filter: brightness(1.5) saturate(1.15);
+  animation-duration: 4.5s;
+}
+
+/* The warm variant marks the one destructive-adjacent / primary-commit
+   control per screen, so the cyan rim does not have to mean two things. */
+.grad-border-warm::before {
+  background: conic-gradient(
+    from var(--grad-angle),
+    rgba(245, 49, 11, 0.08) 0deg,
+    rgba(245, 49, 11, 0.55) 60deg,
+    rgba(255, 102, 68, 0.95) 100deg,
+    rgba(245, 49, 11, 0.4) 150deg,
+    rgba(220, 221, 239, 0.12) 230deg,
+    rgba(245, 49, 11, 0.08) 360deg
+  );
+}
+
+@keyframes grad-border-sweep {
+  to {
+    --grad-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grad-border::before,
+  .btn-neon::before,
+  .seg-pill::before,
+  .grad-border:hover::before,
+  .btn-neon:hover::before,
+  .seg-pill:hover::before {
+    animation: none;
+  }
+}
+
+/* Segmented filter pills.
+   The portfolio's format axis used to be a run of words separated by slashes,
+   which gave no affordance that any of it was pressable and no sense of which
+   one was on. These are physical segments instead: the unselected ones sit
+   flush and quiet, the selected one is lit from within and raised, so "what is
+   on" is legible from across the room. */
+.seg-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-family: var(--font-azeret-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  color: rgba(220, 221, 239, 0.62);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.02) 55%,
+    rgba(0, 0, 0, 0.16) 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(0, 0, 0, 0.4), 0 4px 12px -6px rgba(0, 0, 0, 0.7);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.seg-pill::before {
+  opacity: 0.5;
+}
+
+.seg-pill[aria-pressed="true"]::before {
+  opacity: 1;
+  filter: brightness(1.4);
+}
+
+.seg-pill:hover {
+  color: #dcddef;
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 2px 0 rgba(0, 0, 0, 0.4), 0 10px 20px -8px rgba(0, 0, 0, 0.8);
+}
+
+.seg-pill:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.seg-pill[aria-pressed="true"] {
+  color: #0b0b10;
+  background-image: linear-gradient(180deg, #a4f4fd 0%, #00d2ff 58%, #00a8cc 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 1px 0 rgba(0, 0, 0, 0.45), 0 8px 20px -8px rgba(0, 0, 0, 0.8),
+    0 0 22px -4px rgba(0, 210, 255, 0.75);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seg-pill {
+    transition: none;
+  }
+  .seg-pill:hover,
+  .seg-pill:active {
+    transform: none;
   }
 }
 

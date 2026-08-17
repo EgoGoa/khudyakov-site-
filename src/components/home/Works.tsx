@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
+import Appear from "@/components/ui/Appear";
+import { BEAT, EASE as MOTION_EASE, STAGGER } from "@/lib/motion";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { CloseIcon } from "@/components/ui/Icons";
 import { useService } from "@/lib/service-context";
@@ -24,6 +27,60 @@ function swapToFallback(img: HTMLImageElement, youtubeId?: string) {
 
 const ALL = "Все работы";
 const ALL_SPHERES = "Все сферы";
+
+// Segmented pill version of a filter axis, used inside a cinematic chapter.
+// Only the first VISIBLE_SEGMENTS options are shown; the rest live behind a
+// "+n" pill that expands in place, so thirteen formats do not eat half the
+// screen but none of them are unreachable.
+const VISIBLE_SEGMENTS = 7;
+
+function SegmentedAxis({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  // Keep the selected option on screen even when it lives in the overflow.
+  const head = options.slice(0, VISIBLE_SEGMENTS);
+  const tail = options.slice(VISIBLE_SEGMENTS);
+  const shown = expanded || head.includes(value) ? head : [...head.slice(0, -1), value];
+  const rest = expanded ? tail : [];
+
+  return (
+    <div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">{label}</div>
+      <div className="mt-2.5 flex flex-wrap gap-2">
+        {[...shown, ...rest].map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => onChange(option)}
+            aria-pressed={value === option}
+            className="seg-pill"
+          >
+            {option}
+          </button>
+        ))}
+        {tail.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className="seg-pill"
+          >
+            {expanded ? "Свернуть" : `+${tail.length}`}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // Одна ось фильтра: подпись + плоский список значений через слэш.
 function FilterAxis({
@@ -96,7 +153,19 @@ function plural(count: number) {
   return "РАБОТ";
 }
 
-export default function Works() {
+// `bare` drops the section's own eyebrow/heading and outer padding: on the
+// service pages this block is rendered inside a CinematicSection that already
+// supplies the chapter number and title, so its own would be a duplicate.
+//
+// `limit` caps the grid at a fixed number of tiles and hides "показать ещё" —
+// on the cinematic pages the chapter has to fit one screen exactly, with no
+// scrolling of its own, so it shows a filtered four rather than a catalogue.
+// The full catalogue lives on /works, which has no such constraint.
+export default function Works({
+  bare = false,
+  limit,
+  filtersAside,
+}: { bare?: boolean; limit?: number; filtersAside?: ReactNode } = {}) {
   const { active: activeService } = useService();
   const works = worksByCategory[activeService];
   // Основные рубрики идут в том порядке, в котором сгруппированы работы в
@@ -154,8 +223,8 @@ export default function Works() {
     setVisible(PAGE_SIZE);
   }, [filter, sphere, activeService]);
 
-  const shown = filtered.slice(0, visible);
-  const hasMore = filtered.length > shown.length;
+  const shown = filtered.slice(0, limit ?? visible);
+  const hasMore = !limit && filtered.length > shown.length;
 
   const active = works.find((w) => w.id === activeId) ?? null;
 
@@ -169,14 +238,16 @@ export default function Works() {
   }, [activeId]);
 
   return (
-    <section id="works" className="py-10 sm:py-14">
-      <Container>
-        <Reveal>
-          <Eyebrow index="01" label="Работы" />
-          <h2 className="font-sans text-3xl font-light uppercase tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
-            Портфолио
-          </h2>
-        </Reveal>
+    <section id={bare ? undefined : "works"} className={bare ? "" : "py-10 sm:py-14"}>
+      <Container className={bare ? "!px-0" : ""}>
+        {!bare && (
+          <Reveal>
+            <Eyebrow index="01" label="Работы" />
+            <h2 className="font-sans text-3xl font-light uppercase tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
+              Портфолио
+            </h2>
+          </Reveal>
+        )}
 
         {works.length === 0 ? (
           <Reveal delay={0.05}>
@@ -186,49 +257,83 @@ export default function Works() {
           </Reveal>
         ) : (
           <>
-            <Reveal delay={0.05}>
-              <div className="mt-8 font-mono text-xs uppercase tracking-[0.18em] text-paper">
-                {filtered.length} {plural(filtered.length)} НАЙДЕНО
-              </div>
-            </Reveal>
+            {!limit && (
+              <Reveal delay={0.05}>
+                <div className="mt-8 font-mono text-xs uppercase tracking-[0.18em] text-paper">
+                  {filtered.length} {plural(filtered.length)} НАЙДЕНО
+                </div>
+              </Reveal>
+            )}
 
             {/* Две оси фильтра плоскими списками через слэш, как в референсе,
-                а не капсулами: при 13 рубриках капсулы занимают четыре строки. */}
+                а не капсулами: при 13 рубриках капсулы занимают четыре строки.
+                В режиме главы (`limit`) обе оси идут одной строкой без верхней
+                линейки — иначе фильтры съедают половину экрана. */}
             <Reveal delay={0.1}>
-              <div className="mt-8 grid gap-8 border-t border-paper/10 pt-6 lg:grid-cols-2 lg:gap-10">
-                <FilterAxis
-                  label="По формату"
-                  options={categories}
-                  value={filter}
-                  onChange={setFilter}
-                />
-                {spheres.length > 0 && (
-                  <FilterAxis
-                    label="По сферам"
-                    options={spheres}
-                    value={sphere}
-                    onChange={setSphere}
+              <div className={limit
+                ? "flex flex-wrap items-end justify-between gap-x-8 gap-y-4"
+                : "mt-8 grid gap-8 border-t border-paper/10 pt-6 lg:grid-cols-2 lg:gap-10"}>
+                {limit ? (
+                  // In a chapter only the format axis is offered: two axes of
+                  // pills is more control than one screen can carry, and the
+                  // sphere axis is still there on /works.
+                  <Appear from="left" delay={BEAT.controls}>
+                  <SegmentedAxis
+                    label="По формату"
+                    options={categories}
+                    value={filter}
+                    onChange={setFilter}
                   />
+                  </Appear>
+                ) : (
+                  <>
+                    <FilterAxis
+                      label="По формату"
+                      options={categories}
+                      value={filter}
+                      onChange={setFilter}
+                    />
+                    {spheres.length > 0 && (
+                      <FilterAxis
+                        label="По сферам"
+                        options={spheres}
+                        value={sphere}
+                        onChange={setSphere}
+                      />
+                    )}
+                  </>
                 )}
+                {limit && filtersAside && <Appear from="right" delay={BEAT.controls}>{filtersAside}</Appear>}
               </div>
             </Reveal>
 
-            <div className="mt-10 grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2">
+            <div className={limit
+              ? "mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4 lg:max-w-[47rem]"
+              : "mt-10 grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2"}>
+              {/* In chapter mode each tile carries its own two actions, so it is
+                  a plain container rather than one big button — a button cannot
+                  legally contain other buttons or links. */}
               <AnimatePresence mode="popLayout">
                 {shown.map((work, index) => (
-                  <motion.button
+                  <motion.div
                     key={work.id}
                     layout
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: 24, x: limit ? (index % 2 ? 40 : -40) : 0 }}
+                    animate={{ opacity: 1, y: 0, x: 0 }}
                     exit={{ opacity: 0, transition: { duration: 0.18 } }}
                     transition={{
-                      duration: 0.5,
-                      delay: Math.min((index % PAGE_SIZE) * 0.05, 0.35),
-                      ease: [0.22, 1, 0.36, 1],
+                      duration: limit ? 0.8 : 0.5,
+                      // In a chapter the four tiles arrive in a clear sequence
+                      // rather than as a block: left, right, left, right.
+                      delay: limit
+                        ? BEAT.content + index * STAGGER.normal
+                        : Math.min((index % PAGE_SIZE) * 0.05, 0.35),
+                      ease: MOTION_EASE,
                     }}
-                    onClick={() => setActiveId(work.id)}
-                    className="group relative aspect-[16/10] overflow-hidden rounded-2xl bg-ink-soft text-left transition-shadow duration-300 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85),0_0_50px_-12px_rgba(0,210,255,0.3)]"
+                    onClick={limit ? undefined : () => setActiveId(work.id)}
+                    className={`group relative overflow-hidden rounded-2xl bg-ink-soft text-left transition-shadow duration-300 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85),0_0_50px_-12px_rgba(0,210,255,0.3)] ${
+                      limit ? "aspect-video" : "aspect-[16/10] cursor-pointer"
+                    }`}
                   >
                     <img
                       src={work.youtubeId ? maxThumb(work.youtubeId) : ""}
@@ -258,13 +363,38 @@ export default function Works() {
                       </span>
                     )}
 
-                    <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <span className="flex h-14 w-14 scale-75 items-center justify-center rounded-full bg-ink/60 text-paper shadow-[0_0_28px_rgba(0,210,255,0.5)] backdrop-blur-sm transition-transform duration-300 group-hover:scale-100">
-                        ▶
+                    {!limit && (
+                      <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <span className="flex h-14 w-14 scale-75 items-center justify-center rounded-full bg-ink/60 text-paper shadow-[0_0_28px_rgba(0,210,255,0.5)] backdrop-blur-sm transition-transform duration-300 group-hover:scale-100">
+                          ▶
+                        </span>
                       </span>
-                    </span>
+                    )}
 
-                    <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 sm:inset-x-5 sm:bottom-5">
+                    {limit && (
+                      <div className="absolute bottom-4 right-4 flex items-center gap-2 sm:bottom-5 sm:right-5">
+                        <button
+                          type="button"
+                          onClick={() => setActiveId(work.id)}
+                          className="grad-border btn-3d inline-flex items-center gap-1.5 rounded-full border bg-ink/70 px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-paper backdrop-blur-md hover:text-glow"
+                        >
+                          <span aria-hidden="true">▶</span>
+                          Смотреть
+                        </button>
+                        <Link
+                          href="/brief"
+                          className="grad-border btn-3d inline-flex items-center rounded-full border bg-ink/70 px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-paper backdrop-blur-md hover:text-glow"
+                        >
+                          Хочу так же
+                        </Link>
+                      </div>
+                    )}
+
+                    <div className={`absolute bottom-4 gap-3 sm:bottom-5 ${
+                      limit
+                        ? "left-4 right-40 flex flex-col items-start sm:left-5"
+                        : "inset-x-4 flex items-end justify-between sm:inset-x-5"
+                    }`}>
                       <div className="min-w-0">
                         <div className="font-sans text-base font-medium leading-snug text-paper transition-[text-shadow] duration-300 group-hover:[text-shadow:0_0_16px_rgba(0,210,255,0.55)] sm:text-lg">
                           {work.title}
@@ -275,15 +405,17 @@ export default function Works() {
                           </div>
                         )}
                       </div>
-                      <div className="flex shrink-0 flex-wrap justify-end gap-1.5">
+                      <div className={`flex shrink-0 flex-wrap gap-1.5 ${
+                        limit ? "mt-2 justify-start" : "justify-end"
+                      }`}>
                         {/* Сфера — нейтральным чипом, чтобы не путать оси:
                             подсвеченные чипы = формат. */}
-                        {work.sphere && (
+                        {work.sphere && !limit && (
                           <span className="rounded-full bg-paper/10 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-paper/70 ring-1 ring-inset ring-paper/15 backdrop-blur-sm sm:text-[10px]">
                             {work.sphere}
                           </span>
                         )}
-                        {allCategories(work).map((c) => (
+                        {(limit ? [work.category] : allCategories(work)).map((c) => (
                           <span
                             key={c}
                             className="rounded-full bg-glow/15 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-glow ring-1 ring-inset ring-glow/30 backdrop-blur-sm sm:text-[10px]"
@@ -293,7 +425,7 @@ export default function Works() {
                         ))}
                       </div>
                     </div>
-                  </motion.button>
+                  </motion.div>
                 ))}
               </AnimatePresence>
             </div>

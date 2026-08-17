@@ -91,7 +91,7 @@ export default function ServicePicker() {
         type="button"
         onClick={() => go(-1)}
         aria-label="Предыдущее"
-        className="service-arrow-left absolute left-4 top-1/2 z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-glow/50 bg-ink/50 text-3xl text-glow backdrop-blur-md transition-colors hover:border-glow hover:bg-glow/10 sm:left-8 sm:h-20 sm:w-20"
+        className="grad-border service-arrow-left absolute left-4 top-1/2 z-10 hidden h-16 w-16 sm:flex shrink-0 items-center justify-center rounded-full border bg-ink/50 text-3xl text-glow backdrop-blur-md transition-colors hover:border-glow hover:bg-glow/10 sm:left-8 sm:h-20 sm:w-20"
       >
         ‹
       </button>
@@ -100,7 +100,7 @@ export default function ServicePicker() {
         type="button"
         onClick={() => go(1)}
         aria-label="Следующее"
-        className="service-arrow-right absolute right-4 top-1/2 z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-glow/50 bg-ink/50 text-3xl text-glow backdrop-blur-md transition-colors hover:border-glow hover:bg-glow/10 sm:right-8 sm:h-20 sm:w-20"
+        className="grad-border service-arrow-right absolute right-4 top-1/2 z-10 hidden h-16 w-16 sm:flex shrink-0 items-center justify-center rounded-full border bg-ink/50 text-3xl text-glow backdrop-blur-md transition-colors hover:border-glow hover:bg-glow/10 sm:right-8 sm:h-20 sm:w-20"
       >
         ›
       </button>
@@ -114,23 +114,46 @@ export default function ServicePicker() {
           {previewMeta.description}
         </p>
 
-        <div className="mt-5 flex gap-2">
-          {serviceOrder.map((key) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setPreviewKey(key)}
-              aria-label={serviceMeta[key].label}
-              className={`h-2 w-2 rounded-full transition-colors ${
-                key === previewKey ? "bg-glow" : "bg-paper/25 hover:bg-paper/50"
-              }`}
-            />
-          ))}
+        {/* On phones the prev/next controls join the dots in one row under the
+            copy instead of floating over it. Same buttons, same order, just
+            somewhere they cannot cover the heading. */}
+        <div className="mt-5 flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => go(-1)}
+            aria-label="Предыдущее"
+            className="grad-border flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-ink/50 text-2xl leading-none text-glow backdrop-blur-md sm:hidden"
+          >
+            ‹
+          </button>
+
+          <div className="flex gap-2">
+            {serviceOrder.map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setPreviewKey(key)}
+                aria-label={serviceMeta[key].label}
+                className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                  key === previewKey ? "bg-glow" : "bg-paper/25 hover:bg-paper/50"
+                }`}
+              />
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => go(1)}
+            aria-label="Следующее"
+            className="grad-border flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-ink/50 text-2xl leading-none text-glow backdrop-blur-md sm:hidden"
+          >
+            ›
+          </button>
         </div>
 
         <Link
           href={`/${previewMeta.slug}`}
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-glow/40 px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
+          className="grad-border mt-6 inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
         >
           Подробнее об услуге →
         </Link>
