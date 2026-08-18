@@ -1,12 +1,59 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { vibeButtonStyle } from "@/components/home/WelcomeOverlay";
 import WelcomeWidget from "@/components/home/WelcomeWidget";
 import CenterModal from "@/components/ui/CenterModal";
+
+// Standalone routes where the whole page *is* one rail item — no in-page
+// anchor to scroll-spy, the URL alone decides it.
+const PAGE_ACTIVE_ID: Record<string, string> = {
+  "/works": "catalog",
+  "/calculator": "calculator",
+  "/brief": "brief",
+};
+
+// The subset of ITEMS ids that are real in-page anchors, shared verbatim by
+// every service page — the cinematic deck on /content and the plain-scroll
+// layout on /ai, /sites, /smm both render a `#services`/`#contact`/`#works`
+// element at the right scroll position, so the exact scroll-spy Header.tsx
+// already runs works here unmodified (same rootMargin, same technique).
+const ANCHOR_IDS = ["works", "services", "contact"];
+
+function useActiveRailId(): string {
+  const pathname = usePathname();
+  const [activeId, setActiveId] = useState("");
+
+  useEffect(() => {
+    const pageMatch = PAGE_ACTIVE_ID[pathname];
+    if (pageMatch) {
+      setActiveId(pageMatch);
+      return;
+    }
+    setActiveId("");
+    const elements = ANCHOR_IDS.map((id) => document.getElementById(id)).filter(
+      (el): el is HTMLElement => Boolean(el)
+    );
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveId(entry.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+    );
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  return activeId;
+}
 
 // The site-wide "vibe" rail — replaces the old bottom-right "VIBE САЙТ"
 // floating button (see FloatingCta, now removed from layout.tsx). Same
@@ -274,11 +321,17 @@ function RailRow({
   glyph,
   label,
   expanded,
+  active = false,
   onClick,
 }: {
   glyph: ReactNode;
   label: string;
   expanded: boolean;
+  /** This row's section is the one currently on screen — lights the icon
+   *  up with the rail's own pink→cyan glow and carries a shared layoutId,
+   *  so moving from one active row to the next animates as one glow
+   *  sliding between them rather than one switching off and another on. */
+  active?: boolean;
   onClick: () => void;
 }) {
   return (
@@ -287,14 +340,40 @@ function RailRow({
       onClick={onClick}
       title={expanded ? undefined : label}
       aria-label={label}
+      aria-current={active ? "true" : undefined}
       // flex-row-reverse + justify-start (reversed, so visually flush right)
       // is what keeps the icon pinned to a constant distance from the page's
       // right edge no matter how wide the row grows — the label just grows
       // in to its left. Anchoring the icon to the row's *left* instead was
       // what made it visibly drift sideways as the panel widened.
-      className="group flex w-full flex-row-reverse items-center justify-start gap-2 rounded-xl py-2 pl-2.5 pr-3 text-right text-paper/70 transition-colors hover:bg-paper/[0.08] hover:text-paper"
+      className={`group flex w-full flex-row-reverse items-center justify-start gap-2 rounded-xl py-2 pl-2.5 pr-3 text-right transition-colors hover:bg-paper/[0.08] ${
+        active ? "text-white" : "text-paper/70 hover:text-paper"
+      }`}
     >
-      <span className="flex h-5 w-5 shrink-0 items-center justify-center [&_svg]:h-[18px] [&_svg]:w-[18px]">{glyph}</span>
+      <span className="relative flex h-5 w-5 shrink-0 items-center justify-center [&_svg]:h-[18px] [&_svg]:w-[18px]">
+        {active && (
+          <motion.span
+            layoutId="vibe-rail-active-glow"
+            animate={{
+              boxShadow: [
+                "0 0 8px rgba(236,72,153,0.55), 0 0 14px rgba(56,189,248,0.45)",
+                "0 0 15px rgba(236,72,153,0.85), 0 0 24px rgba(56,189,248,0.7)",
+                "0 0 8px rgba(236,72,153,0.55), 0 0 14px rgba(56,189,248,0.45)",
+              ],
+            }}
+            transition={{
+              layout: { type: "spring", stiffness: 340, damping: 28 },
+              boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+            }}
+            className="absolute -inset-[7px] -z-10 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(236,72,153,0.5) 0%, rgba(56,189,248,0.35) 65%, transparent 100%)",
+            }}
+          />
+        )}
+        {glyph}
+      </span>
       <span
         // Opacity only — no width/max-width transition of its own. The
         // label used to animate its own max-width *at the same time* as the
@@ -316,6 +395,7 @@ function RailRow({
 }
 
 export default function VibeRail() {
+  const activeRailId = useActiveRailId();
   const [expanded, setExpanded] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -416,6 +496,7 @@ export default function VibeRail() {
                 glyph={item.glyph}
                 label={item.label}
                 expanded={expanded}
+                active={item.id === activeRailId}
                 onClick={() => openItem(item)}
               />
             ))}
