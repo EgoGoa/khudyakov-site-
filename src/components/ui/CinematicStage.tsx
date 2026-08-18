@@ -43,9 +43,16 @@ import {
 export type Phase = { start: number; end: number };
 export type ChapterMeta = { id: string };
 
-type StageApi = { activeIndex: number };
+type StageApi = { activeIndex: number; staged: boolean };
 
-const StageContext = createContext<StageApi>({ activeIndex: 0 });
+// `staged: false` on the default value (no Provider above) is what lets
+// CinematicSection tell "really inside a CinematicStage" apart from "the
+// context fell back to its default" — see useIsStaged below. A component
+// like Process that is reused both inside /content's deck and directly on
+// the plain-scroll /ai, /sites, /smm pages needs that distinction: it must
+// stay hidden-until-active in the deck, but render as an ordinary visible
+// section everywhere else.
+const StageContext = createContext<StageApi>({ activeIndex: 0, staged: false });
 
 // Seeking is only accurate to the nearest keyframe; the reel carries one per
 // second (-g 25), so land slightly inside the phase rather than exactly on its
@@ -126,6 +133,14 @@ export default function CinematicStage({
   // up, and at the last scrolling down, the event is left alone so the page
   // continues out to the picker above or the footer below.
   useEffect(() => {
+    // A visitor with `prefers-reduced-motion` gets plain native scrolling
+    // instead — no wheel/touch/keyboard capture, no eased glide. `onScroll`
+    // is still registered below regardless, so the chapter runway's real
+    // scroll height keeps mapping scroll position to activeIndex and
+    // chapters still swap; only the aggressive one-gesture-one-chapter
+    // takeover and its resistance to plain scrolling are skipped.
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     let lock = 0; // timestamp until which further gestures are absorbed
     let wheelAccum = 0;
     let wheelReset: number | null = null;
@@ -423,21 +438,25 @@ export default function CinematicStage({
     };
 
     onScroll();
-    window.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    window.addEventListener("touchend", onTouchEnd);
-    window.addEventListener("keydown", onKeyDown);
+    if (!reducedMotion) {
+      window.addEventListener("wheel", onWheel, { passive: false });
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove", onTouchMove, { passive: false });
+      window.addEventListener("touchend", onTouchEnd);
+      window.addEventListener("keydown", onKeyDown);
+    }
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
       cancelAnimationFrame(tween);
       if (wheelReset) window.clearTimeout(wheelReset);
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
-      window.removeEventListener("keydown", onKeyDown);
+      if (!reducedMotion) {
+        window.removeEventListener("wheel", onWheel);
+        window.removeEventListener("touchstart", onTouchStart);
+        window.removeEventListener("touchmove", onTouchMove);
+        window.removeEventListener("touchend", onTouchEnd);
+        window.removeEventListener("keydown", onKeyDown);
+      }
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
@@ -545,7 +564,7 @@ export default function CinematicStage({
     return () => cancelAnimationFrame(raf);
   }, [activeIndex, phases, started]);
 
-  const api = useMemo<StageApi>(() => ({ activeIndex }), [activeIndex]);
+  const api = useMemo<StageApi>(() => ({ activeIndex, staged: true }), [activeIndex]);
 
   return (
     <StageContext.Provider value={api}>
@@ -580,6 +599,36 @@ export default function CinematicStage({
             }}
           />
           {children}
+
+          {/* Nudge on every chapter, not just the first: without it, a
+              visitor's scroll gesture is silently absorbed by the deck (see
+              onWheel/onTouchMove above) instead of moving the page the way
+              scrolling normally does, which reads as the site having frozen
+              — that risk exists at each chapter, not only on arrival. On the
+              last chapter "further" exits the deck into the ordinary page
+              below (Trust/Offer/Process/Close) rather than another chapter,
+              which is still an accurate thing to say. */}
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-6 flex flex-col items-center gap-1.5 text-paper/60 sm:bottom-9"
+            aria-hidden="true"
+          >
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em]">
+                Листайте дальше
+              </span>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="cinematic-scroll-hint"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+          </div>
         </div>
 
         {/* Runway: one viewport-height step per chapter, pulled up behind the
@@ -599,4 +648,17 @@ export default function CinematicStage({
 
 export function useStageActive(index: number) {
   return useContext(StageContext).activeIndex === index;
+}
+
+// True only inside a real CinematicStage. A chapter component built for the
+// deck (Trust, Offer, Process, Close — see CinematicSection) is sometimes
+// reused directly on a plain-scroll page instead, with no CinematicStage
+// ancestor; there `useStageActive` would silently and permanently return
+// false (matched against the context's *default* value, not a real deck
+// position), leaving the whole section stuck in its off-stage transform —
+// invisible, `aria-hidden`, and still occupying `position: absolute` layout
+// space that overflows the page. CinematicSection checks this to fall back
+// to always-visible, normal-flow rendering outside a stage.
+export function useIsStaged() {
+  return useContext(StageContext).staged;
 }

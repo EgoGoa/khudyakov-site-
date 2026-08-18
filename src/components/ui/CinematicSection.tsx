@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { useStageActive } from "@/components/ui/CinematicStage";
+import { useStageActive, useIsStaged } from "@/components/ui/CinematicStage";
 import ChapterIcon, { type ChapterIconName } from "@/components/ui/ChapterIcon";
 import { ChapterActiveProvider } from "@/components/ui/Appear";
 import { BEAT, DUR, EASE as MOTION_EASE } from "@/lib/motion";
@@ -86,7 +86,18 @@ export default function CinematicSection({
   titleClassName?: string;
   children?: ReactNode;
 }) {
-  const active = useStageActive(index);
+  // Trust/Offer/Process/Close are authored for the pinned deck (see
+  // CinematicStage) but Process is also reused directly on the plain-scroll
+  // /ai, /sites, /smm pages, with no deck above it. `useStageActive` alone
+  // can't tell those cases apart — matched against the context's fallback
+  // value, it silently and permanently reads as "not active", leaving the
+  // whole section stuck off-stage: invisible, `aria-hidden`, and still
+  // occupying `position: absolute` layout space that overflowed the page.
+  // `staged` distinguishes a real deck from that fallback, so outside one
+  // this renders as a normal, always-visible, static-flow section instead.
+  const staged = useIsStaged();
+  const stageActive = useStageActive(index);
+  const active = staged ? stageActive : true;
   const reduced = useReducedMotion();
   const alignRight = side === "right";
   const alignCenter = side === "center";
@@ -95,21 +106,30 @@ export default function CinematicSection({
   return (
     <motion.div
       initial={false}
-      animate={reduced ? { opacity: active ? 1 : 0 } : entranceFor(kind, active)}
+      animate={!staged || reduced ? { opacity: active ? 1 : 0 } : entranceFor(kind, active)}
       // Only transform and opacity are animated — a blur() on a full-screen
       // layer was tried and dropped: it forces a repaint of the whole stage on
       // every frame and made the swap visibly stutter.
       transition={{ duration: DUR.chapter, ease: EASE }}
       aria-hidden={!active}
-      data-chapter-pane=""
+      data-chapter-pane={staged ? "" : undefined}
       data-active={active ? "true" : "false"}
-      className={`absolute inset-0 flex flex-col overflow-y-auto px-6 pb-12 pt-[5.5rem] lg:px-10 lg:pb-12 lg:pt-[5.5rem] ${
-        active ? "" : "pointer-events-none"
-      }`}
+      className={
+        staged
+          ? `absolute inset-0 flex flex-col overflow-y-auto px-6 pb-12 pt-[5.5rem] lg:px-10 lg:pb-12 lg:pt-[5.5rem] ${
+              active ? "" : "pointer-events-none"
+            }`
+          : "relative flex flex-col px-6 py-10 sm:py-14 lg:px-10"
+      }
       // touch-action pan-y so the pane itself can be dragged on a phone; the
       // stage decides whether that drag scrolls this chapter or steps to the
-      // next one (see CinematicStage).
-      style={{ willChange: "transform, opacity", perspective: 1200, touchAction: "pan-y" }}
+      // next one (see CinematicStage). Irrelevant outside the deck, but
+      // harmless to leave set.
+      style={
+        staged
+          ? { willChange: "transform, opacity", perspective: 1200, touchAction: "pan-y" }
+          : undefined
+      }
     >
       {/* Feathered scrim rather than a card: it has no edge to see, so the
           chapter still reads as type on film, but the copy keeps its contrast

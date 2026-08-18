@@ -421,6 +421,26 @@ body {
   }
 }
 
+/* cinematic stage — "листайте дальше" chevron on the deck's first chapter */
+@keyframes cinematic-scroll-hint {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+}
+.cinematic-scroll-hint {
+  animation: cinematic-scroll-hint 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-scroll-hint {
+    animation: none;
+  }
+}
+
 /* welcome overlay — expanding ripple while the mic is listening */
 @keyframes mic-ripple {
   0% {

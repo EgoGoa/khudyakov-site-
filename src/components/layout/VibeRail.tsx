@@ -490,6 +490,18 @@ export default function VibeRail() {
               }}
             />
             <div className="mx-3 my-1.5 h-px bg-paper/10" />
+            {/* Distinguishes this rail from Header's ordinary nav — without
+                it the two read as duplicate menus, since several rows below
+                point at the same sections/pages Header already links to.
+                Opacity-only, same reveal timing as RailRow's own label, so
+                it appears together with the rest of the panel's text. */}
+            <div
+              className={`px-3 pb-0.5 pt-0.5 font-mono text-[8px] uppercase tracking-[0.16em] text-paper/35 transition-opacity ${
+                expanded ? "opacity-100 duration-200 delay-200" : "opacity-0 duration-100"
+              }`}
+            >
+              Vibe-режим
+            </div>
             {ITEMS.map((item) => (
               <RailRow
                 key={item.id}
@@ -575,6 +587,9 @@ export default function VibeRail() {
 
               <div className="my-2 h-px bg-paper/10" />
 
+              <div className="px-2 pb-1 font-mono text-[9px] uppercase tracking-[0.16em] text-paper/35">
+                Vibe-режим
+              </div>
               <nav className="flex flex-col gap-0.5">
                 {ITEMS.map((item) => (
                   <button

@@ -25,7 +25,13 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer id="footer" className="bg-ink text-paper">
+    <footer id="footer" className="relative overflow-hidden bg-ink text-paper">
+      <div
+        className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-25"
+        style={{ backgroundImage: "url(/images/footer-bg.jpg)" }}
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/80 to-ink" />
+      <div className="relative">
       {/* CTA band — mirrors the "ready to discuss your project" strip from
           the reference, but pointed at our own real channels */}
       <div className="border-b border-paper/10">
@@ -140,6 +146,7 @@ export default function Footer() {
           © {year} HDKV.AGENCY. Все права защищены.
         </p>
       </Container>
+      </div>
     </footer>
   );
 }

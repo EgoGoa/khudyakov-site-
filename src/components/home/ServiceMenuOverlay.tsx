@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { UserIcon } from "@/components/ui/Icons";
-import { VoiceWave, VoiceMicButton } from "@/components/home/WelcomeOverlay";
+import { VoiceWave, VoiceMicButton, isSnoozed, snooze } from "@/components/home/WelcomeOverlay";
 import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useWelcomeGate } from "@/lib/welcome-gate";
@@ -100,7 +100,10 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
   const [visible, setVisible] = useState(true);
   const [creativeOpen, setCreativeOpen] = useState(false);
   const [reduced, setReduced] = useState(false);
-  const close = () => setVisible(false);
+  const close = () => {
+    snooze();
+    setVisible(false);
+  };
   const active = visible && !welcomeOpen && !skippedToSite;
 
   useBodyScrollLock(active);
@@ -108,6 +111,11 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReduced(mq.matches);
+    // Shares WelcomeOverlay's snooze — a visitor who already dismissed the
+    // guided flow once (from either screen) skips straight past this one
+    // too, instead of it popping up the instant the first overlay's own
+    // snooze effect closes that one.
+    if (isSnoozed()) setVisible(false);
   }, []);
 
   const { rendered, done: typed } = useTypeOnce(PHRASE, reduced, active);

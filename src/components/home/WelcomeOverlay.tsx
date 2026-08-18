@@ -265,8 +265,42 @@ export function VoiceMicButton({ onTranscript }: { onTranscript: (transcript: st
   );
 }
 
+// How long a dismissal is remembered for. A returning visitor inside this
+// window skips straight to the site instead of seeing the greeting again —
+// picking a service still resets nothing (it's a real destination, not a
+// dismissal), only the "leave the flow" exits below write this.
+const SNOOZE_DAYS = 7;
+const SNOOZE_KEY = "hdkv_welcome_snoozed_until";
+
+// Shared with ServiceMenuOverlay, the second guided screen that follows this
+// one on every service page — both write and read the same key so
+// dismissing either is remembered for the whole guided flow, not just half
+// of it.
+export function isSnoozed(): boolean {
+  if (typeof window === "undefined") return false;
+  const until = Number(window.localStorage.getItem(SNOOZE_KEY));
+  return Number.isFinite(until) && until > Date.now();
+}
+
+export function snooze() {
+  try {
+    window.localStorage.setItem(SNOOZE_KEY, String(Date.now() + SNOOZE_DAYS * 86_400_000));
+  } catch {
+    /* localStorage unavailable (private mode, quota) — the overlay just
+       reappears next visit, no worse than before this change */
+  }
+}
+
 export default function WelcomeOverlay() {
+  // Starts true on the server (and for the very first client render, to
+  // match it and avoid a hydration mismatch) so a first-time visitor still
+  // sees the overlay; the snooze check runs one effect tick later and
+  // closes it immediately, before paint is noticeable, if it's still active.
   const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (isSnoozed()) setVisible(false);
+  }, []);
 
   useBodyScrollLock(visible);
 
@@ -283,7 +317,10 @@ export default function WelcomeOverlay() {
   // isn't choosing anything, they're leaving the flow, so it goes straight
   // to the site — same destination as the explicit "Обычная версия" /
   // "Перейти на сайт" choice, not an intermediate guide screen.
-  const close = () => setVisible(false);
+  const close = () => {
+    snooze();
+    setVisible(false);
+  };
 
   const goToSite = () => {
     setSkippedToSite(true);
