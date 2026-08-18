@@ -59,6 +59,14 @@ export default function CenterModal({
             // layout floated in the void, so nothing pinned the composition to
             // any deliberate width. Height stays intrinsic to the content but
             // caps at 85vh with its own scroll, for short viewports.
+            //
+            // .liquid-glass's own background is only 3% white — legible over
+            // whatever's behind it purely because backdrop-filter blurs that
+            // background first. Without backdrop-filter support (or with it
+            // disabled) the card reads as almost fully transparent and the
+            // greeting overlaps the page behind it unreadably, so this inline
+            // background wins over that regardless of blur support.
+            style={{ background: "rgba(11,11,16,0.94)" }}
             className="liquid-glass relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] px-6 py-10 sm:px-12 sm:py-14"
           >
             <button
