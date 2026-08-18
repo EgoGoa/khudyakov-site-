@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import FunnelCta from "@/components/ui/FunnelCta";
 import Appear from "@/components/ui/Appear";
 import Opening from "@/components/home/Opening";
 import Works from "@/components/home/Works";
@@ -79,33 +78,44 @@ export default function ContentServicePage() {
           side="right"
           intro="78 проектов: реклама, шоурилы, 3D и моушн."
         >
-          {/* The works run edge to edge in two columns; everything that serves
-              them is arranged around that grid rather than stacked into one
-              side column, which left the tiles looking penned in. Filters take
-              the left of the row above, the catalogue link the right, and the
-              offer sits underneath the grid across the full width. */}
-          <Works
-            bare
-            limit={4}
-            filtersAside={
-              <Link
-                href="/works"
-                className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-paper/80 transition hover:text-glow"
-              >
-                Весь каталог — 78 работ
-                <span aria-hidden="true">→</span>
-              </Link>
-            }
-          />
+          {/* The offer used to sit under the grid, which meant the tiles had
+              to leave room for it above the fold — now it sits beside the
+              grid instead, so the tiles get the space and can run bigger. */}
+          <div className="lg:flex lg:items-start lg:gap-8">
+            <div className="lg:min-w-0 lg:flex-1">
+              <Works
+                bare
+                limit={4}
+                filtersAside={
+                  <Link
+                    href="/works"
+                    className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-paper/80 transition hover:text-glow"
+                  >
+                    Весь каталог — 78 работ
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                }
+              />
+            </div>
 
-          <Appear from="up" delay={1.0}>
-            <FunnelCta
-              item="brief"
-              layout="row"
-              pitch="Нашли похожий формат? Пришлите ссылку в брифе — соберём смету и 2–3 концепции бесплатно."
-              className="mt-4"
-            />
-          </Appear>
+            <Appear from="up" delay={1.0} className="mt-6 lg:mt-0 lg:w-[280px] lg:shrink-0 xl:w-[300px]">
+              <div className="rounded-2xl bg-ink/45 p-5 backdrop-blur-md">
+                <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
+                  Нашли похожий формат?
+                </span>
+                <p className="mt-3 font-sans text-xl leading-[1.15] text-paper">
+                  Пришлите ссылку в брифе <span className="font-semibold text-orange">бесплатно</span>
+                </p>
+                <p className="mt-2.5 text-sm leading-relaxed text-paper/60">
+                  Соберём смету и 2–3 концепции — без предоплаты за идею.
+                </p>
+                <Link href="/brief" className="btn-neon btn-warm btn-3d mt-4 w-full justify-center !py-3.5">
+                  Заполнить бриф
+                </Link>
+              </div>
+            </Appear>
+          </div>
         </CinematicSection>
 
         <Trust />

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 // One way forward per chapter, with the sentence that earns the click.
 //
@@ -7,8 +8,16 @@ import Link from "next/link";
 // "brief" and "calculator" side by side were really asking "do you already
 // know what you want?", a question the page is supposed to answer for them.
 // So each chapter now carries exactly one action, picked to follow from what
-// that chapter just showed, above it a line that names the concrete thing the
-// agency does differently rather than a generic invitation.
+// that chapter just showed.
+//
+// Built as an offer card, not a sentence-plus-button panel: a small tag
+// names the situation, a promise line makes the concrete offer (the
+// number/deadline picked out in orange), the original sentence is the
+// supporting line underneath — and the button sits beside all of that,
+// vertically centred on the card rather than stacked under the text, with
+// its own warm glow bleeding out of that corner. Six chapters each carry one
+// of these, so `size` and `align` are what stop them reading as six copies
+// of the same box.
 
 const TELEGRAM_URL = "https://t.me/+79925111812";
 
@@ -32,6 +41,26 @@ function Glyph({ children }: { children: React.ReactNode }) {
       className="shrink-0"
     >
       {children}
+    </svg>
+  );
+}
+
+function ArrowGlyph() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+      className="shrink-0"
+    >
+      <path d="M7 17 17 7M9 7h8v8" />
     </svg>
   );
 }
@@ -72,83 +101,187 @@ const FUNNELS: Record<
   },
 };
 
+export type FunnelSize = "sm" | "md" | "lg";
+
+const HEADLINE_SIZE: Record<FunnelSize, string> = {
+  sm: "text-xl sm:text-2xl",
+  md: "text-2xl sm:text-3xl",
+  lg: "text-3xl sm:text-4xl",
+};
+
+const CARD_PADDING: Record<FunnelSize, string> = {
+  sm: "px-5 py-5 sm:px-7 sm:py-6",
+  md: "px-6 py-6 sm:px-8 sm:py-7",
+  lg: "px-7 py-7 sm:px-10 sm:py-9",
+};
+
+// The card is a compact offer, not a banner spanning whatever column it's
+// dropped into — capped well short of the chapter's own width so it keeps
+// looking like a deliberate object on the page rather than a stretched bar.
+const CARD_WIDTH: Record<FunnelSize, string> = {
+  sm: "max-w-xl",
+  md: "max-w-2xl",
+  lg: "max-w-3xl",
+};
+
+function EyebrowPill({ children, dense = false }: { children: ReactNode; dense?: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 font-mono uppercase tracking-[0.18em] text-orange ${
+        dense ? "px-3 py-1 text-[10px]" : "px-3.5 py-1.5 text-[11px]"
+      }`}
+    >
+      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
+      {children}
+    </span>
+  );
+}
+
+function CtaButton({
+  funnel,
+  size,
+}: {
+  funnel: (typeof FUNNELS)[FunnelKey];
+  size: FunnelSize;
+}) {
+  const content = (
+    <>
+      {funnel.glyph}
+      {funnel.label}
+      <ArrowGlyph />
+    </>
+  );
+  return funnel.external ? (
+    <a href={funnel.href} target="_blank" rel="noopener noreferrer" className={buttonClass(size)}>
+      {content}
+    </a>
+  ) : (
+    <Link href={funnel.href} className={buttonClass(size)}>
+      {content}
+    </Link>
+  );
+}
+
 export default function FunnelCta({
   item,
+  eyebrow,
+  headline,
+  accent,
   pitch,
   align = "left",
-  layout = "panel",
+  size = "md",
   className = "",
 }: {
   item: FunnelKey;
-  /** The sentence that justifies pressing this particular button here. */
+  /** Short tag naming the situation this offer answers — "ЕСТЬ ТОЛЬКО ИДЕЯ?" */
+  eyebrow: string;
+  /** The promise, plain sentence case. The number/deadline half goes in `accent`. */
+  headline: ReactNode;
+  /** The part of the headline picked out in orange, rendered on its own line
+   *  ("md"/"lg") or inline ("sm"). */
+  accent?: ReactNode;
+  /** The supporting sentence underneath, one register quieter than the
+   *  headline. Dropped entirely at "sm" — that size is for chapters with no
+   *  vertical room to spare, a single line plus a button. */
   pitch: string;
+  /** Which corner the button — and its glow — sits in. */
   align?: "left" | "right";
-  /** "row" puts the pitch and the button side by side — same panel, roughly
-   *  half the height, for chapters that cannot spare the vertical space. */
-  layout?: "panel" | "row";
+  /** Mixing sizes across chapters is deliberate — six identical boxes read
+   *  as filler, not six different offers. "sm" is a single compact row for
+   *  a chapter that's already full; "md"/"lg" are the two-column offer card. */
+  size?: FunnelSize;
   className?: string;
 }) {
   const funnel = FUNNELS[item];
   const right = align === "right";
-  const row = layout === "row";
+
+  if (size === "sm") {
+    return (
+      <div
+        className={`relative overflow-hidden rounded-2xl bg-ink px-5 py-4 sm:px-6 ${CARD_WIDTH.sm} ${
+          right ? "ml-auto" : ""
+        } ${className}`}
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: right
+              ? "radial-gradient(75% 140% at 0% 50%, rgba(255,106,61,0.18), transparent 62%)"
+              : "radial-gradient(75% 140% at 100% 50%, rgba(255,106,61,0.18), transparent 62%)",
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-paper/10" />
+
+        <div
+          className={`relative flex flex-wrap items-center gap-x-4 gap-y-3 sm:flex-nowrap sm:justify-between ${
+            right ? "sm:flex-row-reverse" : ""
+          }`}
+        >
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+            <EyebrowPill dense>{eyebrow}</EyebrowPill>
+            <p className="font-sans text-base leading-snug text-paper sm:text-lg">
+              {headline} {accent && <span className="font-semibold text-orange">{accent}</span>}
+            </p>
+          </div>
+          <div className="shrink-0">
+            <CtaButton funnel={funnel} size={size} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
-      className={`liquid-glass relative overflow-hidden rounded-3xl px-6 py-5 sm:px-7 sm:py-6 ${
-        right ? "lg:text-right" : ""
+      className={`relative overflow-hidden rounded-3xl bg-ink ${CARD_PADDING[size]} ${CARD_WIDTH[size]} ${
+        right ? "ml-auto" : ""
       } ${className}`}
     >
-      {/* The same soft light source the old closing block used: a wide radial
-          wash from the top edge, which lifts the panel off the footage without
-          another visible border. */}
+      {/* Warm light source in the button's corner, fading to plain dark by
+          the far edge — the card is lit from where the action is, not from
+          a border. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-70"
+        className="pointer-events-none absolute inset-0"
         style={{
           background: right
-            ? "radial-gradient(520px circle at 80% 0%, rgba(0,210,255,0.2), transparent 70%)"
-            : "radial-gradient(520px circle at 20% 0%, rgba(0,210,255,0.2), transparent 70%)",
+            ? "radial-gradient(85% 130% at 0% 50%, rgba(255,106,61,0.22), transparent 62%)"
+            : "radial-gradient(85% 130% at 100% 50%, rgba(255,106,61,0.22), transparent 62%)",
         }}
       />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-paper/10" />
 
       <div
-        className={`relative ${
-          row ? "flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between" : ""
+        className={`relative flex flex-col items-start gap-6 sm:items-center sm:gap-8 ${
+          right ? "sm:flex-row-reverse" : "sm:flex-row"
         }`}
       >
-        <p
-          className={`text-base font-light leading-relaxed text-paper sm:text-lg ${
-            row ? "max-w-xl" : "max-w-md"
-          } ${right && !row ? "lg:ml-auto" : ""}`}
-        >
-          {pitch}
-        </p>
+        <div className="min-w-0 flex-1">
+          <EyebrowPill>{eyebrow}</EyebrowPill>
 
-        <div className={`flex ${row ? "shrink-0" : "mt-5"} ${right && !row ? "lg:justify-end" : ""}`}>
-          {funnel.external ? (
-            <a
-              href={funnel.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={BUTTON_CLASS}
-            >
-              {funnel.glyph}
-              {funnel.label}
-            </a>
-          ) : (
-            <Link href={funnel.href} className={BUTTON_CLASS}>
-              {funnel.glyph}
-              {funnel.label}
-            </Link>
-          )}
+          <p className={`mt-3 font-sans leading-[1.15] text-paper ${HEADLINE_SIZE[size]}`}>
+            {headline}
+            {accent && <span className="block font-semibold text-orange">{accent}</span>}
+          </p>
+
+          <p className="mt-3 max-w-md font-light leading-relaxed text-paper/60 text-sm sm:text-base">
+            {pitch}
+          </p>
+        </div>
+
+        <div className="shrink-0">
+          <CtaButton funnel={funnel} size={size} />
         </div>
       </div>
     </div>
   );
 }
 
-// Deliberately larger than the site's default pill: this is the one action the
-// chapter is asking for, and at the default size it read as a footnote under
-// the offer rather than as its conclusion.
-const BUTTON_CLASS =
-  "btn-neon btn-3d inline-flex items-center gap-2.5 !px-8 !py-4 !text-[13px] !tracking-[0.14em]";
+// The one warm, solid-fill button in the chapter — everything else on the
+// page is the quieter default .btn-neon. Sized down a step for "sm" so it
+// doesn't outweigh a compact card.
+function buttonClass(size: FunnelSize) {
+  const scale = size === "sm" ? "!px-6 !py-3 !text-[12px]" : "!px-8 !py-4 !text-[13px]";
+  return `btn-neon btn-warm btn-3d inline-flex items-center gap-2.5 whitespace-nowrap ${scale} !tracking-[0.14em]`;
+}

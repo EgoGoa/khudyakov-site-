@@ -1,14 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
-import FunnelCta from "@/components/ui/FunnelCta";
 import { useService } from "@/lib/service-context";
 import { servicesByCategory } from "@/lib/service-content";
 
-// Chapter 04 — the services list plus the AI-assistant teaser that used to be
-// a full section of its own. Set as a bare two-column index: numbers and
-// titles only, with the description carried by the title itself, so ten items
-// still leave most of the frame empty.
+// Chapter 04 — the services list plus the AI-assistant teaser and the
+// calculator pitch that used to each get their own vertical slot. The list
+// runs as one column stretching down the left, the way a menu reads, and the
+// calculator sits as a vertical card on the right rather than another
+// horizontal row underneath — the two-column split is what keeps ten
+// services from pushing the calculator off the bottom of the screen.
 
 export default function Offer() {
   const { active } = useService();
@@ -25,42 +27,61 @@ export default function Offer() {
       entrance="unfold"
       intro="Съёмка, монтаж, графика и AI-продакшн — под формат и площадку."
     >
-      {services.length === 0 ? (
-        <p className="text-sm leading-relaxed text-paper/60">
-          Список услуг по этому направлению скоро появится здесь.
-        </p>
-      ) : (
-        <ul className="grid max-w-4xl gap-x-10 gap-y-0 sm:grid-cols-2">
-          {services.map((service, i) => (
-            <li
-              key={service.title}
-              className="group flex items-baseline gap-3 border-t border-paper/20 py-3"
-            >
-              <span className="font-mono text-[10px] text-paper/40">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="font-display text-base uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-glow sm:text-lg [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
-                {service.title}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div id="ai" className="mt-8 flex max-w-md items-start gap-3 border-l-2 border-glow/60 pl-4">
-        <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-glow">Скоро</div>
-          <p className="mt-1.5 text-sm leading-relaxed text-paper/75 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
-            AI-агент прикинет формат и бюджет прямо в чате — до брифа и без ожидания менеджера.
+      <div className="lg:flex lg:items-start lg:gap-12">
+        {services.length === 0 ? (
+          <p className="text-sm leading-relaxed text-paper/60">
+            Список услуг по этому направлению скоро появится здесь.
           </p>
+        ) : (
+          <ul className="lg:flex-1">
+            {services.map((service, i) => (
+              <li
+                key={service.title}
+                className="group flex items-baseline gap-3 border-t border-paper/20 py-3"
+              >
+                <span className="font-mono text-[10px] text-paper/40">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="font-display text-base uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-glow sm:text-lg [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
+                  {service.title}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Vertical card, not another row: the AI teaser and the calculator
+            pitch stacked, sitting beside the list rather than under it. */}
+        <div className="mt-8 rounded-2xl bg-ink/45 p-5 backdrop-blur-md lg:mt-0 lg:w-[300px] lg:shrink-0 xl:w-[320px]">
+          <div id="ai" className="flex items-start gap-3 border-l-2 border-glow/60 pl-4">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-glow">Скоро</div>
+              <p className="mt-1.5 text-sm leading-relaxed text-paper/75">
+                AI-агент прикинет формат и бюджет прямо в чате — до брифа и без ожидания менеджера.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 border-t border-paper/15 pt-5">
+            <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
+              Не знаете формат?
+            </span>
+            <p className="mt-3 font-sans text-xl leading-[1.15] text-paper">
+              Калькулятор подберёт формат <span className="font-semibold text-orange">за 2 минуты</span>
+            </p>
+            <p className="mt-2.5 text-sm leading-relaxed text-paper/60">
+              По площадке и бюджету — сразу покажет вилку цен.
+            </p>
+            <Link
+              href="/calculator"
+              className="btn-neon btn-warm btn-3d mt-4 w-full justify-center !py-3.5"
+            >
+              Рассчитать бюджет
+            </Link>
+          </div>
         </div>
       </div>
-
-      <FunnelCta
-        item="calculator"
-        pitch="Не знаете, какой формат под задачу? Калькулятор подберёт его по площадке и бюджету — и сразу покажет вилку цен."
-        className="mt-7"
-      />
     </CinematicSection>
   );
 }

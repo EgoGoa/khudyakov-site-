@@ -8,6 +8,13 @@
   --rec: #f5310b;
   --glow: #00d2ff;
   --glow-deep: #0b2551;
+  /* Primary accent going forward — warmer and less saturated than --rec
+     (which stays reserved for the recording-indicator/timecode motif). Cyan
+     (--glow) is now the point accent, used sparingly where something is
+     already tied to it by meaning (the REC badge's neighbours, the voice
+     assistant); orange carries the everyday interactive weight. */
+  --orange: #ff6a3d;
+  --orange-bright: #ff8a5c;
 }
 
 html {
@@ -110,16 +117,6 @@ body {
   }
   50% {
     height: 14px;
-  }
-}
-
-/* neon glow pulse for CTA buttons */
-@keyframes neon-pulse {
-  0%, 100% {
-    box-shadow: 0 0 8px rgba(0, 210, 255, 0.4), 0 0 20px rgba(0, 210, 255, 0.2), inset 0 0 12px rgba(0, 210, 255, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 12px rgba(0, 210, 255, 0.6), 0 0 30px rgba(0, 210, 255, 0.35), inset 0 0 16px rgba(0, 210, 255, 0.25);
   }
 }
 
@@ -276,6 +273,31 @@ body {
   color: #b8ecff;
   text-shadow: 0 0 6px rgba(0, 210, 255, 0.7), 0 0 18px rgba(0, 210, 255, 0.45),
     0 0 40px rgba(0, 210, 255, 0.22), 0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
+/* A breathing version of the same glow, for the one heading on the page
+   that's also a button — the pulse is what says "click me" without adding
+   a border or a background. */
+@keyframes chapter-neon-pulse {
+  0%,
+  100% {
+    text-shadow: 0 0 6px rgba(0, 210, 255, 0.7), 0 0 18px rgba(0, 210, 255, 0.45),
+      0 0 40px rgba(0, 210, 255, 0.22), 0 2px 24px rgba(11, 11, 16, 0.9);
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(0, 210, 255, 1), 0 0 32px rgba(0, 210, 255, 0.7),
+      0 0 70px rgba(0, 210, 255, 0.4), 0 2px 24px rgba(11, 11, 16, 0.9);
+  }
+}
+
+.chapter-neon-pulse {
+  animation: chapter-neon-pulse 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-neon-pulse {
+    animation: none;
+  }
 }
 
 /* welcome overlay — the assistant's speech trace: a bar waveform mirrored
@@ -498,14 +520,14 @@ body {
    breakpoint) still win the cascade — plain CSS here would sit after
    @tailwind utilities in the compiled output and always beat "hidden". */
 @layer components {
+  /* Flat pill, not a glass/neon panel: solid fill at rest, a hairline border
+     only appears on hover rather than an always-on glow ring. This is the
+     everyday, many-per-screen action style — the one action per screen that
+     should stand out gets .btn-warm on top of it instead of its own class. */
   .btn-neon {
-    background: rgba(0, 210, 255, 0.08);
-    /* Edge comes from the .grad-border ring, not a flat stroke — the class is
-       applied on the element alongside .btn-neon. */
-    border: none;
-    color: #a4f4fd;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1.4px solid rgba(255, 255, 255, 0.14);
+    color: var(--paper);
     padding: 10px 22px;
     font-size: 12px;
     font-weight: 500;
@@ -513,8 +535,8 @@ body {
     letter-spacing: 0.12em;
     border-radius: 999px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    animation: neon-pulse 3s ease-in-out infinite;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
+      transform 0.15s ease;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -524,15 +546,27 @@ body {
   }
 
   .btn-neon:hover {
-    background: rgba(0, 210, 255, 0.12);
-    color: #00d2ff;
-    box-shadow: 0 0 16px rgba(0, 210, 255, 0.8), 0 0 40px rgba(0, 210, 255, 0.5), inset 0 0 20px rgba(0, 210, 255, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #ffffff;
   }
 
   .btn-neon:active {
     transform: translateY(1px) scale(0.985);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 2px 6px rgba(0, 0, 0, 0.45),
-      0 0 14px rgba(0, 210, 255, 0.45);
+  }
+
+  /* The one emphasised action per screen — solid orange instead of another
+     outline, so it reads as the destination rather than one more option in
+     a row of equals. */
+  .btn-neon.btn-warm {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #ffffff;
+  }
+
+  .btn-neon.btn-warm:hover {
+    background: var(--orange-bright);
+    border-color: var(--orange-bright);
   }
 }
 
@@ -567,7 +601,7 @@ body {
   transform: translateY(-1px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.4),
     0 2px 0 rgba(0, 0, 0, 0.5), 0 12px 26px -8px rgba(0, 0, 0, 0.8),
-    0 0 22px -4px rgba(0, 210, 255, 0.4);
+    0 0 22px -4px rgba(255, 255, 255, 0.35);
 }
 
 .btn-3d:active {
@@ -576,20 +610,30 @@ body {
     0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-/* The .btn-neon variant already carries its own cyan rim and pulse; layering
-   the thickness on top of that would double the glow, so its 3D form is
-   quieter and leans on the rim it already has. */
+/* .btn-neon is a flat fill now, so its 3D form just needs the edge/shade
+   pair without an extra rim glow riding on top of it. */
 .btn-neon.btn-3d {
-  animation: none;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
-    0 1px 0 rgba(0, 0, 0, 0.45), 0 8px 20px -8px rgba(0, 0, 0, 0.8),
-    0 0 18px -6px rgba(0, 210, 255, 0.55);
+    0 1px 0 rgba(0, 0, 0, 0.45), 0 8px 20px -8px rgba(0, 0, 0, 0.8);
 }
 
 .btn-neon.btn-3d:hover {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
-    0 2px 0 rgba(0, 0, 0, 0.45), 0 14px 28px -10px rgba(0, 0, 0, 0.85),
-    0 0 26px rgba(0, 210, 255, 0.7), 0 0 60px rgba(0, 210, 255, 0.35);
+    0 2px 0 rgba(0, 0, 0, 0.45), 0 14px 28px -10px rgba(0, 0, 0, 0.85);
+}
+
+/* The emphasised (.btn-warm) 3D button gets an orange rim instead — the one
+   action per screen that should glow. */
+.btn-neon.btn-warm.btn-3d {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 1px 0 rgba(0, 0, 0, 0.4), 0 8px 20px -8px rgba(0, 0, 0, 0.8),
+    0 0 18px -6px rgba(255, 106, 61, 0.55);
+}
+
+.btn-neon.btn-warm.btn-3d:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 2px 0 rgba(0, 0, 0, 0.4), 0 14px 28px -10px rgba(0, 0, 0, 0.85),
+    0 0 26px rgba(255, 106, 61, 0.7), 0 0 60px rgba(255, 106, 61, 0.35);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -701,8 +745,11 @@ body {
   inherits: false;
 }
 
-/* .btn-neon and .seg-pill carry the ring by class rather than by opt-in, so
-   every existing call site picks it up without being edited.
+/* .seg-pill carries the ring by class rather than by opt-in, so every
+   existing call site picks it up without being edited. .btn-neon used to be
+   in this group too — it now carries its border as a flat property instead
+   (see .btn-neon above), so a hover only ever brightens a still edge rather
+   than sweeping a ring around it.
 
    :where() gives this rule zero specificity on purpose. A plain class selector
    here beat Tailwind's own `absolute` utility and dropped absolutely
@@ -710,7 +757,7 @@ body {
    arrows on top of each other. At zero specificity any positioning utility on
    the element wins, and unpositioned elements still get the containing block
    the ring needs. */
-:where(.grad-border, .btn-neon, .seg-pill) {
+:where(.grad-border, .seg-pill) {
   position: relative;
 }
 
@@ -719,7 +766,6 @@ body {
 }
 
 .grad-border::before,
-.btn-neon::before,
 .seg-pill::before {
   content: "";
   position: absolute;
@@ -746,7 +792,6 @@ body {
 }
 
 .grad-border:hover::before,
-.btn-neon:hover::before,
 .seg-pill:hover::before {
   filter: brightness(1.5) saturate(1.15);
   animation-duration: 4.5s;
@@ -774,10 +819,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .grad-border::before,
-  .btn-neon::before,
   .seg-pill::before,
   .grad-border:hover::before,
-  .btn-neon:hover::before,
   .seg-pill:hover::before {
     animation: none;
   }

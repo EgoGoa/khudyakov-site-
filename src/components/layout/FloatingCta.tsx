@@ -2,27 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useFullpage } from "@/lib/fullpage";
-import { serviceMeta, serviceOrder } from "@/lib/service-content";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { VIBE_BUTTON_CLASS, vibeButtonStyle } from "@/components/home/WelcomeOverlay";
+import WelcomeWidget from "@/components/home/WelcomeWidget";
+import CenterModal from "@/components/ui/CenterModal";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
-const LIST_VARIANTS = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.07, delayChildren: 0.08 } },
-};
-const ITEM_VARIANTS = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE } },
-};
-
-// Always-on-screen entry point into the same "what are you after" service
-// choice the welcome overlay's "VIBE САЙТ" button leads to (WelcomeOverlay.tsx)
-// — same pill style, same copy, same four links — just reachable from any
-// scroll position on any page, not only the first-visit greeting.
+// Always-on-screen entry point into the same greeting → direction-picker
+// widget the first-visit WelcomeOverlay opens with (WelcomeWidget.tsx, inside
+// the shared CenterModal card) — same copy, same voice wave, same flow — just
+// reachable from any scroll position on any page, not only on a fresh landing.
 export default function FloatingCta() {
   const pathname = usePathname();
   const api = useFullpage();
@@ -44,16 +34,8 @@ export default function FloatingCta() {
     setOpen(false);
   }, [pathname]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
-
   const visible = fullpageActive ? (api?.activeIndex ?? 0) > 0 : scrolled;
+  const close = () => setOpen(false);
 
   return (
     <>
@@ -81,57 +63,9 @@ export default function FloatingCta() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease: EASE }}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Выбор направления"
-            className="fixed inset-0 z-[97] flex items-center justify-center bg-ink/90 px-6 backdrop-blur-2xl"
-            onClick={() => setOpen(false)}
-          >
-            <div
-              className="flex w-full max-w-xl flex-col items-center text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <p className="font-sans text-xl font-light leading-snug text-paper sm:text-2xl">
-                Что тебя интересует?
-              </p>
-
-              <motion.div
-                initial="hidden"
-                animate="show"
-                variants={LIST_VARIANTS}
-                className="mx-auto mt-8 flex w-full max-w-[280px] flex-col gap-3 sm:mt-10"
-              >
-                {serviceOrder.map((key) => (
-                  <motion.div key={key} variants={ITEM_VARIANTS}>
-                    <Link
-                      href={`/${serviceMeta[key].slug}`}
-                      onClick={() => setOpen(false)}
-                      className="btn-neon w-full justify-center"
-                    >
-                      {serviceMeta[key].label}
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="mt-10 whitespace-nowrap rounded-full border border-paper/20 bg-ink/40 px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-paper/60 backdrop-blur-md transition hover:border-glow/50 hover:text-paper"
-              >
-                Закрыть
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <CenterModal open={open} onClose={close} ariaLabel="Выбор направления">
+        <WelcomeWidget onClose={close} />
+      </CenterModal>
     </>
   );
 }

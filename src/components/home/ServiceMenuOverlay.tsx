@@ -9,6 +9,7 @@ import { VoiceWave, VoiceMicButton } from "@/components/home/WelcomeOverlay";
 import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useWelcomeGate } from "@/lib/welcome-gate";
+import CenterModal from "@/components/ui/CenterModal";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const TELEGRAM_URL = "https://t.me/+79925111812";
@@ -109,15 +110,6 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
     setReduced(mq.matches);
   }, []);
 
-  useEffect(() => {
-    if (!active) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setVisible(false);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [active]);
-
   const { rendered, done: typed } = useTypeOnce(PHRASE, reduced, active);
 
   const scrollToSection = (id: string) => {
@@ -153,134 +145,121 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
   if (welcomeOpen || skippedToSite) return null;
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.45, ease: EASE }}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Меню — ${serviceMeta[service].label}`}
-          className="fixed inset-0 z-[95] flex justify-center overflow-y-auto bg-ink/90 px-6 pb-24 pt-[9vh] backdrop-blur-2xl sm:pt-[11vh]"
-        >
-          <div className="flex h-fit w-full max-w-xl flex-col items-center text-center">
-            <div className="mb-2 flex items-center gap-2" aria-hidden="true">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-rec" />
-              <span className="font-display text-xs uppercase leading-none tracking-tight text-paper/60">
-                {serviceMeta[service].label}
-              </span>
-            </div>
+    <CenterModal open={visible} onClose={goToSite} ariaLabel={`Меню — ${serviceMeta[service].label}`}>
+      <div className="flex h-fit w-full flex-col items-center text-center">
+        <div className="mb-2 flex items-center gap-2" aria-hidden="true">
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-rec" />
+          <span className="font-display text-xs uppercase leading-none tracking-tight text-paper/60">
+            {serviceMeta[service].label}
+          </span>
+        </div>
 
-            <VoiceWave energy={typed ? "idle" : "typing"} />
+        <VoiceWave energy={typed ? "idle" : "typing"} />
 
-            <p className="mt-2 min-h-[1.8em] font-sans text-xl font-light leading-snug text-paper sm:text-2xl">
-              {rendered}
-              {!typed && (
-                <span
-                  className="ml-0.5 inline-block w-[2px] animate-pulse bg-glow align-middle"
-                  style={{ height: "1em" }}
-                  aria-hidden="true"
-                />
-              )}
-            </p>
+        <p className="mt-2 min-h-[1.8em] font-sans text-xl font-light leading-snug text-paper sm:text-2xl">
+          {rendered}
+          {!typed && (
+            <span
+              className="ml-0.5 inline-block w-[2px] animate-pulse bg-glow align-middle"
+              style={{ height: "1em" }}
+              aria-hidden="true"
+            />
+          )}
+        </p>
 
-            <AnimatePresence>
-              {typed && (
-                <motion.div
-                  initial="hidden"
-                  animate="show"
-                  exit="hidden"
-                  variants={LIST_VARIANTS}
-                  className="mx-auto mt-10 flex w-full max-w-[280px] flex-col gap-3"
-                >
-                  {MENU_ITEMS.map((item) => (
-                    <motion.div key={item.key} variants={ITEM_VARIANTS}>
-                      {item.type === "anchor" && (
-                        <button
-                          type="button"
-                          onClick={() => scrollToSection(item.targetId)}
-                          className="btn-neon w-full justify-center"
-                        >
-                          {item.label}
-                        </button>
-                      )}
-                      {item.type === "link" && (
-                        <Link href={item.href} onClick={close} className="btn-neon w-full justify-center">
-                          {item.label}
-                        </Link>
-                      )}
-                      {item.type === "creative" && (
-                        <button
-                          type="button"
-                          onClick={() => setCreativeOpen((v) => !v)}
-                          aria-expanded={creativeOpen}
-                          className="btn-neon w-full justify-center"
-                        >
-                          {item.label}
-                        </button>
-                      )}
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {creativeOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 12, height: 0 }}
-                  animate={{ opacity: 1, y: 0, height: "auto" }}
-                  exit={{ opacity: 0, y: 12, height: 0 }}
-                  transition={{ duration: 0.4, ease: EASE }}
-                  className="mx-auto mt-5 w-full max-w-[280px] overflow-hidden"
-                >
-                  <div className="flex flex-col items-center gap-3 rounded-2xl border border-glow/30 bg-ink/60 p-5 backdrop-blur-md">
-                    <span className="flex h-14 w-14 items-center justify-center rounded-full border border-glow/40 bg-ink text-glow">
-                      <UserIcon />
-                    </span>
-                    <p className="text-sm leading-relaxed text-paper/80">
-                      Обсудим идею лично с креативным продюсером. Сейчас это открывает чат в Telegram — скоро
-                      будет прямо на сайте.
-                    </p>
-                    <a
-                      href={TELEGRAM_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
+        <AnimatePresence>
+          {typed && (
+            <motion.div
+              initial="hidden"
+              animate="show"
+              exit="hidden"
+              variants={LIST_VARIANTS}
+              className="mx-auto mt-10 flex w-full max-w-[280px] flex-col gap-3"
+            >
+              {MENU_ITEMS.map((item) => (
+                <motion.div key={item.key} variants={ITEM_VARIANTS}>
+                  {item.type === "anchor" && (
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection(item.targetId)}
                       className="btn-neon w-full justify-center"
                     >
-                      Открыть чат в Telegram
-                    </a>
-                  </div>
+                      {item.label}
+                    </button>
+                  )}
+                  {item.type === "link" && (
+                    <Link href={item.href} onClick={close} className="btn-neon w-full justify-center">
+                      {item.label}
+                    </Link>
+                  )}
+                  {item.type === "creative" && (
+                    <button
+                      type="button"
+                      onClick={() => setCreativeOpen((v) => !v)}
+                      aria-expanded={creativeOpen}
+                      className="btn-neon w-full justify-center"
+                    >
+                      {item.label}
+                    </button>
+                  )}
                 </motion.div>
-              )}
-            </AnimatePresence>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-            <div className="mt-12 flex w-full flex-col items-center gap-6 sm:mt-14">
-              <AnimatePresence>
-                {typed && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: EASE, delay: 0.3 }}
-                  >
-                    <VoiceMicButton onTranscript={handleVoiceTranscript} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+        <AnimatePresence>
+          {creativeOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 12, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: "auto" }}
+              exit={{ opacity: 0, y: 12, height: 0 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              className="mx-auto mt-5 w-full max-w-[280px] overflow-hidden"
+            >
+              <div className="flex flex-col items-center gap-3 rounded-2xl border border-glow/30 bg-ink/60 p-5 backdrop-blur-md">
+                <span className="flex h-14 w-14 items-center justify-center rounded-full border border-glow/40 bg-ink text-glow">
+                  <UserIcon />
+                </span>
+                <p className="text-sm leading-relaxed text-paper/80">
+                  Обсудим идею лично с креативным продюсером. Сейчас это открывает чат в Telegram — скоро
+                  будет прямо на сайте.
+                </p>
+                <a
+                  href={TELEGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-neon w-full justify-center"
+                >
+                  Открыть чат в Telegram
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-              <button
-                type="button"
-                onClick={goToSite}
-                className="whitespace-nowrap rounded-full border border-paper/20 bg-ink/40 px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-paper/60 backdrop-blur-md transition hover:border-glow/50 hover:text-paper"
+        <div className="mt-12 flex w-full flex-col items-center gap-6 sm:mt-14">
+          <AnimatePresence>
+            {typed && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: EASE, delay: 0.3 }}
               >
-                Перейти на сайт →
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+                <VoiceMicButton onTranscript={handleVoiceTranscript} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <button
+            type="button"
+            onClick={goToSite}
+            className="whitespace-nowrap rounded-full border border-paper/20 bg-ink/40 px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-paper/60 backdrop-blur-md transition hover:border-glow/50 hover:text-paper"
+          >
+            Перейти на сайт →
+          </button>
+        </div>
+      </div>
+    </CenterModal>
   );
 }

@@ -1,10 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, EASE, STAGGER } from "@/lib/motion";
-import FunnelCta from "@/components/ui/FunnelCta";
 import { useService } from "@/lib/service-context";
 import { pricingByCategory } from "@/lib/service-content";
 
@@ -36,9 +36,9 @@ export default function Close() {
     <CinematicSection
       index={5}
       chapter="06"
-      title="Цены и заявка"
+      title="Персональные условия"
       icon="spark"
-      side="left"
+      side="center"
       // The payoff comes up to meet the visitor instead of sliding past.
       entrance="zoom"
       intro="Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: консультация, смета и 2–3 концепции."
@@ -84,28 +84,35 @@ export default function Close() {
                   ))}
                 </ul>
 
-                <a
-                  href="#contact-form"
-                  className={`relative mt-auto self-center rounded-full px-8 py-2.5 text-sm font-semibold transition ${
-                    tier.pro
-                      ? "bg-rec text-white hover:bg-rec-light"
-                      : "bg-paper text-ink hover:bg-white"
-                  }`}
-                >
-                  Выбрать план
-                </a>
+                <div className="relative mt-auto flex flex-col items-center gap-2 self-stretch">
+                  <a
+                    href="/brief"
+                    className={`w-full rounded-full px-8 py-2.5 text-center text-sm font-semibold transition ${
+                      tier.pro ? "bg-rec text-white hover:bg-rec-light" : "bg-paper text-ink hover:bg-white"
+                    }`}
+                  >
+                    Выбрать план
+                  </a>
+                  <Link href="/calculator" className="btn-neon w-full justify-center !py-2.5 !text-[12px]">
+                    Рассчитать
+                  </Link>
+                </div>
               </motion.div>
             ))
           )}
         </div>
 
+        {/* The one card in the deck that isn't a card: a plain, huge
+            statement in the same type the chapter titles already use, so it
+            reads as the page raising its voice rather than one more panel
+            competing with the pricing grid above it. */}
         <Appear from="up" delay={BEAT.cta}>
-          <FunnelCta
-            item="brief"
-            layout="row"
-            className="mt-5"
-            pitch="Точную стоимость считаем по ТЗ. Ответим за один рабочий день — сметой и 2–3 концепциями, без предоплаты за идею."
-          />
+          <Link
+            href="/brief"
+            className="chapter-neon chapter-neon-pulse mt-6 block text-center font-display uppercase leading-[0.88] tracking-tight text-[clamp(2.2rem,7.5vw,5rem)] transition-opacity hover:opacity-80"
+          >
+            Начать проект сейчас
+          </Link>
         </Appear>
       </>
     </CinematicSection>

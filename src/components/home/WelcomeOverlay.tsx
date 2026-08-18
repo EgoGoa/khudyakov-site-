@@ -2,39 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { MicIcon } from "@/components/ui/Icons";
-import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useWelcomeGate } from "@/lib/welcome-gate";
+import CenterModal from "@/components/ui/CenterModal";
+import WelcomeWidget from "./WelcomeWidget";
 
 // shared easing across every motion in this overlay, so entrances/exits read
 // as one authored sequence instead of mismatched curves
 const EASE = [0.22, 1, 0.36, 1] as const;
 const EASE_CSS = "cubic-bezier(0.22, 1, 0.36, 1)";
-
-// direction buttons reveal one at a time, top to bottom, instead of as one block
-const LIST_VARIANTS = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } },
-};
-const ITEM_VARIANTS = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
-};
-
-// the two choice buttons pop in one at a time with a touch of scale, not
-// just a fade — reads as more deliberate/premium than a flat entrance
-const CHOICE_LIST_VARIANTS = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
-};
-const CHOICE_ITEM_VARIANTS = {
-  hidden: { opacity: 0, y: 18, scale: 0.92 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.2, 0.9, 0.3, 1.2] as const } },
-};
 
 // Personal Vibe: vivid pink → purple → blue gradient pill (matches the
 // reference "Sign Up" button), glossy not flat — a radial white highlight
@@ -56,9 +34,8 @@ const GLASS_BTN = {
   },
 } as const;
 
-// shared by every "VIBE САЙТ" pill across the site (welcome overlay,
-// floating CTA) — one definition so the gradient/glow can't drift between
-// copies
+// shared by every "VIBE САЙТ" pill across the site (welcome widget, floating
+// CTA) — one definition so the gradient/glow can't drift between copies
 export const VIBE_BUTTON_CLASS = "glass-choice-btn rounded-full text-sm font-bold uppercase tracking-[0.14em]";
 export function vibeButtonStyle(): CSSProperties {
   return {
@@ -73,59 +50,9 @@ export function vibeButtonStyle(): CSSProperties {
   } as CSSProperties;
 }
 
-// Two separate single-phrase instances, not one auto-advancing sequence:
-// the greeting always types on mount; the "what are you after" phrase only
-// starts once the visitor picks Personal Vibe (see `active` below) — the
-// classic-site choice needs to interrupt before that second phrase ever
-// begins.
-const GREETING_PHRASE = { text: "Привет, добро пожаловать в наш Digital дом — HDKV AGENCY", charDelay: 45 };
-const ASKING_PHRASE = { text: "Что тебя интересует?", charDelay: 75 };
-
-type TypePhase = "typing" | "done";
-
-function useTypedPhrase(phrase: { text: string; charDelay: number }, reduced: boolean, active: boolean) {
-  const [text, setText] = useState("");
-  const [phase, setPhase] = useState<TypePhase>("typing");
-
-  useEffect(() => {
-    if (!active) return;
-    if (reduced) {
-      setText(phrase.text);
-      setPhase("done");
-      return;
-    }
-
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout>;
-    let i = 0;
-    setText("");
-    setPhase("typing");
-
-    function tick() {
-      if (cancelled) return;
-      i += 1;
-      setText(phrase.text.slice(0, i));
-      if (i < phrase.text.length) {
-        timer = setTimeout(tick, phrase.charDelay);
-      } else {
-        setPhase("done");
-      }
-    }
-    tick();
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [phrase, reduced, active]);
-
-  return { text, phase };
-}
-
 // ---------- voice waveform (reacts to speech; deliberately cheap to render) ----------
-// Replaces the rotating gradient ring, which animated continuously and so
-// said nothing about whether the assistant was actually speaking. This is a
-// speech trace instead: a symmetric bar waveform mirrored around a centre
-// axis, whose three states each mean something.
+// A speech trace: a symmetric bar waveform mirrored around a centre axis,
+// whose three states each mean something.
 //   • at rest      — every bar collapses onto the axis as a still dot row.
 //                    Nothing animates; silence looks like silence.
 //   • while typing — each bar breathes on its own duration and a negative
@@ -231,18 +158,6 @@ function getSpeechRecognitionCtor(): SpeechRecognitionCtor | null {
     webkitSpeechRecognition?: SpeechRecognitionCtor;
   };
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
-}
-
-const VOICE_KEYWORDS: Record<ServiceKey, string[]> = {
-  content: ["контент", "видео", "ролик", "съём", "съем", "монтаж"],
-  ai: ["ai", "аи", "искусственн", "бот", "автоматизац", "нейросет"],
-  sites: ["сайт", "лендинг", "vibe", "вайб"],
-  smm: ["smm", "смм", "соцсет", "продвижен", "инстаграм", "reels", "тикток", "tiktok"],
-};
-
-function matchService(transcript: string): ServiceKey | null {
-  const t = transcript.toLowerCase();
-  return serviceOrder.find((key) => VOICE_KEYWORDS[key].some((kw) => t.includes(kw))) ?? null;
 }
 
 type MicState = "idle" | "listening" | "nomatch" | "error" | "unsupported";
@@ -351,15 +266,7 @@ export function VoiceMicButton({ onTranscript }: { onTranscript: (transcript: st
 }
 
 export default function WelcomeOverlay() {
-  const router = useRouter();
   const [visible, setVisible] = useState(true);
-  const [reduced, setReduced] = useState(false);
-  const [personalVibe, setPersonalVibe] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(mq.matches);
-  }, []);
 
   useBodyScrollLock(visible);
 
@@ -369,21 +276,13 @@ export default function WelcomeOverlay() {
     return () => setWelcomeOpen(false);
   }, [visible, setWelcomeOpen]);
 
-  useEffect(() => {
-    if (!visible) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setVisible(false);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [visible]);
-
-  const greeting = useTypedPhrase(GREETING_PHRASE, reduced, true);
-  const asking = useTypedPhrase(ASKING_PHRASE, reduced, personalVibe);
-  const greetingDone = greeting.phase === "done";
-  const askingDone = asking.phase === "done";
-  const isTyping = personalVibe ? asking.phase === "typing" : greeting.phase === "typing";
-  const waveEnergy: WavePhaseEnergy = isTyping ? "typing" : "idle";
+  // Picking an actual service (a Link inside the widget) just closes and
+  // lets the navigation land wherever that page starts — close is what
+  // WelcomeWidget's onClose does for that case. A plain dismiss (Escape, the
+  // × button, clicking the backdrop) is a different intent: the visitor
+  // isn't choosing anything, they're leaving the flow, so it goes straight
+  // to the site — same destination as the explicit "Обычная версия" /
+  // "Перейти на сайт" choice, not an intermediate guide screen.
   const close = () => setVisible(false);
 
   const goToSite = () => {
@@ -396,166 +295,9 @@ export default function WelcomeOverlay() {
     }, 200);
   };
 
-  const handleVoiceTranscript = (transcript: string) => {
-    const key = matchService(transcript);
-    if (!key) return false;
-    close();
-    router.push(`/${serviceMeta[key].slug}`);
-    return true;
-  };
-
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.45, ease: EASE }}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Приветствие HDKV AGENCY"
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-ink/90 px-6 py-24 backdrop-blur-2xl"
-        >
-          <div className="pointer-events-none absolute inset-x-0 top-0 flex justify-center bg-transparent pt-6 sm:pt-8">
-            <div className="flex items-center gap-2" aria-hidden="true">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-rec" />
-              <span className="font-display text-xs uppercase leading-none tracking-tight text-paper/60">
-                HDKV<span className="text-rec">.AGENCY</span>
-              </span>
-            </div>
-          </div>
-
-          <div className="flex h-fit w-full max-w-xl flex-col items-center text-center">
-            <VoiceWave energy={waveEnergy} />
-
-            <AnimatePresence mode="wait">
-              {!personalVibe ? (
-                <motion.p
-                  key="greeting"
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0, filter: "blur(6px)" }}
-                  transition={{ duration: 0.45, ease: EASE }}
-                  className="mt-8 min-h-[3.6em] font-sans text-xl font-light leading-snug text-paper sm:mt-10 sm:text-2xl"
-                >
-                  {greeting.text}
-                  {greeting.phase === "typing" && (
-                    <span
-                      className="ml-0.5 inline-block w-[2px] animate-pulse bg-glow align-middle"
-                      style={{ height: "1em" }}
-                      aria-hidden="true"
-                    />
-                  )}
-                </motion.p>
-              ) : (
-                <motion.p
-                  key="asking"
-                  initial={{ opacity: 0, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 0.45, ease: EASE, delay: 0.1 }}
-                  className="mt-8 min-h-[3.6em] font-sans text-xl font-light leading-snug text-paper sm:mt-10 sm:text-2xl"
-                >
-                  {asking.text}
-                  {asking.phase === "typing" && (
-                    <span
-                      className="ml-0.5 inline-block w-[2px] animate-pulse bg-glow align-middle"
-                      style={{ height: "1em" }}
-                      aria-hidden="true"
-                    />
-                  )}
-                </motion.p>
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {greetingDone && !personalVibe && (
-                <motion.div
-                  initial="hidden"
-                  animate="show"
-                  exit="hidden"
-                  variants={CHOICE_LIST_VARIANTS}
-                  className="mx-auto mt-8 flex w-full max-w-[280px] flex-col items-center gap-4 sm:mt-10"
-                >
-                  {/* entrance pop lives on this wrapper, not the button itself —
-                      framer-motion's inline transform would otherwise fight the
-                      glass-choice-btn's own glow/hover CSS */}
-                  <motion.div variants={CHOICE_ITEM_VARIANTS} className="w-full">
-                    <button
-                      type="button"
-                      onClick={() => setPersonalVibe(true)}
-                      className={`${VIBE_BUTTON_CLASS} w-full px-8 py-4`}
-                      style={vibeButtonStyle()}
-                    >
-                      VIBE САЙТ
-                    </button>
-                  </motion.div>
-
-                  <motion.div variants={CHOICE_ITEM_VARIANTS} className="w-full">
-                    <button
-                      type="button"
-                      onClick={goToSite}
-                      className="btn-neon mx-auto w-[70%] justify-center py-[11px] text-[10px]"
-                    >
-                      Обычная версия
-                    </button>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {askingDone && personalVibe && (
-                <motion.div
-                  initial="hidden"
-                  animate="show"
-                  exit="hidden"
-                  variants={LIST_VARIANTS}
-                  className="mx-auto mt-8 flex w-full max-w-[280px] flex-col gap-3 sm:mt-10"
-                >
-                  {serviceOrder.map((key) => (
-                    <motion.div key={key} variants={ITEM_VARIANTS}>
-                      <Link
-                        href={`/${serviceMeta[key].slug}`}
-                        onClick={close}
-                        className="btn-neon w-full justify-center"
-                      >
-                        {serviceMeta[key].label}
-                      </Link>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="mt-12 flex w-full flex-col items-center gap-6 sm:mt-14">
-              <AnimatePresence>
-                {askingDone && personalVibe && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: EASE, delay: 0.3 }}
-                  >
-                    <VoiceMicButton onTranscript={handleVoiceTranscript} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* the always-available quiet exit — hidden only during the
-                  Personal Vibe / Обычная версия choice itself, so it doesn't
-                  sit right under its own more prominent duplicate */}
-              {(!greetingDone || personalVibe) && (
-                <button
-                  type="button"
-                  onClick={goToSite}
-                  className="whitespace-nowrap rounded-full border border-paper/20 bg-ink/40 px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-paper/60 backdrop-blur-md transition hover:border-glow/50 hover:text-paper"
-                >
-                  Перейти на сайт →
-                </button>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <CenterModal open={visible} onClose={goToSite} ariaLabel="Приветствие HDKV AGENCY">
+      <WelcomeWidget onClose={close} onSkip={goToSite} />
+    </CenterModal>
   );
 }

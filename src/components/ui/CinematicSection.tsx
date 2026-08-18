@@ -68,6 +68,7 @@ export default function CinematicSection({
   icon,
   side = "left",
   entrance,
+  titleClassName = "",
   children,
 }: {
   /** Position in the deck — must match this chapter's entry in `chapters`. */
@@ -77,15 +78,19 @@ export default function CinematicSection({
   title: string;
   intro?: ReactNode;
   icon: ChapterIconName;
-  side?: "left" | "right";
+  side?: "left" | "right" | "center";
   /** Defaults to sliding in from whichever side the chapter is aligned to. */
   entrance?: EntranceKind;
+  /** Extra classes appended to the title — for the one chapter whose title
+   *  needs to carry more weight than the shared size gives every chapter. */
+  titleClassName?: string;
   children?: ReactNode;
 }) {
   const active = useStageActive(index);
   const reduced = useReducedMotion();
   const alignRight = side === "right";
-  const kind: EntranceKind = entrance ?? (alignRight ? "slide-right" : "slide-left");
+  const alignCenter = side === "center";
+  const kind: EntranceKind = entrance ?? (alignRight ? "slide-right" : alignCenter ? "rise" : "slide-left");
 
   return (
     <motion.div
@@ -98,7 +103,7 @@ export default function CinematicSection({
       aria-hidden={!active}
       data-chapter-pane=""
       data-active={active ? "true" : "false"}
-      className={`absolute inset-0 flex flex-col overflow-y-auto px-6 pb-12 pt-24 lg:px-10 lg:pb-12 lg:pt-24 ${
+      className={`absolute inset-0 flex flex-col overflow-y-auto px-6 pb-12 pt-[5.5rem] lg:px-10 lg:pb-12 lg:pt-[5.5rem] ${
         active ? "" : "pointer-events-none"
       }`}
       // touch-action pan-y so the pane itself can be dragged on a phone; the
@@ -112,34 +117,49 @@ export default function CinematicSection({
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
-          background: alignRight
+          background: alignCenter
+            ? "radial-gradient(120% 85% at 50% 40%, rgba(11,11,16,0.86) 0%, rgba(11,11,16,0.5) 45%, transparent 78%)"
+            : alignRight
             ? "radial-gradient(115% 85% at 88% 45%, rgba(11,11,16,0.86) 0%, rgba(11,11,16,0.5) 40%, transparent 74%)"
             : "radial-gradient(115% 85% at 12% 45%, rgba(11,11,16,0.86) 0%, rgba(11,11,16,0.5) 40%, transparent 74%)",
         }}
       />
 
       <header className="mx-auto w-full max-w-7xl shrink-0">
+        {/* The chapter number/icon sits in its own corner regardless of how
+            the title is aligned — it used to travel with the title as one
+            block, which meant centring a title also centred the number away
+            from any corner. Kept separate, a centred title can still be a
+            centred title. */}
         <motion.div
           initial={false}
           animate={active ? "on" : "off"}
-          className={`max-w-md [text-shadow:0_2px_24px_rgba(11,11,16,0.9)] ${
-            alignRight ? "lg:ml-auto lg:text-right" : ""
+          variants={reduced ? undefined : HEADER_EYEBROW}
+          className={`flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)] ${
+            alignRight ? "lg:justify-end" : ""
           }`}
         >
-          <motion.div
-            variants={reduced ? undefined : HEADER_EYEBROW}
-            className={`flex items-center gap-3 ${alignRight ? "lg:flex-row-reverse" : ""}`}
-          >
-            <ChapterIcon name={icon} active={active} />
-            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">
-              {chapter}
-            </span>
-            <span className="h-px w-8 bg-glow/40" />
-          </motion.div>
+          <ChapterIcon name={icon} active={active} />
+          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">
+            {chapter}
+          </span>
+          <span className="h-px w-8 bg-glow/40" />
+        </motion.div>
 
+        {/* The title is always centred on its own, independent of which
+            corner the number sits in — bigger too, since it's now the one
+            thing carrying the chapter's weight rather than sharing it with
+            an inline icon. */}
+        <motion.div
+          initial={false}
+          animate={active ? "on" : "off"}
+          className="mx-auto mt-2 max-w-3xl text-center [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]"
+        >
           <motion.h2
             variants={reduced ? undefined : HEADER_TITLE}
-            className="chapter-neon mt-3 font-display text-3xl uppercase leading-[0.95] tracking-tight sm:text-4xl"
+            className={`chapter-neon font-display uppercase leading-[0.95] tracking-tight ${
+              titleClassName || "text-3xl sm:text-4xl lg:text-4xl xl:text-5xl"
+            }`}
           >
             {title}
           </motion.h2>
@@ -147,7 +167,7 @@ export default function CinematicSection({
           {intro && (
             <motion.p
               variants={reduced ? undefined : HEADER_INTRO}
-              className="mt-3.5 text-sm leading-relaxed text-paper/80"
+              className="mt-2.5 text-sm leading-relaxed text-paper/80"
             >
               {intro}
             </motion.p>
@@ -156,7 +176,7 @@ export default function CinematicSection({
       </header>
 
       {children && (
-        <div className="mx-auto my-auto w-full max-w-7xl py-3">
+        <div className="mx-auto my-auto w-full max-w-7xl py-2">
           {/* Children use <Appear> to arrive on their own beat and from their
               own direction; this is what tells them the chapter is on stage. */}
           <ChapterActiveProvider active={active}>{children}</ChapterActiveProvider>

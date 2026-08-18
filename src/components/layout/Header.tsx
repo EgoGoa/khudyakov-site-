@@ -177,10 +177,17 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-3 sm:gap-4">
+          <a
+            href="tel:+79925111812"
+            className="hidden whitespace-nowrap text-sm font-medium text-paper/80 transition-colors hover:text-paper xl:inline-flex"
+          >
+            +7 992 511-18-12
+          </a>
+
           <Link
             href="/brief"
-            className="hidden btn-neon sm:inline-flex"
+            className="hidden btn-neon btn-warm sm:inline-flex"
           >
             Заполнить бриф
           </Link>
@@ -250,11 +257,17 @@ export default function Header() {
               ))}
             </nav>
 
-            <div className="px-6 pb-8 pt-4 sm:px-10">
+            <div className="flex flex-col gap-3 px-6 pb-8 pt-4 sm:px-10">
+              <a
+                href="tel:+79925111812"
+                className="text-center text-sm font-medium text-paper/70 transition-colors hover:text-paper"
+              >
+                +7 992 511-18-12
+              </a>
               <Link
                 href="/brief"
                 onClick={() => setMenuOpen(false)}
-                className="btn-neon w-full"
+                className="btn-neon btn-warm w-full"
               >
                 Заполнить бриф
               </Link>

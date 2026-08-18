@@ -2,18 +2,103 @@
 
 import CinematicSection from "@/components/ui/CinematicSection";
 import FunnelCta from "@/components/ui/FunnelCta";
-import { useService } from "@/lib/service-context";
-import { processByCategory } from "@/lib/service-content";
 
-// Chapter 05. Three steps read across the frame as a numbered strip rather
-// than as three stacked cards — the horizontal rule and the step numbers do
-// the structural work that card borders used to, leaving the footage visible
-// between the columns.
+// Chapter 05. Six steps instead of the earlier three broad phases — the same
+// path from brief to delivery, just told at the grain a first-time client
+// actually asks about (when do we sign, when do you shoot, who approves the
+// cut) rather than three headline phases. One line per step keeps six cards
+// inside a single screen; the icon badge is what lets six short lines still
+// read as six distinct moments instead of a list.
+//
+// Universal across services rather than pulled from processByCategory — the
+// production pipeline (quote → contract → preproduction → shoot → post →
+// delivery) doesn't meaningfully differ between content/AI/sites/SMM the way
+// pricing or the "why us" reasons do.
+
+function StepIcon({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange/30 bg-orange/15 text-orange">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        {children}
+      </svg>
+    </span>
+  );
+}
+
+const STEPS = [
+  {
+    title: "Оценка проекта",
+    description: "Бриф и консультация — предлагаем 2–3 концепции бесплатно.",
+    icon: (
+      <StepIcon>
+        <path d="M6 3.5h9l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
+        <path d="M14 3.5V8h4M8 12.5h8M8 16h5" />
+      </StepIcon>
+    ),
+  },
+  {
+    title: "Подписание договора",
+    description: "Утверждаем смету, сроки и ТЗ — работаем после согласования.",
+    icon: (
+      <StepIcon>
+        <path d="M4 20 15.5 8.5l3.8-3.8a1.4 1.4 0 0 1 2 2L17.5 10.5 6 22H4v-2z" />
+        <path d="M13 10.5 17.5 15" />
+      </StepIcon>
+    ),
+  },
+  {
+    title: "Препродакшн",
+    description: "Прорабатываем сценарий, локации и кастинг.",
+    icon: (
+      <StepIcon>
+        <rect x="3.5" y="4" width="17" height="16" rx="2" />
+        <path d="M3.5 9.5h17M8 4v5.5M14.5 14h3" />
+      </StepIcon>
+    ),
+  },
+  {
+    title: "Съёмки",
+    description: "Снимаем по утверждённому сценарию в назначенный день.",
+    icon: (
+      <StepIcon>
+        <rect x="3" y="7" width="13" height="11" rx="2" />
+        <path d="M16 10.2 21 7.5v9L16 13.8" />
+      </StepIcon>
+    ),
+  },
+  {
+    title: "Постпродакшн",
+    description: "Монтаж, графика, цветокоррекция и саунд-дизайн.",
+    icon: (
+      <StepIcon>
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <path d="M8 4v16M16 4v16M3 9.5h5M3 15h5M16 9.5h5M16 15h5" />
+      </StepIcon>
+    ),
+  },
+  {
+    title: "Правки и сдача",
+    description: "2–3 круга правок, затем передаём готовый ролик.",
+    icon: (
+      <StepIcon>
+        <path d="M20 6 9 17l-5-5" />
+      </StepIcon>
+    ),
+  },
+];
 
 export default function Process() {
-  const { active } = useService();
-  const steps = processByCategory[active];
-
   return (
     <CinematicSection
       index={4}
@@ -22,35 +107,33 @@ export default function Process() {
       icon="route"
       side="right"
       entrance="slide-right"
-      intro="Три шага от брифа до сдачи. На каждом вы видите прогресс и можете вносить правки."
+      intro="Шесть шагов от брифа до сдачи. На каждом вы видите прогресс и можете вносить правки."
     >
-      {steps.length === 0 ? (
-        <p className="text-sm leading-relaxed text-paper/60">
-          Описание процесса по этому направлению скоро появится здесь.
-        </p>
-      ) : (
-        <div className="relative grid gap-x-10 gap-y-8 rounded-2xl bg-ink/45 p-6 backdrop-blur-md sm:grid-cols-3">
-          {steps.map((step, i) => (
-            <div key={step.title} className="border-t border-glow/40 pt-4">
-              <div className="font-display text-3xl leading-none text-glow/80">
-                {String(i + 1).padStart(2, "0")}
-              </div>
-              <h3 className="mt-3 font-display text-lg uppercase leading-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-xs leading-relaxed text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
-                {step.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {STEPS.map((step, i) => (
+          <div
+            key={step.title}
+            className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md"
+          >
+            {step.icon}
+            <h3 className="mt-3 font-display text-sm uppercase leading-tight tracking-tight text-white">
+              <span className="mr-1.5 text-orange">{String(i + 1).padStart(2, "0")}</span>
+              {step.title}
+            </h3>
+            <p className="mt-1.5 text-xs leading-snug text-paper/65">{step.description}</p>
+          </div>
+        ))}
+      </div>
 
       <FunnelCta
         item="brief"
         align="right"
-        pitch="Шаг первый занимает 5 минут. Дальше — 2–3 концепции и смета за 3–5 дней, бесплатно и до подписания договора."
-        className="mt-7"
+        size="sm"
+        eyebrow="Готовы начать?"
+        headline="Первый шаг"
+        accent="5 минут"
+        pitch="Дальше — 2–3 концепции и смета за 3–5 дней, бесплатно."
+        className="mt-5"
       />
     </CinematicSection>
   );

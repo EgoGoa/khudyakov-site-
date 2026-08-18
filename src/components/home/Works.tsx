@@ -308,7 +308,7 @@ export default function Works({
             </Reveal>
 
             <div className={limit
-              ? "mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4 lg:max-w-[47rem]"
+              ? "mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4 lg:max-w-[44rem]"
               : "mt-10 grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2"}>
               {/* In chapter mode each tile carries its own two actions, so it is
                   a plain container rather than one big button — a button cannot
@@ -358,7 +358,7 @@ export default function Works({
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/90 via-ink/45 to-transparent" />
 
                     {formatDate(work.date) && (
-                      <span className="absolute left-4 top-4 font-mono text-[11px] tracking-[0.08em] text-paper/75 sm:left-5 sm:top-5">
+                      <span className={`absolute left-4 top-4 font-mono tracking-[0.08em] text-white/90 sm:left-5 sm:top-5 ${limit ? "text-xs" : "text-[11px]"}`}>
                         {formatDate(work.date)}
                       </span>
                     )}
@@ -396,11 +396,13 @@ export default function Works({
                         : "inset-x-4 flex items-end justify-between sm:inset-x-5"
                     }`}>
                       <div className="min-w-0">
-                        <div className="font-sans text-base font-medium leading-snug text-paper transition-[text-shadow] duration-300 group-hover:[text-shadow:0_0_16px_rgba(0,210,255,0.55)] sm:text-lg">
+                        <div className={`font-sans font-semibold leading-snug text-white transition-[text-shadow] duration-300 group-hover:[text-shadow:0_0_16px_rgba(0,210,255,0.55)] ${
+                          limit ? "text-lg sm:text-xl" : "text-base sm:text-lg"
+                        }`}>
                           {work.title}
                         </div>
                         {formatDuration(work.duration) && (
-                          <div className="mt-1 font-mono text-[11px] tracking-[0.08em] text-paper/65">
+                          <div className={`mt-1 font-mono tracking-[0.08em] text-paper/80 ${limit ? "text-xs" : "text-[11px]"}`}>
                             {formatDuration(work.duration)}
                           </div>
                         )}

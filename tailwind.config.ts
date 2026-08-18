@@ -30,6 +30,10 @@ const config: Config = {
           deep: "#0B2551",
           pale: "#A4F4FD",
         },
+        orange: {
+          DEFAULT: "#FF6A3D",
+          bright: "#FF8A5C",
+        },
       },
       fontFamily: {
         sans: ["var(--font-montserrat)", "system-ui", "sans-serif"],

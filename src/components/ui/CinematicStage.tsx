@@ -67,15 +67,24 @@ const SWIPE_THRESHOLD = 36; // px of touch travel that counts as a swipe
 const MOMENTUM_MS = 320;
 const STEP_MS = 620; // the glide from one chapter to the next
 const EDGE_EPSILON = 2; // px tolerance for "this chapter is scrolled to the end"
+// Below this, an overflow is treated as measurement noise (sub-pixel font
+// metrics, a slightly different zoom level) rather than a chapter that
+// genuinely needs reading before it steps on. Without this, a chapter that
+// was only a few px over the fold -- invisible to the eye -- still demanded a
+// full scroll-to-the-edge before a trackpad flick would advance it, which is
+// what made switching off the portfolio chapter feel stuck.
+const SCROLLABLE_MIN_OVERFLOW = 48;
 const KEY_SCROLL_PX = 320; // how far one arrow press scrolls inside a tall chapter
 
-// The coast into a phase's hold: how long before the end the slow-down starts,
-// and the slowest rate it reaches before pausing. It never eases to zero —
-// browsers do not interpolate between decoded frames, so a very low rate
-// delivers them far enough apart that the picture reads as stuttering rather
-// than as slowing down.
-const COAST_SECONDS = 1.6;
-const MIN_COAST_RATE = 0.55;
+// The hold is reached by blurring, not by slowing down. An earlier version
+// eased playbackRate down before the pause, but the reel only carries one
+// keyframe per second — at a low rate the browser has nothing to interpolate
+// between, so the "slow motion" read as a stutter rather than a settle. Full
+// speed to a hard stop has no such problem; the blur is what sells the
+// transition instead. BLUR_SECONDS is the window, at both ends of a phase,
+// over which it ramps; MAX_BLUR_PX is how far it gets.
+const BLUR_SECONDS = 0.7;
+const MAX_BLUR_PX = 16;
 
 export default function CinematicStage({
   src,
@@ -144,6 +153,33 @@ export default function CinematicStage({
       return rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
     };
 
+    // Was the deck engaged on the previous check? Initialised from the actual
+    // state (not `false`) so a page that loads already scrolled into the deck
+    // — a hash link to one of its chapter ids — does not treat its first
+    // gesture as a cold entry.
+    let wasEngaged = engaged();
+
+    // The gesture that carries the visitor from the ordinary page (Hero,
+    // ServicePicker) across the deck's own edge is still travelling — it is
+    // not a flick aimed at a chapter, it is the tail of a scroll that started
+    // outside the deck entirely. Without this, the moment the deck "switched
+    // on" its very first wheel/touch event already had enough delta to count
+    // as a step, so chapter 01 (and, entering from below, the last chapter)
+    // was skipped before it was ever seen. Crossing in snaps onto whichever
+    // chapter the visitor landed on and arms the same settle lock a normal
+    // step gets, so the incoming momentum has somewhere to be absorbed.
+    const armEntry = () => {
+      wasEngaged = true;
+      const current = indexNow();
+      setActiveIndex(current);
+      glideTo(current);
+      // Only long enough to absorb this same gesture's trailing momentum, not
+      // a full step's worth — a bigger lock here reads as the deck being
+      // stuck right where responsiveness matters most, the very first
+      // interaction with it.
+      extendLock(MOMENTUM_MS);
+    };
+
     const indexNow = () => {
       const wrap = wrapRef.current;
       if (!wrap) return 0;
@@ -172,26 +208,38 @@ export default function CinematicStage({
       tween = requestAnimationFrame(step);
     };
 
-    // The active chapter's own scroll box. A chapter taller than the screen has
-    // to be readable before the deck moves on, so a gesture is spent on the
-    // chapter first and only steps once that inner scroll has reached the edge
-    // it is heading for. Same contract lib/fullpage.tsx applies to horizontally
-    // overflowing slides, applied here vertically.
+    // The active chapter's own scroll box. On a narrow/mobile layout a chapter
+    // taller than the screen has to be readable before the deck moves on, so a
+    // gesture is spent on the chapter first and only steps once that inner
+    // scroll has reached the edge it is heading for — the same contract
+    // lib/fullpage.tsx applies to horizontally overflowing slides on the
+    // homepage, applied here vertically.
+    //
+    // On desktop this is switched off entirely: one flick always steps,
+    // full stop. It was gated by viewport width once before and un-gated
+    // again, on the theory that the real cause of "one flick doesn't step"
+    // was a lock bug rather than the inner scroll — that bug is now fixed
+    // (see armEntry and the wheel-lock notes above), but a chapter that is
+    // even a little taller than the fold in a real browser (different font
+    // metrics, a non-100% zoom) still fell into "scroll to the edge, then a
+    // *separate* gesture to advance," which reads as the deck getting stuck.
+    // Desktop chapters are laid out to fit the screen; this stops the rare
+    // few extra px from imposing that two-step dance there.
+    const isDesktopLayout = () => window.matchMedia("(min-width: 1024px)").matches;
+
     const activePane = () =>
       document.querySelector<HTMLElement>('[data-chapter-pane][data-active="true"]');
 
     /** How much room the active chapter still has in this direction, in px.
-     *  Zero for a chapter that fits, which is the normal desktop case — that
-     *  chapter steps on the first flick with nothing in between. Gating this by
-     *  viewport width was tried and reverted: what actually stopped the deck
-     *  from switching was a lock bug in the wheel handler, not the inner
-     *  scroll, and disabling it on desktop just made overflowing chapters
-     *  unreachable there. */
+     *  Zero on desktop always, and zero on mobile for a chapter that fits
+     *  within noise (SCROLLABLE_MIN_OVERFLOW) — either way, that chapter
+     *  steps on the first flick with nothing in between. */
     const paneRoom = (dir: number) => {
+      if (isDesktopLayout()) return 0;
       const pane = activePane();
       if (!pane) return 0;
       const max = pane.scrollHeight - pane.clientHeight;
-      if (max <= EDGE_EPSILON) return 0; // chapter fits — nothing to scroll
+      if (max <= SCROLLABLE_MIN_OVERFLOW) return 0; // fits, within noise — nothing to scroll
       return dir > 0 ? max - pane.scrollTop : pane.scrollTop;
     };
 
@@ -213,7 +261,16 @@ export default function CinematicStage({
     };
 
     const onWheel = (e: WheelEvent) => {
-      if (!engaged()) return;
+      const isEngagedNow = engaged();
+      if (!isEngagedNow) {
+        wasEngaged = false;
+        return;
+      }
+      if (!wasEngaged) {
+        armEntry();
+        e.preventDefault();
+        return;
+      }
       if (isLocked()) {
         // Trackpads keep emitting decaying events after the fingers lift;
         // absorbing them here is what stops one flick cascading through
@@ -267,7 +324,18 @@ export default function CinematicStage({
       paneMoved = false;
     };
     const onTouchMove = (e: TouchEvent) => {
-      if (!engaged()) return;
+      const isEngagedNow = engaged();
+      if (!isEngagedNow) {
+        wasEngaged = false;
+        return;
+      }
+      if (!wasEngaged) {
+        armEntry();
+        // Measure the swipe from here on — distance covered before the deck
+        // engaged belonged to the ordinary page, not to this gesture.
+        touchStartY = e.touches[0]?.clientY ?? null;
+        return;
+      }
       const y = e.touches[0]?.clientY ?? 0;
       const dir = (touchStartY ?? y) - y > 0 ? 1 : -1;
       // Let the pane pan itself natively while it has room; only swallow the
@@ -296,7 +364,17 @@ export default function CinematicStage({
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (!engaged() || isLocked()) return;
+      const isEngagedNow = engaged();
+      if (!isEngagedNow) {
+        wasEngaged = false;
+        return;
+      }
+      if (!wasEngaged) {
+        armEntry();
+        e.preventDefault();
+        return;
+      }
+      if (isLocked()) return;
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       const down = e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ";
@@ -383,36 +461,41 @@ export default function CinematicStage({
     }
     video.play().catch(() => {});
 
-    // Coast into the hold instead of cutting to a stop. Over the last stretch
-    // of the phase the rate eases from full speed down to MIN_COAST_RATE, then
-    // the video pauses on its closing frame.
-    //
-    // It does not ease all the way to 0: browsers do not interpolate between
-    // decoded frames, so very low rates deliver frames far enough apart that
-    // the picture reads as stuttering rather than as slowing down. Stopping
-    // the ramp at half speed keeps every frame of the deceleration smooth.
+    // Blur into the hold instead of coasting to a stop. Playback stays at
+    // full speed right up to the cut — reel's one keyframe per second gives
+    // a slow rate nothing to interpolate between, so slowing down read as a
+    // stutter rather than a settle. The blur ramps in over the last
+    // BLUR_SECONDS instead, and back out over the first BLUR_SECONDS of the
+    // next phase, so the same window sells both the stop and the resume.
     //
     // Driven by rAF rather than `timeupdate`, which only fires about four
-    // times a second — far too coarse to shape a half-second ramp.
+    // times a second — far too coarse to shape a sub-second ramp.
+    const smoothstep = (t: number) => t * t * (3 - 2 * t);
     let raf = 0;
     const tick = () => {
       const remaining = phase.end - video.currentTime;
       if (remaining <= 0) {
         if (!video.paused) video.pause();
-        video.playbackRate = 1;
+        video.style.filter = `blur(${MAX_BLUR_PX}px)`;
         return;
       }
-      // Approaching the hold, ease the rate down so the picture settles rather
-      // than stopping dead. Scroll velocity used to also drive this, which meant
-      // two writers fighting over playbackRate every frame and a visibly jumpy
-      // image; with one gesture per chapter there is no "fast scroll" to map.
-      let rate = 1;
-      if (remaining < COAST_SECONDS) {
-        const t = remaining / COAST_SECONDS; // 1 → 0 across the coast
-        const eased = t * t * (3 - 2 * t); // smoothstep, so the ramp has no corner
-        rate = MIN_COAST_RATE + (1 - MIN_COAST_RATE) * eased;
-      }
-      video.playbackRate = rate;
+      // Self-heal an unexpected pause. play() is fire-and-forget above, and
+      // an overlapping play()/seek right at mount (StrictMode's double
+      // effect invocation, or the browser throttling a video that's still
+      // scrolled out of view) can leave it paused with nothing left to
+      // resume it — the effect that called play() only reruns on the next
+      // chapter change. Checking every frame here means any such stall
+      // corrects itself well before the visitor scrolls to see it.
+      if (video.paused) video.play().catch(() => {});
+
+      const elapsed = video.currentTime - phase.start;
+      const revealT = Math.min(1, Math.max(0, elapsed / BLUR_SECONDS));
+      const settleT = Math.min(1, Math.max(0, remaining / BLUR_SECONDS));
+      const blurIn = (1 - smoothstep(revealT)) * MAX_BLUR_PX;
+      const blurOut = (1 - smoothstep(settleT)) * MAX_BLUR_PX;
+      const blur = Math.max(blurIn, blurOut);
+      video.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "";
+
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
