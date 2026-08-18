@@ -140,9 +140,13 @@ function EyebrowPill({ children, dense = false }: { children: ReactNode; dense?:
 function CtaButton({
   funnel,
   size,
+  flat = false,
 }: {
   funnel: (typeof FUNNELS)[FunnelKey];
   size: FunnelSize;
+  /** Drops the .btn-3d "physical key" treatment for a plain flat pill —
+   *  the solid-fill .btn-neon.btn-warm look on its own. */
+  flat?: boolean;
 }) {
   const content = (
     <>
@@ -152,11 +156,11 @@ function CtaButton({
     </>
   );
   return funnel.external ? (
-    <a href={funnel.href} target="_blank" rel="noopener noreferrer" className={buttonClass(size)}>
+    <a href={funnel.href} target="_blank" rel="noopener noreferrer" className={buttonClass(size, flat)}>
       {content}
     </a>
   ) : (
-    <Link href={funnel.href} className={buttonClass(size)}>
+    <Link href={funnel.href} className={buttonClass(size, flat)}>
       {content}
     </Link>
   );
@@ -170,6 +174,8 @@ export default function FunnelCta({
   pitch,
   align = "left",
   size = "md",
+  spacious = false,
+  flatButton = false,
   className = "",
 }: {
   item: FunnelKey;
@@ -190,6 +196,12 @@ export default function FunnelCta({
    *  as filler, not six different offers. "sm" is a single compact row for
    *  a chapter that's already full; "md"/"lg" are the two-column offer card. */
   size?: FunnelSize;
+  /** "sm" only: trades the single tight row for a taller, looser stack —
+   *  eyebrow+copy on their own line, the button given its own room below
+   *  rather than squeezed to the opposite edge. */
+  spacious?: boolean;
+  /** Drops the button's .btn-3d "physical key" treatment for a flat pill. */
+  flatButton?: boolean;
   className?: string;
 }) {
   const funnel = FUNNELS[item];
@@ -198,9 +210,9 @@ export default function FunnelCta({
   if (size === "sm") {
     return (
       <div
-        className={`relative overflow-hidden rounded-2xl bg-ink px-5 py-4 sm:px-6 ${CARD_WIDTH.sm} ${
-          right ? "ml-auto" : ""
-        } ${className}`}
+        className={`relative overflow-hidden bg-ink ${
+          spacious ? "rounded-3xl px-6 py-7 sm:px-8 sm:py-8" : "rounded-2xl px-5 py-4 sm:px-6"
+        } ${CARD_WIDTH.sm} ${right ? "ml-auto" : ""} ${className}`}
       >
         <div
           aria-hidden="true"
@@ -211,21 +223,35 @@ export default function FunnelCta({
               : "radial-gradient(75% 140% at 100% 50%, rgba(255,106,61,0.18), transparent 62%)",
           }}
         />
-        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-paper/10" />
+        <div
+          className={`pointer-events-none absolute inset-0 ring-1 ring-inset ring-paper/10 ${
+            spacious ? "rounded-3xl" : "rounded-2xl"
+          }`}
+        />
 
         <div
-          className={`relative flex flex-wrap items-center gap-x-4 gap-y-3 sm:flex-nowrap sm:justify-between ${
-            right ? "sm:flex-row-reverse" : ""
-          }`}
+          className={
+            spacious
+              ? `relative flex flex-col items-start gap-5 ${right ? "sm:items-end sm:text-right" : ""}`
+              : `relative flex flex-wrap items-center gap-x-4 gap-y-3 sm:flex-nowrap sm:justify-between ${
+                  right ? "sm:flex-row-reverse" : ""
+                }`
+          }
         >
-          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+          <div
+            className={
+              spacious
+                ? `flex min-w-0 flex-col gap-y-2 ${right ? "sm:items-end" : ""}`
+                : "flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2"
+            }
+          >
             <EyebrowPill dense>{eyebrow}</EyebrowPill>
             <p className="font-sans text-base leading-snug text-paper sm:text-lg">
               {headline} {accent && <span className="font-semibold text-orange">{accent}</span>}
             </p>
           </div>
           <div className="shrink-0">
-            <CtaButton funnel={funnel} size={size} />
+            <CtaButton funnel={funnel} size={size} flat={flatButton} />
           </div>
         </div>
       </div>
@@ -281,7 +307,8 @@ export default function FunnelCta({
 // The one warm, solid-fill button in the chapter — everything else on the
 // page is the quieter default .btn-neon. Sized down a step for "sm" so it
 // doesn't outweigh a compact card.
-function buttonClass(size: FunnelSize) {
+function buttonClass(size: FunnelSize, flat = false) {
   const scale = size === "sm" ? "!px-6 !py-3 !text-[12px]" : "!px-8 !py-4 !text-[13px]";
-  return `btn-neon btn-warm btn-3d inline-flex items-center gap-2.5 whitespace-nowrap ${scale} !tracking-[0.14em]`;
+  const dimension = flat ? "" : "btn-3d";
+  return `btn-neon btn-warm ${dimension} inline-flex items-center gap-2.5 whitespace-nowrap ${scale} !tracking-[0.14em]`;
 }

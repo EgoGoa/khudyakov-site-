@@ -3,7 +3,7 @@ import { Oswald, Montserrat, Azeret_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
-import FloatingCta from "@/components/layout/FloatingCta";
+import VibeRail from "@/components/layout/VibeRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import CursorGlow from "@/components/layout/CursorGlow";
 import { FullpageProvider } from "@/lib/fullpage";
@@ -53,12 +53,15 @@ export default function RootLayout({
         <BackgroundFX />
         <CursorGlow />
         <FullpageProvider>
+          {/* VibeRail floats on top of the page by design — it does not
+              reserve any layout space, the same way the old FloatingCta
+              button never did either. */}
           <div className="relative z-10">
             <Header />
             <main>{children}</main>
             <ConditionalFooter />
-            <FloatingCta />
           </div>
+          <VibeRail />
         </FullpageProvider>
         <Analytics />
       </body>

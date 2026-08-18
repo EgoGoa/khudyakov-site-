@@ -308,7 +308,7 @@ export default function Works({
             </Reveal>
 
             <div className={limit
-              ? "mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4 lg:max-w-[44rem]"
+              ? "mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6"
               : "mt-10 grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2"}>
               {/* In chapter mode each tile carries its own two actions, so it is
                   a plain container rather than one big button — a button cannot
@@ -332,7 +332,7 @@ export default function Works({
                     }}
                     onClick={limit ? undefined : () => setActiveId(work.id)}
                     className={`group relative overflow-hidden rounded-2xl bg-ink-soft text-left transition-shadow duration-300 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85),0_0_50px_-12px_rgba(0,210,255,0.3)] ${
-                      limit ? "aspect-video" : "aspect-[16/10] cursor-pointer"
+                      limit ? "aspect-[4/3] sm:aspect-video" : "aspect-[16/10] cursor-pointer"
                     }`}
                   >
                     <img
@@ -371,33 +371,14 @@ export default function Works({
                       </span>
                     )}
 
-                    {limit && (
-                      <div className="absolute bottom-4 right-4 flex items-center gap-2 sm:bottom-5 sm:right-5">
-                        <button
-                          type="button"
-                          onClick={() => setActiveId(work.id)}
-                          className="grad-border btn-3d inline-flex items-center gap-1.5 rounded-full border bg-ink/70 px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-paper backdrop-blur-md hover:text-glow"
-                        >
-                          <span aria-hidden="true">▶</span>
-                          Смотреть
-                        </button>
-                        <Link
-                          href="/brief"
-                          className="grad-border btn-3d inline-flex items-center rounded-full border bg-ink/70 px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-paper backdrop-blur-md hover:text-glow"
-                        >
-                          Хочу так же
-                        </Link>
-                      </div>
-                    )}
-
                     <div className={`absolute bottom-4 gap-3 sm:bottom-5 ${
                       limit
-                        ? "left-4 right-40 flex flex-col items-start sm:left-5"
+                        ? "left-4 right-4 flex flex-col items-start sm:left-5 sm:right-5"
                         : "inset-x-4 flex items-end justify-between sm:inset-x-5"
                     }`}>
                       <div className="min-w-0">
                         <div className={`font-sans font-semibold leading-snug text-white transition-[text-shadow] duration-300 group-hover:[text-shadow:0_0_16px_rgba(0,210,255,0.55)] ${
-                          limit ? "text-lg sm:text-xl" : "text-base sm:text-lg"
+                          limit ? "text-lg sm:text-2xl" : "text-base sm:text-lg"
                         }`}>
                           {work.title}
                         </div>
@@ -426,6 +407,29 @@ export default function Works({
                           </span>
                         ))}
                       </div>
+
+                      {/* Own row, in normal flow rather than absolutely
+                          pinned beside the caption — pinning them to a fixed
+                          right-hand reserve was what made "Смотреть" collide
+                          with "Хочу так же" on a narrower tile. Flat pills
+                          (no .btn-3d) instead of the glass/bordered pair, so
+                          they read as the two clear next steps rather than
+                          matching the tags underneath them. */}
+                      {limit && (
+                        <div className="mt-2 flex w-full flex-wrap items-center gap-2 sm:mt-3 sm:gap-2.5">
+                          <button
+                            type="button"
+                            onClick={() => setActiveId(work.id)}
+                            className="btn-neon inline-flex items-center gap-1.5 !px-5 !py-2.5 !text-[11px]"
+                          >
+                            <span aria-hidden="true">▶</span>
+                            Смотреть
+                          </button>
+                          <Link href="/brief" className="btn-neon btn-warm inline-flex items-center !px-5 !py-2.5 !text-[11px]">
+                            Хочу так же
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 ))}

@@ -102,6 +102,13 @@ export default function CinematicStage({
   const videoRef = useRef<HTMLVideoElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  // The phase-driving effect below fires on mount (activeIndex starts at 0),
+  // which used to mean chapter 01's phase played out — and parked, blurred,
+  // on its closing frame — before the visitor had scrolled anywhere near it.
+  // Gated on actually entering the viewport, so the reel is still sitting at
+  // its start when the visitor arrives and the built-in blur-in plays for
+  // real instead of having already finished off-screen.
+  const [started, setStarted] = useState(false);
   // Which way the last step went, so a chapter can be entered at the right edge.
   const directionRef = useRef(1);
   const activeIndexRef = useRef(0);
@@ -196,6 +203,17 @@ export default function CinematicStage({
       const from = window.scrollY;
       const to = wrap.offsetTop + index * window.innerHeight;
       if (Math.abs(to - from) < 1) return;
+      // The glide always runs a full STEP_MS regardless of who called it —
+      // armEntry only arms a much shorter MOMENTUM_MS lock of its own (see
+      // above), which used to expire mid-glide. onScroll would then read the
+      // animation's own in-flight scrollTo() calls as a real gesture and
+      // recompute activeIndex from wherever the tween happened to be,
+      // snapping the chapter header back and forth and fighting the glide —
+      // the stutter and repeated re-renders on entering the deck. Locking
+      // for the glide's actual duration here, centrally, means every caller
+      // is covered no matter how short a lock it arms afterwards (extendLock
+      // only ever grows the deadline).
+      extendLock(STEP_MS + 60);
       const started = performance.now();
       cancelAnimationFrame(tween);
       const step = () => {
@@ -331,6 +349,12 @@ export default function CinematicStage({
       }
       if (!wasEngaged) {
         armEntry();
+        // Without this, the native drag kept scrolling the page underneath
+        // armEntry's own glideTo() at the same time — two things driving
+        // scrollY on the same frame — which is what read as a jerk right at
+        // the moment the deck took over on a phone. Matches onWheel and
+        // onKeyDown, which already prevent default the same way here.
+        e.preventDefault();
         // Measure the swipe from here on — distance covered before the deck
         // engaged belonged to the ordinary page, not to this gesture.
         touchStartY = e.touches[0]?.clientY ?? null;
@@ -419,6 +443,24 @@ export default function CinematicStage({
     };
   }, [chapters.length]);
 
+  // Flip on once the deck first enters the viewport — before that, the reel
+  // has no visible audience yet and should stay parked at its start.
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(wrap);
+    return () => observer.disconnect();
+  }, []);
+
   // A chapter that scrolls internally is entered at the edge matching the
   // direction of travel: at its top when arriving from the chapter above, at
   // its bottom when coming back up from below. Landing mid-chapter, or always
@@ -443,7 +485,7 @@ export default function CinematicStage({
   useEffect(() => {
     const video = videoRef.current;
     const phase = phases[activeIndex];
-    if (!video || !phase) return;
+    if (!video || !phase || !started) return;
 
     // Advancing to the next chapter must NOT seek: the previous phase left the
     // playhead parked exactly on this one's start, and re-seeking there costs a
@@ -501,7 +543,7 @@ export default function CinematicStage({
     raf = requestAnimationFrame(tick);
 
     return () => cancelAnimationFrame(raf);
-  }, [activeIndex, phases]);
+  }, [activeIndex, phases, started]);
 
   const api = useMemo<StageApi>(() => ({ activeIndex }), [activeIndex]);
 

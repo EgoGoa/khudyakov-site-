@@ -25,7 +25,7 @@ const EASE_CSS = "cubic-bezier(0.22, 1, 0.36, 1)";
 const GLASS_BTN = {
   vibe: {
     fill: "radial-gradient(130% 90% at 35% -15%, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 45%), linear-gradient(100deg, #ec4899 0%, #a855f7 50%, #38bdf8 100%)",
-    border: "1px solid rgba(255,255,255,0.4)",
+    border: "none",
     text: "#ffffff",
     glowMin:
       "inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -14px 20px -10px rgba(30,10,45,0.35), 0 0 20px rgba(236,72,153,0.35), 0 0 30px rgba(56,189,248,0.3)",

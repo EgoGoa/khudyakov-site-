@@ -274,7 +274,7 @@ export function FullpageProvider({ children }: { children: ReactNode }) {
   return <FullpageContext.Provider value={api}>{children}</FullpageContext.Provider>;
 }
 
-/** Read-only access to fullpage state (Header, SectionReveal, FloatingCta). */
+/** Read-only access to fullpage state (Header, SectionReveal). */
 export function useFullpage(): FullpageApi | null {
   return useContext(FullpageContext);
 }

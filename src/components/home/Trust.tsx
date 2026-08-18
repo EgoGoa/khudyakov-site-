@@ -76,6 +76,8 @@ export default function Trust() {
             item="consult"
             align="right"
             size="sm"
+            spacious
+            flatButton
             eyebrow="Есть вопрос?"
             headline="Ответит продюсер"
             accent="а не отдел продаж"

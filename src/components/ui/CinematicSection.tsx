@@ -153,12 +153,15 @@ export default function CinematicSection({
         <motion.div
           initial={false}
           animate={active ? "on" : "off"}
-          className="mx-auto mt-2 max-w-3xl text-center [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]"
+          className="mx-auto mt-2 max-w-5xl text-center [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]"
         >
           <motion.h2
             variants={reduced ? undefined : HEADER_TITLE}
+            // 2x the previous scale (text-3xl/4xl/4xl/5xl) — the chapter
+            // name is meant to carry the whole header now, not share the
+            // weight with the icon/eyebrow row above it.
             className={`chapter-neon font-display uppercase leading-[0.95] tracking-tight ${
-              titleClassName || "text-3xl sm:text-4xl lg:text-4xl xl:text-5xl"
+              titleClassName || "text-5xl sm:text-7xl lg:text-7xl xl:text-8xl"
             }`}
           >
             {title}

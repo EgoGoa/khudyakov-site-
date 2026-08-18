@@ -9,8 +9,8 @@ import { VoiceWave, VoiceMicButton, VIBE_BUTTON_CLASS, vibeButtonStyle, type Wav
 
 // The greeting → direction-picker flow itself, without the outer
 // fixed/backdrop chrome — that lives in CenterModal, shared by WelcomeOverlay
-// (first visit) and FloatingCta's "VIBE САЙТ" button, so both open this exact
-// same widget rather than two different dialogs with drifting copy.
+// (first visit) and VibeRail's top "Vibe" row, so both open this exact same
+// widget rather than two different dialogs with drifting copy.
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
