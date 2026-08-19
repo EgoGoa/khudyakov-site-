@@ -500,18 +500,40 @@ export default function CinematicStage({
         wasEngaged = false;
         return;
       }
-      if (!wasEngaged) {
-        armEntry();
-        e.preventDefault();
-        return;
-      }
-      if (isLocked()) return;
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       const down = e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ";
       const up = e.key === "ArrowUp" || e.key === "PageUp";
       if (!down && !up) return;
       const dir = down ? 1 : -1;
+      if (!wasEngaged) {
+        // A key press has no momentum tail to absorb the way a trackpad
+        // flick does, so armEntry's settle-then-wait-for-a-second-press
+        // contract (built for that tail — see armEntry's own comment) just
+        // reads as "the first press did nothing" here. Ordinary native
+        // arrow-key scrolling above the deck advances in ~40px browser
+        // increments, so the press that crosses into the deck almost never
+        // lands exactly on a chapter boundary and would otherwise spend
+        // itself settling that small drift alone. Land on the nearest
+        // chapter (same one-step clamp armEntry itself uses, so a stray
+        // native scroll still can't skip past more than one) and glide
+        // straight on to the intended next chapter in this same press,
+        // instead of a separate settle animation followed by a second
+        // press's worth of step animation.
+        wasEngaged = true;
+        const prevIndex = activeIndexRef.current;
+        const raw = indexNow();
+        const settled = Math.max(prevIndex - 1, Math.min(prevIndex + 1, raw));
+        const target = Math.max(0, Math.min(chapters.length - 1, settled + dir));
+        e.preventDefault();
+        if (target === prevIndex) return; // already at the deck's edge in this direction
+        directionRef.current = dir;
+        setActiveIndex(target);
+        glideTo(target);
+        extendLock(STEP_MS + 700);
+        return;
+      }
+      if (isLocked()) return;
       if (paneRoom(dir) > EDGE_EPSILON) {
         e.preventDefault();
         const pane = activePane();
