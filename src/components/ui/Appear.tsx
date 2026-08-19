@@ -28,6 +28,15 @@ export function ChapterActiveProvider({
   return <ChapterActive.Provider value={active}>{children}</ChapterActive.Provider>;
 }
 
+/** Whether the nearest ChapterActiveProvider ancestor is currently the
+ *  chapter on stage — for content that needs to know this beyond just
+ *  motion (e.g. gating an autoplaying embed so it doesn't load before the
+ *  visitor has actually scrolled to it). Defaults to true outside a
+ *  provider, matching ChapterActive's own default. */
+export function useChapterActive() {
+  return useContext(ChapterActive);
+}
+
 export type AppearFrom = "left" | "right" | "up" | "down" | "scale" | "fade";
 
 const HIDDEN: Record<AppearFrom, Record<string, number>> = {

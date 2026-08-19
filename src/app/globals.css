@@ -610,6 +610,30 @@ body {
   }
 }
 
+/* A quiet cyan-neon breathe around the outline, one button at a time — see
+   .btn-neon-cycle below for how the stagger is set per instance. */
+@keyframes btn-neon-outline-pulse {
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 0 rgba(0, 210, 255, 0);
+  }
+  50% {
+    border-color: rgba(0, 210, 255, 0.85);
+    box-shadow: 0 0 14px rgba(0, 210, 255, 0.45), 0 0 28px rgba(0, 210, 255, 0.2);
+  }
+}
+
+.btn-neon-cycle {
+  animation: btn-neon-outline-pulse 3.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-neon-cycle {
+    animation: none;
+  }
+}
+
 /* Volumetric control surface.
    A pill is given real thickness the way a physical key has it: a light top
    edge where a light source would catch it, a dark bottom edge in its own

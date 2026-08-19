@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
-import Appear from "@/components/ui/Appear";
+import Appear, { useChapterActive } from "@/components/ui/Appear";
 import { BEAT, EASE as MOTION_EASE, STAGGER } from "@/lib/motion";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { CloseIcon } from "@/components/ui/Icons";
@@ -211,6 +211,19 @@ export default function Works({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [visible, setVisible] = useState(PAGE_SIZE);
 
+  // Chapter tiles autoplay a video embed each — mounting all of them the
+  // moment the page loads (this chapter sits off-stage but still mounted,
+  // see CinematicStage) was pulling in four YouTube players before the
+  // visitor had scrolled anywhere near them. Gate on the chapter having
+  // actually been on stage at least once instead, and keep it mounted after
+  // that rather than tearing the players down every time it steps off stage
+  // again (that would restart the loop on every return visit).
+  const chapterActive = useChapterActive();
+  const [chapterEverActive, setChapterEverActive] = useState(chapterActive);
+  useEffect(() => {
+    if (chapterActive) setChapterEverActive(true);
+  }, [chapterActive]);
+
   useEffect(() => {
     setFilter(ALL);
     setSphere(ALL_SPHERES);
@@ -353,7 +366,7 @@ export default function Works({
                         : "aspect-[16/10] cursor-pointer"
                     }`}
                   >
-                    {limit && work.youtubeId ? (
+                    {limit && work.youtubeId && chapterEverActive ? (
                       // Chapter tiles autoplay a muted loop instead of a
                       // static thumbnail — pointer-events-none so the click
                       // still reaches "Смотреть"/"Хочу так же" underneath.

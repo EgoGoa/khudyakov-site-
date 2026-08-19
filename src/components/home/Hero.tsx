@@ -73,6 +73,22 @@ export default function Hero() {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const titleWrapRef = useRef<HTMLDivElement>(null);
 
+  // The YouTube embed (its own player JS + video stream) was mounting the
+  // instant the page loaded, competing with the headline/CTAs — the actual
+  // content of the very first screen — for bandwidth and main-thread time.
+  // A static frame from the reel covers the same spot immediately; the
+  // embed itself is deferred a beat so the critical content settles first,
+  // then fades in once it's ready.
+  const [loadReel, setLoadReel] = useState(false);
+  useEffect(() => {
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(() => setLoadReel(true), { timeout: 1500 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(() => setLoadReel(true), 400);
+    return () => window.clearTimeout(id);
+  }, []);
+
   // Track the cursor as CSS custom properties (not React state) so the
   // glow can follow the mouse every frame without triggering re-renders.
   const handleTitleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -91,15 +107,28 @@ export default function Hero() {
           site — playing on a loop, softly blurred at rest so the type stays
           readable and snapping sharp on hover */}
       <div className="group absolute inset-0 -z-10 overflow-hidden">
-        <iframe
-          ref={frameRef}
-          className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 blur-[6px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[300%] md:w-[220%] lg:w-[190%]"
-          src={`https://www.youtube.com/embed/${SHOWREEL_YOUTUBE_ID}?autoplay=1&mute=1&loop=1&playlist=${SHOWREEL_YOUTUBE_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
-          title="Шоурил HDKV.AGENCY"
-          allow="autoplay; encrypted-media; picture-in-picture"
-          referrerPolicy="strict-origin-when-cross-origin"
-          loading="eager"
+        {/* Same still the iframe itself would show at rest — covers the spot
+            immediately so there's no blank/black flash while the embed is
+            deferred. */}
+        <img
+          src="/images/showreel-frame.jpg"
+          alt=""
+          aria-hidden="true"
+          className={`pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover blur-[6px] brightness-[0.85] transition-opacity duration-500 sm:w-[300%] md:w-[220%] lg:w-[190%] ${
+            loadReel ? "opacity-0" : "opacity-100"
+          }`}
         />
+        {loadReel && (
+          <iframe
+            ref={frameRef}
+            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 blur-[6px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[300%] md:w-[220%] lg:w-[190%]"
+            src={`https://www.youtube.com/embed/${SHOWREEL_YOUTUBE_ID}?autoplay=1&mute=1&loop=1&playlist=${SHOWREEL_YOUTUBE_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
+            title="Шоурил HDKV.AGENCY"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            referrerPolicy="strict-origin-when-cross-origin"
+            loading="eager"
+          />
+        )}
         <div
           className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-60"
           style={{
@@ -157,15 +186,27 @@ export default function Hero() {
           >
             Смотреть работы
           </Link>
-          <a href="tel:+79925111812" className="btn-neon">
+          <a href="tel:+79925111812" className="btn-neon btn-neon-cycle" style={{ animationDelay: "0s" }}>
             <PhoneIcon className="animate-pulse" />
             Заказать звонок
           </a>
-          <a href="https://t.me/+79925111812" target="_blank" rel="noopener noreferrer" className="btn-neon">
+          <a
+            href="https://t.me/+79925111812"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-neon btn-neon-cycle"
+            style={{ animationDelay: "1.2s" }}
+          >
             <TelegramIcon />
             Написать в Telegram
           </a>
-          <a href="https://wa.me/79925111812" target="_blank" rel="noopener noreferrer" className="btn-neon">
+          <a
+            href="https://wa.me/79925111812"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-neon btn-neon-cycle"
+            style={{ animationDelay: "2.4s" }}
+          >
             <WhatsAppIcon />
             Написать в WhatsApp
           </a>

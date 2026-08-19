@@ -188,7 +188,7 @@ export default function CinematicSection({
             // name is meant to carry the whole header now, not share the
             // weight with the icon/eyebrow row above it.
             className={`chapter-neon font-display uppercase leading-[0.95] tracking-tight ${
-              titleClassName || "text-5xl sm:text-7xl lg:text-7xl xl:text-8xl"
+              titleClassName || "text-4xl sm:text-6xl lg:text-6xl xl:text-7xl"
             }`}
           >
             {title}

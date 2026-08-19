@@ -158,13 +158,6 @@ export default function Header() {
             +7 992 511-18-12
           </a>
 
-          <Link
-            href="/brief"
-            className="hidden btn-neon btn-warm sm:inline-flex"
-          >
-            Заполнить бриф
-          </Link>
-
           <motion.button
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
