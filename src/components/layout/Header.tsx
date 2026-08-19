@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
-import { CloseIcon, MenuIcon } from "@/components/ui/Icons";
+import { CloseIcon, MenuIcon, PhoneIcon } from "@/components/ui/Icons";
 import { useFullpage } from "@/lib/fullpage";
 
 // The six cinematic chapters of a service page (see (landing)/content/page.tsx)
@@ -29,10 +29,6 @@ const pages = [
 // page identically — jumping there should stay on whichever one you're
 // already viewing instead of bouncing to the default service
 const landingSlugs = ["content", "ai", "sites", "smm"];
-
-// the desktop bar only has room for a curated subset — the burger menu
-// still lists every section, and the CTA already covers the brief
-const desktopSections = ["works", "services", "contact"];
 
 export default function Header() {
   const pathname = usePathname();
@@ -140,59 +136,25 @@ export default function Header() {
         <Link
           href="/"
           onClick={navigateHome}
-          className="flex min-w-0 items-center gap-2.5 py-2 font-display uppercase leading-none tracking-tight text-paper transition active:scale-[0.97] sm:gap-3"
+          className="flex shrink-0 items-center gap-2 py-2 font-mono uppercase leading-none tracking-[0.08em] text-paper transition active:scale-[0.97] sm:gap-2.5"
         >
           <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full bg-rec sm:h-2.5 sm:w-2.5" />
-          <span className="truncate text-[clamp(1.1rem,4vw,1.75rem)]">
-            HDKV<span className="text-rec">.AGENCY</span>
+          <span className="whitespace-nowrap text-[clamp(0.95rem,3vw,1.25rem)] font-semibold">
+            HDKV.AGENCY
+          </span>
+          <span className="ml-1 hidden h-6 w-px shrink-0 bg-paper/25 sm:block" aria-hidden="true" />
+          <span className="hidden shrink-0 flex-col gap-0.5 font-sans text-[0.65rem] font-normal leading-none tracking-[0.12em] text-paper/60 sm:flex">
+            <span className="whitespace-nowrap text-[1em]">DIGITAL</span>
+            <span className="whitespace-nowrap text-[1em]">АГЕНТСТВО</span>
           </span>
         </Link>
-
-        <nav className="hidden items-center gap-6 lg:flex">
-          {sections
-            .filter((s) => desktopSections.includes(s.id))
-            .map((s, i) => (
-              <motion.div
-                key={s.id}
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 + i * 0.05 }}
-              >
-                <Link
-                  href={hrefFor(s.id)}
-                  onClick={(e) => navigateTo(e, s.id)}
-                  className={`text-sm font-medium transition-colors ${
-                    active === s.id ? "text-glow" : "text-paper/70 hover:text-paper"
-                  }`}
-                >
-                  {s.label}
-                </Link>
-              </motion.div>
-            ))}
-          {pages.map((p, i) => (
-            <motion.div
-              key={p.href}
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 + i * 0.05 }}
-            >
-              <Link
-                href={p.href}
-                className={`text-sm font-medium transition-colors ${
-                  pathname === p.href ? "text-glow" : "text-paper/70 hover:text-paper"
-                }`}
-              >
-                {p.label}
-              </Link>
-            </motion.div>
-          ))}
-        </nav>
 
         <div className="flex shrink-0 items-center gap-3 sm:gap-4">
           <a
             href="tel:+79925111812"
-            className="hidden whitespace-nowrap text-sm font-medium text-paper/80 transition-colors hover:text-paper xl:inline-flex"
+            className="hidden items-center gap-2 whitespace-nowrap text-sm font-medium text-paper/80 transition-colors hover:text-paper sm:inline-flex"
           >
+            <PhoneIcon className="icon-neon-pulse text-glow" />
             +7 992 511-18-12
           </a>
 

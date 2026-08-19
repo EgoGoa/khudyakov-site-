@@ -1,10 +1,79 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Container from "@/components/ui/Container";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
+
+// A faceted, holomotion-style chevron: a thick gradient-stroked glyph with
+// two ghost repeats trailing behind it at falling opacity, like the ones in
+// the reference moodboard — not a plain "‹"/"›" character. Pure SVG/CSS, no
+// imagery. `overflow: visible` on the <svg> matters here: an SVG clips its
+// own children to the viewBox by default, so the blurred trail was getting
+// cut off in a hard rectangle — that's the "square" artifact around the old
+// version, not an actual box on the button. The gradient id comes from
+// useId() (not a module-level counter) so it stays identical between the
+// server-rendered markup and the client's first render — a plain counter
+// increments a second time during hydration and was mismatching, which
+// React repaints as a visible flash/box around the glyph.
+function NeonChevron({ flip = false }: { flip?: boolean }) {
+  const gradId = useId();
+  return (
+    <svg
+      width="60"
+      height="60"
+      viewBox="-8 -8 40 40"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+      overflow="visible"
+      style={{ transform: flip ? "scaleX(-1)" : undefined, overflow: "visible" }}
+      className="h-16 w-16 sm:h-20 sm:w-20"
+    >
+      <defs>
+        <linearGradient id={gradId} x1="6" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#00e5ff" />
+          <stop offset="55%" stopColor="#7dd8ff" />
+          <stop offset="100%" stopColor="#ff8a5c" />
+        </linearGradient>
+      </defs>
+
+      {/* trailing ghosts, falling back and fading out */}
+      <path
+        d="M8 4 20 12 8 20"
+        stroke="#00d2ff"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.18"
+        transform="translate(-7, 0)"
+      />
+      <path
+        d="M8 4 20 12 8 20"
+        stroke="#00d2ff"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.32"
+        transform="translate(-3.5, 0)"
+      />
+
+      {/* crisp foreground glyph */}
+      <path
+        d="M8 4 20 12 8 20"
+        stroke={`url(#${gradId})`}
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          filter:
+            "drop-shadow(0 0 5px rgba(0,210,255,0.9)) drop-shadow(0 0 14px rgba(0,210,255,0.55)) drop-shadow(0 0 30px rgba(255,138,92,0.3))",
+        }}
+      />
+    </svg>
+  );
+}
 
 // Only the "sites" slide has a video background — playing it only while its
 // slide is actually the visible one (not just opacity:0'd behind the others)
@@ -53,7 +122,7 @@ export default function ServicePicker() {
   return (
     <section
       id="service-picker"
-      className="relative flex min-h-screen items-center overflow-hidden"
+      className="relative flex min-h-[70svh] items-center overflow-hidden"
     >
       <div className="absolute inset-0 -z-10">
         {serviceOrder.map((key) =>
@@ -87,22 +156,26 @@ export default function ServicePicker() {
         />
       </div>
 
+      {/* No circle, no border — just the glyph with the same neon text-shadow
+          as a chapter heading (.chapter-neon). Pulled in well past the
+          VibeRail's fixed right-0 column (see layout/VibeRail.tsx) so the
+          rail never sits on top of the right arrow. */}
       <button
         type="button"
         onClick={() => go(-1)}
         aria-label="Предыдущее"
-        className="grad-border service-arrow-left absolute left-4 top-1/2 z-10 hidden h-16 w-16 sm:flex shrink-0 items-center justify-center rounded-full border bg-ink/50 text-3xl text-glow backdrop-blur-md transition-colors hover:border-glow hover:bg-glow/10 sm:left-8 sm:h-20 sm:w-20"
+        className="service-arrow-left absolute left-10 top-1/2 z-10 hidden shrink-0 items-center justify-center transition-transform hover:scale-110 hover:opacity-80 sm:flex sm:left-[calc(50%-320px)] xl:left-[calc(50%-380px)]"
       >
-        ‹
+        <NeonChevron flip />
       </button>
 
       <button
         type="button"
         onClick={() => go(1)}
         aria-label="Следующее"
-        className="grad-border service-arrow-right absolute right-4 top-1/2 z-10 hidden h-16 w-16 sm:flex shrink-0 items-center justify-center rounded-full border bg-ink/50 text-3xl text-glow backdrop-blur-md transition-colors hover:border-glow hover:bg-glow/10 sm:right-8 sm:h-20 sm:w-20"
+        className="service-arrow-right absolute right-10 top-1/2 z-10 hidden shrink-0 items-center justify-center transition-transform hover:scale-110 hover:opacity-80 sm:flex sm:right-[calc(50%-320px)] xl:right-[calc(50%-380px)]"
       >
-        ›
+        <NeonChevron />
       </button>
 
       <Container className="flex flex-col items-center py-10 text-center">

@@ -123,24 +123,24 @@ body {
 /* ServicePicker prev/next arrows — pinned to the block edges regardless of
    the label's width, blinking neon and nudging toward the direction they
    navigate. */
+/* No box-shadow here on purpose — that used to glow the button's own
+   (rectangular) box, which is exactly the "square" halo around the arrow
+   the redesigned glyph doesn't want. All of the glow now lives on the SVG
+   chevron itself, via drop-shadow filters (see NeonChevron). */
 @keyframes arrow-nudge-left {
   0%, 100% {
     transform: translate(0, -50%);
-    box-shadow: 0 0 8px rgba(0, 210, 255, 0.35), 0 0 20px rgba(0, 210, 255, 0.18);
   }
   50% {
     transform: translate(-8px, -50%);
-    box-shadow: 0 0 16px rgba(0, 210, 255, 0.75), 0 0 36px rgba(0, 210, 255, 0.4);
   }
 }
 @keyframes arrow-nudge-right {
   0%, 100% {
     transform: translate(0, -50%);
-    box-shadow: 0 0 8px rgba(0, 210, 255, 0.35), 0 0 20px rgba(0, 210, 255, 0.18);
   }
   50% {
     transform: translate(8px, -50%);
-    box-shadow: 0 0 16px rgba(0, 210, 255, 0.75), 0 0 36px rgba(0, 210, 255, 0.4);
   }
 }
 .service-arrow-left {
@@ -294,8 +294,28 @@ body {
   animation: chapter-neon-pulse 2.2s ease-in-out infinite;
 }
 
+/* Same breathing cyan glow as chapter-neon-pulse, but as a drop-shadow —
+   for small icons (stroked SVGs) where a text-shadow has nothing to grab. */
+@keyframes icon-neon-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px rgba(0, 210, 255, 0.7)) drop-shadow(0 0 8px rgba(0, 210, 255, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(0, 210, 255, 1)) drop-shadow(0 0 16px rgba(0, 210, 255, 0.65));
+  }
+}
+
+.icon-neon-pulse {
+  animation: icon-neon-pulse 2.2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chapter-neon-pulse {
+    animation: none;
+  }
+
+  .icon-neon-pulse {
     animation: none;
   }
 }

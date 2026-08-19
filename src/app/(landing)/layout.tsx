@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import Hero from "@/components/home/Hero";
 import ServicePicker from "@/components/home/ServicePicker";
 import WelcomeOverlay from "@/components/home/WelcomeOverlay";
@@ -6,18 +9,33 @@ import { WelcomeGateProvider } from "@/lib/welcome-gate";
 
 // Shared between /content, /ai, /sites, /smm (a Next.js route group — the
 // parens don't add a URL segment). Hero and ServicePicker stay mounted
-// across navigation between these routes so the showreel and the picker's
-// background image never flash/reload — only the page-specific blocks
-// below swap out. WelcomeOverlay lives here too, for the same reason: it
-// only remounts (and re-shows) on a fresh landing, not on nav between
+// across navigation between these four routes so the showreel and the
+// picker's background image never flash/reload — only the page-specific
+// blocks below swap out. WelcomeOverlay lives here too, for the same reason:
+// it only remounts (and re-shows) on a fresh landing, not on nav between
 // /content, /ai, /sites, /smm. WelcomeGateProvider lets the page's own
 // ServiceMenuOverlay know not to render (and animate) until this closes.
+//
+// /content/[direction] (the lightweight direction pages linked from the
+// "Что мы делаем" card grid) live inside this same route group — they have
+// to, since /content/presentation nests under the /content segment this
+// group already owns — but they deliberately don't get Hero/ServicePicker:
+// those pages are meant to be quick, single-topic reads, not another full
+// landing. That does mean navigating /content → /content/presentation →
+// /content unmounts and remounts the showreel once, the exact flash this
+// layout was built to avoid between the four main routes — an accepted
+// trade for keeping the direction pages light.
+const TOP_LEVEL_ROUTES = new Set(["/content", "/ai", "/sites", "/smm"]);
+
 export default function LandingLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const showChrome = TOP_LEVEL_ROUTES.has(pathname);
+
   return (
     <WelcomeGateProvider>
       <WelcomeOverlay />
-      <Hero />
-      <ServicePicker />
+      {showChrome && <Hero />}
+      {showChrome && <ServicePicker />}
       {children}
     </WelcomeGateProvider>
   );

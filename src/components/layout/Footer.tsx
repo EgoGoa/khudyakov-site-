@@ -65,7 +65,7 @@ export default function Footer() {
           </div>
           <p className="mt-4 text-sm leading-relaxed text-paper/50">
             Диджитал-агентство полного цикла: продакшн, брендинг, SMM и
-            AI-контент. 5 лет на рынке, 450+ проектов, 200+ клиентов.
+            AI-контент. 8 лет на рынке, 450+ проектов, 350+ клиентов.
           </p>
 
           <div className="mt-8">

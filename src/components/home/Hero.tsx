@@ -14,6 +14,15 @@ const menuItems = ["Съёмка", "Монтаж", "Цветокор", "Звук
 // signal without waiting for a visitor to scroll to the dedicated section.
 const clients = ["KIA", "Федерация баскетбола", "Гольф-клуб", "Ani d. Zop", "COTRIL", "OUTDOOR", "GOOD GAME"];
 
+// Same numbers as Stats.tsx, but a plain inline row here — no border, no
+// grid — just filling the space under the CTAs before the menu strip.
+const heroStats = [
+  { value: "8 лет", label: "на рынке" },
+  { value: "350+", label: "клиентов" },
+  { value: "450+", label: "проектов" },
+  { value: "5 стран", label: "опыта" },
+];
+
 function useTimecode() {
   const [tc, setTc] = useState("00:00:00:00");
 
@@ -63,7 +72,6 @@ export default function Hero() {
   const clock = useClock();
   const frameRef = useRef<HTMLIFrameElement>(null);
   const titleWrapRef = useRef<HTMLDivElement>(null);
-  const [soundOn, setSoundOn] = useState(false);
 
   // Track the cursor as CSS custom properties (not React state) so the
   // glow can follow the mouse every frame without triggering re-renders.
@@ -75,25 +83,6 @@ export default function Hero() {
     const y = ((event.clientY - rect.top) / rect.height) * 100;
     el.style.setProperty("--mx", `${x}%`);
     el.style.setProperty("--my", `${y}%`);
-  };
-
-  // YouTube's iframe accepts player commands over postMessage as long as the
-  // embed was created with enablejsapi=1 — that avoids pulling in the whole
-  // IFrame Player API script just to toggle audio.
-  const toggleSound = () => {
-    const win = frameRef.current?.contentWindow;
-    if (!win) return;
-    const next = !soundOn;
-    const send = (func: string, args: unknown[] = []) =>
-      win.postMessage(JSON.stringify({ event: "command", func, args }), "*");
-
-    if (next) {
-      send("unMute");
-      send("setVolume", [60]);
-    } else {
-      send("mute");
-    }
-    setSoundOn(next);
   };
 
   return (
@@ -183,50 +172,28 @@ export default function Hero() {
         </motion.div>
       </Container>
 
-      {/* neon audio toggle for the background showreel */}
+      {/* Anchored to the hero's own bottom, above the menu strip — Container
+          above is flex-1/justify-center, so it absorbs the extra vertical
+          space on tall viewports and this row naturally lands right where
+          the CTAs used to leave empty air. justify-between stretches it
+          across the full width instead of clustering left like the CTAs. */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.6 }}
-        className="pointer-events-none relative z-10 mt-6 w-full sm:absolute sm:bottom-24 sm:right-0 sm:mt-0"
+        transition={{ duration: 0.7, delay: 0.4 }}
+        className="relative mt-10 shrink-0"
       >
-        <Container className="flex justify-start sm:justify-end">
-          <button
-            type="button"
-            onClick={toggleSound}
-            aria-pressed={soundOn}
-            aria-label={soundOn ? "Выключить звук шоурила" : "Включить звук шоурила"}
-            className={`pointer-events-auto group/sound relative inline-flex items-center gap-3 rounded-full border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.18em] backdrop-blur-md transition-all duration-300 active:scale-95 ${
-              soundOn
-                ? "border-glow/70 bg-glow/10 text-paper"
-                : "border-paper/20 bg-ink/40 text-paper/80 hover:border-glow/60 hover:text-paper"
-            }`}
-            style={{
-              boxShadow: soundOn
-                ? "0 0 24px rgba(0,210,255,0.4), 0 0 60px rgba(0,210,255,0.15), inset 0 0 20px rgba(0,210,255,0.1)"
-                : "0 0 16px rgba(0,210,255,0.12)",
-            }}
-          >
-            <span className="flex h-3.5 items-end gap-[3px]" aria-hidden="true">
-              {[0, 1, 2, 3].map((i) => (
-                <span
-                  key={i}
-                  className={`w-[2px] rounded-full transition-colors duration-300 ${
-                    soundOn ? "bg-glow" : "bg-paper/45"
-                  }`}
-                  style={
-                    soundOn
-                      ? {
-                          animation: `eq 1s ease-in-out ${i * 0.13}s infinite`,
-                          boxShadow: "0 0 8px rgba(0,210,255,0.9)",
-                        }
-                      : { height: `${[6, 10, 7, 4][i]}px` }
-                  }
-                />
-              ))}
-            </span>
-            {soundOn ? "Звук включён" : "Включить звук"}
-          </button>
+        <Container className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-4 pb-6">
+          {heroStats.map((stat) => (
+            <div key={stat.label}>
+              <span className="font-display text-2xl uppercase text-paper sm:text-3xl">
+                {stat.value}
+              </span>
+              <span className="ml-2 font-mono text-xs uppercase tracking-[0.1em] text-paper/50">
+                {stat.label}
+              </span>
+            </div>
+          ))}
         </Container>
       </motion.div>
 

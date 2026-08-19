@@ -255,7 +255,15 @@ export default function CinematicStage({
       // afterward if the visitor keeps scrolling past even that.
       const prevIndex = activeIndexRef.current;
       const raw = indexNow();
-      const current = Math.max(prevIndex - 1, Math.min(prevIndex + 1, raw));
+      // prevIndex === 0 only ever means "never engaged yet" or "sitting on
+      // the deck's own opening chapter" — a visitor scrolling up into the
+      // deck from below would already carry whatever later chapter it last
+      // knew, never 0. So a fresh entry from above landing here is always
+      // supposed to open on chapter 0 — it's never a valid target to clamp
+      // *past*, the way the general one-step clamp below would otherwise
+      // let a strong trackpad flick's overshoot do.
+      const current =
+        prevIndex === 0 && raw > 0 ? 0 : Math.max(prevIndex - 1, Math.min(prevIndex + 1, raw));
       setActiveIndex(current);
       const settling = glideTo(current);
       if (settling) {

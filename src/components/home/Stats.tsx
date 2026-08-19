@@ -2,9 +2,9 @@ import Reveal from "@/components/ui/Reveal";
 import Container from "@/components/ui/Container";
 
 const stats = [
-  { value: "5 лет", label: "в области видеопроизводства" },
-  { value: "200+", label: "довольных клиентов" },
-  { value: "450+", label: "созданных видеороликов" },
+  { value: "8 лет", label: "в области видеопроизводства" },
+  { value: "350+", label: "довольных клиентов" },
+  { value: "450+", label: "созданных проектов" },
   { value: "5+", label: "штатных сотрудников" },
   { value: "5 стран", label: "международный опыт работы" },
 ];
