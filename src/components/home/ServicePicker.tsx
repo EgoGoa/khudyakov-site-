@@ -20,29 +20,18 @@ function SlideVideo({ src, poster, active }: { src: string; poster: string; acti
   }, [active]);
 
   return (
-    // The animated opacity/transform live on this wrapper, not on the
-    // <video> itself — Chromium has a known class of bug where animating
-    // opacity/transform directly on a playing <video> element freezes its
-    // painted frame (the element keeps decoding and its currentTime keeps
-    // advancing, it just stops being repainted) while leaving everything
-    // else about it looking fine. Keeping the video's own box static and
-    // animating a wrapper instead sidesteps that entirely.
-    <div
-      className="absolute inset-0 transition-[opacity,transform] duration-[800ms] ease-out"
+    <video
+      ref={videoRef}
+      src={src}
+      poster={poster}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      aria-hidden="true"
+      className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out"
       style={{ opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(1.06)" }}
-    >
-      <video
-        ref={videoRef}
-        src={src}
-        poster={poster}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-        className="h-full w-full object-cover"
-      />
-    </div>
+    />
   );
 }
 
