@@ -5,7 +5,6 @@ import Header from "@/components/layout/Header";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
-import CursorGlow from "@/components/layout/CursorGlow";
 import { FullpageProvider } from "@/lib/fullpage";
 import { HeaderMenuProvider } from "@/lib/header-menu";
 import { CinematicNavProvider } from "@/lib/cinematic-nav";
@@ -54,7 +53,6 @@ export default function RootLayout({
     >
       <body className="relative bg-ink font-sans text-paper antialiased">
         <BackgroundFX />
-        <CursorGlow />
         <FullpageProvider>
           <CinematicNavProvider>
             <HeaderMenuProvider>

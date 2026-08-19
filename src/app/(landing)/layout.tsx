@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import FluidSmoke from "@/components/layout/FluidSmoke";
 import Hero from "@/components/home/Hero";
 import ServicePicker from "@/components/home/ServicePicker";
 import WelcomeOverlay from "@/components/home/WelcomeOverlay";
@@ -34,6 +35,12 @@ export default function LandingLayout({ children }: { children: ReactNode }) {
   return (
     <WelcomeGateProvider>
       <WelcomeOverlay />
+      {/* Pointer-driven fluid smoke, screen-blended over the whole page.
+          Scoped to the four landings (same gate as Hero) so the lightweight
+          /content/[direction] reads don't carry a GPU simulation. Mounted
+          before the chrome so it survives nav between the four routes
+          without losing its dye field. */}
+      {showChrome && <FluidSmoke />}
       {showChrome && <Hero />}
       {showChrome && <ServicePicker />}
       {children}
