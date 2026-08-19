@@ -10,10 +10,6 @@ const SHOWREEL_YOUTUBE_ID = "HC5SMCQuoms";
 
 const menuItems = ["Съёмка", "Монтаж", "Цветокор", "Звук", "Рендер"];
 
-// Same roster as LogoCloud — kept here too so the hero carries its own trust
-// signal without waiting for a visitor to scroll to the dedicated section.
-const clients = ["KIA", "Федерация баскетбола", "Гольф-клуб", "Ani d. Zop", "COTRIL", "OUTDOOR", "GOOD GAME"];
-
 // Same numbers as Stats.tsx, but a plain inline row here — no border, no
 // grid — just filling the space under the CTAs before the menu strip.
 const heroStats = [
@@ -271,38 +267,6 @@ export default function Hero() {
             <span className="font-mono">{clock}</span>
           </div>
         </Container>
-      </motion.div>
-
-      {/* Partner logos drift by on their own, slowly enough to read, never
-          stopping — a strip rather than a static row, the way the reference
-          hero carried its client marks along the very bottom edge. Doubled
-          and rolled by exactly half its width so the loop has no seam. */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 1 }}
-        className="relative shrink-0 overflow-hidden border-b border-paper/10 bg-ink/40 py-4 backdrop-blur-md"
-      >
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-ink to-transparent sm:w-28"
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-ink to-transparent sm:w-28"
-          aria-hidden="true"
-        />
-        <div className="reel flex">
-          <div className="reel-track flex w-max shrink-0 items-center gap-12 sm:gap-16">
-            {[...clients, ...clients].map((name, i) => (
-              <span
-                key={i}
-                className="shrink-0 font-display text-lg uppercase tracking-tight text-paper/40 sm:text-xl"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
-        </div>
       </motion.div>
     </section>
   );

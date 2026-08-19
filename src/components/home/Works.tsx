@@ -557,12 +557,9 @@ export default function Works({
                   <h3 className="mt-2 font-sans text-2xl font-light uppercase tracking-[0.01em] sm:text-3xl">
                     {active.title}
                   </h3>
-                  <p className="mt-1 text-sm text-paper/60">
-                    {active.client}
-                    {formatDuration(active.duration) && (
-                      <span className="text-paper/40"> · {formatDuration(active.duration)}</span>
-                    )}
-                  </p>
+                  {formatDuration(active.duration) && (
+                    <p className="mt-1 text-sm text-paper/60">{formatDuration(active.duration)}</p>
+                  )}
                 </div>
                 <div className="font-mono text-xs text-paper/40">Esc закрыть</div>
               </div>

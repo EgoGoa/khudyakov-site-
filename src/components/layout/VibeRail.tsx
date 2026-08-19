@@ -231,19 +231,6 @@ const TESTIMONIALS_BLOCK: PageBlock = {
   ),
 };
 
-const LOGOCLOUD_BLOCK: PageBlock = {
-  id: "logocloud",
-  label: "Клиенты",
-  description: "Бренды, с которыми уже работало агентство.",
-  glyph: (
-    <Glyph>
-      <circle cx="7" cy="8" r="3" />
-      <circle cx="17" cy="8" r="3" />
-      <path d="M3 19v-1.5A4 4 0 0 1 7 13.5h0a4 4 0 0 1 4 4V19M13 19v-1.5a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4V19" />
-    </Glyph>
-  ),
-};
-
 const AICONSULT_BLOCK: PageBlock = {
   id: "ai",
   label: "AI-консультация",
@@ -280,7 +267,6 @@ const PAGE_BLOCKS: Record<string, PageBlock[]> = {
     FINALCTA_BLOCK,
     WHY_BLOCK,
     TESTIMONIALS_BLOCK,
-    LOGOCLOUD_BLOCK,
     SERVICES_BLOCK,
     AICONSULT_BLOCK,
     PROCESS_BLOCK,
@@ -293,7 +279,6 @@ const PAGE_BLOCKS: Record<string, PageBlock[]> = {
     FINALCTA_BLOCK,
     WHY_BLOCK,
     TESTIMONIALS_BLOCK,
-    LOGOCLOUD_BLOCK,
     SERVICES_BLOCK,
     AICONSULT_BLOCK,
     PROCESS_BLOCK,
@@ -306,7 +291,6 @@ const PAGE_BLOCKS: Record<string, PageBlock[]> = {
     FINALCTA_BLOCK,
     WHY_BLOCK,
     TESTIMONIALS_BLOCK,
-    LOGOCLOUD_BLOCK,
     SERVICES_BLOCK,
     AICONSULT_BLOCK,
     PROCESS_BLOCK,

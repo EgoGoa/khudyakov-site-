@@ -4,7 +4,6 @@ import Works from "@/components/home/Works";
 import FinalCTA from "@/components/home/FinalCTA";
 import Why from "@/components/home/Why";
 import Testimonials from "@/components/home/Testimonials";
-import LogoCloud from "@/components/home/LogoCloud";
 import Services from "@/components/home/Services";
 import AiConsult from "@/components/home/AiConsult";
 import Process from "@/components/home/Process";
@@ -27,7 +26,6 @@ export default function SmmServicePage() {
       <FinalCTA />
       <Why />
       <Testimonials />
-      <LogoCloud />
       <Services />
       <AiConsult />
       <Process />

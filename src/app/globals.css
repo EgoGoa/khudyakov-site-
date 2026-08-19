@@ -90,20 +90,7 @@ body {
   transform: translateY(0);
 }
 
-/* auto-scrolling showreel filmstrip, paused on hover */
-.reel-track {
-  animation: roll 32s linear infinite;
-}
-
-.reel:hover .reel-track {
-  animation-play-state: paused;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .reel-track {
-    animation: none;
-  }
-
   html {
     scroll-behavior: auto;
   }
