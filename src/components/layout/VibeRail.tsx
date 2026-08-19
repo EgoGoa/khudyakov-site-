@@ -646,7 +646,7 @@ export default function VibeRail() {
           backdropFilter: "blur(28px)",
           WebkitBackdropFilter: "blur(28px)",
         }}
-        className="fixed right-0 top-1/2 z-[65] hidden -translate-y-1/2 overflow-hidden py-2.5 lg:block"
+        className="fixed right-2 top-1/2 z-[65] hidden -translate-y-1/2 overflow-hidden py-2.5 lg:block"
       >
         <nav className="flex flex-col gap-0.5">
           <RailRow
