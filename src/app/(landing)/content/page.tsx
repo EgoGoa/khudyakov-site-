@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Appear from "@/components/ui/Appear";
 import Opening from "@/components/home/Opening";
 import Works from "@/components/home/Works";
 import Trust from "@/components/home/Trust";
@@ -77,45 +76,29 @@ export default function ContentServicePage() {
           icon="frames"
           side="right"
           intro="78 проектов: реклама, шоурилы, 3D и моушн."
+          // A 2×2 grid of video tiles under the default text-8xl title was
+          // tall enough to clip its own bottom row on short/wide viewports
+          // (the deck can't scroll a chapter internally on desktop — see
+          // CinematicStage's paneRoom comment). A smaller title reclaims the
+          // header space instead of shrinking the tiles themselves.
+          titleClassName="text-4xl sm:text-5xl lg:text-6xl xl:text-6xl"
         >
-          {/* The offer used to sit under the grid, which meant the tiles had
-              to leave room for it above the fold — now it sits beside the
-              grid instead, so the tiles get the space and can run bigger. */}
-          <div className="lg:flex lg:items-start lg:gap-8">
-            <div className="lg:min-w-0 lg:flex-1">
-              <Works
-                bare
-                limit={4}
-                filtersAside={
-                  <Link
-                    href="/works"
-                    className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-paper/80 transition hover:text-glow"
-                  >
-                    Весь каталог — 78 работ
-                    <span aria-hidden="true">→</span>
-                  </Link>
-                }
-              />
-            </div>
-
-            <Appear from="up" delay={1.0} className="mt-6 lg:mt-0 lg:w-[280px] lg:shrink-0 xl:w-[300px]">
-              <div className="rounded-2xl bg-ink/45 p-5 backdrop-blur-md">
-                <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange">
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
-                  Нашли похожий формат?
-                </span>
-                <p className="mt-3 font-sans text-xl leading-[1.15] text-paper">
-                  Пришлите ссылку в брифе <span className="font-semibold text-orange">бесплатно</span>
-                </p>
-                <p className="mt-2.5 text-sm leading-relaxed text-paper/60">
-                  Соберём смету и 2–3 концепции — без предоплаты за идею.
-                </p>
-                <Link href="/brief" className="btn-neon btn-warm btn-3d mt-4 w-full justify-center !py-3.5">
-                  Заполнить бриф
-                </Link>
-              </div>
-            </Appear>
-          </div>
+          {/* The "нашли похожий формат" offer card that used to sit beside
+              the grid on lg+ is gone — the portfolio now gets the full
+              width the card used to reserve. */}
+          <Works
+            bare
+            limit={4}
+            filtersAside={
+              <Link
+                href="/works"
+                className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-paper/80 transition hover:text-glow"
+              >
+                Весь каталог — 78 работ
+                <span aria-hidden="true">→</span>
+              </Link>
+            }
+          />
         </CinematicSection>
 
         <Trust />

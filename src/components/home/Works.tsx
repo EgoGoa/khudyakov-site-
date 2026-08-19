@@ -52,6 +52,16 @@ function SegmentedAxis({
   const shown = expanded || head.includes(value) ? head : [...head.slice(0, -1), value];
   const rest = expanded ? tail : [];
 
+  // Same tab-pill look as FaqAside's category switcher (rounded border,
+  // solid orange when active) — asked to bring the two in line rather than
+  // the glass/cyan .seg-pill treatment this used to have.
+  const pillClass = (isActive: boolean) =>
+    `rounded-full border px-3 py-1.5 text-[11px] font-medium leading-none transition ${
+      isActive
+        ? "border-orange bg-orange text-white"
+        : "border-paper/20 text-paper/60 hover:border-paper/40 hover:text-paper"
+    }`;
+
   return (
     <div>
       <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">{label}</div>
@@ -62,7 +72,7 @@ function SegmentedAxis({
             type="button"
             onClick={() => onChange(option)}
             aria-pressed={value === option}
-            className="seg-pill"
+            className={pillClass(value === option)}
           >
             {option}
           </button>
@@ -72,7 +82,7 @@ function SegmentedAxis({
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className="seg-pill"
+            className={pillClass(false)}
           >
             {expanded ? "Свернуть" : `+${tail.length}`}
           </button>
@@ -332,25 +342,47 @@ export default function Works({
                     }}
                     onClick={limit ? undefined : () => setActiveId(work.id)}
                     className={`group relative overflow-hidden rounded-2xl bg-ink-soft text-left transition-shadow duration-300 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85),0_0_50px_-12px_rgba(0,210,255,0.3)] ${
-                      limit ? "aspect-[4/3] sm:aspect-video" : "aspect-[16/10] cursor-pointer"
+                      limit
+                        ? // A plain 16:9 card in a 2×2 grid grows tall enough
+                          // on wide desktop screens to push the second row
+                          // past the fold of the pinned chapter (it can't
+                          // scroll internally on desktop). Wider/shorter on
+                          // lg+ keeps both rows on screen without shrinking
+                          // the grid itself.
+                          "aspect-[4/3] sm:aspect-video lg:aspect-[16/7]"
+                        : "aspect-[16/10] cursor-pointer"
                     }`}
                   >
-                    <img
-                      src={work.youtubeId ? maxThumb(work.youtubeId) : ""}
-                      onError={(e) => swapToFallback(e.currentTarget, work.youtubeId)}
-                      // maxresdefault отсутствует у части видео, но YouTube
-                      // отвечает не пустым 404, а серой заглушкой 120×90 —
-                      // onError на неё не срабатывает, поэтому подмену делаем
-                      // и по факту загрузки слишком маленькой картинки.
-                      onLoad={(e) => {
-                        if (e.currentTarget.naturalWidth <= 120) {
-                          swapToFallback(e.currentTarget, work.youtubeId);
-                        }
-                      }}
-                      alt=""
-                      loading="lazy"
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
-                    />
+                    {limit && work.youtubeId ? (
+                      // Chapter tiles autoplay a muted loop instead of a
+                      // static thumbnail — pointer-events-none so the click
+                      // still reaches "Смотреть"/"Хочу так же" underneath.
+                      <iframe
+                        className="pointer-events-none absolute inset-0 h-full w-full scale-[1.35] object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.42]"
+                        src={`https://www.youtube.com/embed/${work.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${work.youtubeId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1`}
+                        title={work.title}
+                        allow="autoplay; encrypted-media"
+                        aria-hidden="true"
+                        tabIndex={-1}
+                      />
+                    ) : (
+                      <img
+                        src={work.youtubeId ? maxThumb(work.youtubeId) : ""}
+                        onError={(e) => swapToFallback(e.currentTarget, work.youtubeId)}
+                        // maxresdefault отсутствует у части видео, но YouTube
+                        // отвечает не пустым 404, а серой заглушкой 120×90 —
+                        // onError на неё не срабатывает, поэтому подмену делаем
+                        // и по факту загрузки слишком маленькой картинки.
+                        onLoad={(e) => {
+                          if (e.currentTarget.naturalWidth <= 120) {
+                            swapToFallback(e.currentTarget, work.youtubeId);
+                          }
+                        }}
+                        alt=""
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
+                      />
+                    )}
                     {/* Подписи лежат прямо на кадре, как в референсе, поэтому
                         затемняем только те полосы, где они стоят: сплошной
                         градиент по всей высоте читается как леттербокс. */}
