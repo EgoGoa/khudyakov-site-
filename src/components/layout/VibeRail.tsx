@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
+import { useHeaderMenu } from "@/lib/header-menu";
 import { vibeButtonStyle } from "@/components/home/WelcomeOverlay";
 import WelcomeWidget from "@/components/home/WelcomeWidget";
 import CenterModal from "@/components/ui/CenterModal";
@@ -576,6 +577,11 @@ export default function VibeRail() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<RailItem | null>(null);
+  // Header's desktop burger dropdown lives in roughly the same top-right
+  // corner of the screen — stepping the rail out of the way while it's open
+  // is simpler and more robust than trying to keep two floating panels from
+  // ever overlapping by careful positioning alone.
+  const { menuOpen: headerMenuOpen } = useHeaderMenu();
 
   useBodyScrollLock(pickerOpen || sheetOpen || !!activeItem);
 
@@ -612,6 +618,12 @@ export default function VibeRail() {
         animate={{
           width: expanded ? 226 : VIBE_RAIL_WIDTH,
           borderRadius: expanded ? 26 : 999,
+          // Steps out of the way (see the headerMenuOpen comment above)
+          // rather than trying to out-position the burger dropdown. Opacity
+          // only — animating x here would fight the className's own
+          // translate-y-1/2 centering, since Motion's x/y compose into one
+          // transform that replaces it rather than adding to it.
+          opacity: headerMenuOpen ? 0 : 1,
           // A touch darker once labels appear, but staying translucent —
           // going fully opaque here made the panel read as a flat solid
           // card instead of glass. Legibility over busy backgrounds now
@@ -635,6 +647,7 @@ export default function VibeRail() {
           width: { duration: 0.45, ease: EASE },
           borderRadius: { duration: 0.45, ease: EASE },
           background: { duration: 0.3 },
+          opacity: { duration: 0.25, ease: EASE },
           boxShadow: expanded
             ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
             : { duration: 0.4 },
@@ -646,7 +659,9 @@ export default function VibeRail() {
           backdropFilter: "blur(28px)",
           WebkitBackdropFilter: "blur(28px)",
         }}
-        className="fixed right-2 top-1/2 z-[65] hidden -translate-y-1/2 overflow-hidden py-2.5 lg:block"
+        className={`fixed right-2 top-1/2 z-[65] hidden -translate-y-1/2 overflow-hidden py-2.5 lg:block ${
+          headerMenuOpen ? "pointer-events-none" : ""
+        }`}
       >
         <nav className="flex flex-col gap-0.5">
           <RailRow

@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useCinematicNavRegister } from "@/lib/cinematic-nav";
 
 // One continuous film behind a deck of chapters.
 //
@@ -120,6 +121,7 @@ export default function CinematicStage({
   const directionRef = useRef(1);
   const activeIndexRef = useRef(0);
   activeIndexRef.current = activeIndex;
+  const registerGoTo = useCinematicNavRegister();
 
   // globals.css sets html{scroll-behavior:smooth} for ordinary anchor-link
   // navigation elsewhere on the site. Inside this deck that fights every
@@ -386,6 +388,23 @@ export default function CinematicStage({
       return true;
     };
 
+    // A deliberate jump to a specific chapter (a menu link), as opposed to
+    // stepBy's "one chapter from here" — registered with CinematicNavProvider
+    // so Header can reach a chapter directly instead of a plain `#id` anchor,
+    // whose native scroll-jump onScroll above would otherwise clamp to one
+    // chapter away from wherever the visitor already was (see that provider's
+    // own comment for why).
+    const goToId = (id: string): boolean => {
+      const index = chapters.findIndex((c) => c.id === id);
+      if (index < 0) return false;
+      directionRef.current = index > activeIndexRef.current ? 1 : -1;
+      setActiveIndex(index);
+      glideTo(index);
+      extendLock(STEP_MS + 700);
+      return true;
+    };
+    registerGoTo(goToId);
+
     const onWheel = (e: WheelEvent) => {
       const isEngagedNow = engaged();
       if (!isEngagedNow) {
@@ -605,8 +624,9 @@ export default function CinematicStage({
       }
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      registerGoTo(null);
     };
-  }, [chapters.length]);
+  }, [chapters.length, registerGoTo]);
 
   // Flip on once the deck first enters the viewport — before that, the reel
   // has no visible audience yet and should stay parked at its start.

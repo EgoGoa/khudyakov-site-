@@ -7,6 +7,8 @@ import VibeRail from "@/components/layout/VibeRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import CursorGlow from "@/components/layout/CursorGlow";
 import { FullpageProvider } from "@/lib/fullpage";
+import { HeaderMenuProvider } from "@/lib/header-menu";
+import { CinematicNavProvider } from "@/lib/cinematic-nav";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -54,15 +56,19 @@ export default function RootLayout({
         <BackgroundFX />
         <CursorGlow />
         <FullpageProvider>
-          {/* VibeRail floats on top of the page by design — it does not
-              reserve any layout space, the same way the old FloatingCta
-              button never did either. */}
-          <div className="relative z-10">
-            <Header />
-            <main>{children}</main>
-            <ConditionalFooter />
-          </div>
-          <VibeRail />
+          <CinematicNavProvider>
+            <HeaderMenuProvider>
+              {/* VibeRail floats on top of the page by design — it does not
+                  reserve any layout space, the same way the old FloatingCta
+                  button never did either. */}
+              <div className="relative z-10">
+                <Header />
+                <main>{children}</main>
+                <ConditionalFooter />
+              </div>
+              <VibeRail />
+            </HeaderMenuProvider>
+          </CinematicNavProvider>
         </FullpageProvider>
         <Analytics />
       </body>
