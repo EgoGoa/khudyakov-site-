@@ -107,6 +107,7 @@ export default function Process() {
       icon="route"
       side="right"
       entrance="slide-right"
+      id="process"
       intro="Шесть шагов от брифа до сдачи. На каждом вы видите прогресс и можете вносить правки."
     >
       <div className="grid gap-4 sm:grid-cols-3">

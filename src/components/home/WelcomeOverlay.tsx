@@ -310,13 +310,19 @@ export default function WelcomeOverlay() {
     return () => setWelcomeOpen(false);
   }, [visible, setWelcomeOpen]);
 
-  // Picking an actual service (a Link inside the widget) just closes and
-  // lets the navigation land wherever that page starts — close is what
-  // WelcomeWidget's onClose does for that case. A plain dismiss (Escape, the
-  // × button, clicking the backdrop) is a different intent: the visitor
-  // isn't choosing anything, they're leaving the flow, so it goes straight
-  // to the site — same destination as the explicit "Обычная версия" /
-  // "Перейти на сайт" choice, not an intermediate guide screen.
+  // Picking an actual service (a Link inside the widget) just closes this
+  // overlay and lets the navigation land on that page's ServiceMenuOverlay —
+  // it must NOT snooze, or that next screen sees isSnoozed() and hides
+  // itself before it can render. selectService is what WelcomeWidget's
+  // onClose does for that case. A plain dismiss (Escape, the × button,
+  // clicking the backdrop) is a different intent: the visitor isn't
+  // choosing anything, they're leaving the flow, so it goes straight to the
+  // site and is remembered for next visit — same as the explicit "Обычная
+  // версия" / "Перейти на сайт" choice, not an intermediate guide screen.
+  const selectService = () => {
+    setVisible(false);
+  };
+
   const close = () => {
     snooze();
     setVisible(false);
@@ -334,7 +340,7 @@ export default function WelcomeOverlay() {
 
   return (
     <CenterModal open={visible} onClose={goToSite} ariaLabel="Приветствие HDKV AGENCY">
-      <WelcomeWidget onClose={close} onSkip={goToSite} />
+      <WelcomeWidget onClose={selectService} onSkip={goToSite} />
     </CenterModal>
   );
 }

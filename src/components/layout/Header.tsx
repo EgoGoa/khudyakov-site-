@@ -112,6 +112,17 @@ export default function Header() {
     if (fullpageActive) {
       e.preventDefault();
       api!.goToIndex(0);
+      return;
+    }
+    // Already on one of the four landing pages: href="/" would still
+    // navigate (redirecting straight back to /content), remounting the
+    // whole page — video, deck state, everything — just to land back where
+    // "top of this page" would have done. An instant scroll reset gets to
+    // the same place without any of that, and without the animated
+    // scroll-through-the-page a route change produces.
+    if (isLanding) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
   };
 

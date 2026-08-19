@@ -17,16 +17,18 @@ const PAGE_ACTIVE_ID: Record<string, string> = {
   "/brief": "brief",
 };
 
-// The subset of ITEMS ids that are real in-page anchors, shared verbatim by
-// every service page — the cinematic deck on /content and the plain-scroll
-// layout on /ai, /sites, /smm both render a `#services`/`#contact`/`#works`
-// element at the right scroll position, so the exact scroll-spy Header.tsx
-// already runs works here unmodified (same rootMargin, same technique).
-const ANCHOR_IDS = ["works", "services", "contact"];
-
-function useActiveRailId(): string {
+// Tracks whichever of `anchorIds` is currently on screen, re-running its
+// IntersectionObserver whenever the id list changes (i.e. on every route
+// change between /content, /ai, /sites, /smm, each with its own block set).
+// The cinematic deck on /content and the plain-scroll layout on /ai, /sites,
+// /smm both end up with one real DOM element per id at the right scroll
+// position — CinematicStage's own runway divs for the former, each
+// section's own `id=` for the latter — so the exact same technique
+// (same rootMargin) covers both without knowing which one it's on.
+function useActiveRailId(anchorIds: string[]): string {
   const pathname = usePathname();
   const [activeId, setActiveId] = useState("");
+  const anchorKey = anchorIds.join(",");
 
   useEffect(() => {
     const pageMatch = PAGE_ACTIVE_ID[pathname];
@@ -35,9 +37,9 @@ function useActiveRailId(): string {
       return;
     }
     setActiveId("");
-    const elements = ANCHOR_IDS.map((id) => document.getElementById(id)).filter(
-      (el): el is HTMLElement => Boolean(el)
-    );
+    const elements = anchorIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
     if (elements.length === 0) return;
 
     const observer = new IntersectionObserver(
@@ -50,7 +52,8 @@ function useActiveRailId(): string {
     );
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- anchorKey is anchorIds' stable identity
+  }, [pathname, anchorKey]);
 
   return activeId;
 }
@@ -116,43 +119,205 @@ function Glyph({ children }: { children: ReactNode }) {
   );
 }
 
-const ITEMS: RailItem[] = [
-  {
-    id: "works",
-    label: "Работы",
-    description: "78 проектов портфолио: реклама, шоурилы, 3D и моушн.",
-    href: "/content#works",
-    glyph: (
-      <Glyph>
-        <rect x="3" y="5" width="18" height="14" rx="2.5" />
-        <path d="M3 9h18M3 15h18M8 5v14M16 5v14" />
-      </Glyph>
-    ),
-  },
-  {
-    id: "services",
-    label: "Что делаем",
-    description: "Продакшн, AI, сайты и SMM — весь стек услуг агентства.",
-    href: "/content#services",
-    glyph: (
-      <Glyph>
-        <path d="M12 3l8.5 4.5L12 12 3.5 7.5 12 3z" />
-        <path d="M3.5 12L12 16.5 20.5 12" />
-        <path d="M3.5 16.5L12 21l8.5-4.5" />
-      </Glyph>
-    ),
-  },
-  {
-    id: "contact",
-    label: "Цены и заявка",
-    description: "Сроки, бюджет и как быстрее всего оставить заявку.",
-    href: "/content#contact",
-    glyph: (
-      <Glyph>
-        <path d="M12 2.5l2.3 6.2 6.2 2.3-6.2 2.3L12 19.5l-2.3-6.2L3.5 11l6.2-2.3L12 2.5z" />
-      </Glyph>
-    ),
-  },
+// A block belongs to exactly one page and is rendered with an in-page
+// `#id` anchor computed from the current route (see PAGE_BLOCKS/useRailItems
+// below) — unlike CROSS_PAGE_ITEMS, whose href is a real destination page.
+type PageBlock = Omit<RailItem, "href">;
+
+const WORKS_BLOCK: PageBlock = {
+  id: "works",
+  label: "Работы",
+  description: "78 проектов портфолио: реклама, шоурилы, 3D и моушн.",
+  glyph: (
+    <Glyph>
+      <rect x="3" y="5" width="18" height="14" rx="2.5" />
+      <path d="M3 9h18M3 15h18M8 5v14M16 5v14" />
+    </Glyph>
+  ),
+};
+
+const SERVICES_BLOCK: PageBlock = {
+  id: "services",
+  label: "Что делаем",
+  description: "Продакшн, AI, сайты и SMM — весь стек услуг агентства.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3l8.5 4.5L12 12 3.5 7.5 12 3z" />
+      <path d="M3.5 12L12 16.5 20.5 12" />
+      <path d="M3.5 16.5L12 21l8.5-4.5" />
+    </Glyph>
+  ),
+};
+
+const CONTACT_BLOCK: PageBlock = {
+  id: "contact",
+  label: "Цены и заявка",
+  description: "Сроки, бюджет и как быстрее всего оставить заявку.",
+  glyph: (
+    <Glyph>
+      <path d="M12 2.5l2.3 6.2 6.2 2.3-6.2 2.3L12 19.5l-2.3-6.2L3.5 11l6.2-2.3L12 2.5z" />
+    </Glyph>
+  ),
+};
+
+const PROCESS_BLOCK: PageBlock = {
+  id: "process",
+  label: "Как мы работаем",
+  description: "Шесть шагов пути: от оценки проекта до сдачи и поддержки.",
+  glyph: (
+    <Glyph>
+      <path d="M4 6h11a3.5 3.5 0 0 1 0 7H7" />
+      <path d="M9.5 10 6 13l3.5 3M14 18h6" />
+    </Glyph>
+  ),
+};
+
+const WHY_BLOCK: PageBlock = {
+  id: "why",
+  label: "Почему мы",
+  description: "Что отличает агентство: опыт, подход и что получает клиент.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3 4 6.5V12c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6.5L12 3z" />
+    </Glyph>
+  ),
+};
+
+// The cinematic deck's opening chapter on /content — its id comes from
+// CinematicStage's own runway div (see CHAPTERS in content/page.tsx), not
+// from the Opening component itself.
+const OPENING_BLOCK: PageBlock = {
+  id: "opening",
+  label: "Интро",
+  description: "Ключевой месседж и цифры результата — открывающий кадр.",
+  glyph: (
+    <Glyph>
+      <path d="M5 4.5 19 12 5 19.5z" />
+    </Glyph>
+  ),
+};
+
+const STATS_BLOCK: PageBlock = {
+  id: "stats",
+  label: "Цифры",
+  description: "Опыт агентства в цифрах: клиенты, ролики, страны, команда.",
+  glyph: (
+    <Glyph>
+      <path d="M5 19V10M12 19V5M19 19v-7" />
+    </Glyph>
+  ),
+};
+
+const FINALCTA_BLOCK: PageBlock = {
+  id: "finalcta",
+  label: "Призыв к действию",
+  description: "Короткий питч и прямой путь к заявке или брифу.",
+  glyph: (
+    <Glyph>
+      <path d="M13 3 5 13.5h6L11 21l8-10.5h-6z" />
+    </Glyph>
+  ),
+};
+
+const TESTIMONIALS_BLOCK: PageBlock = {
+  id: "testimonials",
+  label: "Отзывы",
+  description: "Что говорят клиенты о работе с агентством после проекта.",
+  glyph: (
+    <Glyph>
+      <path d="M4 6.5h13a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2H10l-4 3.5V16H6a2 2 0 0 1-2-2V8.5a2 2 0 0 1 2-2z" />
+    </Glyph>
+  ),
+};
+
+const LOGOCLOUD_BLOCK: PageBlock = {
+  id: "logocloud",
+  label: "Клиенты",
+  description: "Бренды, с которыми уже работало агентство.",
+  glyph: (
+    <Glyph>
+      <circle cx="7" cy="8" r="3" />
+      <circle cx="17" cy="8" r="3" />
+      <path d="M3 19v-1.5A4 4 0 0 1 7 13.5h0a4 4 0 0 1 4 4V19M13 19v-1.5a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4V19" />
+    </Glyph>
+  ),
+};
+
+const AICONSULT_BLOCK: PageBlock = {
+  id: "ai",
+  label: "AI-консультация",
+  description: "Чат с AI-консультантом — прикидка формата и бюджета без брифа.",
+  glyph: (
+    <Glyph>
+      <rect x="5" y="7" width="14" height="12" rx="3" />
+      <path d="M9 7V4.5h6V7M9 13h.01M15 13h.01" />
+      <path d="M3.5 12h1.5M19 12h1.5" />
+    </Glyph>
+  ),
+};
+
+const PRICING_BLOCK: PageBlock = {
+  id: "pricing",
+  label: "Цены",
+  description: "Форматы и стоимость услуг агентства.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3v18M8 7.5h5.5a2.5 2.5 0 0 1 0 5H9a2.5 2.5 0 0 0 0 5H16" />
+    </Glyph>
+  ),
+};
+
+// /content is the cinematic deck (CinematicStage): six chapters, ids come
+// from its own runway divs at each scroll step (see content/page.tsx's
+// CHAPTERS). /ai, /sites, /smm share one identical, plain-scroll section
+// list (see each page.tsx) — one entry here per page, in on-page order.
+const PAGE_BLOCKS: Record<string, PageBlock[]> = {
+  "/content": [OPENING_BLOCK, WORKS_BLOCK, WHY_BLOCK, SERVICES_BLOCK, PROCESS_BLOCK, CONTACT_BLOCK],
+  "/ai": [
+    STATS_BLOCK,
+    WORKS_BLOCK,
+    FINALCTA_BLOCK,
+    WHY_BLOCK,
+    TESTIMONIALS_BLOCK,
+    LOGOCLOUD_BLOCK,
+    SERVICES_BLOCK,
+    AICONSULT_BLOCK,
+    PROCESS_BLOCK,
+    PRICING_BLOCK,
+    CONTACT_BLOCK,
+  ],
+  "/sites": [
+    STATS_BLOCK,
+    WORKS_BLOCK,
+    FINALCTA_BLOCK,
+    WHY_BLOCK,
+    TESTIMONIALS_BLOCK,
+    LOGOCLOUD_BLOCK,
+    SERVICES_BLOCK,
+    AICONSULT_BLOCK,
+    PROCESS_BLOCK,
+    PRICING_BLOCK,
+    CONTACT_BLOCK,
+  ],
+  "/smm": [
+    STATS_BLOCK,
+    WORKS_BLOCK,
+    FINALCTA_BLOCK,
+    WHY_BLOCK,
+    TESTIMONIALS_BLOCK,
+    LOGOCLOUD_BLOCK,
+    SERVICES_BLOCK,
+    AICONSULT_BLOCK,
+    PROCESS_BLOCK,
+    PRICING_BLOCK,
+    CONTACT_BLOCK,
+  ],
+};
+
+// Real destination pages rather than in-page anchors — always the same
+// three rows regardless of which service page the visitor is on, appended
+// after that page's own blocks.
+const CROSS_PAGE_ITEMS: RailItem[] = [
   {
     id: "catalog",
     label: "Все работы",
@@ -192,6 +357,16 @@ const ITEMS: RailItem[] = [
     ),
   },
 ];
+
+// This page's own blocks (own ids, own hrefs) followed by the fixed
+// cross-page rows. A page not in PAGE_BLOCKS (e.g. /works itself) just gets
+// the cross-page rows, matching the previous single-list behaviour.
+function useRailItems(): { pageItems: RailItem[]; crossPageItems: RailItem[]; anchorIds: string[] } {
+  const pathname = usePathname();
+  const blocks = PAGE_BLOCKS[pathname] ?? [];
+  const pageItems = blocks.map((block) => ({ ...block, href: `${pathname}#${block.id}` }));
+  return { pageItems, crossPageItems: CROSS_PAGE_ITEMS, anchorIds: blocks.map((b) => b.id) };
+}
 
 type ModeKey = "agent" | "session" | "personalize";
 
@@ -395,7 +570,8 @@ function RailRow({
 }
 
 export default function VibeRail() {
-  const activeRailId = useActiveRailId();
+  const { pageItems, crossPageItems, anchorIds } = useRailItems();
+  const activeRailId = useActiveRailId(anchorIds);
   const [expanded, setExpanded] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -502,7 +678,18 @@ export default function VibeRail() {
             >
               Vibe-режим
             </div>
-            {ITEMS.map((item) => (
+            {pageItems.map((item) => (
+              <RailRow
+                key={item.id}
+                glyph={item.glyph}
+                label={item.label}
+                expanded={expanded}
+                active={item.id === activeRailId}
+                onClick={() => openItem(item)}
+              />
+            ))}
+            {pageItems.length > 0 && <div className="mx-3 my-1.5 h-px bg-paper/10" />}
+            {crossPageItems.map((item) => (
               <RailRow
                 key={item.id}
                 glyph={item.glyph}
@@ -591,7 +778,19 @@ export default function VibeRail() {
                 Vibe-режим
               </div>
               <nav className="flex flex-col gap-0.5">
-                {ITEMS.map((item) => (
+                {pageItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => openItem(item)}
+                    className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left text-paper/80"
+                  >
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center">{item.glyph}</span>
+                    <span className="font-sans text-sm">{item.label}</span>
+                  </button>
+                ))}
+                {pageItems.length > 0 && <div className="mx-2 my-1.5 h-px bg-paper/10" />}
+                {crossPageItems.map((item) => (
                   <button
                     key={item.id}
                     type="button"

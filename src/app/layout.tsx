@@ -47,6 +47,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
+      data-scroll-behavior="smooth"
       className={`${montserrat.variable} ${bebas.variable} ${azeretMono.variable}`}
     >
       <body className="relative bg-ink font-sans text-paper antialiased">

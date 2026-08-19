@@ -71,8 +71,8 @@ const RESUME_TOLERANCE = 0.5;
 const WHEEL_THRESHOLD = 12; // px of accumulated deltaY that counts as a flick
 const WHEEL_RESET_MS = 120; // trackpads fire many tiny events — coalesce them
 const SWIPE_THRESHOLD = 36; // px of touch travel that counts as a swipe
-const MOMENTUM_MS = 320;
-const STEP_MS = 620; // the glide from one chapter to the next
+const MOMENTUM_MS = 220;
+const STEP_MS = 420; // the glide from one chapter to the next
 const EDGE_EPSILON = 2; // px tolerance for "this chapter is scrolled to the end"
 // Below this, an overflow is treated as measurement noise (sub-pixel font
 // metrics, a slightly different zoom level) rather than a chapter that
@@ -121,6 +121,28 @@ export default function CinematicStage({
   const activeIndexRef = useRef(0);
   activeIndexRef.current = activeIndex;
 
+  // globals.css sets html{scroll-behavior:smooth} for ordinary anchor-link
+  // navigation elsewhere on the site. Inside this deck that fights every
+  // programmatic scroll the code below does: glideTo() below already runs
+  // its own hand-timed easing tween precisely because native smooth scroll
+  // can't be cancelled or timed (see its own comment), but without this the
+  // ambient CSS default still re-smooths each of its per-frame scrollTo()
+  // calls on top of that tween — two animations racing for the same
+  // scroll position — and does the same to a plain browser scroll-to-anchor
+  // landing here from a hash link (e.g. Header's nav, VibeRail). Forcing the
+  // CSS property to "auto" (instant) for as long as this deck is mounted
+  // removes the ambient smoothing so this component's own logic is the only
+  // thing moving the scroll position; restored on unmount since it's only
+  // /content that needs this, not the rest of the site.
+  useEffect(() => {
+    const root = document.documentElement;
+    const prev = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    return () => {
+      root.style.scrollBehavior = prev;
+    };
+  }, []);
+
   // Gesture stepping. One short flick, swipe or arrow press moves exactly one
   // chapter — the same one-block-per-gesture contract as lib/fullpage.tsx on
   // the homepage, and for the same reason: reading scroll *position* means a
@@ -141,7 +163,23 @@ export default function CinematicStage({
     // takeover and its resistance to plain scrolling are skipped.
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    let lock = 0; // timestamp until which further gestures are absorbed
+    // Timestamp until which wheel input is absorbed after a step — fixed
+    // once a step decides its duration (glideTo + stepBy/armEntry's own
+    // calls, which legitimately need to grow it, see extendLock), then
+    // deliberately left alone by every wheel event that follows during
+    // that window (see the isLocked branch in onWheel). Earlier attempts
+    // at renewing it per absorbed event, meant to outlast a trackpad's
+    // momentum tail, went to two different extremes: no cap on the renewal
+    // left the deck looking permanently stuck for as long as any wheel
+    // activity continued, and a silence-gap heuristic meant to replace
+    // that kept mistaking a real new swipe for a continuation of the
+    // last one — trackpads rarely go fully quiet between deliberate
+    // swipes — and needed several tries to register one step. A plain
+    // fixed window, generous enough to cover one flick's momentum tail
+    // (STEP_MS + STEP_LOCK_BUFFER_MS below), is simpler and predictable:
+    // everything inside it is this step's own settling, and the very next
+    // event after it always gets a clean shot at being read as new input.
+    let lock = 0;
     let wheelAccum = 0;
     let wheelReset: number | null = null;
     let touchStartY: number | null = null;
@@ -152,7 +190,6 @@ export default function CinematicStage({
     // on its own at the end of a swipe.
     let paneMoved = false;
     let tween = 0;
-
     const isLocked = () => performance.now() < lock;
     // One timer clears both the accumulated delta and the "this gesture was
     // spent on the chapter" flag, so a new flick starts from a clean slate.
@@ -190,16 +227,45 @@ export default function CinematicStage({
     // was skipped before it was ever seen. Crossing in snaps onto whichever
     // chapter the visitor landed on and arms the same settle lock a normal
     // step gets, so the incoming momentum has somewhere to be absorbed.
-    const armEntry = () => {
+    // Returns whether it actually had anything to settle. Landing on this
+    // page fresh (no incoming scroll momentum to absorb) means the visitor
+    // is usually already sitting exactly on chapter 01 the first time a
+    // gesture reaches here — glideTo() then has nowhere to go and is a
+    // silent no-op, so the whole gesture that was supposed to open the deck
+    // produces no visible motion at all and reads as "scrolling doesn't do
+    // anything". The caller uses this to tell that case apart from a real
+    // settle and let the same gesture also carry the first real step.
+    const armEntry = (): boolean => {
       wasEngaged = true;
-      const current = indexNow();
+      // Clamped to at most one chapter away from wherever the deck last
+      // knew it was — not indexNow() raw. Trackpads have a browser quirk
+      // that makes this necessary: entering the deck flips engaged() to
+      // true mid-gesture, but if that gesture's very first wheel event
+      // arrived a few pixels earlier (while still outside the deck and
+      // legitimately left un-prevented), Chrome commits the *entire*
+      // physical gesture — including its momentum — to native scrolling
+      // and ignores every preventDefault() after that. By the time this
+      // code regains control, native momentum may already have carried
+      // scrollY well past chapter 01 into chapter 02 or 03, and indexNow()
+      // would happily round to wherever that raw position landed —
+      // silently skipping every chapter in between instead of visiting
+      // each one. Clamping the landing to one step from the last known
+      // chapter keeps that promise regardless of how far the native scroll
+      // got to first; onScroll (below) still gently retargets activeIndex
+      // afterward if the visitor keeps scrolling past even that.
+      const prevIndex = activeIndexRef.current;
+      const raw = indexNow();
+      const current = Math.max(prevIndex - 1, Math.min(prevIndex + 1, raw));
       setActiveIndex(current);
-      glideTo(current);
-      // Only long enough to absorb this same gesture's trailing momentum, not
-      // a full step's worth — a bigger lock here reads as the deck being
-      // stuck right where responsiveness matters most, the very first
-      // interaction with it.
-      extendLock(MOMENTUM_MS);
+      const settling = glideTo(current);
+      if (settling) {
+        // Only long enough to absorb this same gesture's trailing momentum,
+        // not a full step's worth — a bigger lock here reads as the deck
+        // being stuck right where responsiveness matters most, the very
+        // first interaction with it.
+        extendLock(MOMENTUM_MS);
+      }
+      return settling;
     };
 
     const indexNow = () => {
@@ -212,12 +278,12 @@ export default function CinematicStage({
     // Own easing rather than scrollTo({behavior:'smooth'}): the native smooth
     // scroll cannot be cancelled or timed, and its duration varies by distance
     // and browser, so the chapter swap and the film could not be matched to it.
-    const glideTo = (index: number) => {
+    const glideTo = (index: number): boolean => {
       const wrap = wrapRef.current;
-      if (!wrap) return;
+      if (!wrap) return false;
       const from = window.scrollY;
       const to = wrap.offsetTop + index * window.innerHeight;
-      if (Math.abs(to - from) < 1) return;
+      if (Math.abs(to - from) < 1) return false;
       // The glide always runs a full STEP_MS regardless of who called it —
       // armEntry only arms a much shorter MOMENTUM_MS lock of its own (see
       // above), which used to expire mid-glide. onScroll would then read the
@@ -239,6 +305,7 @@ export default function CinematicStage({
         if (p < 1) tween = requestAnimationFrame(step);
       };
       tween = requestAnimationFrame(step);
+      return true;
     };
 
     // The active chapter's own scroll box. On a narrow/mobile layout a chapter
@@ -276,20 +343,38 @@ export default function CinematicStage({
       return dir > 0 ? max - pane.scrollTop : pane.scrollTop;
     };
 
-    /** Is there a chapter in this direction, or does the page take over? */
+    /** Is there a chapter in this direction, or does the page take over?
+     *  Based on activeIndexRef, not indexNow() — see stepBy below for why. */
     const canStep = (delta: number) => {
-      const next = indexNow() + delta;
+      const next = activeIndexRef.current + delta;
       return next >= 0 && next <= chapters.length - 1;
     };
 
     const stepBy = (delta: number): boolean => {
-      const current = indexNow();
+      // activeIndexRef, not indexNow(): a step fired while the previous
+      // glide is still animating (its own lock ran out early, or this one
+      // slipped in past it) would have indexNow() read window.scrollY
+      // somewhere *between* two chapters and round to whichever is nearer —
+      // already the chapter this step is meant to land on, one step ahead
+      // of where the deck actually, conceptually is. Adding delta to that
+      // then overshoots by a whole chapter. activeIndexRef always holds the
+      // last *committed* target, set synchronously the moment a step or
+      // settle decides on it, regardless of whether the tween chasing it
+      // has arrived yet — the correct base for "one more from here".
+      const current = activeIndexRef.current;
       const next = current + delta;
       if (next < 0 || next > chapters.length - 1) return false; // hand back to the page
       directionRef.current = delta;
       setActiveIndex(next);
       glideTo(next);
-      extendLock(STEP_MS + 120);
+      // Fixed, single-shot window a trackpad's post-flick momentum tail
+      // needs to fully play out and get absorbed within (see the isLocked
+      // branch in onWheel, which deliberately does not renew this) — a
+      // strong flick's tail on a real trackpad can keep emitting decaying
+      // events for the better part of a second, well past the glide's own
+      // STEP_MS, so this errs generous rather than risk a leftover tail
+      // landing as an unintended second step.
+      extendLock(STEP_MS + 700);
       return true;
     };
 
@@ -300,16 +385,24 @@ export default function CinematicStage({
         return;
       }
       if (!wasEngaged) {
-        armEntry();
+        const settling = armEntry();
         e.preventDefault();
-        return;
+        // Nothing to settle onto (the visitor is already sitting exactly on
+        // a chapter boundary, the normal case scrolling in cleanly from
+        // just above the deck) — fall through and let this same gesture
+        // also register as the first real step below, instead of quietly
+        // discarding it and leaving the deck looking unresponsive.
+        if (settling) return;
       }
       if (isLocked()) {
-        // Trackpads keep emitting decaying events after the fingers lift;
-        // absorbing them here is what stops one flick cascading through
-        // several chapters.
+        // Trackpads keep emitting decaying (or, for a long swipe, simply
+        // still-continuing) events well past the moment a step already
+        // fired; absorbing them here — without renewing the lock itself —
+        // is what stops that same physical gesture cascading into a second
+        // chapter, while still guaranteeing the lock actually expires on
+        // schedule so the deck responds again promptly. See the big
+        // comment on `lock` above for why this doesn't extend it.
         e.preventDefault();
-        extendLock(MOMENTUM_MS);
         return;
       }
       // Spend the gesture on the chapter itself while it still has room.
@@ -348,7 +441,6 @@ export default function CinematicStage({
       wheelAccum = 0;
       if (stepBy(stepDir)) {
         e.preventDefault();
-        extendLock(MOMENTUM_MS);
       }
     };
 
@@ -430,11 +522,35 @@ export default function CinematicStage({
     };
 
     // Keeps the deck honest when the page is scrolled by anything that is not
-    // a gesture — a header anchor, a hash on load, the scrollbar.
+    // our own gesture handling below — a header anchor, a hash on load, the
+    // scrollbar, or (the case this is clamped for) a trackpad's native
+    // momentum. Chrome commits an entire physical trackpad gesture to native
+    // scrolling, ignoring every subsequent preventDefault(), if that
+    // gesture's very first wheel event fired a moment before engaged()
+    // turned true (still legitimately unprevented, outside the deck) — a
+    // long swipe can then carry scrollY straight through an entire extra
+    // chapter's worth of native scrolling before onWheel/armEntry ever get a
+    // chance to run, and this listener (unlike those, it can't preventDefault
+    // — passive) would otherwise just adopt wherever that native scroll
+    // ended up, silently skipping the chapter in between. Clamped to one
+    // step per update past the initial sync fixes that: a real deep link
+    // (hash on load) still lands exactly where it points in that one
+    // one-time initial call, but any *ongoing* scroll — gesture or drift —
+    // is only ever allowed to advance the deck one chapter at a time,
+    // exactly like a normal step.
+    let syncedInitialScroll = false;
     const onScroll = () => {
       if (isLocked()) return;
       const next = indexNow();
-      setActiveIndex((prev) => (prev === next ? prev : next));
+      if (!syncedInitialScroll) {
+        syncedInitialScroll = true;
+        setActiveIndex(next);
+        return;
+      }
+      setActiveIndex((prev) => {
+        if (prev === next) return prev;
+        return Math.max(prev - 1, Math.min(prev + 1, next));
+      });
     };
 
     onScroll();

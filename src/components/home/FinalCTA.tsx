@@ -11,7 +11,7 @@ export default function FinalCTA() {
   const cta = finalCtaByCategory[active];
 
   return (
-    <section className="py-10 sm:py-14">
+    <section id="finalcta" className="py-10 sm:py-14">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 24 }}

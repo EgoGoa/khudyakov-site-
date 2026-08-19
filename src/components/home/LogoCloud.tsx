@@ -17,7 +17,7 @@ const clients = [
 // swap in image logos here later without touching the layout.
 export default function LogoCloud() {
   return (
-    <section className="py-10 sm:py-12">
+    <section id="logocloud" className="py-10 sm:py-12">
       <Container>
         <p className="text-center font-mono text-xs uppercase tracking-[0.25em] text-paper/40">
           Нам доверяют

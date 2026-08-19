@@ -69,6 +69,7 @@ export default function CinematicSection({
   side = "left",
   entrance,
   titleClassName = "",
+  id,
   children,
 }: {
   /** Position in the deck — must match this chapter's entry in `chapters`. */
@@ -84,6 +85,11 @@ export default function CinematicSection({
   /** Extra classes appended to the title — for the one chapter whose title
    *  needs to carry more weight than the shared size gives every chapter. */
   titleClassName?: string;
+  /** Scroll-spy anchor, e.g. for VibeRail. Only applied outside the pinned
+   *  deck (`!staged`) — inside it, CinematicStage's own runway div already
+   *  carries this same id at the matching scroll position, and setting it
+   *  here too would duplicate it in the DOM. */
+  id?: string;
   children?: ReactNode;
 }) {
   // Trust/Offer/Process/Close are authored for the pinned deck (see
@@ -105,6 +111,7 @@ export default function CinematicSection({
 
   return (
     <motion.div
+      id={!staged ? id : undefined}
       initial={false}
       animate={!staged || reduced ? { opacity: active ? 1 : 0 } : entranceFor(kind, active)}
       // Only transform and opacity are animated — a blur() on a full-screen
