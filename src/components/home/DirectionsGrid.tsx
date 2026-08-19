@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useStageActive } from "@/components/ui/CinematicStage";
+import { useStageActive, useStageStarted } from "@/components/ui/CinematicStage";
 import { TelegramIcon } from "@/components/ui/Icons";
 import { contentDirections, type ContentDirection } from "@/lib/service-content";
 import { works } from "@/lib/data";
@@ -170,7 +170,13 @@ function ConsultCard() {
 }
 
 export default function DirectionsGrid() {
-  const active = useStageActive(0);
+  // useStageActive(0) alone is true from the very first render — chapter 0
+  // is "active" by the deck's default state before the visitor has
+  // scrolled anywhere near it (Hero/ServicePicker sit above it) — which
+  // was mounting all six cards' autoplaying YouTube embeds immediately on
+  // page load. useStageStarted() only flips once the deck has actually
+  // scrolled into view.
+  const active = useStageActive(0) && useStageStarted();
   const picks = pickWorks(contentDirections);
 
   return (

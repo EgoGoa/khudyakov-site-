@@ -44,7 +44,7 @@ import { useCinematicNavRegister } from "@/lib/cinematic-nav";
 export type Phase = { start: number; end: number };
 export type ChapterMeta = { id: string };
 
-type StageApi = { activeIndex: number; staged: boolean };
+type StageApi = { activeIndex: number; staged: boolean; started: boolean };
 
 // `staged: false` on the default value (no Provider above) is what lets
 // CinematicSection tell "really inside a CinematicStage" apart from "the
@@ -53,7 +53,7 @@ type StageApi = { activeIndex: number; staged: boolean };
 // the plain-scroll /ai, /sites, /smm pages needs that distinction: it must
 // stay hidden-until-active in the deck, but render as an ordinary visible
 // section everywhere else.
-const StageContext = createContext<StageApi>({ activeIndex: 0, staged: false });
+const StageContext = createContext<StageApi>({ activeIndex: 0, staged: false, started: false });
 
 // Seeking is only accurate to the nearest keyframe; the reel carries one per
 // second (-g 25), so land slightly inside the phase rather than exactly on its
@@ -730,7 +730,7 @@ export default function CinematicStage({
     return () => cancelAnimationFrame(raf);
   }, [activeIndex, phases, started]);
 
-  const api = useMemo<StageApi>(() => ({ activeIndex, staged: true }), [activeIndex]);
+  const api = useMemo<StageApi>(() => ({ activeIndex, staged: true, started }), [activeIndex, started]);
 
   return (
     <StageContext.Provider value={api}>
@@ -814,6 +814,17 @@ export default function CinematicStage({
 
 export function useStageActive(index: number) {
   return useContext(StageContext).activeIndex === index;
+}
+
+// Whether the deck has actually scrolled into view yet (see `started`
+// above) — chapter 0 is "active" by the default activeIndex state from the
+// very first render, before the visitor has scrolled anywhere near it (Hero
+// and ServicePicker sit above it). A component gating an autoplaying embed
+// on "is my chapter active" alone would mount it immediately on page load
+// for that reason; combining with this catches the same real-viewport
+// intent `started` already gates the reel's own playback on.
+export function useStageStarted() {
+  return useContext(StageContext).started;
 }
 
 // True only inside a real CinematicStage. A chapter component built for the
