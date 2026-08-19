@@ -103,7 +103,7 @@ export default function Process() {
     <CinematicSection
       index={4}
       chapter="05"
-      title="Как мы работаем"
+      title="PRO хронология"
       icon="route"
       side="right"
       entrance="slide-right"

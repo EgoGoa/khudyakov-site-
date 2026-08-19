@@ -422,13 +422,8 @@ export default function Works({
                         : "inset-x-4 flex items-end justify-between sm:inset-x-5"
                     }`}>
                       <div className="min-w-0">
-                        <div className={`font-sans font-semibold leading-snug text-white transition-[text-shadow] duration-300 group-hover:[text-shadow:0_0_16px_rgba(0,210,255,0.55)] ${
-                          limit ? "text-lg sm:text-2xl" : "text-base sm:text-lg"
-                        }`}>
-                          {work.title}
-                        </div>
                         {formatDuration(work.duration) && (
-                          <div className={`mt-1 font-mono tracking-[0.08em] text-paper/80 ${limit ? "text-xs" : "text-[11px]"}`}>
+                          <div className={`font-mono tracking-[0.08em] text-paper/80 ${limit ? "text-xs" : "text-[11px]"}`}>
                             {formatDuration(work.duration)}
                           </div>
                         )}

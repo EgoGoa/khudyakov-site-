@@ -20,7 +20,7 @@ export default function Offer() {
     <CinematicSection
       index={3}
       chapter="04"
-      title="Что мы делаем"
+      title="Лучшие в этом"
       icon="layers"
       side="left"
       // New subject after the trust argument — it tips up into place.

@@ -16,13 +16,13 @@ import { useEffect, useRef } from "react";
 // Desktop only, by design: touch devices have no persistent pointer and the
 // simulation is the single most expensive thing on the page.
 
-const SIM_RESOLUTION = 128;
-const DYE_RESOLUTION = 640;
+const SIM_RESOLUTION = 192;
+const DYE_RESOLUTION = 1024;
 const DENSITY_DISSIPATION = 1.5;
-const VELOCITY_DISSIPATION = 0.16;
+const VELOCITY_DISSIPATION = 0.1;
 const PRESSURE = 0.8;
 const PRESSURE_ITERATIONS = 20;
-const CURL = 46;
+const CURL = 60;
 const SPLAT_RADIUS = 0.00269;
 // Ceiling the dye can approach but not exceed, so the plume stays a
 // translucent wave over the page instead of a solid fill.
@@ -35,11 +35,11 @@ const SPLAT_SPREAD = 0.0605;
 // How much of each satellite's impulse is rotational rather than along the
 // direction of travel. Raise it for more obvious curls, lower it for a
 // straighter trail.
-const SWIRL_STRENGTH = 0.75;
+const SWIRL_STRENGTH = 1.05;
 const SPLAT_FORCE = 6000;
-const BLOOM_ITERATIONS = 8;
+const BLOOM_ITERATIONS = 6;
 const BLOOM_RESOLUTION = 256;
-const BLOOM_INTENSITY = 0.55;
+const BLOOM_INTENSITY = 0.35;
 const BLOOM_THRESHOLD = 0.132;
 const BLOOM_SOFT_KNEE = 0.7;
 
@@ -282,10 +282,10 @@ precision highp sampler2D;
 varying vec2 vUv;
 uniform sampler2D uTexture;
 uniform sampler2D uBloom;
-// The dye's own bright filament is damped to CORE_WEIGHT and most of the
-// visible energy comes from the bloom mip chain, so the trail reads as a
-// wide soft volume rather than a hard drawn line.
-const float CORE_WEIGHT = 0.5;
+// The dye's own filament carries most of the visible energy and the bloom
+// mip chain only adds a tight halo around it, so the trail reads as defined
+// curling lines rather than as diffuse vapour.
+const float CORE_WEIGHT = 0.75;
 void main () {
   vec3 c = texture2D(uTexture, vUv).rgb * CORE_WEIGHT;
   c += texture2D(uBloom, vUv).rgb;

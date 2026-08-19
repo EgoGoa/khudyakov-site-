@@ -29,7 +29,7 @@ export default function Trust() {
     <CinematicSection
       index={2}
       chapter="03"
-      title="Почему мы"
+      title="Именно мы"
       icon="shield"
       side="right"
       // The argument continues here, so it rises rather than cutting in sideways.

@@ -72,7 +72,7 @@ export default function ContentServicePage() {
         <CinematicSection
           index={1}
           chapter="02"
-          title="Работы"
+          title="Наши работы"
           icon="frames"
           side="right"
           intro="78 проектов: реклама, шоурилы, 3D и моушн."
