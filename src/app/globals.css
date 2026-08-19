@@ -1145,3 +1145,35 @@ body {
     scroll-snap-align: center;
   }
 }
+
+/* vibe orb — the sphere that opens the vibe rail (see VibeOrb.tsx).
+   The canvas draws the light; CSS owns only the hover gesture, so the growth
+   stays on the compositor and the trigger's hover state drives both the
+   scale here and the brightening inside the canvas. `.vibe-orb-trigger` goes
+   on the whole button, so hovering anywhere on the row lights the orb rather
+   than only the 22px circle itself. */
+.vibe-orb {
+  transform-origin: 50% 50%;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.vibe-orb-trigger:hover .vibe-orb,
+.vibe-orb-trigger:focus-visible .vibe-orb {
+  transform: scale(1.18);
+}
+
+.vibe-orb-trigger:active .vibe-orb {
+  transform: scale(1.06);
+  transition-duration: 0.12s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vibe-orb,
+  .vibe-orb-trigger:hover .vibe-orb,
+  .vibe-orb-trigger:focus-visible .vibe-orb,
+  .vibe-orb-trigger:active .vibe-orb {
+    transform: none;
+    transition: none;
+  }
+}

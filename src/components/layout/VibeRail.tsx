@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useHeaderMenu } from "@/lib/header-menu";
-import { vibeButtonStyle } from "@/components/home/WelcomeOverlay";
 import WelcomeWidget from "@/components/home/WelcomeWidget";
 import CenterModal from "@/components/ui/CenterModal";
+import VibeOrb from "@/components/ui/VibeOrb";
 
 // Standalone routes where the whole page *is* one rail item — no in-page
 // anchor to scroll-spy, the URL alone decides it.
@@ -498,11 +498,15 @@ function RailRow({
   label,
   expanded,
   active = false,
+  className = "",
   onClick,
 }: {
   glyph: ReactNode;
   label: string;
   expanded: boolean;
+  /** Extra classes on the row's button — used to mark the vibe row as the
+   *  orb's hover trigger, so the whole row lights it, not just the sphere. */
+  className?: string;
   /** This row's section is the one currently on screen — lights the icon
    *  up with the rail's own pink→cyan glow and carries a shared layoutId,
    *  so moving from one active row to the next animates as one glow
@@ -524,7 +528,7 @@ function RailRow({
       // what made it visibly drift sideways as the panel widened.
       className={`group flex w-full flex-row-reverse items-center justify-start gap-2 rounded-xl py-2 pl-2.5 pr-3 text-right transition-colors hover:bg-paper/[0.08] ${
         active ? "text-white" : "text-paper/70 hover:text-paper"
-      }`}
+      } ${className}`}
     >
       <span className="relative flex h-5 w-5 shrink-0 items-center justify-center [&_svg]:h-[18px] [&_svg]:w-[18px]">
         {active && (
@@ -659,27 +663,41 @@ export default function VibeRail() {
           backdropFilter: "blur(28px)",
           WebkitBackdropFilter: "blur(28px)",
         }}
-        className={`fixed right-2 top-1/2 z-[65] hidden -translate-y-1/2 overflow-hidden py-2.5 lg:block ${
+        // No overflow-hidden here any more — it moved to the row list below.
+        // The crown orb is sized to the rail's own rounded cap and its glow
+        // has to spill past that edge to read as light; clipping it at the
+        // rail's border box cut the halo into a flat arc.
+        className={`fixed right-2 top-1/2 z-[65] hidden -translate-y-1/2 pb-2.5 pt-0.5 lg:block ${
           headerMenuOpen ? "pointer-events-none" : ""
         }`}
       >
-        <nav className="flex flex-col gap-0.5">
-          <RailRow
-            glyph={
-              <span
-                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white"
-                style={{ background: vibeButtonStyle().background as string }}
-              >
-                V
-              </span>
-            }
-            label="Vibe"
-            expanded={expanded}
-            onClick={() => {
-              setExpanded(false);
-              setPickerOpen(true);
-              }}
-            />
+        {/* The rail's crown: the vibe orb replaces the old gradient "V" disc.
+            Sized to sit inside the pill's rounded cap with a couple of pixels
+            of clearance, so its limb traces the rail's own curve — collapsed
+            (a full semicircular cap) and expanded (a 26px corner) alike, since
+            it stays pinned to the same corner in both. */}
+        <button
+          type="button"
+          onClick={() => {
+            setExpanded(false);
+            setPickerOpen(true);
+          }}
+          aria-label="Vibe"
+          aria-haspopup="dialog"
+          className="vibe-orb-trigger flex w-full flex-row-reverse items-center justify-start gap-2 pl-2.5 pr-1 text-right"
+        >
+          <VibeOrb size={40} />
+          <span
+            className={`shrink-0 whitespace-nowrap font-mono text-[8px] uppercase leading-none tracking-[0.03em] text-paper/70 [text-shadow:0_1px_6px_rgba(0,0,0,0.9)] transition-opacity ${
+              expanded ? "opacity-100 duration-200 delay-200" : "opacity-0 duration-100"
+            }`}
+          >
+            Vibe
+          </span>
+        </button>
+
+        <div className="overflow-hidden">
+          <nav className="flex flex-col gap-0.5">
             <div className="mx-3 my-1.5 h-px bg-paper/10" />
             {/* Distinguishes this rail from Header's ordinary nav — without
                 it the two read as duplicate menus, since several rows below
@@ -714,7 +732,8 @@ export default function VibeRail() {
                 onClick={() => openItem(item)}
               />
             ))}
-        </nav>
+          </nav>
+        </div>
       </motion.div>
 
       {/* Mobile entry point — the old floating "VIBE САЙТ" button's slot and
@@ -727,14 +746,12 @@ export default function VibeRail() {
           aria-haspopup="dialog"
           aria-expanded={sheetOpen}
           aria-label="Vibe меню"
-          className="flex h-12 w-12 items-center justify-center rounded-full font-display text-sm font-bold uppercase text-white transition-transform duration-200 active:scale-95"
-          style={{
-            background: vibeButtonStyle().background as string,
-            border: vibeButtonStyle().border as string,
-            boxShadow: "0 8px 28px -8px rgba(168,85,247,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
-          }}
+          // No disc behind it: the orb *is* the button here, so the mark keeps
+          // the transparent background it's drawn for instead of sitting on a
+          // gradient pill that would mute its own glow.
+          className="vibe-orb-trigger flex h-12 w-12 items-center justify-center rounded-full"
         >
-          V
+          <VibeOrb size={40} />
         </button>
       </div>
 
@@ -774,13 +791,10 @@ export default function VibeRail() {
                   setSheetOpen(false);
                   setPickerOpen(true);
                 }}
-                className="flex w-full items-center gap-3 rounded-xl px-2 py-3"
+                className="vibe-orb-trigger flex w-full items-center gap-3 rounded-xl px-2 py-3"
               >
-                <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold uppercase text-white"
-                  style={vibeButtonStyle()}
-                >
-                  V
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center">
+                  <VibeOrb size={28} />
                 </span>
                 <span className="font-mono text-xs uppercase tracking-[0.16em] text-paper">
                   Vibe — выбор направления

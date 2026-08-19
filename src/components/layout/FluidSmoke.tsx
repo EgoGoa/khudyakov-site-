@@ -19,10 +19,16 @@ import { useEffect, useRef } from "react";
 const SIM_RESOLUTION = 192;
 const DYE_RESOLUTION = 1024;
 const DENSITY_DISSIPATION = 1.5;
-const VELOCITY_DISSIPATION = 0.1;
+// Momentum has to die roughly when the pointer stops, or any vortex that
+// forms keeps coasting across the page under its own steam long after the
+// cursor has gone.
+const VELOCITY_DISSIPATION = 0.16;
 const PRESSURE = 0.8;
 const PRESSURE_ITERATIONS = 20;
-const CURL = 60;
+// Vorticity confinement feeds energy back into whatever is already rotating.
+// Pushed high it does not just sharpen the trail's curls, it keeps detached
+// eddies alive indefinitely, so it stays moderate.
+const CURL = 46;
 const SPLAT_RADIUS = 0.00269;
 // Ceiling the dye can approach but not exceed, so the plume stays a
 // translucent wave over the page instead of a solid fill.
@@ -35,7 +41,12 @@ const SPLAT_SPREAD = 0.0605;
 // How much of each satellite's impulse is rotational rather than along the
 // direction of travel. Raise it for more obvious curls, lower it for a
 // straighter trail.
-const SWIRL_STRENGTH = 1.05;
+// Kept below 1: the spin term ((0.45..0.95) * SWIRL_STRENGTH) has to stay
+// smaller than the along-path term (0.3..0.75) or a satellite's net impulse
+// points more sideways than forward — it splats off at an angle away from
+// the pointer's travel and spins up into its own little vortex that then
+// drifts across the page on its own, decoupled from the cursor.
+const SWIRL_STRENGTH = 0.75;
 const SPLAT_FORCE = 6000;
 const BLOOM_ITERATIONS = 6;
 const BLOOM_RESOLUTION = 256;
