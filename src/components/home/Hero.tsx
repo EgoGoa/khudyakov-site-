@@ -114,14 +114,22 @@ export default function Hero() {
           src="/images/showreel-frame.jpg"
           alt=""
           aria-hidden="true"
-          className={`pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover blur-[3px] brightness-[0.85] transition-opacity duration-500 sm:w-[300%] md:w-[220%] lg:w-[190%] ${
+          className={`pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 object-cover blur-[3px] brightness-[0.85] transition-opacity duration-500 sm:w-[200%] md:w-[147%] lg:w-[127%] ${
             loadReel ? "opacity-0" : "opacity-100"
           }`}
         />
         {loadReel && (
+          // Laid out ~33% smaller than the visual size it ends up at (the
+          // matching scale-[1.5] below stretches it back) rather than at
+          // its full on-screen size directly: YouTube picks a stream
+          // resolution from the iframe's actual layout box, and this was
+          // requesting a needlessly high one for a video that's blurred at
+          // rest and, even sharp on hover, is still just a background loop
+          // behind text — CSS can't lower an already-negotiated resolution,
+          // only the box size fed into that negotiation can.
           <iframe
             ref={frameRef}
-            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 blur-[3px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[300%] md:w-[220%] lg:w-[190%]"
+            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 blur-[3px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]"
             src={`https://www.youtube.com/embed/${SHOWREEL_YOUTUBE_ID}?autoplay=1&mute=1&loop=1&playlist=${SHOWREEL_YOUTUBE_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
             title="Шоурил HDKV.AGENCY"
             allow="autoplay; encrypted-media; picture-in-picture"
