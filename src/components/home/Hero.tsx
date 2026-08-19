@@ -114,14 +114,14 @@ export default function Hero() {
           src="/images/showreel-frame.jpg"
           alt=""
           aria-hidden="true"
-          className={`pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover blur-[6px] brightness-[0.85] transition-opacity duration-500 sm:w-[300%] md:w-[220%] lg:w-[190%] ${
+          className={`pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover blur-[3px] brightness-[0.85] transition-opacity duration-500 sm:w-[300%] md:w-[220%] lg:w-[190%] ${
             loadReel ? "opacity-0" : "opacity-100"
           }`}
         />
         {loadReel && (
           <iframe
             ref={frameRef}
-            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 blur-[6px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[300%] md:w-[220%] lg:w-[190%]"
+            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[420%] max-w-none -translate-x-1/2 -translate-y-1/2 blur-[3px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[300%] md:w-[220%] lg:w-[190%]"
             src={`https://www.youtube.com/embed/${SHOWREEL_YOUTUBE_ID}?autoplay=1&mute=1&loop=1&playlist=${SHOWREEL_YOUTUBE_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
             title="Шоурил HDKV.AGENCY"
             allow="autoplay; encrypted-media; picture-in-picture"
