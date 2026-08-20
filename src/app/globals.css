@@ -196,6 +196,19 @@ body {
   }
 }
 
+/* The "AI" appended to the header's DIGITAL wordmark is a distinct brand
+   mark, not the hero's cyan neon — pink-to-blue gradient with its own soft
+   glow, per the founder's logo. Drop-shadow rather than text-shadow because
+   text-shadow can't pick up a gradient fill's colour. */
+.header-ai-mark {
+  background-image: linear-gradient(90deg, #ff4fd8 0%, #00d2ff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 5px rgba(255, 79, 216, 0.5)) drop-shadow(0 0 8px rgba(0, 210, 255, 0.5));
+}
+
 /* Chapter icons (ChapterIcon.tsx): one line-icon language across the six
    chapters. They draw themselves on when their chapter takes the stage, then
    hold a slow halo breathe so the frame never looks frozen. The halo is a

@@ -260,7 +260,9 @@ export default function Header() {
           </span>
           <span className="ml-1 hidden h-6 w-px shrink-0 bg-paper/25 sm:block" aria-hidden="true" />
           <span className="hidden shrink-0 flex-col gap-0.5 font-sans text-[0.65rem] font-normal leading-none tracking-[0.12em] text-paper/60 sm:flex">
-            <span className="whitespace-nowrap text-[1em]">DIGITAL</span>
+            <span className="whitespace-nowrap text-[1em]">
+              DIGITAL <span className="header-ai-mark">AI</span>
+            </span>
             <span className="whitespace-nowrap text-[1em]">АГЕНТСТВО</span>
           </span>
         </Link>

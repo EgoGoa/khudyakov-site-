@@ -21,23 +21,42 @@ const DYE_RESOLUTION = 1024;
 const DENSITY_DISSIPATION = 1.5;
 // Momentum has to die roughly when the pointer stops, or any vortex that
 // forms keeps coasting across the page under its own steam long after the
-// cursor has gone.
-const VELOCITY_DISSIPATION = 0.16;
+// cursor has gone. Kept on the high side (settles fast) so the trail drifts
+// and settles like smoke off a cigarette rather than staying agitated.
+const VELOCITY_DISSIPATION = 0.24;
 const PRESSURE = 0.8;
 const PRESSURE_ITERATIONS = 20;
 // Vorticity confinement feeds energy back into whatever is already rotating.
 // Pushed high it does not just sharpen the trail's curls, it keeps detached
-// eddies alive indefinitely, so it stays moderate.
-const CURL = 46;
+// eddies alive indefinitely and reads as agitated, wind-blown turbulence —
+// kept low so curls stay lazy and occasional rather than constant.
+const CURL = 18;
 const SPLAT_RADIUS = 0.00269;
 // Ceiling the dye can approach but not exceed, so the plume stays a
 // translucent wave over the page instead of a solid fill.
 const DYE_CAP = 0.408;
 // Extra jittered splats around each pointer sample — the wispiness lever.
 const SATELLITES_PER_MOVE = 1;
+// The splat directly under the cursor still injects full velocity (it has
+// to, to drive the fluid) but carries almost no dye of its own — the point
+// itself should read as an invisible force shoving the fluid, not as a
+// patch of smoke. Left at full strength, a slow drag re-paints the same UV
+// cell every frame and the Gaussian saturates into a static glowing disc
+// before there's enough velocity for vorticity confinement to tear it into
+// a filament. All the visible smoke comes from the offset, swirl-heavy
+// satellites below, which is what actually reads as a trailing thread.
+const MAIN_DYE_RADIUS_SCALE = 0.3;
+const MAIN_DYE_STRENGTH = 0.16;
 // How far off the pointer path satellites may land, as a fraction of the
 // viewport. A plain UV distance, deliberately independent of SPLAT_RADIUS.
-const SPLAT_SPREAD = 0.0605;
+// Has to stay small: pointermove fires far more often than the cursor
+// visibly travels between frames, so a wide spread lands dozens of
+// overlapping satellites within one small area every second and the trail
+// reads as a fluffy cloud around the cursor instead of a thread trailing
+// behind it. Kept just wide enough that individual satellites still miss
+// each other slightly — that miss is what the curl then twists into a
+// visible thin vortex rather than a solid smear.
+const SPLAT_SPREAD = 0.014;
 // How much of each satellite's impulse is rotational rather than along the
 // direction of travel. Raise it for more obvious curls, lower it for a
 // straighter trail.
@@ -46,11 +65,18 @@ const SPLAT_SPREAD = 0.0605;
 // points more sideways than forward — it splats off at an angle away from
 // the pointer's travel and spins up into its own little vortex that then
 // drifts across the page on its own, decoupled from the cursor.
-const SWIRL_STRENGTH = 0.75;
-const SPLAT_FORCE = 6000;
-const BLOOM_ITERATIONS = 6;
+const SWIRL_STRENGTH = 0.3;
+// A hard shove reads as smoke being flung around; a gentle one lets it drift
+// off the cursor the way heat plumes off a smoldering cigarette.
+const SPLAT_FORCE = 3200;
+// Kept short and tight on purpose: with the full 6-mip chain from before,
+// bloom's soft halo outweighed the dye's own advected shape and every
+// filament read as a single foggy smear regardless of how sharp the
+// underlying fluid structure was (verified by zeroing intensity and
+// inspecting the raw dye texture — the curls were there all along).
+const BLOOM_ITERATIONS = 3;
 const BLOOM_RESOLUTION = 256;
-const BLOOM_INTENSITY = 0.35;
+const BLOOM_INTENSITY = 0.16;
 const BLOOM_THRESHOLD = 0.132;
 const BLOOM_SOFT_KNEE = 0.7;
 
@@ -296,7 +322,7 @@ uniform sampler2D uBloom;
 // The dye's own filament carries most of the visible energy and the bloom
 // mip chain only adds a tight halo around it, so the trail reads as defined
 // curling lines rather than as diffuse vapour.
-const float CORE_WEIGHT = 0.75;
+const float CORE_WEIGHT = 1.0;
 void main () {
   vec3 c = texture2D(uTexture, vUv).rgb * CORE_WEIGHT;
   c += texture2D(uBloom, vUv).rgb;
@@ -659,26 +685,37 @@ export default function FluidSmoke() {
       dx: number,
       dy: number,
       color: [number, number, number],
-      radiusScale = 1,
+      velRadiusScale = 1,
+      dyeRadiusScale = velRadiusScale,
+      dyeStrength = 1,
     ) {
-      gl!.useProgram(splatProgram.program);
-      gl!.uniform1i(splatProgram.uniforms.uTarget!, velocity.read.attach(0));
-      gl!.uniform1f(splatProgram.uniforms.aspectRatio!, canvas!.width / canvas!.height);
-      gl!.uniform2f(splatProgram.uniforms.point!, x, y);
-      gl!.uniform3f(splatProgram.uniforms.color!, dx, dy, 0);
       // The gaussian in the splat shader works in UV space, which is
       // anisotropic on a wide viewport — widen the radius by the aspect ratio
       // so the injected blob stays round instead of squashing vertically.
       const aspectRatio = canvas!.width / canvas!.height;
-      const base = SPLAT_RADIUS * radiusScale;
-      const radius = aspectRatio > 1 ? base * aspectRatio : base;
-      gl!.uniform1f(splatProgram.uniforms.radius!, radius);
+      const widen = (scale: number) => {
+        const base = SPLAT_RADIUS * scale;
+        return aspectRatio > 1 ? base * aspectRatio : base;
+      };
+
+      gl!.useProgram(splatProgram.program);
+      gl!.uniform1i(splatProgram.uniforms.uTarget!, velocity.read.attach(0));
+      gl!.uniform1f(splatProgram.uniforms.aspectRatio!, aspectRatio);
+      gl!.uniform2f(splatProgram.uniforms.point!, x, y);
+      gl!.uniform3f(splatProgram.uniforms.color!, dx, dy, 0);
+      gl!.uniform1f(splatProgram.uniforms.radius!, widen(velRadiusScale));
       gl!.uniform1f(splatProgram.uniforms.cap!, 0);
       blit(velocity.write);
       velocity.swap();
 
       gl!.uniform1i(splatProgram.uniforms.uTarget!, dye.read.attach(0));
-      gl!.uniform3f(splatProgram.uniforms.color!, color[0], color[1], color[2]);
+      gl!.uniform3f(
+        splatProgram.uniforms.color!,
+        color[0] * dyeStrength,
+        color[1] * dyeStrength,
+        color[2] * dyeStrength,
+      );
+      gl!.uniform1f(splatProgram.uniforms.radius!, widen(dyeRadiusScale));
       gl!.uniform1f(splatProgram.uniforms.cap!, DYE_CAP);
       blit(dye.write);
       dye.swap();
@@ -723,7 +760,7 @@ export default function FluidSmoke() {
       pointer.prevX = pointer.x;
       pointer.prevY = pointer.y;
 
-      splat(pointer.x, pointer.y, dx, dy, splatColor());
+      splat(pointer.x, pointer.y, dx, dy, splatColor(), 1, MAIN_DYE_RADIUS_SCALE, MAIN_DYE_STRENGTH);
 
       for (let i = 0; i < SATELLITES_PER_MOVE; i += 1) {
         const jx = (Math.random() - 0.5) * 2 * SPLAT_SPREAD;
@@ -731,13 +768,16 @@ export default function FluidSmoke() {
         const along = 0.3 + Math.random() * 0.45;
         const spin = (i % 2 === 0 ? 1 : -1) * (0.45 + Math.random() * 0.5) * SWIRL_STRENGTH;
         const color = splatColor();
+        const radiusScale = 0.45 + Math.random() * 0.8;
         splat(
           pointer.x + jx,
           pointer.y + jy,
           dx * along - dy * spin,
           dy * along + dx * spin,
-          [color[0] * 0.6, color[1] * 0.6, color[2] * 0.6],
-          0.45 + Math.random() * 0.8,
+          color,
+          radiusScale,
+          radiusScale,
+          0.65,
         );
       }
     }
