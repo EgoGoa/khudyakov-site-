@@ -94,22 +94,44 @@ const KEY_SCROLL_PX = 320; // how far one arrow press scrolls inside a tall chap
 // keyframe per second — at a low rate the browser has nothing to interpolate
 // between, so the "slow motion" read as a stutter rather than a settle. Full
 // speed to a hard stop has no such problem; the blur is what sells the
-// transition instead. BLUR_SECONDS is the window, at both ends of a phase,
-// over which it ramps; MAX_BLUR_PX is how far it gets.
-const BLUR_SECONDS = 0.7;
-const MAX_BLUR_PX = 16;
+// transition instead. `blurSeconds` is the window, at both ends of a phase,
+// over which it ramps; `maxBlurPx` is how far it gets. Both are props, since
+// how hard the defocus should hit is a per-reel decision: these are the
+// values /content's reel was tuned to, /ai asks for a heavier one.
+const DEFAULT_BLUR_SECONDS = 0.7;
+const DEFAULT_MAX_BLUR_PX = 16;
+
+// `push` only. A slow zoom across the *whole* reel, not per phase: the film
+// closes in by PUSH_RANGE from 0 to its last phase's end and never resets, so
+// no chapter change carries a scale jump (a per-phase push does, and a 6%
+// pop is legible even under a full-strength blur). It earns its place on a
+// reel with long, near-frozen stretches — /ai's has two — where the picture
+// would otherwise sit dead still for a whole chapter. PUSH_BASE also keeps
+// the frame overscanned, so a heavy blur can't drag the video's own edges
+// into shot.
+const PUSH_BASE = 1.04;
+const PUSH_RANGE = 0.06;
 
 export default function CinematicStage({
   src,
   poster,
   phases,
   chapters,
+  maxBlurPx = DEFAULT_MAX_BLUR_PX,
+  blurSeconds = DEFAULT_BLUR_SECONDS,
+  push = false,
   children,
 }: {
   src: string;
   poster: string;
   phases: Phase[];
   chapters: ChapterMeta[];
+  /** How far the defocus goes at a hold. See DEFAULT_MAX_BLUR_PX. */
+  maxBlurPx?: number;
+  /** How long it takes to get there, at both ends of a phase. */
+  blurSeconds?: number;
+  /** Slow zoom across the whole reel — see PUSH_BASE. */
+  push?: boolean;
   children: ReactNode;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -703,12 +725,19 @@ export default function CinematicStage({
     // Driven by rAF rather than `timeupdate`, which only fires about four
     // times a second — far too coarse to shape a sub-second ramp.
     const smoothstep = (t: number) => t * t * (3 - 2 * t);
+    const reelEnd = phases[phases.length - 1]?.end ?? 0;
+    const applyPush = () => {
+      if (!push || reelEnd <= 0) return;
+      const travelled = Math.min(1, Math.max(0, video.currentTime / reelEnd));
+      video.style.transform = `scale(${(PUSH_BASE + PUSH_RANGE * travelled).toFixed(4)})`;
+    };
     let raf = 0;
     const tick = () => {
       const remaining = phase.end - video.currentTime;
+      applyPush();
       if (remaining <= 0) {
         if (!video.paused) video.pause();
-        video.style.filter = `blur(${MAX_BLUR_PX}px)`;
+        video.style.filter = `blur(${maxBlurPx}px)`;
         return;
       }
       // Self-heal an unexpected pause. play() is fire-and-forget above, and
@@ -721,10 +750,10 @@ export default function CinematicStage({
       if (video.paused) video.play().catch(() => {});
 
       const elapsed = video.currentTime - phase.start;
-      const revealT = Math.min(1, Math.max(0, elapsed / BLUR_SECONDS));
-      const settleT = Math.min(1, Math.max(0, remaining / BLUR_SECONDS));
-      const blurIn = (1 - smoothstep(revealT)) * MAX_BLUR_PX;
-      const blurOut = (1 - smoothstep(settleT)) * MAX_BLUR_PX;
+      const revealT = Math.min(1, Math.max(0, elapsed / blurSeconds));
+      const settleT = Math.min(1, Math.max(0, remaining / blurSeconds));
+      const blurIn = (1 - smoothstep(revealT)) * maxBlurPx;
+      const blurOut = (1 - smoothstep(settleT)) * maxBlurPx;
       const blur = Math.max(blurIn, blurOut);
       video.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "";
 
@@ -733,7 +762,7 @@ export default function CinematicStage({
     raf = requestAnimationFrame(tick);
 
     return () => cancelAnimationFrame(raf);
-  }, [activeIndex, phases, started]);
+  }, [activeIndex, phases, started, maxBlurPx, blurSeconds, push]);
 
   const api = useMemo<StageApi>(() => ({ activeIndex, staged: true, started }), [activeIndex, started]);
 

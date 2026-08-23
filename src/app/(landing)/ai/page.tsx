@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PhotoStage, { type ChapterMeta } from "@/components/ui/PhotoStage";
+import CinematicStage, { type ChapterMeta, type Phase } from "@/components/ui/CinematicStage";
 import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import AiPitch from "@/components/home/ai/AiPitch";
 import AiPortfolio from "@/components/home/ai/AiPortfolio";
@@ -19,17 +19,39 @@ export const metadata: Metadata = {
   description: "Внедряем ИИ-инструменты в продакшн и коммуникацию с клиентами.",
 };
 
-// Same section architecture as /content's cinematic deck (see that page),
-// built on top of the ruvision.ru/ai reference — see docs/ai-page-todo.md
-// for what's still a structural [TODO] placeholder versus real content.
+// Same deck as /content: one continuous film pinned behind chapters that step
+// one per gesture, each phase playing out and then holding — defocused — on
+// its closing frame. See CinematicStage for the mechanics.
 //
-// Background is PhotoStage (a static-image sibling of CinematicStage, see
-// that component) rather than a scrubbed video reel: /ai has no edited
-// footage of its own yet. `photo` below is a placeholder path — drop the
-// real image in at that path and it picks up automatically; nothing else
-// changes. Once there's a proper AI reel, swap PhotoStage for CinematicStage
-// here and this file's chapters don't need to move.
-const PHOTO = "/images/ai-hero-placeholder.jpg";
+// public/video/ai-reel.mp4 is the supplied footage whole and unedited, only
+// transcoded for the web (1280×720, ~1.2 Mbps, one keyframe per second so a
+// seek back to a phase start lands clean, audio dropped). 31.625s long.
+//
+// The phases below are where playback rests. Boundaries were read off the
+// footage itself — its hard cuts at 2.375, 4.292, 6.625, 9.958 and the flash
+// at 26.083, plus the points where motion drops to a standstill (7.0–9.9,
+// 14.5–20.5, 25.5–26.0) — so each chapter both opens on a cut and freezes on
+// a frame the film had already settled onto:
+//
+//   01  0     → 4.29   the android, two quick cuts
+//   02  4.29  → 9.96   the glass office, holding on the man at the laptop
+//   03  9.96  → 14.5   the chameleon reveal, settling
+//   04  14.5  → 21.0   the canopy overhead, near-still (the push carries it)
+//   05  21.0  → 26.08  the android close-up, resting just before the flash
+//   06  26.08 → 31.63  flash, hands on the keys, the last look up
+//
+// Six phases is what the film holds, so the deck is six chapters — the last
+// three sections of the page (process, team, close) sit below it in ordinary
+// scroll rather than stretching a seventh phase out of footage that hasn't
+// got one.
+const PHASES: Phase[] = [
+  { start: 0, end: 4.292 },
+  { start: 4.292, end: 9.958 },
+  { start: 9.958, end: 14.5 },
+  { start: 14.5, end: 21.0 },
+  { start: 21.0, end: 26.083 },
+  { start: 26.083, end: 31.625 },
+];
 
 const CHAPTERS: ChapterMeta[] = [
   { id: "pitch" },
@@ -38,9 +60,6 @@ const CHAPTERS: ChapterMeta[] = [
   { id: "trust" },
   { id: "offer" },
   { id: "guarantees" },
-  { id: "process" },
-  { id: "team" },
-  { id: "close" },
 ];
 
 export default function AiServicePage() {
@@ -48,7 +67,20 @@ export default function AiServicePage() {
     <ServiceProvider forcedValue="ai">
       <ServiceMenuOverlay service="ai" />
 
-      <PhotoStage photo={PHOTO} chapters={CHAPTERS}>
+      {/* Heavier defocus than /content's default 16px/0.7s: this reel is
+          softer and slower-moving, so the hold needs more of a drop to read
+          as a deliberate stop rather than a stall. `push` is the slow zoom
+          across the whole film — chapters 04 and 06 sit on footage that is
+          nearly frozen, and without it those screens look like a still. */}
+      <CinematicStage
+        src="/video/ai-reel.mp4"
+        poster="/images/ai-reel-poster.jpg"
+        phases={PHASES}
+        chapters={CHAPTERS}
+        maxBlurPx={26}
+        blurSeconds={0.9}
+        push
+      >
         <AiPitch />
         <AiPortfolio />
         <AiSegments />
@@ -61,16 +93,21 @@ export default function AiServicePage() {
         />
         <Offer index={4} chapter="05" />
         <AiGuarantees />
-        <Process
-          index={6}
-          chapter="07"
-          title="Как проходит внедрение"
-          intro="Шесть шагов от аудита до сопровождения. На каждом — понятный результат и точка согласования."
-          steps={AI_PROCESS_STEPS}
-        />
-        <AiTeamBlog />
-        <Close index={8} chapter="09" />
-      </PhotoStage>
+      </CinematicStage>
+
+      {/* Below the deck the page releases into ordinary scroll. These are the
+          same CinematicSection components, which render always-visible and in
+          normal flow outside a stage (see useIsStaged there) — the `index`
+          props are inert here and only keep the chapter numbering honest. */}
+      <Process
+        index={6}
+        chapter="07"
+        title="Как проходит внедрение"
+        intro="Шесть шагов от аудита до сопровождения. На каждом — понятный результат и точка согласования."
+        steps={AI_PROCESS_STEPS}
+      />
+      <AiTeamBlog />
+      <Close index={8} chapter="09" />
 
       <AiSeoText />
     </ServiceProvider>
