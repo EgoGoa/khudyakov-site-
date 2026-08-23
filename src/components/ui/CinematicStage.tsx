@@ -53,7 +53,12 @@ type StageApi = { activeIndex: number; staged: boolean; started: boolean };
 // the plain-scroll /ai, /sites, /smm pages needs that distinction: it must
 // stay hidden-until-active in the deck, but render as an ordinary visible
 // section everywhere else.
-const StageContext = createContext<StageApi>({ activeIndex: 0, staged: false, started: false });
+// Exported so PhotoStage (a static-background sibling deck for pages with no
+// video reel yet — see that file) can provide the exact same context object.
+// CinematicSection's hooks below then work under either stage unmodified,
+// since a React Context is just an object identity — which component
+// provides it doesn't matter.
+export const StageContext = createContext<StageApi>({ activeIndex: 0, staged: false, started: false });
 
 // Seeking is only accurate to the nearest keyframe; the reel carries one per
 // second (-g 25), so land slightly inside the phase rather than exactly on its

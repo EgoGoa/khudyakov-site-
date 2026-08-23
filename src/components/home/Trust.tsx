@@ -6,12 +6,19 @@ import FaqAside from "@/components/home/FaqAside";
 import { useService } from "@/lib/service-context";
 import { whyByCategory } from "@/lib/service-content";
 
-// Chapter 03 — the old Why + Testimonials + LogoCloud folded into one screen.
-// They made the same argument three times across three scroll stops; here the
-// three reasons carry it, one quote backs it up, and the client names run as a
+// Chapter 03 on /content (the deck position `index`/`chapter` default to) —
+// the old Why + Testimonials + LogoCloud folded into one screen. They made
+// the same argument three times across three scroll stops; here the three
+// reasons carry it, one quote backs it up, and the client names run as a
 // single rule-separated line rather than a logo grid.
+//
+// `title`/`intro`/`clients` are props (defaulted to content's own copy and
+// client roster) because both are genuinely content-specific — a different
+// service reusing this chapter (see /ai) has neither a matching pitch line
+// nor that client list to show, and `clients` empty hides the line rather
+// than rendering it blank.
 
-const clients = [
+const DEFAULT_CLIENTS = [
   "KIA",
   "Федерация баскетбола",
   "Гольф-клуб",
@@ -21,20 +28,32 @@ const clients = [
   "GOOD GAME",
 ];
 
-export default function Trust() {
+export default function Trust({
+  index = 2,
+  chapter = "03",
+  title = "Именно мы",
+  intro = "Продюсерский центр полного цикла: от идеи до готового ролика. Около 60% заказов — клиенты, которые возвращаются.",
+  clients = DEFAULT_CLIENTS,
+}: {
+  index?: number;
+  chapter?: string;
+  title?: string;
+  intro?: string;
+  clients?: string[];
+}) {
   const { active } = useService();
   const why = whyByCategory[active];
 
   return (
     <CinematicSection
-      index={2}
-      chapter="03"
-      title="Именно мы"
+      index={index}
+      chapter={chapter}
+      title={title}
       icon="shield"
       side="right"
       // The argument continues here, so it rises rather than cutting in sideways.
       entrance="rise"
-      intro="Продюсерский центр полного цикла: от идеи до готового ролика. Около 60% заказов — клиенты, которые возвращаются."
+      intro={intro}
     >
       <div className="lg:flex lg:items-start lg:justify-between lg:gap-12">
         {/* The reasons opposite it push everything lg:ml-auto, which leaves
@@ -63,14 +82,16 @@ export default function Trust() {
             ))}
           </div>
 
-          <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-2 border-t border-paper/15 pt-4">
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-paper/45">
-              Нам доверяют
-            </span>
-            <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
-              {clients.join(" / ")}
-            </span>
-          </div>
+          {clients.length > 0 && (
+            <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-2 border-t border-paper/15 pt-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-paper/45">
+                Нам доверяют
+              </span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
+                {clients.join(" / ")}
+              </span>
+            </div>
+          )}
 
           <FunnelCta
             item="consult"

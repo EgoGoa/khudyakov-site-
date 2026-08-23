@@ -18,7 +18,10 @@ export type ChapterIconName =
   | "shield" // 03 trust — why us
   | "layers" // 04 offer — the stack of services
   | "route" // 05 process — brief → shoot → delivery
-  | "spark"; // 06 close — the offer / payoff
+  | "spark" // 06 close — the offer / payoff
+  | "target" // /ai 02 — who this is for, and the cases that prove it
+  | "scale" // /ai 05 — guarantees, terms, what's included
+  | "users"; // /ai 07 — team and blog
 
 const PATHS: Record<ChapterIconName, React.ReactNode> = {
   aperture: (
@@ -57,6 +60,28 @@ const PATHS: Record<ChapterIconName, React.ReactNode> = {
     <>
       <path d="M12 2.5l2.3 6.2 6.2 2.3-6.2 2.3L12 19.5l-2.3-6.2L3.5 11l6.2-2.3L12 2.5z" />
       <path d="M19 17.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z" />
+    </>
+  ),
+  target: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1" />
+    </>
+  ),
+  scale: (
+    <>
+      <path d="M12 3v18M7 21h10" />
+      <path d="M12 6L5 8l3.2 6.2a3.4 3.4 0 0 0 5.6 0L15 8l-3-2z" />
+      <path d="M5 8L3 12.5a2.5 2.5 0 0 0 4.6 0L5 8zM19 8l-2 4.5a2.5 2.5 0 0 0 4.6 0L19 8z" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="8.5" cy="8" r="3" />
+      <path d="M2.5 20c0-3.6 2.7-6 6-6s6 2.4 6 6" />
+      <circle cx="17" cy="9" r="2.4" />
+      <path d="M15.5 14.2c2.7.3 4.5 2.5 4.5 5.8" />
     </>
   ),
 };

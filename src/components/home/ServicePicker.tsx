@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Container from "@/components/ui/Container";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 
@@ -106,18 +106,37 @@ function SlideVideo({ src, poster, active }: { src: string; poster: string; acti
 
 export default function ServicePicker() {
   const pathname = usePathname();
+  const router = useRouter();
   const currentKey: ServiceKey =
     serviceOrder.find((key) => `/${serviceMeta[key].slug}` === pathname) ?? "content";
 
-  // Arrows/dots only preview a service here — they don't navigate. The
-  // visitor commits to actually visiting that service's page (and its own
-  // portfolio/pricing/etc below) via the "Подробнее" button.
+  // Arrows/dots both preview instantly (label, description, background) and
+  // commit straight away — a click is the navigation now, not a step before
+  // one. previewKey stays local state (not derived from pathname) purely so
+  // the slide swaps on the same frame as the click, before the router's own
+  // navigation has resolved; the effect below keeps it in sync for any other
+  // way the route can change (a header link, back/forward).
   const [previewKey, setPreviewKey] = useState<ServiceKey>(currentKey);
+  useEffect(() => {
+    setPreviewKey(currentKey);
+  }, [currentKey]);
   const index = serviceOrder.indexOf(previewKey);
   const count = serviceOrder.length;
   const previewMeta = serviceMeta[previewKey];
 
-  const go = (delta: number) => setPreviewKey(serviceOrder[(index + delta + count) % count]);
+  // { scroll: false }: the visitor is standing right here, mid-page, when
+  // they click — Next's default push scrolls the viewport to the top of the
+  // new route on every navigation, which yanked the page up and back while
+  // Hero/ServicePicker (unchanged, still mounted) sat still underneath it.
+  const go = (delta: number) => {
+    const next = serviceOrder[(index + delta + count) % count];
+    setPreviewKey(next);
+    router.push(`/${serviceMeta[next].slug}`, { scroll: false });
+  };
+  const goTo = (key: ServiceKey) => {
+    setPreviewKey(key);
+    router.push(`/${serviceMeta[key].slug}`, { scroll: false });
+  };
 
   return (
     <section
@@ -205,7 +224,7 @@ export default function ServicePicker() {
               <button
                 key={key}
                 type="button"
-                onClick={() => setPreviewKey(key)}
+                onClick={() => goTo(key)}
                 aria-label={serviceMeta[key].label}
                 className={`h-2.5 w-2.5 rounded-full transition-colors ${
                   key === previewKey ? "bg-glow" : "bg-paper/25 hover:bg-paper/50"

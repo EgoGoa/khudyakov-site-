@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Oswald, Montserrat, Azeret_Mono } from "next/font/google";
+import { Unbounded, Manrope, Azeret_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
@@ -10,21 +10,21 @@ import { HeaderMenuProvider } from "@/lib/header-menu";
 import { CinematicNavProvider } from "@/lib/cinematic-nav";
 import "./globals.css";
 
-const montserrat = Montserrat({
+// Manrope/Unbounded replaced Montserrat/Oswald site-wide — the earlier pair
+// read as generic template type. Both have native Cyrillic (no
+// latin-only-with-a-fallback compromise like the old Bebas Neue swap).
+const montserrat = Manrope({
   subsets: ["latin", "cyrillic"],
   variable: "--font-montserrat",
   display: "swap",
   weight: ["400", "500", "600", "700", "800"],
 });
 
-// Bebas Neue has no Cyrillic glyphs, so Russian headlines would silently
-// fall back to a system font. Oswald gives the same bold condensed
-// editorial look and fully supports Cyrillic.
-const bebas = Oswald({
+const bebas = Unbounded({
   subsets: ["latin", "cyrillic"],
   variable: "--font-bebas",
   display: "swap",
-  weight: ["500", "600", "700"],
+  weight: ["500", "600", "700", "800", "900"],
 });
 
 const azeretMono = Azeret_Mono({

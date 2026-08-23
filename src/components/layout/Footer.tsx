@@ -1,7 +1,28 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import Container from "@/components/ui/Container";
 import { services } from "@/lib/data";
 import { EditIcon, InstagramIcon, PhoneIcon, TelegramIcon } from "@/components/ui/Icons";
+
+// Five blurred color-flare spots baked into one wide texture
+// (public/images/footer-flares.png): violet, blue, cyan, red, green. Each
+// layer below drifts through all five in a different order/phase via the
+// "flare-drift" keyframes (tailwind.config.ts) — background-position eases
+// between the --p0..--p4 custom properties while opacity dips mid-transit
+// and blooms at each stop, so flares read as smoothly appearing in
+// different spots rather than blinking in place. First === last keyframe
+// stop, so the loop has no visible seam.
+const VIOLET = "10% 18%";
+const BLUE = "88% 10%";
+const CYAN = "8% 82%";
+const RED = "50% 48%";
+const GREEN = "88% 85%";
+
+const FLARE_LAYERS: { stops: [string, string, string, string, string]; duration: string; delay: string }[] = [
+  { stops: [VIOLET, RED, CYAN, BLUE, GREEN], duration: "44s", delay: "0s" },
+  { stops: [BLUE, GREEN, VIOLET, RED, CYAN], duration: "52s", delay: "-18s" },
+  { stops: [CYAN, BLUE, GREEN, VIOLET, RED], duration: "60s", delay: "-35s" },
+];
 
 const navLinks = [
   { href: "/#works", label: "Работы" },
@@ -26,10 +47,26 @@ export default function Footer() {
 
   return (
     <footer id="footer" className="relative overflow-hidden bg-ink text-paper">
-      <div
-        className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-25"
-        style={{ backgroundImage: "url(/images/footer-bg.jpg)" }}
-      />
+      {FLARE_LAYERS.map((layer, i) => (
+        <div
+          key={i}
+          className="pointer-events-none absolute inset-0 bg-no-repeat animate-flare-drift"
+          style={
+            {
+              backgroundImage: "url(/images/footer-flares.png)",
+              backgroundPosition: layer.stops[0],
+              backgroundSize: "200%",
+              animationDuration: layer.duration,
+              animationDelay: layer.delay,
+              "--p0": layer.stops[0],
+              "--p1": layer.stops[1],
+              "--p2": layer.stops[2],
+              "--p3": layer.stops[3],
+              "--p4": layer.stops[4],
+            } as CSSProperties
+          }
+        />
+      ))}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/80 to-ink" />
       <div className="relative">
       {/* CTA band — mirrors the "ready to discuss your project" strip from

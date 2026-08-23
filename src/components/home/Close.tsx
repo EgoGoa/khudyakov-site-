@@ -28,14 +28,18 @@ function CheckIcon() {
   );
 }
 
-export default function Close() {
+export default function Close({ index = 5, chapter = "06" }: { index?: number; chapter?: string }) {
   const { active } = useService();
   const tiers = pricingByCategory[active];
+  // /calculator computes a video-production budget specifically — a fair
+  // second action on /content's own pricing cards, but a wrong one to offer
+  // alongside a different service's tiers.
+  const showCalculator = active === "content";
 
   return (
     <CinematicSection
-      index={5}
-      chapter="06"
+      index={index}
+      chapter={chapter}
       title="Персональные условия"
       icon="spark"
       side="center"
@@ -93,9 +97,11 @@ export default function Close() {
                   >
                     Выбрать план
                   </a>
-                  <Link href="/calculator" className="btn-neon w-full justify-center !py-2.5 !text-[12px]">
-                    Рассчитать
-                  </Link>
+                  {showCalculator && (
+                    <Link href="/calculator" className="btn-neon w-full justify-center !py-2.5 !text-[12px]">
+                      Рассчитать
+                    </Link>
+                  )}
                 </div>
               </motion.div>
             ))

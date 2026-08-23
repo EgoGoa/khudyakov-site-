@@ -1,21 +1,29 @@
 "use client";
 
+import type { ReactNode } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
 import FunnelCta from "@/components/ui/FunnelCta";
 
-// Chapter 05. Six steps instead of the earlier three broad phases — the same
-// path from brief to delivery, just told at the grain a first-time client
-// actually asks about (when do we sign, when do you shoot, who approves the
-// cut) rather than three headline phases. One line per step keeps six cards
+// Chapter 05 on /content (the deck position `index`/`chapter` default to).
+// Six steps instead of the earlier three broad phases — the same path from
+// brief to delivery, just told at the grain a first-time client actually
+// asks about (when do we sign, when do you shoot, who approves the cut)
+// rather than three headline phases. One line per step keeps six cards
 // inside a single screen; the icon badge is what lets six short lines still
 // read as six distinct moments instead of a list.
 //
-// Universal across services rather than pulled from processByCategory — the
-// production pipeline (quote → contract → preproduction → shoot → post →
-// delivery) doesn't meaningfully differ between content/AI/sites/SMM the way
-// pricing or the "why us" reasons do.
+// The steps below are content's own production pipeline (quote → contract →
+// preproduction → shoot → post → delivery) — genuinely shoot-specific
+// wording ("Съёмки", "Препродакшн"), not the universal-across-services text
+// the old comment here claimed. A page for a different service (see /ai)
+// passes its own `steps`/`title`/`intro` instead of reusing these; `index`
+// and `chapter` are also props (defaulted to content's own position) so the
+// chapter header highlights correctly regardless of where it sits in a
+// different deck.
 
-function StepIcon({ children }: { children: React.ReactNode }) {
+export type ProcessStepItem = { title: string; description: string; icon: ReactNode };
+
+export function StepIcon({ children }: { children: React.ReactNode }) {
   return (
     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange/30 bg-orange/15 text-orange">
       <svg
@@ -98,22 +106,34 @@ const STEPS = [
   },
 ];
 
-export default function Process() {
+export default function Process({
+  index = 4,
+  chapter = "05",
+  title = "PRO хронология",
+  intro = "Шесть шагов от брифа до сдачи. На каждом вы видите прогресс и можете вносить правки.",
+  steps = STEPS,
+}: {
+  index?: number;
+  chapter?: string;
+  title?: string;
+  intro?: string;
+  steps?: ProcessStepItem[];
+}) {
   return (
     <CinematicSection
-      index={4}
-      chapter="05"
-      title="PRO хронология"
+      index={index}
+      chapter={chapter}
+      title={title}
       icon="route"
       side="right"
       entrance="slide-right"
       id="process"
-      intro="Шесть шагов от брифа до сдачи. На каждом вы видите прогресс и можете вносить правки."
+      intro={intro}
     >
       <div className="grid gap-4 sm:grid-cols-3">
-        {STEPS.map((step, i) => (
+        {steps.map((step, i) => (
           <div
-            key={step.title}
+            key={`${index}-${i}`}
             className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md"
           >
             {step.icon}

@@ -12,14 +12,14 @@ import { servicesByCategory } from "@/lib/service-content";
 // horizontal row underneath — the two-column split is what keeps ten
 // services from pushing the calculator off the bottom of the screen.
 
-export default function Offer() {
+export default function Offer({ index = 3, chapter = "04" }: { index?: number; chapter?: string }) {
   const { active } = useService();
   const services = servicesByCategory[active];
 
   return (
     <CinematicSection
-      index={3}
-      chapter="04"
+      index={index}
+      chapter={chapter}
       title="Лучшие в этом"
       icon="layers"
       side="left"
@@ -50,15 +50,28 @@ export default function Offer() {
           </ul>
         )}
 
-        {/* Vertical card, not another row: the AI teaser and the calculator
+        {/* Vertical card, not another row: the teaser and the calculator
             pitch stacked, sitting beside the list rather than under it. */}
         <div className="mt-8 rounded-2xl bg-ink/45 p-5 backdrop-blur-md lg:mt-0 lg:w-[300px] lg:shrink-0 xl:w-[320px]">
           <div id="ai" className="flex items-start gap-3 border-l-2 border-glow/60 pl-4">
             <div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-glow">Скоро</div>
-              <p className="mt-1.5 text-sm leading-relaxed text-paper/75">
-                AI-агент прикинет формат и бюджет прямо в чате — до брифа и без ожидания менеджера.
-              </p>
+              {active === "ai" ? (
+                // The site's own "AI-agent coming soon" teaser reads oddly
+                // advertised on the AI-services page itself — a client
+                // coming here for AI work doesn't need the site's own
+                // AI feature pitched at them mid-page. Same low-friction
+                // offer (skip the form, get a fast answer), no self-promo.
+                <p className="text-sm leading-relaxed text-paper/75">
+                  Опишите задачу в двух словах — продюсер вернётся с форматом и бюджетом в течение дня.
+                </p>
+              ) : (
+                <>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-glow">Скоро</div>
+                  <p className="mt-1.5 text-sm leading-relaxed text-paper/75">
+                    AI-агент прикинет формат и бюджет прямо в чате — до брифа и без ожидания менеджера.
+                  </p>
+                </>
+              )}
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
+import Magnetic from "@/components/ui/Magnetic";
 import { PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 
 const SHOWREEL_YOUTUBE_ID = "HC5SMCQuoms";
@@ -143,30 +144,43 @@ export default function Hero() {
       </div>
 
       <Container className="flex flex-1 flex-col justify-center">
-        <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-rec">
-          <span className="h-2 w-2 animate-pulse-rec rounded-full bg-rec" />
-          REC {timecode}
-        </div>
-
         <div
           ref={titleWrapRef}
           onMouseMove={handleTitleMouseMove}
           className="hero-title-wrap relative mt-6"
         >
           <div className="hero-title-glow" aria-hidden="true" />
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="relative max-w-4xl font-sans text-3xl font-extrabold uppercase leading-[0.95] tracking-[0.06em] sm:text-5xl md:text-6xl"
-          >
-            <span className="hero-neon-word">DIGITAL AI</span>
-            <span className="hero-gradient-text">
-              , который
-              <br />
-              быстрее рынка
-            </span>
-          </motion.h1>
+          {/* "Монолит" (headline mockup option 03), carried over as literal
+              CSS — perspective on the outer wrap, the fixed tilt as a plain
+              static transform on the middle div, exactly the two mockup
+              rules (.h3-wrap / .h3). That tilt has to sit on a div of its
+              own rather than directly on motion.h1: framer writes its own
+              opacity/y animation as an inline `transform` on whatever
+              element carries `animate`, and an inline style always beats a
+              CSS class — a `.hero-monolith` class placed on motion.h1
+              itself would get its rotateX/scale silently overwritten the
+              instant framer's animation ran. */}
+          <div className="hero-monolith-wrap">
+            <div className="hero-monolith">
+              <motion.h1
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 }}
+                // No text-*/leading-*/tracking-* here on purpose: size,
+                // line-height and letter-spacing come from .hero-monolith
+                // so they stay exactly the mockup's values.
+                className="relative max-w-4xl font-display font-extrabold uppercase"
+              >
+                <span className="hero-neon-word">DIGITAL </span>
+                <span className="hero-ai-gradient-smoke">AI</span>
+                <span className="hero-gradient-text">
+                  {" "}- который
+                  <br />
+                  быстрее рынка
+                </span>
+              </motion.h1>
+            </div>
+          </div>
         </div>
 
         <motion.p
@@ -184,12 +198,14 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.3 }}
           className="mt-8 flex flex-wrap items-center gap-3"
         >
-          <Link
-            href="#works"
-            className="rounded-full bg-rec px-7 py-3.5 text-sm font-medium text-white transition hover:bg-rec-light"
-          >
-            Смотреть работы
-          </Link>
+          <Magnetic>
+            <Link
+              href="#works"
+              className="rounded-full bg-rec px-7 py-3.5 text-sm font-medium text-white transition hover:bg-rec-light"
+            >
+              Смотреть работы
+            </Link>
+          </Magnetic>
           <a href="tel:+79925111812" className="btn-neon btn-neon-cycle" style={{ animationDelay: "0s" }}>
             <PhoneIcon className="animate-pulse" />
             Заказать звонок
