@@ -135,6 +135,16 @@ export default function CinematicStage({
   children: ReactNode;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  // Blur and the push-zoom transform land on this wrapper, not on the
+  // <video> element itself. Safari composites a hardware-decoded <video>
+  // through its own overlay layer, and mutating `filter`/`transform` on
+  // that element directly — especially both at once, every animation
+  // frame, which only /ai's heavier `push` reel does — makes WebKit drop
+  // the video to a black/frozen frame instead of rendering the effect.
+  // Chromium has no such issue, which is why only Safari showed it.
+  // Applying the same styles to a plain div wrapping the video sidesteps
+  // the video's own compositing path entirely.
+  const frameRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   // The phase-driving effect below fires on mount (activeIndex starts at 0),
@@ -727,17 +737,19 @@ export default function CinematicStage({
     const smoothstep = (t: number) => t * t * (3 - 2 * t);
     const reelEnd = phases[phases.length - 1]?.end ?? 0;
     const applyPush = () => {
-      if (!push || reelEnd <= 0) return;
+      const frame = frameRef.current;
+      if (!push || reelEnd <= 0 || !frame) return;
       const travelled = Math.min(1, Math.max(0, video.currentTime / reelEnd));
-      video.style.transform = `scale(${(PUSH_BASE + PUSH_RANGE * travelled).toFixed(4)})`;
+      frame.style.transform = `scale(${(PUSH_BASE + PUSH_RANGE * travelled).toFixed(4)})`;
     };
     let raf = 0;
     const tick = () => {
+      const frame = frameRef.current;
       const remaining = phase.end - video.currentTime;
       applyPush();
       if (remaining <= 0) {
         if (!video.paused) video.pause();
-        video.style.filter = `blur(${maxBlurPx}px)`;
+        if (frame) frame.style.filter = `blur(${maxBlurPx}px)`;
         return;
       }
       // Self-heal an unexpected pause. play() is fire-and-forget above, and
@@ -755,7 +767,7 @@ export default function CinematicStage({
       const blurIn = (1 - smoothstep(revealT)) * maxBlurPx;
       const blurOut = (1 - smoothstep(settleT)) * maxBlurPx;
       const blur = Math.max(blurIn, blurOut);
-      video.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "";
+      if (frame) frame.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "";
 
       raf = requestAnimationFrame(tick);
     };
@@ -770,21 +782,23 @@ export default function CinematicStage({
     <StageContext.Provider value={api}>
       <div ref={wrapRef} className="relative">
         <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
-          <video
-            ref={videoRef}
-            src={src}
-            poster={poster}
-            muted
-            playsInline
-            preload="auto"
-            aria-hidden="true"
-            onLoadedMetadata={() => {
-              const video = videoRef.current;
-              const phase = phases[activeIndexRef.current];
-              if (video && phase) video.currentTime = phase.start + SEEK_EPSILON;
-            }}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          <div ref={frameRef} className="absolute inset-0 h-full w-full">
+            <video
+              ref={videoRef}
+              src={src}
+              poster={poster}
+              muted
+              playsInline
+              preload="auto"
+              aria-hidden="true"
+              onLoadedMetadata={() => {
+                const video = videoRef.current;
+                const phase = phases[activeIndexRef.current];
+                if (video && phase) video.currentTime = phase.start + SEEK_EPSILON;
+              }}
+              className="h-full w-full object-cover"
+            />
+          </div>
           {/* Two-part grade. A flat wash across the whole frame drops the
               footage back a stop so the chapters read as the foreground, and a
               second gradient adds weight at the top and bottom edges, where the
