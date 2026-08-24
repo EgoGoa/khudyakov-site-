@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Magnetic from "@/components/ui/Magnetic";
+import MagneticChars from "@/components/ui/MagneticChars";
 import { PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 
 const SHOWREEL_YOUTUBE_ID = "HC5SMCQuoms";
@@ -171,13 +172,12 @@ export default function Hero() {
                 // so they stay exactly the mockup's values.
                 className="relative max-w-4xl font-display font-extrabold uppercase"
               >
-                <span className="hero-neon-word">DIGITAL </span>
+                <MagneticChars text="DIGITAL " className="hero-neon-word" />
                 <span className="hero-ai-gradient-smoke">AI</span>
-                <span className="hero-gradient-text">
-                  {" "}- который
-                  <br />
-                  быстрее рынка
-                </span>
+                {" "}
+                <MagneticChars text="- который" className="hero-gradient-text" />
+                <br />
+                <MagneticChars text="быстрее рынка" className="hero-gradient-text" />
               </motion.h1>
             </div>
           </div>

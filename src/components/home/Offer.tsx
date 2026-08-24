@@ -12,20 +12,35 @@ import { servicesByCategory } from "@/lib/service-content";
 // horizontal row underneath — the two-column split is what keeps ten
 // services from pushing the calculator off the bottom of the screen.
 
-export default function Offer({ index = 3, chapter = "04" }: { index?: number; chapter?: string }) {
+export default function Offer({
+  index = 3,
+  chapter = "04",
+  title = "Лучшие в этом",
+  intro = "Съёмка, монтаж, графика и AI-продакшн — под формат и площадку.",
+}: {
+  index?: number;
+  chapter?: string;
+  title?: string;
+  intro?: string;
+}) {
   const { active } = useService();
   const services = servicesByCategory[active];
+  // /calculator computes a video-production budget specifically (type,
+  // runtime, add-ons) — a fair pitch on /content's own chapter, but a wrong
+  // one on /ai, /sites or /smm, which don't share that pricing model. Same
+  // gating Close.tsx already applies to its own "Рассчитать" button below.
+  const showCalculator = active === "content";
 
   return (
     <CinematicSection
       index={index}
       chapter={chapter}
-      title="Лучшие в этом"
+      title={title}
       icon="layers"
       side="left"
       // New subject after the trust argument — it tips up into place.
       entrance="unfold"
-      intro="Съёмка, монтаж, графика и AI-продакшн — под формат и площадку."
+      intro={intro}
     >
       <div className="lg:flex lg:items-start lg:gap-12">
         {services.length === 0 ? (
@@ -75,24 +90,26 @@ export default function Offer({ index = 3, chapter = "04" }: { index?: number; c
             </div>
           </div>
 
-          <div className="mt-5 border-t border-paper/15 pt-5">
-            <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
-              Не знаете формат?
-            </span>
-            <p className="mt-3 font-sans text-xl leading-[1.15] text-paper">
-              Калькулятор подберёт формат <span className="font-semibold text-orange">за 2 минуты</span>
-            </p>
-            <p className="mt-2.5 text-sm leading-relaxed text-paper/60">
-              По площадке и бюджету — сразу покажет вилку цен.
-            </p>
-            <Link
-              href="/calculator"
-              className="btn-neon btn-warm btn-3d mt-4 w-full justify-center !py-3.5"
-            >
-              Рассчитать бюджет
-            </Link>
-          </div>
+          {showCalculator && (
+            <div className="mt-5 border-t border-paper/15 pt-5">
+              <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
+                Не знаете формат?
+              </span>
+              <p className="mt-3 font-sans text-xl leading-[1.15] text-paper">
+                Калькулятор подберёт формат <span className="font-semibold text-orange">за 2 минуты</span>
+              </p>
+              <p className="mt-2.5 text-sm leading-relaxed text-paper/60">
+                По площадке и бюджету — сразу покажет вилку цен.
+              </p>
+              <Link
+                href="/calculator"
+                className="btn-neon btn-warm btn-3d mt-4 w-full justify-center !py-3.5"
+              >
+                Рассчитать бюджет
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </CinematicSection>

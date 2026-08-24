@@ -21,7 +21,8 @@ export type ChapterIconName =
   | "spark" // 06 close — the offer / payoff
   | "target" // /ai 02 — who this is for, and the cases that prove it
   | "scale" // /ai 05 — guarantees, terms, what's included
-  | "users"; // /ai 07 — team and blog
+  | "users" // /ai 07 — team and blog
+  | "code"; // /sites 02 — the AI-assisted method, code that's yours
 
 const PATHS: Record<ChapterIconName, React.ReactNode> = {
   aperture: (
@@ -82,6 +83,12 @@ const PATHS: Record<ChapterIconName, React.ReactNode> = {
       <path d="M2.5 20c0-3.6 2.7-6 6-6s6 2.4 6 6" />
       <circle cx="17" cy="9" r="2.4" />
       <path d="M15.5 14.2c2.7.3 4.5 2.5 4.5 5.8" />
+    </>
+  ),
+  code: (
+    <>
+      <path d="M8.5 8L3.5 12.5 8.5 17M15.5 8l5 4.5-5 4.5" />
+      <path d="M13.2 5.5l-2.4 13" />
     </>
   ),
 };

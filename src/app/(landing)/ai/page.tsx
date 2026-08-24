@@ -69,17 +69,19 @@ export default function AiServicePage() {
 
       {/* `push` is the slow zoom across the whole film — chapters 04 and 06
           sit on footage that is nearly frozen, and without it those screens
-          look like a still. maxBlurPx was halved from its original 26px and
-          brightness lifts the reel 30% — both per the founder's ask, so the
-          hold reads softer and the footage sits lighter than before. */}
+          look like a still. maxBlurPx started at 26px, was halved to 13px,
+          then halved again to 6.5px. brightness went 1x → 1.3 → 1.69 (blew
+          the footage out) → 1.4 (still read too hot, washing out detail) →
+          1.12, 20% down from 1.4 — per the founder's own reports each round,
+          so the film's texture stays visible instead of flattening out. */}
       <CinematicStage
         src="/video/ai-reel.mp4"
         poster="/images/ai-reel-poster.jpg"
         phases={PHASES}
         chapters={CHAPTERS}
-        maxBlurPx={13}
+        maxBlurPx={6.5}
         blurSeconds={0.9}
-        brightness={1.3}
+        brightness={1.12}
         push
       >
         <AiPitch />

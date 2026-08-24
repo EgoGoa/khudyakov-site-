@@ -55,7 +55,16 @@ export default function Footer() {
             {
               backgroundImage: "url(/images/footer-flares.png)",
               backgroundPosition: layer.stops[0],
-              backgroundSize: "200%",
+              // Explicit "200% 200%", not the shorthand "200%" — a single
+              // value only sets width to that percentage and leaves height
+              // at "auto" (scaled by the image's own aspect ratio), which on
+              // this wide 1536×768 texture left it shorter than the
+              // footer's own box on most viewports. As backgroundPosition
+              // animated, that gap intermittently showed through as the
+              // texture's edge sliding along the footer's edge. Sizing both
+              // axes to the container guarantees full coverage at every
+              // position, so there's never an edge left to reveal.
+              backgroundSize: "200% 200%",
               animationDuration: layer.duration,
               animationDelay: layer.delay,
               "--p0": layer.stops[0],

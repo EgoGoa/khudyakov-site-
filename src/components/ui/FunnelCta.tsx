@@ -21,7 +21,7 @@ import type { ReactNode } from "react";
 
 const TELEGRAM_URL = "https://t.me/+79925111812";
 
-export type FunnelKey = "brief" | "calculator" | "consult";
+export type FunnelKey = "brief" | "calculator" | "consult" | "discuss";
 
 // Same line language as ChapterIcon: 24-unit grid, 1.75 stroke, round joins,
 // no fills. Decorative — each sits beside its own visible label.
@@ -96,6 +96,20 @@ const FUNNELS: Record<
     glyph: (
       <Glyph>
         <path d="M21 4L3.5 10.8l5.2 1.9L19 6.5l-8 7.4v5l3-3.6 4 3.2L21 4z" />
+      </Glyph>
+    ),
+  },
+  // "Обсудить проект" — /sites' own literal CTA wording (see the brief in
+  // content/site-copy.md); same destination and glyph as "brief" ("Заполнить
+  // бриф"), just a different label for a service that pitches a
+  // conversation before a form.
+  discuss: {
+    label: "Обсудить проект",
+    href: "/brief",
+    glyph: (
+      <Glyph>
+        <path d="M5 3.5h9l5 5V20a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 4 20V5a1.5 1.5 0 0 1 1-1.5z" />
+        <path d="M14 3.5V9h5M8.5 13.5h7M8.5 17h4.5" />
       </Glyph>
     ),
   },
