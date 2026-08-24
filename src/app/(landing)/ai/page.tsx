@@ -67,18 +67,19 @@ export default function AiServicePage() {
     <ServiceProvider forcedValue="ai">
       <ServiceMenuOverlay service="ai" />
 
-      {/* Heavier defocus than /content's default 16px/0.7s: this reel is
-          softer and slower-moving, so the hold needs more of a drop to read
-          as a deliberate stop rather than a stall. `push` is the slow zoom
-          across the whole film — chapters 04 and 06 sit on footage that is
-          nearly frozen, and without it those screens look like a still. */}
+      {/* `push` is the slow zoom across the whole film — chapters 04 and 06
+          sit on footage that is nearly frozen, and without it those screens
+          look like a still. maxBlurPx was halved from its original 26px and
+          brightness lifts the reel 30% — both per the founder's ask, so the
+          hold reads softer and the footage sits lighter than before. */}
       <CinematicStage
         src="/video/ai-reel.mp4"
         poster="/images/ai-reel-poster.jpg"
         phases={PHASES}
         chapters={CHAPTERS}
-        maxBlurPx={26}
+        maxBlurPx={13}
         blurSeconds={0.9}
+        brightness={1.3}
         push
       >
         <AiPitch />

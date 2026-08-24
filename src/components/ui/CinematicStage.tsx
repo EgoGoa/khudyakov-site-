@@ -120,6 +120,7 @@ export default function CinematicStage({
   maxBlurPx = DEFAULT_MAX_BLUR_PX,
   blurSeconds = DEFAULT_BLUR_SECONDS,
   push = false,
+  brightness = 1,
   children,
 }: {
   src: string;
@@ -132,6 +133,10 @@ export default function CinematicStage({
   blurSeconds?: number;
   /** Slow zoom across the whole reel — see PUSH_BASE. */
   push?: boolean;
+  /** CSS brightness() multiplier on the reel, e.g. 1.3 = 30% lighter. Baked
+   *  into the same filter string the blur ramp writes (see the tick loop
+   *  below), since setting `style.filter` replaces the whole property. */
+  brightness?: number;
   children: ReactNode;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -736,6 +741,12 @@ export default function CinematicStage({
     // times a second — far too coarse to shape a sub-second ramp.
     const smoothstep = (t: number) => t * t * (3 - 2 * t);
     const reelEnd = phases[phases.length - 1]?.end ?? 0;
+    // Prefixed onto every filter string below rather than set once as a CSS
+    // class: `style.filter` is rewritten wholesale each frame by the blur
+    // ramp, and an inline style always wins over a class rule for the same
+    // property, so a class-based brightness would just get clobbered the
+    // first time the ramp touches `filter`.
+    const brightnessPrefix = brightness !== 1 ? `brightness(${brightness}) ` : "";
     const applyPush = () => {
       const frame = frameRef.current;
       if (!push || reelEnd <= 0 || !frame) return;
@@ -749,7 +760,7 @@ export default function CinematicStage({
       applyPush();
       if (remaining <= 0) {
         if (!video.paused) video.pause();
-        if (frame) frame.style.filter = `blur(${maxBlurPx}px)`;
+        if (frame) frame.style.filter = `${brightnessPrefix}blur(${maxBlurPx}px)`;
         return;
       }
       // Self-heal an unexpected pause. play() is fire-and-forget above, and
@@ -767,14 +778,16 @@ export default function CinematicStage({
       const blurIn = (1 - smoothstep(revealT)) * maxBlurPx;
       const blurOut = (1 - smoothstep(settleT)) * maxBlurPx;
       const blur = Math.max(blurIn, blurOut);
-      if (frame) frame.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "";
+      if (frame) {
+        frame.style.filter = blur > 0.4 ? `${brightnessPrefix}blur(${blur.toFixed(1)}px)` : brightnessPrefix.trim();
+      }
 
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
 
     return () => cancelAnimationFrame(raf);
-  }, [activeIndex, phases, started, maxBlurPx, blurSeconds, push]);
+  }, [activeIndex, phases, started, maxBlurPx, blurSeconds, push, brightness]);
 
   const api = useMemo<StageApi>(() => ({ activeIndex, staged: true, started }), [activeIndex, started]);
 
