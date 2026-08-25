@@ -71,6 +71,8 @@ export default function CinematicSection({
   titleClassName = "",
   id,
   children,
+  decor,
+  bodyDecor,
 }: {
   /** Position in the deck — must match this chapter's entry in `chapters`. */
   index: number;
@@ -91,6 +93,14 @@ export default function CinematicSection({
    *  here too would duplicate it in the DOM. */
   id?: string;
   children?: ReactNode;
+  /** Optional decorative element (e.g. ContentDecoIcon) rendered inside the
+   *  header, positioned absolutely by the element itself via its own
+   *  className — same pattern as Opening.tsx's chapter 01 header. */
+  decor?: ReactNode;
+  /** Same idea as `decor`, but rendered next to the body/children instead of
+   *  the header — for a decoration meant to sit beside the content below the
+   *  title rather than beside the title itself. */
+  bodyDecor?: ReactNode;
 }) {
   // Trust/Offer/Process/Close are authored for the pinned deck (see
   // CinematicStage) but Process is also reused directly on the plain-scroll
@@ -152,7 +162,9 @@ export default function CinematicSection({
         }}
       />
 
-      <header className="mx-auto w-full max-w-7xl shrink-0">
+      <header className="relative mx-auto w-full max-w-7xl shrink-0">
+        {decor}
+
         {/* The chapter number/icon sits in its own corner regardless of how
             the title is aligned — it used to travel with the title as one
             block, which meant centring a title also centred the number away
@@ -197,7 +209,7 @@ export default function CinematicSection({
           {intro && (
             <motion.p
               variants={reduced ? undefined : HEADER_INTRO}
-              className="mt-2.5 text-sm leading-relaxed text-paper/80"
+              className="mt-2.5 font-display text-[10px] uppercase leading-snug tracking-tight text-white sm:text-[11px]"
             >
               {intro}
             </motion.p>
@@ -206,7 +218,8 @@ export default function CinematicSection({
       </header>
 
       {children && (
-        <div className="mx-auto my-auto w-full max-w-7xl py-2">
+        <div className="relative mx-auto my-auto w-full max-w-7xl py-2">
+          {bodyDecor}
           {/* Children use <Appear> to arrive on their own beat and from their
               own direction; this is what tells them the chapter is on stage. */}
           <ChapterActiveProvider active={active}>{children}</ChapterActiveProvider>

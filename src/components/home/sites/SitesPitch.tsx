@@ -2,6 +2,7 @@
 
 import CinematicSection from "@/components/ui/CinematicSection";
 import FunnelCta from "@/components/ui/FunnelCta";
+import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 
 // Chapter 01 of /sites — the opening pitch, one level in from the site's own
 // universal Hero (see (landing)/layout.tsx, and the same reasoning in
@@ -20,6 +21,24 @@ export default function SitesPitch() {
       entrance="slide-left"
       id="pitch"
       intro="Уникальный дизайн и вёрстка вместо шаблонов и конструкторов. Без штата разработчиков — HDKV.AGENCY собирает сайт с помощью AI-инструментов под контролем опытной команды."
+      decor={
+        <SitesDecoIcon
+          src="/images/icons/sites/cursor.png"
+          size={92}
+          rotate={-14}
+          click
+          className="right-[24%] top-[58px] lg:top-[66px]"
+        />
+      }
+      bodyDecor={
+        <SitesDecoIcon
+          src="/images/icons/sites/browser-tile.png"
+          size={230}
+          rotate={-6}
+          pulse
+          className="-left-[115px] top-24"
+        />
+      }
     >
       <div className="lg:flex lg:items-center lg:gap-12">
         <div className="lg:flex-1">

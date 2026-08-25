@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useStageActive } from "@/components/ui/CinematicStage";
 import ChapterIcon from "@/components/ui/ChapterIcon";
 import DirectionsGrid from "@/components/home/DirectionsGrid";
+import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 
 // Chapter 01. Top-anchored now, same as every other chapter's header — it
@@ -43,22 +44,44 @@ export default function Opening({ service }: { service: ServiceKey }) {
       }`}
     >
       <div className="mx-auto w-full max-w-7xl">
-        <div className="flex items-center gap-3">
-          <ChapterIcon name="aperture" active={active} />
-          <span className="h-1.5 w-1.5 animate-pulse-rec rounded-full bg-rec" />
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-paper/70">
-            HDKV.AGENCY
-          </span>
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">01</span>
+        <div className="relative">
+          <div className="flex items-center gap-3">
+            <ChapterIcon name="aperture" active={active} />
+            <span className="h-1.5 w-1.5 animate-pulse-rec rounded-full bg-rec" />
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-paper/70">
+              HDKV.AGENCY
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">01</span>
+          </div>
+
+          <h1 className="chapter-neon mt-5 max-w-3xl font-display uppercase leading-[0.92] tracking-tight text-[clamp(2rem,5vw,3.6rem)]">
+            Основные направления
+          </h1>
+
+          <p className="mt-4 max-w-md font-display text-[10px] uppercase leading-snug tracking-tight text-white sm:text-[11px] [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
+            {meta.description}
+          </p>
+
+          <ContentDecoIcon
+            src="/images/icons/content/presentation.png"
+            size={238}
+            rotate={-6}
+            variant={1}
+            className="right-[6%] top-0"
+          />
+          {/* AI direction's own icon, tucked just in front of the
+              presentation icon's left edge so the two read as one small
+              cluster — sized and placed to only ever overlap that one
+              icon, never the title or the cards below it. */}
+          <ContentDecoIcon
+            src="/images/icons/content/ai-video.png"
+            size={168}
+            rotate={4}
+            variant={4}
+            z={1}
+            className="right-[19%] top-6"
+          />
         </div>
-
-        <h1 className="chapter-neon mt-5 max-w-3xl font-display uppercase leading-[0.92] tracking-tight text-[clamp(2rem,5vw,3.6rem)]">
-          Основные направления
-        </h1>
-
-        <p className="mt-4 max-w-md text-sm leading-relaxed text-paper/80 sm:text-base [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-          {meta.description}
-        </p>
 
         <div className="mt-8">
           <DirectionsGrid />

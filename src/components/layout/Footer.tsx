@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import { services } from "@/lib/data";
 import { EditIcon, InstagramIcon, PhoneIcon, TelegramIcon } from "@/components/ui/Icons";
@@ -42,11 +42,12 @@ const EMAIL = "khudyakov.yegor@gmail.com";
 const pillClass =
   "inline-flex items-center gap-2.5 rounded-full border border-paper/15 px-6 py-3 text-sm text-paper transition-all duration-300 hover:border-glow/60 hover:text-glow hover:shadow-[0_0_16px_rgba(0,210,255,0.2)]";
 
-export default function Footer() {
+export default function Footer({ decor }: { decor?: ReactNode } = {}) {
   const year = new Date().getFullYear();
 
   return (
     <footer id="footer" className="relative overflow-hidden bg-ink text-paper">
+      {decor}
       {FLARE_LAYERS.map((layer, i) => (
         <div
           key={i}

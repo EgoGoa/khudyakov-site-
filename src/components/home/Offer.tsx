@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
+import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import { useService } from "@/lib/service-context";
 import { servicesByCategory } from "@/lib/service-content";
 
@@ -41,6 +42,20 @@ export default function Offer({
       // New subject after the trust argument — it tips up into place.
       entrance="unfold"
       intro={intro}
+      // Offer is shared across /ai, /sites, /smm too (each passes its own
+      // title/intro) — this orange-red icon is content's own, so it's
+      // gated the same way Trust.tsx gates its own decoration.
+      decor={
+        active === "content" ? (
+          <ContentDecoIcon
+            src="/images/icons/content/services.png"
+            size={260}
+            rotate={-8}
+            variant={2}
+            className="right-[7%] top-0"
+          />
+        ) : undefined
+      }
     >
       <div className="lg:flex lg:items-start lg:gap-12">
         {services.length === 0 ? (

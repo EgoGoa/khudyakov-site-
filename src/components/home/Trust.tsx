@@ -3,6 +3,7 @@
 import CinematicSection from "@/components/ui/CinematicSection";
 import FunnelCta from "@/components/ui/FunnelCta";
 import FaqAside from "@/components/home/FaqAside";
+import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import { useService } from "@/lib/service-context";
 import { whyByCategory } from "@/lib/service-content";
 
@@ -93,18 +94,35 @@ export default function Trust({
             </div>
           )}
 
-          <FunnelCta
-            item="consult"
-            align="right"
-            size="sm"
-            spacious
-            flatButton
-            eyebrow="Есть вопрос?"
-            headline="Ответит продюсер"
-            accent="а не отдел продаж"
-            pitch="Около 60% заказов — клиенты, которые вернулись."
-            className="mt-5"
-          />
+          <div className="relative mt-5">
+            <FunnelCta
+              item="consult"
+              align="right"
+              size="sm"
+              spacious
+              flatButton
+              eyebrow="Есть вопрос?"
+              headline="Ответит продюсер"
+              accent="а не отдел продаж"
+              pitch="Около 60% заказов — клиенты, которые вернулись."
+            />
+            {/* Trust is shared across /ai, /sites, /smm too (each passes its
+                own title/intro/clients) — this decoration is content's own
+                orange-red icon set, so it only renders on /content. /ai gets
+                its own emerald icon in the same slot. */}
+            {active === "content" && (
+              // Exception to every other icon's "always behind text" rule —
+              // this one was asked to sit right on top of the card block.
+              <ContentDecoIcon
+                src="/images/icons/content/image.png"
+                size={320}
+                rotate={-30}
+                variant={3}
+                z={10}
+                className="-left-6 top-1/2 -translate-y-1/2"
+              />
+            )}
+          </div>
         </div>
       </div>
     </CinematicSection>

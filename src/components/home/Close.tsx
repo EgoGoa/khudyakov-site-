@@ -4,6 +4,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
+import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
+import AiDecoIcon from "@/components/home/ai/AiDecoIcon";
 import { BEAT, EASE, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
 import { pricingByCategory } from "@/lib/service-content";
@@ -46,6 +48,19 @@ export default function Close({ index = 5, chapter = "06" }: { index?: number; c
       // The payoff comes up to meet the visitor instead of sliding past.
       entrance="zoom"
       intro="Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: консультация, смета и 2–3 концепции."
+      // Close is shared across /ai, /sites, /smm too — this orange-red icon
+      // is content's own, gated the same way Trust/Offer/Process gate theirs.
+      decor={
+        active === "content" ? (
+          <ContentDecoIcon
+            src="/images/icons/content/pricing.png"
+            size={220}
+            rotate={-14}
+            variant={4}
+            className="left-[4%] top-0"
+          />
+        ) : undefined
+      }
     >
       <>
         {/* The original tier cards, restored: full feature list, the eyebrow
@@ -113,12 +128,24 @@ export default function Close({ index = 5, chapter = "06" }: { index?: number; c
             reads as the page raising its voice rather than one more panel
             competing with the pricing grid above it. */}
         <Appear from="up" delay={BEAT.cta}>
-          <Link
-            href="/brief"
-            className="chapter-neon chapter-neon-pulse mt-6 block text-center font-display uppercase leading-[0.88] tracking-tight text-[clamp(2.2rem,7.5vw,5rem)] transition-opacity hover:opacity-80"
-          >
-            Начать проект сейчас
-          </Link>
+          <div className="relative">
+            {active === "content" && (
+              <ContentDecoIcon
+                src="/images/icons/content/contact.png"
+                size={110}
+                rotate={-10}
+                variant={1}
+                z={10}
+                className="left-[26%] top-full mt-1"
+              />
+            )}
+            <Link
+              href="/brief"
+              className="chapter-neon chapter-neon-pulse mt-6 block text-center font-display uppercase leading-[0.88] tracking-tight text-[clamp(2.2rem,7.5vw,5rem)] transition-opacity hover:opacity-80"
+            >
+              Начать проект сейчас
+            </Link>
+          </div>
         </Appear>
       </>
     </CinematicSection>

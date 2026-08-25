@@ -9,6 +9,7 @@ import Close from "@/components/home/Close";
 import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import CinematicStage, { type ChapterMeta } from "@/components/ui/CinematicStage";
 import CinematicSection from "@/components/ui/CinematicSection";
+import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -82,6 +83,19 @@ export default function ContentServicePage() {
           // CinematicStage's paneRoom comment). A smaller title reclaims the
           // header space instead of shrinking the tiles themselves.
           titleClassName="text-4xl sm:text-5xl lg:text-6xl xl:text-6xl"
+          // Sits behind the title's left half (lower in the DOM/paint order
+          // than the h2 below it, so the glow shows through around the
+          // letters rather than covering them) rather than beside it.
+          decor={
+            <ContentDecoIcon
+              src="/images/icons/content/process.png"
+              size={216}
+              rotate={-10}
+              variant={2}
+              z={-1}
+              className="left-[20%] -top-10"
+            />
+          }
         >
           {/* The "нашли похожий формат" offer card that used to sit beside
               the grid on lg+ is gone — the portfolio now gets the full

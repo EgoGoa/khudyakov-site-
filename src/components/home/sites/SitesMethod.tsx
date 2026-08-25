@@ -2,6 +2,7 @@
 
 import CinematicSection from "@/components/ui/CinematicSection";
 import { StepIcon } from "@/components/home/Process";
+import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 
 // Chapter 02 — "no magic, just faster and cheaper than classical
 // development" (brief §3) plus the constructor/studio/us comparison table
@@ -73,6 +74,14 @@ export default function SitesMethod() {
       entrance="slide-right"
       id="method"
       intro="Просто быстрее и дешевле классической разработки."
+      decor={
+        <SitesDecoIcon
+          src="/images/icons/sites/bolt.png"
+          size={260}
+          rotate={10}
+          className="right-4 -top-2 lg:right-10"
+        />
+      }
     >
       <div className="grid gap-4 sm:grid-cols-3">
         {STEPS.map((step, i) => (

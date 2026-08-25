@@ -12,6 +12,7 @@ import { AI_PROCESS_STEPS } from "@/components/home/ai/aiProcessSteps";
 import AiTeamBlog from "@/components/home/ai/AiTeamBlog";
 import Close from "@/components/home/Close";
 import AiSeoText from "@/components/home/ai/AiSeoText";
+import AiDecoIcon from "@/components/home/ai/AiDecoIcon";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -84,6 +85,16 @@ export default function AiServicePage() {
         brightness={1.12}
         push
       >
+        {/* No icon on chapter 01 (pitch) by request — icons start from
+            chapter 02. Chapters 02-06 each carry their own emerald icon via
+            their own `decor` prop (AiPortfolio/AiSegments/AiGuarantees
+            directly; Trust/Offer are shared across services, so they gate
+            their decor on `active === "ai"` internally) rather than as a
+            sibling here — CinematicStage pins every chapter in the same
+            viewport and only each CinematicSection's own active-chapter
+            gating hides the ones not currently showing. A sibling icon
+            outside that gating rendered unconditionally, bleeding through
+            on top of whichever chapter was actually active. */}
         <AiPitch />
         <AiPortfolio />
         <AiSegments />
@@ -109,8 +120,20 @@ export default function AiServicePage() {
         intro="Шесть шагов от аудита до сопровождения. На каждом — понятный результат и точка согласования."
         steps={AI_PROCESS_STEPS}
       />
+
       <AiTeamBlog />
-      <Close index={8} chapter="09" />
+
+      <div className="relative z-10">
+        <AiDecoIcon
+          src="/images/icons/ai/close.png?v=2"
+          size={91}
+          rotate={-7}
+          click
+          z={10}
+          className="left-4 top-40 lg:left-6"
+        />
+        <Close index={8} chapter="09" />
+      </div>
 
       <AiSeoText />
     </ServiceProvider>

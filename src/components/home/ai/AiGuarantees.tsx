@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
+import AiDecoIcon from "@/components/home/ai/AiDecoIcon";
 
 // Chapter 05 — "you're buying a system, not a post" thesis, terms (rights/
 // SLA/timelines), contractual guarantees, and a compact FAQ, all folded into
@@ -71,6 +72,16 @@ export default function AiGuarantees() {
       entrance="unfold"
       id="guarantees"
       intro="Покупаете не пост и не ролик — покупаете работающую систему, зафиксированную в договоре."
+      decor={
+        <AiDecoIcon
+          src="/images/icons/ai/guarantees.png?v=2"
+          size={240}
+          rotate={8}
+          variant={2}
+          z={-1}
+          className="-left-16 -top-10 lg:-left-6"
+        />
+      }
     >
       <div className="lg:flex lg:items-start lg:gap-12">
         <ul className="lg:max-w-md lg:flex-1">

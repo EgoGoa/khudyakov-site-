@@ -1313,3 +1313,295 @@ body {
     transition: none;
   }
 }
+
+/* Scattered glass icons on /smm (see SmmIconField.tsx). Reveal's own
+   framer-motion transform handles the one-time scroll-in on a wrapping div;
+   this continuous drift lives on the <img> itself so the two animations
+   don't fight over the same transform. */
+.smm-deco-icon {
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 16px rgba(0, 210, 255, 0.3));
+  animation: smm-icon-float 8s ease-in-out infinite;
+}
+
+@keyframes smm-icon-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+    filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 16px rgba(0, 210, 255, 0.3));
+  }
+  50% {
+    transform: translateY(-16px) rotate(var(--r, 0deg));
+    filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 40px rgba(0, 210, 255, 0.8));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smm-deco-icon {
+    animation: none;
+    transform: rotate(var(--r, 0deg));
+  }
+}
+
+/* Glass-icon treatment for /content's orange-red icon set: every icon
+   always breathes a neon contour glow (tight inner ring + soft ambient
+   halo, oscillating dim/bright) and drifts a few pixels on its own path —
+   four variants below give each icon a different direction/timing so a
+   page with several of them never reads as one shape copy-pasted. Amplitude
+   stays small (6-9px) since these sit close to real content, not scattered
+   in a margin like .smm-deco-icon. */
+.content-deco-icon-1,
+.content-deco-icon-2,
+.content-deco-icon-3,
+.content-deco-icon-4 {
+  --glow-dim: drop-shadow(0 0 5px rgba(255, 106, 61, 0.35)) drop-shadow(0 0 24px rgba(255, 76, 41, 0.28))
+    drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+  --glow-bright: drop-shadow(0 0 9px rgba(255, 138, 92, 0.65)) drop-shadow(0 0 48px rgba(255, 76, 41, 0.6))
+    drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+}
+
+.content-deco-icon-1 {
+  animation: content-icon-drift-1 7.5s ease-in-out infinite;
+}
+.content-deco-icon-2 {
+  animation: content-icon-drift-2 8.5s ease-in-out infinite;
+}
+.content-deco-icon-3 {
+  animation: content-icon-drift-3 6.8s ease-in-out infinite;
+}
+.content-deco-icon-4 {
+  animation: content-icon-drift-4 9.2s ease-in-out infinite;
+}
+
+@keyframes content-icon-drift-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--r, 0deg));
+    filter: var(--glow-dim);
+  }
+  50% {
+    transform: translate(4px, -9px) rotate(var(--r, 0deg));
+    filter: var(--glow-bright);
+  }
+}
+@keyframes content-icon-drift-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--r, 0deg));
+    filter: var(--glow-dim);
+  }
+  50% {
+    transform: translate(-8px, 6px) rotate(var(--r, 0deg));
+    filter: var(--glow-bright);
+  }
+}
+@keyframes content-icon-drift-3 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--r, 0deg));
+    filter: var(--glow-dim);
+  }
+  50% {
+    transform: translate(9px, 4px) rotate(var(--r, 0deg));
+    filter: var(--glow-bright);
+  }
+}
+@keyframes content-icon-drift-4 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--r, 0deg));
+    filter: var(--glow-dim);
+  }
+  50% {
+    transform: translate(-5px, -8px) rotate(var(--r, 0deg));
+    filter: var(--glow-bright);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content-deco-icon-1,
+  .content-deco-icon-2,
+  .content-deco-icon-3,
+  .content-deco-icon-4 {
+    animation: none;
+    transform: rotate(var(--r, 0deg));
+    filter: var(--glow-dim);
+  }
+}
+
+/* Glass-icon treatment for /ai's emerald/birch-green icon set — same
+   drift+glow-pulse mechanics as .content-deco-icon-N, recolored to the AI
+   page's green palette. */
+.ai-deco-icon-1,
+.ai-deco-icon-2,
+.ai-deco-icon-3,
+.ai-deco-icon-4 {
+  --glow-dim: drop-shadow(0 0 5px rgba(52, 211, 153, 0.35)) drop-shadow(0 0 24px rgba(16, 185, 129, 0.28))
+    drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+  --glow-bright: drop-shadow(0 0 9px rgba(110, 231, 183, 0.65)) drop-shadow(0 0 48px rgba(16, 185, 129, 0.6))
+    drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+}
+
+.ai-deco-icon-1 {
+  animation: content-icon-drift-1 7.5s ease-in-out infinite;
+}
+.ai-deco-icon-2 {
+  animation: content-icon-drift-2 8.5s ease-in-out infinite;
+}
+.ai-deco-icon-3 {
+  animation: content-icon-drift-3 6.8s ease-in-out infinite;
+}
+.ai-deco-icon-4 {
+  animation: content-icon-drift-4 9.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-deco-icon-1,
+  .ai-deco-icon-2,
+  .ai-deco-icon-3,
+  .ai-deco-icon-4 {
+    animation: none;
+    transform: rotate(var(--r, 0deg));
+    filter: var(--glow-dim);
+  }
+}
+
+/* Continuous 3D spin for a standalone floating glass object (no card/frame
+   behind it) — the parent wrapper carries the CSS `perspective` so this
+   rotateY reads as turning in space rather than a flat squash. */
+.ai-deco-icon-spin3d {
+  filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.4)) drop-shadow(0 0 32px rgba(16, 185, 129, 0.35))
+    drop-shadow(0 18px 32px rgba(0, 0, 0, 0.5));
+  animation: ai-icon-spin3d 14s linear infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes ai-icon-spin3d {
+  from {
+    transform: rotateY(0deg) rotateX(6deg);
+  }
+  to {
+    transform: rotateY(360deg) rotateX(6deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-deco-icon-spin3d {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* A cursor-style icon "clicking" the letter it's pinned to — a quick
+   press-down scale dip that snaps back, then a hold, on a loop. Distinct
+   from the drift/spin variants, which read as ambient rather than a
+   pointed, deliberate action. */
+.ai-deco-icon-click {
+  filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.5)) drop-shadow(0 0 26px rgba(16, 185, 129, 0.4))
+    drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
+  transform-origin: 20% 15%;
+  animation: ai-icon-click 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes ai-icon-click {
+  0%,
+  55% {
+    transform: rotate(var(--r, 0deg)) scale(1);
+  }
+  65% {
+    transform: rotate(var(--r, 0deg)) scale(0.82);
+  }
+  75%,
+  100% {
+    transform: rotate(var(--r, 0deg)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-deco-icon-click {
+    animation: none;
+    transform: rotate(var(--r, 0deg));
+  }
+}
+
+/* Same press-down "click" pulse as .ai-deco-icon-click, tuned to /sites'
+   purple-cherry glass icons (see SitesDecoIcon.tsx) instead of /ai's
+   emerald palette — everything else about the loop is identical. */
+.sites-deco-icon-click {
+  filter: drop-shadow(0 0 6px rgba(232, 95, 160, 0.5)) drop-shadow(0 0 26px rgba(123, 31, 162, 0.4))
+    drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
+  transform-origin: 20% 15%;
+  animation: sites-icon-click 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes sites-icon-click {
+  0%,
+  55% {
+    transform: rotate(var(--r, 0deg)) scale(1);
+  }
+  65% {
+    transform: rotate(var(--r, 0deg)) scale(0.82);
+  }
+  75%,
+  100% {
+    transform: rotate(var(--r, 0deg)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sites-deco-icon-click {
+    animation: none;
+    transform: rotate(var(--r, 0deg));
+  }
+}
+
+/* Default /sites float — same idea as .smm-deco-icon (drift + breathing
+   glow in one loop) but in the purple-cherry palette instead of cyan. */
+.sites-deco-icon-float {
+  animation: sites-icon-float 8s ease-in-out infinite;
+}
+
+@keyframes sites-icon-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+    filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 16px rgba(232, 95, 160, 0.3));
+  }
+  50% {
+    transform: translateY(-16px) rotate(var(--r, 0deg));
+    filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 40px rgba(123, 31, 162, 0.75));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sites-deco-icon-float {
+    animation: none;
+    transform: rotate(var(--r, 0deg));
+  }
+}
+
+/* Gentle breathing scale pulse — for a single "hero" icon that should read
+   as calmly alive rather than drifting or clicking (see browser-tile.png on
+   /sites' pitch chapter). Slower and softer than the click pulse: a smooth
+   sine-like grow/shrink with the glow breathing in step, no snap. */
+.sites-deco-icon-pulse {
+  animation: sites-icon-pulse 4.2s ease-in-out infinite;
+}
+
+@keyframes sites-icon-pulse {
+  0%,
+  100% {
+    transform: scale(1) rotate(var(--r, 0deg));
+    filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(232, 95, 160, 0.35));
+  }
+  50% {
+    transform: scale(1.055) rotate(var(--r, 0deg));
+    filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 38px rgba(123, 31, 162, 0.7));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sites-deco-icon-pulse {
+    animation: none;
+    transform: rotate(var(--r, 0deg));
+  }
+}

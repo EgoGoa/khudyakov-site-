@@ -4,6 +4,7 @@ import SitesPitch from "@/components/home/sites/SitesPitch";
 import SitesMethod from "@/components/home/sites/SitesMethod";
 import SitesAudience from "@/components/home/sites/SitesAudience";
 import Offer from "@/components/home/Offer";
+import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import Process from "@/components/home/Process";
 import { SITES_PROCESS_STEPS } from "@/components/home/sites/sitesProcessSteps";
 import SitesGuarantees from "@/components/home/sites/SitesGuarantees";
@@ -35,15 +36,25 @@ export default function SitesServicePage() {
     <ServiceProvider forcedValue="sites">
       <ServiceMenuOverlay service="sites" />
 
-      <SitesPitch />
+      <div className="overflow-x-hidden">
+        <SitesPitch />
+      </div>
       <SitesMethod />
       <SitesAudience />
-      <Offer
-        index={3}
-        chapter="04"
-        title="Что мы делаем"
-        intro="От одностраничного лендинга до сайта под ключ с интеграциями — вёрстка на React/HTML, без привязки к конструктору."
-      />
+      <div className="relative">
+        <SitesDecoIcon
+          src="/images/icons/sites/code.png"
+          size={380}
+          rotate={8}
+          className="right-2 bottom-0 lg:right-8"
+        />
+        <Offer
+          index={3}
+          chapter="04"
+          title="Что мы делаем"
+          intro="От одностраничного лендинга до сайта под ключ с интеграциями — вёрстка на React/HTML, без привязки к конструктору."
+        />
+      </div>
       <Process
         index={4}
         chapter="05"

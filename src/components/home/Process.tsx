@@ -3,6 +3,8 @@
 import type { ReactNode } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
 import FunnelCta from "@/components/ui/FunnelCta";
+import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
+import { useService } from "@/lib/service-context";
 
 // Chapter 05 on /content (the deck position `index`/`chapter` default to).
 // Six steps instead of the earlier three broad phases — the same path from
@@ -119,6 +121,7 @@ export default function Process({
   intro?: string;
   steps?: ProcessStepItem[];
 }) {
+  const { active } = useService();
   return (
     <CinematicSection
       index={index}
@@ -129,6 +132,19 @@ export default function Process({
       entrance="slide-right"
       id="process"
       intro={intro}
+      // Process is shared across /ai, /sites, /smm too (each passes its own
+      // title/intro/steps) — this orange-red icon is content's own.
+      decor={
+        active === "content" ? (
+          <ContentDecoIcon
+            src="/images/icons/content/workflow.png"
+            size={240}
+            rotate={10}
+            variant={3}
+            className="left-[7%] top-0"
+          />
+        ) : undefined
+      }
     >
       <div className="grid gap-4 sm:grid-cols-3">
         {steps.map((step, i) => (
