@@ -30,7 +30,16 @@ function CheckIcon() {
   );
 }
 
-export default function Close({ index = 5, chapter = "06" }: { index?: number; chapter?: string }) {
+export default function Close({
+  index = 5,
+  chapter = "06",
+  spacious = false,
+}: {
+  index?: number;
+  chapter?: string;
+  /** See CinematicSection's own prop — /sites opts in, other pages don't. */
+  spacious?: boolean;
+}) {
   const { active } = useService();
   const tiers = pricingByCategory[active];
   // /calculator computes a video-production budget specifically — a fair
@@ -48,6 +57,7 @@ export default function Close({ index = 5, chapter = "06" }: { index?: number; c
       // The payoff comes up to meet the visitor instead of sliding past.
       entrance="zoom"
       intro="Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: консультация, смета и 2–3 концепции."
+      spacious={spacious}
       // Close is shared across /ai, /sites, /smm too — this orange-red icon
       // is content's own, gated the same way Trust/Offer/Process gate theirs.
       decor={
@@ -85,7 +95,9 @@ export default function Close({ index = 5, chapter = "06" }: { index?: number; c
                 // in the middle grows into place — three different arrivals so
                 // the row does not land as a single slab.
                 transition={{ duration: 0.8, delay: BEAT.content + i * STAGGER.normal, ease: EASE }}
-                className={`c3-card !min-h-0 !rounded-3xl !p-6 ${tier.pro ? "c3-card-pro" : ""}`}
+                className={`c3-card !min-h-0 !rounded-3xl ${spacious ? "!p-5 c3-card-compact" : "!p-6"} ${
+                  tier.pro ? "c3-card-pro" : ""
+                }`}
               >
                 <span className="c3-tier-small relative">{tier.tagline}</span>
                 <div className="c3-tier-large relative !text-2xl">{tier.name}</div>
@@ -123,10 +135,10 @@ export default function Close({ index = 5, chapter = "06" }: { index?: number; c
           )}
         </div>
 
-        {/* The one card in the deck that isn't a card: a plain, huge
-            statement in the same type the chapter titles already use, so it
-            reads as the page raising its voice rather than one more panel
-            competing with the pricing grid above it. */}
+        {/* A closing line in the same type the chapter titles use — sized
+            down to a statement rather than a shout (was clamp(2.2rem,7.5vw,5rem),
+            about 3x this) now that the actual next step lives on its own
+            button just below rather than on this text itself. */}
         <Appear from="up" delay={BEAT.cta}>
           <div className="relative">
             {active === "content" && (
@@ -139,12 +151,17 @@ export default function Close({ index = 5, chapter = "06" }: { index?: number; c
                 className="left-[26%] top-full mt-1"
               />
             )}
-            <Link
-              href="/brief"
-              className="chapter-neon chapter-neon-pulse mt-6 block text-center font-display uppercase leading-[0.88] tracking-tight text-[clamp(2.2rem,7.5vw,5rem)] transition-opacity hover:opacity-80"
-            >
+            <p className="chapter-neon mt-6 text-center font-display uppercase leading-[0.95] tracking-tight text-[clamp(1.5rem,5vw,3.4rem)]">
               Начать проект сейчас
-            </Link>
+            </p>
+            <div className="mt-5 flex justify-center">
+              <Link
+                href="/brief"
+                className="btn-glass rounded-full px-10 py-3.5 font-mono text-xs uppercase tracking-[0.2em] text-paper transition-colors hover:text-white"
+              >
+                Да, начинаем
+              </Link>
+            </div>
           </div>
         </Appear>
       </>

@@ -836,6 +836,37 @@ body {
     0 0 26px rgba(255, 106, 61, 0.7), 0 0 60px rgba(255, 106, 61, 0.35);
 }
 
+/* Frosted-glass pill — a real pane of glass rather than a flat fill: a
+   diagonal light/dark gradient reads as glass catching light, backdrop-blur
+   lets whatever's behind it (the reel, a card edge) show through softened,
+   and the cyan rim on hover is the same glow the chapter neon type uses, so
+   the button reads as part of the same lit signage rather than a plain UI
+   control. Used for Close's "Да, начинаем" — the one place the site closes
+   the pitch, so it earns a more physical, more "there" surface than the
+   flat .btn-neon pills used everywhere else. */
+.btn-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.2s ease;
+}
+
+.btn-glass:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08));
+  border-color: rgba(0, 210, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 12px 34px -10px rgba(0, 0, 0, 0.65), 0 0 26px -4px rgba(0, 210, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-glass:active {
+  transform: translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .btn-3d {
     transition: none;
@@ -1243,6 +1274,25 @@ body {
 
 .c3-card-pro .c3-check {
   background: rgba(245, 49, 11, 0.18);
+}
+
+/* Tighter tier card for the plain-scroll pages (/ai, /sites, /smm) opted
+   into CinematicSection's `spacious` mode — that mode already gives the
+   whole chapter generous min-h-screen room, so the card itself doesn't also
+   need c3-card's original deck-slot spacing (tuned to fill one fixed screen
+   in /content's pinned stage). Only overrides spacing, not the card's
+   color/border identity. */
+.c3-card-compact .c3-team {
+  margin-bottom: 14px;
+}
+
+.c3-card-compact .c3-list li {
+  margin-bottom: 10px;
+}
+
+.c3-card-compact .c3-desc {
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 @media (max-width: 1024px) {

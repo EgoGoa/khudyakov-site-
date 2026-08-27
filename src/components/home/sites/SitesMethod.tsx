@@ -73,6 +73,7 @@ export default function SitesMethod() {
       side="right"
       entrance="slide-right"
       id="method"
+      spacious
       intro="Просто быстрее и дешевле классической разработки."
       decor={
         <SitesDecoIcon

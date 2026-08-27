@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
+import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 
 // Chapter 06 — "why us" (brief §9) plus the FAQ (brief §10), folded into one
 // screen the same way AiGuarantees.tsx pairs its terms list with an FAQ
 // accordion for /ai's chapter 06.
 //
-// FAQ answer 2 ("Насколько быстро...") carries a "←ПРОВЕРИТЬ" flag — same
-// convention as the pricing tiers in service-content.ts — until Egor confirms
-// a real turnaround time.
+// FAQ answer 2 ("Насколько быстро...") states a market-rate turnaround
+// estimate, same convention as the pricing tiers in service-content.ts — not
+// confirmed by Egor against a real case yet.
 
 const REASONS = [
   {
@@ -37,7 +38,7 @@ const FAQ = [
   },
   {
     q: "Насколько быстро вы делаете сайт?",
-    a: "От нескольких рабочих дней на лендинг до пары недель на сайт под ключ ←ПРОВЕРИТЬ — за счёт AI на этапе черновика сроки короче, чем в классической разработке.",
+    a: "От нескольких рабочих дней на лендинг до пары недель на сайт под ключ — за счёт AI на этапе черновика сроки короче, чем в классической разработке.",
   },
   {
     q: "Что если результат не понравится?",
@@ -69,7 +70,17 @@ export default function SitesGuarantees() {
       side="left"
       entrance="unfold"
       id="guarantees"
+      spacious
       intro="Покупаете не шаблон и не подписку на конструктор — покупаете свой сайт с зафиксированными сроками."
+      decor={
+        <SitesDecoIcon
+          src="/images/icons/sites/shield.png"
+          size={230}
+          rotate={7}
+          z={5}
+          className="right-4 -top-6 opacity-90 lg:right-10"
+        />
+      }
     >
       <div className="lg:flex lg:items-start lg:gap-12">
         <ul className="lg:max-w-md lg:flex-1">

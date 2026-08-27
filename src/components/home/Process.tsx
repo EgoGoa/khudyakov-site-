@@ -114,12 +114,15 @@ export default function Process({
   title = "PRO хронология",
   intro = "Шесть шагов от брифа до сдачи. На каждом вы видите прогресс и можете вносить правки.",
   steps = STEPS,
+  spacious = false,
 }: {
   index?: number;
   chapter?: string;
   title?: string;
   intro?: string;
   steps?: ProcessStepItem[];
+  /** See CinematicSection's own prop — /sites opts in, other pages don't. */
+  spacious?: boolean;
 }) {
   const { active } = useService();
   return (
@@ -132,6 +135,7 @@ export default function Process({
       entrance="slide-right"
       id="process"
       intro={intro}
+      spacious={spacious}
       // Process is shared across /ai, /sites, /smm too (each passes its own
       // title/intro/steps) — this orange-red icon is content's own.
       decor={

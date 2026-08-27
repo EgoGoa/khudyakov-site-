@@ -105,7 +105,7 @@ export default function SmmServicePage() {
         />
       </div>
 
-      <div className="relative z-10 overflow-x-hidden">
+      <div className="relative z-10 overflow-x-clip">
         <SmmDecoIcon
           src="/images/icons/smm/analytics.png"
           size={255}
@@ -121,7 +121,7 @@ export default function SmmServicePage() {
         cta="Смотреть цены"
       />
 
-      <div className="relative z-10 overflow-x-hidden">
+      <div className="relative z-10 overflow-x-clip">
         <SmmDecoIcon
           src="/images/icons/smm/ai.png"
           size={105}

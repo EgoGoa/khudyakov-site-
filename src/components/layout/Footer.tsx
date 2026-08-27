@@ -54,7 +54,7 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
           className="pointer-events-none absolute inset-0 bg-no-repeat animate-flare-drift"
           style={
             {
-              backgroundImage: "url(/images/footer-flares.png)",
+              backgroundImage: "url(/images/footer-flares.jpg)",
               backgroundPosition: layer.stops[0],
               // Explicit "200% 200%", not the shorthand "200%" — a single
               // value only sets width to that percentage and leaves height

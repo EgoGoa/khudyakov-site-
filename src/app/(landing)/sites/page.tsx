@@ -36,7 +36,7 @@ export default function SitesServicePage() {
     <ServiceProvider forcedValue="sites">
       <ServiceMenuOverlay service="sites" />
 
-      <div className="overflow-x-hidden">
+      <div className="overflow-x-clip">
         <SitesPitch />
       </div>
       <SitesMethod />
@@ -53,6 +53,7 @@ export default function SitesServicePage() {
           chapter="04"
           title="Что мы делаем"
           intro="От одностраничного лендинга до сайта под ключ с интеграциями — вёрстка на React/HTML, без привязки к конструктору."
+          spacious
         />
       </div>
       <Process
@@ -61,9 +62,18 @@ export default function SitesServicePage() {
         title="Как проходит работа"
         intro="Пять шагов от брифа до запуска — на каждом понятный результат и точка согласования."
         steps={SITES_PROCESS_STEPS}
+        spacious
       />
       <SitesGuarantees />
-      <Close index={6} chapter="07" />
+      <div className="relative z-10 overflow-x-clip">
+        <SitesDecoIcon
+          src="/images/icons/sites/tag.png"
+          size={190}
+          rotate={-11}
+          className="-left-20 top-8 lg:-left-10"
+        />
+        <Close index={6} chapter="07" spacious />
+      </div>
 
       <SitesSeoText />
     </ServiceProvider>

@@ -18,11 +18,14 @@ export default function Offer({
   chapter = "04",
   title = "Лучшие в этом",
   intro = "Съёмка, монтаж, графика и AI-продакшн — под формат и площадку.",
+  spacious = false,
 }: {
   index?: number;
   chapter?: string;
   title?: string;
   intro?: string;
+  /** See CinematicSection's own prop — /sites opts in, other pages don't. */
+  spacious?: boolean;
 }) {
   const { active } = useService();
   const services = servicesByCategory[active];
@@ -42,6 +45,7 @@ export default function Offer({
       // New subject after the trust argument — it tips up into place.
       entrance="unfold"
       intro={intro}
+      spacious={spacious}
       // Offer is shared across /ai, /sites, /smm too (each passes its own
       // title/intro) — this orange-red icon is content's own, so it's
       // gated the same way Trust.tsx gates its own decoration.

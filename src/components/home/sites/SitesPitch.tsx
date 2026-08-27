@@ -20,6 +20,7 @@ export default function SitesPitch() {
       side="left"
       entrance="slide-left"
       id="pitch"
+      spacious
       intro="Уникальный дизайн и вёрстка вместо шаблонов и конструкторов. Без штата разработчиков — HDKV.AGENCY собирает сайт с помощью AI-инструментов под контролем опытной команды."
       decor={
         <SitesDecoIcon

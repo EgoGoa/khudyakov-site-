@@ -4,13 +4,13 @@ import { useState } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
 
 // Chapter 05 — terms and a compact FAQ folded into one screen, same shape
-// as AiGuarantees/SitesGuarantees. "←ПРОВЕРИТЬ" marks a working default
-// rather than a term Egor has actually confirmed.
+// as AiGuarantees/SitesGuarantees. Terms below are working defaults rather
+// than ones Egor has actually confirmed against a real contract.
 
 const TERMS = [
   {
     title: "Фиксированный ежемесячный пакет",
-    description: "Без доплат за «лишний» рилс в рамках согласованного объёма. ←ПРОВЕРИТЬ",
+    description: "Без доплат за «лишний» рилс в рамках согласованного объёма.",
   },
   {
     title: "Контент утверждается перед публикацией",
@@ -18,7 +18,7 @@ const TERMS = [
   },
   {
     title: "Отказ в любой момент",
-    description: "Без длинных контрактов «в клетку» — предупреждение за один расчётный период. ←ПРОВЕРИТЬ",
+    description: "Без длинных контрактов «в клетку» — предупреждение за один расчётный период.",
   },
   {
     title: "Отчёт каждую неделю",

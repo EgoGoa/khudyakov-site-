@@ -301,15 +301,14 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
       pro: false,
     },
   ],
-  // Placeholders marked ←ПРОВЕРИТЬ — Егор подтверждает реальные сроки и цены
-  // перед публикацией, см. content/site-copy.md и AiSegments.tsx для того же
-  // соглашения на /ai.
+  // Рыночные ориентиры (не подтверждены Егором на конкретных кейсах) —
+  // см. content/site-copy.md и AiSegments.tsx для того же соглашения на /ai.
   sites: [
     {
       name: "Лендинг",
-      price: "от 60 000 ₽ ←ПРОВЕРИТЬ",
+      price: "от 60 000 ₽",
       tagline: "Одна страница под задачу",
-      team: "Срок — 5 рабочих дней ←ПРОВЕРИТЬ",
+      team: "Срок — 5 рабочих дней",
       features: [
         "Тексты, дизайн и вёрстка с нуля",
         "2 итерации правок включены",
@@ -319,9 +318,9 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
     },
     {
       name: "Сайт-визитка",
-      price: "от 120 000 ₽ ←ПРОВЕРИТЬ",
+      price: "от 120 000 ₽",
       tagline: "До 5 страниц, всё включено",
-      team: "Срок — 8 рабочих дней ←ПРОВЕРИТЬ",
+      team: "Срок — 8 рабочих дней",
       features: [
         "Структура из нескольких страниц",
         "3 итерации правок включены",
@@ -331,9 +330,9 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
     },
     {
       name: "Сайт под ключ",
-      price: "от 220 000 ₽ ←ПРОВЕРИТЬ",
+      price: "от 220 000 ₽",
       tagline: "Многостраничный сайт с интеграциями",
-      team: "Срок — 14 рабочих дней ←ПРОВЕРИТЬ",
+      team: "Срок — 14 рабочих дней",
       features: [
         "До 10+ страниц, формы и интеграция с CRM",
         "AI-ассистент на сайте — по запросу",
@@ -342,15 +341,13 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
       pro: false,
     },
   ],
-  // Placeholders marked ←ПРОВЕРИТЬ — Егор подтверждает реальные цены перед
-  // публикацией, тот же приём, что и на /sites (см. content/site-copy.md).
-  // Ориентиры взяты по рынку SMM-агентств РФ — не с конкретных сайтов-рефов
-  // (radar-online.ru, manifestagency.ru, advertalyze.ru — ни один не
-  // публикует цены), а как стартовая вилка для правки.
+  // Рыночные ориентиры по рынку SMM-агентств РФ (не с конкретных сайтов-рефов
+  // — radar-online.ru, manifestagency.ru, advertalyze.ru — ни один не
+  // публикует цены), не подтверждены Егором на конкретных кейсах.
   smm: [
     {
       name: "Стартовый",
-      price: "от 45 000 до 80 000 ₽/мес ←ПРОВЕРИТЬ",
+      price: "от 45 000 до 80 000 ₽/мес",
       tagline: "Ведение без съёмки",
       team: "Команда: SMM-менеджер + дизайнер",
       features: [
@@ -362,7 +359,7 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
     },
     {
       name: "Комплексный",
-      price: "от 90 000 до 180 000 ₽/мес ←ПРОВЕРИТЬ",
+      price: "от 90 000 до 180 000 ₽/мес",
       tagline: "Съёмка и продвижение",
       team: "Команда: продюсер, оператор, монтажёр, SMM-менеджер",
       features: [
@@ -375,7 +372,7 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
     },
     {
       name: "Full-service",
-      price: "от 200 000 ₽/мес ←ПРОВЕРИТЬ",
+      price: "от 200 000 ₽/мес",
       tagline: "Полный цикл с блогерами",
       team: "Команда: продюсер, оператор, монтажёр, SMM-менеджер, таргетолог",
       features: [

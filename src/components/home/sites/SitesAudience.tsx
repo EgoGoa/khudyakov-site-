@@ -1,6 +1,7 @@
 "use client";
 
 import CinematicSection from "@/components/ui/CinematicSection";
+import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 
 // Chapter 03 — "who this is for" (brief §5). No case cards here on purpose:
 // worksByCategory.sites is empty and the brief is explicit that an empty
@@ -36,7 +37,18 @@ export default function SitesAudience() {
       side="left"
       entrance="rise"
       id="audience"
+      spacious
       intro="Малому бизнесу, личному бренду и стартапам, которым нужен результат быстрее классической разработки."
+      decor={
+        <SitesDecoIcon
+          src="/images/icons/sites/target.png"
+          size={210}
+          rotate={-9}
+          pulse
+          z={5}
+          className="right-2 -top-4 opacity-90 lg:right-6"
+        />
+      }
     >
       <div className="grid gap-4 sm:grid-cols-3">
         {SEGMENTS.map((s) => (

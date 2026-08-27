@@ -73,6 +73,7 @@ export default function CinematicSection({
   children,
   decor,
   bodyDecor,
+  spacious = false,
 }: {
   /** Position in the deck — must match this chapter's entry in `chapters`. */
   index: number;
@@ -101,6 +102,16 @@ export default function CinematicSection({
    *  the header — for a decoration meant to sit beside the content below the
    *  title rather than beside the title itself. */
   bodyDecor?: ReactNode;
+  /** Outside a pinned deck only (`!staged`): stretches the section to at
+   *  least one viewport tall and centers the body in the extra room, instead
+   *  of the section hugging its content height. For plain-scroll pages
+   *  (/ai, /sites, /smm) whose chapters were never designed against a fixed
+   *  screen the way the pinned deck's are — without this they read as
+   *  cramped bands of a few hundred px stacked back to back rather than
+   *  full "chapters". Off by default so the pinned-deck consumers (Trust,
+   *  Offer, Process, Close inside /content's stage) and every plain-scroll
+   *  page that hasn't opted in keep their current, tighter rhythm. */
+  spacious?: boolean;
 }) {
   // Trust/Offer/Process/Close are authored for the pinned deck (see
   // CinematicStage) but Process is also reused directly on the plain-scroll
@@ -136,6 +147,8 @@ export default function CinematicSection({
           ? `absolute inset-0 flex flex-col overflow-y-auto px-6 pb-12 pt-[5.5rem] lg:px-10 lg:pb-12 lg:pt-[5.5rem] ${
               active ? "" : "pointer-events-none"
             }`
+          : spacious
+          ? "relative flex min-h-[100svh] flex-col px-6 py-16 sm:py-20 lg:min-h-screen lg:px-10 lg:py-24"
           : "relative flex flex-col px-6 py-10 sm:py-14 lg:px-10"
       }
       // touch-action pan-y so the pane itself can be dragged on a phone; the
@@ -162,7 +175,11 @@ export default function CinematicSection({
         }}
       />
 
-      <header className="relative mx-auto w-full max-w-7xl shrink-0">
+      <header
+        className={`relative mx-auto w-full max-w-7xl shrink-0 ${
+          spacious ? "flex flex-col justify-center min-h-[20svh]" : ""
+        }`}
+      >
         {decor}
 
         {/* The chapter number/icon sits in its own corner regardless of how
@@ -209,7 +226,7 @@ export default function CinematicSection({
           {intro && (
             <motion.p
               variants={reduced ? undefined : HEADER_INTRO}
-              className="mt-2.5 font-display text-[10px] uppercase leading-snug tracking-tight text-white sm:text-[11px]"
+              className="relative z-10 mt-2.5 font-display text-[10px] uppercase leading-snug tracking-tight text-white sm:text-[11px]"
             >
               {intro}
             </motion.p>
@@ -218,7 +235,9 @@ export default function CinematicSection({
       </header>
 
       {children && (
-        <div className="relative mx-auto my-auto w-full max-w-7xl py-2">
+        <div
+          className={`relative mx-auto w-full max-w-7xl py-2 ${spacious ? "" : "my-auto"}`}
+        >
           {bodyDecor}
           {/* Children use <Appear> to arrive on their own beat and from their
               own direction; this is what tells them the chapter is on stage. */}
