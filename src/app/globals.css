@@ -1295,6 +1295,36 @@ body {
   margin-bottom: 20px;
 }
 
+/* Denser still — /ai's own Close chapter (see the `dense` prop) asked for
+   the tier cards' type shrunk by about 30% across the board, tier name/
+   price/team already done inline (they're set per-tier via a plain
+   className, not this shared class), tagline and feature list here since
+   those come from the shared .c3-tier-small/.c3-list rules. min-height
+   dropped too — the card was sized for the original, larger type and reads
+   as an oversized empty box once the text inside it shrinks. */
+.c3-card-dense {
+  min-height: 0;
+}
+
+.c3-card-dense .c3-tier-small {
+  font-size: 0.62rem;
+}
+
+.c3-card-dense .c3-list li {
+  font-size: 0.7rem;
+  margin-bottom: 10px;
+}
+
+.c3-card-dense .c3-check {
+  width: 19px;
+  height: 19px;
+}
+
+.c3-card-dense .c3-check svg {
+  width: 9px;
+  height: 9px;
+}
+
 @media (max-width: 1024px) {
   .c3-watermark-main {
     /* 3rem reads fine at tablet widths but a single long word like

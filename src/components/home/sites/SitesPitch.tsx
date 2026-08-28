@@ -31,15 +31,6 @@ export default function SitesPitch() {
           className="right-[24%] top-[58px] lg:top-[66px]"
         />
       }
-      bodyDecor={
-        <SitesDecoIcon
-          src="/images/icons/sites/browser-tile.png"
-          size={230}
-          rotate={-6}
-          pulse
-          className="-left-[115px] top-24"
-        />
-      }
     >
       <div className="lg:flex lg:items-center lg:gap-12">
         <div className="lg:flex-1">

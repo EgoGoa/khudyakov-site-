@@ -49,10 +49,10 @@ export default function AiPortfolio() {
               </span>
               <span className="text-sm font-medium leading-snug text-paper/70">[TODO название кейса]</span>
               <div className="mt-1 flex w-full flex-wrap items-center gap-2">
-                <span className="rounded-full border border-paper/15 px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.08em] text-paper/40">
+                <span className="rounded-none bg-orange px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-white">
                   Смотреть
                 </span>
-                <span className="rounded-full border border-paper/15 px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.08em] text-paper/40">
+                <span className="rounded-none border border-paper/20 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-paper/60">
                   Хочу так же
                 </span>
               </div>

@@ -758,7 +758,17 @@ export default function CinematicStage({
       const frame = frameRef.current;
       const remaining = phase.end - video.currentTime;
       applyPush();
-      if (remaining <= 0) {
+      // A phase whose `end` sits at or past the file's actual duration (a
+      // last chapter cut right up to the reel's own final frame) can hit the
+      // <video>'s native end — currentTime pinned at duration, paused true —
+      // before `remaining` ever counts down to 0 itself. Treated as an
+      // ordinary unexpected pause below, the self-heal call would then
+      // re-`play()` an already-ended element, which some browsers (Chrome
+      // included) answer by restarting it from 0 rather than leaving it put
+      // — the reel visibly looping back to its opening frame instead of
+      // holding on its last one. `video.ended` catches that case here, ahead
+      // of the self-heal branch, and holds exactly like a normal phase end.
+      if (remaining <= 0 || video.ended) {
         if (!video.paused) video.pause();
         if (frame) frame.style.filter = `${brightnessPrefix}blur(${maxBlurPx}px)`;
         return;

@@ -1,7 +1,6 @@
 "use client";
 
 import CinematicSection from "@/components/ui/CinematicSection";
-import FunnelCta from "@/components/ui/FunnelCta";
 import { servicesByCategory } from "@/lib/service-content";
 
 // Chapter 01 of /ai's deck (see src/app/(landing)/ai/page.tsx) — the
@@ -44,52 +43,43 @@ export default function AiPitch() {
       id="pitch"
       intro="Внедряем ИИ-инструменты в продажи, контент и коммуникацию с клиентами — там, где это реально ускоряет результат, а не для галочки."
     >
-      <div className="lg:flex lg:items-start lg:gap-12">
-        <div className="lg:flex-1">
-          {/* The pain line — named pains before the pitch resumes into the
-              task grid, per the copy brief (hushflow: pain, then solution). */}
-          <p className="-mt-2 mb-5 max-w-2xl text-sm leading-relaxed text-paper/55">
-            Заявки теряются, пока менеджер занят. Контент под каталог собираете вручную. Отвечаете
-            клиенту через два часа, когда конкурент — через минуту.
-          </p>
+      <div>
+        {/* The pain line — named pains before the pitch resumes into the
+            task grid, per the copy brief (hushflow: pain, then solution). */}
+        <p className="-mt-2 mb-5 max-w-2xl text-sm leading-relaxed text-paper/55">
+          Заявки теряются, пока менеджер занят. Контент под каталог собираете вручную. Отвечаете
+          клиенту через два часа, когда конкурент — через минуту.
+        </p>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-            {services.map((service, i) => (
-              <div
-                key={service.title}
-                className="rounded-xl bg-ink/45 p-3 backdrop-blur-md"
-              >
-                <span className="font-mono text-[9px] text-glow/70">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="mt-1 font-display text-[11px] uppercase leading-[1.15] tracking-tight text-white sm:text-xs">
-                  {service.title}
-                </h3>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-paper/15 pt-5 sm:grid-cols-4">
-            {STATS.map((stat) => (
-              <div key={stat.label} className="border-l border-glow/30 pl-3.5">
-                <div className="font-display text-2xl uppercase tabular-nums text-paper">{stat.value}</div>
-                <div className="mt-1 font-mono text-[10px] uppercase leading-snug tracking-[0.1em] text-paper/50">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Full page width now that the FunnelCta card that used to claim
+            the right ~300px column is gone — ten cells get to breathe
+            instead of being squeezed into a strip beside it. Bigger padding
+            and a taller minimum height per cell (not just a wider grid) is
+            what actually reads as "voluminous"; a wider grid alone would
+            have just left more empty space inside the same cramped cells. */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {services.map((service, i) => (
+            <div
+              key={service.title}
+              className="flex min-h-[104px] flex-col rounded-2xl bg-ink/45 p-4 backdrop-blur-md"
+            >
+              <span className="font-mono text-[10px] text-glow/70">{String(i + 1).padStart(2, "0")}</span>
+              <h3 className="mt-2 font-display text-sm uppercase leading-[1.2] tracking-tight text-white">
+                {service.title}
+              </h3>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-6 lg:mt-0 lg:w-[280px] lg:shrink-0 xl:w-[300px]">
-          <FunnelCta
-            item="consult"
-            align="right"
-            size="sm"
-            spacious
-            eyebrow="Опишите задачу"
-            headline="Обсудим формат"
-            accent="и бюджет"
-            pitch="Ответит продюсер — не отдел продаж."
-          />
+        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-paper/15 pt-5 sm:grid-cols-4">
+          {STATS.map((stat) => (
+            <div key={stat.label} className="border-l border-glow/30 pl-3.5">
+              <div className="font-display text-2xl uppercase tabular-nums text-paper">{stat.value}</div>
+              <div className="mt-1 font-mono text-[10px] uppercase leading-snug tracking-[0.1em] text-paper/50">
+                {stat.label}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </CinematicSection>

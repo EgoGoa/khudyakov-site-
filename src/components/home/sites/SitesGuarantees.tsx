@@ -4,7 +4,7 @@ import { useState } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 
-// Chapter 06 — "why us" (brief §9) plus the FAQ (brief §10), folded into one
+// Chapter 05 — "why us" (brief §9) plus the FAQ (brief §10), folded into one
 // screen the same way AiGuarantees.tsx pairs its terms list with an FAQ
 // accordion for /ai's chapter 06.
 //
@@ -63,8 +63,8 @@ export default function SitesGuarantees() {
 
   return (
     <CinematicSection
-      index={5}
-      chapter="06"
+      index={4}
+      chapter="05"
       title="Почему мы"
       icon="scale"
       side="left"

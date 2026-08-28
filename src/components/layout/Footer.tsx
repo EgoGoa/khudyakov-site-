@@ -1,28 +1,9 @@
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
+import FlareBackground from "@/components/ui/FlareBackground";
 import { services } from "@/lib/data";
 import { EditIcon, InstagramIcon, PhoneIcon, TelegramIcon } from "@/components/ui/Icons";
-
-// Five blurred color-flare spots baked into one wide texture
-// (public/images/footer-flares.png): violet, blue, cyan, red, green. Each
-// layer below drifts through all five in a different order/phase via the
-// "flare-drift" keyframes (tailwind.config.ts) — background-position eases
-// between the --p0..--p4 custom properties while opacity dips mid-transit
-// and blooms at each stop, so flares read as smoothly appearing in
-// different spots rather than blinking in place. First === last keyframe
-// stop, so the loop has no visible seam.
-const VIOLET = "10% 18%";
-const BLUE = "88% 10%";
-const CYAN = "8% 82%";
-const RED = "50% 48%";
-const GREEN = "88% 85%";
-
-const FLARE_LAYERS: { stops: [string, string, string, string, string]; duration: string; delay: string }[] = [
-  { stops: [VIOLET, RED, CYAN, BLUE, GREEN], duration: "44s", delay: "0s" },
-  { stops: [BLUE, GREEN, VIOLET, RED, CYAN], duration: "52s", delay: "-18s" },
-  { stops: [CYAN, BLUE, GREEN, VIOLET, RED], duration: "60s", delay: "-35s" },
-];
 
 const navLinks = [
   { href: "/#works", label: "Работы" },
@@ -48,46 +29,17 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
   return (
     <footer id="footer" className="relative overflow-hidden bg-ink text-paper">
       {decor}
-      {FLARE_LAYERS.map((layer, i) => (
-        <div
-          key={i}
-          className="pointer-events-none absolute inset-0 bg-no-repeat animate-flare-drift"
-          style={
-            {
-              backgroundImage: "url(/images/footer-flares.jpg)",
-              backgroundPosition: layer.stops[0],
-              // Explicit "200% 200%", not the shorthand "200%" — a single
-              // value only sets width to that percentage and leaves height
-              // at "auto" (scaled by the image's own aspect ratio), which on
-              // this wide 1536×768 texture left it shorter than the
-              // footer's own box on most viewports. As backgroundPosition
-              // animated, that gap intermittently showed through as the
-              // texture's edge sliding along the footer's edge. Sizing both
-              // axes to the container guarantees full coverage at every
-              // position, so there's never an edge left to reveal.
-              backgroundSize: "200% 200%",
-              animationDuration: layer.duration,
-              animationDelay: layer.delay,
-              "--p0": layer.stops[0],
-              "--p1": layer.stops[1],
-              "--p2": layer.stops[2],
-              "--p3": layer.stops[3],
-              "--p4": layer.stops[4],
-            } as CSSProperties
-          }
-        />
-      ))}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/80 to-ink" />
+      <FlareBackground />
       <div className="relative">
       {/* CTA band — mirrors the "ready to discuss your project" strip from
           the reference, but pointed at our own real channels */}
       <div className="border-b border-paper/10">
-        <Container className="py-14 text-center sm:py-20">
-          <h2 className="font-sans text-2xl font-light uppercase leading-tight tracking-[0.01em] text-paper sm:text-4xl">
+        <Container className="pb-14 pt-8 text-center sm:pb-20 sm:pt-10">
+          <h2 className="font-display text-2xl uppercase leading-tight tracking-tight text-paper sm:text-3xl">
             Готовы обсудить ваш проект
             <br className="hidden sm:block" /> в любое время
           </h2>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={pillClass}>
               <TelegramIcon />
               Написать в Telegram

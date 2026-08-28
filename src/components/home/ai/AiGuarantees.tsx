@@ -4,12 +4,20 @@ import { useState } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
 import AiDecoIcon from "@/components/home/ai/AiDecoIcon";
 
-// Chapter 05 — "you're buying a system, not a post" thesis, terms (rights/
+// Chapter 06 — "you're buying a system, not a post" thesis, terms (rights/
 // SLA/timelines), contractual guarantees, and a compact FAQ, all folded into
 // one screen the way /content's chapter 03 pairs its reasons with a FAQ
 // aside. ruvision's tender/44-ФЗ guarantee point is dropped — not relevant
 // to this business — and its awards/press proof points are skipped entirely
 // per the no-invented-data rule.
+//
+// The former standalone "Команда и блог" chapter (AiTeamBlog) folded in here
+// as a compact strip above the FAQ rather than keeping its own video phase —
+// its content was almost entirely [TODO] placeholders (team size, blog
+// posts), too thin to carry a full screen on its own once every chapter on
+// this page maps 1:1 to a phase of the reel. Its dashed blog placeholder
+// cards are dropped outright rather than shrunk; the one real line (team
+// backing the system) earns its place next to the terms it's vouching for.
 //
 // "←ПРОВЕРИТЬ" marks a working default rather than a term Egor has actually
 // confirmed — see docs/ai-page-todo.md.
@@ -101,7 +109,15 @@ export default function AiGuarantees() {
         </ul>
 
         <div className="mt-8 lg:mt-0 lg:w-[360px] lg:shrink-0 xl:w-[400px]">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">FAQ</span>
+          <div className="rounded-xl bg-ink/40 p-3.5">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-glow">Команда</span>
+            <p className="mt-1.5 text-xs leading-relaxed text-paper/65">
+              AI-инструменты внедряем с 2024 года в составе продюсерского центра HDKV.AGENCY — не
+              коробочный сервис, а конкретные люди на пилоте и на сопровождении.
+            </p>
+          </div>
+
+          <span className="mt-5 block font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">FAQ</span>
           <div className="mt-3 border-t border-paper/10">
             {FAQ.map((item, i) => {
               const isOpen = open === i;

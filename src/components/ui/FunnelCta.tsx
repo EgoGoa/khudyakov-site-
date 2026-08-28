@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useService } from "@/lib/service-context";
 
 // One way forward per chapter, with the sentence that earns the click.
 //
@@ -155,12 +156,16 @@ function CtaButton({
   funnel,
   size,
   flat = false,
+  square = false,
 }: {
   funnel: (typeof FUNNELS)[FunnelKey];
   size: FunnelSize;
   /** Drops the .btn-3d "physical key" treatment for a plain flat pill —
    *  the solid-fill .btn-neon.btn-warm look on its own. */
   flat?: boolean;
+  /** /ai's own button language (see FunnelCta's own `square` note below) —
+   *  square corners, the display font, no 3D key. Implies `flat`. */
+  square?: boolean;
 }) {
   const content = (
     <>
@@ -169,12 +174,13 @@ function CtaButton({
       <ArrowGlyph />
     </>
   );
+  const cls = buttonClass(size, flat || square, square);
   return funnel.external ? (
-    <a href={funnel.href} target="_blank" rel="noopener noreferrer" className={buttonClass(size, flat)}>
+    <a href={funnel.href} target="_blank" rel="noopener noreferrer" className={cls}>
       {content}
     </a>
   ) : (
-    <Link href={funnel.href} className={buttonClass(size, flat)}>
+    <Link href={funnel.href} className={cls}>
       {content}
     </Link>
   );
@@ -220,6 +226,12 @@ export default function FunnelCta({
 }) {
   const funnel = FUNNELS[item];
   const right = align === "right";
+  // /ai's own button language — square corners, the display font, no 3D
+  // key — applied here rather than per call site (same pattern Offer.tsx
+  // already uses for its own `active === "ai"` teaser branch) so every
+  // FunnelCta rendered anywhere in /ai's tree (AiPitch, Trust, Process)
+  // picks it up automatically, without touching each of those files.
+  const square = useService().active === "ai";
 
   if (size === "sm") {
     return (
@@ -265,7 +277,7 @@ export default function FunnelCta({
             </p>
           </div>
           <div className="shrink-0">
-            <CtaButton funnel={funnel} size={size} flat={flatButton} />
+            <CtaButton funnel={funnel} size={size} flat={flatButton} square={square} />
           </div>
         </div>
       </div>
@@ -311,7 +323,7 @@ export default function FunnelCta({
         </div>
 
         <div className="shrink-0">
-          <CtaButton funnel={funnel} size={size} />
+          <CtaButton funnel={funnel} size={size} square={square} />
         </div>
       </div>
     </div>
@@ -321,8 +333,14 @@ export default function FunnelCta({
 // The one warm, solid-fill button in the chapter — everything else on the
 // page is the quieter default .btn-neon. Sized down a step for "sm" so it
 // doesn't outweigh a compact card.
-function buttonClass(size: FunnelSize, flat = false) {
+function buttonClass(size: FunnelSize, flat = false, square = false) {
   const scale = size === "sm" ? "!px-6 !py-3 !text-[12px]" : "!px-8 !py-4 !text-[13px]";
   const dimension = flat ? "" : "btn-3d";
-  return `btn-neon btn-warm ${dimension} inline-flex items-center gap-2.5 whitespace-nowrap ${scale} !tracking-[0.14em]`;
+  // Square corners + the display font instead of the pill/sans everywhere
+  // else uses — /ai's own button language (see `square` above). `!` on
+  // rounded-none isn't needed: Tailwind's utilities layer already sits
+  // after .btn-neon's plain `@layer components` rule in the cascade, so it
+  // wins on specificity-tied selectors without forcing it.
+  const shape = square ? "rounded-none font-display uppercase !tracking-[0.08em]" : "";
+  return `btn-neon btn-warm ${dimension} inline-flex items-center gap-2.5 whitespace-nowrap ${scale} !tracking-[0.14em] ${shape}`;
 }

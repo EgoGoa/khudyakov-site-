@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
@@ -19,6 +20,7 @@ export default function Offer({
   title = "Лучшие в этом",
   intro = "Съёмка, монтаж, графика и AI-продакшн — под формат и площадку.",
   spacious = false,
+  decor,
 }: {
   index?: number;
   chapter?: string;
@@ -26,6 +28,12 @@ export default function Offer({
   intro?: string;
   /** See CinematicSection's own prop — /sites opts in, other pages don't. */
   spacious?: boolean;
+  /** Overrides content's own decoration below for a different service's page
+   *  (e.g. /sites' own glass icon) — ignored while `active === "content"`.
+   *  Must be passed through this slot rather than as a sibling element: a
+   *  sibling next to a staged CinematicSection isn't gated by the deck's own
+   *  active-chapter logic and renders unconditionally on every chapter. */
+  decor?: ReactNode;
 }) {
   const { active } = useService();
   const services = servicesByCategory[active];
@@ -58,7 +66,9 @@ export default function Offer({
             variant={2}
             className="right-[7%] top-0"
           />
-        ) : undefined
+        ) : (
+          decor
+        )
       }
     >
       <div className="lg:flex lg:items-start lg:gap-12">

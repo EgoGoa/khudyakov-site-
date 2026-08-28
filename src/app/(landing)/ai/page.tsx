@@ -9,10 +9,9 @@ import Offer from "@/components/home/Offer";
 import AiGuarantees from "@/components/home/ai/AiGuarantees";
 import Process from "@/components/home/Process";
 import { AI_PROCESS_STEPS } from "@/components/home/ai/aiProcessSteps";
-import AiTeamBlog from "@/components/home/ai/AiTeamBlog";
+import { AI_INTERACTIVE_TIERS } from "@/components/home/ai/aiPricingTiers";
 import Close from "@/components/home/Close";
 import AiSeoText from "@/components/home/ai/AiSeoText";
-import AiDecoIcon from "@/components/home/ai/AiDecoIcon";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -22,36 +21,47 @@ export const metadata: Metadata = {
 
 // Same deck as /content: one continuous film pinned behind chapters that step
 // one per gesture, each phase playing out and then holding — defocused — on
-// its closing frame. See CinematicStage for the mechanics.
+// its closing frame. See CinematicStage for the mechanics. Every section of
+// the page now lives inside this one deck — none of it releases into plain
+// scroll below, matching /content's own page structure.
 //
-// public/video/ai-reel.mp4 is the supplied footage whole and unedited, only
-// transcoded for the web (1280×720, ~1.2 Mbps, one keyframe per second so a
-// seek back to a phase start lands clean, audio dropped). 31.625s long.
+// public/video/ai-reel.mp4 is the founder's second reel for this page, only
+// transcoded for the web (1280×720, ~1.18 Mbps, one keyframe per second so a
+// seek back to a phase start lands clean, audio dropped). 53.71s long.
 //
-// The phases below are where playback rests. Boundaries were read off the
-// footage itself — its hard cuts at 2.375, 4.292, 6.625, 9.958 and the flash
-// at 26.083, plus the points where motion drops to a standstill (7.0–9.9,
-// 14.5–20.5, 25.5–26.0) — so each chapter both opens on a cut and freezes on
-// a frame the film had already settled onto:
+// The founder gave the phases below in whole seconds — 8 blocks for 8
+// chapters. Snapped here to the footage's own cuts instead of those round
+// numbers: an ffmpeg scene-detect pass (`select='gt(scene,0.03)'`) against
+// the actual file found real cuts up to ~0.4s off the whole-second reading
+// at a couple of boundaries (27.58s and 39.42s, not 28s/39s) — enough to
+// read as a raw splice poking out of the blur hold, since the reveal ramp on
+// the new phase was timed against a boundary the footage's own cut didn't
+// actually sit on. Every boundary below is one of those detected cuts:
 //
-//   01  0     → 4.29   the android, two quick cuts
-//   02  4.29  → 9.96   the glass office, holding on the man at the laptop
-//   03  9.96  → 14.5   the chameleon reveal, settling
-//   04  14.5  → 21.0   the canopy overhead, near-still (the push carries it)
-//   05  21.0  → 26.08  the android close-up, resting just before the flash
-//   06  26.08 → 31.63  flash, hands on the keys, the last look up
-//
-// Six phases is what the film holds, so the deck is six chapters — the last
-// three sections of the page (process, team, close) sit below it in ordinary
-// scroll rather than stretching a seventh phase out of footage that hasn't
-// got one.
+//   01  0     → 7.14   AiPitch
+//   02  7.14  → 10.04  AiPortfolio
+//   03  10.04 → 16.85  AiSegments
+//   04  16.85 → 22.08  Trust
+//   05  22.08 → 27.58  Offer
+//   06  27.58 → 39.42  AiGuarantees (carries the former standalone team/blog note)
+//   07  39.42 → 47.21  Process
+//   08  47.21 → end    Close
 const PHASES: Phase[] = [
-  { start: 0, end: 4.292 },
-  { start: 4.292, end: 9.958 },
-  { start: 9.958, end: 14.5 },
-  { start: 14.5, end: 21.0 },
-  { start: 21.0, end: 26.083 },
-  { start: 26.083, end: 31.625 },
+  { start: 0, end: 7.14 },
+  { start: 7.14, end: 10.04 },
+  { start: 10.04, end: 16.85 },
+  { start: 16.85, end: 22.08 },
+  { start: 22.08, end: 27.58 },
+  { start: 27.58, end: 39.42 },
+  { start: 39.42, end: 47.21 },
+  // The reel's actual duration is 53.708s — ending the last phase right at
+  // (or past) that meant the tick loop's own "remaining <= 0" hold could
+  // never fire before the <video> hit its native end first, and the tick
+  // loop's self-heal (see CinematicStage) then called .play() on an already-
+  // ended video, which some browsers answer by restarting it from 0 instead
+  // of staying put. Comfortable margin here is what makes chapter 08 hold
+  // and blur on the car, same as every other chapter, instead of looping.
+  { start: 47.21, end: 53.4 },
 ];
 
 const CHAPTERS: ChapterMeta[] = [
@@ -61,6 +71,8 @@ const CHAPTERS: ChapterMeta[] = [
   { id: "trust" },
   { id: "offer" },
   { id: "guarantees" },
+  { id: "process" },
+  { id: "close" },
 ];
 
 export default function AiServicePage() {
@@ -81,17 +93,24 @@ export default function AiServicePage() {
         phases={PHASES}
         chapters={CHAPTERS}
         maxBlurPx={6.5}
-        blurSeconds={0.9}
+        // 0.9 → 1.15s: a little more cushion on top of the corrected phase
+        // boundaries above, so a soft/flickery cut (the film has one such
+        // stretch, not a single clean frame) still reads as covered by the
+        // blur rather than poking out of it mid-reveal.
+        blurSeconds={1.15}
         brightness={1.12}
         push
       >
         {/* No icon on chapter 01 (pitch) by request — icons start from
-            chapter 02. Chapters 02-06 each carry their own emerald icon via
-            their own `decor` prop (AiPortfolio/AiSegments/AiGuarantees
-            directly; Trust/Offer are shared across services, so they gate
-            their decor on `active === "ai"` internally) rather than as a
-            sibling here — CinematicStage pins every chapter in the same
-            viewport and only each CinematicSection's own active-chapter
+            chapter 02. AiPortfolio/AiSegments/AiGuarantees each carry their
+            own emerald icon via their own `decor` prop; Trust/Offer/Process
+            are shared across services and only show their own content-only
+            icon (gated on `active === "content"`), so /ai renders no icon on
+            those three; Close takes /ai's icon via its own `ctaIcon` prop,
+            pinned beside its closing line rather than floating in the
+            header. Every icon lives inside its own CinematicSection rather
+            than as a sibling here — CinematicStage pins every chapter in the
+            same viewport and only each CinematicSection's own active-chapter
             gating hides the ones not currently showing. A sibling icon
             outside that gating rendered unconditionally, bleeding through
             on top of whichever chapter was actually active. */}
@@ -107,33 +126,38 @@ export default function AiServicePage() {
         />
         <Offer index={4} chapter="05" />
         <AiGuarantees />
-      </CinematicStage>
-
-      {/* Below the deck the page releases into ordinary scroll. These are the
-          same CinematicSection components, which render always-visible and in
-          normal flow outside a stage (see useIsStaged there) — the `index`
-          props are inert here and only keep the chapter numbering honest. */}
-      <Process
-        index={6}
-        chapter="07"
-        title="Как проходит внедрение"
-        intro="Шесть шагов от аудита до сопровождения. На каждом — понятный результат и точка согласования."
-        steps={AI_PROCESS_STEPS}
-      />
-
-      <AiTeamBlog />
-
-      <div className="relative z-10">
-        <AiDecoIcon
-          src="/images/icons/ai/close.png?v=2"
-          size={91}
-          rotate={-7}
-          click
-          z={10}
-          className="left-4 top-40 lg:left-6"
+        <Process
+          index={6}
+          chapter="07"
+          title="Как проходит внедрение"
+          intro="Шесть шагов от аудита до сопровождения. На каждом — понятный результат и точка согласования."
+          steps={AI_PROCESS_STEPS}
         />
-        <Close index={8} chapter="09" />
-      </div>
+        <Close
+          index={7}
+          chapter="08"
+          dense
+          interactiveTiers={AI_INTERACTIVE_TIERS}
+          titleClassName="text-[1.6rem] sm:text-[2.6rem] lg:text-[2.6rem] xl:text-[3.15rem]"
+          // The cursor used to float in the header corner via `decor`,
+          // unrelated to any particular piece of copy. Moved here instead —
+          // Close renders it right beside "Начать проект сейчас" (its own
+          // `ctaIcon` slot, see that component) so it reads as clicking that
+          // exact line, at every viewport rather than only lg+ (no `hidden
+          // lg:block` here, unlike AiDecoIcon's other placements — the ask
+          // was for it to hold there "at any breakpoint").
+          ctaIcon={
+            <img
+              src="/images/icons/ai/close.png?v=2"
+              alt=""
+              aria-hidden="true"
+              width={34}
+              className="ai-deco-icon-click inline-block w-7 shrink-0 rounded-[10px] sm:w-9"
+              style={{ "--r": "-7deg" } as React.CSSProperties}
+            />
+          }
+        />
+      </CinematicStage>
 
       <AiSeoText />
     </ServiceProvider>

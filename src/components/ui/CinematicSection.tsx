@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { useStageActive, useIsStaged } from "@/components/ui/CinematicStage";
-import ChapterIcon, { type ChapterIconName } from "@/components/ui/ChapterIcon";
+import type { ChapterIconName } from "@/components/ui/ChapterIcon";
 import { ChapterActiveProvider } from "@/components/ui/Appear";
 import { BEAT, DUR, EASE as MOTION_EASE } from "@/lib/motion";
 
@@ -182,11 +182,12 @@ export default function CinematicSection({
       >
         {decor}
 
-        {/* The chapter number/icon sits in its own corner regardless of how
-            the title is aligned — it used to travel with the title as one
-            block, which meant centring a title also centred the number away
-            from any corner. Kept separate, a centred title can still be a
-            centred title. */}
+        {/* The chapter number sits in its own corner regardless of how the
+            title is aligned — it used to travel with the title as one block,
+            which meant centring a title also centred the number away from
+            any corner. Kept separate, a centred title can still be a centred
+            title. No per-chapter glyph next to it any more (removed by
+            request) — the number alone is the marker. */}
         <motion.div
           initial={false}
           animate={active ? "on" : "off"}
@@ -195,7 +196,6 @@ export default function CinematicSection({
             alignRight ? "lg:justify-end" : ""
           }`}
         >
-          <ChapterIcon name={icon} active={active} />
           <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">
             {chapter}
           </span>

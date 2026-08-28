@@ -60,17 +60,29 @@ const config: Config = {
           "0%, 100%": { opacity: "0.18", transform: "scale(1)" },
           "50%": { opacity: "0.6", transform: "scale(1.08)" },
         },
+        // Each flare layer div is exactly `inset-0` (the footer's own box),
+        // and three of them run on independent, staggered durations/delays
+        // (see Footer.tsx's FLARE_LAYERS), so they're never in phase. The dip
+        // used to scale down to 0.97 — below 1, which shrinks the div inside
+        // the footer's own edges and exposes whatever sits beneath at that
+        // moment (a lower layer at a different phase, or the bare gradient/
+        // ink underneath). Since the three layers are never synchronized,
+        // that read as a shifting, misaligned band right at the left/right
+        // edges. The dip is 1 here instead — the box always covers the full
+        // footer, `overflow-hidden` safely clips the 1.1 bloom on the other
+        // side, and the breathing motion still reads from the opacity swing
+        // alone.
         "flare-drift": {
           "0%": { backgroundPosition: "var(--p0)", opacity: "0.72", transform: "scale(1.1)" },
-          "10%": { opacity: "0.16", transform: "scale(0.97)" },
+          "10%": { opacity: "0.16", transform: "scale(1)" },
           "20%": { backgroundPosition: "var(--p1)", opacity: "0.72", transform: "scale(1.1)" },
-          "30%": { opacity: "0.16", transform: "scale(0.97)" },
+          "30%": { opacity: "0.16", transform: "scale(1)" },
           "40%": { backgroundPosition: "var(--p2)", opacity: "0.72", transform: "scale(1.1)" },
-          "50%": { opacity: "0.16", transform: "scale(0.97)" },
+          "50%": { opacity: "0.16", transform: "scale(1)" },
           "60%": { backgroundPosition: "var(--p3)", opacity: "0.72", transform: "scale(1.1)" },
-          "70%": { opacity: "0.16", transform: "scale(0.97)" },
+          "70%": { opacity: "0.16", transform: "scale(1)" },
           "80%": { backgroundPosition: "var(--p4)", opacity: "0.72", transform: "scale(1.1)" },
-          "90%": { opacity: "0.16", transform: "scale(0.97)" },
+          "90%": { opacity: "0.16", transform: "scale(1)" },
           "100%": { backgroundPosition: "var(--p0)", opacity: "0.72", transform: "scale(1.1)" },
         },
       },

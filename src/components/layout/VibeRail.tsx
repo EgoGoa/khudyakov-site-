@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useHeaderMenu } from "@/lib/header-menu";
+import { useCinematicGoTo } from "@/lib/cinematic-nav";
 import WelcomeWidget from "@/components/home/WelcomeWidget";
 import CenterModal from "@/components/ui/CenterModal";
 import VibeOrb from "@/components/ui/VibeOrb";
@@ -255,35 +256,208 @@ const PRICING_BLOCK: PageBlock = {
   ),
 };
 
+// /ai is a CinematicStage deck of its own now (see (landing)/ai/page.tsx) —
+// eight chapters, one entry here per chapter, ids matching that page's own
+// CHAPTERS exactly (pitch/portfolio/segments/trust/offer/guarantees/process/
+// close) so useActiveRailId's IntersectionObserver picks up CinematicStage's
+// runway divs at the right scroll step, the same technique /content's own
+// deck already relies on.
+const AI_PITCH_BLOCK: PageBlock = {
+  id: "pitch",
+  label: "AI-решения",
+  description: "Боль клиента, 10 AI-услуг и цифры опыта — открывающий блок.",
+  glyph: (
+    <Glyph>
+      <path d="M12.5 2.5 5 13.5h5.5L11 21.5l7.5-11H13z" />
+    </Glyph>
+  ),
+};
+
+const AI_PORTFOLIO_BLOCK: PageBlock = {
+  id: "portfolio",
+  label: "Портфолио AI-работ",
+  description: "Кейсы AI-проектов — первые уже в работе.",
+  glyph: (
+    <Glyph>
+      <rect x="3" y="5" width="18" height="14" rx="2.5" />
+      <path d="M3 9h18M8 5v14M16 5v14" />
+    </Glyph>
+  ),
+};
+
+const AI_SEGMENTS_BLOCK: PageBlock = {
+  id: "segments",
+  label: "Кому подходит",
+  description: "4 сегмента бизнеса и кейсы под каждый.",
+  glyph: (
+    <Glyph>
+      <rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.5" />
+      <rect x="13" y="3.5" width="7.5" height="7.5" rx="1.5" />
+      <rect x="3.5" y="13" width="7.5" height="7.5" rx="1.5" />
+      <rect x="13" y="13" width="7.5" height="7.5" rx="1.5" />
+    </Glyph>
+  ),
+};
+
+const AI_TRUST_BLOCK: PageBlock = {
+  id: "trust",
+  label: "Почему мы",
+  description: "Продюсерский центр полного цикла — 60% заказов возвращаются.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3 4 6.5V12c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6.5L12 3z" />
+    </Glyph>
+  ),
+};
+
+const AI_OFFER_BLOCK: PageBlock = {
+  id: "offer",
+  label: "Что делаем",
+  description: "10 AI-услуг: боты, контент, аналитика.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3l8.5 4.5L12 12 3.5 7.5 12 3z" />
+      <path d="M3.5 12L12 16.5 20.5 12" />
+      <path d="M3.5 16.5L12 21l8.5-4.5" />
+    </Glyph>
+  ),
+};
+
+const AI_GUARANTEES_BLOCK: PageBlock = {
+  id: "guarantees",
+  label: "Условия и гарантии",
+  description: "Права, SLA, сроки и команда, которая за этим стоит.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3v3M12 8l-6 2v4c0 3.5 2.5 6 6 7 3.5-1 6-3.5 6-7V10l-6-2z" />
+    </Glyph>
+  ),
+};
+
+const AI_PROCESS_BLOCK: PageBlock = {
+  id: "process",
+  label: "Как проходит внедрение",
+  description: "Шесть шагов от аудита процессов до сопровождения.",
+  glyph: (
+    <Glyph>
+      <path d="M4 6h11a3.5 3.5 0 0 1 0 7H7" />
+      <path d="M9.5 10 6 13l3.5 3M14 18h6" />
+    </Glyph>
+  ),
+};
+
+const AI_CLOSE_BLOCK: PageBlock = {
+  id: "close",
+  label: "Цены и заявка",
+  description: "Тарифы под задачу и старт проекта.",
+  glyph: (
+    <Glyph>
+      <path d="M12 2.5l2.3 6.2 6.2 2.3-6.2 2.3L12 19.5l-2.3-6.2L3.5 11l6.2-2.3L12 2.5z" />
+    </Glyph>
+  ),
+};
+
+// /sites is now its own CinematicStage deck too (see (landing)/sites/page.tsx),
+// six chapters, ids matching that page's own CHAPTERS exactly — same
+// technique as /ai's block list above, needed because a plain-scroll page's
+// generic block list (STATS_BLOCK, WORKS_BLOCK, ...) doesn't correspond to
+// any real element id once the page is a pinned deck.
+const SITES_PITCH_BLOCK: PageBlock = {
+  id: "pitch",
+  label: "Сайты на AI",
+  description: "Уникальный дизайн и вёрстка вместо шаблонов — открывающий блок.",
+  glyph: (
+    <Glyph>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3v7.5M20.8 7.5l-6.5 3.75M20.8 16.5l-6.5-3.75M12 21v-7.5M3.2 16.5l6.5-3.75M3.2 7.5l6.5 3.75" />
+    </Glyph>
+  ),
+};
+
+const SITES_METHOD_BLOCK: PageBlock = {
+  id: "method",
+  label: "Метод и кому подходит",
+  description: "Как AI ускоряет черновик и три сегмента, которым это подходит.",
+  glyph: (
+    <Glyph>
+      <path d="M8.5 8L3.5 12.5 8.5 17M15.5 8l5 4.5-5 4.5" />
+      <path d="M13.2 5.5l-2.4 13" />
+    </Glyph>
+  ),
+};
+
+const SITES_OFFER_BLOCK: PageBlock = {
+  id: "offer",
+  label: "Что делаем",
+  description: "От лендинга до сайта под ключ с интеграциями.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3l8.5 4.5L12 12 3.5 7.5 12 3z" />
+      <path d="M3.5 12L12 16.5 20.5 12" />
+      <path d="M3.5 16.5L12 21l8.5-4.5" />
+    </Glyph>
+  ),
+};
+
+const SITES_PROCESS_BLOCK: PageBlock = {
+  id: "process",
+  label: "Как проходит работа",
+  description: "Пять шагов от брифа до запуска.",
+  glyph: (
+    <Glyph>
+      <path d="M4 6h11a3.5 3.5 0 0 1 0 7H7" />
+      <path d="M9.5 10 6 13l3.5 3M14 18h6" />
+    </Glyph>
+  ),
+};
+
+const SITES_GUARANTEES_BLOCK: PageBlock = {
+  id: "guarantees",
+  label: "Почему мы",
+  description: "Фиксированные сроки, гарантия возврата и свой код.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3l7 3v5.5c0 4.3-2.9 8.1-7 9.5-4.1-1.4-7-5.2-7-9.5V6l7-3z" />
+      <path d="M9 12l2.2 2.2L15.5 10" />
+    </Glyph>
+  ),
+};
+
+const SITES_CLOSE_BLOCK: PageBlock = {
+  id: "close",
+  label: "Цены и заявка",
+  description: "Три пакета и старт проекта.",
+  glyph: (
+    <Glyph>
+      <path d="M12 2.5l2.3 6.2 6.2 2.3-6.2 2.3L12 19.5l-2.3-6.2L3.5 11l6.2-2.3L12 2.5z" />
+    </Glyph>
+  ),
+};
+
 // /content is the cinematic deck (CinematicStage): six chapters, ids come
 // from its own runway divs at each scroll step (see content/page.tsx's
-// CHAPTERS). /ai, /sites, /smm share one identical, plain-scroll section
-// list (see each page.tsx) — one entry here per page, in on-page order.
+// CHAPTERS). /ai and /sites are their own decks too (see above). /smm is
+// still the plain-scroll layout (see that page.tsx) — one entry here per
+// section, in on-page order.
 const PAGE_BLOCKS: Record<string, PageBlock[]> = {
   "/content": [OPENING_BLOCK, WORKS_BLOCK, WHY_BLOCK, SERVICES_BLOCK, PROCESS_BLOCK, CONTACT_BLOCK],
   "/ai": [
-    STATS_BLOCK,
-    WORKS_BLOCK,
-    FINALCTA_BLOCK,
-    WHY_BLOCK,
-    TESTIMONIALS_BLOCK,
-    SERVICES_BLOCK,
-    AICONSULT_BLOCK,
-    PROCESS_BLOCK,
-    PRICING_BLOCK,
-    CONTACT_BLOCK,
+    AI_PITCH_BLOCK,
+    AI_PORTFOLIO_BLOCK,
+    AI_SEGMENTS_BLOCK,
+    AI_TRUST_BLOCK,
+    AI_OFFER_BLOCK,
+    AI_GUARANTEES_BLOCK,
+    AI_PROCESS_BLOCK,
+    AI_CLOSE_BLOCK,
   ],
   "/sites": [
-    STATS_BLOCK,
-    WORKS_BLOCK,
-    FINALCTA_BLOCK,
-    WHY_BLOCK,
-    TESTIMONIALS_BLOCK,
-    SERVICES_BLOCK,
-    AICONSULT_BLOCK,
-    PROCESS_BLOCK,
-    PRICING_BLOCK,
-    CONTACT_BLOCK,
+    SITES_PITCH_BLOCK,
+    SITES_METHOD_BLOCK,
+    SITES_OFFER_BLOCK,
+    SITES_PROCESS_BLOCK,
+    SITES_GUARANTEES_BLOCK,
+    SITES_CLOSE_BLOCK,
   ],
   "/smm": [
     STATS_BLOCK,
@@ -394,6 +568,21 @@ const MODES: { key: ModeKey; label: string; pitch: string; glyph: ReactNode }[] 
 
 function VibeModeWindow({ item, onClose }: { item: RailItem; onClose: () => void }) {
   const [revealed, setRevealed] = useState<ModeKey | null>(null);
+  const cinematicGoTo = useCinematicGoTo();
+
+  // Same bridge Header's own nav uses (see cinematic-nav.tsx): on a
+  // CinematicStage page a plain `#id` anchor's native scroll-jump gets
+  // misread by the deck's own scroll listener as trackpad-momentum overshoot
+  // and clamped to one chapter away from the click. Stepping through the
+  // registered deck directly lands exactly on the chapter clicked, with the
+  // same eased glide (and blur hold) the deck's own gestures use — which is
+  // the "switches together with the blocks" behaviour asked for. Falls
+  // through to the plain anchor href on a page with no deck registered
+  // (nothing to intercept there).
+  const goToItem = (e: React.MouseEvent) => {
+    onClose();
+    if (cinematicGoTo(item.id)) e.preventDefault();
+  };
 
   return (
     <div>
@@ -450,7 +639,7 @@ function VibeModeWindow({ item, onClose }: { item: RailItem; onClose: () => void
 
         <Link
           href={item.href}
-          onClick={onClose}
+          onClick={goToItem}
           className="group relative overflow-hidden rounded-2xl p-4"
           style={{ background: "linear-gradient(155deg, rgba(255,106,61,0.32), rgba(245,49,11,0.18))" }}
         >
@@ -514,7 +703,14 @@ function RailRow({
         active ? "text-white" : "text-paper/70 hover:text-paper"
       } ${className}`}
     >
-      <span className="relative flex h-5 w-5 shrink-0 items-center justify-center [&_svg]:h-[18px] [&_svg]:w-[18px]">
+      {/* Stroke thickens on top of the shared glow below when this row's
+          section is the one on screen — the glow alone read as too subtle a
+          difference between the active and idle rows at this icon size. */}
+      <span
+        className={`relative flex h-5 w-5 shrink-0 items-center justify-center [&_svg]:h-[18px] [&_svg]:w-[18px] ${
+          active ? "[&_svg]:stroke-[2.35]" : ""
+        }`}
+      >
         {active && (
           <motion.span
             layoutId="vibe-rail-active-glow"
