@@ -75,17 +75,17 @@ export default function AiSegments() {
     <CinematicSection
       index={2}
       chapter="03"
-      title="Кому подходит"
+      title={<>Кому <span className="kw">подходит</span></>}
       icon="target"
       side="right"
       entrance="rise"
       id="segments"
-      intro="Не всем и не всегда — там, где AI реально быстрее и дешевле ручной работы."
+      intro={<>Не всем и не всегда — там, где AI <span className="kw">реально быстрее и дешевле</span> ручной работы.</>}
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {SEGMENTS.map((s) => (
           <div key={s.tag} className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md">
-            <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-glow">{s.tag}</span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-emerald-300">{s.tag}</span>
             <h3 className="mt-2 font-display text-base uppercase leading-tight tracking-tight text-white">
               {s.title}
             </h3>
@@ -99,7 +99,7 @@ export default function AiSegments() {
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {CASES.map((c) => (
             <div key={c.title} className="rounded-xl bg-ink/40 p-3.5 text-xs leading-relaxed text-paper/65">
-              <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-glow">{c.industry}</div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-emerald-300">{c.industry}</div>
               <p className="mt-1 text-sm font-medium leading-snug text-white">{c.title}</p>
               <p className="mt-1.5 text-paper/60">
                 <span className="text-paper/40">Задача:</span> {c.task}

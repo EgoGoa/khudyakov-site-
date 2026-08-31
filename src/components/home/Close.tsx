@@ -11,6 +11,7 @@ import { useService } from "@/lib/service-context";
 import { pricingByCategory } from "@/lib/service-content";
 import InteractiveTierCard from "@/components/home/ai/InteractiveTierCard";
 import type { InteractiveTier } from "@/components/home/ai/aiPricingTiers";
+import SeoAccordion, { type SeoSection } from "@/components/ui/SeoAccordion";
 
 // Chapter 06 — pricing, the closing pitch and the contact form, which used to
 // be three consecutive full sections. Reading a price, deciding, and typing
@@ -35,15 +36,23 @@ function CheckIcon() {
 export default function Close({
   index = 5,
   chapter = "06",
+  title = "Персональные условия",
+  intro = "Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: консультация, смета и 2–3 концепции.",
   spacious = false,
   decor,
   dense = false,
   titleClassName,
   ctaIcon,
   interactiveTiers,
+  seoSections,
+  seoEyebrow,
 }: {
   index?: number;
   chapter?: string;
+  /** Overridable per page for a gradient keyword — /ai's own call passes its
+   *  own accented copy, other pages keep the defaults above. */
+  title?: ReactNode;
+  intro?: ReactNode;
   /** See CinematicSection's own prop — /sites opts in, other pages don't. */
   spacious?: boolean;
   /** Overrides content's own decoration below for a different service's page
@@ -69,6 +78,14 @@ export default function Close({
    *  /ai passes this; /content, /sites, /smm keep the plain static cards
    *  built from `pricingByCategory` below. */
   interactiveTiers?: InteractiveTier[];
+  /** The page's long-read, search-facing copy, rendered as thin rows under
+   *  the tier cards. /sites and /ai each used to end on a standalone SeoText
+   *  section below the deck; with the deck pinned above it that section had
+   *  no film behind it and landed as a flat black slab. Folded in here it
+   *  inherits the chapter's own misted reveal. */
+  seoSections?: SeoSection[];
+  /** Label above those rows, e.g. "Подробнее о сайтах на AI". */
+  seoEyebrow?: string;
 }) {
   const { active } = useService();
   const tiers = pricingByCategory[active];
@@ -81,13 +98,13 @@ export default function Close({
     <CinematicSection
       index={index}
       chapter={chapter}
-      title="Персональные условия"
+      title={title}
       titleClassName={titleClassName}
       icon="spark"
       side="center"
       // The payoff comes up to meet the visitor instead of sliding past.
       entrance="zoom"
-      intro="Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: консультация, смета и 2–3 концепции."
+      intro={intro}
       spacious={spacious}
       // Close is shared across /ai, /sites, /smm too — this orange-red icon
       // is content's own, gated the same way Trust/Offer/Process gate theirs.
@@ -107,7 +124,7 @@ export default function Close({
     >
       <>
         {interactiveTiers ? (
-          <div className="grid gap-5 sm:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-3">
             {interactiveTiers.map((tier, i) => (
               <InteractiveTierCard key={tier.name} tier={tier} index={i} spacious={spacious} />
             ))}
@@ -120,7 +137,7 @@ export default function Close({
             down to one feature and no button to force the chapter into a
             single screen; now that a tall chapter scrolls internally (see
             CinematicStage) that compromise is unnecessary. */
-        <div className="grid gap-5 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-3">
           {tiers.length === 0 ? (
             <p className="text-sm leading-relaxed text-paper/50">
               Тарифы по этому направлению скоро появятся здесь.
@@ -146,16 +163,24 @@ export default function Close({
                 </div>
                 <div className={`c3-team relative ${dense ? "mb-3" : "mb-6"}`}>{tier.team}</div>
 
-                <ul className="c3-list relative">
-                  {tier.features.map((feature) => (
-                    <li key={feature}>
-                      <span className="c3-check text-paper">
-                        <CheckIcon />
-                      </span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                {/* Dropped in `dense` mode: that's the setting used where the
+                    chapter also has to carry the SEO rows below (see
+                    seoSections), and three feature bullets per card is the
+                    one block long enough to push the whole thing off a single
+                    screen. Tagline, name, price, term and the button all
+                    stay, so the card still says what it is. */}
+                {!dense && (
+                  <ul className="c3-list relative">
+                    {tier.features.map((feature) => (
+                      <li key={feature}>
+                        <span className="c3-check text-paper">
+                          <CheckIcon />
+                        </span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
                 <div className="relative mt-auto flex flex-col items-center gap-2 self-stretch">
                   <a
@@ -186,6 +211,12 @@ export default function Close({
             stay pinned to this exact piece of text at every viewport width,
             and normal flow next to it is the only positioning that can't
             drift off it as the text reflows or resizes. */}
+        {seoSections && seoSections.length > 0 && (
+          <Appear from="up" delay={BEAT.content}>
+            <SeoAccordion eyebrow={seoEyebrow ?? "Подробнее"} sections={seoSections} />
+          </Appear>
+        )}
+
         <Appear from="up" delay={BEAT.cta}>
           <div className="relative flex justify-center">
             {active === "content" && (

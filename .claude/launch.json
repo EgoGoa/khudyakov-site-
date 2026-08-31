@@ -3,6 +3,11 @@
   "configurations": [
     {
       "name": "khudyakov-site",
+      "port": 3000,
+      "url": "http://localhost:3000"
+    },
+    {
+      "name": "khudyakov-site-start",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000,

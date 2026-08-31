@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import CinematicSection from "@/components/ui/CinematicSection";
+import Link from "next/link";
+import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
+import Appear from "@/components/ui/Appear";
+import { BEAT } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
+import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 
 // Chapter 05 — "why us" (brief §9) plus the FAQ (brief §10), folded into one
 // screen the same way AiGuarantees.tsx pairs its terms list with an FAQ
@@ -11,6 +15,15 @@ import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 // FAQ answer 2 ("Насколько быстро...") states a market-rate turnaround
 // estimate, same convention as the pricing tiers in service-content.ts — not
 // confirmed by Egor against a real case yet.
+//
+// Laid out in chapter 01's language, which Egor asked to carry across the
+// page: `headless`, so the chapter renders its own number and heading into a
+// left column that centres against the content beside it instead of a header
+// pinned above everything; the heading in the display face under one wide
+// soft cyan halo; and the flat PILL/ROUND pair for actions rather than the
+// site-wide `.btn-3d` key. The reasons list and the FAQ move into one glass
+// panel on the right, the same material as chapter 01's cards and chapter
+// 02's comparison table.
 
 const REASONS = [
   {
@@ -71,18 +84,67 @@ export default function SitesGuarantees() {
       entrance="unfold"
       id="guarantees"
       spacious
-      intro="Покупаете не шаблон и не подписку на конструктор — покупаете свой сайт с зафиксированными сроками."
-      decor={
+      column
+      headless
+      bodyDecor={
         <SitesDecoIcon
           src="/images/icons/sites/shield.png"
           size={230}
           rotate={7}
-          z={5}
-          className="right-4 -top-6 opacity-90 lg:right-10"
+          z={0}
+          className="-right-6 -top-10 opacity-80 lg:right-0"
         />
       }
     >
-      <div className="lg:flex lg:items-start lg:gap-12">
+      <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
+        <div className="w-full shrink-0 lg:w-[38%]">
+          <Appear from="up" delay={BEAT.eyebrow}>
+            <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
+              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">05</span>
+              <span className="h-px w-8 bg-glow/40" />
+            </div>
+          </Appear>
+
+          <Appear from="up" delay={BEAT.title}>
+            <h2 className="chapter-neon-warm mt-3 max-w-[6.7em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] lg:text-[3.6rem] xl:text-[4rem]">
+              Почему
+              <br />
+              <span className="kw">мы</span>
+            </h2>
+          </Appear>
+
+          <Appear from="up" delay={BEAT.intro}>
+            <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
+              Покупаете не шаблон и не подписку на конструктор — покупаете свой сайт с
+              зафиксированными сроками.
+            </p>
+          </Appear>
+
+          <Appear from="up" delay={BEAT.cta}>
+            <div className="mt-9 flex items-center gap-4">
+              <Link href="/brief" className={PILL}>
+                Обсудить проект
+              </Link>
+              <Link href="/calculator" aria-label="Рассчитать бюджет" className={ROUND}>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M7 17 17 7M9 7h8v8" />
+                </svg>
+              </Link>
+            </div>
+          </Appear>
+        </div>
+
+      <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8">
         <ul className="lg:max-w-md lg:flex-1">
           {REASONS.map((reason, i) => (
             <li key={reason.title} className="border-t border-paper/20 py-3">
@@ -99,7 +161,7 @@ export default function SitesGuarantees() {
           ))}
         </ul>
 
-        <div className="mt-8 lg:mt-0 lg:w-[360px] lg:shrink-0 xl:w-[400px]">
+        <div className="mt-8 lg:mt-0 lg:w-[320px] lg:shrink-0 xl:w-[360px]">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">FAQ</span>
           <div className="mt-3 border-t border-paper/10">
             {FAQ.map((item, i) => {
@@ -130,6 +192,7 @@ export default function SitesGuarantees() {
             })}
           </div>
         </div>
+      </div>
       </div>
     </CinematicSection>
   );

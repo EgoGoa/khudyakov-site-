@@ -22,12 +22,14 @@ export default function AiPortfolio() {
     <CinematicSection
       index={1}
       chapter="02"
-      title="Портфолио AI-работ"
+      // One gradient keyword per chapter heading, at most — Egor's rule for
+      // this page. Here it is the noun that names the chapter's subject.
+      title={<>Портфолио <span className="kw">AI-работ</span></>}
       icon="frames"
       side="right"
       entrance="rise"
       id="portfolio"
-      intro="Первые кейсы — в работе. [TODO] — сюда встанут реальные AI-проекты по мере запуска."
+      intro={<>Первые кейсы — в работе. [TODO] — сюда встанут <span className="kw">реальные AI-проекты</span> по мере запуска.</>}
     >
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
         {TILES.map((i) => (
@@ -49,7 +51,10 @@ export default function AiPortfolio() {
               </span>
               <span className="text-sm font-medium leading-snug text-paper/70">[TODO название кейса]</span>
               <div className="mt-1 flex w-full flex-wrap items-center gap-2">
-                <span className="rounded-none bg-orange px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-white">
+                {/* Emerald, not the site-wide bg-orange these tiles borrowed by
+                    default — /ai's page accent, matching AI_PILL and the rest
+                    of this page's actions. */}
+                <span className="rounded-none bg-emerald-400 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-[#03120d]">
                   Смотреть
                 </span>
                 <span className="rounded-none border border-paper/20 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-paper/60">

@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
+import CinematicStage, { type ChapterMeta, type Phase } from "@/components/ui/CinematicStage";
 import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
+import ChapterRail from "@/components/ui/ChapterRail";
 import SmmPitch from "@/components/home/smm/SmmPitch";
-import Offer from "@/components/home/Offer";
-import Trust from "@/components/home/Trust";
-import SmmTeaserLink from "@/components/home/smm/SmmTeaserLink";
-import Process from "@/components/home/Process";
-import { SMM_PROCESS_STEPS } from "@/components/home/smm/smmProcessSteps";
+import SmmMethod from "@/components/home/smm/SmmMethod";
+import SmmOffer from "@/components/home/smm/SmmOffer";
+import SmmProcess from "@/components/home/smm/SmmProcess";
 import SmmGuarantees from "@/components/home/smm/SmmGuarantees";
-import Close from "@/components/home/Close";
-import SmmSeoText from "@/components/home/smm/SmmSeoText";
-import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
+import SmmClose from "@/components/home/smm/SmmClose";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -18,132 +16,113 @@ export const metadata: Metadata = {
     "SMM силами продакшена: съёмка, монтаж и ведение соцсетей одной командой, без подрядчиков со стороны.",
 };
 
-// No CinematicStage yet: public/video/bg-smm.mp4 is only the 10s preview
-// loop used in DirectionsGrid/ServicePicker, not a full cinematic reel like
-// content-reel.mp4 or ai-reel.mp4 — same situation as /sites (see that
-// page's own comment). Every section below is a <CinematicSection>, which
-// renders as a normal always-visible, static-flow section outside a staged
-// deck — so once real footage lands, wrapping these same children in
-// <CinematicStage src="/video/smm-reel.mp4" ...> is the only change needed.
+// public/video/smm-reel.mp4 is Egor's delivery for this page (bg-smm.mp4 was
+// only ever the 10s preview loop used in DirectionsGrid/ServicePicker),
+// transcoded the same way as /ai's and /sites' reels: 1280×720, ~1.18 Mbps,
+// one keyframe per second, audio dropped. Unlike /sites' reel it is the
+// delivered file untouched — no fragment needed re-timing, so every timestamp
+// below is the source's own.
 //
-// Portfolio is deliberately skipped for the same reason as /sites:
-// worksByCategory.smm is empty and content/site-copy.md's placeholder-cases
-// rule applies here too. /smm/cases exists as its own page for when 2–3
-// real projects land; a teaser card links to it instead of an empty chapter.
+// The reel is a night sequence — a terrace, a club, a shooting star, a
+// sunrise terrace — cut from several shots rather than one unbroken take, so
+// the phase boundaries come from a scene-detect pass (ffmpeg
+// `select='gt(scene,0.02)'`) cross-checked frame by frame either side of
+// every hit. The detector reports ten cuts; the six chapters use five of
+// them, and the five it uses are the ones nearest Egor's own timecodes.
 //
-// Decorative icons: each one sits in its own `relative` wrapper next to the
-// chapter it illustrates, positioned by hand against that chapter's real
-// layout rather than computed from page-wide percentages — a global overlay
-// couldn't be calibrated against content it doesn't know the height of.
-// z-0 vs the chapter's z-10 keeps every icon behind the text it sits near,
-// so overlap with empty space beside a paragraph is fine by construction.
+// Egor's timecodes were 4 / 13 / 20 / 23 / 29. Each was moved by at most half
+// a second onto the film's own edit:
+//
+//   его 4   → 3.60   терраса ночью → клуб
+//   его 13  → 13.52  крупный план → широкий танцпол
+//   его 20  → 19.64  танцпол → бассейн ночью
+//   его 23  → 23.44  звездопад → танец в клубе
+//   его 29  → 28.50  силуэты в клубе → терраса на закате
+//
+// The move is the whole point rather than a liberty taken with the brief: the
+// blur hold has to land on a cut the footage already has, so the defocus
+// covers an event that is in the film anyway. Stopping at a round 4.00 —
+// four tenths into a shot that has already started — freezes the picture
+// mid-scene and starts it again mid-scene, which reads as a stutter with
+// nothing in the frame to justify it. That exact mistake was made and
+// reverted on /sites (see the 4.40 note in that page's own comments).
+//
+// Frame-by-frame confirmation of all five, 0.15s either side: 3.45/3.75,
+// 13.40/13.65, 19.50/19.80, 23.30/23.60, 28.35/28.65 — every pair is a
+// different shot, so none of the five is camera motion mistaken for an edit.
+//
+//   01  0      → 3.60   SmmPitch       (терраса ночью, двое)
+//   02  3.60   → 13.52  SmmMethod      (разговор в клубе — самая длинная фаза)
+//   03  13.52  → 19.64  SmmOffer       (танцпол)
+//   04  19.64  → 23.44  SmmProcess     (бассейн, падающая звезда — тихая доля)
+//   05  23.44  → 28.50  SmmGuarantees  (танец, крупные планы)
+//   06  28.50  → end    SmmClose       (терраса на закате)
+const PHASES: Phase[] = [
+  { start: 0, end: 3.6 },
+  { start: 3.6, end: 13.52 },
+  { start: 13.52, end: 19.64 },
+  { start: 19.64, end: 23.44 },
+  { start: 23.44, end: 28.5 },
+  // Ends a shade before the file's 32.583 so the last chapter holds on a real
+  // frame rather than on whatever the decoder leaves at the very tail.
+  //
+  // Brightness is lifted for this phase alone. Egor's timecode of 29 stands —
+  // the boundary is not moved — but the fragment it opens is by far the
+  // darkest in the reel (a terrace after sunset), and at the page's 1.16 the
+  // closing chapter read as an unlit black page rather than as film. 1.5 is
+  // the phase's own multiplier; every other chapter keeps 1.16.
+  { start: 28.5, end: 32.5, brightness: 1.5 },
+];
+
+const CHAPTERS: ChapterMeta[] = [
+  { id: "pitch" },
+  { id: "method" },
+  { id: "offer" },
+  { id: "process" },
+  { id: "guarantees" },
+  { id: "close" },
+];
+
 export default function SmmServicePage() {
   return (
     <ServiceProvider forcedValue="smm">
       <ServiceMenuOverlay service="smm" />
 
-      <div className="relative z-10">
-        <SmmDecoIcon
-          src="/images/icons/smm/launch.png"
-          size={285}
-          rotate={30}
-          className="-left-6 top-2 lg:left-0"
-        />
-        <SmmPitch />
+      {/* .smm-violet-headings repaints every chapter heading inside the stage
+          from the site's cyan neon to this page's violet, and carries the
+          tier cards' accent in chapter 06 (see globals.css). All six chapters
+          are this page's own components and set the violet classes directly,
+          so the wrapper is belt-and-braces — it stays because it is also what
+          would catch any shared component dropped back into this stage later.
+          A plain div: no overflow, transform or filter, so it does not become
+          a containing block and the stage's `position: sticky` still resolves
+          against the same scroll ancestor. */}
+      <div className="smm-violet-headings">
+        <CinematicStage
+          src="/video/smm-reel.mp4"
+          poster="/images/smm-reel-poster.jpg"
+          phases={PHASES}
+          chapters={CHAPTERS}
+          maxBlurPx={10}
+          blurSeconds={0.9}
+          // The reel is a night shoot and grades darker than /sites' footage,
+          // so it is lifted a little further to keep the chapters' body copy
+          // off a near-black frame.
+          brightness={1.16}
+          // The rail runs in the page's own violet → sky, the same gradient
+          // the chapter keyword spans use — matching the rail to the actual
+          // keyword accent rather than to a separate halo, which is how /ai
+          // and /sites do it too.
+          rail={<ChapterRail count={CHAPTERS.length} from="#a855f7" to="#38bdf8" />}
+        >
+          <SmmPitch />
+          <SmmMethod />
+          <SmmOffer />
+          <SmmProcess />
+          <SmmGuarantees />
+          <SmmClose />
+        </CinematicStage>
       </div>
-
-      <div className="relative z-10">
-        <SmmDecoIcon
-          src="/images/icons/smm/reels.png"
-          size={240}
-          rotate={7}
-          className="-right-4 bottom-0 lg:right-2"
-        />
-        <Offer
-          index={1}
-          chapter="02"
-          title="Что делаем"
-          intro="Полный цикл ведения соцсетей — от съёмки до отчёта."
-        />
-      </div>
-
-      <div className="relative z-10">
-        <SmmDecoIcon
-          src="/images/icons/smm/influencer.png"
-          size={225}
-          rotate={-6}
-          className="left-2 top-2 lg:left-8"
-        />
-        <Trust
-          index={2}
-          chapter="03"
-          title="Продюсерский центр, не подрядчик"
-          intro="SMM ведёт та же команда, что снимает рекламные ролики: одни операторы, монтажёры и продюсер на проекте — без передачи задачи фрилансерам."
-          clients={[]}
-        />
-      </div>
-
-      <SmmTeaserLink
-        text="Кейсы SMM — в процессе. Смотрите, как мы ведём проекты."
-        href="/smm/cases"
-        cta="Смотреть кейсы"
-      />
-
-      <div className="relative z-10">
-        <SmmDecoIcon
-          src="/images/icons/smm/strategy.png"
-          size={300}
-          rotate={-8}
-          className="right-2 top-0 lg:right-6"
-        />
-        <Process
-          index={3}
-          chapter="04"
-          title="Как проходит работа"
-          intro="Пять шагов от аудита до отчёта — на каждом понятный результат."
-          steps={SMM_PROCESS_STEPS}
-        />
-      </div>
-
-      <div className="relative z-10 overflow-x-clip">
-        <SmmDecoIcon
-          src="/images/icons/smm/analytics.png"
-          size={255}
-          rotate={9}
-          className="-left-28 -top-16 lg:-left-16"
-        />
-        <SmmGuarantees />
-      </div>
-
-      <SmmTeaserLink
-        text="Три пакета ведения — от разового аудита до полного цикла с блогерами и таргетом."
-        href="/smm/pricing"
-        cta="Смотреть цены"
-      />
-
-      <div className="relative z-10 overflow-x-clip">
-        <SmmDecoIcon
-          src="/images/icons/smm/ai.png"
-          size={105}
-          rotate={10}
-          className="left-6 bottom-10 lg:left-10"
-        />
-        <SmmDecoIcon
-          src="/images/icons/smm/handshake.png"
-          size={230}
-          rotate={-10}
-          className="-right-10 top-4 lg:right-2"
-        />
-        <SmmDecoIcon
-          src="/images/icons/smm/pricetag.png"
-          size={190}
-          rotate={14}
-          className="-left-24 top-56 lg:-left-16"
-        />
-        <Close index={5} chapter="06" />
-      </div>
-
-      <SmmSeoText />
     </ServiceProvider>
   );
 }

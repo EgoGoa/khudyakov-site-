@@ -74,12 +74,12 @@ export default function AiGuarantees() {
     <CinematicSection
       index={5}
       chapter="06"
-      title="Условия и гарантии"
+      title={<>Условия и <span className="kw">гарантии</span></>}
       icon="scale"
       side="left"
       entrance="unfold"
       id="guarantees"
-      intro="Покупаете не пост и не ролик — покупаете работающую систему, зафиксированную в договоре."
+      intro={<>Покупаете не пост и не ролик — покупаете <span className="kw">работающую систему</span>, зафиксированную в договоре.</>}
       decor={
         <AiDecoIcon
           src="/images/icons/ai/guarantees.png?v=2"
@@ -110,7 +110,7 @@ export default function AiGuarantees() {
 
         <div className="mt-8 lg:mt-0 lg:w-[360px] lg:shrink-0 xl:w-[400px]">
           <div className="rounded-xl bg-ink/40 p-3.5">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-glow">Команда</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-300">Команда</span>
             <p className="mt-1.5 text-xs leading-relaxed text-paper/65">
               AI-инструменты внедряем с 2024 года в составе продюсерского центра HDKV.AGENCY — не
               коробочный сервис, а конкретные люди на пилоте и на сопровождении.
@@ -132,7 +132,7 @@ export default function AiGuarantees() {
                     <span className="text-sm font-medium leading-snug text-paper">{item.q}</span>
                     <span
                       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-paper/20 text-paper/60 transition-transform duration-200 ${
-                        isOpen ? "rotate-45 border-orange/50 text-orange" : ""
+                        isOpen ? "rotate-45 border-emerald-400/50 text-emerald-300" : ""
                       }`}
                       aria-hidden="true"
                     >

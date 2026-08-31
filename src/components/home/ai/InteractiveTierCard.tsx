@@ -128,7 +128,9 @@ export default function InteractiveTierCard({
       <div className="relative mt-auto flex flex-col items-center gap-2 self-stretch">
         <a
           href="/brief"
-          className="w-full rounded-none bg-orange px-8 py-2 text-center font-display text-xs uppercase tracking-[0.08em] text-white transition hover:bg-orange-bright"
+          // Emerald, not the site-wide orange — /ai's own accent, matching
+          // AI_PILL and the rest of the page's actions.
+          className="w-full rounded-none bg-emerald-400 px-8 py-2 text-center font-display text-xs uppercase tracking-[0.08em] text-[#03120d] transition hover:bg-emerald-300"
         >
           Выбрать план
         </a>

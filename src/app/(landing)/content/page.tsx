@@ -8,6 +8,7 @@ import Process from "@/components/home/Process";
 import Close from "@/components/home/Close";
 import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import CinematicStage, { type ChapterMeta } from "@/components/ui/CinematicStage";
+import ChapterRail from "@/components/ui/ChapterRail";
 import CinematicSection from "@/components/ui/CinematicSection";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import { ServiceProvider } from "@/lib/service-context";
@@ -62,21 +63,30 @@ export default function ContentServicePage() {
     <ServiceProvider forcedValue="content">
       <ServiceMenuOverlay service="content" />
 
+      {/* .content-warm-headings turns every `.kw` keyword span inside the
+          stage from the site-wide magenta→cyan to /content's own
+          magenta→orange (Egor's pick — see .content-warm-headings in
+          globals.css). Same mechanism /ai and /sites use for their own
+          accent colours. */}
+      <div className="content-warm-headings">
       <CinematicStage
         src="/video/content-reel.mp4"
         poster="/images/content-reel-poster.jpg"
         phases={PHASES}
         chapters={CHAPTERS}
+        // The left-edge rail follows the same magenta→orange gradient as the
+        // keyword spans above.
+        rail={<ChapterRail count={CHAPTERS.length} from="#ff4fd8" to="#ff6a3d" />}
       >
         <Opening service="content" />
 
         <CinematicSection
           index={1}
           chapter="02"
-          title="Наши работы"
+          title={<>Наши <span className="kw">работы</span></>}
           icon="frames"
           side="right"
-          intro="78 проектов: реклама, шоурилы, 3D и моушн."
+          intro={<><span className="kw">78 проектов</span>: реклама, шоурилы, 3D и моушн.</>}
           // A 2×2 grid of video tiles under the default text-8xl title was
           // tall enough to clip its own bottom row on short/wide viewports
           // (the deck can't scroll a chapter internally on desktop — see
@@ -115,11 +125,24 @@ export default function ContentServicePage() {
           />
         </CinematicSection>
 
-        <Trust />
-        <Offer />
-        <Process />
-        <Close />
+        <Trust
+          title={<>Именно <span className="kw">мы</span></>}
+          intro={<>Продюсерский центр полного цикла: от идеи до готового ролика. Около <span className="kw">60% заказов</span> — клиенты, которые возвращаются.</>}
+        />
+        <Offer
+          title={<>Лучшие в <span className="kw">этом</span></>}
+          intro={<>Съёмка, монтаж, графика и <span className="kw">AI-продакшн</span> — под формат и площадку.</>}
+        />
+        <Process
+          title={<>PRO <span className="kw">хронология</span></>}
+          intro={<>Шесть шагов от брифа до сдачи. На каждом вы видите <span className="kw">прогресс</span> и можете вносить правки.</>}
+        />
+        <Close
+          title={<>Персональные <span className="kw">условия</span></>}
+          intro={<>Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: <span className="kw">консультация, смета</span> и 2–3 концепции.</>}
+        />
       </CinematicStage>
+      </div>
     </ServiceProvider>
   );
 }

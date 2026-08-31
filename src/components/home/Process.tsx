@@ -118,8 +118,10 @@ export default function Process({
 }: {
   index?: number;
   chapter?: string;
-  title?: string;
-  intro?: string;
+  /** ReactNode rather than string so a page can put a gradient keyword
+   *  span inside its heading — /ai does (see its page.tsx). */
+  title?: ReactNode;
+  intro?: ReactNode;
   steps?: ProcessStepItem[];
   /** See CinematicSection's own prop — /sites opts in, other pages don't. */
   spacious?: boolean;
@@ -150,11 +152,11 @@ export default function Process({
         ) : undefined
       }
     >
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-3">
         {steps.map((step, i) => (
           <div
             key={`${index}-${i}`}
-            className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md"
+            className="rounded-2xl bg-ink/45 p-5 backdrop-blur-md"
           >
             {step.icon}
             <h3 className="mt-3 font-display text-sm uppercase leading-tight tracking-tight text-white">

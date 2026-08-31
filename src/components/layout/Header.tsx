@@ -259,9 +259,19 @@ export default function Header() {
             HDKV<span className="text-rec">.AGENCY</span>
           </span>
           <span className="ml-1 hidden h-6 w-px shrink-0 bg-paper/25 sm:block" aria-hidden="true" />
-          <span className="hidden shrink-0 flex-col gap-0.5 font-sans text-[0.65rem] font-normal leading-none tracking-[0.12em] text-paper/60 sm:flex">
+          {/* The tagline now carries /sites' chapter-heading treatment: the
+              display face, the near-white under a warm orange bloom
+              (.chapter-neon-warm), and the keyword in the same
+              magenta-to-cyan gradient (.kw). It used to be the light sans at
+              60% paper with only "AI" picked out, which read as a caption
+              beside the logo rather than as the line the logo is making.
+              .kw rather than .header-ai-mark — same gradient, but .kw also
+              clears text-shadow, which the parent's new bloom needs: a shadow
+              under a transparent-filled glyph is not hidden by it, and would
+              have painted an orange slab in the shape of the word. */}
+          <span className="chapter-neon-warm hidden shrink-0 flex-col gap-0.5 font-display text-[0.65rem] font-normal uppercase leading-none tracking-[0.12em] sm:flex">
             <span className="whitespace-nowrap text-[1em]">
-              DIGITAL <span className="header-ai-mark">AI</span>
+              DIGITAL <span className="kw">AI</span>
             </span>
             <span className="whitespace-nowrap text-[1em]">АГЕНТСТВО</span>
           </span>

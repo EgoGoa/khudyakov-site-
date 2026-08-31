@@ -41,7 +41,17 @@ import { useCinematicNavRegister } from "@/lib/cinematic-nav";
 // fit a single screen instead — the portfolio chapter shows four works and
 // links to /works for the full catalogue.
 
-export type Phase = { start: number; end: number };
+export type Phase = {
+  start: number;
+  end: number;
+  /** Optional per-chapter override of the stage's `brightness` prop, for a
+   *  fragment that grades much darker or lighter than the rest of the reel.
+   *  /smm's closing phase is the case it was added for: the last four
+   *  seconds are a near-black terrace, and at the stage-wide multiplier the
+   *  picture simply read as an unlit page. Left undefined, a phase inherits
+   *  the stage value, so no existing page changes. */
+  brightness?: number;
+};
 export type ChapterMeta = { id: string };
 
 type StageApi = { activeIndex: number; staged: boolean; started: boolean };
@@ -66,9 +76,31 @@ export const StageContext = createContext<StageApi>({ activeIndex: 0, staged: fa
 const SEEK_EPSILON = 0.04;
 
 // How far behind a phase's start the playhead may sit and still count as
-// "already here" — covers the frame or two of overshoot left by pausing on the
-// previous phase's boundary.
+// "already here" — covers HOLD_BACK_SECONDS below, which deliberately parks
+// the playhead just *short* of the boundary rather than on it.
 const RESUME_TOLERANCE = 0.5;
+
+// How far before a phase's end the hold actually stops the film.
+//
+// A phase boundary is one of the footage's own cuts, and a scene detector
+// reports a cut at the timestamp of the *first frame of the new scene*. So
+// pausing at `phase.end` froze the deck on the next fragment's opening frame:
+// the new angle sat there, blurred, for the whole hold, and when the blur
+// cleared it revealed the very frame it had been showing all along — the
+// reveal had nothing left to give.
+//
+// Stopping a few frames earlier holds the last frame of the fragment that
+// just played instead, so the new angle stays entirely behind the blur and
+// only arrives as it lifts. The remaining sliver is played back (not sought
+// past) when the next chapter resumes — at that point the blur is still at
+// full strength, so the cut itself lands where nothing is legible, and no
+// seek/decode is spent on a step that used to need none.
+//
+// 0.12s is ~3 frames at 24fps: comfortably clear of one frame of playback
+// plus the ~17ms of overshoot a 60Hz rAF loop can leave, with room for a
+// scene detector's own off-by-one, while still reading as the fragment's
+// final beat rather than a chunk cut off its end.
+const HOLD_BACK_SECONDS = 0.12;
 
 // Gesture stepping. Thresholds are deliberately low: the ask is that one short
 // movement is enough, so a flick registers well before a full page of scrolling
@@ -121,6 +153,7 @@ export default function CinematicStage({
   blurSeconds = DEFAULT_BLUR_SECONDS,
   push = false,
   brightness = 1,
+  rail,
   children,
 }: {
   src: string;
@@ -137,6 +170,13 @@ export default function CinematicStage({
    *  into the same filter string the blur ramp writes (see the tick loop
    *  below), since setting `style.filter` replaces the whole property. */
   brightness?: number;
+  /** Deck-level furniture rendered inside the sticky viewport, above the
+   *  grade and below the chapters — currently only /sites' neon chapter
+   *  rail (see ChapterRail). Optional and off by default so every
+   *  other CinematicStage consumer is unaffected; a page opts in by
+   *  passing its own element, which receives the deck's activeIndex via
+   *  StageContext the same way the chapters themselves do. */
+  rail?: ReactNode;
   children: ReactNode;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -670,23 +710,75 @@ export default function CinematicStage({
     };
   }, [chapters.length, registerGoTo]);
 
-  // Flip on once the deck first enters the viewport — before that, the reel
-  // has no visible audience yet and should stay parked at its start.
+  // Run the film only while the deck is actually the thing on screen.
+  //
+  // This used to gate on `wrap.top <= 1` — true only once the deck is fully
+  // pinned. Chapter 01's video frame is `sticky top-0` inside `wrap`, so
+  // before that point it isn't hidden: it scrolls up from the bottom edge of
+  // the viewport like ordinary content, in full view, for a whole screen
+  // height of scrolling — just not yet playing. A visitor scrolling down
+  // from Hero/ServicePicker into the deck watched a paused poster frame
+  // slide up and lock into place, then only *then* start moving — the
+  // "фоновое видео не воспроизводится, пока не начинаю видеть блок" bug.
+  //
+  // Fixed the same way `engaged()` still tests the gesture question below
+  // (whether the deck fills the screen), but this test asks a different
+  // question — whether any part of the sticky video frame is visible yet —
+  // and answers it with a wider, asymmetric threshold instead of `<= 1`:
+  //   enters "onScreen" (video starts) the instant any pixel of the frame is
+  //   visible (`top < innerHeight`), so playback is already running for
+  //   every frame the visitor can actually see, with none of the old dead
+  //   time;
+  //   leaves "onScreen" (video pauses + rewinds) only once the frame is
+  //   fully clear of the viewport again, plus an EXIT_HYSTERESIS margin.
+  //   Without that margin, scroll noise right at the `top === innerHeight`
+  //   boundary — a trackpad's momentum settling, a mouse wheel's last few
+  //   sub-pixel deltas — flips the state back and forth and calls
+  //   play()/pause() repeatedly, which is exactly the "дёргания и
+  //   спотыкания" this was asked to avoid. The asymmetry (instant enter,
+  //   buffered exit) is deliberate: it costs nothing on the way in — the
+  //   frame is only just reaching the screen — and only matters on the way
+  //   out, where the extra margin is invisible because the frame is already
+  //   off-screen by the time it fires.
+  //
+  // Leaving upwards still rewinds the current phase to its start, so coming
+  // back down replays that chapter from the beginning instead of resuming a
+  // few frames from its hold — without this the second visit reproduced the
+  // original bug exactly.
   useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setStarted(true);
-          observer.disconnect();
+    const EXIT_HYSTERESIS = 120;
+    const check = () => {
+      const top = wrap.getBoundingClientRect().top;
+      setStarted((prev) => {
+        const onScreen = prev
+          ? top < window.innerHeight + EXIT_HYSTERESIS
+          : top < window.innerHeight;
+        if (prev === onScreen) return prev;
+        if (!onScreen) {
+          const video = videoRef.current;
+          const phase = phases[activeIndexRef.current];
+          if (video && phase) {
+            try {
+              video.pause();
+              video.currentTime = phase.start + SEEK_EPSILON;
+            } catch {
+              /* metadata not ready — onLoadedMetadata seeks instead */
+            }
+          }
         }
-      },
-      { threshold: 0 }
-    );
-    observer.observe(wrap);
-    return () => observer.disconnect();
-  }, []);
+        return onScreen;
+      });
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
+  }, [phases]);
 
   // A chapter that scrolls internally is entered at the edge matching the
   // direction of travel: at its top when arriving from the chapter above, at
@@ -746,7 +838,13 @@ export default function CinematicStage({
     // ramp, and an inline style always wins over a class rule for the same
     // property, so a class-based brightness would just get clobbered the
     // first time the ramp touches `filter`.
-    const brightnessPrefix = brightness !== 1 ? `brightness(${brightness}) ` : "";
+    //
+    // A phase may override the stage value (see Phase.brightness). This is
+    // read here rather than inside the tick because the effect already
+    // re-runs on `activeIndex`, so the prefix is recomputed exactly when the
+    // chapter — and therefore the fragment being graded — changes.
+    const phaseBrightness = phases[activeIndex]?.brightness ?? brightness;
+    const brightnessPrefix = phaseBrightness !== 1 ? `brightness(${phaseBrightness}) ` : "";
     const applyPush = () => {
       const frame = frameRef.current;
       if (!push || reelEnd <= 0 || !frame) return;
@@ -768,7 +866,7 @@ export default function CinematicStage({
       // — the reel visibly looping back to its opening frame instead of
       // holding on its last one. `video.ended` catches that case here, ahead
       // of the self-heal branch, and holds exactly like a normal phase end.
-      if (remaining <= 0 || video.ended) {
+      if (remaining <= HOLD_BACK_SECONDS || video.ended) {
         if (!video.paused) video.pause();
         if (frame) frame.style.filter = `${brightnessPrefix}blur(${maxBlurPx}px)`;
         return;
@@ -784,7 +882,12 @@ export default function CinematicStage({
 
       const elapsed = video.currentTime - phase.start;
       const revealT = Math.min(1, Math.max(0, elapsed / blurSeconds));
-      const settleT = Math.min(1, Math.max(0, remaining / blurSeconds));
+      // Measured against the hold point (HOLD_BACK_SECONDS short of the cut),
+      // not the cut itself, so the ramp arrives at exactly maxBlurPx on the
+      // frame the film actually stops on. Against `remaining` alone it was
+      // still a few percent shy there and the hold's own hard assignment
+      // closed the gap in one step.
+      const settleT = Math.min(1, Math.max(0, (remaining - HOLD_BACK_SECONDS) / blurSeconds));
       const blurIn = (1 - smoothstep(revealT)) * maxBlurPx;
       const blurOut = (1 - smoothstep(settleT)) * maxBlurPx;
       const blur = Math.max(blurIn, blurOut);
@@ -835,16 +938,24 @@ export default function CinematicStage({
                 "linear-gradient(to bottom, rgba(11,11,16,0.72) 0%, rgba(11,11,16,0.16) 26%, rgba(11,11,16,0.2) 54%, rgba(11,11,16,0.85) 100%)",
             }}
           />
+          {rail}
+
           {children}
 
-          {/* Nudge on every chapter, not just the first: without it, a
-              visitor's scroll gesture is silently absorbed by the deck (see
+          {/* Nudge on every chapter but the last: without it, a visitor's
+              scroll gesture is silently absorbed by the deck (see
               onWheel/onTouchMove above) instead of moving the page the way
               scrolling normally does, which reads as the site having frozen
-              — that risk exists at each chapter, not only on arrival. On the
-              last chapter "further" exits the deck into the ordinary page
-              below (Trust/Offer/Process/Close) rather than another chapter,
-              which is still an accurate thing to say. */}
+              — that risk exists at each chapter, not only on arrival.
+              The final chapter is the exception. Its closing chapter is the
+              one that ends on a full-width CTA line sitting at the very
+              bottom of the pane (Close's "Начать проект сейчас"), and the
+              hint is centred at bottom-6 of the same stage: on /ai the two
+              overlap by ~20px, drawing the mono caption and its chevron
+              straight through the CTA. The nudge also has the least to say
+              there — past the last chapter "further" is just the ordinary
+              page below, which scrolls normally anyway. */}
+          {activeIndex < chapters.length - 1 && (
           <div
             className="pointer-events-none absolute inset-x-0 bottom-6 flex flex-col items-center gap-1.5 text-paper/60 sm:bottom-9"
             aria-hidden="true"
@@ -866,6 +977,7 @@ export default function CinematicStage({
                 <path d="M6 9l6 6 6-6" />
               </svg>
           </div>
+          )}
         </div>
 
         {/* Runway: one viewport-height step per chapter, pulled up behind the

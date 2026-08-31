@@ -55,7 +55,7 @@ export default function Opening({ service }: { service: ServiceKey }) {
           </div>
 
           <h1 className="chapter-neon mt-5 max-w-3xl font-display uppercase leading-[0.92] tracking-tight text-[clamp(2rem,5vw,3.6rem)]">
-            Основные направления
+            Основные <span className="kw">направления</span>
           </h1>
 
           <p className="mt-4 max-w-md font-display text-[10px] uppercase leading-snug tracking-tight text-white sm:text-[11px] [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">

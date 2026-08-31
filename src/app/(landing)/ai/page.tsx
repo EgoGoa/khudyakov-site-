@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CinematicStage, { type ChapterMeta, type Phase } from "@/components/ui/CinematicStage";
 import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
+import ChapterRail from "@/components/ui/ChapterRail";
 import AiPitch from "@/components/home/ai/AiPitch";
 import AiPortfolio from "@/components/home/ai/AiPortfolio";
 import AiSegments from "@/components/home/ai/AiSegments";
@@ -11,7 +12,7 @@ import Process from "@/components/home/Process";
 import { AI_PROCESS_STEPS } from "@/components/home/ai/aiProcessSteps";
 import { AI_INTERACTIVE_TIERS } from "@/components/home/ai/aiPricingTiers";
 import Close from "@/components/home/Close";
-import AiSeoText from "@/components/home/ai/AiSeoText";
+import { AI_SEO_SECTIONS } from "@/components/home/ai/aiSeoSections";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -87,6 +88,12 @@ export default function AiServicePage() {
           the footage out) → 1.4 (still read too hot, washing out detail) →
           1.12, 20% down from 1.4 — per the founder's own reports each round,
           so the film's texture stays visible instead of flattening out. */}
+      {/* .ai-cool-headings turns every chapter heading inside the stage
+          emerald, including the chapters whose components are shared with the
+          other service pages (Trust, Offer, Process, Close) and so can't take
+          a per-page class through props. Same mechanism /sites uses for its
+          warm headings — see .ai-cool-headings in globals.css. */}
+      <div className="ai-cool-headings">
       <CinematicStage
         src="/video/ai-reel.mp4"
         poster="/images/ai-reel-poster.jpg"
@@ -100,6 +107,11 @@ export default function AiServicePage() {
         blurSeconds={1.15}
         brightness={1.12}
         push
+        // The left-edge chapter rail, in /ai's own lime→emerald gradient —
+        // each of the eight segments takes its hue from its position down the
+        // ramp, so scrolling the deck walks the gradient. Same component
+        // /sites uses, only with its own colours and chapter count.
+        rail={<ChapterRail count={CHAPTERS.length} from="#c8f169" to="#10b981" />}
       >
         {/* No icon on chapter 01 (pitch) by request — icons start from
             chapter 02. AiPortfolio/AiSegments/AiGuarantees each carry their
@@ -120,24 +132,33 @@ export default function AiServicePage() {
         <Trust
           index={3}
           chapter="04"
-          title="Продюсерский центр, не коробка"
-          intro="AI-инструменты внедряем с 2024 года внутри агентства полного цикла. Около 60% заказов — клиенты, которые возвращаются."
+          title={<>Продюсерский центр, <span className="kw">не коробка</span></>}
+          intro={<>AI-инструменты внедряем с 2024 года внутри агентства полного цикла. Около <span className="kw">60% заказов</span> — клиенты, которые возвращаются.</>}
           clients={[]}
         />
-        <Offer index={4} chapter="05" />
+        <Offer
+          index={4}
+          chapter="05"
+          title={<>Лучшие в <span className="kw">AI</span></>}
+          intro={<>Съёмка, монтаж, графика и <span className="kw">AI-продакшн</span> — под формат и площадку.</>}
+        />
         <AiGuarantees />
         <Process
           index={6}
           chapter="07"
-          title="Как проходит внедрение"
-          intro="Шесть шагов от аудита до сопровождения. На каждом — понятный результат и точка согласования."
+          title={<>Как проходит <span className="kw">внедрение</span></>}
+          intro={<>Шесть шагов от аудита до сопровождения. На каждом — понятный результат и <span className="kw">точка согласования</span>.</>}
           steps={AI_PROCESS_STEPS}
         />
         <Close
           index={7}
           chapter="08"
+          title={<>Персональные <span className="kw">условия</span></>}
+          intro={<>Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: <span className="kw">консультация, смета</span> и 2–3 концепции.</>}
           dense
           interactiveTiers={AI_INTERACTIVE_TIERS}
+          seoEyebrow="Подробнее о AI-решениях"
+          seoSections={AI_SEO_SECTIONS}
           titleClassName="text-[1.6rem] sm:text-[2.6rem] lg:text-[2.6rem] xl:text-[3.15rem]"
           // The cursor used to float in the header corner via `decor`,
           // unrelated to any particular piece of copy. Moved here instead —
@@ -148,6 +169,15 @@ export default function AiServicePage() {
           // was for it to hold there "at any breakpoint").
           ctaIcon={
             <img
+              // Keyed even though this is a single element and not part of a
+              // list here. Close drops it into a <Link> beside the closing
+              // line, and next/link runs its children through an array — at
+              // which point React sees an element created in this file with
+              // no key and warns ("Check the render method of LinkComponent…
+              // It was passed a child from AiServicePage"). A key on the
+              // element itself is the contained fix; the alternative is
+              // restructuring Close's own markup for every page that uses it.
+              key="cta-icon"
               src="/images/icons/ai/close.png?v=2"
               alt=""
               aria-hidden="true"
@@ -158,8 +188,8 @@ export default function AiServicePage() {
           }
         />
       </CinematicStage>
+      </div>
 
-      <AiSeoText />
     </ServiceProvider>
   );
 }

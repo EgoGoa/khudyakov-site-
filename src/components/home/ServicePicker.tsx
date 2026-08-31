@@ -6,6 +6,82 @@ import { usePathname, useRouter } from "next/navigation";
 import Container from "@/components/ui/Container";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 
+// One word inside each service's own label picked out in that service's own
+// gradient — same "one keyword per heading" rule the service pages
+// themselves follow, extended to this shared preview card since it cycles
+// through all four labels regardless of which page is actually open.
+// Colours match each page's own accent exactly (see globals.css / that
+// page's own kw scoping): /sites and the site default share magenta→cyan,
+// /ai is lime→emerald, /content is magenta→orange. /smm has no dedicated
+// `.xxx-cool-headings` override the way /ai and /sites do (see globals.css)
+// — its chapter headings just use the shared `.chapter-neon`, cyan-family
+// like this. A flat two-stop cyan→blue read as flat/blended against the
+// picker's own dark footage once Egor actually saw it live — this three-stop
+// sky→cyan→violet run is his pick after comparing four live options against
+// the real /video/bg-smm.mp4 background.
+const LABEL_ACCENT: Partial<
+  Record<ServiceKey, { word: string; from: string; via?: string; to: string; scale?: number }>
+> = {
+  content: { word: "контента", from: "#ff4fd8", to: "#ff6a3d" },
+  ai: { word: "AI", from: "#c8f169", to: "#10b981" },
+  sites: { word: "Vibe", from: "#ff4fd8", to: "#00d2ff" },
+  // /smm has no entry here on purpose. Once the page itself was rebuilt with
+  // its own violet identity, Egor asked for this label to read exactly like
+  // that page's chapter heading — the near-white word under one soft violet
+  // bloom, nothing picked out inside it. A single gradient letter is a
+  // different idea from "one gradient keyword per heading", and with the word
+  // being only three characters there is no keyword to pick. It is handled by
+  // LABEL_TREATMENT below instead.
+};
+
+// Per-service overrides for the label's own type treatment, as opposed to a
+// gradient inside it. Only /smm uses one: `.chapter-neon-violet` is the exact
+// class its chapter headings carry (see globals.css), so the name of the
+// direction in the picker and the heading of the page it leads to are set the
+// same way. Anything listed here also opts OUT of `.service-label-glow`,
+// whose animated cyan text-shadow would otherwise overwrite the treatment's
+// own — the two are both text-shadow on the same element.
+const LABEL_TREATMENT: Partial<Record<ServiceKey, string>> = {
+  smm: "chapter-neon-violet",
+};
+
+function ServiceLabel({ meta, serviceKey }: { meta: (typeof serviceMeta)[ServiceKey]; serviceKey: ServiceKey }) {
+  const accent = LABEL_ACCENT[serviceKey];
+  if (!accent) return <>{meta.label}</>;
+
+  const i = meta.label.lastIndexOf(accent.word);
+  if (i === -1) return <>{meta.label}</>;
+
+  const before = meta.label.slice(0, i);
+  const after = meta.label.slice(i + accent.word.length);
+  return (
+    <>
+      {before}
+      <span
+        style={{
+          backgroundImage: accent.via
+            ? `linear-gradient(90deg, ${accent.from} 0%, ${accent.via} 55%, ${accent.to} 100%)`
+            : `linear-gradient(90deg, ${accent.from} 0%, ${accent.to} 100%)`,
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          color: "transparent",
+          // .service-label-glow's text-shadow on the parent <h3> would
+          // otherwise paint as a solid slab in the shape of this transparent
+          // glyph (same issue the site-wide .kw class works around) — killed
+          // here and replaced with a drop-shadow in the word's own colour(s),
+          // which follows the painted gradient instead of the glyph fill.
+          textShadow: "none",
+          filter: `drop-shadow(0 0 10px ${accent.from}66) drop-shadow(0 0 26px ${accent.to}66)`,
+          fontSize: accent.scale ? `${accent.scale}em` : undefined,
+        }}
+      >
+        {accent.word}
+      </span>
+      {after}
+    </>
+  );
+}
+
 // A faceted, holomotion-style chevron: a thick gradient-stroked glyph with
 // two ghost repeats trailing behind it at falling opacity, like the ones in
 // the reference moodboard — not a plain "‹"/"›" character. Pure SVG/CSS, no
@@ -198,11 +274,19 @@ export default function ServicePicker() {
       </button>
 
       <Container className="flex flex-col items-center py-10 text-center">
-        <h3 className="font-sans text-[clamp(1.8rem,4.5vw,2.8rem)] font-light uppercase tracking-[0.02em] text-paper">
-          {previewMeta.label}
+        {/* font-display, not the font-sans/light it used to be: this is the
+            name of a direction, so it should be set in the same face every
+            chapter heading on the service pages uses. The light sans read as
+            a subtitle rather than as the title of the thing being chosen. */}
+        <h3
+          className={`font-display text-[clamp(1.8rem,4.5vw,2.8rem)] uppercase leading-[0.95] tracking-tight ${
+            LABEL_TREATMENT[previewKey] ?? "service-label-glow text-paper"
+          }`}
+        >
+          <ServiceLabel meta={previewMeta} serviceKey={previewKey} />
         </h3>
 
-        <p className="mt-3.5 max-w-[440px] text-sm leading-relaxed text-paper/75">
+        <p className="service-sub-glow mt-3.5 max-w-[440px] text-sm leading-relaxed text-paper/75">
           {previewMeta.description}
         </p>
 

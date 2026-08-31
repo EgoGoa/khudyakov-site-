@@ -90,6 +90,11 @@ function useActiveRailId(anchorIds: string[]): string {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const VIBE_RAIL_WIDTH = 48; // px — collapsed, icon-only width
+// One duration for the whole expand/collapse state change — clipPath,
+// scale, opacity and the backdrop's background all read it, so the rail
+// arrives as one motion instead of several properties settling at
+// different times (see the note on the outer motion.div below).
+const RAIL_DUR = 0.32;
 
 type RailItem = {
   id: string;
@@ -714,18 +719,8 @@ function RailRow({
         {active && (
           <motion.span
             layoutId="vibe-rail-active-glow"
-            animate={{
-              boxShadow: [
-                "0 0 8px rgba(236,72,153,0.55), 0 0 14px rgba(56,189,248,0.45)",
-                "0 0 15px rgba(236,72,153,0.85), 0 0 24px rgba(56,189,248,0.7)",
-                "0 0 8px rgba(236,72,153,0.55), 0 0 14px rgba(56,189,248,0.45)",
-              ],
-            }}
-            transition={{
-              layout: { type: "spring", stiffness: 340, damping: 28 },
-              boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-            }}
-            className="absolute -inset-[7px] -z-10 rounded-full"
+            transition={{ layout: { type: "spring", stiffness: 340, damping: 28 } }}
+            className="vibe-rail-active-glow absolute -inset-[7px] -z-10 rounded-full"
             style={{
               background:
                 "radial-gradient(circle, rgba(236,72,153,0.5) 0%, rgba(56,189,248,0.35) 65%, transparent 100%)",
@@ -784,14 +779,22 @@ export default function VibeRail() {
           translucent fill, and a soft neon pulse kicks in only while
           expanded — the panel is meant to read as live, technical surface,
           not a static menu. */}
-      {/* No separate fixed-width wrapper here on purpose: an inner box
-          wider than a fixed-width parent can't be pushed flush against the
-          parent's right edge with margin-left:auto — the browser collapses
-          that auto margin to 0 once the box no longer fits, and the panel
-          shot off the right side of the screen instead of growing left.
-          `right-0` with no width set on *this* element is what actually
-          keeps its right edge pinned while its left edge moves as width
-          animates. */}
+      {/* Rewritten from a single element animating `width` to a fixed-size
+          shell (always 226px — the expanded size) with a separate
+          decorative backdrop underneath that reveals via `clipPath`.
+          `width` is a layout property: the browser has to reflow every
+          frame it changes, and that reflow was running alongside `scale`
+          (a transform, GPU-composited, on the *same* element) on a
+          *different* duration (0.3s vs width's 0.45s) — two different
+          rendering pipelines, arriving at different times, is what read as
+          "кривая, дёргается". A fixed-size shell means content never
+          reflows at all (rows stay `w-full` of a constant 226px, icons stay
+          pinned to its right edge via flex-row-reverse exactly as before —
+          the visible "narrow pill" state is just the backdrop showing less
+          of that same fixed layout), and the backdrop's own clipPath is
+          numeric-interpolated by Motion the same way boxShadow already is
+          elsewhere in this file, on one shared duration with scale/opacity
+          so the whole rail arrives together instead of in stages. */}
       <motion.div
         onMouseEnter={() => setExpanded(true)}
         onMouseLeave={() => setExpanded(false)}
@@ -800,57 +803,98 @@ export default function VibeRail() {
           if (!e.currentTarget.contains(e.relatedTarget as Node)) setExpanded(false);
         }}
         animate={{
-          width: expanded ? 226 : VIBE_RAIL_WIDTH,
-          borderRadius: expanded ? 26 : 999,
           // Steps out of the way (see the headerMenuOpen comment above)
-          // rather than trying to out-position the burger dropdown. Opacity
-          // only — animating x here would fight the className's own
-          // translate-y-1/2 centering, since Motion's x/y compose into one
-          // transform that replaces it rather than adding to it.
-          opacity: headerMenuOpen ? 0 : 1,
-          // A touch darker once labels appear, but staying translucent —
-          // going fully opaque here made the panel read as a flat solid
-          // card instead of glass. Legibility over busy backgrounds now
-          // comes from the label's own text-shadow instead (see RailRow),
-          // the same trick the rest of the site uses over video/photo.
-          background: expanded ? "rgba(9,9,14,0.4)" : "rgba(11,11,16,0.16)",
-          // Same pink→cyan family as the "VIBE САЙТ" pill and the CenterModal
-          // window it lights up (see GLASS_BTN.vibe in WelcomeOverlay.tsx),
-          // just pushed brighter here — the rail is the thing you're meant
-          // to notice first. A dim, steady version at rest so it never reads
-          // as fully off, pulsing wider and more saturated on expand.
-          boxShadow: expanded
-            ? [
-                "0 0 22px rgba(236,72,153,0.35), 0 0 34px rgba(56,189,248,0.3)",
-                "0 0 46px rgba(236,72,153,0.7), 0 0 70px rgba(56,189,248,0.6)",
-                "0 0 22px rgba(236,72,153,0.35), 0 0 34px rgba(56,189,248,0.3)",
-              ]
-            : "0 0 16px rgba(236,72,153,0.25), 0 0 24px rgba(56,189,248,0.2)",
+          // rather than trying to out-position the burger dropdown.
+          // Parked quiet and restored on approach: 40% opacity and 70% scale
+          // at rest, both full once the pointer or keyboard focus enters
+          // (`expanded` is already set by this element's own
+          // mouseenter/focus handlers above, so there is no second piece of
+          // state to keep in sync). Both drive the *whole* rail — backdrop
+          // and content alike — since opacity/transform on a parent apply to
+          // its entire rendered subtree, not just itself.
+          opacity: headerMenuOpen ? 0 : expanded ? 1 : 0.4,
+          scale: expanded ? 1 : 0.7,
+          // The vertical centring has to live here too, not in the className.
+          // Motion composes every transform value in this object into one
+          // `transform` that *replaces* whatever CSS set — the moment `scale`
+          // joined, the class's own `-translate-y-1/2` was dropped and the
+          // rail fell out of centre (and out from under the pointer, which is
+          // also why hover stopped registering). Keeping y here means one
+          // system owns the whole transform.
+          y: "-50%",
+          // Moved here from the decorative backdrop below, and this is the
+          // fix for "раскрывается слишком рано": this outer element is the
+          // one with onMouseEnter, and its own hit-test box used to be the
+          // full 226px shell at every state — the backdrop's clipPath only
+          // ever masked what got *painted*, not what could catch the
+          // pointer. So the collapsed rail was already listening across the
+          // whole 226px-wide strip, invisible bulk included, and firing
+          // `setExpanded(true)` the moment the cursor crossed into that
+          // empty space — well before it ever touched the visible pill.
+          // clip-path clips hit-testing along with paint (unlike width,
+          // it's not a layout property, so this doesn't reintroduce the
+          // reflow this component was rewritten to avoid — see the note
+          // above), so putting the same expression here makes the
+          // interactive area match the visible shape at every state: a
+          // narrow strip collapsed, the full panel once it actually opens.
+          clipPath: expanded
+            ? "inset(0px 0px 0px 0px round 26px)"
+            : `inset(0px 0px 0px ${226 - VIBE_RAIL_WIDTH}px round 999px)`,
         }}
         transition={{
-          width: { duration: 0.45, ease: EASE },
-          borderRadius: { duration: 0.45, ease: EASE },
-          background: { duration: 0.3 },
-          opacity: { duration: 0.25, ease: EASE },
-          boxShadow: expanded
-            ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
-            : { duration: 0.4 },
+          opacity: { duration: RAIL_DUR, ease: EASE },
+          scale: { duration: RAIL_DUR, ease: EASE },
+          y: { duration: 0 },
+          clipPath: { duration: RAIL_DUR, ease: EASE },
         }}
-        style={{
-          // Deliberately no border/ring — just a translucent fill over a
-          // strong blur, so the rail reads as glass the page shows through
-          // rather than a bordered panel sitting on top of it.
-          backdropFilter: "blur(28px)",
-          WebkitBackdropFilter: "blur(28px)",
-        }}
-        // No overflow-hidden here any more — it moved to the row list below.
-        // The crown orb is sized to the rail's own rounded cap and its glow
-        // has to spill past that edge to read as light; clipping it at the
-        // rail's border box cut the halo into a flat arc.
-        className={`fixed right-2 top-1/2 z-[65] hidden -translate-y-1/2 pb-2.5 pt-0.5 lg:block ${
+        // origin-right so the rest-state shrink pulls the rail toward the
+        // screen edge it is parked against rather than floating it inward.
+        className={`fixed right-2 top-1/2 z-[65] hidden w-[226px] origin-right pb-2.5 pt-0.5 lg:block ${
           headerMenuOpen ? "pointer-events-none" : ""
         }`}
       >
+        {/* The decorative backdrop — background, blur and glow, separated
+            from the content above it so content never has to reflow (see
+            the note above). The pill/panel SHAPE itself is no longer
+            clipped here: it lives on the outer wrapper's own `clipPath` now
+            (see that element's `animate`), because hit-testing needed to
+            follow the same shape as the paint — see the note there for why.
+            This element just fills whatever area the parent leaves clipped.
+            `pointer-events-none`: this layer is paint only, every click
+            still reaches the real buttons stacked on top of it. */}
+        <motion.div
+          aria-hidden="true"
+          animate={{
+            // A touch darker once labels appear, but staying translucent —
+            // going fully opaque here made the panel read as a flat solid
+            // card instead of glass. Legibility over busy backgrounds now
+            // comes from the label's own text-shadow instead (see RailRow),
+            // the same trick the rest of the site uses over video/photo.
+            background: expanded ? "rgba(9,9,14,0.4)" : "rgba(11,11,16,0.16)",
+            // Same pink→cyan family as the "VIBE САЙТ" pill and the CenterModal
+            // window it lights up (see GLASS_BTN.vibe in WelcomeOverlay.tsx),
+            // just pushed brighter here — the rail is the thing you're meant
+            // to notice first. A dim, steady default (below) so it never reads
+            // as fully off; the pulsing wider/more-saturated version on expand
+            // is a plain CSS animation (.vibe-rail-backdrop-glow) rather than a
+            // Framer `boxShadow: [...]` loop — the loop ran on the JS thread
+            // via an inline-style rewrite every frame, competing with click
+            // handling and CinematicStage's own scroll rAF for main-thread
+            // time the whole time the rail was expanded.
+          }}
+          transition={{
+            background: { duration: RAIL_DUR, ease: EASE },
+          }}
+          style={{
+            // Deliberately no border/ring — just a translucent fill over a
+            // strong blur, so the rail reads as glass the page shows through
+            // rather than a bordered panel sitting on top of it.
+            backdropFilter: "blur(28px)",
+            WebkitBackdropFilter: "blur(28px)",
+            boxShadow: "0 0 16px rgba(236,72,153,0.25), 0 0 24px rgba(56,189,248,0.2)",
+          }}
+          className={`pointer-events-none absolute inset-0 ${expanded ? "vibe-rail-backdrop-glow" : ""}`}
+        />
         {/* The rail's crown: the vibe orb replaces the old gradient "V" disc.
             Sized to sit inside the pill's rounded cap with a couple of pixels
             of clearance, so its limb traces the rail's own curve — collapsed

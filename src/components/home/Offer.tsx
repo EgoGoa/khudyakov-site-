@@ -21,11 +21,12 @@ export default function Offer({
   intro = "Съёмка, монтаж, графика и AI-продакшн — под формат и площадку.",
   spacious = false,
   decor,
+  bodyDecor,
 }: {
   index?: number;
   chapter?: string;
-  title?: string;
-  intro?: string;
+  title?: ReactNode;
+  intro?: ReactNode;
   /** See CinematicSection's own prop — /sites opts in, other pages don't. */
   spacious?: boolean;
   /** Overrides content's own decoration below for a different service's page
@@ -34,6 +35,11 @@ export default function Offer({
    *  sibling next to a staged CinematicSection isn't gated by the deck's own
    *  active-chapter logic and renders unconditionally on every chapter. */
   decor?: ReactNode;
+  /** Decoration for the body area rather than the header. `decor` renders
+   *  inside <header>, which is only as tall as the title — an icon anchored
+   *  to its bottom edge therefore sits at the *top* of the screen and gets
+   *  clipped by the site header. Anything sized to the chapter belongs here. */
+  bodyDecor?: ReactNode;
 }) {
   const { active } = useService();
   const services = servicesByCategory[active];
@@ -70,8 +76,9 @@ export default function Offer({
           decor
         )
       }
+      bodyDecor={bodyDecor}
     >
-      <div className="lg:flex lg:items-start lg:gap-12">
+      <div className="relative z-10 lg:flex lg:items-start lg:gap-16">
         {services.length === 0 ? (
           <p className="text-sm leading-relaxed text-paper/60">
             Список услуг по этому направлению скоро появится здесь.
@@ -81,7 +88,7 @@ export default function Offer({
             {services.map((service, i) => (
               <li
                 key={service.title}
-                className="group flex items-baseline gap-3 border-t border-paper/20 py-3"
+                className="group flex items-baseline gap-3 border-t border-paper/20 py-4"
               >
                 <span className="font-mono text-[10px] text-paper/40">
                   {String(i + 1).padStart(2, "0")}
@@ -96,7 +103,7 @@ export default function Offer({
 
         {/* Vertical card, not another row: the teaser and the calculator
             pitch stacked, sitting beside the list rather than under it. */}
-        <div className="mt-8 rounded-2xl bg-ink/45 p-5 backdrop-blur-md lg:mt-0 lg:w-[300px] lg:shrink-0 xl:w-[320px]">
+        <div className="mt-10 rounded-2xl bg-ink/45 p-6 backdrop-blur-md lg:mt-0 lg:w-[300px] lg:shrink-0 xl:w-[320px]">
           <div id="ai" className="flex items-start gap-3 border-l-2 border-glow/60 pl-4">
             <div>
               {active === "ai" ? (
@@ -120,7 +127,7 @@ export default function Offer({
           </div>
 
           {showCalculator && (
-            <div className="mt-5 border-t border-paper/15 pt-5">
+            <div className="mt-6 border-t border-paper/15 pt-6">
               <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange">
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
                 Не знаете формат?

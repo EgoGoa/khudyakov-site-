@@ -137,6 +137,47 @@ body {
   animation: arrow-nudge-right 1.8s ease-in-out infinite;
 }
 
+/* Soft breathing neon behind ServicePicker's direction name, so the heading
+   and the slide arrows beside it read as one lit system — the arrows carry
+   the same cyan-into-warm falloff as a drop-shadow on their SVG path (see
+   NeonChevron), and this is that glow expressed as a text-shadow, which is
+   what real glyphs need.
+   The pulse is deliberately slower and shallower than .chapter-neon-pulse:
+   that one is a call to action on a heading that is also a button, this one
+   is ambient light on a label, and at the chapter pulse's depth it read as
+   flickering rather than as breathing. */
+@keyframes service-label-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 8px rgba(0, 210, 255, 0.35), 0 0 24px rgba(0, 210, 255, 0.18),
+      0 0 52px rgba(255, 138, 92, 0.12), 0 2px 24px rgba(11, 11, 16, 0.9);
+  }
+  50% {
+    text-shadow: 0 0 14px rgba(0, 210, 255, 0.62), 0 0 38px rgba(0, 210, 255, 0.34),
+      0 0 78px rgba(255, 138, 92, 0.24), 0 2px 24px rgba(11, 11, 16, 0.9);
+  }
+}
+
+.service-label-glow {
+  animation: service-label-glow 3.4s ease-in-out infinite;
+}
+
+/* The supporting line under it gets the same light held still — a pulse
+   under running text is what makes body copy hard to read, and this line has
+   to stay readable while the heading above it does the breathing. */
+.service-sub-glow {
+  text-shadow: 0 0 10px rgba(0, 210, 255, 0.22), 0 0 30px rgba(0, 210, 255, 0.12),
+    0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-label-glow {
+    animation: none;
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.45), 0 0 30px rgba(0, 210, 255, 0.24),
+      0 0 64px rgba(255, 138, 92, 0.16), 0 2px 24px rgba(11, 11, 16, 0.9);
+  }
+}
+
 /* hero headline hover effect — a soft glow follows the cursor behind the
    letters (position driven by --mx/--my, set on mousemove in Hero.tsx),
    and the warm gradient brightens smoothly. Everything here is a plain
@@ -415,6 +456,122 @@ body {
   animation: chapter-neon-pulse 2.2s ease-in-out infinite;
 }
 
+/* /sites runs its chapter headings warm instead of cyan (Egor's call for
+   that page): the same near-white type, but the halo around it is the
+   brand orange rather than the glow cyan every other service page uses.
+   Kept lighter than .chapter-neon's cyan — one wide soft bloom instead of
+   three stacked radii — because orange over the page's warm footage picks
+   up far more of the frame than cyan does, and at .chapter-neon's depth it
+   smeared into the picture behind it.
+
+   The keyword span inside a heading goes the other way: solid brand orange
+   with no halo of its own. A word can't be picked out by *more* of the same
+   glow the whole line already has, so it is picked out by hue and weight
+   against the near-white instead. */
+/* Glow radii in `em`, not rem: this treatment is used both on chapter
+   headings around 3.6rem and on the header's tagline at 0.65rem, and a fixed
+   radius that reads as a halo on the heading reads as an orange smudge four
+   times the size of the tagline. In `em` the bloom scales with whatever it is
+   set on. 0.72em/1.39em reproduce the original 2.6rem/5rem exactly at the
+   heading's own size, so the headings are unchanged. */
+.chapter-neon-warm {
+  color: #ffeee7;
+  text-shadow: 0 0 0.72em rgba(255, 106, 61, 0.42), 0 0 1.39em rgba(255, 106, 61, 0.18),
+    0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
+/* Keyword inside a chapter heading, in the same magenta-to-cyan gradient the
+   logo's own "AI" mark carries (.header-ai-mark above) — Egor pointed at that
+   mark and asked for this to match it, so the two now share one recipe and
+   only differ in glow radius, which is scaled up here for type roughly six
+   times the size.
+
+   text-shadow is explicitly cleared. The gradient works by painting the fill
+   transparent and letting the clipped background show through, and a
+   text-shadow under a transparent glyph is not hidden by it — the heading's
+   own orange halo would have rendered as a solid orange slab in the shape of
+   the word. The glow is a drop-shadow on the element instead, which follows
+   the painted gradient rather than the glyph's fill. */
+.chapter-neon-warm .kw,
+.kw {
+  background-image: linear-gradient(90deg, #ff4fd8 0%, #00d2ff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 10px rgba(255, 79, 216, 0.45))
+    drop-shadow(0 0 26px rgba(0, 210, 255, 0.4));
+}
+
+/* Every heading inside /sites' stage, including the chapters whose
+   components are shared with /ai, /smm and /content (Offer, Process, Close)
+   and therefore can't take a per-page class through props. Scoped to this
+   wrapper so the other three pages keep their cyan headings untouched. */
+.sites-warm-headings .chapter-neon {
+  color: #ffeee7;
+  text-shadow: 0 0 0.72em rgba(255, 106, 61, 0.42), 0 0 1.39em rgba(255, 106, 61, 0.18),
+    0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
+/* /ai runs its chapter headings the same way /sites runs them warm, only
+   in the page's own emerald: near-white type under one wide, soft bloom
+   instead of .chapter-neon's three stacked cyan radii. Egor asked for /ai's
+   heading and button language to match the /sites treatment he approved, and
+   emerald is what the whole page already is — its icon set, its deck and its
+   pill all sit in that hue, so a cyan triple-neon on top read as a leftover
+   from the site-wide default rather than a decision.
+
+   Radii in `em` for the same reason as .chapter-neon-warm: this is set on
+   type from ~0.65rem to ~4rem and a fixed radius only looks right at one of
+   those sizes. */
+/* /ai's keyword gradient — lime to emerald, Egor's pick from the four
+   variants. Deliberately NOT the site-wide magenta→cyan `.kw` (the logo's
+   own mark, which /sites also uses): the two service pages have to read as
+   different places, and /ai's accent is emerald everywhere else already —
+   its icons, its deck, its pill. Lime at the head of the ramp is what keeps
+   the word brighter than the emerald body copy around it, so a single
+   keyword still carries the line.
+
+   One keyword per chapter heading at most — his call. text-shadow is cleared
+   and the glow moved to a drop-shadow for the same reason as .kw above: a
+   shadow under a transparent gradient glyph renders as a solid slab in the
+   shape of the word. */
+.chapter-neon-cool .kw,
+.ai-cool-headings .kw {
+  background-image: linear-gradient(90deg, #c8f169 0%, #10b981 100%);
+  filter: drop-shadow(0 0 10px rgba(200, 241, 105, 0.4))
+    drop-shadow(0 0 26px rgba(16, 185, 129, 0.42));
+}
+
+/* /content's own keyword gradient — magenta to orange (Egor's pick, variant
+   03, from four rendered options), warmer than the site-wide magenta→cyan
+   `.kw` that /sites and the header logo mark keep using. Scoped to this
+   page's own wrapper for the same reason as /ai's `.ai-cool-headings .kw`
+   above: `.kw` is also the shared default used elsewhere (Header's own
+   "DIGITAL AI" mark, /sites' chapters), so the base class stays untouched
+   and only /content repaints it. */
+.content-warm-headings .kw {
+  background-image: linear-gradient(90deg, #ff4fd8 0%, #ff6a3d 100%);
+  filter: drop-shadow(0 0 10px rgba(255, 79, 216, 0.4)) drop-shadow(0 0 26px rgba(255, 106, 61, 0.42));
+}
+
+.chapter-neon-cool {
+  color: #eafff5;
+  text-shadow: 0 0 0.72em rgba(52, 211, 153, 0.4), 0 0 1.39em rgba(16, 185, 129, 0.18),
+    0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
+/* Every heading inside /ai's stage, including the chapters whose components
+   are shared with the other service pages (Offer, Process, Trust, Close) and
+   therefore can't take a per-page class through props. Scoped to this wrapper
+   so /content and /smm keep their cyan headings untouched. */
+.ai-cool-headings .chapter-neon {
+  color: #eafff5;
+  text-shadow: 0 0 0.72em rgba(52, 211, 153, 0.4), 0 0 1.39em rgba(16, 185, 129, 0.18),
+    0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
 /* Same breathing cyan glow as chapter-neon-pulse, but as a drop-shadow —
    for small icons (stroked SVGs) where a text-shadow has nothing to grab. */
 @keyframes icon-neon-pulse {
@@ -655,6 +812,40 @@ body {
   transition: filter 0.3s ease, transform 0.15s ease;
 }
 
+/* VibeRail's active-row glow and its expanded-backdrop glow used to be
+   Framer Motion `animate={{ boxShadow: [...] }}` loops with `repeat:
+   Infinity` — a JS callback rewriting an inline style every single frame,
+   forever, from the moment any page mounts (some rail row is "active"
+   almost immediately). That fought the main thread against everything else
+   on the page — scroll handling, click handlers, CinematicStage's own rAF
+   loop — for a decoration nobody was even looking at most of the time. A
+   plain CSS animation does the same pulse without a JS frame callback: the
+   browser drives it independently of React's render cycle. */
+@keyframes vibe-rail-active-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(236, 72, 153, 0.55), 0 0 14px rgba(56, 189, 248, 0.45); }
+  50% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.85), 0 0 24px rgba(56, 189, 248, 0.7); }
+}
+
+.vibe-rail-active-glow {
+  animation: vibe-rail-active-pulse 2s ease-in-out infinite;
+}
+
+@keyframes vibe-rail-backdrop-pulse {
+  0%, 100% { box-shadow: 0 0 22px rgba(236, 72, 153, 0.35), 0 0 34px rgba(56, 189, 248, 0.3); }
+  50% { box-shadow: 0 0 46px rgba(236, 72, 153, 0.7), 0 0 70px rgba(56, 189, 248, 0.6); }
+}
+
+.vibe-rail-backdrop-glow {
+  animation: vibe-rail-backdrop-pulse 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vibe-rail-active-glow,
+  .vibe-rail-backdrop-glow {
+    animation: none;
+  }
+}
+
 .glass-choice-btn:hover,
 .glass-choice-btn:focus-visible {
   animation-duration: 1.6s;
@@ -834,6 +1025,225 @@ body {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.3),
     0 2px 0 rgba(0, 0, 0, 0.4), 0 14px 28px -10px rgba(0, 0, 0, 0.85),
     0 0 26px rgba(255, 106, 61, 0.7), 0 0 60px rgba(255, 106, 61, 0.35);
+}
+
+/* /ai's action buttons.
+   The page's chapters 04, 05, 07 and 08 are shared components (Trust, Offer,
+   Process, Close) plus the shared FunnelCta, so their buttons can't take a
+   per-page class through props — and editing those components would change
+   /content and /smm too, which is not what was asked. Scoping the treatment
+   to this page's wrapper is what keeps the change on /ai alone.
+
+   Same decision as /sites: the skeuomorphic pressed-key (.btn-3d) fights the
+   flat glass the chapters are built from, so inside /ai it becomes the flat
+   emerald pill chapter 01 and AiDeck already use (AI_PILL). Kept as one
+   recipe here rather than duplicated per component. */
+/* /ai's shared chapters (Trust, Offer) still carry the site-wide cyan
+   `.text-glow` / `.border-glow` labels and hover states — eyebrow tags,
+   list-hover colour, the "AI-агент" teaser's left rule. Scoped overrides
+   here, same reasoning as the pill buttons above: those components are
+   shared with /content and /smm and can't take a per-page class through
+   props, and editing them directly would repaint the other pages too. */
+.ai-cool-headings .text-glow {
+  color: #34d399;
+}
+
+.ai-cool-headings .group:hover .group-hover\:text-glow {
+  color: #34d399;
+}
+
+.ai-cool-headings .border-glow\/60 {
+  border-color: rgba(52, 211, 153, 0.6);
+}
+
+/* Process's StepIcon boxes and numbered index are hardcoded orange too —
+   same shared-component situation as .text-glow above. */
+.ai-cool-headings .border-orange\/30 {
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+/* AiDeck (chapter 01 carousel) — the back cards get a flickering neon rim in
+   the page's own emerald, so the coverflow reads as lit from within rather
+   than just faded by opacity+blur. Each card's --flicker-delay is offset by
+   its index, so five cards don't pulse in unison. */
+/* One shared breathing flicker for every card's glow — back cards get it
+   pale and slow (--flicker-min/max set low, page's own emerald), the active
+   card gets it bright and a touch quicker (violet→blue gradient, set by the
+   component). Same mechanic, different intensity, rather than two unrelated
+   animations — that's what keeps every card's light reading as "one system"
+   instead of the front card doing something categorically different. */
+@keyframes ai-deck-flicker {
+  0%, 100% { opacity: var(--flicker-min, 0.2); }
+  50% { opacity: var(--flicker-max, 0.5); }
+}
+
+.ai-deck-glow {
+  animation: ai-deck-flicker var(--flicker-duration, 3.8s) cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: var(--flicker-delay, 0s);
+}
+
+/* The ambient pool of light behind the whole rail — a slow breathing scale
+   so the deck doesn't sit on a flat black background. */
+@keyframes ai-deck-ambient-breathe {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.08); }
+}
+
+.ai-deck-ambient-glow {
+  animation: ai-deck-ambient-breathe 5.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-deck-glow,
+  .ai-deck-ambient-glow {
+    animation: none;
+  }
+}
+
+.ai-cool-headings .bg-orange\/15 {
+  background-color: rgba(52, 211, 153, 0.15);
+}
+
+.ai-cool-headings .text-orange {
+  color: #34d399;
+}
+
+/* The same pill/tag treatment appears standalone in Offer's calculator
+   teaser and in FunnelCta's embedded quote card (Trust chapter 04) —
+   border-orange/35 + bg-orange/10 is that pill's frame. */
+.ai-cool-headings .border-orange\/35 {
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.ai-cool-headings .bg-orange\/10 {
+  background-color: rgba(52, 211, 153, 0.1);
+}
+
+/* FaqAside's active filter chip and its dot use plain, full-opacity
+   border-orange/bg-orange (no slash) rather than the /10 tint above. */
+.ai-cool-headings .border-orange {
+  border-color: #34d399;
+}
+
+.ai-cool-headings .bg-orange {
+  background-color: #34d399;
+}
+
+.ai-cool-headings .btn-neon.btn-3d {
+  background-image: linear-gradient(180deg, #5ce6b0 0%, #0fa47a 100%);
+  border-color: transparent;
+  color: #03120d;
+  box-shadow: 0 12px 30px -8px rgba(16, 185, 129, 0.6);
+  transition: filter 0.3s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ai-cool-headings .btn-neon.btn-3d:hover {
+  transform: none;
+  filter: brightness(1.1);
+  box-shadow: 0 14px 34px -8px rgba(16, 185, 129, 0.7);
+}
+
+.ai-cool-headings .btn-neon.btn-3d:active {
+  transform: translateY(1px);
+  box-shadow: 0 8px 20px -10px rgba(16, 185, 129, 0.6);
+}
+
+/* FunnelCta's own /ai variant (`square`, see that file) drops the .btn-3d
+   class entirely — `buttonClass(size, flat || square, square)` computes
+   `dimension` from the OR of the two, so on /ai it is always "" — which is
+   why the .btn-neon.btn-3d override above never touched it: there is no
+   .btn-3d class on that button to match. This is the flat counterpart, for
+   exactly that shape (.btn-neon.btn-warm with no .btn-3d sibling class). */
+.ai-cool-headings .btn-neon.btn-warm {
+  background: linear-gradient(180deg, #5ce6b0 0%, #0fa47a 100%);
+  border-color: transparent;
+  color: #03120d;
+}
+
+.ai-cool-headings .btn-neon.btn-warm:hover {
+  background: linear-gradient(180deg, #6ff0bd 0%, #12b884 100%);
+  border-color: transparent;
+}
+
+/* The "recommended tier" card (.c3-card-pro, shared with /content and
+   /sites) is tinted in the site's red-orange `rec` colour. Scoped to
+   emerald on /ai for the same reason as everything else above. */
+.ai-cool-headings .c3-card-pro {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(0, 0, 0, 0.2));
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.ai-cool-headings .c3-card-pro:hover {
+  border-color: rgba(52, 211, 153, 0.7);
+}
+
+.ai-cool-headings .c3-card-pro .c3-check {
+  background: rgba(52, 211, 153, 0.2);
+}
+
+.ai-cool-headings .c3-check {
+  background: rgba(52, 211, 153, 0.15);
+}
+
+.ai-cool-headings .bg-rec {
+  background-color: #10b981;
+}
+
+.ai-cool-headings .bg-rec:hover,
+.ai-cool-headings .hover\:bg-rec-light:hover {
+  background-color: #34d399;
+}
+
+/* /content's action buttons — same call as /ai and /sites: the
+   skeuomorphic pressed-key (.btn-3d) fights the flat glass everything else
+   here is made of, so inside /content it becomes a flat pill in the page's
+   own magenta→orange. Scoped to this page's wrapper since Offer, Close,
+   Works and FunnelCta are shared with other pages. */
+.content-warm-headings .btn-neon.btn-3d,
+.content-warm-headings .btn-neon.btn-warm {
+  background: linear-gradient(180deg, #ff6fe0 0%, #ff6a3d 100%);
+  border-color: transparent;
+  color: #1a0a04;
+  box-shadow: 0 12px 30px -8px rgba(255, 106, 61, 0.6);
+  transition: filter 0.3s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.content-warm-headings .btn-neon.btn-3d:hover,
+.content-warm-headings .btn-neon.btn-warm:hover {
+  transform: none;
+  filter: brightness(1.1);
+  box-shadow: 0 14px 34px -8px rgba(255, 106, 61, 0.7);
+}
+
+.content-warm-headings .btn-neon.btn-3d:active {
+  transform: translateY(1px);
+  box-shadow: 0 8px 20px -10px rgba(255, 106, 61, 0.6);
+}
+
+/* Close's plain (non-interactive) tier cards use their own recommended-tier
+   button (bg-rec, red-orange) rather than .btn-neon — same repaint, kept as
+   its own selector since it's a different class pair. */
+.content-warm-headings .bg-rec {
+  background-image: linear-gradient(180deg, #ff6fe0 0%, #ff6a3d 100%);
+  background-color: transparent;
+  color: #1a0a04;
+}
+
+.content-warm-headings .hover\:bg-rec-light:hover {
+  filter: brightness(1.1);
+}
+
+/* The "recommended tier" card itself (.c3-card-pro, shared with /ai and
+   /sites) is tinted in the site's red-orange `rec` colour — /content's own
+   gradient already lands on that same hue at its warm end, so only the cool
+   (magenta) half needs adding for the card to read as this page's own. */
+.content-warm-headings .c3-card-pro {
+  background: linear-gradient(135deg, rgba(255, 79, 216, 0.1), rgba(0, 0, 0, 0.2));
+  border-color: rgba(255, 106, 61, 0.45);
+}
+
+.content-warm-headings .c3-card-pro:hover {
+  border-color: rgba(255, 106, 61, 0.75);
 }
 
 /* Frosted-glass pill — a real pane of glass rather than a flat fill: a
@@ -1195,6 +1605,20 @@ body {
   transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   overflow: hidden;
   position: relative;
+}
+
+/* /sites' own tier cards. The shared .c3-card is tuned to fill one fixed
+   screen on its own — 44px of top padding and a 520px floor — and on /sites
+   chapter 06 that floor is doing nothing but pushing air: the chapter also
+   carries the SEO accordion and the closing CTA under the row, so the tall
+   cards squeezed the heading above them. Top padding comes down the 20% Egor
+   asked for and the floor goes away, so a card is exactly as tall as what is
+   in it. Scoped to this class rather than edited on .c3-card, which /ai,
+   /smm and /content still render at the original size. */
+.sites-tier {
+  padding: 35px 24px 26px;
+  min-height: 0;
+  border-radius: 26px;
 }
 
 .c3-card::before {
@@ -1578,7 +2002,12 @@ body {
 .ai-deco-icon-click {
   filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.5)) drop-shadow(0 0 26px rgba(16, 185, 129, 0.4))
     drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
-  transform-origin: 20% 15%;
+  /* close.png's actual painted tip sits at ~81%/4% of the image box (measured
+     from its alpha channel), not the box's visual center — pivoting rotate
+     and the press-down scale there keeps the tip pinned in place instead of
+     sliding as the icon dips, the way a real fingertip doesn't move while
+     the hand behind it presses down. */
+  transform-origin: 81% 4%;
   animation: ai-icon-click 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
@@ -1603,13 +2032,54 @@ body {
   }
 }
 
+/* The neon ripple the click sends out above the pill — same 2.4s loop as
+   .ai-deco-icon-click, timed so the ring blooms right at the press-down dip
+   (65% in that keyframe) instead of on its own unrelated schedule. */
+/* A ring expanding and fading from the cursor's tip, like a ripple spreading
+   from the point something touched water — three of these, staggered by
+   animation-delay in AiPitch.tsx, read as successive ripples rather than one
+   pulse. Blooms at 62% to land just after .ai-deco-icon-click's press-down
+   dip (65% in that keyframe), same reasoning as the wave ring this replaced:
+   the ripple should leave right as the cursor lands, not on its own
+   unrelated schedule. */
+@keyframes ai-icon-ripple {
+  0%, 55% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  62% {
+    transform: scale(0.6);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(3.4);
+    opacity: 0;
+  }
+}
+
+.ai-icon-ripple {
+  border: 1.5px solid rgba(110, 231, 183, 0.85);
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.7), 0 0 14px rgba(16, 185, 129, 0.4);
+  animation: ai-icon-ripple 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-icon-ripple {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* Same press-down "click" pulse as .ai-deco-icon-click, tuned to /sites'
    purple-cherry glass icons (see SitesDecoIcon.tsx) instead of /ai's
    emerald palette — everything else about the loop is identical. */
 .sites-deco-icon-click {
   filter: drop-shadow(0 0 6px rgba(232, 95, 160, 0.5)) drop-shadow(0 0 26px rgba(123, 31, 162, 0.4))
     drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
-  transform-origin: 20% 15%;
+  /* cursor.png's painted tip sits at ~33%/23% of the image box (measured
+     from its alpha channel) — same reasoning as .ai-deco-icon-click above:
+     pivot there so the tip stays put while the press-down dip happens. */
+  transform-origin: 33% 23%;
   animation: sites-icon-click 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
@@ -1684,4 +2154,105 @@ body {
     animation: none;
     transform: rotate(var(--r, 0deg));
   }
+}
+
+/* ---------- /smm: фиолетово-синий акцент ---------- */
+
+/* /smm runs its chapter headings the way /sites runs them warm and /ai cool,
+   only in this page's own violet: near-white type under one wide, soft bloom
+   instead of .chapter-neon's three stacked cyan radii.
+
+   Violet is Egor's pick for /smm and it comes straight out of the footage —
+   smm-reel.mp4 is a night club sequence lit in purple and cold blue, so the
+   accent is the light that is already in frame. It also keeps the four
+   service pages apart: /ai is lime→emerald, /sites magenta→cyan, /content
+   magenta→orange, /smm violet→sky.
+
+   Radii in `em`, not rem, for the same reason as .chapter-neon-warm: this
+   treatment lands on type from ~0.65rem to ~4rem and a fixed radius only
+   reads as a halo at one of those sizes. */
+.chapter-neon-violet {
+  color: #f4ecff;
+  text-shadow: 0 0 0.72em rgba(168, 85, 247, 0.42), 0 0 1.39em rgba(56, 189, 248, 0.2),
+    0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
+/* Every heading inside /smm's stage, including any shared chapter component
+   dropped back into it later that can't take a per-page class through props.
+   Scoped to this page's wrapper so the other three pages are untouched. */
+.smm-violet-headings .chapter-neon {
+  color: #f4ecff;
+  text-shadow: 0 0 0.72em rgba(168, 85, 247, 0.42), 0 0 1.39em rgba(56, 189, 248, 0.2),
+    0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
+/* /smm's keyword gradient — violet to sky. Deliberately NOT the site-wide
+   magenta→cyan `.kw` (the logo's own mark, which /sites also uses): the base
+   class stays the shared default and only this page repaints it, exactly the
+   pattern .ai-cool-headings and .content-warm-headings already follow.
+
+   text-shadow is cleared and the glow moved to a drop-shadow for the same
+   reason as `.kw` itself: a shadow under a transparent gradient glyph paints
+   as a solid slab in the shape of the word rather than a halo around it. */
+.chapter-neon-violet .kw,
+.smm-violet-headings .kw {
+  background-image: linear-gradient(90deg, #a855f7 0%, #38bdf8 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.45))
+    drop-shadow(0 0 26px rgba(56, 189, 248, 0.4));
+}
+
+/* /smm's tier cards, same trim as .sites-tier and for the same reason: the
+   shared .c3-card carries a 520px floor meant to fill a screen on its own,
+   and chapter 06 here also holds the SEO accordion and the closing CTA under
+   the row, so that floor is pure air pushing down on the heading. */
+.smm-tier {
+  padding: 35px 24px 26px;
+  min-height: 0;
+  border-radius: 26px;
+}
+
+/* The tier card's hover edge and its "pro" card follow the page accent
+   instead of the site-wide cyan/red, so the closing chapter doesn't drop out
+   of the violet the other five chapters are set in. */
+.smm-violet-headings .c3-card:hover {
+  border-color: rgba(168, 85, 247, 0.55);
+}
+
+.smm-violet-headings .c3-card-pro {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.14), rgba(0, 0, 0, 0.2));
+  border-color: rgba(168, 85, 247, 0.45);
+}
+
+.smm-violet-headings .bg-rec {
+  background-color: #8b3ff0;
+}
+
+.smm-violet-headings .hover\:bg-rec-light:hover {
+  background-color: #a855f7;
+}
+
+/* Keyword accent inside a /smm chapter's supporting line (the "подзаголовок"
+   under the big heading). Egor's call after the page was built: the headings
+   already carry the violet→sky gradient keyword, and the sub-lines were left
+   flat white, so each one now picks out one phrase — in the CYAN of the
+   page's glass icons rather than in the heading's violet.
+
+   Two accents on one screen in two different hues is deliberate: the heading
+   keyword ties the chapter to the rail and the page's identity, while the
+   sub-line keyword ties the sentence to the object floating beside it. Using
+   the violet here instead would have made the sub-line read as a second,
+   quieter heading rather than as its own line.
+
+   A flat colour with a soft glow, not a gradient: at body size a gradient
+   across a two-word phrase is invisible, and the transparent-fill trick that
+   `.kw` needs would strip the text-shadow the copy relies on to stay legible
+   over film. */
+.smm-accent {
+  color: #5ee7ff;
+  text-shadow: 0 0 14px rgba(94, 231, 255, 0.45), 0 2px 20px rgba(11, 11, 16, 0.9);
 }

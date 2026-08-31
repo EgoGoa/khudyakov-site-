@@ -30,6 +30,25 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
     <footer id="footer" className="relative overflow-hidden bg-ink text-paper">
       {decor}
       <FlareBackground />
+      {/* Opens the flare texture from solid black over the footer's own first
+          128px instead of starting it at full strength against whatever sits
+          above. This used to be FlareHandoff, a standalone 96/128px band that
+          /ai and /sites rendered between their closing chapter and the footer
+          — it carried no content, and as an empty strip of nothing between
+          the last CTA and the footer it read as a gap rather than a
+          transition, so it was cut. The fade itself was worth keeping: as an
+          absolutely positioned overlay it costs no layout height at all.
+          Ends at transparent, which lands exactly on FlareBackground's own
+          default gradient starting at 0.4 — the same value the two arcs were
+          pinned to across the old seam (see FlareBackground), now with no
+          seam to cross. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-24 sm:h-32"
+        aria-hidden="true"
+        style={{
+          background: "linear-gradient(to bottom, rgba(11,11,16,1) 0%, rgba(11,11,16,0) 100%)",
+        }}
+      />
       <div className="relative">
       {/* CTA band — mirrors the "ready to discuss your project" strip from
           the reference, but pointed at our own real channels */}

@@ -118,6 +118,16 @@ const FUNNELS: Record<
 
 export type FunnelSize = "sm" | "md" | "lg";
 
+/** Card chrome. "warm" is the site-wide default — an opaque ink card lit from
+ *  the button's corner in orange. "glass" is the frosted variant built for
+ *  /sites' chapter 01: the card lets the film through and is lit in the same
+ *  purple-cherry the page's 3D glass icons are rendered in (see
+ *  .sites-deco-icon-* in globals.css), so the CTA reads as one more piece of
+ *  glass laid on the footage rather than a solid panel punched into it. The
+ *  button stays orange either way — that is the one CTA colour across all
+ *  six chapters and every service page. */
+export type FunnelTone = "warm" | "glass";
+
 const HEADLINE_SIZE: Record<FunnelSize, string> = {
   sm: "text-xl sm:text-2xl",
   md: "text-2xl sm:text-3xl",
@@ -139,14 +149,28 @@ const CARD_WIDTH: Record<FunnelSize, string> = {
   lg: "max-w-3xl",
 };
 
-function EyebrowPill({ children, dense = false }: { children: ReactNode; dense?: boolean }) {
+function EyebrowPill({
+  children,
+  dense = false,
+  tone = "warm",
+}: {
+  children: ReactNode;
+  dense?: boolean;
+  tone?: FunnelTone;
+}) {
+  const skin =
+    tone === "glass"
+      ? "border-[#e85fa0]/40 bg-[#e85fa0]/10 text-[#f4a8cd]"
+      : "border-orange/35 bg-orange/10 text-orange";
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 font-mono uppercase tracking-[0.18em] text-orange ${
+      className={`inline-flex items-center gap-2 rounded-full border font-mono uppercase tracking-[0.18em] ${skin} ${
         dense ? "px-3 py-1 text-[10px]" : "px-3.5 py-1.5 text-[11px]"
       }`}
     >
-      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
+      <span
+        className={`h-1.5 w-1.5 shrink-0 rounded-full ${tone === "glass" ? "bg-[#e85fa0]" : "bg-orange"}`}
+      />
       {children}
     </span>
   );
@@ -195,7 +219,9 @@ export default function FunnelCta({
   align = "left",
   size = "md",
   spacious = false,
+  barLayout = false,
   flatButton = false,
+  tone = "warm",
   className = "",
 }: {
   item: FunnelKey;
@@ -220,8 +246,24 @@ export default function FunnelCta({
    *  eyebrow+copy on their own line, the button given its own room below
    *  rather than squeezed to the opposite edge. */
   spacious?: boolean;
+  /** "sm" only, and only alongside `spacious={false}`: keeps the card as one
+   *  horizontal bar (copy left, button right) but stacks the eyebrow *above*
+   *  the headline instead of sitting beside it.
+   *
+   *  The default row puts the eyebrow pill and the headline in one wrapping
+   *  flex line, which needs the full card width. In a narrow column — /sites'
+   *  chapter 01 is capped at ~44% of the frame so the footage's car stays
+   *  clear — that line has nowhere to go: the pill broke across two lines
+   *  mid-capsule and the headline broke across three, while the button
+   *  (`sm:flex-nowrap`) refused to wrap and overlapped them. `spacious` fixes
+   *  the wrapping but drops the button onto its own row, which costs the
+   *  vertical space a one-screen chapter doesn't have. This is the third
+   *  shape: one line tall, nothing wraps. */
+  barLayout?: boolean;
   /** Drops the button's .btn-3d "physical key" treatment for a flat pill. */
   flatButton?: boolean;
+  /** Card chrome — see FunnelTone. "glass" is currently "sm" only. */
+  tone?: FunnelTone;
   className?: string;
 }) {
   const funnel = FUNNELS[item];
@@ -234,25 +276,50 @@ export default function FunnelCta({
   const square = useService().active === "ai";
 
   if (size === "sm") {
+    const glass = tone === "glass";
+    const radius = spacious ? "rounded-3xl" : "rounded-2xl";
     return (
       <div
-        className={`relative overflow-hidden bg-ink ${
+        className={`relative overflow-hidden ${
+          glass
+            ? "bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)] backdrop-blur-2xl backdrop-saturate-150"
+            : "bg-ink"
+        } ${
           spacious ? "rounded-3xl px-6 py-7 sm:px-8 sm:py-8" : "rounded-2xl px-5 py-4 sm:px-6"
         } ${CARD_WIDTH.sm} ${right ? "ml-auto" : ""} ${className}`}
       >
+        {/* The light in the card. "warm" is lit from the button's corner in
+            orange; "glass" is lit in the purple-cherry the page's 3D icons
+            are rendered in, so the two read as the same material. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
-            background: right
+            background: glass
+              ? right
+                ? "radial-gradient(85% 150% at 0% 45%, rgba(232,95,160,0.20), transparent 60%), radial-gradient(90% 160% at 100% 100%, rgba(123,31,162,0.28), transparent 66%)"
+                : "radial-gradient(85% 150% at 100% 45%, rgba(232,95,160,0.20), transparent 60%), radial-gradient(90% 160% at 0% 100%, rgba(123,31,162,0.28), transparent 66%)"
+              : right
               ? "radial-gradient(75% 140% at 0% 50%, rgba(255,106,61,0.18), transparent 62%)"
               : "radial-gradient(75% 140% at 100% 50%, rgba(255,106,61,0.18), transparent 62%)",
           }}
         />
+        {/* Glass only: the specular sheen along the top edge that makes a
+            frosted panel read as a solid pane rather than a blurred hole. */}
+        {glass && (
+          <div
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-0 ${radius}`}
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.03) 22%, transparent 55%)",
+            }}
+          />
+        )}
         <div
-          className={`pointer-events-none absolute inset-0 ring-1 ring-inset ring-paper/10 ${
-            spacious ? "rounded-3xl" : "rounded-2xl"
-          }`}
+          className={`pointer-events-none absolute inset-0 ring-1 ring-inset ${
+            glass ? "ring-white/15" : "ring-paper/10"
+          } ${radius}`}
         />
 
         <div
@@ -268,12 +335,30 @@ export default function FunnelCta({
             className={
               spacious
                 ? `flex min-w-0 flex-col gap-y-2 ${right ? "sm:items-end" : ""}`
+                : barLayout
+                ? `flex min-w-0 flex-col items-start gap-y-1.5 ${right ? "sm:items-end" : ""}`
                 : "flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2"
             }
           >
-            <EyebrowPill dense>{eyebrow}</EyebrowPill>
-            <p className="font-sans text-base leading-snug text-paper sm:text-lg">
-              {headline} {accent && <span className="font-semibold text-orange">{accent}</span>}
+            <EyebrowPill dense tone={tone}>
+              {eyebrow}
+            </EyebrowPill>
+            <p
+              className={`font-sans leading-snug text-paper ${
+                // barLayout is a one-line bar by definition, so the headline
+                // must not wrap — at lg+ only, where the bar actually is a
+                // row. Below that the card stacks and wrapping is correct.
+                barLayout
+                  ? "text-base lg:whitespace-nowrap"
+                  : "text-base sm:text-lg"
+              }`}
+            >
+              {headline}{" "}
+              {accent && (
+                <span className={`font-semibold ${tone === "glass" ? "text-[#f4a8cd]" : "text-orange"}`}>
+                  {accent}
+                </span>
+              )}
             </p>
           </div>
           <div className="shrink-0">

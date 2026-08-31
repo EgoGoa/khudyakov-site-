@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
 import FunnelCta from "@/components/ui/FunnelCta";
 import FaqAside from "@/components/home/FaqAside";
@@ -38,8 +39,8 @@ export default function Trust({
 }: {
   index?: number;
   chapter?: string;
-  title?: string;
-  intro?: string;
+  title?: ReactNode;
+  intro?: ReactNode;
   clients?: string[];
 }) {
   const { active } = useService();
@@ -56,7 +57,7 @@ export default function Trust({
       entrance="rise"
       intro={intro}
     >
-      <div className="lg:flex lg:items-start lg:justify-between lg:gap-12">
+      <div className="lg:flex lg:items-start lg:justify-between lg:gap-16">
         {/* The reasons opposite it push everything lg:ml-auto, which leaves
             this whole column empty above that breakpoint — an FAQ belongs
             here rather than nowhere, since it answers exactly the practical
@@ -66,8 +67,8 @@ export default function Trust({
           <FaqAside />
         </div>
 
-        <div className="mt-8 lg:mt-0 lg:max-w-2xl">
-          <div className="grid gap-x-8 gap-y-5 rounded-2xl bg-ink/45 p-5 backdrop-blur-md sm:grid-cols-3">
+        <div className="mt-10 lg:mt-0 lg:max-w-2xl">
+          <div className="grid gap-x-8 gap-y-6 rounded-2xl bg-ink/45 p-6 backdrop-blur-md sm:grid-cols-3">
             {why.reasons.map((reason, i) => (
               <div key={reason.title} className="border-t border-paper/25 pt-4">
                 <span className="font-mono text-[10px] tracking-[0.2em] text-glow">
@@ -84,7 +85,7 @@ export default function Trust({
           </div>
 
           {clients.length > 0 && (
-            <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-2 border-t border-paper/15 pt-4">
+            <div className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-2 border-t border-paper/15 pt-5">
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-paper/45">
                 Нам доверяют
               </span>
@@ -94,7 +95,7 @@ export default function Trust({
             </div>
           )}
 
-          <div className="relative mt-5">
+          <div className="relative mt-7">
             <FunnelCta
               item="consult"
               align="right"

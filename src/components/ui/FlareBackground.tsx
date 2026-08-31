@@ -29,7 +29,7 @@ export const FLARE_LAYERS: { stops: [string, string, string, string, string]; du
  *  drifting flare layers plus the same top-to-bottom darkening gradient the
  *  footer uses over them, so text stays legible without a heavier scrim.
  *
- *  AiSeoText and Footer each mount their own independent copy of this — a
+ *  FlareHandoff and Footer each mount their own independent copy of this — a
  *  visitor scrolling from one straight into the other is meant to read it as
  *  one continuous background, but a plain `animation-delay: layer.baseDelay`
  *  only fixes each layer's phase *relative to the moment its own element
@@ -92,7 +92,7 @@ export default function FlareBackground({ fadeTop = false }: { fadeTop?: boolean
         style={{
           // Both arcs are pinned to the exact same 0.4 value at the seam —
           // fadeTop's own last stop and the default gradient's first stop —
-          // on purpose. A section using `fadeTop` (AiSeoText) hands off
+          // on purpose. A section using `fadeTop` (FlareHandoff) hands off
           // directly into one *not* using it (Footer) immediately below,
           // and the two are rendered by separate component instances with
           // no shared element between them; even a 1% difference in opacity
