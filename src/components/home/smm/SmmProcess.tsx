@@ -3,7 +3,7 @@
 import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { SMM_BEAT, SMM_DUR, SMM_STAGGER } from "@/components/home/smm/smmMotion";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { SMM_PROCESS_STEPS } from "@/components/home/smm/smmProcessSteps";
@@ -23,6 +23,10 @@ import { SMM_PROCESS_STEPS } from "@/components/home/smm/smmProcessSteps";
 // This is the reel's shortest phase (19.64 → 23.44, the quiet beat under the
 // shooting star) — five short rows is exactly what fits a screen that is only
 // on for a few seconds before the next hold.
+//
+// Steps cascade one at a time (SMM_STAGGER, smmMotion.ts) rather than the
+// whole <ol> arriving together, `as="li"` so each row stays a direct child of
+// the list.
 
 export default function SmmProcess() {
   return (
@@ -37,6 +41,7 @@ export default function SmmProcess() {
       spacious
       column
       headless
+      transitionDuration={SMM_DUR.chapter}
       /* Top-right, above the steps panel and only grazing its upper corner —
          the exact box Egor marked, measured against this chapter's own
          container (`relative mx-auto max-w-7xl`) and written in px rather
@@ -72,30 +77,37 @@ export default function SmmProcess() {
         primary={{ href: "/brief", label: "Заполнить бриф" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
       >
-        <Appear from="right" delay={BEAT.content}>
-          <ol className={`${SMM_PANEL} divide-y divide-paper/10 px-5 py-1`}>
-            {SMM_PROCESS_STEPS.map((step, i) => (
-              <li key={step.title} className="flex items-start gap-4 py-3.5">
-                <span
-                  className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-mono text-[10px]"
-                  style={{
-                    borderColor: "rgba(168,85,247,0.35)",
-                    color: "#e4d0ff",
-                    boxShadow: "inset 0 0 10px rgba(168,85,247,0.18)",
-                  }}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="min-w-0">
-                  <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
-                    {step.title}
-                  </h3>
-                  <p className="mt-1 text-xs leading-relaxed text-paper/55">{step.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </Appear>
+        <ol className={`${SMM_PANEL} divide-y divide-paper/10 px-5 py-1`}>
+          {SMM_PROCESS_STEPS.map((step, i) => (
+            <Appear
+              key={step.title}
+              as="li"
+              from="right"
+              delay={SMM_BEAT.content + i * SMM_STAGGER}
+              duration={SMM_DUR.row}
+              blur
+              blurPx={10}
+              className="flex items-start gap-4 py-3.5"
+            >
+              <span
+                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-mono text-[10px]"
+                style={{
+                  borderColor: "rgba(168,85,247,0.35)",
+                  color: "#e4d0ff",
+                  boxShadow: "inset 0 0 10px rgba(168,85,247,0.18)",
+                }}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div className="min-w-0">
+                <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
+                  {step.title}
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-paper/55">{step.description}</p>
+              </div>
+            </Appear>
+          ))}
+        </ol>
 
         {/* The two link-outs to /smm/cases and /smm/pricing, as one quiet row
             under the steps. They were two full-width cards below the deck, on
@@ -107,7 +119,7 @@ export default function SmmProcess() {
             cards: the chapter already carries a heading, a support line, five
             steps and two actions, and two more panels would be the crowding
             he asked to avoid. */}
-        <Appear from="up" delay={BEAT.cta}>
+        <Appear from="up" delay={SMM_BEAT.cta} duration={SMM_DUR.item} blur>
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-5">
             <Link
               href="/smm/cases"

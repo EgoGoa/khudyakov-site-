@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { SMM_BEAT, SMM_DUR } from "@/components/home/smm/smmMotion";
 import { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 
@@ -22,6 +22,10 @@ import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 // makes "the whole page in one style" true in the code and not just in the
 // current screenshot: the heading treatment, the beat delays and the button
 // language all have exactly one definition to change.
+//
+// Timing runs on SMM_BEAT/SMM_DUR (smmMotion.ts), this page's own slower,
+// blur-in rhythm — see that file for why it's a separate scale from every
+// other service page's lib/motion.ts pace.
 
 export default function SmmChapterLayout({
   number,
@@ -54,7 +58,7 @@ export default function SmmChapterLayout({
   return (
     <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
       <div className={`w-full shrink-0 ${columnClassName}`}>
-        <Appear from="up" delay={BEAT.eyebrow}>
+        <Appear from="up" delay={SMM_BEAT.eyebrow} duration={SMM_DUR.item} blur>
           <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
             <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c4a0ff]">
               {number}
@@ -63,17 +67,17 @@ export default function SmmChapterLayout({
           </div>
         </Appear>
 
-        <Appear from="up" delay={BEAT.title}>
+        <Appear from="up" delay={SMM_BEAT.title} duration={SMM_DUR.item} blur>
           <h2 className="chapter-neon-violet mt-3 max-w-[6.7em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] lg:text-[3.6rem] xl:text-[4rem]">
             {title}
           </h2>
         </Appear>
 
-        <Appear from="up" delay={BEAT.intro}>
+        <Appear from="up" delay={SMM_BEAT.intro} duration={SMM_DUR.item} blur>
           <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>{sub}</p>
         </Appear>
 
-        <Appear from="up" delay={BEAT.cta}>
+        <Appear from="up" delay={SMM_BEAT.cta} duration={SMM_DUR.item} blur>
           <div className="mt-9 flex items-center gap-4">
             <Link href={primary.href} className={PILL}>
               {primary.label}

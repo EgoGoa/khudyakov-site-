@@ -3,7 +3,7 @@
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { SMM_BEAT, SMM_DUR, SMM_STAGGER } from "@/components/home/smm/smmMotion";
 import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 import SeoAccordion from "@/components/ui/SeoAccordion";
 import { SMM_SEO_SECTIONS } from "@/components/home/smm/smmSeoSections";
@@ -27,6 +27,10 @@ import { pricingByCategory } from "@/lib/service-content";
 // card has a 520px floor meant to fill a screen on its own, and here that
 // floor is pure air pushing down on the heading, since the accordion and the
 // closing CTA also live on this screen.
+//
+// Timing runs on SMM_BEAT/SMM_DUR (smmMotion.ts) — the tier cards cascade
+// one at a time via SMM_STAGGER rather than the row appearing as one block,
+// `as="article"` so each card stays a direct child of the CSS grid.
 //
 // The /smm/cases and /smm/pricing link-outs are deliberately NOT here. They
 // were two full-width cards below the deck, on flat black with no film behind
@@ -71,60 +75,71 @@ export default function SmmClose() {
       id="close"
       spacious
       titleClassName="chapter-neon-violet text-4xl sm:text-5xl lg:text-5xl xl:text-6xl"
+      transitionDuration={SMM_DUR.chapter}
     >
       {/* The supporting line is rendered here rather than through
           CinematicSection's `intro` slot, which sets its text as tiny
           uppercase display type — every other chapter on this page carries
           ordinary sentence-case copy at the body scale. */}
-      <Appear from="up" delay={BEAT.intro}>
+      <Appear from="up" delay={SMM_BEAT.intro} duration={SMM_DUR.item} blur>
         <p className={`mx-auto mb-8 max-w-[46em] text-center ${CHAPTER_INTRO}`}>
           Точная смета — после короткого брифа. <span className="smm-accent">Бесплатно</span>:
           аудит аккаунта и разбор, что усилить в первую очередь.
         </p>
       </Appear>
 
-      <Appear from="up" delay={BEAT.content}>
-        <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3">
-          {TIERS.map((tier) => (
-            <article key={tier.name} className={`c3-card smm-tier ${tier.pro ? "c3-card-pro" : ""}`}>
-              <span className="c3-tier-small relative">{tier.tagline}</span>
-              <div className="c3-tier-large relative !text-xl">{tier.name}</div>
-              <div className="relative mt-2 text-base font-semibold text-paper">{tier.price}</div>
-              <div className="c3-team relative mb-5">{tier.team}</div>
+      <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3">
+        {TIERS.map((tier, i) => (
+          <Appear
+            key={tier.name}
+            as="article"
+            from="up"
+            delay={SMM_BEAT.content + i * SMM_STAGGER}
+            duration={SMM_DUR.row}
+            blur
+            blurPx={14}
+            className={`c3-card smm-tier ${tier.pro ? "c3-card-pro" : ""}`}
+          >
+            <span className="c3-tier-small relative">{tier.tagline}</span>
+            <div className="c3-tier-large relative !text-xl">{tier.name}</div>
+            <div className="relative mt-2 text-base font-semibold text-paper">{tier.price}</div>
+            <div className="c3-team relative mb-5">{tier.team}</div>
 
-              <ul className="c3-list relative">
-                {tier.features.map((feature) => (
-                  <li key={feature}>
-                    <span className="c3-check text-paper">
-                      <CheckIcon />
-                    </span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+            <ul className="c3-list relative">
+              {tier.features.map((feature) => (
+                <li key={feature}>
+                  <span className="c3-check text-paper">
+                    <CheckIcon />
+                  </span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
 
-              <div className="relative mt-auto self-stretch pt-4">
-                <Link
-                  href="/brief"
-                  className={`block w-full rounded-full py-2.5 text-center text-sm font-semibold transition ${
-                    tier.pro
-                      ? "bg-rec text-white hover:bg-rec-light"
-                      : "bg-paper text-ink hover:bg-white"
-                  }`}
-                >
-                  Выбрать пакет
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      </Appear>
+            <div className="relative mt-auto self-stretch pt-4">
+              <Link
+                href="/brief"
+                className={`block w-full rounded-full py-2.5 text-center text-sm font-semibold transition ${
+                  tier.pro
+                    ? "bg-rec text-white hover:bg-rec-light"
+                    : "bg-paper text-ink hover:bg-white"
+                }`}
+              >
+                Выбрать пакет
+              </Link>
+            </div>
+          </Appear>
+        ))}
+      </div>
 
-      <Appear from="up" delay={BEAT.cta}>
+      {/* Past the tier cascade (last card lands at content + 2×STAGGER),
+          so the long-read and the closing CTA land after the pricing has
+          finished revealing itself. */}
+      <Appear from="up" delay={SMM_BEAT.cta} duration={SMM_DUR.item} blur>
         <SeoAccordion eyebrow="Подробнее о SMM" sections={SMM_SEO_SECTIONS} />
       </Appear>
 
-      <Appear from="up" delay={BEAT.cta}>
+      <Appear from="up" delay={SMM_BEAT.cta + SMM_STAGGER} duration={SMM_DUR.item} blur>
         <div className="mt-7 flex items-center justify-center gap-4">
           <Link href="/brief" className={PILL}>
             Начать вести соцсети

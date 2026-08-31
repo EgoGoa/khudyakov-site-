@@ -3,7 +3,7 @@
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { SMM_BEAT, SMM_DUR } from "@/components/home/smm/smmMotion";
 import SmmDeck, { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 
 // Chapter 01 of /smm — the opening pitch, one level in from the site's own
@@ -29,6 +29,11 @@ import SmmDeck, { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 // facts still have their own home further down the page (the cadence numbers
 // on the carousel's own cards, the CTA in every chapter's action row).
 //
+// Timing: this chapter, like the other five, reads on SMM_BEAT/SMM_DUR
+// (smmMotion.ts) rather than the shared lib/motion.ts scale — a slower,
+// blur-in pace Egor asked for specifically on this page. See that file for
+// the full reasoning.
+//
 // This chapter carries NO decorative glass icon, unlike the other five. The
 // rocket was tried twice — pinned to the primary button (the way /sites pins
 // its cursor there) and then moved to the frame's lower-left — and Egor cut
@@ -51,19 +56,20 @@ export default function SmmPitch() {
       spacious
       column
       headless
+      transitionDuration={SMM_DUR.chapter}
     >
       <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
         {/* Left column: the chapter's whole stack, so it centres against the
             carousel rather than against itself. */}
         <div className="w-full shrink-0 lg:w-[46%]">
-          <Appear from="up" delay={BEAT.eyebrow}>
+          <Appear from="up" delay={SMM_BEAT.eyebrow} duration={SMM_DUR.item} blur>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
               <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c4a0ff]">01</span>
               <span className="h-px w-8 bg-[#a855f7]/40" />
             </div>
           </Appear>
 
-          <Appear from="up" delay={BEAT.title}>
+          <Appear from="up" delay={SMM_BEAT.title} duration={SMM_DUR.item} blur>
             {/* The explicit break is what puts "продакшена" on its own line as
                 the keyword; no automatic wrap does it at every step of the
                 responsive type scale, and the measure is in `em` so the shape
@@ -75,14 +81,14 @@ export default function SmmPitch() {
             </h2>
           </Appear>
 
-          <Appear from="up" delay={BEAT.intro}>
+          <Appear from="up" delay={SMM_BEAT.intro} duration={SMM_DUR.item} blur>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
               Съёмка, монтаж и ведение соцсетей — <span className="smm-accent">одна команда</span>,
               без подрядчиков со стороны.
             </p>
           </Appear>
 
-          <Appear from="up" delay={BEAT.cta}>
+          <Appear from="up" delay={SMM_BEAT.cta} duration={SMM_DUR.item} blur>
             <div className="mt-9 flex items-center gap-4">
               <Link href="/brief" className={PILL}>
                 Обсудить формат
@@ -108,9 +114,16 @@ export default function SmmPitch() {
 
         {/* Hidden below lg: the fan needs the column's own width beside it to
             make sense, and there isn't a second column on a phone. The chapter
-            still reads as heading + copy + CTA alone there. */}
+            still reads as heading + copy + CTA alone there.
+
+            The carousel gets its own Appear beat (content) rather than
+            arriving with the chapter's own slide-in — the copy establishes
+            what this is first, then the thing itself comes into focus a beat
+            later, which is the "последовательно" part of the brief. */}
         <div className="mt-10 hidden lg:mt-0 lg:block lg:flex-1">
-          <SmmDeck />
+          <Appear from="right" delay={SMM_BEAT.content} duration={SMM_DUR.item} blur blurPx={18}>
+            <SmmDeck />
+          </Appear>
         </div>
       </div>
     </CinematicSection>

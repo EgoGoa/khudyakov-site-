@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { SMM_BEAT, SMM_DUR, SMM_STAGGER } from "@/components/home/smm/smmMotion";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 
@@ -22,6 +22,11 @@ import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 // two-panel right column (terms + FAQ side by side) rather than going through
 // SmmChapterLayout, which takes a single child panel — same exception
 // SitesGuarantees makes for the same reason.
+//
+// Both the terms list and the FAQ cascade one row at a time (SMM_STAGGER,
+// smmMotion.ts) rather than arriving as two blocks — they run on the same
+// stagger step so the two columns settle together instead of one finishing
+// well before the other.
 
 const TERMS = [
   {
@@ -76,6 +81,7 @@ export default function SmmGuarantees() {
       spacious
       column
       headless
+      transitionDuration={SMM_DUR.chapter}
       /* Placed to the exact box Egor drew: the empty pocket above the
          heading, right of the "05" marker, its lower edge just reaching the
          top of "ВХОДИТ" — the slight overlap he asked for, and nothing more.
@@ -98,14 +104,14 @@ export default function SmmGuarantees() {
     >
       <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
         <div className="w-full shrink-0 lg:w-[38%]">
-          <Appear from="up" delay={BEAT.eyebrow}>
+          <Appear from="up" delay={SMM_BEAT.eyebrow} duration={SMM_DUR.item} blur>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
               <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c4a0ff]">05</span>
               <span className="h-px w-8 bg-[#a855f7]/40" />
             </div>
           </Appear>
 
-          <Appear from="up" delay={BEAT.title}>
+          <Appear from="up" delay={SMM_BEAT.title} duration={SMM_DUR.item} blur>
             <h2 className="chapter-neon-violet mt-3 max-w-[6.7em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] lg:text-[3.6rem] xl:text-[4rem]">
               Что
               <br />
@@ -113,14 +119,14 @@ export default function SmmGuarantees() {
             </h2>
           </Appear>
 
-          <Appear from="up" delay={BEAT.intro}>
+          <Appear from="up" delay={SMM_BEAT.intro} duration={SMM_DUR.item} blur>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
               Покупаете не пост и не рилс — покупаете <span className="smm-accent">систему
               ведения</span>, зафиксированную в договоре.
             </p>
           </Appear>
 
-          <Appear from="up" delay={BEAT.cta}>
+          <Appear from="up" delay={SMM_BEAT.cta} duration={SMM_DUR.item} blur>
             <div className="mt-9 flex items-center gap-4">
               <Link href="/brief" className={PILL}>
                 Обсудить задачу
@@ -147,7 +153,16 @@ export default function SmmGuarantees() {
         <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8">
           <ul className="lg:max-w-md lg:flex-1">
             {TERMS.map((term, i) => (
-              <li key={term.title} className="border-t border-paper/20 py-3">
+              <Appear
+                key={term.title}
+                as="li"
+                from="left"
+                delay={SMM_BEAT.content + i * SMM_STAGGER}
+                duration={SMM_DUR.row}
+                blur
+                blurPx={10}
+                className="border-t border-paper/20 py-3"
+              >
                 <div className="flex items-baseline gap-3">
                   <span className="font-mono text-[10px] text-paper/40">
                     {String(i + 1).padStart(2, "0")}
@@ -159,7 +174,7 @@ export default function SmmGuarantees() {
                     <p className="mt-1 text-xs leading-relaxed text-paper/60">{term.description}</p>
                   </div>
                 </div>
-              </li>
+              </Appear>
             ))}
           </ul>
 
@@ -169,7 +184,15 @@ export default function SmmGuarantees() {
               {FAQ.map((item, i) => {
                 const isOpen = open === i;
                 return (
-                  <div key={item.q} className="border-b border-paper/10">
+                  <Appear
+                    key={item.q}
+                    from="right"
+                    delay={SMM_BEAT.content + i * SMM_STAGGER}
+                    duration={SMM_DUR.row}
+                    blur
+                    blurPx={10}
+                    className="border-b border-paper/10"
+                  >
                     <button
                       type="button"
                       onClick={() => setOpen(isOpen ? null : i)}
@@ -189,7 +212,7 @@ export default function SmmGuarantees() {
                     {isOpen && (
                       <p className="max-w-sm pb-3.5 text-xs leading-relaxed text-paper/55">{item.a}</p>
                     )}
-                  </div>
+                  </Appear>
                 );
               })}
             </div>

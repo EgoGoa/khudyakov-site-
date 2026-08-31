@@ -101,6 +101,7 @@ export default function CinematicSection({
   spacious = false,
   column = false,
   headless = false,
+  transitionDuration,
 }: {
   /** Position in the deck — must match this chapter's entry in `chapters`. */
   index: number;
@@ -167,6 +168,13 @@ export default function CinematicSection({
    *  Offer, Process, Close inside /content's stage) and every plain-scroll
    *  page that hasn't opted in keep their current, tighter rhythm. */
   spacious?: boolean;
+  /** How long the whole chapter block takes to fly in/out (DUR.chapter,
+   *  0.85s, if omitted). Every page but /smm leaves this unset — /smm's own
+   *  chapters pass a longer value (see smmMotion.ts) as part of the slower,
+   *  more theatrical pace Egor asked for there specifically ("заметно
+   *  медленнее... дорогая, креативная анимация"), without moving the other
+   *  three service pages off the pace lib/motion.ts already sets for them. */
+  transitionDuration?: number;
 }) {
   // Trust/Offer/Process/Close are authored for the pinned deck (see
   // CinematicStage) but Process is also reused directly on the plain-scroll
@@ -205,7 +213,7 @@ export default function CinematicSection({
       // Only transform and opacity are animated — a blur() on a full-screen
       // layer was tried and dropped: it forces a repaint of the whole stage on
       // every frame and made the swap visibly stutter.
-      transition={{ duration: DUR.chapter, ease: EASE }}
+      transition={{ duration: transitionDuration ?? DUR.chapter, ease: EASE }}
       aria-hidden={!active}
       data-chapter-pane={staged ? "" : undefined}
       data-active={active ? "true" : "false"}

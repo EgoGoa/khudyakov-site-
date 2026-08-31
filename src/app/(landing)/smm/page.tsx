@@ -103,8 +103,15 @@ export default function SmmServicePage() {
           poster="/images/smm-reel-poster.jpg"
           phases={PHASES}
           chapters={CHAPTERS}
-          maxBlurPx={10}
-          blurSeconds={0.9}
+          // Deepened and lengthened from the page's first pass (10 / 0.9) —
+          // Egor asked for the chapter-to-chapter stitch to read richer too,
+          // not just the reveal inside each chapter. The shortest phase on
+          // this reel is 3.8s (19.64→23.44); at 1.15s the ramp in and out
+          // together take 2.3s, still leaving ~1.5s of a clear frame before
+          // the next hold starts — checked against that phase specifically
+          // rather than assumed safe.
+          maxBlurPx={14}
+          blurSeconds={1.15}
           // The reel is a night shoot and grades darker than /sites' footage,
           // so it is lifted a little further to keep the chapters' body copy
           // off a near-black frame.
