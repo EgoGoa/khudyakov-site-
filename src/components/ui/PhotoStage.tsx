@@ -384,26 +384,30 @@ export default function PhotoStage({
           />
           {children}
 
+          {/* Same three-chevron hint as CinematicStage — kept identical on
+              purpose so the two stages don't drift into two different
+              "scroll on" cues. See that file for the timing. */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-6 flex flex-col items-center gap-1.5 text-paper/60 sm:bottom-9"
+            className="pointer-events-none absolute inset-x-0 bottom-6 flex items-center justify-center gap-2 text-paper/60 sm:bottom-9"
             aria-hidden="true"
           >
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em]">
-              Листайте дальше
-            </span>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="cinematic-scroll-hint"
-            >
-              <path d="M6 9l6 6 6-6" />
-            </svg>
+            {[0, 0.16, 0.32].map((delay) => (
+              <svg
+                key={delay}
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="scroll-hint-chevron"
+                style={{ animationDelay: `${delay}s` }}
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            ))}
           </div>
         </div>
 

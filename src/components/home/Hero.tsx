@@ -10,10 +10,9 @@ import { PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 
 const SHOWREEL_YOUTUBE_ID = "HC5SMCQuoms";
 
-const menuItems = ["Съёмка", "Монтаж", "Цветокор", "Звук", "Рендер"];
 
 // Same numbers as Stats.tsx, but a plain inline row here — no border, no
-// grid — just filling the space under the CTAs before the menu strip.
+// grid — just filling the space under the CTAs.
 const heroStats = [
   { value: "8 лет", label: "на рынке" },
   { value: "350+", label: "клиентов" },
@@ -21,53 +20,7 @@ const heroStats = [
   { value: "5 стран", label: "опыта" },
 ];
 
-function useTimecode() {
-  const [tc, setTc] = useState("00:00:00:00");
-
-  useEffect(() => {
-    const start = Date.now();
-    const id = setInterval(() => {
-      const elapsedMs = Date.now() - start;
-      const totalFrames = Math.floor((elapsedMs / 1000) * 25);
-      const frames = totalFrames % 25;
-      const totalSeconds = Math.floor(totalFrames / 25);
-      const seconds = totalSeconds % 60;
-      const totalMinutes = Math.floor(totalSeconds / 60);
-      const minutes = totalMinutes % 60;
-      const hours = Math.floor(totalMinutes / 60);
-      const pad = (n: number) => String(n).padStart(2, "0");
-      setTc(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}:${pad(frames)}`);
-    }, 40);
-    return () => clearInterval(id);
-  }, []);
-
-  return tc;
-}
-
-function useClock() {
-  const [label, setLabel] = useState("");
-
-  useEffect(() => {
-    const update = () => {
-      const formatted = new Intl.DateTimeFormat("ru-RU", {
-        day: "numeric",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date());
-      setLabel(formatted);
-    };
-    update();
-    const id = setInterval(update, 30_000);
-    return () => clearInterval(id);
-  }, []);
-
-  return label;
-}
-
 export default function Hero() {
-  const timecode = useTimecode();
-  const clock = useClock();
   const frameRef = useRef<HTMLIFrameElement>(null);
   const titleWrapRef = useRef<HTMLDivElement>(null);
 
@@ -258,32 +211,6 @@ export default function Hero() {
         </Container>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.9 }}
-        className="relative mt-16 h-10 shrink-0 border-y border-paper/10 bg-ink/40 backdrop-blur-md sm:mt-auto"
-      >
-        <Container className="flex h-full items-center justify-between gap-3 overflow-hidden text-xs">
-          <div className="flex min-w-0 items-center gap-4 whitespace-nowrap text-paper/70">
-            <span className="flex shrink-0 items-center gap-1.5 font-semibold text-paper">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-rec" />
-              HDKV.AGENCY
-            </span>
-            {menuItems.map((item, i) => (
-              <span
-                key={item}
-                className={`hidden ${i <= 1 ? "sm:inline" : ""} ${i > 1 && i <= 3 ? "md:inline" : ""} ${i > 3 ? "lg:inline" : ""}`}
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-          <div className="flex shrink-0 items-center gap-2 whitespace-nowrap text-paper/50">
-            <span className="font-mono">{clock}</span>
-          </div>
-        </Container>
-      </motion.div>
     </section>
   );
 }

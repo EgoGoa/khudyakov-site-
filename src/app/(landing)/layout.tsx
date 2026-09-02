@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import FluidSmoke from "@/components/layout/FluidSmoke";
 import Hero from "@/components/home/Hero";
+import PageSideNav from "@/components/home/PageSideNav";
 import ServicePicker from "@/components/home/ServicePicker";
 import WelcomeOverlay from "@/components/home/WelcomeOverlay";
 import { WelcomeGateProvider } from "@/lib/welcome-gate";
@@ -55,6 +56,7 @@ export default function LandingLayout({ children }: { children: ReactNode }) {
       {showChrome && enableSmoke && <FluidSmoke />}
       {showChrome && <Hero />}
       {showChrome && <ServicePicker />}
+      {showChrome && <PageSideNav />}
       {children}
     </WelcomeGateProvider>
   );

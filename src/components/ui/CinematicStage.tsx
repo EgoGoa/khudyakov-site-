@@ -111,6 +111,21 @@ const WHEEL_RESET_MS = 120; // trackpads fire many tiny events — coalesce them
 const SWIPE_THRESHOLD = 36; // px of touch travel that counts as a swipe
 const MOMENTUM_MS = 220;
 const STEP_MS = 420; // the glide from one chapter to the next
+// How long the post-step lock is renewed by, on every wheel event that
+// arrives while still locked (see the isLocked branch in onWheel). Egor
+// reported an ordinary, unhurried trackpad/mouse scroll — not a hard flick —
+// carrying the deck through two chapters in one continuous motion. The old
+// lock was a single fixed window (STEP_MS + 700, set once when the step
+// fired) rather than tied to the gesture itself: an everyday scroll routinely
+// keeps emitting wheel events for longer than 1.12s, so by the time that
+// window expired the visitor's finger was often still moving, and the very
+// next event started accumulating a second step from scratch — mid-gesture.
+// Renewing the lock a little on each absorbed event instead ties its expiry
+// to the gesture actually going quiet: it keeps being pushed out for as long
+// as the same continuous scroll keeps producing events, and only lapses this
+// many ms after the last one, whether that is 200ms or 2s later. One
+// continuous gesture — of any length — now always lands exactly one chapter.
+const WHEEL_LOCK_RENEW_MS = 180;
 const EDGE_EPSILON = 2; // px tolerance for "this chapter is scrolled to the end"
 // Below this, an overflow is treated as measurement noise (sub-pixel font
 // metrics, a slightly different zoom level) rather than a chapter that
@@ -459,14 +474,13 @@ export default function CinematicStage({
       directionRef.current = delta;
       setActiveIndex(next);
       glideTo(next);
-      // Fixed, single-shot window a trackpad's post-flick momentum tail
-      // needs to fully play out and get absorbed within (see the isLocked
-      // branch in onWheel, which deliberately does not renew this) — a
-      // strong flick's tail on a real trackpad can keep emitting decaying
-      // events for the better part of a second, well past the glide's own
-      // STEP_MS, so this errs generous rather than risk a leftover tail
-      // landing as an unintended second step.
-      extendLock(STEP_MS + 700);
+      // Just enough to cover the glide animation itself — anything past
+      // that (a trackpad's momentum tail, or the visitor simply still
+      // scrolling) is now absorbed by the isLocked branch in onWheel
+      // renewing this same lock event by event, so it keeps stretching for
+      // as long as the gesture keeps producing wheel events instead of
+      // needing a guess at how long a tail can run.
+      extendLock(STEP_MS + 150);
       return true;
     };
 
@@ -504,14 +518,14 @@ export default function CinematicStage({
         if (settling) return;
       }
       if (isLocked()) {
-        // Trackpads keep emitting decaying (or, for a long swipe, simply
-        // still-continuing) events well past the moment a step already
-        // fired; absorbing them here — without renewing the lock itself —
-        // is what stops that same physical gesture cascading into a second
-        // chapter, while still guaranteeing the lock actually expires on
-        // schedule so the deck responds again promptly. See the big
-        // comment on `lock` above for why this doesn't extend it.
+        // Renewed by WHEEL_LOCK_RENEW_MS on every event absorbed here — see
+        // that constant's own comment for why: an ordinary, unhurried scroll
+        // keeps this window pushed out for as long as it keeps producing
+        // wheel events, so the same continuous gesture can never cascade
+        // into a second step, and the lock still lapses promptly (within
+        // one renewal window) once the visitor's scroll actually stops.
         e.preventDefault();
+        extendLock(WHEEL_LOCK_RENEW_MS);
         return;
       }
       // Spend the gesture on the chapter itself while it still has room.
@@ -957,13 +971,19 @@ export default function CinematicStage({
               page below, which scrolls normally anyway. */}
           {activeIndex < chapters.length - 1 && (
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-6 flex flex-col items-center gap-1.5 text-paper/60 sm:bottom-9"
+            className="pointer-events-none absolute inset-x-0 bottom-6 flex items-center justify-center gap-2 text-paper/60 sm:bottom-9"
             aria-hidden="true"
           >
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em]">
-                Листайте дальше
-              </span>
+            {/* The "Листайте дальше" caption is gone — three chevrons in a
+                row say the same thing without a line of type competing with
+                the chapter's own copy. The delays are what make the dip
+                travel left-to-right along the row instead of all three
+                moving together; the step (0.16s) is a little under a fifth
+                of the 1.9s cycle, so the wave has passed all three well
+                before the next one starts. */}
+            {[0, 0.16, 0.32].map((delay) => (
               <svg
+                key={delay}
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
@@ -972,10 +992,12 @@ export default function CinematicStage({
                 strokeWidth="1.75"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="cinematic-scroll-hint"
+                className="scroll-hint-chevron"
+                style={{ animationDelay: `${delay}s` }}
               >
                 <path d="M6 9l6 6 6-6" />
               </svg>
+            ))}
           </div>
           )}
         </div>

@@ -41,11 +41,17 @@ const LABEL_ACCENT: Partial<
 // same way. Anything listed here also opts OUT of `.service-label-glow`,
 // whose animated cyan text-shadow would otherwise overwrite the treatment's
 // own — the two are both text-shadow on the same element.
-const LABEL_TREATMENT: Partial<Record<ServiceKey, string>> = {
+export const LABEL_TREATMENT: Partial<Record<ServiceKey, string>> = {
   smm: "chapter-neon-violet",
 };
 
-function ServiceLabel({ meta, serviceKey }: { meta: (typeof serviceMeta)[ServiceKey]; serviceKey: ServiceKey }) {
+export function ServiceLabel({
+  meta,
+  serviceKey,
+}: {
+  meta: (typeof serviceMeta)[ServiceKey];
+  serviceKey: ServiceKey;
+}) {
   const accent = LABEL_ACCENT[serviceKey];
   if (!accent) return <>{meta.label}</>;
 
@@ -93,7 +99,13 @@ function ServiceLabel({ meta, serviceKey }: { meta: (typeof serviceMeta)[Service
 // server-rendered markup and the client's first render — a plain counter
 // increments a second time during hydration and was mismatching, which
 // React repaints as a visible flash/box around the glyph.
-function NeonChevron({ flip = false }: { flip?: boolean }) {
+export function NeonChevron({
+  flip = false,
+  className = "h-16 w-16 sm:h-20 sm:w-20",
+}: {
+  flip?: boolean;
+  className?: string;
+}) {
   const gradId = useId();
   return (
     <svg
@@ -105,7 +117,7 @@ function NeonChevron({ flip = false }: { flip?: boolean }) {
       focusable="false"
       overflow="visible"
       style={{ transform: flip ? "scaleX(-1)" : undefined, overflow: "visible" }}
-      className="h-16 w-16 sm:h-20 sm:w-20"
+      className={className}
     >
       <defs>
         <linearGradient id={gradId} x1="6" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
@@ -217,7 +229,11 @@ export default function ServicePicker() {
   return (
     <section
       id="service-picker"
-      className="relative flex min-h-[70svh] items-center overflow-hidden"
+      // Full viewport height, not 70% — Egor asked for this block (photo/
+      // video background, heading, arrows) to fill the whole screen rather
+      // than sitting as a shorter band with page background visible above
+      // and below it.
+      className="relative flex min-h-[100svh] items-center overflow-hidden"
     >
       <div className="absolute inset-0 -z-10">
         {serviceOrder.map((key) =>
@@ -286,9 +302,20 @@ export default function ServicePicker() {
           <ServiceLabel meta={previewMeta} serviceKey={previewKey} />
         </h3>
 
-        <p className="service-sub-glow mt-3.5 max-w-[440px] text-sm leading-relaxed text-paper/75">
-          {previewMeta.description}
-        </p>
+        {/* Fixed height (not just a wrapper), flex-centred: the four
+            descriptions wrap to different line counts (one line for "Сайты",
+            two for others), and this whole section centres its content
+            vertically via `items-center` on the section below — so a shorter
+            or taller description used to change the Container's total
+            height and visibly shift the whole block (heading, dots, button)
+            up or down every time the arrow was clicked. Reserved for two
+            lines at the largest breakpoint's line-height, which is enough
+            for every description in service-content.ts. */}
+        <div className="mt-3.5 flex h-[38px] max-w-[440px] items-center sm:h-[44px]">
+          <p className="service-sub-glow font-display text-[11px] uppercase leading-snug tracking-tight text-paper/75 sm:text-[13px]">
+            {previewMeta.description}
+          </p>
+        </div>
 
         {/* On phones the prev/next controls join the dots in one row under the
             copy instead of floating over it. Same buttons, same order, just
