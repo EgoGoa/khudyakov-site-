@@ -851,6 +851,41 @@ body {
    the screen. Drawn inward, the hairline ring and its bloom sit inside the
    border box, so they survive the clip intact and trace the rounded shape
    exactly at every state. */
+/* Smoke veil (see SmokeVeil.tsx). One full turn, linear, forever.
+   A 360° rotation returns the layer to its exact starting state, so the loop
+   has no seam to hide — and because only `transform` animates, the SVG filter
+   underneath is evaluated once and then merely composited by the GPU.
+   `linear` rather than an eased timing on purpose: any ease would make the
+   rotation visibly slow down and speed up once per cycle, which is precisely
+   the stutter this is meant to avoid.
+   The scale is restated inside the keyframe because a transform in an
+   animation replaces the element's own transform outright; --s carries each
+   layer's value in from the component. */
+@keyframes smoke-veil-turn {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg) scale(var(--s, 1));
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg) scale(var(--s, 1));
+  }
+}
+
+.smoke-veil-layer {
+  animation-name: smoke-veil-turn;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  transform: translate(-50%, -50%) scale(var(--s, 1));
+  /* Promotes the layer so the rotation is composited rather than re-rasterised
+     together with the filter on every frame. */
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smoke-veil-layer {
+    animation: none;
+  }
+}
+
 @keyframes vibe-rail-backdrop-pulse {
   0%, 100% {
     box-shadow:

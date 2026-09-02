@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Container from "@/components/ui/Container";
+import SmokeVeil from "@/components/ui/SmokeVeil";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 
 // One word inside each service's own label picked out in that service's own
@@ -265,6 +266,15 @@ export default function ServicePicker() {
               "linear-gradient(to bottom, rgba(11,11,16,0.65), rgba(11,11,16,0.55) 40%, rgba(11,11,16,0.85))",
           }}
         />
+
+        {/* Inside the -z-10 media wrapper, above the grade but below every bit
+            of copy — so the smoke lies over the footage the way it would in
+            the shot, and never washes over the heading, the arrows or the
+            button. Shared by all four slides rather than being the SMM
+            slide's own: only the video swaps as you page through the
+            services, and a constant smoke line along the floor is what makes
+            those swaps read as one set rather than four separate pictures. */}
+        <SmokeVeil />
       </div>
 
       {/* No circle, no border — just the glyph with the same neon text-shadow
