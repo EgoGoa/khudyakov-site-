@@ -269,11 +269,24 @@ export default function Header() {
               clears text-shadow, which the parent's new bloom needs: a shadow
               under a transparent-filled glyph is not hidden by it, and would
               have painted an orange slab in the shape of the word. */}
-          <span className="chapter-neon-warm hidden shrink-0 flex-col gap-0.5 font-display text-[0.65rem] font-normal uppercase leading-none tracking-[0.12em] sm:flex">
-            <span className="whitespace-nowrap text-[1em]">
-              DIGITAL <span className="kw">AI</span>
-            </span>
-            <span className="whitespace-nowrap text-[1em]">АГЕНТСТВО</span>
+          {/* font-sans/300, not the display face: Egor asked for this line to
+              read thinner and cleaner beside the logo. Unbounded (font-display)
+              has no cut below 500 in this project, so "thinner" is simply not
+              reachable in it — its wide, blocky geometry is also what made the
+              line read as heavy next to the wordmark. Manrope Light gives the
+              plain, thin setting asked for at this size.
+              "AI" is pinned back to `font-display font-normal` so it stays
+              exactly as it was — it would otherwise inherit the new face and
+              weight from this parent along with the rest of the line. */}
+          {/* One line now — "АГЕНТСТВО" was dropped at Egor's request, so the
+              two-line stack (flex-col + gap) that used to hold it went with
+              it: a column of one is just a line, and its `gap` would only
+              have offset the text from nothing. As a single line it centres
+              against the wordmark on its own, from the parent Link's own
+              `items-center`, instead of being a block whose two rows
+              straddled the logo's centre. */}
+          <span className="chapter-neon-warm hidden shrink-0 whitespace-nowrap text-center font-sans text-[0.65rem] font-light uppercase leading-none tracking-[0.12em] sm:block">
+            DIGITAL <span className="kw font-display font-normal">AI</span> CREATIVE
           </span>
         </Link>
 
@@ -291,7 +304,14 @@ export default function Header() {
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
               whileTap={{ scale: 0.9 }}
-              className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-paper/10 bg-paper/5 text-paper backdrop-blur-md transition-colors duration-150 hover:bg-paper/10 sm:h-11 sm:w-11"
+              // No disc behind the glyph any more (Egor's call): the circle —
+              // border, translucent fill and its own backdrop-blur — was more
+              // chrome than a three-line icon needs, and it read as a heavier
+              // control than the wordmark opposite it. The button keeps the
+              // same 40/44px box so the tap target is unchanged; only the
+              // decoration is gone, with hover moving from a filling disc to
+              // the glyph itself brightening.
+              className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center text-paper/80 transition-colors duration-150 hover:text-paper sm:h-11 sm:w-11"
             >
               {menuOpen ? <CloseIcon /> : <MenuIcon />}
             </motion.button>

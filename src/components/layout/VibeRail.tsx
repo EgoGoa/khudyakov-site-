@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -87,6 +87,56 @@ function useActiveRailId(anchorIds: string[]): string {
 // it collapses to a single round button in the same bottom-right corner the
 // old floating CTA used, opening a full-screen matte sheet with the same
 // rows instead of expanding in place.
+
+// The rail's labels: plain white, set light and thin.
+//
+// They used to carry the site-wide magenta→cyan `.kw` gradient, which is the
+// right mark for a heading keyword but wrong at 13px in a dense nine-row
+// column — the two-colour fill plus its own drop-shadow made every row read
+// as a highlight, so nothing in the rail stood out from anything else. Egor
+// asked for white and thinner instead, with the colour work moved to where
+// it carries meaning: the hover state and the active section's icon.
+//
+// font-sans (Manrope), not font-display (Unbounded): Unbounded's lightest cut
+// in this project is 500, so "thinner" isn't reachable in that face at all —
+// Manrope goes to 300, which is what actually makes the row read as a quiet
+// label rather than a small heading. Tracking is opened up a little to keep
+// the uppercase setting legible at that weight.
+// Pure white — and this time actually *rendered* white.
+//
+// The label was already `color: #fff` at `opacity: 1` while still looking
+// washed-out grey on screen, because nothing about the colour was the
+// problem. Three things were dimming the paint itself, and all three are
+// dealt with here:
+//
+//   1. `subpixel-antialiased` overrides the `antialiased` that layout.tsx
+//      sets on <body>. `-webkit-font-smoothing: antialiased` makes macOS
+//      render type visibly thinner; at 12px a light weight's stems come out
+//      under a pixel wide, so they can only ever be *partially* covered —
+//      and a half-covered white pixel on near-black is, literally, grey. No
+//      colour value can fix that; the glyph has to be given real coverage.
+//   2. Weight 300 → 500. Same reason: below ~400 there is not enough stem
+//      at this size for the screen to paint solid. Manrope 500 still reads
+//      far lighter than the display face this replaced, so the rail keeps
+//      the thin, quiet look Egor asked for while gaining a stroke the
+//      display can actually fill in.
+//   3. The dark legibility shadow is gone at rest. It sat directly under
+//      the glyph and darkened exactly the antialiased edge pixels that were
+//      already only half-covered — a grey fringe around every letter. The
+//      rail's own backdrop (a near-opaque rgba(5,5,9,0.86) once expanded)
+//      is what separates the text from the footage now, which is what a
+//      backdrop is for; the label no longer needs to carry its own.
+const RAIL_LABEL_CLASS =
+  "shrink-0 whitespace-nowrap font-sans text-[12px] font-medium uppercase leading-none tracking-[0.08em] text-white subpixel-antialiased transition-[opacity,text-shadow] duration-200";
+
+// Hover: the word lights along its own outline. Tight radii (1/3/7px) rather
+// than a wide bloom — Egor asked for the glow to trace the lettering itself
+// ("по окантовке"), and anything past ~8px stops reading as an edge and
+// starts reading as a halo behind the text. Scoped by `group-hover` to the
+// row's own button, so only the row actually under the cursor lights up
+// while every other label stays plain white.
+const RAIL_LABEL_HOVER =
+  "group-hover:[text-shadow:0_0_1px_rgba(255,255,255,1),0_0_3px_rgba(255,255,255,0.95),0_0_7px_rgba(255,255,255,0.7)]";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const VIBE_RAIL_WIDTH = 48; // px — collapsed, icon-only width
@@ -204,62 +254,10 @@ const OPENING_BLOCK: PageBlock = {
   ),
 };
 
-const STATS_BLOCK: PageBlock = {
-  id: "stats",
-  label: "Цифры",
-  description: "Опыт агентства в цифрах: клиенты, ролики, страны, команда.",
-  glyph: (
-    <Glyph>
-      <path d="M5 19V10M12 19V5M19 19v-7" />
-    </Glyph>
-  ),
-};
-
-const FINALCTA_BLOCK: PageBlock = {
-  id: "finalcta",
-  label: "Призыв к действию",
-  description: "Короткий питч и прямой путь к заявке или брифу.",
-  glyph: (
-    <Glyph>
-      <path d="M13 3 5 13.5h6L11 21l8-10.5h-6z" />
-    </Glyph>
-  ),
-};
-
-const TESTIMONIALS_BLOCK: PageBlock = {
-  id: "testimonials",
-  label: "Отзывы",
-  description: "Что говорят клиенты о работе с агентством после проекта.",
-  glyph: (
-    <Glyph>
-      <path d="M4 6.5h13a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2H10l-4 3.5V16H6a2 2 0 0 1-2-2V8.5a2 2 0 0 1 2-2z" />
-    </Glyph>
-  ),
-};
-
-const AICONSULT_BLOCK: PageBlock = {
-  id: "ai",
-  label: "AI-консультация",
-  description: "Чат с AI-консультантом — прикидка формата и бюджета без брифа.",
-  glyph: (
-    <Glyph>
-      <rect x="5" y="7" width="14" height="12" rx="3" />
-      <path d="M9 7V4.5h6V7M9 13h.01M15 13h.01" />
-      <path d="M3.5 12h1.5M19 12h1.5" />
-    </Glyph>
-  ),
-};
-
-const PRICING_BLOCK: PageBlock = {
-  id: "pricing",
-  label: "Цены",
-  description: "Форматы и стоимость услуг агентства.",
-  glyph: (
-    <Glyph>
-      <path d="M12 3v18M8 7.5h5.5a2.5 2.5 0 0 1 0 5H9a2.5 2.5 0 0 0 0 5H16" />
-    </Glyph>
-  ),
-};
+// The former STATS/FINALCTA/TESTIMONIALS/AICONSULT/PRICING blocks lived here
+// until /smm's rebuild into a deck — they described sections of that page's
+// old plain-scroll layout and had no consumer left once its list was
+// corrected, so they are gone rather than kept as five dead ids.
 
 // /ai is a CinematicStage deck of its own now (see (landing)/ai/page.tsx) —
 // eight chapters, one entry here per chapter, ids matching that page's own
@@ -439,11 +437,95 @@ const SITES_CLOSE_BLOCK: PageBlock = {
   ),
 };
 
-// /content is the cinematic deck (CinematicStage): six chapters, ids come
-// from its own runway divs at each scroll step (see content/page.tsx's
-// CHAPTERS). /ai and /sites are their own decks too (see above). /smm is
-// still the plain-scroll layout (see that page.tsx) — one entry here per
-// section, in on-page order.
+// /smm became a CinematicStage deck of its own too (see (landing)/smm/page.tsx)
+// — six chapters, ids matching that page's own CHAPTERS exactly (pitch/method/
+// offer/process/guarantees/close), same as /ai and /sites above.
+//
+// This list used to be the ten generic plain-scroll blocks the page had before
+// that rebuild (stats/works/finalcta/why/testimonials/services/ai/process/
+// pricing/contact). Nine of those ten ids no longer exist anywhere in the
+// page's DOM, which broke the rail on /smm in both of its jobs at once: the
+// IntersectionObserver in useActiveRailId found no elements to watch, so no
+// row ever lit up as the active section, and every row's "Обычная страница"
+// action fell through to a `/smm#<dead-id>` anchor that scrolls nowhere —
+// cinematicGoTo returns false for an id the deck doesn't know.
+const SMM_PITCH_BLOCK: PageBlock = {
+  id: "pitch",
+  label: "SMM силами продакшена",
+  description: "Съёмка, монтаж и ведение соцсетей одной командой — открывающий блок.",
+  glyph: (
+    <Glyph>
+      <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+      <path d="M10.5 18.5h3" />
+    </Glyph>
+  ),
+};
+
+const SMM_METHOD_BLOCK: PageBlock = {
+  id: "method",
+  label: "Не подрядчик",
+  description: "Сравнение с фрилансером и агентством — и кому это подходит.",
+  glyph: (
+    <Glyph>
+      <path d="M8.5 8L3.5 12.5 8.5 17M15.5 8l5 4.5-5 4.5" />
+      <path d="M13.2 5.5l-2.4 13" />
+    </Glyph>
+  ),
+};
+
+const SMM_OFFER_BLOCK: PageBlock = {
+  id: "offer",
+  label: "Что делаем",
+  description: "Полный цикл ведения: от съёмки и монтажа до таргета и отчёта.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3l8.5 4.5L12 12 3.5 7.5 12 3z" />
+      <path d="M3.5 12L12 16.5 20.5 12" />
+      <path d="M3.5 16.5L12 21l8.5-4.5" />
+    </Glyph>
+  ),
+};
+
+const SMM_PROCESS_BLOCK: PageBlock = {
+  id: "process",
+  label: "Как проходит работа",
+  description: "Пять шагов от аудита до еженедельного отчёта.",
+  glyph: (
+    <Glyph>
+      <path d="M4 6h11a3.5 3.5 0 0 1 0 7H7" />
+      <path d="M9.5 10 6 13l3.5 3M14 18h6" />
+    </Glyph>
+  ),
+};
+
+const SMM_GUARANTEES_BLOCK: PageBlock = {
+  id: "guarantees",
+  label: "Что входит",
+  description: "Фиксированный пакет, согласование контента и отчёт каждую неделю.",
+  glyph: (
+    <Glyph>
+      <path d="M12 3l7 3v5.5c0 4.3-2.9 8.1-7 9.5-4.1-1.4-7-5.2-7-9.5V6l7-3z" />
+      <path d="M9 12l2.2 2.2L15.5 10" />
+    </Glyph>
+  ),
+};
+
+const SMM_CLOSE_BLOCK: PageBlock = {
+  id: "close",
+  label: "Пакеты ведения",
+  description: "Три месячных пакета и старт работы.",
+  glyph: (
+    <Glyph>
+      <path d="M12 2.5l2.3 6.2 6.2 2.3-6.2 2.3L12 19.5l-2.3-6.2L3.5 11l6.2-2.3L12 2.5z" />
+    </Glyph>
+  ),
+};
+
+// Every one of the four service pages is a CinematicStage deck now, so each
+// list below is exactly that page's own CHAPTERS ids, in order — the rail's
+// scroll-spy and its "Обычная страница" jump both address the deck's runway
+// divs by id, so a list that drifts from the page's chapters silently breaks
+// both (see the note above SMM_PITCH_BLOCK for what that looked like).
 const PAGE_BLOCKS: Record<string, PageBlock[]> = {
   "/content": [OPENING_BLOCK, WORKS_BLOCK, WHY_BLOCK, SERVICES_BLOCK, PROCESS_BLOCK, CONTACT_BLOCK],
   "/ai": [
@@ -465,16 +547,12 @@ const PAGE_BLOCKS: Record<string, PageBlock[]> = {
     SITES_CLOSE_BLOCK,
   ],
   "/smm": [
-    STATS_BLOCK,
-    WORKS_BLOCK,
-    FINALCTA_BLOCK,
-    WHY_BLOCK,
-    TESTIMONIALS_BLOCK,
-    SERVICES_BLOCK,
-    AICONSULT_BLOCK,
-    PROCESS_BLOCK,
-    PRICING_BLOCK,
-    CONTACT_BLOCK,
+    SMM_PITCH_BLOCK,
+    SMM_METHOD_BLOCK,
+    SMM_OFFER_BLOCK,
+    SMM_PROCESS_BLOCK,
+    SMM_GUARANTEES_BLOCK,
+    SMM_CLOSE_BLOCK,
   ],
 };
 
@@ -685,10 +763,12 @@ function RailRow({
   /** Extra classes on the row's button — used to mark the vibe row as the
    *  orb's hover trigger, so the whole row lights it, not just the sphere. */
   className?: string;
-  /** This row's section is the one currently on screen — lights the icon
-   *  up with the rail's own pink→cyan glow and carries a shared layoutId,
-   *  so moving from one active row to the next animates as one glow
-   *  sliding between them rather than one switching off and another on. */
+  /** This row's section is the one currently on screen — its icon scales up
+   *  and lights up white-neon in place. Each row's icon animates on its own
+   *  (a plain CSS transition keyed off this flag), not a glow sliding
+   *  between rows — the previous shared-layoutId version visibly hopped
+   *  from one icon to the next, which read as a stray moving blob rather
+   *  than "this section is now active". */
   active?: boolean;
   onClick: () => void;
 }) {
@@ -704,29 +784,37 @@ function RailRow({
       // right edge no matter how wide the row grows — the label just grows
       // in to its left. Anchoring the icon to the row's *left* instead was
       // what made it visibly drift sideways as the panel widened.
-      className={`group flex w-full flex-row-reverse items-center justify-start gap-2 rounded-xl py-2 pl-2.5 pr-3 text-right transition-colors hover:bg-paper/[0.08] ${
-        active ? "text-white" : "text-paper/70 hover:text-paper"
+      // The rest-state dimming that used to live on the whole rail sits here
+      // now, per row, so the active row can stay at full brightness while
+      // the rail is collapsed and unhovered — see the note on the shell's
+      // own `opacity` for why it could not stay up there.
+      className={`group flex w-full flex-row-reverse items-center justify-start gap-2 rounded-xl py-2 pl-2.5 pr-3 text-right text-white transition-[background-color,opacity] duration-300 hover:bg-paper/[0.08] ${
+        expanded || active ? "opacity-100" : "opacity-40"
       } ${className}`}
     >
-      {/* Stroke thickens on top of the shared glow below when this row's
-          section is the one on screen — the glow alone read as too subtle a
-          difference between the active and idle rows at this icon size. */}
+      {/* Scales up and glows white-neon on its own — no shared element, no
+          sliding — the moment its section becomes the active one. This is
+          the scroll-spy cue: with the rail collapsed and untouched, the icon
+          of the chapter currently on screen is the one thing in the column
+          at full strength. */}
       <span
-        className={`relative flex h-5 w-5 shrink-0 items-center justify-center [&_svg]:h-[18px] [&_svg]:w-[18px] ${
-          active ? "[&_svg]:stroke-[2.35]" : ""
+        className={`flex h-5 w-5 shrink-0 items-center justify-center transition-transform duration-300 ease-out [&_svg]:h-[18px] [&_svg]:w-[18px] [&_svg]:transition-[filter,stroke-width] [&_svg]:duration-300 [&_svg]:ease-out ${
+          active ? "scale-[1.35] [&_svg]:stroke-[2.35]" : ""
         }`}
+        style={
+          active
+            ? {
+                // Three stacked shadows rather than two: a tight white core,
+                // a mid bloom and a wide halo, so the active glyph reads as
+                // genuinely lit rather than merely outlined. It can finally
+                // show at its real strength now that no parent opacity is
+                // scaling it down.
+                filter:
+                  "drop-shadow(0 0 3px rgba(255,255,255,1)) drop-shadow(0 0 9px rgba(255,255,255,0.9)) drop-shadow(0 0 22px rgba(255,255,255,0.6))",
+              }
+            : undefined
+        }
       >
-        {active && (
-          <motion.span
-            layoutId="vibe-rail-active-glow"
-            transition={{ layout: { type: "spring", stiffness: 340, damping: 28 } }}
-            className="vibe-rail-active-glow absolute -inset-[7px] -z-10 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(236,72,153,0.5) 0%, rgba(56,189,248,0.35) 65%, transparent 100%)",
-            }}
-          />
-        )}
         {glyph}
       </span>
       <span
@@ -739,12 +827,53 @@ function RailRow({
         // overflow-hidden already does 100% of the reveal/hide work as it
         // widens, so the label only needs to fade in once there's visibly
         // room for it — never clip itself again.
-        className={`shrink-0 whitespace-nowrap font-mono text-[8px] uppercase leading-none tracking-[0.03em] [text-shadow:0_1px_6px_rgba(0,0,0,0.9)] transition-opacity ${
+        className={`${RAIL_LABEL_CLASS} ${RAIL_LABEL_HOVER} ${
           expanded ? "opacity-100 duration-200 delay-200" : "opacity-0 duration-100"
         }`}
       >
         {label}
       </span>
+    </button>
+  );
+}
+
+/** One row of the mobile sheet. Labels always show there (no hover state to
+ *  reveal them), so it carries the same white/thin treatment plus the active
+ *  glow rather than the desktop row's expand logic. */
+function SheetRow({
+  item,
+  active,
+  onClick,
+}: {
+  item: RailItem;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={active ? "true" : undefined}
+      className={`group flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left transition-opacity ${
+        active ? "opacity-100" : "opacity-70"
+      }`}
+    >
+      <span
+        className={`flex h-6 w-6 shrink-0 items-center justify-center text-white transition-transform duration-300 ${
+          active ? "scale-[1.2] [&_svg]:stroke-[2.35]" : ""
+        }`}
+        style={
+          active
+            ? {
+                filter:
+                  "drop-shadow(0 0 3px rgba(255,255,255,1)) drop-shadow(0 0 9px rgba(255,255,255,0.9)) drop-shadow(0 0 22px rgba(255,255,255,0.6))",
+              }
+            : undefined
+        }
+      >
+        {item.glyph}
+      </span>
+      <span className={`${RAIL_LABEL_CLASS} ${RAIL_LABEL_HOVER} text-[13px]`}>{item.label}</span>
     </button>
   );
 }
@@ -764,7 +893,28 @@ export default function VibeRail() {
 
   useBodyScrollLock(pickerOpen || sheetOpen || !!activeItem);
 
+  // A raw onMouseLeave={() => setExpanded(false)} collapses (and restarts
+  // the 0.32s expand/collapse transition, plus the backdrop's pulse loop)
+  // the instant the pointer so much as twitches across the strip's edge —
+  // natural hand tremor while reading a 9-row panel did this several times
+  // a second, which read as the whole rail "misfiring"/flickering rather
+  // than a steady hover state. Collapsing waits a beat so a hovering pointer
+  // that never actually left the rail's neighbourhood doesn't retrigger it;
+  // entering still expands instantly (no delay there — that's not what was
+  // stuttering, and delaying it too would feel laggy).
+  const collapseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cancelCollapse = () => {
+    if (collapseTimeout.current) clearTimeout(collapseTimeout.current);
+    collapseTimeout.current = null;
+  };
+  const scheduleCollapse = () => {
+    cancelCollapse();
+    collapseTimeout.current = setTimeout(() => setExpanded(false), 180);
+  };
+  useEffect(() => cancelCollapse, []);
+
   const openItem = (item: RailItem) => {
+    cancelCollapse();
     setSheetOpen(false);
     setExpanded(false);
     setActiveItem(item);
@@ -796,23 +946,31 @@ export default function VibeRail() {
           elsewhere in this file, on one shared duration with scale/opacity
           so the whole rail arrives together instead of in stages. */}
       <motion.div
-        onMouseEnter={() => setExpanded(true)}
-        onMouseLeave={() => setExpanded(false)}
-        onFocus={() => setExpanded(true)}
+        onMouseEnter={() => {
+          cancelCollapse();
+          setExpanded(true);
+        }}
+        onMouseLeave={scheduleCollapse}
+        onFocus={() => {
+          cancelCollapse();
+          setExpanded(true);
+        }}
         onBlur={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget as Node)) setExpanded(false);
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) scheduleCollapse();
         }}
         animate={{
           // Steps out of the way (see the headerMenuOpen comment above)
           // rather than trying to out-position the burger dropdown.
-          // Parked quiet and restored on approach: 40% opacity and 70% scale
-          // at rest, both full once the pointer or keyboard focus enters
-          // (`expanded` is already set by this element's own
-          // mouseenter/focus handlers above, so there is no second piece of
-          // state to keep in sync). Both drive the *whole* rail — backdrop
-          // and content alike — since opacity/transform on a parent apply to
-          // its entire rendered subtree, not just itself.
-          opacity: headerMenuOpen ? 0 : expanded ? 1 : 0.4,
+          //
+          // Opacity here is now only ever 0 or 1 — the rest-state dimming it
+          // used to apply (0.4) moved down onto the individual rows and the
+          // backdrop. It had to: opacity on a parent multiplies through its
+          // entire subtree, so while the collapsed rail sat at 0.4 the
+          // active section's icon was capped at 40% brightness no matter how
+          // strong its own glow was — and scroll-spy without hover is
+          // exactly the state Egor wants that icon burning at full. Dimming
+          // per-row lets the active one stay at 1 while its neighbours rest.
+          opacity: headerMenuOpen ? 0 : 1,
           scale: expanded ? 1 : 0.7,
           // The vertical centring has to live here too, not in the className.
           // Motion composes every transform value in this object into one
@@ -865,12 +1023,26 @@ export default function VibeRail() {
         <motion.div
           aria-hidden="true"
           animate={{
+            // The backdrop physically shrinks to the collapsed pill instead
+            // of staying 226px wide and letting the parent's clipPath crop
+            // it. That crop was fine while the glow was a soft cloud, but a
+            // rim has to trace the panel's actual outline — a clipped
+            // element's ring gets sliced off flat down the cut line, so the
+            // collapsed pill showed a rim on three sides and a hard edge on
+            // the fourth. Animating this element's own `left`/`borderRadius`
+            // in step with the parent's clipPath means the two shapes
+            // coincide exactly, so nothing is ever cut. It is a leaf node
+            // with no children, so this costs one element's layout and
+            // reflows no content (the reason the component avoids animating
+            // width on the shell itself — see the note above).
+            left: expanded ? 0 : 226 - VIBE_RAIL_WIDTH,
+            borderRadius: expanded ? 26 : 999,
             // A touch darker once labels appear, but staying translucent —
             // going fully opaque here made the panel read as a flat solid
             // card instead of glass. Legibility over busy backgrounds now
             // comes from the label's own text-shadow instead (see RailRow),
             // the same trick the rest of the site uses over video/photo.
-            background: expanded ? "rgba(9,9,14,0.4)" : "rgba(11,11,16,0.16)",
+            background: expanded ? "rgba(5,5,9,0.86)" : "rgba(7,7,11,0.4)",
             // Same pink→cyan family as the "VIBE САЙТ" pill and the CenterModal
             // window it lights up (see GLASS_BTN.vibe in WelcomeOverlay.tsx),
             // just pushed brighter here — the rail is the thing you're meant
@@ -884,16 +1056,27 @@ export default function VibeRail() {
           }}
           transition={{
             background: { duration: RAIL_DUR, ease: EASE },
+            left: { duration: RAIL_DUR, ease: EASE },
+            borderRadius: { duration: RAIL_DUR, ease: EASE },
           }}
           style={{
-            // Deliberately no border/ring — just a translucent fill over a
-            // strong blur, so the rail reads as glass the page shows through
-            // rather than a bordered panel sitting on top of it.
             backdropFilter: "blur(28px)",
             WebkitBackdropFilter: "blur(28px)",
-            boxShadow: "0 0 16px rgba(236,72,153,0.25), 0 0 24px rgba(56,189,248,0.2)",
+            // The resting rim: a hairline neon ring tracing this element's
+            // own border-radius from the inside, plus its inward bloom. Same
+            // shape and colours the expanded state's pulse animates between
+            // (.vibe-rail-backdrop-glow in globals.css) so the two read as
+            // one light source at two intensities, not two effects. Inset
+            // rather than outer for the clip-path reason spelled out on
+            // those keyframes.
+            boxShadow:
+              "inset 0 0 0 1px rgba(255,138,92,0.42), inset 0 0 14px rgba(255,106,61,0.22), inset 0 0 30px rgba(236,72,153,0.14)",
           }}
-          className={`pointer-events-none absolute inset-0 ${expanded ? "vibe-rail-backdrop-glow" : ""}`}
+          // inset-y-0 right-0 rather than inset-0: `left` is animated above,
+          // and a Tailwind `left: 0` from inset-0 would fight it.
+          className={`pointer-events-none absolute inset-y-0 right-0 ${
+            expanded ? "vibe-rail-backdrop-glow" : ""
+          }`}
         />
         {/* The rail's crown: the vibe orb replaces the old gradient "V" disc.
             Sized to sit inside the pill's rounded cap with a couple of pixels
@@ -908,11 +1091,15 @@ export default function VibeRail() {
           }}
           aria-label="Vibe"
           aria-haspopup="dialog"
-          className="vibe-orb-trigger flex w-full flex-row-reverse items-center justify-start gap-2 pl-2.5 pr-1 text-right"
+          // The orb itself is the rail's mark and stays lit at rest — only
+          // its label follows the same white/thin treatment as the rows.
+          // `relative z-10`: see the note on the nav wrapper below — without
+          // it the decorative backdrop paints over this row's label too.
+          className="vibe-orb-trigger group relative z-10 flex w-full flex-row-reverse items-center justify-start gap-2 pl-2.5 pr-1 text-right"
         >
           <VibeOrb size={40} />
           <span
-            className={`shrink-0 whitespace-nowrap font-mono text-[8px] uppercase leading-none tracking-[0.03em] text-paper/70 [text-shadow:0_1px_6px_rgba(0,0,0,0.9)] transition-opacity ${
+            className={`${RAIL_LABEL_CLASS} ${RAIL_LABEL_HOVER} ${
               expanded ? "opacity-100 duration-200 delay-200" : "opacity-0 duration-100"
             }`}
           >
@@ -920,7 +1107,20 @@ export default function VibeRail() {
           </span>
         </button>
 
-        <div className="overflow-hidden">
+        {/* `relative z-10` is load-bearing, not cosmetic. The backdrop above
+            is `position: absolute` while these rows are ordinary in-flow
+            content, and CSS paints positioned elements (step 8 of the
+            painting order) ON TOP of in-flow inline content (step 6) —
+            regardless of DOM order. So the backdrop was being painted over
+            the labels, and since its background animates from
+            rgba(7,7,11,0.4) to rgba(5,5,9,0.86) as the rail opens, the text
+            was being buried under a veil that darkens from 40% to 86% while
+            you watch: bright for an instant, then almost gone. That is the
+            real reason the labels read as washed-out — the colour, weight
+            and smoothing were only ever making a fully-occluded label
+            slightly more or less visible through the veil. Giving the
+            content its own stacking level puts it back above the glass. */}
+        <div className="relative z-10 overflow-hidden">
           <nav className="flex flex-col gap-0.5">
             <div className="mx-3 my-1.5 h-px bg-paper/10" />
             {/* Distinguishes this rail from Header's ordinary nav — without
@@ -1030,30 +1230,25 @@ export default function VibeRail() {
               <div className="px-2 pb-1 font-mono text-[9px] uppercase tracking-[0.16em] text-paper/35">
                 Vibe-режим
               </div>
+              {/* Same white/thin label treatment as the desktop rail, and
+                  the same active-section cue — the sheet used to render every
+                  row identically, so on a phone there was no way to tell
+                  which section you were actually standing on. */}
               <nav className="flex flex-col gap-0.5">
-                {pageItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => openItem(item)}
-                    className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left text-paper/80"
-                  >
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center">{item.glyph}</span>
-                    <span className="font-sans text-sm">{item.label}</span>
-                  </button>
-                ))}
-                {pageItems.length > 0 && <div className="mx-2 my-1.5 h-px bg-paper/10" />}
-                {crossPageItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => openItem(item)}
-                    className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left text-paper/80"
-                  >
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center">{item.glyph}</span>
-                    <span className="font-sans text-sm">{item.label}</span>
-                  </button>
-                ))}
+                {[...pageItems, null, ...crossPageItems].map((item, i) =>
+                  item === null ? (
+                    pageItems.length > 0 ? (
+                      <div key="sep" className="mx-2 my-1.5 h-px bg-paper/10" />
+                    ) : null
+                  ) : (
+                    <SheetRow
+                      key={`${item.id}-${i}`}
+                      item={item}
+                      active={item.id === activeRailId}
+                      onClick={() => openItem(item)}
+                    />
+                  )
+                )}
               </nav>
             </motion.div>
           </motion.div>

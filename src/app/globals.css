@@ -734,23 +734,34 @@ body {
   }
 }
 
-/* cinematic stage — "листайте дальше" chevron on the deck's first chapter */
-@keyframes cinematic-scroll-hint {
-  0%, 100% {
+/* cinematic stage — the "scroll on" hint at the foot of a chapter.
+   Three chevrons in a row rather than a caption plus one arrow: the words
+   were doing no work the arrows don't already do, and the row reads at a
+   glance in any language.
+   Each chevron runs this same keyframe, offset by a staggered
+   animation-delay at the call site, so the dip travels across the three in
+   turn instead of all three bobbing in unison. The long flat tail
+   (0%..100% holding the rest pose, with the dip at 35%) is what leaves a
+   clear gap between one pass of the wave and the next — without it the
+   three overlap into a continuous shimmer rather than reading as one
+   movement passing along the row. */
+@keyframes scroll-hint-chevron {
+  0%, 70%, 100% {
     transform: translateY(0);
-    opacity: 0.55;
+    opacity: 0.3;
   }
-  50% {
+  35% {
     transform: translateY(5px);
     opacity: 1;
   }
 }
-.cinematic-scroll-hint {
-  animation: cinematic-scroll-hint 1.6s ease-in-out infinite;
+.scroll-hint-chevron {
+  animation: scroll-hint-chevron 1.9s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-scroll-hint {
+  .scroll-hint-chevron {
     animation: none;
+    opacity: 0.6;
   }
 }
 
@@ -830,13 +841,64 @@ body {
   animation: vibe-rail-active-pulse 2s ease-in-out infinite;
 }
 
+/* The rail's neon rim: light running along the edge of the panel, rather
+   than the soft orange cloud floating behind it that the previous two
+   blur-only outer layers gave.
+   Every layer is `inset` on purpose. The rail's shell carries a clip-path
+   (it is what makes hit-testing follow the collapsed pill's shape — see
+   VibeRail.tsx), and a clip-path clips its subtree's box-shadow too, so any
+   OUTER shadow here is sliced off flat at the panel's edge and never reaches
+   the screen. Drawn inward, the hairline ring and its bloom sit inside the
+   border box, so they survive the clip intact and trace the rounded shape
+   exactly at every state. */
 @keyframes vibe-rail-backdrop-pulse {
-  0%, 100% { box-shadow: 0 0 22px rgba(236, 72, 153, 0.35), 0 0 34px rgba(56, 189, 248, 0.3); }
-  50% { box-shadow: 0 0 46px rgba(236, 72, 153, 0.7), 0 0 70px rgba(56, 189, 248, 0.6); }
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 138, 92, 0.5),
+      inset 0 0 16px rgba(255, 106, 61, 0.28),
+      inset 0 0 36px rgba(236, 72, 153, 0.18);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 170, 130, 0.95),
+      inset 0 0 28px rgba(255, 106, 61, 0.55),
+      inset 0 0 58px rgba(236, 72, 153, 0.35);
+  }
 }
 
 .vibe-rail-backdrop-glow {
   animation: vibe-rail-backdrop-pulse 2.2s ease-in-out infinite;
+}
+
+/* The page-step arrows at the screen edges (see PageSideNav). At rest only
+   the chevron shows, and it breathes rather than sitting at a flat 50%
+   opacity the way the old always-on card did — a small mark parked at the
+   very edge of a dark, busy frame is easy to miss entirely, and the pulse is
+   what makes it register in peripheral vision without adding any weight to
+   the page. Slow and sinusoidal (2.6s ease-in-out), never a hard on/off
+   blink: at this size a sharp blink reads as a broken element and would be
+   more distracting than the card Egor asked to get rid of. Hover stops it
+   and pins the glyph at full — once you are looking straight at it, a
+   moving opacity is just noise. */
+@keyframes page-nav-arrow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.page-nav-arrow-pulse {
+  animation: page-nav-arrow-pulse 2.6s ease-in-out infinite;
+}
+
+.group:hover .page-nav-arrow-pulse {
+  animation: none;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-nav-arrow-pulse {
+    animation: none;
+    opacity: 0.75;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
