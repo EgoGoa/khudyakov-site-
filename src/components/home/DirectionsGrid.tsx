@@ -176,7 +176,17 @@ export default function DirectionsGrid() {
   // was mounting all six cards' autoplaying YouTube embeds immediately on
   // page load. useStageStarted() only flips once the deck has actually
   // scrolled into view.
-  const active = useStageActive(0) && useStageStarted();
+  // Both hooks are called unconditionally and combined afterwards. Written as
+  // `useStageActive(0) && useStageStarted()` this broke the Rules of Hooks:
+  // `&&` short-circuits, so on every render where the first returned false the
+  // second was never called at all. React identifies hooks purely by call
+  // order, so a render that calls one hook followed by a render that calls two
+  // makes it hand the second hook's slot to the wrong state — the class of bug
+  // that surfaces later as inexplicable stale values or a crash, not as an
+  // error at the call site.
+  const stageActive = useStageActive(0);
+  const stageStarted = useStageStarted();
+  const active = stageActive && stageStarted;
   const picks = pickWorks(contentDirections);
 
   return (
