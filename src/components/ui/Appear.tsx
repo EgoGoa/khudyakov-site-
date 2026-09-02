@@ -64,7 +64,7 @@ export default function Appear({
   delay = 0,
   duration = DUR.item,
   className = "",
-  blur = false,
+  blur = true,
   blurPx = 14,
   as = "div",
   children,
@@ -76,13 +76,14 @@ export default function Appear({
   className?: string;
   /** Also blurs the element in from `blurPx` and clears it as the element
    *  settles, instead of position/opacity alone — a "coming into focus"
-   *  arrival. Off by default so every existing call site keeps its current
-   *  look; the one page that asked for the richer version (/smm) opts in
-   *  explicitly. Kept element-scoped rather than applied to a whole chapter
-   *  or the video reel — CinematicSection's own header tried a full-screen
-   *  blur once and dropped it, since it forces a repaint of the entire stage
-   *  every frame and visibly stutters. A blur on one heading or one row is a
-   *  small fraction of that area and doesn't carry the same cost. */
+   *  arrival. On by default now: this used to be /smm's own opt-in look, but
+   *  Egor asked for it site-wide, so every page's entrances get it unless a
+   *  call site opts out. Kept element-scoped rather than applied to a whole
+   *  chapter or the video reel — CinematicSection's own header tried a
+   *  full-screen blur once and dropped it, since it forces a repaint of the
+   *  entire stage every frame and visibly stutters. A blur on one heading or
+   *  one row is a small fraction of that area and doesn't carry the same
+   *  cost. */
   blur?: boolean;
   blurPx?: number;
   /** Element tag to render — see MOTION_TAGS above for when to reach for

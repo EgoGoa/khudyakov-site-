@@ -21,12 +21,16 @@
 //      (services, process steps, terms, tier cards) use it to reveal one row
 //      at a time instead of as one block.
 
+// `content` sits 2s after `intro` — the same "hold on the heading" pause
+// lib/motion.ts's shared BEAT now gives /content, /ai and /sites (see that
+// file). /smm keeps its own slower eyebrow→title→intro build-up on top of
+// that shared pause rather than adopting the shared scale outright.
 export const SMM_BEAT = {
   eyebrow: 0.1,
   title: 0.32,
   intro: 0.58,
-  content: 0.95,
-  cta: 1.6,
+  content: 2.58,
+  cta: 3.2,
 } as const;
 
 export const SMM_DUR = {

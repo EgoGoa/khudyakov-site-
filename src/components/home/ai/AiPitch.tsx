@@ -180,9 +180,9 @@ export default function AiPitch() {
         {/* Hidden below lg: the coverflow needs the column beside it to make
             sense, and there is no second column on a phone. Same call as
             SitesDeck — a compact swipeable variant is a later pass. */}
-        <div className="mt-10 hidden lg:mt-0 lg:block lg:flex-1">
+        <Appear from="right" delay={BEAT.content} className="mt-10 hidden lg:mt-0 lg:block lg:flex-1">
           <AiDeck />
-        </div>
+        </Appear>
       </div>
     </CinematicSection>
   );

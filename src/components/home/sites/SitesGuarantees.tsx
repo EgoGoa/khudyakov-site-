@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 
@@ -147,7 +147,13 @@ export default function SitesGuarantees() {
       <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8">
         <ul className="lg:max-w-md lg:flex-1">
           {REASONS.map((reason, i) => (
-            <li key={reason.title} className="border-t border-paper/20 py-3">
+            <Appear
+              key={reason.title}
+              as="li"
+              from="up"
+              delay={BEAT.content + i * STAGGER.tight}
+              className="border-t border-paper/20 py-3"
+            >
               <div className="flex items-baseline gap-3">
                 <span className="font-mono text-[10px] text-paper/40">{String(i + 1).padStart(2, "0")}</span>
                 <div>
@@ -157,13 +163,15 @@ export default function SitesGuarantees() {
                   <p className="mt-1 text-xs leading-relaxed text-paper/60">{reason.description}</p>
                 </div>
               </div>
-            </li>
+            </Appear>
           ))}
         </ul>
 
         <div className="mt-8 lg:mt-0 lg:w-[320px] lg:shrink-0 xl:w-[360px]">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">FAQ</span>
-          <div className="mt-3 border-t border-paper/10">
+          <Appear from="up" delay={BEAT.cta} className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">
+            FAQ
+          </Appear>
+          <Appear from="up" delay={BEAT.cta} className="mt-3 border-t border-paper/10">
             {FAQ.map((item, i) => {
               const isOpen = open === i;
               return (
@@ -190,7 +198,7 @@ export default function SitesGuarantees() {
                 </div>
               );
             })}
-          </div>
+          </Appear>
         </div>
       </div>
       </div>

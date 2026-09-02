@@ -3,6 +3,8 @@
 import { useState } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
 import AiDecoIcon from "@/components/home/ai/AiDecoIcon";
+import Appear from "@/components/ui/Appear";
+import { BEAT, STAGGER } from "@/lib/motion";
 
 // Chapter 06 — "you're buying a system, not a post" thesis, terms (rights/
 // SLA/timelines), contractual guarantees, and a compact FAQ, all folded into
@@ -94,7 +96,13 @@ export default function AiGuarantees() {
       <div className="lg:flex lg:items-start lg:gap-12">
         <ul className="lg:max-w-md lg:flex-1">
           {TERMS.map((term, i) => (
-            <li key={term.title} className="border-t border-paper/20 py-3">
+            <Appear
+              key={term.title}
+              as="li"
+              from="up"
+              delay={BEAT.content + i * STAGGER.tight}
+              className="border-t border-paper/20 py-3"
+            >
               <div className="flex items-baseline gap-3">
                 <span className="font-mono text-[10px] text-paper/40">{String(i + 1).padStart(2, "0")}</span>
                 <div>
@@ -104,21 +112,23 @@ export default function AiGuarantees() {
                   <p className="mt-1 text-xs leading-relaxed text-paper/60">{term.description}</p>
                 </div>
               </div>
-            </li>
+            </Appear>
           ))}
         </ul>
 
         <div className="mt-8 lg:mt-0 lg:w-[360px] lg:shrink-0 xl:w-[400px]">
-          <div className="rounded-xl bg-ink/40 p-3.5">
+          <Appear from="right" delay={BEAT.content + TERMS.length * STAGGER.tight} className="rounded-xl bg-ink/40 p-3.5">
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-300">Команда</span>
             <p className="mt-1.5 text-xs leading-relaxed text-paper/65">
               AI-инструменты внедряем с 2024 года в составе продюсерского центра HDKV.AGENCY — не
               коробочный сервис, а конкретные люди на пилоте и на сопровождении.
             </p>
-          </div>
+          </Appear>
 
-          <span className="mt-5 block font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">FAQ</span>
-          <div className="mt-3 border-t border-paper/10">
+          <Appear from="up" delay={BEAT.cta} className="mt-5 block font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">
+            FAQ
+          </Appear>
+          <Appear from="up" delay={BEAT.cta} className="mt-3 border-t border-paper/10">
             {FAQ.map((item, i) => {
               const isOpen = open === i;
               return (
@@ -145,7 +155,7 @@ export default function AiGuarantees() {
                 </div>
               );
             })}
-          </div>
+          </Appear>
         </div>
       </div>
     </CinematicSection>

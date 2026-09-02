@@ -77,6 +77,9 @@ export default function SmmProcess() {
         primary={{ href: "/brief", label: "Заполнить бриф" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
       >
+        {/* Same fix as SmmOffer's list: the panel now arrives on the same
+            beat as the first row instead of popping in early and empty. */}
+        <Appear from="right" delay={SMM_BEAT.content} duration={SMM_DUR.item} blur blurPx={12} as="div">
         <ol className={`${SMM_PANEL} divide-y divide-paper/10 px-5 py-1`}>
           {SMM_PROCESS_STEPS.map((step, i) => (
             <Appear
@@ -108,6 +111,7 @@ export default function SmmProcess() {
             </Appear>
           ))}
         </ol>
+        </Appear>
 
         {/* The two link-outs to /smm/cases and /smm/pricing, as one quiet row
             under the steps. They were two full-width cards below the deck, on

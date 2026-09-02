@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
 import FunnelCta from "@/components/ui/FunnelCta";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
+import Appear from "@/components/ui/Appear";
+import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
 
 // Chapter 05 on /content (the deck position `index`/`chapter` default to).
@@ -144,7 +146,10 @@ export default function Process({
         active === "content" ? (
           <ContentDecoIcon
             src="/images/icons/content/workflow.png"
-            size={240}
+            // Halved from 240 at Egor's request — at full size the circular
+            // arrows crowded the "PRO ХРОНОЛОГИЯ" heading beside them rather
+            // than sitting as a decoration next to it.
+            size={120}
             rotate={10}
             variant={3}
             className="left-[7%] top-0"
@@ -154,8 +159,10 @@ export default function Process({
     >
       <div className="grid gap-5 sm:grid-cols-3">
         {steps.map((step, i) => (
-          <div
+          <Appear
             key={`${index}-${i}`}
+            from="up"
+            delay={BEAT.content + i * STAGGER.tight}
             className="rounded-2xl bg-ink/45 p-5 backdrop-blur-md"
           >
             {step.icon}
@@ -164,20 +171,22 @@ export default function Process({
               {step.title}
             </h3>
             <p className="mt-1.5 text-xs leading-snug text-paper/65">{step.description}</p>
-          </div>
+          </Appear>
         ))}
       </div>
 
-      <FunnelCta
-        item="brief"
-        align="right"
-        size="sm"
-        eyebrow="Готовы начать?"
-        headline="Первый шаг"
-        accent="5 минут"
-        pitch="Дальше — 2–3 концепции и смета за 3–5 дней, бесплатно."
-        className="mt-5"
-      />
+      <Appear from="up" delay={BEAT.cta}>
+        <FunnelCta
+          item="brief"
+          align="right"
+          size="sm"
+          eyebrow="Готовы начать?"
+          headline="Первый шаг"
+          accent="5 минут"
+          pitch="Дальше — 2–3 концепции и смета за 3–5 дней, бесплатно."
+          className="mt-5"
+        />
+      </Appear>
     </CinematicSection>
   );
 }

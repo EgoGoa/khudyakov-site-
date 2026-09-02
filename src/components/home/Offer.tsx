@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
+import Appear from "@/components/ui/Appear";
+import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
 import { servicesByCategory } from "@/lib/service-content";
 
@@ -86,8 +88,11 @@ export default function Offer({
         ) : (
           <ul className="lg:flex-1">
             {services.map((service, i) => (
-              <li
+              <Appear
                 key={service.title}
+                as="li"
+                from="up"
+                delay={BEAT.content + i * STAGGER.tight}
                 className="group flex items-baseline gap-3 border-t border-paper/20 py-4"
               >
                 <span className="font-mono text-[10px] text-paper/40">
@@ -96,14 +101,18 @@ export default function Offer({
                 <span className="font-display text-base uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-glow sm:text-lg [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
                   {service.title}
                 </span>
-              </li>
+              </Appear>
             ))}
           </ul>
         )}
 
         {/* Vertical card, not another row: the teaser and the calculator
             pitch stacked, sitting beside the list rather than under it. */}
-        <div className="mt-10 rounded-2xl bg-ink/45 p-6 backdrop-blur-md lg:mt-0 lg:w-[300px] lg:shrink-0 xl:w-[320px]">
+        <Appear
+          from="right"
+          delay={BEAT.content + STAGGER.normal}
+          className="mt-10 rounded-2xl bg-ink/45 p-6 backdrop-blur-md lg:mt-0 lg:w-[300px] lg:shrink-0 xl:w-[320px]"
+        >
           <div id="ai" className="flex items-start gap-3 border-l-2 border-glow/60 pl-4">
             <div>
               {active === "ai" ? (
@@ -146,7 +155,7 @@ export default function Offer({
               </Link>
             </div>
           )}
-        </div>
+        </Appear>
       </div>
     </CinematicSection>
   );

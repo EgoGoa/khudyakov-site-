@@ -72,17 +72,61 @@ function entranceFor(kind: EntranceKind, active: boolean) {
 // The header's three parts arrive in reading order on the shared beat scale
 // (see lib/motion.ts) rather than on a uniform stagger: the chapter number
 // first to place you, then the title, then the sentence that explains it.
+//
+// Each also blurs in from out-of-focus rather than just sliding/fading — the
+// same "coming into focus" arrival /smm's chapters used via <Appear blur>,
+// now the header's own default everywhere so every page's heading gets it,
+// not only /smm's. Only opacity/transform/filter animate, matching Appear's
+// own rule: a full-screen blur was tried once on this stage and dropped for
+// stuttering, but a blur scoped to three short header lines is cheap.
 const HEADER_EYEBROW: Variants = {
-  off: { opacity: 0, y: 10 },
-  on: { opacity: 1, y: 0, transition: { duration: DUR.text, delay: BEAT.eyebrow, ease: MOTION_EASE } },
+  off: { opacity: 0, y: 10, filter: "blur(8px)" },
+  on: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: DUR.text, delay: BEAT.eyebrow, ease: MOTION_EASE },
+  },
 };
 const HEADER_TITLE: Variants = {
-  off: { opacity: 0, y: 22 },
-  on: { opacity: 1, y: 0, transition: { duration: DUR.title, delay: BEAT.title, ease: MOTION_EASE } },
+  off: { opacity: 0, y: 22, filter: "blur(18px)" },
+  on: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: DUR.title, delay: BEAT.title, ease: MOTION_EASE },
+  },
 };
 const HEADER_INTRO: Variants = {
-  off: { opacity: 0, y: 16 },
-  on: { opacity: 1, y: 0, transition: { duration: DUR.text, delay: BEAT.intro, ease: MOTION_EASE } },
+  off: { opacity: 0, y: 16, filter: "blur(14px)" },
+  on: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: DUR.text, delay: BEAT.intro, ease: MOTION_EASE },
+  },
+};
+
+// `decor`/`bodyDecor` (the illustrated icon graphics — camera, shield, etc.)
+// used to render as plain children with no animation of their own, so they
+// only inherited the chapter's own quick 0.85s wipe (see the outer
+// motion.div's `entranceFor`) and popped in together with the chapter number
+// — well before the 2s heading-alone pause finished. Egor asked for these to
+// hold back with everything else, not just the text: they now sit on
+// BEAT.content, the same beat every cascading list row uses. No `scale` here
+// — unlike HEADER_TITLE this only animates opacity/filter, because these
+// icons are almost always absolutely positioned by their own className
+// against `header`'s `relative`, and a framer-motion `transform` (which a
+// `scale` value would add) makes this wrapper a new containing block, which
+// would silently move the icon's absolute offset to be relative to this div
+// instead of the header.
+const DECOR: Variants = {
+  off: { opacity: 0, filter: "blur(16px)" },
+  on: {
+    opacity: 1,
+    filter: "blur(0px)",
+    transition: { duration: DUR.item, delay: BEAT.content, ease: MOTION_EASE },
+  },
 };
 
 export default function CinematicSection({
@@ -266,7 +310,11 @@ export default function CinematicSection({
           roomy ? "flex flex-col justify-center min-h-[20svh]" : ""
         }`}
       >
-        {decor}
+        {decor && (
+          <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR}>
+            {decor}
+          </motion.div>
+        )}
 
         {/* The chapter number sits in its own corner regardless of how the
             title is aligned — it used to travel with the title as one block,
@@ -338,7 +386,11 @@ export default function CinematicSection({
           // parked at the top.
           className={`relative mx-auto w-full max-w-7xl py-2 ${roomy && !headless ? "" : "my-auto"}`}
         >
-          {bodyDecor}
+          {bodyDecor && (
+            <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR}>
+              {bodyDecor}
+            </motion.div>
+          )}
           {/* Children use <Appear> to arrive on their own beat and from their
               own direction; this is what tells them the chapter is on stage. */}
           <ChapterActiveProvider active={active}>{children}</ChapterActiveProvider>

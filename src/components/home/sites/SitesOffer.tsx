@@ -2,7 +2,7 @@
 
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { BEAT, STAGGER } from "@/lib/motion";
 import SitesChapterLayout, { SITES_PANEL } from "@/components/home/sites/SitesChapterLayout";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
@@ -51,24 +51,34 @@ export default function SitesOffer() {
         primary={{ href: "/brief", label: "Обсудить проект" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
       >
-        <Appear from="right" delay={BEAT.content}>
-          <ul className={`${SITES_PANEL} divide-y divide-paper/10 px-5 py-1`}>
-            {SERVICES.map((service, i) => (
-              <li key={service.title} className="group flex items-baseline gap-3 py-3">
-                <span className="font-mono text-[10px] text-paper/40">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="min-w-0">
-                  <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-glow">
-                    {service.title}
-                  </h3>
-                  <p className="mt-1 text-xs leading-relaxed text-paper/55">
-                    {service.description}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+        {/* The glass panel (SITES_PANEL) used to render statically and pop in
+            with the chapter's own quick wipe, empty, well before the rows
+            cascading inside it — now it arrives on the same beat as the
+            first row instead of sitting there alone through the pause. */}
+        <Appear from="right" delay={BEAT.content} as="div">
+        <ul className={`${SITES_PANEL} divide-y divide-paper/10 px-5 py-1`}>
+          {SERVICES.map((service, i) => (
+            <Appear
+              key={service.title}
+              as="li"
+              from="right"
+              delay={BEAT.content + i * STAGGER.tight}
+              className="group flex items-baseline gap-3 py-3"
+            >
+              <span className="font-mono text-[10px] text-paper/40">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div className="min-w-0">
+                <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-glow">
+                  {service.title}
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-paper/55">
+                  {service.description}
+                </p>
+              </div>
+            </Appear>
+          ))}
+        </ul>
         </Appear>
       </SitesChapterLayout>
     </CinematicSection>

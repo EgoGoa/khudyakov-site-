@@ -3,7 +3,7 @@
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 
@@ -183,24 +183,24 @@ export default function SitesMethodAudience() {
             </div>
           </Appear>
 
-          <Appear from="up" delay={BEAT.cta}>
-            <div className="mt-4 flex flex-wrap gap-2.5">
-              {SEGMENTS.map((s) => (
-                <span
-                  key={s.tag}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-3.5 py-2 backdrop-blur-md"
-                >
-                  <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-glow">
-                    {s.tag}
-                  </span>
-                  <span className="h-1 w-1 shrink-0 rounded-full bg-paper/30" />
-                  <span className="font-display text-[11px] uppercase leading-tight tracking-tight text-white">
-                    {s.title}
-                  </span>
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            {SEGMENTS.map((s, i) => (
+              <Appear
+                key={s.tag}
+                from="up"
+                delay={BEAT.cta + i * STAGGER.tight}
+                className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-3.5 py-2 backdrop-blur-md"
+              >
+                <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-glow">
+                  {s.tag}
                 </span>
-              ))}
-            </div>
-          </Appear>
+                <span className="h-1 w-1 shrink-0 rounded-full bg-paper/30" />
+                <span className="font-display text-[11px] uppercase leading-tight tracking-tight text-white">
+                  {s.title}
+                </span>
+              </Appear>
+            ))}
+          </div>
         </div>
       </div>
     </CinematicSection>

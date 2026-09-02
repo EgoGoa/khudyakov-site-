@@ -133,9 +133,9 @@ export default function SitesPitch() {
             make sense, and there isn't a second column on a phone. A future
             pass can give it a compact swipeable variant there — for now the
             chapter still reads as heading + copy + CTA alone. */}
-        <div className="mt-10 hidden lg:mt-0 lg:block lg:flex-1">
+        <Appear from="right" delay={BEAT.content} className="mt-10 hidden lg:mt-0 lg:block lg:flex-1">
           <SitesDeck />
-        </div>
+        </Appear>
       </div>
     </CinematicSection>
   );

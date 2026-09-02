@@ -5,6 +5,8 @@ import CinematicSection from "@/components/ui/CinematicSection";
 import FunnelCta from "@/components/ui/FunnelCta";
 import FaqAside from "@/components/home/FaqAside";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
+import Appear from "@/components/ui/Appear";
+import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
 import { whyByCategory } from "@/lib/service-content";
 
@@ -63,14 +65,29 @@ export default function Trust({
             here rather than nowhere, since it answers exactly the practical
             questions those reasons raise. Held back below lg: the chapter
             has no vertical room to spare once it's stacking. */}
-        <div className="hidden shrink-0 lg:block lg:w-[300px] xl:w-[340px]">
+        <Appear from="left" delay={BEAT.content} className="hidden shrink-0 lg:block lg:w-[300px] xl:w-[340px]">
           <FaqAside />
-        </div>
+        </Appear>
 
         <div className="mt-10 lg:mt-0 lg:max-w-2xl">
-          <div className="grid gap-x-8 gap-y-6 rounded-2xl bg-ink/45 p-6 backdrop-blur-md sm:grid-cols-3">
+          {/* The glass frame itself (rounded-2xl bg-ink/45) used to render
+              statically — it popped in with the chapter's own quick wipe,
+              well before BEAT.content, and sat empty through the whole
+              heading pause while the rows inside it cascaded in late. Now it
+              arrives on the same beat as the first row, so frame and text
+              read as one arrival rather than an empty box appearing first. */}
+          <Appear
+            from="up"
+            delay={BEAT.content}
+            className="grid gap-x-8 gap-y-6 rounded-2xl bg-ink/45 p-6 backdrop-blur-md sm:grid-cols-3"
+          >
             {why.reasons.map((reason, i) => (
-              <div key={reason.title} className="border-t border-paper/25 pt-4">
+              <Appear
+                key={reason.title}
+                from="up"
+                delay={BEAT.content + i * STAGGER.normal}
+                className="border-t border-paper/25 pt-4"
+              >
                 <span className="font-mono text-[10px] tracking-[0.2em] text-glow">
                   {String(i + 1).padStart(2, "0")}
                 </span>
@@ -80,22 +97,26 @@ export default function Trust({
                 <p className="mt-1.5 text-xs leading-relaxed text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
                   {reason.description}
                 </p>
-              </div>
+              </Appear>
             ))}
-          </div>
+          </Appear>
 
           {clients.length > 0 && (
-            <div className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-2 border-t border-paper/15 pt-5">
+            <Appear
+              from="up"
+              delay={BEAT.content + why.reasons.length * STAGGER.normal}
+              className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-2 border-t border-paper/15 pt-5"
+            >
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-paper/45">
                 Нам доверяют
               </span>
               <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
                 {clients.join(" / ")}
               </span>
-            </div>
+            </Appear>
           )}
 
-          <div className="relative mt-7">
+          <Appear from="up" delay={BEAT.cta} className="relative mt-7">
             <FunnelCta
               item="consult"
               align="right"
@@ -123,7 +144,7 @@ export default function Trust({
                 className="-left-6 top-1/2 -translate-y-1/2"
               />
             )}
-          </div>
+          </Appear>
         </div>
       </div>
     </CinematicSection>

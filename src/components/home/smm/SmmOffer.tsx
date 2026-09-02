@@ -62,6 +62,11 @@ export default function SmmOffer() {
         primary={{ href: "/brief", label: "Обсудить формат" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
       >
+        {/* The glass panel (SMM_PANEL) used to render statically, popping in
+            with the chapter's own quick wipe well before the rows cascading
+            inside it — empty through the whole heading pause. It now arrives
+            on the same beat as the first row instead. */}
+        <Appear from="right" delay={SMM_BEAT.content} duration={SMM_DUR.item} blur blurPx={12} as="div">
         <ul className={`${SMM_PANEL} divide-y divide-paper/10 px-5 py-1`}>
           {SERVICES.map((service, i) => (
             <Appear
@@ -88,6 +93,7 @@ export default function SmmOffer() {
             </Appear>
           ))}
         </ul>
+        </Appear>
       </SmmChapterLayout>
     </CinematicSection>
   );

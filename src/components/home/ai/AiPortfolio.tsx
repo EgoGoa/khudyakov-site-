@@ -1,6 +1,8 @@
 "use client";
 
 import CinematicSection from "@/components/ui/CinematicSection";
+import Appear from "@/components/ui/Appear";
+import { BEAT, STAGGER } from "@/lib/motion";
 
 // Chapter 02 — same logic and layout as /content's own chapter 02 (see that
 // page: <Works bare limit={4} filtersAside=.../>): a 2×2 grid of portfolio
@@ -32,9 +34,11 @@ export default function AiPortfolio() {
       intro={<>Первые кейсы — в работе. [TODO] — сюда встанут <span className="kw">реальные AI-проекты</span> по мере запуска.</>}
     >
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
-        {TILES.map((i) => (
-          <div
+        {TILES.map((i, idx) => (
+          <Appear
             key={i}
+            from="up"
+            delay={BEAT.content + idx * STAGGER.normal}
             className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-dashed border-paper/20 bg-ink-soft/60 sm:aspect-video lg:aspect-[16/7]"
           >
             <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-ink/60 to-transparent" />
@@ -62,16 +66,16 @@ export default function AiPortfolio() {
                 </span>
               </div>
             </div>
-          </div>
+          </Appear>
         ))}
       </div>
 
-      <div className="mt-5 flex justify-end">
+      <Appear from="up" delay={BEAT.cta} className="mt-5 flex justify-end">
         <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-paper/40">
           Весь каталог AI-работ — [TODO]
           <span aria-hidden="true">→</span>
         </span>
-      </div>
+      </Appear>
     </CinematicSection>
   );
 }

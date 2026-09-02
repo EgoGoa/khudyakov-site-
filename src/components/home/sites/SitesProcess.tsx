@@ -2,7 +2,7 @@
 
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { BEAT, STAGGER } from "@/lib/motion";
 import SitesChapterLayout, { SITES_PANEL } from "@/components/home/sites/SitesChapterLayout";
 import { SITES_PROCESS_STEPS } from "@/components/home/sites/sitesProcessSteps";
 
@@ -45,29 +45,37 @@ export default function SitesProcess() {
         primary={{ href: "/brief", label: "Заполнить бриф" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
       >
-        <Appear from="right" delay={BEAT.content}>
-          <ol className={`${SITES_PANEL} divide-y divide-paper/10 px-5 py-1`}>
-            {SITES_PROCESS_STEPS.map((step, i) => (
-              <li key={step.title} className="flex items-start gap-4 py-3.5">
-                <span
-                  className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-mono text-[10px]"
-                  style={{
-                    borderColor: "rgba(255,106,61,0.35)",
-                    color: "#ffd0bd",
-                    boxShadow: "inset 0 0 10px rgba(255,106,61,0.18)",
-                  }}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="min-w-0">
-                  <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
-                    {step.title}
-                  </h3>
-                  <p className="mt-1 text-xs leading-relaxed text-paper/55">{step.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+        {/* Same fix as SitesOffer's list: the glass panel itself now arrives
+            on the same beat as the first row instead of popping in early. */}
+        <Appear from="right" delay={BEAT.content} as="div">
+        <ol className={`${SITES_PANEL} divide-y divide-paper/10 px-5 py-1`}>
+          {SITES_PROCESS_STEPS.map((step, i) => (
+            <Appear
+              key={step.title}
+              as="li"
+              from="right"
+              delay={BEAT.content + i * STAGGER.tight}
+              className="flex items-start gap-4 py-3.5"
+            >
+              <span
+                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-mono text-[10px]"
+                style={{
+                  borderColor: "rgba(255,106,61,0.35)",
+                  color: "#ffd0bd",
+                  boxShadow: "inset 0 0 10px rgba(255,106,61,0.18)",
+                }}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div className="min-w-0">
+                <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
+                  {step.title}
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-paper/55">{step.description}</p>
+              </div>
+            </Appear>
+          ))}
+        </ol>
         </Appear>
       </SitesChapterLayout>
     </CinematicSection>
