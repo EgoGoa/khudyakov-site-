@@ -229,11 +229,12 @@ export default function ServicePicker() {
   return (
     <section
       id="service-picker"
-      // Full viewport height, not 70% — Egor asked for this block (photo/
-      // video background, heading, arrows) to fill the whole screen rather
-      // than sitting as a shorter band with page background visible above
-      // and below it.
-      className="relative flex min-h-[100svh] items-center overflow-hidden"
+      // 60svh — cut back by 40% from the full-screen version. Filling the
+      // whole viewport made the block read as stretched: the copy and the
+      // controls sit in a compact stack in the middle, so the extra height
+      // went entirely into empty footage above and below them rather than
+      // into anything to look at.
+      className="relative flex min-h-[60svh] items-center overflow-hidden"
     >
       <div className="absolute inset-0 -z-10">
         {serviceOrder.map((key) =>
