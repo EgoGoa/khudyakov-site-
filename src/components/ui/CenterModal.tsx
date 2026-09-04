@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { CloseIcon } from "@/components/ui/Icons";
+
+// Everything inside the card that a Tab can land on, in document order.
+// Queried per keypress rather than cached: these dialogs grow their own
+// controls as they go (the welcome widget's service list appears only once
+// its greeting has finished typing, the Vibe window reveals a note per mode),
+// so a list captured on open would be stale by the time it is needed.
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -27,14 +35,65 @@ export default function CenterModal({
   ariaLabel: string;
   children: ReactNode;
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      // Keep Tab inside the card. `aria-modal` tells a screen reader the rest
+      // of the page is inert, but it does not make it so: without this, Tab
+      // walked straight out of an open dialog into the header, the rail and
+      // the whole page behind it — all of it still focusable, none of it
+      // visible under the backdrop — and a keyboard visitor had no way of
+      // telling where the focus had gone.
+      if (e.key !== "Tab") return;
+      const card = cardRef.current;
+      if (!card) return;
+      const items = Array.from(card.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el.offsetParent !== null || el === document.activeElement
+      );
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const activeInside = card.contains(document.activeElement);
+      if (!activeInside) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+        return;
+      }
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, onClose]);
+
+  // Focus moves into the dialog on open and back to whatever opened it on
+  // close, so a keyboard visitor is never left with focus parked on an
+  // element that is now behind a backdrop.
+  useEffect(() => {
+    if (!open) return;
+    const opener = document.activeElement as HTMLElement | null;
+    const card = cardRef.current;
+    const target =
+      card?.querySelector<HTMLElement>(FOCUSABLE) ?? card ?? null;
+    // After the entrance transition has actually put the card on screen —
+    // focusing an element mid-animation makes some browsers scroll to it.
+    const timer = window.setTimeout(() => target?.focus(), 60);
+    return () => {
+      window.clearTimeout(timer);
+      if (opener && document.body.contains(opener)) opener.focus();
+    };
+  }, [open]);
 
   return (
     <AnimatePresence>
@@ -51,6 +110,7 @@ export default function CenterModal({
           onClick={onClose}
         >
           <motion.div
+            ref={cardRef}
             initial={{ opacity: 0, y: 22, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 14, scale: 0.97 }}
