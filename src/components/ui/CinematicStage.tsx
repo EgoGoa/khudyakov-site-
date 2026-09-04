@@ -623,8 +623,18 @@ export default function CinematicStage({
         wasEngaged = false;
         return;
       }
-      const tag = (e.target as HTMLElement | null)?.tagName;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      // Space is also how a focused button activates itself natively, and this
+      // listener runs first: tabbing to a chapter's own button (the Works
+      // chapter's "Смотреть", a filter pill) and pressing Space stepped the
+      // deck to the next chapter instead of pressing the button, because
+      // preventDefault() below landed before the browser's click-on-Space
+      // ever fired. Links are included for the same reason even though they
+      // activate on Enter — a focused <a> swallowing the page's scroll key
+      // would be just as surprising.
+      if (e.key === " " && (tag === "BUTTON" || tag === "A" || target?.isContentEditable)) return;
       const down = e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ";
       const up = e.key === "ArrowUp" || e.key === "PageUp";
       if (!down && !up) return;
