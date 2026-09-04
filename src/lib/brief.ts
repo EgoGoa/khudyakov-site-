@@ -32,6 +32,93 @@ export const SCENE_NAMES: Record<number, string> = {
 
 export const BRIEF_EMAIL = "khudyakov.yegor@gmail.com";
 
+export type ContactValue = { email: string; phone: string };
+export type AnswerValue = string | string[] | ContactValue | undefined;
+export type Answers = Record<string, AnswerValue>;
+
+// How much of a single answer is kept. Generous next to any real answer —
+// the longest sensible reply here is a few sentences — but it bounds what the
+// public /api/brief endpoint can be made to emit, since the same builder runs
+// on the server against whatever a caller posts.
+const MAX_ANSWER_LENGTH = 2000;
+
+function clamp(value: string) {
+  return value.length > MAX_ANSWER_LENGTH
+    ? `${value.slice(0, MAX_ANSWER_LENGTH)}… (обрезано)`
+    : value;
+}
+
+export function isAnswered(step: BriefStep, answers: Answers) {
+  const v = answers[step.id];
+  if (step.type === "chips") return Array.isArray(v) && v.length > 0;
+  if (step.type === "contact") {
+    const c = v as ContactValue | undefined;
+    return Boolean(c?.email && c.email.trim());
+  }
+  return Boolean(v && String(v).trim());
+}
+
+export function formatAnswer(step: BriefStep, answers: Answers): string | null {
+  const v = answers[step.id];
+
+  if (step.type === "chips") {
+    // Only options the step actually offers. On the server this list is what
+    // stops a caller from posting arbitrary strings as "answers" to a
+    // multiple-choice question.
+    if (!Array.isArray(v) || v.length === 0) return null;
+    const allowed = v.filter((opt) => typeof opt === "string" && step.options?.includes(opt));
+    return allowed.length ? allowed.join(", ") : null;
+  }
+  if (step.type === "choice") {
+    return typeof v === "string" && step.options?.includes(v) ? v : null;
+  }
+  if (step.type === "contact") {
+    const c = v as ContactValue | undefined;
+    if (!c?.email) return null;
+    const parts: string[] = [];
+    const name = answers.name;
+    if (typeof name === "string" && name.trim()) parts.push(clamp(name.trim()));
+    parts.push(clamp(c.email.trim()));
+    if (typeof c.phone === "string" && c.phone.trim()) parts.push(clamp(c.phone.trim()));
+    return parts.join(" · ");
+  }
+  if (step.type === "date") {
+    if (typeof v !== "string" || !v) return null;
+    const d = new Date(`${v}T00:00:00`);
+    const out = Number.isNaN(d.getTime())
+      ? clamp(v)
+      : d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+    const note = answers[`${step.id}Note`];
+    return typeof note === "string" && note.trim() ? `${out} — ${clamp(note.trim())}` : out;
+  }
+  return typeof v === "string" && v.trim() ? clamp(v.trim()) : null;
+}
+
+// The brief as plain text. Shared deliberately: the clipboard copy, the
+// selectable fallback textarea and the Telegram message the server sends are
+// all this one function, so what the visitor is shown they copied is exactly
+// what we receive. Driven by STEPS rather than by the posted object's own
+// keys, so only the twenty known questions can ever appear in the output.
+export function buildBriefText(answers: Answers) {
+  const lines: string[] = ["БРИФ НА ВИДЕОПРОДАКШН — HDKV.AGENCY", ""];
+  const seen: number[] = [];
+  STEPS.forEach((step) => {
+    if (!seen.includes(step.scene)) {
+      seen.push(step.scene);
+      lines.push(`— ${SCENE_NAMES[step.scene].toUpperCase()} —`);
+    }
+    lines.push(step.title);
+    lines.push(formatAnswer(step, answers) || "—");
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+
+export function briefSubject(answers: Answers) {
+  const company = typeof answers.company === "string" ? answers.company.trim() : "";
+  return `Бриф на видео — ${company ? clamp(company) : "новый проект"}`;
+}
+
 export const STEPS: BriefStep[] = [
   {
     id: "company",
