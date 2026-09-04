@@ -2,9 +2,8 @@
 
 import { createContext, useCallback, useContext, useRef, type ReactNode } from "react";
 
-// Header lives outside CinematicStage's own tree (siblings under RootLayout,
-// the same relationship FullpageProvider already bridges for the homepage's
-// fullpage deck) — this is the same bridge for the cinematic deck on
+// Header lives outside CinematicStage's own tree — they are siblings under
+// RootLayout — so this is the bridge between them, for the cinematic deck on
 // /content, /ai, /sites, /smm.
 //
 // Without it, a menu link to a chapter far from the current one was just a
@@ -15,8 +14,7 @@ import { createContext, useCallback, useContext, useRef, type ReactNode } from "
 // comment) — clamps to only one chapter away from wherever the visitor was,
 // landing on the wrong chapter instead of the one actually clicked.
 // Registering a direct `goTo(id)` here lets a menu click step there in one
-// deliberate move instead, the same way fullpage.tsx's goTo already does for
-// the homepage.
+// deliberate move instead.
 type GoToFn = (id: string) => boolean;
 
 const CinematicNavContext = createContext<{

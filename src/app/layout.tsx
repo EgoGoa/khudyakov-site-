@@ -5,7 +5,6 @@ import Header from "@/components/layout/Header";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
-import { FullpageProvider } from "@/lib/fullpage";
 import { HeaderMenuProvider } from "@/lib/header-menu";
 import { CinematicNavProvider } from "@/lib/cinematic-nav";
 import "./globals.css";
@@ -53,21 +52,19 @@ export default function RootLayout({
     >
       <body className="relative bg-ink font-sans text-paper antialiased">
         <BackgroundFX />
-        <FullpageProvider>
-          <CinematicNavProvider>
-            <HeaderMenuProvider>
-              {/* VibeRail floats on top of the page by design — it does not
-                  reserve any layout space, the same way the old FloatingCta
-                  button never did either. */}
-              <div className="relative z-10">
-                <Header />
-                <main>{children}</main>
-                <ConditionalFooter />
-              </div>
-              <VibeRail />
-            </HeaderMenuProvider>
-          </CinematicNavProvider>
-        </FullpageProvider>
+        <CinematicNavProvider>
+          <HeaderMenuProvider>
+            {/* VibeRail floats on top of the page by design — it does not
+                reserve any layout space, the same way the old FloatingCta
+                button never did either. */}
+            <div className="relative z-10">
+              <Header />
+              <main>{children}</main>
+              <ConditionalFooter />
+            </div>
+            <VibeRail />
+          </HeaderMenuProvider>
+        </CinematicNavProvider>
         <Analytics />
       </body>
     </html>

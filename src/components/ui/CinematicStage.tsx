@@ -243,11 +243,10 @@ export default function CinematicStage({
   }, []);
 
   // Gesture stepping. One short flick, swipe or arrow press moves exactly one
-  // chapter — the same one-block-per-gesture contract as lib/fullpage.tsx on
-  // the homepage, and for the same reason: reading scroll *position* means a
-  // visitor has to push a whole viewport of scrolling to change block, and any
-  // "settle onto the nearest step" correction afterwards reads as the page
-  // fighting back.
+  // chapter. Position-driven stepping was tried and dropped: reading scroll
+  // *position* means a visitor has to push a whole viewport of scrolling to
+  // change block, and any "settle onto the nearest step" correction afterwards
+  // reads as the page fighting back.
   //
   // Native scrolling is suppressed only while the stage actually fills the
   // viewport and the step stays inside the deck. At the first chapter scrolling
@@ -418,9 +417,7 @@ export default function CinematicStage({
     // The active chapter's own scroll box. On a narrow/mobile layout a chapter
     // taller than the screen has to be readable before the deck moves on, so a
     // gesture is spent on the chapter first and only steps once that inner
-    // scroll has reached the edge it is heading for — the same contract
-    // lib/fullpage.tsx applies to horizontally overflowing slides on the
-    // homepage, applied here vertically.
+    // scroll has reached the edge it is heading for.
     //
     // On desktop this is switched off entirely: one flick always steps,
     // full stop. It was gated by viewport width once before and un-gated

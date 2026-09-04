@@ -6,7 +6,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { CloseIcon, MenuIcon, PhoneIcon } from "@/components/ui/Icons";
-import { useFullpage } from "@/lib/fullpage";
 import { useHeaderMenu } from "@/lib/header-menu";
 import { useCinematicGoTo } from "@/lib/cinematic-nav";
 
@@ -136,31 +135,18 @@ const landingSlugs = ["content", "ai", "sites", "smm"];
 
 export default function Header() {
   const pathname = usePathname();
-  const isHome = pathname === "/";
   const isLanding = landingSlugs.includes(pathname.replace(/^\//, ""));
-  const api = useFullpage();
   const cinematicGoTo = useCinematicGoTo();
-  const fullpageActive = isHome && (api?.ready ?? false);
   const [scrolled, setScrolled] = useState(false);
   const { menuOpen, setMenuOpen } = useHeaderMenu();
   const [active, setActive] = useState<string>("");
 
-  // On the homepage, navigation is a fullpage slide deck (see
-  // src/lib/fullpage.tsx) — there is no real document scroll to watch, so
-  // both "has the visitor moved past the first slide" and "which section is
-  // current" come from that shared state instead of window.scrollY /
-  // IntersectionObserver.
   useEffect(() => {
-    if (fullpageActive) {
-      setScrolled((api?.activeIndex ?? 0) > 0);
-      setActive(api?.activeId ?? "");
-      return;
-    }
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [fullpageActive, api?.activeIndex, api?.activeId]);
+  }, []);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -179,10 +165,10 @@ export default function Header() {
     };
   }, [menuOpen]);
 
-  // Non-fullpage routes (or before the slide deck has registered) fall back
-  // to plain in-page anchors / IntersectionObserver-free scroll-spy.
+  // Scroll-spy for the section anchors, on the four landing routes that have
+  // them.
   useEffect(() => {
-    if (!isLanding || fullpageActive) return;
+    if (!isLanding) return;
     const elements = sections
       .map((s) => document.getElementById(s.id))
       .filter((el): el is HTMLElement => Boolean(el));
@@ -198,16 +184,11 @@ export default function Header() {
     );
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [isLanding, fullpageActive]);
+  }, [isLanding]);
 
   const hrefFor = (id: string) => (isLanding ? `#${id}` : `/content#${id}`);
 
   const navigateTo = (e: React.MouseEvent, id: string) => {
-    if (fullpageActive) {
-      e.preventDefault();
-      api!.goTo(id);
-      return;
-    }
     // On /content, id is one of CinematicStage's own pinned chapters — a
     // plain `#id` anchor's native scroll-jump gets misread by the deck's own
     // scroll listener as trackpad-momentum overshoot and clamped to one
@@ -221,11 +202,6 @@ export default function Header() {
   };
 
   const navigateHome = (e: React.MouseEvent) => {
-    if (fullpageActive) {
-      e.preventDefault();
-      api!.goToIndex(0);
-      return;
-    }
     // Already on one of the four landing pages: href="/" would still
     // navigate (redirecting straight back to /content), remounting the
     // whole page — video, deck state, everything — just to land back where
