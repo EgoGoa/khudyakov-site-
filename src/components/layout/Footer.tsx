@@ -148,19 +148,31 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
             <InstagramIcon />
             Instagram*
           </a>
-          <span className="inline-flex items-center gap-2.5 rounded-full border border-paper/15 px-6 py-3 text-sm text-paper/60">
+          {/* No profile to link to yet. Styled as visibly inactive and
+              labelled "скоро" rather than left looking like the two working
+              buttons beside it — identical treatment with nothing behind the
+              click reads as a broken link, not as "not ready". */}
+          <span className="inline-flex cursor-default items-center gap-2.5 rounded-full border border-dashed border-paper/10 px-6 py-3 text-sm text-paper/40">
             <span className="font-serif text-base italic">Bē</span>
             Behance
+            <span className="rounded-full bg-paper/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-paper/55">
+              Скоро
+            </span>
           </span>
         </div>
-        <p className="mt-4 max-w-2xl text-xs leading-relaxed text-paper/30">
+        {/* text-paper/55, not /30: at 30% over the near-black page this legal
+            note measured ~2.2:1 against the background, well under the 4.5:1
+            a body-size line needs to be readable — and of everything in the
+            footer, a legally required notice is the last line that should be
+            hard to read. */}
+        <p className="mt-4 max-w-2xl text-xs leading-relaxed text-paper/55">
           *Instagram принадлежит компании Meta Platforms Inc., деятельность
           которой признана экстремистской и запрещена на территории РФ.
         </p>
       </Container>
 
       <Container className="border-t border-paper/10 py-6">
-        <p className="font-mono text-xs text-paper/30">
+        <p className="font-mono text-xs text-paper/55">
           © {year} HDKV.AGENCY. Все права защищены.
         </p>
       </Container>

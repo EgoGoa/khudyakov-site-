@@ -159,7 +159,11 @@ export default function Calculator() {
             ) : (
               <>
                 {formatRub(result.min)}
-                <span className="text-paper/30"> – </span>
+                {/* /45 rather than /30: this dash is what makes the two
+                    numbers read as one range instead of two separate prices,
+                    and at 30% it sat under the contrast a display-size glyph
+                    needs to be legible. */}
+                <span className="text-paper/45"> – </span>
                 {formatRub(result.max)}
               </>
             )}
