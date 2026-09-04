@@ -15,6 +15,30 @@ type Screen = "intro" | "page1" | "page2" | "review" | "sent";
 const inputClass =
   "w-full rounded-lg border border-paper/15 bg-paper/[0.04] px-4 py-3 text-sm text-paper placeholder:text-paper/35 transition focus:border-glow focus:outline-none";
 
+// The brief travels via the clipboard, not inside the mailto: URL.
+//
+// A mail client does not take an unlimited mailto:. Outlook on Windows opens
+// one through ShellExecute, which caps a URL at roughly 2 KB, and other
+// clients have their own limits; past them the body is silently truncated or
+// the link simply does not open — the visitor believes the brief was sent and
+// we never receive it, which for the site's only structured intake form is the
+// worst possible way to fail.
+//
+// This brief cannot fit that budget, and no amount of trimming answers would
+// change it: every Cyrillic character costs six characters once
+// percent-encoded ("%D0%B0"), so the twenty question titles ALONE — with every
+// answer left empty — already encode to a 3.9k-character link, and a normal
+// set of answers reaches ~7.6k. So there is no "short enough" case to branch
+// on; the letter carries the instruction and the answers go on the clipboard,
+// every time.
+//
+// The proper fix is to post the brief to our own endpoint (mail service or
+// Telegram bot) and stop depending on the visitor's mail client at all. Until
+// that exists, this at least never loses answers silently: whatever happens to
+// the mail client, the text is on the clipboard and also selectable on screen.
+const CLIPBOARD_BODY =
+  "Текст брифа скопирован в буфер обмена — вставьте его сюда (Ctrl+V, на Mac ⌘+V) и отправьте письмо.";
+
 function isAnswered(step: BriefStep, answers: Answers) {
   const v = answers[step.id];
   if (step.type === "chips") return Array.isArray(v) && v.length > 0;
@@ -57,6 +81,10 @@ export default function BriefForm() {
   const [screen, setScreen] = useState<Screen>("intro");
   const [answers, setAnswers] = useState<Answers>({});
   const [invalid, setInvalid] = useState<string[]>([]);
+  // "fail" is not an error state so much as a fallback one: it reveals the
+  // brief in a selectable textarea, which is the last route out that needs
+  // neither a working mail client nor clipboard permission.
+  const [copied, setCopied] = useState<"idle" | "ok" | "fail">("idle");
 
   const set = (id: string, value: AnswerValue) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -90,7 +118,9 @@ export default function BriefForm() {
     return true;
   };
 
-  const mailtoHref = () => {
+  // The brief as plain text — the exact letter body, and also what goes to
+  // the clipboard when the link route is not safe (see MAILTO_SAFE_LENGTH).
+  const briefText = useMemo(() => {
     const lines: string[] = ["БРИФ НА ВИДЕОПРОДАКШН — HDKV.AGENCY", ""];
     const seen: number[] = [];
     STEPS.forEach((step) => {
@@ -102,11 +132,29 @@ export default function BriefForm() {
       lines.push(formatAnswer(step, answers) || "—");
       lines.push("");
     });
+    return lines.join("\n");
+  }, [answers]);
+
+  // Addressed and titled, with the paste instruction as its body — the answers
+  // themselves reach the letter through the clipboard (see CLIPBOARD_BODY).
+  const mailHref = useMemo(() => {
     const company = typeof answers.company === "string" ? answers.company.trim() : "";
-    const subject = `Бриф на видео — ${company || "новый проект"}`;
-    return `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(lines.join("\n"))}`;
+    const subject = encodeURIComponent(`Бриф на видео — ${company || "новый проект"}`);
+    return `mailto:${BRIEF_EMAIL}?subject=${subject}&body=${encodeURIComponent(CLIPBOARD_BODY)}`;
+  }, [answers.company]);
+
+  const copyBrief = async () => {
+    try {
+      await navigator.clipboard.writeText(briefText);
+      setCopied("ok");
+      return true;
+    } catch {
+      // No clipboard permission, or an insecure context — the textarea this
+      // flips open lets the visitor select the text by hand instead, so the
+      // answers are never trapped in a form they cannot get out of.
+      setCopied("fail");
+      return false;
+    }
   };
 
   const hud =
@@ -293,9 +341,14 @@ export default function BriefForm() {
                     ← Назад
                   </button>
                   <a
-                    href={contactOk ? mailtoHref() : undefined}
+                    href={contactOk ? mailHref : undefined}
                     onClick={() => {
-                      if (contactOk) setTimeout(() => setScreen("sent"), 250);
+                      if (!contactOk) return;
+                      // Fired before the mailto opens, and from a real click,
+                      // which is what the clipboard API requires. The letter
+                      // then opens already telling the visitor to paste.
+                      void copyBrief();
+                      setTimeout(() => setScreen("sent"), 250);
                     }}
                     aria-disabled={!contactOk}
                     className={`rounded-full bg-rec px-8 py-3.5 text-sm font-medium text-white transition ${
@@ -304,15 +357,44 @@ export default function BriefForm() {
                         : "pointer-events-none opacity-40"
                     }`}
                   >
-                    Отправить бриф на почту →
+                    Скопировать бриф и открыть письмо →
                   </a>
+                  <button
+                    type="button"
+                    onClick={() => void copyBrief()}
+                    className="rounded-full border border-paper/20 px-7 py-3.5 text-sm font-medium text-paper transition hover:border-glow/60 hover:text-glow"
+                  >
+                    {copied === "ok" ? "Скопировано ✓" : "Только скопировать текст"}
+                  </button>
                 </div>
 
-                <p className="mt-4 max-w-xl text-xs leading-relaxed text-paper/40">
-                  Кнопка откроет черновик письма в вашей почтовой программе,
-                  адресованный на {BRIEF_EMAIL}, с уже готовым текстом брифа —
-                  останется нажать «Отправить».
+                <p className="mt-4 max-w-xl text-xs leading-relaxed text-paper/50">
+                  Кнопка скопирует текст брифа в буфер обмена и откроет письмо
+                  на {BRIEF_EMAIL} — останется вставить текст (Ctrl+V, на Mac
+                  ⌘+V) и нажать «Отправить». Так бриф доходит целиком: почтовые
+                  программы обрезают слишком длинные ссылки, а вставленный текст
+                  не теряется.
                 </p>
+
+                {copied === "fail" && (
+                  <div className="mt-4">
+                    <p className="text-sm text-paper/70">
+                      Браузер не дал скопировать автоматически — выделите текст
+                      ниже и скопируйте вручную, затем отправьте его на{" "}
+                      <a href={`mailto:${BRIEF_EMAIL}`} className="text-glow hover:underline">
+                        {BRIEF_EMAIL}
+                      </a>
+                      .
+                    </p>
+                    <textarea
+                      readOnly
+                      rows={10}
+                      value={briefText}
+                      onFocus={(e) => e.currentTarget.select()}
+                      className={`${inputClass} mt-3 font-mono text-xs`}
+                    />
+                  </div>
+                )}
               </div>
             )}
 
@@ -326,14 +408,37 @@ export default function BriefForm() {
                   Бриф готов к отправке
                 </h2>
                 <p className="mt-4 max-w-xl text-base leading-relaxed text-paper/60">
-                  Мы открыли черновик письма в вашей почте. Если он не появился —
-                  проверьте, назначена ли почтовая программа по умолчанию, или
-                  напишите нам напрямую на{" "}
+                  Текст брифа скопирован в буфер обмена, и мы открыли письмо —
+                  вставьте текст (Ctrl+V, на Mac ⌘+V) и нажмите «Отправить».
+                  Если письмо не появилось — проверьте, назначена ли почтовая
+                  программа по умолчанию, или напишите нам напрямую на{" "}
                   <a href={`mailto:${BRIEF_EMAIL}`} className="text-glow hover:underline">
                     {BRIEF_EMAIL}
                   </a>
                   .
                 </p>
+
+                {/* The answers stay reachable after "отправлено" too: if the
+                    mail client never opened, this screen is otherwise a dead
+                    end holding twenty answered questions with no way out. */}
+                <div className="mt-6">
+                  <button
+                    type="button"
+                    onClick={() => void copyBrief()}
+                    className="rounded-full border border-paper/20 px-6 py-3 text-sm font-medium text-paper transition hover:border-glow/60 hover:text-glow"
+                  >
+                    {copied === "ok" ? "Скопировано ✓" : "Скопировать текст брифа ещё раз"}
+                  </button>
+                  {copied === "fail" && (
+                    <textarea
+                      readOnly
+                      rows={10}
+                      value={briefText}
+                      onFocus={(e) => e.currentTarget.select()}
+                      className={`${inputClass} mt-3 font-mono text-xs`}
+                    />
+                  )}
+                </div>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <button
                     type="button"
