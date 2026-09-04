@@ -354,7 +354,35 @@ export default function Works({
                       ease: MOTION_EASE,
                     }}
                     onClick={limit ? undefined : () => setActiveId(work.id)}
+                    // Catalogue mode (/works) has no button of its own inside
+                    // the tile — the "Смотреть"/"Хочу так же" pair below only
+                    // renders in chapter mode — so the tile itself is the
+                    // control that opens the lightbox. As a bare div with an
+                    // onClick that made it mouse-only: nothing to tab to, no
+                    // Enter/Space, and a screen reader announced no control at
+                    // all, which left the whole catalogue unreachable without a
+                    // pointer. In chapter mode these stay off: there the real
+                    // buttons underneath are the controls, and a focusable
+                    // wrapper around them would just be a second stop that
+                    // says the same thing.
+                    onKeyDown={
+                      limit
+                        ? undefined
+                        : (e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setActiveId(work.id);
+                            }
+                          }
+                    }
+                    role={limit ? undefined : "button"}
+                    tabIndex={limit ? undefined : 0}
+                    aria-label={limit ? undefined : `Смотреть работу: ${work.title}`}
                     className={`group relative overflow-hidden rounded-2xl bg-ink-soft text-left transition-shadow duration-300 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85),0_0_50px_-12px_rgba(0,210,255,0.3)] ${
+                      limit
+                        ? ""
+                        : "focus:outline-none focus-visible:ring-2 focus-visible:ring-glow focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+                    } ${
                       limit
                         ? // A plain 16:9 card in a 2×2 grid grows tall enough
                           // on wide desktop screens to push the second row
