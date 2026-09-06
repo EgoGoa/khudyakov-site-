@@ -27,8 +27,8 @@ export const graphicsContent: DirectionContent = {
         текста</Accent> — и не требует ни площадки, ни съёмочной смены.
       </>
     ),
-    video: "/video/works/rustech.mp4",
-    poster: "/images/works/rustech.jpg",
+    video: "/video/works/showreel-2024-motion-hero.mp4",
+    poster: "/images/works/showreel-2024-motion-hero.jpg",
     typed: "Показать то, что не покажет камера",
   },
 

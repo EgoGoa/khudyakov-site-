@@ -33,8 +33,8 @@ export const aiVideoContent: DirectionContent = {
         за месяцы</Accent> — там, где это действительно уместно.
       </>
     ),
-    video: "/video/works/aishowreel.mp4",
-    poster: "/images/works/aishowreel.jpg",
+    video: "/video/works/showreel-2026-hero.mp4",
+    poster: "/images/works/showreel-2026-hero.jpg",
   },
 
   // Единственная страница направления, уходящая в холодную часть палитры:

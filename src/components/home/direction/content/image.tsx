@@ -27,8 +27,8 @@ export const imageContent: DirectionContent = {
         потом узнают</Accent> на сайте, в соцсетях и при первой встрече.
       </>
     ),
-    video: "/video/works/belykit-32.mp4",
-    poster: "/images/works/belykit-32.jpg",
+    video: "/video/works/showreel-2024-mood-hero.mp4",
+    poster: "/images/works/showreel-2024-mood-hero.jpg",
     typed: "Настроение, с которым вас запоминают",
   },
 

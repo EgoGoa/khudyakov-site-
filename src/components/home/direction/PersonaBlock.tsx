@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
-import { BEAT, EASE, STAGGER } from "@/lib/motion";
+import { DIRECTION_BEAT, EASE, STAGGER } from "@/lib/motion";
 import { CHAPTER_INTRO, EYEBROW } from "@/lib/typography";
 import SectionStage from "./SectionStage";
 import BlockMedia, { MEDIA_TEXT } from "./BlockMedia";
@@ -59,7 +59,7 @@ export function PersonaShell({
       {media ? <BlockMedia media={media} /> : null}
 
       <Container className={`text-center ${MEDIA_TEXT}`}>
-        <Appear from="up" delay={BEAT.eyebrow}>
+        <Appear from="up" delay={DIRECTION_BEAT.eyebrow}>
           {/* Прогресс воронки — полосками, а не строкой «шаг 1 из 3».
               Раньше номер шага стоял цифрой прямо в надзаголовке; на узком
               экране строка переносилась и число повисало отдельной строкой
@@ -88,13 +88,13 @@ export function PersonaShell({
           </span>
         </Appear>
 
-        <Appear from="up" delay={BEAT.title}>
+        <Appear from="up" delay={DIRECTION_BEAT.title}>
           <h2 className="chapter-neon-warm mx-auto mt-4 max-w-4xl break-words font-display text-[1.7rem] uppercase leading-[0.98] tracking-tight sm:text-[2.8rem] lg:text-[3.2rem]">
             {prompt}
           </h2>
         </Appear>
 
-        <Appear from="up" delay={BEAT.intro}>
+        <Appear from="up" delay={DIRECTION_BEAT.intro}>
           <p className={`mx-auto mt-6 max-w-[34em] ${CHAPTER_INTRO}`}>{note}</p>
         </Appear>
 
@@ -141,7 +141,7 @@ export function PersonaChip({
   onClick: () => void;
 }) {
   return (
-    <Appear from="up" delay={BEAT.content + index * STAGGER.normal}>
+    <Appear from="up" delay={DIRECTION_BEAT.content + index * STAGGER.normal}>
       <button
         type="button"
         onClick={onClick}

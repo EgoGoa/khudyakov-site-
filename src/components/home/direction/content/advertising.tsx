@@ -35,8 +35,8 @@ export const advertisingContent: DirectionContent = {
         пришлём идею и смету.
       </>
     ),
-    video: "/video/works/carpoint.mp4",
-    poster: "/images/works/carpoint.jpg",
+    video: "/video/works/showreel-2021-hero.mp4",
+    poster: "/images/works/showreel-2021-hero.jpg",
   },
 
   // Зеркальная версия градиента соседней страницы: тот же родной для

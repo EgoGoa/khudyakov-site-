@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { DIRECTION_BEAT } from "@/lib/motion";
 import { TelegramIcon } from "@/components/ui/Icons";
 import { TELEGRAM_URL } from "../contacts";
 import { PersonaChip, PersonaResult, PersonaShell } from "../PersonaBlock";
@@ -118,7 +118,7 @@ export default function PersonaAssets({ media }: { media?: BlockMediaSpec }) {
         ))}
       </div>
 
-      <Appear from="up" delay={BEAT.cta}>
+      <Appear from="up" delay={DIRECTION_BEAT.cta}>
         <label className="mx-auto mt-8 block max-w-[34em] text-left">
           <span className={`${EYEBROW} text-white/70`}>
             Ссылка или ожидания

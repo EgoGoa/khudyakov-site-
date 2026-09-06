@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
-import { BEAT, EASE, STAGGER } from "@/lib/motion";
+import { DIRECTION_BEAT, EASE, STAGGER } from "@/lib/motion";
 import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
@@ -80,7 +80,7 @@ export default function CasesBlock({ cases }: { cases: DirectionContent["cases"]
         <SectionHead head={cases} />
 
         <div className="mt-16 lg:grid lg:grid-cols-[1.45fr_1fr] lg:gap-12">
-          <Appear from="left" delay={BEAT.content}>
+          <Appear from="left" delay={DIRECTION_BEAT.content}>
             <div className="relative aspect-video overflow-hidden rounded-3xl bg-ink ring-1 ring-paper/10">
               <AnimatePresence mode="wait">
                 {current?.youtubeId ? (
@@ -122,7 +122,7 @@ export default function CasesBlock({ cases }: { cases: DirectionContent["cases"]
                 <Appear
                   key={work.id}
                   from="right"
-                  delay={BEAT.content + 0.1 + i * STAGGER.tight}
+                  delay={DIRECTION_BEAT.content + 0.1 + i * STAGGER.tight}
                 >
                   <button
                     type="button"
@@ -178,7 +178,7 @@ export default function CasesBlock({ cases }: { cases: DirectionContent["cases"]
               );
             })}
 
-            <Appear from="up" delay={BEAT.cta}>
+            <Appear from="up" delay={DIRECTION_BEAT.cta}>
               <Link
                 href="/works"
                 className="mt-8 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-white transition hover:text-orange"

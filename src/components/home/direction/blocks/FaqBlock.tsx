@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
-import { BEAT, EASE, STAGGER } from "@/lib/motion";
+import { DIRECTION_BEAT, EASE, STAGGER } from "@/lib/motion";
 import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
@@ -33,7 +33,7 @@ export default function FaqBlock({ faq }: { faq: DirectionContent["faq"] }) {
             {faq.items.map((item, i) => {
               const on = i === active;
               return (
-                <Appear key={item.q} from="left" delay={BEAT.content + i * STAGGER.tight}>
+                <Appear key={item.q} from="left" delay={DIRECTION_BEAT.content + i * STAGGER.tight}>
                   <div>
                     <button
                       type="button"

@@ -2,7 +2,7 @@
 
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
-import { BEAT, STAGGER } from "@/lib/motion";
+import { DIRECTION_BEAT, STAGGER } from "@/lib/motion";
 import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
@@ -32,7 +32,7 @@ export default function WhyBlock({ why }: { why: NonNullable<DirectionContent["w
             <Appear
               key={item.title}
               from={i % 2 === 0 ? "left" : "right"}
-              delay={BEAT.content + Math.floor(i / 2) * STAGGER.normal}
+              delay={DIRECTION_BEAT.content + Math.floor(i / 2) * STAGGER.normal}
             >
               <div className="flex gap-6">
                 <span className="w-20 shrink-0 pt-1 text-right font-display text-2xl uppercase leading-none text-orange sm:text-3xl">

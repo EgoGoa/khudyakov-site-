@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
-import { BEAT, EASE, STAGGER } from "@/lib/motion";
+import { DIRECTION_BEAT, EASE, STAGGER } from "@/lib/motion";
 import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia, { MEDIA_TEXT } from "../BlockMedia";
@@ -59,7 +59,7 @@ export default function PricingBlock({
           {pricing.tiers.map((tier, i) => {
             const on = tier.id === highlightId;
             return (
-              <Appear key={tier.id} from="up" delay={BEAT.content + i * STAGGER.normal}>
+              <Appear key={tier.id} from="up" delay={DIRECTION_BEAT.content + i * STAGGER.normal}>
                 <div
                   className={`glass-panel flex h-full flex-col rounded-3xl p-8 transition-all duration-500 ${
                     on
@@ -116,7 +116,7 @@ export default function PricingBlock({
           })}
         </div>
 
-        <Appear from="up" delay={BEAT.cta}>
+        <Appear from="up" delay={DIRECTION_BEAT.cta}>
           <p className={`mt-10 max-w-2xl text-xs leading-relaxed text-white ${MEDIA_TEXT}`}>{pricing.note}</p>
         </Appear>
       </Container>

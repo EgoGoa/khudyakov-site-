@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from "framer-motion";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { DIRECTION_BEAT } from "@/lib/motion";
 import { PersonaChip, PersonaResult, PersonaShell } from "../PersonaBlock";
 import { BUDGET_CHOICES, SPEED_CHOICES, useDirectionTask } from "../TaskContext";
 import type { BlockMediaSpec } from "../types";
@@ -76,7 +76,7 @@ export default function PersonaBudget({ media }: { media?: BlockMediaSpec }) {
     >
       <div className="space-y-8">
         <div>
-          <Appear from="up" delay={BEAT.content}>
+          <Appear from="up" delay={DIRECTION_BEAT.content}>
             <span className={`${EYEBROW} text-white/70`}>
               Сколько готовы вложить
             </span>
@@ -97,7 +97,7 @@ export default function PersonaBudget({ media }: { media?: BlockMediaSpec }) {
         </div>
 
         <div>
-          <Appear from="up" delay={BEAT.content}>
+          <Appear from="up" delay={DIRECTION_BEAT.content}>
             <span className={`${EYEBROW} text-white/70`}>
               К какой дате нужно
             </span>

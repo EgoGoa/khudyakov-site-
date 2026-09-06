@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
-import { BEAT, EASE, STAGGER } from "@/lib/motion";
+import { DIRECTION_BEAT, EASE, STAGGER } from "@/lib/motion";
 import { TelegramIcon } from "@/components/ui/Icons";
 import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
@@ -52,12 +52,12 @@ export default function CloseBlock({ close }: { close: DirectionContent["close"]
         </AnimatePresence>
 
         <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
-          <Appear from="up" delay={BEAT.cta}>
+          <Appear from="up" delay={DIRECTION_BEAT.cta}>
             <Link href="/brief" className="btn-neon btn-warm btn-3d !py-4 !px-8">
               Заполнить бриф
             </Link>
           </Appear>
-          <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
+          <Appear from="up" delay={DIRECTION_BEAT.cta + STAGGER.normal}>
             <a
               href={TELEGRAM_URL}
               target="_blank"
@@ -70,7 +70,7 @@ export default function CloseBlock({ close }: { close: DirectionContent["close"]
           </Appear>
         </div>
 
-        <Appear from="up" delay={BEAT.cta + STAGGER.normal * 2}>
+        <Appear from="up" delay={DIRECTION_BEAT.cta + STAGGER.normal * 2}>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-mono text-[11px] uppercase tracking-[0.15em] text-white">
             <a href={PHONE_HREF} className="transition hover:text-orange">
               {PHONE}

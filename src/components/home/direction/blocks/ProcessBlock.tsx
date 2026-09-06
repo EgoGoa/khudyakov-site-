@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
-import { BEAT, EASE, STAGGER } from "@/lib/motion";
+import { DIRECTION_BEAT, EASE, STAGGER } from "@/lib/motion";
 import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia, { MEDIA_TEXT } from "../BlockMedia";
@@ -74,7 +74,7 @@ export default function ProcessBlock({
                 key={step.number}
                 as="li"
                 from="up"
-                delay={BEAT.content + i * STAGGER.tight}
+                delay={DIRECTION_BEAT.content + i * STAGGER.tight}
               >
                 <div className={`relative grid gap-2 pb-12 pl-10 sm:grid-cols-[1fr] lg:pl-14 ${MEDIA_TEXT}`}>
                   {/* Линия и точка. Линия обрывается на последнем шаге,

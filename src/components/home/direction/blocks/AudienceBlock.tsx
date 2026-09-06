@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
-import { BEAT, STAGGER } from "@/lib/motion";
+import { DIRECTION_BEAT, STAGGER } from "@/lib/motion";
 import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
@@ -39,7 +39,7 @@ export default function AudienceBlock({
               <Appear
                 key={item.number}
                 from="right"
-                delay={BEAT.content + i * STAGGER.normal}
+                delay={DIRECTION_BEAT.content + i * STAGGER.normal}
               >
                 <div
                   // Лестница задаётся переменной, а применяется только с lg

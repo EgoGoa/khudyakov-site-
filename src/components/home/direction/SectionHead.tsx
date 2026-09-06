@@ -1,7 +1,7 @@
 "use client";
 
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { DIRECTION_BEAT } from "@/lib/motion";
 import { CHAPTER_INTRO, EYEBROW } from "@/lib/typography";
 import Typewriter from "./Typewriter";
 import { MEDIA_TEXT } from "./BlockMedia";
@@ -10,7 +10,7 @@ import type { DirectionSectionHead } from "./types";
 // Шапка блока: надзаголовок, заголовок, подзаголовок.
 //
 // Порядок появления — общесайтовый: сначала надзаголовок («где я»), через
-// BEAT.title заголовок («что это»), через BEAT.intro поясняющая строка. Ни
+// DIRECTION_BEAT.title заголовок («что это»), через DIRECTION_BEAT.intro поясняющая строка. Ни
 // один блок не выезжает целиком: это ровно та хореография, что на /content,
 // /ai, /sites и /smm, просто триггером служит попадание в экран.
 //
@@ -42,7 +42,7 @@ export default function SectionHead({
     // Тень носит вся шапка, а не только блоки с кадром: над ровным фоном
     // она невидима, а над видео держит контраст без притушивания картинки.
     <div className={`${ALIGN_CLASS[align]} ${MEDIA_TEXT}`}>
-      <Appear from={from} delay={BEAT.eyebrow}>
+      <Appear from={from} delay={DIRECTION_BEAT.eyebrow}>
         <span
           className={`${EYEBROW} flex items-center gap-2 text-rec ${
             align === "center" ? "justify-center" : align === "right" ? "justify-end" : ""
@@ -53,7 +53,7 @@ export default function SectionHead({
         </span>
       </Appear>
 
-      <Appear from={from} delay={BEAT.title}>
+      <Appear from={from} delay={DIRECTION_BEAT.title}>
         <h2
           className={`chapter-neon-warm mt-4 break-words font-display uppercase leading-[0.98] tracking-tight ${
             titleClassName || "text-[1.8rem] sm:text-[3rem] lg:text-[3.4rem]"
@@ -70,7 +70,7 @@ export default function SectionHead({
       </Appear>
 
       {head.sub ? (
-        <Appear from="up" delay={BEAT.intro}>
+        <Appear from="up" delay={DIRECTION_BEAT.intro}>
           <p
             className={`mt-6 max-w-[30em] ${CHAPTER_INTRO} ${
               align === "center" ? "mx-auto" : align === "right" ? "ml-auto" : ""

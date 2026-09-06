@@ -31,8 +31,8 @@ export const presentationContent: DirectionContent = {
         пришлём структуру фильма и смету в трёх вариантах.
       </>
     ),
-    video: "/video/works/elovoe.mp4",
-    poster: "/images/works/elovoe.jpg",
+    video: "/video/works/showreel-2018-hero.mp4",
+    poster: "/images/works/showreel-2018-hero.jpg",
     // Единственная печатающаяся точка на этой странице. На /content/advertising
     // печатается заголовок процесса — чтобы страницы не повторяли приём.
     typed: "Фильм, который представляет компанию за вас",
