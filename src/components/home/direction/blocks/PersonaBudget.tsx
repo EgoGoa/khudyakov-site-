@@ -6,6 +6,7 @@ import { BEAT } from "@/lib/motion";
 import { PersonaChip, PersonaResult, PersonaShell } from "../PersonaBlock";
 import { BUDGET_CHOICES, SPEED_CHOICES, useDirectionTask } from "../TaskContext";
 import type { BlockMediaSpec } from "../types";
+import { EYEBROW } from "@/lib/typography";
 
 // Шаг 2 воронки: бюджет и срок.
 //
@@ -76,7 +77,7 @@ export default function PersonaBudget({ media }: { media?: BlockMediaSpec }) {
       <div className="space-y-8">
         <div>
           <Appear from="up" delay={BEAT.content}>
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70">
+            <span className={`${EYEBROW} text-white/70`}>
               Сколько готовы вложить
             </span>
           </Appear>
@@ -97,7 +98,7 @@ export default function PersonaBudget({ media }: { media?: BlockMediaSpec }) {
 
         <div>
           <Appear from="up" delay={BEAT.content}>
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70">
+            <span className={`${EYEBROW} text-white/70`}>
               К какой дате нужно
             </span>
           </Appear>

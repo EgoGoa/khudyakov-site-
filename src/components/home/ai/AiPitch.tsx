@@ -5,6 +5,7 @@ import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSectio
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import AiDeck, { AI_PILL, AI_ROUND } from "@/components/home/ai/AiDeck";
+import { EYEBROW } from "@/lib/typography";
 
 // Chapter 01 of /ai's deck (see src/app/(landing)/ai/page.tsx) — rebuilt in
 // the composition Egor approved on /sites (see SitesPitch for the same
@@ -64,7 +65,7 @@ export default function AiPitch() {
         <div className="w-full shrink-0 lg:w-[46%]">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-emerald-300">01</span>
+              <span className={`${EYEBROW} text-emerald-300`}>01</span>
               <span className="h-px w-8 bg-emerald-300/40" />
             </div>
           </Appear>

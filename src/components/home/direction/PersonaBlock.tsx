@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
 import { BEAT, EASE, STAGGER } from "@/lib/motion";
-import { CHAPTER_INTRO } from "@/lib/typography";
+import { CHAPTER_INTRO, EYEBROW } from "@/lib/typography";
 import SectionStage from "./SectionStage";
 import BlockMedia, { MEDIA_TEXT } from "./BlockMedia";
 import type { BlockMediaSpec } from "./types";
@@ -60,14 +60,36 @@ export function PersonaShell({
 
       <Container className={`text-center ${MEDIA_TEXT}`}>
         <Appear from="up" delay={BEAT.eyebrow}>
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-rec">
-            <span className="h-1.5 w-1.5 rounded-full bg-rec" />
-            Персонализация · шаг {step} из 3
+          {/* Прогресс воронки — полосками, а не строкой «шаг 1 из 3».
+              Раньше номер шага стоял цифрой прямо в надзаголовке; на узком
+              экране строка переносилась и число повисало отдельной строкой
+              под словом «ИЗ» — Егор показал это на скриншоте. Три полоски
+              не участвуют в переносе текста и одновременно показывают
+              больше: сколько шагов позади и сколько осталось. */}
+          <span className={`${EYEBROW} inline-flex flex-wrap items-center justify-center gap-3 text-rec`}>
+            <span className="inline-flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-rec" />
+              Персонализация
+            </span>
+            <span className="inline-flex items-center gap-1" aria-hidden="true">
+              {([1, 2, 3] as const).map((n) => (
+                <span
+                  key={n}
+                  className={`h-[3px] w-6 rounded-full transition-colors duration-300 ${
+                    n <= step ? "bg-[linear-gradient(90deg,#ff4fd8,#ff6a3d)]" : "bg-paper/20"
+                  }`}
+                />
+              ))}
+            </span>
+            <span className="sr-only">{`Шаг ${step} из 3`}</span>
+            <span aria-hidden="true" className="tabular-nums text-white/60">
+              {step} / 3
+            </span>
           </span>
         </Appear>
 
         <Appear from="up" delay={BEAT.title}>
-          <h2 className="chapter-neon-warm mx-auto mt-4 max-w-4xl font-display text-[2rem] uppercase leading-[0.98] tracking-tight sm:text-[2.8rem] lg:text-[3.2rem]">
+          <h2 className="chapter-neon-warm mx-auto mt-4 max-w-4xl break-words font-display text-[1.7rem] uppercase leading-[0.98] tracking-tight sm:text-[2.8rem] lg:text-[3.2rem]">
             {prompt}
           </h2>
         </Appear>

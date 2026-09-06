@@ -5,6 +5,7 @@ import Link from "next/link";
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
+import { EYEBROW } from "@/lib/typography";
 
 // The shared two-column chapter skeleton.
 //
@@ -76,7 +77,7 @@ export default function ChapterLayout({
       <div className={`w-full shrink-0 ${columnClassName}`}>
         <Appear from="up" delay={BEAT.eyebrow}>
           <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-            <span className={`font-mono text-[11px] uppercase tracking-[0.22em] ${accent.number}`}>
+            <span className={`${EYEBROW} ${accent.number}`}>
               {number}
             </span>
             <span className={`h-px w-8 ${accent.rule}`} />

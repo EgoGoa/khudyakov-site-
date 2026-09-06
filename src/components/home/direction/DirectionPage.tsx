@@ -51,7 +51,15 @@ import type { DirectionContent } from "./types";
 export default function DirectionPage({ content }: { content: DirectionContent }) {
   return (
     <DirectionTaskProvider tasks={content.tasks} title={content.hero.eyebrow}>
-      <div className="content-warm-headings relative">
+      {/* overflow-x: clip, а не hidden.
+        
+          Элементы въезжают через <Appear> со сдвигом по X на ±44px, и на
+          время входа этот сдвиг распирал страницу горизонтальным скроллом —
+          на мобильном запаса по ширине нет. clip срезает вылет и при этом,
+          в отличие от hidden, не создаёт скролл-контейнер, поэтому липкие
+          заголовки блоков (lg:sticky в «под чью задачу», sticky в FAQ)
+          продолжают работать. */}
+      <div className="content-warm-headings relative [overflow-x:clip]">
         <DirectionBackdrop from={content.backdrop.from} to={content.backdrop.to} />
 
         <DirectionHero hero={content.hero} />

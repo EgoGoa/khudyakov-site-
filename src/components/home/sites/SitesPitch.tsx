@@ -6,6 +6,7 @@ import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import SitesDeck, { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
+import { EYEBROW } from "@/lib/typography";
 
 // Chapter 01 of /sites — the opening pitch, one level in from the site's own
 // universal Hero (see (landing)/layout.tsx, and the same reasoning in
@@ -69,7 +70,7 @@ export default function SitesPitch() {
         <div className="w-full shrink-0 lg:w-[46%]">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">01</span>
+              <span className={`${EYEBROW} text-glow`}>01</span>
               <span className="h-px w-8 bg-glow/40" />
             </div>
           </Appear>

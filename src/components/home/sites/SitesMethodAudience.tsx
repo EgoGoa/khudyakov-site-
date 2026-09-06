@@ -6,6 +6,7 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
+import { EYEBROW } from "@/lib/typography";
 
 // Chapter 02 — merges the former SitesMethod and SitesAudience chapters into
 // one screen. sites-reel.mp4 (Egor's second delivery for /sites) only cuts
@@ -92,7 +93,7 @@ export default function SitesMethodAudience() {
         <div className="w-full shrink-0 lg:w-[38%]">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">02</span>
+              <span className={`${EYEBROW} text-glow`}>02</span>
               <span className="h-px w-8 bg-glow/40" />
             </div>
           </Appear>

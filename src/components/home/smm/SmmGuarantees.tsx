@@ -7,6 +7,7 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
+import { EYEBROW } from "@/lib/typography";
 
 // Chapter 05 — the terms plus a compact FAQ folded into one screen, the same
 // shape AiGuarantees and SitesGuarantees use.
@@ -104,7 +105,7 @@ export default function SmmGuarantees() {
         <div className="w-full shrink-0 lg:w-[38%]">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c4a0ff]">05</span>
+              <span className={`${EYEBROW} text-[#c4a0ff]`}>05</span>
               <span className="h-px w-8 bg-[#a855f7]/40" />
             </div>
           </Appear>
@@ -177,7 +178,7 @@ export default function SmmGuarantees() {
           </ul>
 
           <div className="mt-8 lg:mt-0 lg:w-[320px] lg:shrink-0 xl:w-[360px]">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">FAQ</span>
+            <span className={`${EYEBROW} text-paper/45`}>FAQ</span>
             <div className="mt-3 border-t border-paper/10">
               {FAQ.map((item, i) => {
                 const isOpen = open === i;

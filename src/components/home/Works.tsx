@@ -12,6 +12,7 @@ import { CloseIcon } from "@/components/ui/Icons";
 import { useService } from "@/lib/service-context";
 import { worksByCategory } from "@/lib/service-content";
 import type { Work } from "@/lib/types";
+import { EYEBROW } from "@/lib/typography";
 
 // hqdefault always exists for any YouTube video; maxresdefault looks much
 // sharper but isn't guaranteed, so the <img> below falls back to hqdefault
@@ -64,7 +65,7 @@ function SegmentedAxis({
 
   return (
     <div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">{label}</div>
+      <div className={`${EYEBROW} text-paper/45`}>{label}</div>
       <div className="mt-2.5 flex flex-wrap gap-2">
         {[...shown, ...rest].map((option) => (
           <button

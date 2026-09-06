@@ -5,6 +5,7 @@ import CinematicSection from "@/components/ui/CinematicSection";
 import AiDecoIcon from "@/components/home/ai/AiDecoIcon";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
+import { EYEBROW } from "@/lib/typography";
 
 // Chapter 06 — "you're buying a system, not a post" thesis, terms (rights/
 // SLA/timelines), contractual guarantees, and a compact FAQ, all folded into
@@ -117,14 +118,14 @@ export default function AiGuarantees() {
 
         <div className="mt-8 lg:mt-0 lg:w-[360px] lg:shrink-0 xl:w-[400px]">
           <Appear from="right" delay={BEAT.content + TERMS.length * STAGGER.tight} className="rounded-xl bg-ink/40 p-3.5">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-300">Команда</span>
+            <span className={`${EYEBROW} text-emerald-300`}>Команда</span>
             <p className="mt-1.5 text-xs leading-relaxed text-paper/65">
               AI-инструменты внедряем с 2024 года в составе продюсерского центра HDKV.AGENCY — не
               коробочный сервис, а конкретные люди на пилоте и на сопровождении.
             </p>
           </Appear>
 
-          <Appear from="up" delay={BEAT.cta} className="mt-5 block font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">
+          <Appear from="up" delay={BEAT.cta} className={`${EYEBROW} mt-5 block text-paper/45`}>
             FAQ
           </Appear>
           <Appear from="up" delay={BEAT.cta} className="mt-3 border-t border-paper/10">

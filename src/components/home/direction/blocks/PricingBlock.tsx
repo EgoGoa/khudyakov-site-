@@ -10,6 +10,7 @@ import SectionHead from "../SectionHead";
 import BlockMedia, { MEDIA_TEXT } from "../BlockMedia";
 import { BUDGET_CHOICES, SPEED_CHOICES, useDirectionTask } from "../TaskContext";
 import type { DirectionContent } from "../types";
+import { EYEBROW } from "@/lib/typography";
 
 // Смета. Заголовок прижат вправо, карточки идут под ним слева — зеркально
 // блоку «под чью задачу», где заголовок стоял слева. Именно чередование
@@ -80,7 +81,7 @@ export default function PricingBlock({
                     ) : null}
                   </AnimatePresence>
 
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white">
+                  <span className={`${EYEBROW} text-white`}>
                     {tier.tagline}
                   </span>
                   <h3 className="mt-4 font-display text-2xl uppercase leading-none tracking-tight text-white">

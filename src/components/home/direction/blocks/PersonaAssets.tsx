@@ -9,6 +9,7 @@ import { TELEGRAM_URL } from "../contacts";
 import { PersonaChip, PersonaResult, PersonaShell } from "../PersonaBlock";
 import { ASSET_CHOICES, useDirectionTask } from "../TaskContext";
 import type { BlockMediaSpec } from "../types";
+import { EYEBROW } from "@/lib/typography";
 
 // Шаг 3 воронки: что у клиента уже есть и чего он ждёт.
 //
@@ -119,7 +120,7 @@ export default function PersonaAssets({ media }: { media?: BlockMediaSpec }) {
 
       <Appear from="up" delay={BEAT.cta}>
         <label className="mx-auto mt-8 block max-w-[34em] text-left">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70">
+          <span className={`${EYEBROW} text-white/70`}>
             Ссылка или ожидания
           </span>
           <input

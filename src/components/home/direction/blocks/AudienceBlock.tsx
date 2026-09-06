@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
@@ -9,6 +10,7 @@ import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
 import { withAccent } from "../Accent";
 import type { DirectionContent } from "../types";
+import { EYEBROW } from "@/lib/typography";
 
 // «Под чью задачу» — асимметричная раскладка: заголовок держится слева и
 // стоит на месте, пока роли проходят справа лестницей.
@@ -40,14 +42,19 @@ export default function AudienceBlock({
                 delay={BEAT.content + i * STAGGER.normal}
               >
                 <div
-                  className="glass-panel group rounded-2xl p-7 transition sm:p-8"
-                  style={{ marginLeft: `${i * 7}%` }}
+                  // Лестница задаётся переменной, а применяется только с lg
+                  // (см. .audience-stair в globals.css). Инлайновый
+                  // margin-left работал на всех ширинах и на телефоне просто
+                  // выталкивал карточки за правый край экрана — лестницу там
+                  // всё равно не видно, колонка одна.
+                  className="audience-stair glass-panel group rounded-2xl p-7 transition sm:p-8"
+                  style={{ "--stair": `${i * 7}%` } as CSSProperties}
                 >
                   <div className="flex items-baseline gap-4">
                     <span className="font-display text-2xl leading-none text-orange">
                       {item.number}
                     </span>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white">
+                    <span className={`${EYEBROW} text-white`}>
                       {item.role}
                     </span>
                   </div>

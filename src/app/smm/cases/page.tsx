@@ -3,6 +3,7 @@ import Link from "next/link";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
+import { EYEBROW } from "@/lib/typography";
 
 export const metadata: Metadata = {
   title: "Кейсы SMM — HDKV.AGENCY",
@@ -51,7 +52,7 @@ export default function SmmCasesPage() {
                 key={item.category}
                 className="flex aspect-[4/3] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-paper/20 bg-ink/40 p-6 text-center"
               >
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/40">
+                <span className={`${EYEBROW} text-paper/40`}>
                   {item.category}
                 </span>
                 <span className="rounded-full border border-paper/15 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-paper/50">

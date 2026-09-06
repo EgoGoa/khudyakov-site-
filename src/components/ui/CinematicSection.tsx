@@ -53,7 +53,7 @@ export const CHAPTER_COLUMN = "max-w-xl lg:max-w-[56%]";
 // работать. См. комментарий там о том, почему клиентский модуль не место
 // для константы, нужной и серверным компонентам.
 export { CHAPTER_INTRO } from "@/lib/typography";
-import { CHAPTER_INTRO } from "@/lib/typography";
+import { CHAPTER_INTRO, EYEBROW } from "@/lib/typography";
 
 export type EntranceKind = "slide-left" | "slide-right" | "rise" | "zoom" | "unfold";
 
@@ -323,7 +323,7 @@ export default function CinematicSection({
             alignRight ? "lg:justify-end" : ""
           }`}
         >
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">
+          <span className={`${EYEBROW} text-glow`}>
             {chapter}
           </span>
           <span className="h-px w-8 bg-glow/40" />

@@ -47,7 +47,7 @@ export const advertisingContent: DirectionContent = {
   stats: [
     { value: "8 лет", label: "в видеопроизводстве" },
     { value: "450+", label: "созданных проектов" },
-    { value: "11", label: "рекламных роликов в портфолио" },
+    { value: "12", label: "рекламных роликов в портфолио" },
     { value: "350+", label: "клиентов" },
   ],
   statsMedia: {

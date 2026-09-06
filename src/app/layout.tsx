@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Unbounded, Manrope, Azeret_Mono } from "next/font/google";
+import { Unbounded, Manrope, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
@@ -27,8 +27,20 @@ const bebas = Unbounded({
   weight: ["500", "600", "700", "800", "900"],
 });
 
-const azeretMono = Azeret_Mono({
-  subsets: ["latin"],
+// Моноширинный тоже обязан иметь кириллицу.
+//
+// Здесь стоял Azeret Mono с subsets: ["latin"] — и это была настоящая
+// ошибка, а не стилистический выбор. Кириллицы у него нет вовсе, поэтому
+// каждая русская подпись на сайте (а их 145) рисовалась подменным
+// системным шрифтом, тогда как цифры в той же строке — самим Azeret.
+// Два шрифта в одной строке: разная высота, разная ширина знака, разный
+// вес. Егор увидел это на «ШАГ 1 ИЗ 3» и назвал «скачет размер шрифтов».
+//
+// JetBrains Mono несёт кириллицу нативно, поэтому буквы и цифры снова
+// приходят из одной гарнитуры. Имя переменной оставлено прежним, чтобы не
+// трогать tailwind.config и полторы сотни мест разом.
+const azeretMono = JetBrains_Mono({
+  subsets: ["latin", "cyrillic"],
   variable: "--font-azeret-mono",
   display: "swap",
   weight: ["400", "500", "600"],

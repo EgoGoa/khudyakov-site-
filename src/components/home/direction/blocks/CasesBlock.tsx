@@ -150,7 +150,7 @@ export default function CasesBlock({ cases }: { cases: DirectionContent["cases"]
                       ) : null}
                     </span>
 
-                    <span className="min-w-0 flex-1">
+                    <span className="min-w-0 flex-1 break-words">
                       <span className="flex items-center gap-2">
                         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white">
                           {work.sphere ?? work.category}

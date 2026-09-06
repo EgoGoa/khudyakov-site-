@@ -10,6 +10,7 @@ import BlockMedia, { MEDIA_TEXT } from "../BlockMedia";
 import { withAccent } from "../Accent";
 import { SPEED_CHOICES, useDirectionTask } from "../TaskContext";
 import type { DirectionContent } from "../types";
+import { EYEBROW } from "@/lib/typography";
 
 // Процесс. Заголовок липкий слева, шаги едут мимо него справа — читается
 // как «пока идёт производство, задача остаётся та же».
@@ -56,7 +57,7 @@ export default function ProcessBlock({
                   transition={{ duration: 0.4, ease: EASE }}
                   className="glass-panel glass-panel-on mt-10 rounded-2xl p-6"
                 >
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white">
+                  <span className={`${EYEBROW} text-white`}>
                     Срок под вашу задачу
                   </span>
                   <p className="mt-3 font-display text-xl uppercase leading-tight tracking-tight text-orange">

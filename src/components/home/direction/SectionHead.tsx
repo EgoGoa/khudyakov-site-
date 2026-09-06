@@ -2,7 +2,7 @@
 
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
-import { CHAPTER_INTRO } from "@/lib/typography";
+import { CHAPTER_INTRO, EYEBROW } from "@/lib/typography";
 import Typewriter from "./Typewriter";
 import { MEDIA_TEXT } from "./BlockMedia";
 import type { DirectionSectionHead } from "./types";
@@ -44,7 +44,7 @@ export default function SectionHead({
     <div className={`${ALIGN_CLASS[align]} ${MEDIA_TEXT}`}>
       <Appear from={from} delay={BEAT.eyebrow}>
         <span
-          className={`flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-rec ${
+          className={`${EYEBROW} flex items-center gap-2 text-rec ${
             align === "center" ? "justify-center" : align === "right" ? "justify-end" : ""
           }`}
         >
@@ -55,8 +55,8 @@ export default function SectionHead({
 
       <Appear from={from} delay={BEAT.title}>
         <h2
-          className={`chapter-neon-warm mt-4 font-display uppercase leading-[0.98] tracking-tight ${
-            titleClassName || "text-[2.2rem] sm:text-[3rem] lg:text-[3.4rem]"
+          className={`chapter-neon-warm mt-4 break-words font-display uppercase leading-[0.98] tracking-tight ${
+            titleClassName || "text-[1.8rem] sm:text-[3rem] lg:text-[3.4rem]"
           }`}
         >
           {typed ? (

@@ -4,6 +4,7 @@ import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { pricingByCategory } from "@/lib/service-content";
+import { EYEBROW } from "@/lib/typography";
 
 export const metadata: Metadata = {
   title: "Цены на SMM — HDKV.AGENCY",
@@ -50,7 +51,7 @@ export default function SmmPricingPage() {
                     tier.pro ? "border-glow/50 bg-glow/[0.06]" : "border-paper/15 bg-ink/45"
                   }`}
                 >
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50">
+                  <span className={`${EYEBROW} text-paper/50`}>
                     {tier.tagline}
                   </span>
                   <div className="mt-2 font-display text-2xl uppercase tracking-tight text-paper">

@@ -8,6 +8,7 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
 import { servicesByCategory } from "@/lib/service-content";
+import { EYEBROW } from "@/lib/typography";
 
 // Chapter 04 — the services list plus the AI-assistant teaser and the
 // calculator pitch that used to each get their own vertical slot. The list
@@ -132,7 +133,7 @@ export default function Offer({
                 </p>
               ) : (
                 <>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-glow">Скоро</div>
+                  <div className={`${EYEBROW} text-glow`}>Скоро</div>
                   <p className="mt-1.5 text-sm leading-relaxed text-paper/75">
                     AI-агент прикинет формат и бюджет прямо в чате — до брифа и без ожидания менеджера.
                   </p>

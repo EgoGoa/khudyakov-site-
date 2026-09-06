@@ -9,6 +9,7 @@ import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
 import type { DirectionContent } from "../types";
+import { EYEBROW } from "@/lib/typography";
 
 // FAQ: слева список вопросов, справа развёрнутый ответ на выбранный.
 // На узких экранах превращается в обычный аккордеон — две колонки туда не
@@ -101,7 +102,7 @@ export default function FaqBlock({ faq }: { faq: DirectionContent["faq"] }) {
                   transition={{ duration: 0.45, ease: EASE }}
                   className="glass-panel sticky top-28 rounded-3xl p-9"
                 >
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-orange">
+                  <span className={`${EYEBROW} text-orange`}>
                     Ответ / {String(active + 1).padStart(2, "0")}
                   </span>
                   <h3 className="mt-5 font-display text-xl uppercase leading-tight tracking-tight text-white">

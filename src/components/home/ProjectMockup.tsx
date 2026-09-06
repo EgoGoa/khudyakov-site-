@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { works } from "@/lib/data";
+import { EYEBROW } from "@/lib/typography";
 
 const navItems = [
   { label: "Брифы", count: 3 },
@@ -77,7 +78,7 @@ export default function ProjectMockup() {
                   </div>
                 ))}
               </nav>
-              <div className="mt-8 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/30">
+              <div className={`${EYEBROW} mt-8 text-paper/30`}>
                 Категории
               </div>
               <div className="mt-3 space-y-2">

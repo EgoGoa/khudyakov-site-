@@ -9,6 +9,7 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
 import { whyByCategory } from "@/lib/service-content";
+import { EYEBROW } from "@/lib/typography";
 
 // Chapter 03 on /content (the deck position `index`/`chapter` default to) —
 // the old Why + Testimonials + LogoCloud folded into one screen. They made
@@ -106,7 +107,7 @@ export default function Trust({
               delay={BEAT.content + why.reasons.length * STAGGER.normal}
               className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-2 border-t border-paper/15 pt-5 [@media(max-height:860px)]:mt-3 [@media(max-height:860px)]:pt-3"
             >
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-paper/45">
+              <span className={`${EYEBROW} text-paper/45`}>
                 Нам доверяют
               </span>
               <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">

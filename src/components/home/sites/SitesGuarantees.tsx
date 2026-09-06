@@ -7,6 +7,7 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
+import { EYEBROW } from "@/lib/typography";
 
 // Chapter 05 — "why us" (brief §9) plus the FAQ (brief §10), folded into one
 // screen the same way AiGuarantees.tsx pairs its terms list with an FAQ
@@ -99,7 +100,7 @@ export default function SitesGuarantees() {
         <div className="w-full shrink-0 lg:w-[38%]">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">05</span>
+              <span className={`${EYEBROW} text-glow`}>05</span>
               <span className="h-px w-8 bg-glow/40" />
             </div>
           </Appear>
@@ -167,7 +168,7 @@ export default function SitesGuarantees() {
         </ul>
 
         <div className="mt-8 lg:mt-0 lg:w-[320px] lg:shrink-0 xl:w-[360px]">
-          <Appear from="up" delay={BEAT.cta} className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">
+          <Appear from="up" delay={BEAT.cta} className={`${EYEBROW} text-paper/45`}>
             FAQ
           </Appear>
           <Appear from="up" delay={BEAT.cta} className="mt-3 border-t border-paper/10">

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { EASE } from "@/lib/motion";
-import { HERO_LEAD } from "@/lib/typography";
+import { HERO_LEAD, EYEBROW } from "@/lib/typography";
 import Typewriter from "./Typewriter";
 import { TelegramIcon } from "@/components/ui/Icons";
 import { PHONE, PHONE_HREF, TELEGRAM_URL } from "./contacts";
@@ -81,18 +81,18 @@ export default function DirectionHero({ hero }: { hero: DirectionContent["hero"]
         >
           <Link
             href="/content"
-            className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-white transition-colors hover:text-glow"
+            className={`${EYEBROW} inline-flex items-center gap-2 text-white transition-colors hover:text-glow`}
           >
             <span aria-hidden="true">←</span>
             Создание контента
           </Link>
 
-          <span className="mt-6 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-rec">
+          <span className={`${EYEBROW} mt-6 flex items-center gap-2 text-rec`}>
             <span className="h-1.5 w-1.5 rounded-full bg-rec" />
             {hero.eyebrow}
           </span>
 
-          <h1 className="chapter-neon-warm mt-5 font-display text-[2.6rem] uppercase leading-[0.95] tracking-tight sm:text-[3.6rem] lg:text-[4.4rem]">
+          <h1 className="chapter-neon-warm mt-5 break-words font-display text-[2.1rem] uppercase leading-[0.95] tracking-tight sm:text-[3.6rem] lg:text-[4.4rem]">
             {/* Если направление отдало `typed`, заголовок печатается. Ровно
                 одна такая точка на страницу — либо здесь, либо в блоке
                 процесса, никогда в обоих. */}

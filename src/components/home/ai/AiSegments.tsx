@@ -3,6 +3,7 @@
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
+import { EYEBROW } from "@/lib/typography";
 
 // Chapter 02 — who this is for (4 segments) and the cases that prove it,
 // folded into one screen the way /content's own chapter 02 folds its
@@ -105,7 +106,7 @@ export default function AiSegments() {
           the last segment card lands. */}
       <div className="mt-6 border-t border-paper/15 pt-5">
         <Appear from="up" delay={BEAT.content + SEGMENTS.length * STAGGER.tight}>
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45">Кейсы</span>
+          <span className={`${EYEBROW} text-paper/45`}>Кейсы</span>
         </Appear>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {CASES.map((c, i) => (
