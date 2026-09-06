@@ -26,24 +26,40 @@ export const BEAT = {
   title: 0.35, // "what is this"
   intro: 0.65, // "what does it mean" — heading + this line hold alone for 2s
   content: 2.65, // the substance: tiles, cards, lists
-  controls: 2.6, // filters and links that act on the substance
+  // Filters and catalogue links act *on* the substance, so they arrive after
+  // it rather than a hair before it — the value used to be 2.6, which put
+  // them 0.05s ahead of the thing they control and made the two read as one
+  // simultaneous slab. Still comfortably before `cta`.
+  controls: 2.95,
   cta: 3.2, // the ask, last — after the reason for it has landed
 } as const;
 
-/** How long each kind of element takes to settle. Slightly slower than the
- *  original scale (title 0.9→1.0, text/item 0.7-0.75→0.85) to match the
- *  unhurried settle Egor liked on /smm. */
+/** How long each kind of element takes to settle.
+ *
+ *  These are /smm's numbers, adopted for every service page. /smm used to
+ *  carry its own slower scale in a `smmMotion.ts` of its own; Egor picked
+ *  that pace as the one the whole site should read at, so the file is gone
+ *  and its values live here instead. A longer settle reads as an element
+ *  being *placed* rather than snapping into position, which is what made
+ *  /smm feel more considered than its siblings. */
 export const DUR = {
-  chapter: 0.85, // the chapter block itself flying in
-  title: 1.0,
-  text: 0.85,
-  item: 0.85,
+  chapter: 1.15, // the chapter block itself flying in
+  title: 1.05,
+  text: 1.05,
+  item: 1.05,
+  /** One row or card inside a cascading list — shorter than `item` on
+   *  purpose. A row is a smaller, simpler shape, and the cascade's own
+   *  STAGGER already supplies the sense of duration; a full `item` per row
+   *  would make a five-row list take visibly longer to finish than the
+   *  heading above it took to arrive. */
+  row: 0.8,
 } as const;
 
-/** Gap between siblings in a sequence (tiles, cards, list rows). Wider than
- *  before (0.07/0.11 → 0.09/0.15) so a cascading list reads as one row after
- *  another rather than a fast ripple. */
+/** Gap between siblings in a sequence (tiles, cards, list rows). Wide enough
+ *  that a cascading list reads as one row after another rather than a fast
+ *  ripple, and narrow enough that the list finishes revealing itself before
+ *  BEAT.cta asks the reader to act on it. */
 export const STAGGER = {
-  tight: 0.09, // long lists — ten service rows
-  normal: 0.15, // a handful of cards or tiles
+  tight: 0.09, // long lists — process steps, ten service rows, FAQ
+  normal: 0.15, // a handful of cards, tiles or pills
 } as const;

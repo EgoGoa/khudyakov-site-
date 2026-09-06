@@ -53,7 +53,6 @@ export default function AiPitch() {
       index={0}
       chapter="01"
       title="AI-решения быстрее рынка"
-      icon="aperture"
       side="left"
       entrance="slide-left"
       id="pitch"

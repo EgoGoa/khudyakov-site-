@@ -3,7 +3,7 @@
 import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { SMM_BEAT, SMM_DUR, SMM_STAGGER } from "@/components/home/smm/smmMotion";
+import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { SMM_PROCESS_STEPS } from "@/components/home/smm/smmProcessSteps";
@@ -24,7 +24,7 @@ import { SMM_PROCESS_STEPS } from "@/components/home/smm/smmProcessSteps";
 // shooting star) — five short rows is exactly what fits a screen that is only
 // on for a few seconds before the next hold.
 //
-// Steps cascade one at a time (SMM_STAGGER, smmMotion.ts) rather than the
+// Steps cascade one at a time (STAGGER.tight, lib/motion.ts) rather than the
 // whole <ol> arriving together, `as="li"` so each row stays a direct child of
 // the list.
 
@@ -34,14 +34,12 @@ export default function SmmProcess() {
       index={3}
       chapter="04"
       title="Как проходит работа"
-      icon="route"
       side="right"
       entrance="slide-right"
       id="process"
       spacious
       column
       headless
-      transitionDuration={SMM_DUR.chapter}
       /* Top-right, above the steps panel and only grazing its upper corner —
          the exact box Egor marked, measured against this chapter's own
          container (`relative mx-auto max-w-7xl`) and written in px rather
@@ -79,15 +77,15 @@ export default function SmmProcess() {
       >
         {/* Same fix as SmmOffer's list: the panel now arrives on the same
             beat as the first row instead of popping in early and empty. */}
-        <Appear from="right" delay={SMM_BEAT.content} duration={SMM_DUR.item} blur blurPx={12} as="div">
+        <Appear from="right" delay={BEAT.content} blurPx={12} as="div">
         <ol className={`${SMM_PANEL} divide-y divide-paper/10 px-5 py-1`}>
           {SMM_PROCESS_STEPS.map((step, i) => (
             <Appear
               key={step.title}
               as="li"
               from="right"
-              delay={SMM_BEAT.content + i * SMM_STAGGER}
-              duration={SMM_DUR.row}
+              delay={BEAT.content + i * STAGGER.tight}
+              duration={DUR.row}
               blur
               blurPx={10}
               className="flex items-start gap-4 py-3.5"
@@ -123,7 +121,7 @@ export default function SmmProcess() {
             cards: the chapter already carries a heading, a support line, five
             steps and two actions, and two more panels would be the crowding
             he asked to avoid. */}
-        <Appear from="up" delay={SMM_BEAT.cta} duration={SMM_DUR.item} blur>
+        <Appear from="up" delay={BEAT.cta}>
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-5">
             <Link
               href="/smm/cases"

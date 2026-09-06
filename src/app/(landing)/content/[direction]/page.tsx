@@ -5,11 +5,18 @@ import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { contentDirections } from "@/lib/service-content";
+import DirectionFullPage from "@/components/home/direction/DirectionPage";
+import { directionPages } from "@/components/home/direction/registry";
 
 // Superficial on purpose — one screen of real copy per direction (pitch +
 // what's included) rather than the full ruvision-style case-study/pricing/
-// process stack. Deepening any one of these is a separate pass once the
-// direction grid itself (the actual ask) is settled.
+// process stack.
+//
+// Exception: directions listed in components/home/direction/registry.ts
+// ("presentation", "advertising") have the full stack, built to the
+// mechanics of ruvision.ru — one shared layout, one content file per
+// direction. The rest deliberately stay on the light layout below until
+// each gets its own content.
 
 export function generateStaticParams() {
   return contentDirections.map((d) => ({ direction: d.slug }));
@@ -33,6 +40,9 @@ export default async function DirectionPage({ params }: { params: Promise<{ dire
   const { direction: slug } = await params;
   const direction = contentDirections.find((d) => d.slug === slug);
   if (!direction) notFound();
+
+  const fullPage = directionPages[slug];
+  if (fullPage) return <DirectionFullPage content={fullPage} />;
 
   return (
     <section className="py-16 sm:py-24">

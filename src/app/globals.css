@@ -358,6 +358,31 @@ body {
   }
 }
 
+/* Тот же приём для стокового кадра на фоне блока страницы направления.
+   На этих страницах кадры чередуются с отрывками наших работ, и статичная
+   фотография между двумя играющими видео читается как «здесь не
+   загрузилось». Наезд намеренно длиннее и мельче, чем у photo-stage-bg:
+   кадр стоит под плотным текстом, и заметное движение под абзацем мешало бы
+   читать. */
+.block-media-drift {
+  animation: block-media-drift 42s ease-in-out infinite alternate;
+}
+
+@keyframes block-media-drift {
+  0% {
+    transform: scale(1.05) translate(0.8%, 0.6%);
+  }
+  100% {
+    transform: scale(1.12) translate(-0.8%, -1%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block-media-drift {
+    animation: none;
+  }
+}
+
 /* The "AI" appended to the header's DIGITAL wordmark is a distinct brand
    mark, not the hero's cyan neon — pink-to-blue gradient with its own soft
    glow, per the founder's logo. Drop-shadow rather than text-shadow because
@@ -2352,4 +2377,188 @@ body {
 .smm-accent {
   color: #5ee7ff;
   text-shadow: 0 0 14px rgba(94, 231, 255, 0.45), 0 2px 20px rgba(11, 11, 16, 0.9);
+}
+
+/* ── A pinned chapter gets exactly one screen, and no more ───────────────
+   CinematicStage pins every chapter in the same viewport-sized frame, and
+   the deck's whole premise is that a chapter is read at a glance rather
+   than scrolled through (see CinematicStage's own note). That premise only
+   held on a tall display: the frame's fixed vertical chrome — 88px of
+   header clearance, 48px below, and a 60px title — was measured against a
+   1920x1080 screen, and on the 1280x800 and 1440x900 laptops most visitors
+   actually use it pushed several chapters past the fold, so their closing
+   rows could only be reached by scrolling inside the chapter.
+
+   Height, not width, is the constraint here, so this keys off `max-height`
+   rather than a breakpoint: the frame gives room back in two steps as the
+   screen gets shorter, and the chapter's content keeps every pixel it
+   gains. Nothing is hidden and no copy is dropped — only the air around it
+   and the size of the heading change.
+
+   The title rules match on the neon classes every chapter heading carries
+   (`chapter-neon`, and the per-page `-warm`/`-cool`/`-violet` variants), so
+   this caps the shared default and a chapter's own `titleClassName` alike.
+
+   Both selectors are written to out-specify a plain Tailwind utility, which
+   is what sets these values on the element in the first place (`pt-[5.5rem]`,
+   `text-6xl`). A single attribute selector ties with a single class and then
+   loses on source order, since these rules are emitted before Tailwind's
+   utilities — so the pane matches on `[data-chapter-pane][data-active]`
+   (every pane carries both) and the heading on element+class. No
+   `!important` needed either way. */
+@media (max-height: 940px) {
+  [data-chapter-pane][data-active] {
+    padding-top: 4.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  [data-chapter-pane] h2[class*="chapter-neon"] {
+    font-size: clamp(1.9rem, 3.6vw, 3.25rem);
+  }
+}
+
+/* The floor. `padding-top` stops at 4rem because the site header is 64px
+   tall and fixed — any less and a chapter's number row slides under it. */
+@media (max-height: 860px) {
+  [data-chapter-pane][data-active] {
+    padding-top: 4rem;
+    padding-bottom: 1rem;
+  }
+
+  [data-chapter-pane] h2[class*="chapter-neon"] {
+    font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+  }
+}
+
+/* Кнопки блока персонализации на страницах направлений.
+   
+   Егор просил сделать их «более явными, пусть мигают неоном»: этот блок —
+   смысловой центр страницы, и он должен звать нажать, а не стоять как ряд
+   служебных фильтров. Пульсация работает ТОЛЬКО пока ответ не выбран
+   (класс .task-chip-idle снимается сразу после выбора) — иначе блок
+   продолжал бы дёргать внимание уже без причины, а это раздражает. */
+.task-chip {
+  box-shadow: 0 0 0 0 rgba(255, 106, 61, 0);
+}
+
+.task-chip-idle {
+  animation: task-chip-pulse 2.8s ease-in-out infinite;
+}
+
+/* Выбранная кнопка не мигает, а ровно светится: состояние «применено»
+   должно читаться как покой, а не как ещё одно приглашение нажать. */
+.task-chip-on {
+  box-shadow:
+    0 0 0 1px rgba(255, 106, 61, 0.55),
+    0 0 28px rgba(255, 106, 61, 0.34);
+}
+
+@keyframes task-chip-pulse {
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 0 rgba(255, 106, 61, 0);
+  }
+  50% {
+    border-color: rgba(255, 106, 61, 0.7);
+    box-shadow:
+      0 0 0 1px rgba(255, 106, 61, 0.35),
+      0 0 26px rgba(255, 106, 61, 0.3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task-chip-idle {
+    animation: none;
+    border-color: rgba(255, 106, 61, 0.55);
+  }
+}
+
+/* ── Стеклянные подложки под контентом страниц направлений ────────────────
+
+   Егор: «текст очень плохо падает на фон, это заметно… нужно более явно
+   выделить блоки, подблоки — стеклянный размытый эффект, минималистичные
+   окошки без рамок, чуть-чуть фирменного градиента».
+
+   Отсюда три решения:
+
+   1. Рамки нет. Вместо неё — внутренний световой кант сверху
+      (inset 0 1px 0) и глубокая мягкая тень снизу. Рамка вокруг каждой
+      карточки превращала бы страницу в таблицу; кант же читается как
+      толщина стекла, а не как обводка.
+   2. Подложка не плоская заливка, а лёгкий диагональный градиент — стекло
+      должно ловить свет, иначе панель выглядит как серый прямоугольник.
+   3. Фирменный градиент присутствует ровно одной тонкой полосой по верхней
+      кромке (::before). Больше — и цвет начинает спорить с акцентами
+      внутри карточки. */
+.glass-panel {
+  position: relative;
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.012) 55%),
+    rgba(11, 11, 16, 0.56);
+  backdrop-filter: blur(20px) saturate(125%);
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.045),
+    0 28px 70px -34px rgba(0, 0, 0, 0.95);
+  transition:
+    background 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+/* Фирменная кромка. border-radius наследуется, чтобы полоса повторяла
+   скругление панели на любом радиусе. */
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding-top: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 79, 216, 0.55),
+    rgba(255, 106, 61, 0.55),
+    transparent
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+/* Активное состояние — выбранный тариф, раскрытый вопрос. Стекло становится
+   плотнее и берёт тёплый акцент: «это сейчас про вас». */
+.glass-panel-on {
+  background:
+    linear-gradient(155deg, rgba(255, 106, 61, 0.14), rgba(255, 79, 216, 0.05) 60%),
+    rgba(11, 11, 16, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 0 0 1px rgba(255, 106, 61, 0.4),
+    0 30px 80px -34px rgba(0, 0, 0, 0.95);
+}
+
+.glass-panel-on::before {
+  opacity: 1;
+}
+
+/* Тихий вариант — широкие полосы вроде строки цифр, где подложка должна
+   только приподнять текст над кадром, а не выглядеть карточкой. Поэтому у
+   неё нет ни канта, ни тени: только уплотнение и размытие, растворяющееся
+   по краям. */
+.glass-strip {
+  background: linear-gradient(
+    180deg,
+    rgba(11, 11, 16, 0) 0%,
+    rgba(11, 11, 16, 0.42) 22%,
+    rgba(11, 11, 16, 0.42) 78%,
+    rgba(11, 11, 16, 0) 100%
+  );
+  backdrop-filter: blur(14px) saturate(115%);
+  -webkit-backdrop-filter: blur(14px) saturate(115%);
 }

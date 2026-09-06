@@ -26,7 +26,13 @@ export default function SeoAccordion({
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div className="mx-auto mt-5 w-full max-w-4xl rounded-2xl bg-ink/45 px-4 py-2.5 backdrop-blur-md sm:px-5">
+    // This block lives inside a pinned, one-screen chapter on every service
+    // page, and it is the least glanceable thing on that screen — a
+    // search-facing long read behind collapsed rows. So on a short display it
+    // is the first thing asked to give room back, before any of the copy a
+    // visitor is actually looking at. Nothing is dropped: the rows just sit
+    // closer together.
+    <div className="mx-auto mt-5 w-full max-w-4xl rounded-2xl bg-ink/45 px-4 py-2.5 backdrop-blur-md sm:px-5 [@media(max-height:860px)]:mt-3 [@media(max-height:860px)]:py-1.5">
       <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-paper/45">
         {eyebrow}
       </span>
@@ -40,7 +46,7 @@ export default function SeoAccordion({
                 type="button"
                 onClick={() => setOpenIndex(isOpen ? null : i)}
                 aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-4 py-2 text-left"
+                className="flex w-full items-center justify-between gap-4 py-2 text-left [@media(max-height:860px)]:py-1.5"
               >
                 <span className="flex items-baseline gap-2.5">
                   <span className="font-mono text-[9px] text-glow/70">

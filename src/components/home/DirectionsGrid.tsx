@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import Appear from "@/components/ui/Appear";
+import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import { useStageActive, useStageStarted } from "@/components/ui/CinematicStage";
 import { TelegramIcon } from "@/components/ui/Icons";
 import { contentDirections, type ContentDirection } from "@/lib/service-content";
 import { works } from "@/lib/data";
 import type { Work } from "@/lib/types";
 
-const TELEGRAM_URL = "https://t.me/+79925111812";
+const TELEGRAM_URL = "https://t.me/hdkv";
 
 // hqdefault always exists for any YouTube video; maxresdefault looks sharper
 // but isn't guaranteed — same fallback dance as Works.tsx.
@@ -189,12 +191,36 @@ export default function DirectionsGrid() {
   const active = stageActive && stageStarted;
   const picks = pickWorks(contentDirections);
 
+  // The six cards cascade one after another rather than arriving as a single
+  // slab — the same STAGGER the lists on every other service page read on.
+  // The consult card is deliberately last in that cascade as well as last in
+  // the grid: it is the ask, and it should land after the five formats it
+  // offers to help choose between.
+  const cards = [
+    ...contentDirections.map((direction, i) => (
+      <DirectionCard key={direction.slug} direction={direction} work={picks[i]} active={active} />
+    )),
+    <ConsultCard key="consult" />,
+  ];
+
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {contentDirections.map((direction, i) => (
-        <DirectionCard key={direction.slug} direction={direction} work={picks[i]} active={active} />
+      {cards.map((card, i) => (
+        // `as="article"` so each card stays a direct child of the CSS grid:
+        // a plain wrapping <div> would still be the grid cell, but article
+        // is what the card actually is, and it matches how /smm's own
+        // cascading card grids are built.
+        <Appear
+          key={card.key}
+          as="article"
+          from="up"
+          delay={BEAT.content + i * STAGGER.normal}
+          duration={DUR.row}
+          className="h-full"
+        >
+          {card}
+        </Appear>
       ))}
-      <ConsultCard />
     </div>
   );
 }

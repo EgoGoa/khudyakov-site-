@@ -8,6 +8,8 @@ import SmmOffer from "@/components/home/smm/SmmOffer";
 import SmmProcess from "@/components/home/smm/SmmProcess";
 import SmmGuarantees from "@/components/home/smm/SmmGuarantees";
 import SmmClose from "@/components/home/smm/SmmClose";
+import SeoLongRead from "@/components/home/shared/SeoLongRead";
+import { SMM_SEO_SECTIONS } from "@/components/home/smm/smmSeoSections";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -130,6 +132,8 @@ export default function SmmServicePage() {
           <SmmClose />
         </CinematicStage>
       </div>
+
+      <SeoLongRead eyebrow="Подробнее о SMM" sections={SMM_SEO_SECTIONS} />
     </ServiceProvider>
   );
 }

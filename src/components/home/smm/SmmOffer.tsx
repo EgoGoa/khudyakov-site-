@@ -2,7 +2,7 @@
 
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { SMM_BEAT, SMM_DUR, SMM_STAGGER } from "@/components/home/smm/smmMotion";
+import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
@@ -15,7 +15,7 @@ import { servicesByCategory } from "@/lib/service-content";
 // the service list are the same data Offer reads
 // (servicesByCategory.smm) — only the composition is this page's.
 //
-// Rows cascade one at a time via SMM_STAGGER (smmMotion.ts) instead of the
+// Rows cascade one at a time via STAGGER.tight (lib/motion.ts) instead of the
 // whole <ul> arriving as one block — each <li> is its own Appear, `as="li"`
 // so it stays a direct child of the list rather than a browser hoisting a
 // wrapping <div> back out from between the <ul> and its row.
@@ -27,14 +27,12 @@ export default function SmmOffer() {
       index={2}
       chapter="03"
       title="Что делаем"
-      icon="layers"
       side="left"
       entrance="rise"
       id="offer"
       spacious
       column
       headless
-      transitionDuration={SMM_DUR.chapter}
       bodyDecor={
         <SmmDecoIcon
           src="/images/icons/smm/reels.png"
@@ -66,15 +64,15 @@ export default function SmmOffer() {
             with the chapter's own quick wipe well before the rows cascading
             inside it — empty through the whole heading pause. It now arrives
             on the same beat as the first row instead. */}
-        <Appear from="right" delay={SMM_BEAT.content} duration={SMM_DUR.item} blur blurPx={12} as="div">
+        <Appear from="right" delay={BEAT.content} blurPx={12} as="div">
         <ul className={`${SMM_PANEL} divide-y divide-paper/10 px-5 py-1`}>
           {SERVICES.map((service, i) => (
             <Appear
               key={service.title}
               as="li"
               from="right"
-              delay={SMM_BEAT.content + i * SMM_STAGGER}
-              duration={SMM_DUR.row}
+              delay={BEAT.content + i * STAGGER.tight}
+              duration={DUR.row}
               blur
               blurPx={10}
               className="group flex items-baseline gap-3 py-3"

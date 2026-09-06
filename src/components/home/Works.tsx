@@ -330,8 +330,18 @@ export default function Works({
               </div>
             </Reveal>
 
+            {/* The chapter variant (`limit`) is a 2x2 of tiles inside a pinned,
+                one-screen chapter, so on a short laptop it gives its own gaps
+                back rather than letting the bottom row be cropped by the fold.
+                The full /works catalogue below has a whole page to run down
+                and needs no such thing. */}
             <div className={limit
-              ? "mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6"
+              // The width cap is what keeps the bottom row on screen on a
+              // wide-but-short laptop (1366x768 is the usual one): the tiles
+              // are 16:9, so every extra pixel of width costs nine sixteenths
+              // of a pixel of height on both rows at once. Capping the grid
+              // — not the chapter — leaves the heading and filters full width.
+              ? "mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 [@media(max-height:860px)]:mt-2 [@media(max-height:860px)]:sm:gap-4 [@media(max-height:820px)]:mx-auto [@media(max-height:820px)]:max-w-[860px]"
               : "mt-10 grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2"}>
               {/* In chapter mode each tile carries its own two actions, so it is
                   a plain container rather than one big button — a button cannot

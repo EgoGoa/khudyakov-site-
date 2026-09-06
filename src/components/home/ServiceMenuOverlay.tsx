@@ -12,7 +12,7 @@ import { useWelcomeGate } from "@/lib/welcome-gate";
 import CenterModal from "@/components/ui/CenterModal";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const TELEGRAM_URL = "https://t.me/+79925111812";
+const TELEGRAM_URL = "https://t.me/hdkv";
 const PHRASE = "С чего начнём?";
 const CHAR_DELAY_MS = 120;
 

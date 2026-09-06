@@ -5,17 +5,17 @@ import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSectio
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
-import SeoAccordion from "@/components/ui/SeoAccordion";
-import { SITES_SEO_SECTIONS } from "@/components/home/sites/sitesSeoSections";
 import { pricingByCategory } from "@/lib/service-content";
 
-// Chapter 06 of /sites — the closing chapter: three price tiers, the SEO
-// long-read, and the last call to action.
+// Chapter 06 of /sites — the closing chapter: three price tiers and the last
+// call to action.
 //
 // A /sites-only component rather than the shared <Close>, so this page can
 // carry its own style without moving /ai, /smm and /content with it. The
-// tiers are the same pricingByCategory.sites data and the long-read the same
-// SITES_SEO_SECTIONS the shared component was being handed.
+// tiers are the same pricingByCategory.sites data.
+//
+// The search-facing long read that used to close this chapter now follows the
+// whole deck instead — see shared/SeoLongRead for why it left.
 //
 // This chapter is the one exception to the page's two-column skeleton
 // (SitesChapterLayout). It was built that way first and Egor sent it back:
@@ -62,7 +62,6 @@ export default function SitesClose() {
           Персональные <span className="kw">условия</span>
         </>
       }
-      icon="spark"
       side="center"
       entrance="zoom"
       id="close"
@@ -82,7 +81,7 @@ export default function SitesClose() {
       </Appear>
 
       <Appear from="up" delay={BEAT.content}>
-        <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3">
+        <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3 [@media(max-height:820px)]:max-w-4xl">
           {TIERS.map((tier) => (
             <article key={tier.name} className={`c3-card sites-tier ${tier.pro ? "c3-card-pro" : ""}`}>
               <span className="c3-tier-small relative">{tier.tagline}</span>
@@ -116,10 +115,6 @@ export default function SitesClose() {
             </article>
           ))}
         </div>
-      </Appear>
-
-      <Appear from="up" delay={BEAT.cta}>
-        <SeoAccordion eyebrow="Подробнее о сайтах на AI" sections={SITES_SEO_SECTIONS} />
       </Appear>
 
       <Appear from="up" delay={BEAT.cta}>

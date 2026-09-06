@@ -56,7 +56,6 @@ export default function SitesPitch() {
       index={0}
       chapter="01"
       title="Сайты на AI — дни, не месяцы"
-      icon="aperture"
       side="left"
       entrance="slide-left"
       id="pitch"

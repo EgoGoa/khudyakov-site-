@@ -3,10 +3,8 @@
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { SMM_BEAT, SMM_DUR, SMM_STAGGER } from "@/components/home/smm/smmMotion";
+import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
-import SeoAccordion from "@/components/ui/SeoAccordion";
-import { SMM_SEO_SECTIONS } from "@/components/home/smm/smmSeoSections";
 import { pricingByCategory } from "@/lib/service-content";
 
 // Chapter 06 of /smm — the closing chapter: three monthly packages, the SEO
@@ -28,8 +26,8 @@ import { pricingByCategory } from "@/lib/service-content";
 // floor is pure air pushing down on the heading, since the accordion and the
 // closing CTA also live on this screen.
 //
-// Timing runs on SMM_BEAT/SMM_DUR (smmMotion.ts) — the tier cards cascade
-// one at a time via SMM_STAGGER rather than the row appearing as one block,
+// Timing runs on the shared BEAT/DUR scale (lib/motion.ts) — the tier cards cascade
+// one at a time via STAGGER.normal rather than the row appearing as one block,
 // `as="article"` so each card stays a direct child of the CSS grid.
 //
 // The /smm/cases and /smm/pricing link-outs are deliberately NOT here. They
@@ -69,33 +67,31 @@ export default function SmmClose() {
           Пакеты <span className="kw">ведения</span>
         </>
       }
-      icon="spark"
       side="center"
       entrance="zoom"
       id="close"
       spacious
       titleClassName="chapter-neon-violet text-4xl sm:text-5xl lg:text-5xl xl:text-6xl"
-      transitionDuration={SMM_DUR.chapter}
     >
       {/* The supporting line is rendered here rather than through
           CinematicSection's `intro` slot, which sets its text as tiny
           uppercase display type — every other chapter on this page carries
           ordinary sentence-case copy at the body scale. */}
-      <Appear from="up" delay={SMM_BEAT.intro} duration={SMM_DUR.item} blur>
+      <Appear from="up" delay={BEAT.intro}>
         <p className={`mx-auto mb-8 max-w-[46em] text-center ${CHAPTER_INTRO}`}>
           Точная смета — после короткого брифа. <span className="smm-accent">Бесплатно</span>:
           аудит аккаунта и разбор, что усилить в первую очередь.
         </p>
       </Appear>
 
-      <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3">
+      <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3 [@media(max-height:820px)]:max-w-4xl">
         {TIERS.map((tier, i) => (
           <Appear
             key={tier.name}
             as="article"
             from="up"
-            delay={SMM_BEAT.content + i * SMM_STAGGER}
-            duration={SMM_DUR.row}
+            delay={BEAT.content + i * STAGGER.normal}
+            duration={DUR.row}
             blur
             blurPx={14}
             className={`c3-card smm-tier ${tier.pro ? "c3-card-pro" : ""}`}
@@ -132,15 +128,12 @@ export default function SmmClose() {
         ))}
       </div>
 
-      {/* Past the tier cascade (last card lands at content + 2×STAGGER),
-          so the long-read and the closing CTA land after the pricing has
-          finished revealing itself. */}
-      <Appear from="up" delay={SMM_BEAT.cta} duration={SMM_DUR.item} blur>
-        <SeoAccordion eyebrow="Подробнее о SMM" sections={SMM_SEO_SECTIONS} />
-      </Appear>
-
-      <Appear from="up" delay={SMM_BEAT.cta + SMM_STAGGER} duration={SMM_DUR.item} blur>
-        <div className="mt-7 flex items-center justify-center gap-4">
+      {/* Past the tier cascade (last card lands at content + 2×STAGGER), so
+          the closing CTA lands after the pricing has finished revealing
+          itself. The search-facing long read that used to sit here now
+          follows the deck — see shared/SeoLongRead. */}
+      <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
+        <div className="mt-7 flex items-center justify-center gap-4 [@media(max-height:860px)]:mt-4">
           <Link href="/brief" className={PILL}>
             Начать вести соцсети
           </Link>

@@ -1,67 +1,51 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { useStageActive } from "@/components/ui/CinematicStage";
-import ChapterIcon from "@/components/ui/ChapterIcon";
+import CinematicSection from "@/components/ui/CinematicSection";
 import DirectionsGrid from "@/components/home/DirectionsGrid";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
-import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 
-// Chapter 01. Top-anchored now, same as every other chapter's header — it
-// used to open from the bottom of the frame, but with a stat row and an
-// awards row both under the title that read as the page starting mid-scroll
-// rather than at its own top.
+// Chapter 01 of /content — the direction grid.
 //
-// The stat row (5 лет / 200+ клиентов / ...) that used to sit here is gone —
-// this chapter now opens straight into the direction grid (see
-// DirectionsGrid), so the very first thing a visitor scrolls to is "what do
-// you actually make", not a number row. DirectionsGrid reads chapter 01's
-// own stage index (useStageActive(0)) for its live-video gate now, not
-// chapter 04's — see that component's own comment on why the gate exists.
-
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-export default function Opening({ service }: { service: ServiceKey }) {
-  const meta = serviceMeta[service];
-  const active = useStageActive(0);
-  const reduced = useReducedMotion();
-
+// This used to be a hand-rolled motion.div with its own entrance (x: -180
+// over 0.6s), its own <h1>, and a 10px uppercase supporting line, which made
+// it the one chapter on the site that did not move or read like any other.
+// Everything now goes through CinematicSection, so it enters on the same
+// slide, at the same DUR.chapter, and its number/title/intro land on the
+// same BEAT as every chapter of /content, /ai, /sites and /smm.
+//
+// Three things went with that:
+//   * the heading is an <h2>, like every other chapter — the page's single
+//     <h1> is the hero's, and two of them was an outright markup bug;
+//   * the supporting line is the shared reading-size intro rather than the
+//     old caption-sized uppercase, which is the weight Egor asked for on
+//     every page;
+//   * the "● HDKV.AGENCY" mono label is gone — no other chapter on the site
+//     carries one, and the chapter number is the marker.
+//
+// The stat row that once sat here went earlier, for the same reason it is
+// still absent: the first thing a visitor scrolls to should be "what do you
+// actually make", not a number row.
+export default function Opening() {
   return (
-    <motion.div
-      initial={false}
-      animate={
-        reduced
-          ? { opacity: active ? 1 : 0 }
-          : { x: active ? 0 : -180, opacity: active ? 1 : 0 }
-      }
-      transition={{ duration: 0.6, ease: EASE }}
-      style={{ willChange: "transform, opacity", touchAction: "pan-y" }}
-      aria-hidden={!active}
-      data-chapter-pane=""
-      data-active={active ? "true" : "false"}
-      className={`absolute inset-0 flex flex-col justify-start overflow-y-auto px-6 pb-16 pt-24 lg:px-10 lg:pt-28 ${
-        active ? "" : "pointer-events-none"
-      }`}
-    >
-      <div className="mx-auto w-full max-w-7xl">
-        <div className="relative">
-          <div className="flex items-center gap-3">
-            <ChapterIcon name="aperture" active={active} />
-            <span className="h-1.5 w-1.5 animate-pulse-rec rounded-full bg-rec" />
-            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-paper/70">
-              HDKV.AGENCY
-            </span>
-            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-glow">01</span>
-          </div>
-
-          <h1 className="chapter-neon mt-5 max-w-3xl font-display uppercase leading-[0.92] tracking-tight text-[clamp(2rem,5vw,3.6rem)]">
-            Основные <span className="kw">направления</span>
-          </h1>
-
-          <p className="mt-4 max-w-md font-display text-[10px] uppercase leading-snug tracking-tight text-white sm:text-[11px] [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-            {meta.description}
-          </p>
-
+    <CinematicSection
+      index={0}
+      chapter="01"
+      title={<>Основные <span className="kw">направления</span></>}
+      // Not serviceMeta.description any more. That line — "Съёмка и монтаж
+      // роликов под ваш формат и площадку" — is what the ServicePicker
+      // directly above this chapter already says, so the two stacked and
+      // repeated each other word for word on the way down the page. This
+      // line does the job the picker's cannot: it says what the six cards
+      // below actually are.
+      intro={<>Пять форматов, которые мы снимаем чаще всего — от презентационного фильма до <span className="kw">AI-видео</span>.</>}
+      // Same reasoning as chapter 02's: the body is a six-card grid, and at
+      // the default header size it loses its bottom row on short viewports
+      // (a chapter cannot scroll internally inside the deck — see
+      // CinematicStage). A smaller title buys that room back from the
+      // header rather than from the cards.
+      titleClassName="text-4xl sm:text-5xl lg:text-6xl xl:text-6xl"
+      decor={
+        <>
           <ContentDecoIcon
             src="/images/icons/content/presentation.png"
             size={238}
@@ -81,12 +65,10 @@ export default function Opening({ service }: { service: ServiceKey }) {
             z={1}
             className="right-[19%] top-6"
           />
-        </div>
-
-        <div className="mt-8">
-          <DirectionsGrid />
-        </div>
-      </div>
-    </motion.div>
+        </>
+      }
+    >
+      <DirectionsGrid />
+    </CinematicSection>
   );
 }

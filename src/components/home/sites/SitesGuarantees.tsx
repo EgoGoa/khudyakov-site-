@@ -79,7 +79,6 @@ export default function SitesGuarantees() {
       index={4}
       chapter="05"
       title="Почему мы"
-      icon="scale"
       side="left"
       entrance="unfold"
       id="guarantees"

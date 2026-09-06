@@ -2,6 +2,27 @@
 
 ## Copy Draft Status Checks
 
+### 2026-09-06 12:00
+- Agency name: Filled ("HDKV.AGENCY")
+- Deadline: Unfilled
+- CTA channel: Filled ("khudyakov.yegor@gmail.com / +7 992 511-18-12")
+- Founder bio: Unfilled
+- Overall: 2 of 4 fields filled
+
+### 2026-09-05 12:00
+- Agency name: Filled ("HDKV.AGENCY")
+- Deadline: Unfilled
+- CTA channel: Filled ("khudyakov.yegor@gmail.com / +7 992 511-18-12")
+- Founder bio: Unfilled
+- Overall: 2 of 4 fields filled
+
+### 2026-09-04 12:00
+- Agency name: Filled ("HDKV.AGENCY")
+- Deadline: Unfilled
+- CTA channel: Filled ("khudyakov.yegor@gmail.com / +7 992 511-18-12")
+- Founder bio: Unfilled
+- Overall: 2 of 4 fields filled
+
 ### 2026-09-03 12:00
 - Agency name: Filled ("HDKV.AGENCY")
 - Deadline: Unfilled

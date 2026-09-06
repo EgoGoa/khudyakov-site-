@@ -1,11 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { CloseIcon } from "@/components/ui/Icons";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+
+// How long the whole subtree is kept alive after `open` goes false — the
+// slower of the two exits below (0.4s) plus a beat. See the mount gate in
+// the component itself for why this is ours to do rather than
+// AnimatePresence's.
+const EXIT_MS = 500;
 
 // A bounded card centred on screen, with the page behind it dimmed but not
 // blurred — the blur lives on the card itself (its own backdrop-filter), so
@@ -35,6 +41,39 @@ export default function CenterModal({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, onClose]);
+
+  // Unmounting is ours, not AnimatePresence's.
+  //
+  // framer-motion 12 does not reliably drop this dialog's exiting child:
+  // the fade itself plays to the end, but the node is never removed from
+  // the tree. What is left behind is this `fixed inset-0 z-[100]` layer at
+  // opacity 0 — invisible, and still covering the entire viewport with
+  // `pointer-events: auto`. Every click on the page then lands on the
+  // backdrop instead of the page (which also fires `onClose` again), and
+  // `aria-modal="true"` keeps the whole document hidden from assistive
+  // tech. Reproduced in a production build as well as in dev, so it is not
+  // a StrictMode artefact, and an explicit `key` on the child did not help.
+  //
+  // `keepAlive` therefore holds the subtree for exactly as long as the exit
+  // needs to play, and then this component returns null — which takes the
+  // stuck node with it. Children unmount properly too, so the widgets
+  // inside stop their own timers on close.
+  const [keepAlive, setKeepAlive] = useState(false);
+  useEffect(() => {
+    if (open) {
+      // Arming the grace period the moment the dialog opens. The rule below
+      // is about effects that sync React state with an external system;
+      // this is the dialog's own lifecycle, and there is nothing external
+      // to read it from.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setKeepAlive(true);
+      return;
+    }
+    const id = window.setTimeout(() => setKeepAlive(false), EXIT_MS);
+    return () => window.clearTimeout(id);
+  }, [open]);
+
+  if (!open && !keepAlive) return null;
 
   return (
     <AnimatePresence>

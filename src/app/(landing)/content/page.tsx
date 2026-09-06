@@ -78,13 +78,12 @@ export default function ContentServicePage() {
         // keyword spans above.
         rail={<ChapterRail count={CHAPTERS.length} from="#ff4fd8" to="#ff6a3d" />}
       >
-        <Opening service="content" />
+        <Opening />
 
         <CinematicSection
           index={1}
           chapter="02"
           title={<>Наши <span className="kw">работы</span></>}
-          icon="frames"
           side="right"
           intro={<><span className="kw">78 проектов</span>: реклама, шоурилы, 3D и моушн.</>}
           // A 2×2 grid of video tiles under the default text-8xl title was
@@ -129,9 +128,13 @@ export default function ContentServicePage() {
           title={<>Именно <span className="kw">мы</span></>}
           intro={<>Продюсерский центр полного цикла: от идеи до готового ролика. Около <span className="kw">60% заказов</span> — клиенты, которые возвращаются.</>}
         />
+        {/* Not "…под формат и площадку" any more: the ServicePicker above the
+            deck and chapter 01 both already used that phrase, so it landed
+            three times on the way down one page. This line says what the ten
+            rows below it actually are instead. */}
         <Offer
           title={<>Лучшие в <span className="kw">этом</span></>}
-          intro={<>Съёмка, монтаж, графика и <span className="kw">AI-продакшн</span> — под формат и площадку.</>}
+          intro={<>Десять задач, которые закрываем своей командой — от рекламного ролика до 3D-графики и <span className="kw">AI-контента</span>.</>}
         />
         <Process
           title={<>PRO <span className="kw">хронология</span></>}

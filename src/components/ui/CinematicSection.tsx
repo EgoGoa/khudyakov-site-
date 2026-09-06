@@ -3,7 +3,6 @@
 import type { ReactNode } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { useStageActive, useIsStaged } from "@/components/ui/CinematicStage";
-import type { ChapterIconName } from "@/components/ui/ChapterIcon";
 import { ChapterActiveProvider } from "@/components/ui/Appear";
 import { BEAT, DUR, EASE as MOTION_EASE } from "@/lib/motion";
 
@@ -17,7 +16,7 @@ import { BEAT, DUR, EASE as MOTION_EASE } from "@/lib/motion";
 // the argument rise from below, chapters that change subject come in from a
 // side, and the closing chapter zooms up to meet the visitor.
 //
-// Layout: the chapter's icon, number and title always sit at the top of the
+// Layout: the chapter's number and title always sit at the top of the
 // screen, so the eye lands in the same place every time and the swap reads as
 // content changing under a stable header.
 //
@@ -49,8 +48,12 @@ export const CHAPTER_COLUMN = "max-w-xl lg:max-w-[56%]";
  *  `intro` slot. Egor asked for that page's supporting lines to look like
  *  every other page's, and one exported string is the only way that stays
  *  true after the next edit to either side. */
-export const CHAPTER_INTRO =
-  "font-display text-sm uppercase leading-snug tracking-tight text-white sm:text-base";
+// Значение переехало в lib/typography.ts (обычный модуль) — здесь только
+// ре-экспорт, чтобы уже существующие импорты из этого файла продолжали
+// работать. См. комментарий там о том, почему клиентский модуль не место
+// для константы, нужной и серверным компонентам.
+export { CHAPTER_INTRO } from "@/lib/typography";
+import { CHAPTER_INTRO } from "@/lib/typography";
 
 export type EntranceKind = "slide-left" | "slide-right" | "rise" | "zoom" | "unfold";
 
@@ -134,7 +137,6 @@ export default function CinematicSection({
   chapter,
   title,
   intro,
-  icon,
   side = "left",
   entrance,
   titleClassName = "",
@@ -145,7 +147,6 @@ export default function CinematicSection({
   spacious = false,
   column = false,
   headless = false,
-  transitionDuration,
 }: {
   /** Position in the deck — must match this chapter's entry in `chapters`. */
   index: number;
@@ -157,7 +158,6 @@ export default function CinematicSection({
    *  only ever rendered as children of the <h2>, never read back as text. */
   title: ReactNode;
   intro?: ReactNode;
-  icon: ChapterIconName;
   side?: "left" | "right" | "center";
   /** Defaults to sliding in from whichever side the chapter is aligned to. */
   entrance?: EntranceKind;
@@ -212,13 +212,6 @@ export default function CinematicSection({
    *  Offer, Process, Close inside /content's stage) and every plain-scroll
    *  page that hasn't opted in keep their current, tighter rhythm. */
   spacious?: boolean;
-  /** How long the whole chapter block takes to fly in/out (DUR.chapter,
-   *  0.85s, if omitted). Every page but /smm leaves this unset — /smm's own
-   *  chapters pass a longer value (see smmMotion.ts) as part of the slower,
-   *  more theatrical pace Egor asked for there specifically ("заметно
-   *  медленнее... дорогая, креативная анимация"), without moving the other
-   *  three service pages off the pace lib/motion.ts already sets for them. */
-  transitionDuration?: number;
 }) {
   // Trust/Offer/Process/Close are authored for the pinned deck (see
   // CinematicStage) but Process is also reused directly on the plain-scroll
@@ -257,7 +250,7 @@ export default function CinematicSection({
       // Only transform and opacity are animated — a blur() on a full-screen
       // layer was tried and dropped: it forces a repaint of the whole stage on
       // every frame and made the swap visibly stutter.
-      transition={{ duration: transitionDuration ?? DUR.chapter, ease: EASE }}
+      transition={{ duration: DUR.chapter, ease: EASE }}
       aria-hidden={!active}
       data-chapter-pane={staged ? "" : undefined}
       data-active={active ? "true" : "false"}

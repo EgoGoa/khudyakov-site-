@@ -53,7 +53,6 @@ export default function Trust({
       index={index}
       chapter={chapter}
       title={title}
-      icon="shield"
       side="right"
       // The argument continues here, so it rises rather than cutting in sideways.
       entrance="rise"
@@ -79,14 +78,14 @@ export default function Trust({
           <Appear
             from="up"
             delay={BEAT.content}
-            className="grid gap-x-8 gap-y-6 rounded-2xl bg-ink/45 p-6 backdrop-blur-md sm:grid-cols-3"
+            className="grid gap-x-8 gap-y-6 rounded-2xl bg-ink/45 p-6 backdrop-blur-md sm:grid-cols-3 [@media(max-height:860px)]:p-3.5"
           >
             {why.reasons.map((reason, i) => (
               <Appear
                 key={reason.title}
                 from="up"
                 delay={BEAT.content + i * STAGGER.normal}
-                className="border-t border-paper/25 pt-4"
+                className="border-t border-paper/25 pt-4 [@media(max-height:860px)]:pt-2.5"
               >
                 <span className="font-mono text-[10px] tracking-[0.2em] text-glow">
                   {String(i + 1).padStart(2, "0")}
@@ -105,7 +104,7 @@ export default function Trust({
             <Appear
               from="up"
               delay={BEAT.content + why.reasons.length * STAGGER.normal}
-              className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-2 border-t border-paper/15 pt-5"
+              className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-2 border-t border-paper/15 pt-5 [@media(max-height:860px)]:mt-3 [@media(max-height:860px)]:pt-3"
             >
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-paper/45">
                 Нам доверяют
@@ -116,7 +115,7 @@ export default function Trust({
             </Appear>
           )}
 
-          <Appear from="up" delay={BEAT.cta} className="relative mt-7">
+          <Appear from="up" delay={BEAT.cta} className="relative mt-7 [@media(max-height:860px)]:mt-3">
             <FunnelCta
               item="consult"
               align="right"

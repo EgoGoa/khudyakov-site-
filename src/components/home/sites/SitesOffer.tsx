@@ -22,7 +22,6 @@ export default function SitesOffer() {
       index={2}
       chapter="03"
       title="Что мы делаем"
-      icon="layers"
       side="left"
       entrance="rise"
       id="offer"

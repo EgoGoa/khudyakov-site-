@@ -78,7 +78,6 @@ export default function AiSegments() {
       index={2}
       chapter="03"
       title={<>Кому <span className="kw">подходит</span></>}
-      icon="target"
       side="right"
       entrance="rise"
       id="segments"

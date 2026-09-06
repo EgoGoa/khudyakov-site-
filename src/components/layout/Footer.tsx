@@ -15,7 +15,7 @@ const navLinks = [
 
 const directions = services.slice(0, 6).map((s) => s.title);
 
-const TELEGRAM_URL = "https://t.me/+79925111812";
+const TELEGRAM_URL = "https://t.me/hdkv";
 const CALL_TEL = "tel:+79925111812";
 const CALL_DISPLAY = "+7 992 511-18-12";
 const EMAIL = "khudyakov.yegor@gmail.com";

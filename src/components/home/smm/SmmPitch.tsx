@@ -3,7 +3,7 @@
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { SMM_BEAT, SMM_DUR } from "@/components/home/smm/smmMotion";
+import { BEAT } from "@/lib/motion";
 import SmmDeck, { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 
 // Chapter 01 of /smm — the opening pitch, one level in from the site's own
@@ -29,10 +29,9 @@ import SmmDeck, { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 // facts still have their own home further down the page (the cadence numbers
 // on the carousel's own cards, the CTA in every chapter's action row).
 //
-// Timing: this chapter, like the other five, reads on SMM_BEAT/SMM_DUR
-// (smmMotion.ts) rather than the shared lib/motion.ts scale — a slower,
-// blur-in pace Egor asked for specifically on this page. See that file for
-// the full reasoning.
+// Timing: this chapter, like the other five, reads on the shared BEAT/DUR
+// scale in lib/motion.ts. The slower, blur-in pace Egor asked for on this
+// page is now that shared scale — every service page settles at it.
 //
 // This chapter carries NO decorative glass icon, unlike the other five. The
 // rocket was tried twice — pinned to the primary button (the way /sites pins
@@ -49,27 +48,25 @@ export default function SmmPitch() {
       index={0}
       chapter="01"
       title="SMM силами продакшена"
-      icon="aperture"
       side="left"
       entrance="slide-left"
       id="pitch"
       spacious
       column
       headless
-      transitionDuration={SMM_DUR.chapter}
     >
       <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
         {/* Left column: the chapter's whole stack, so it centres against the
             carousel rather than against itself. */}
         <div className="w-full shrink-0 lg:w-[46%]">
-          <Appear from="up" delay={SMM_BEAT.eyebrow} duration={SMM_DUR.item} blur>
+          <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
               <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c4a0ff]">01</span>
               <span className="h-px w-8 bg-[#a855f7]/40" />
             </div>
           </Appear>
 
-          <Appear from="up" delay={SMM_BEAT.title} duration={SMM_DUR.item} blur>
+          <Appear from="up" delay={BEAT.title}>
             {/* The explicit break is what puts "продакшена" on its own line as
                 the keyword; no automatic wrap does it at every step of the
                 responsive type scale, and the measure is in `em` so the shape
@@ -81,14 +78,14 @@ export default function SmmPitch() {
             </h2>
           </Appear>
 
-          <Appear from="up" delay={SMM_BEAT.intro} duration={SMM_DUR.item} blur>
+          <Appear from="up" delay={BEAT.intro}>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
               Съёмка, монтаж и ведение соцсетей — <span className="smm-accent">одна команда</span>,
               без подрядчиков со стороны.
             </p>
           </Appear>
 
-          <Appear from="up" delay={SMM_BEAT.cta} duration={SMM_DUR.item} blur>
+          <Appear from="up" delay={BEAT.cta}>
             <div className="mt-9 flex items-center gap-4">
               <Link href="/brief" className={PILL}>
                 Обсудить формат
@@ -121,7 +118,7 @@ export default function SmmPitch() {
             what this is first, then the thing itself comes into focus a beat
             later, which is the "последовательно" part of the brief. */}
         <div className="mt-10 hidden lg:mt-0 lg:block lg:flex-1">
-          <Appear from="right" delay={SMM_BEAT.content} duration={SMM_DUR.item} blur blurPx={18}>
+          <Appear from="right" delay={BEAT.content} blurPx={18}>
             <SmmDeck />
           </Appear>
         </div>

@@ -805,12 +805,27 @@ export default function CinematicStage({
     if (!pane) return;
     const max = pane.scrollHeight - pane.clientHeight;
     if (max <= 0) return;
-    // Only a chapter that genuinely runs long is entered at its foot when
-    // coming back up. For one that merely overshoots the screen by a little,
-    // landing at the bottom meant the whole chapter had to be scrolled back
-    // through before the deck would step again — which is what made going from
-    // chapter 3 back to chapter 2 feel stuck.
-    const substantial = max > pane.clientHeight * 0.25;
+    // On desktop a chapter never scrolls internally — paneRoom() returns 0
+    // above 1024px, so every gesture steps to the next chapter and nothing
+    // ever moves the pane's own scrollTop. Entering at the foot there just
+    // parked the chapter mis-scrolled, with its heading pushed off the top
+    // of the frame and nothing but air below.
+    //
+    // And `max` is not a reliable measure of "this chapter runs long" in the
+    // first place: a chapter's decorative icons are absolutely positioned
+    // and deliberately overhang the frame (chapter 03's 320px icon is
+    // centred on a block near the foot of the screen, chapter 06's sits at
+    // `top-full`), and an overhanging absolute child still counts toward a
+    // scroll container's overflow. On a 1280x800 laptop that alone put
+    // chapter 03 204px "over", just past the 25% threshold — so coming back
+    // up from chapter 04 landed on an ornament instead of the chapter.
+    //
+    // Below 1024px, where a chapter genuinely can be scrolled, the original
+    // behaviour stands: arriving from above starts at the top, coming back
+    // from below starts at the foot, and only for a chapter that really is
+    // substantially longer than the screen.
+    const desktop = window.matchMedia("(min-width: 1024px)").matches;
+    const substantial = !desktop && max > pane.clientHeight * 0.25;
     pane.scrollTop = directionRef.current > 0 || !substantial ? 0 : max;
   }, [activeIndex]);
 

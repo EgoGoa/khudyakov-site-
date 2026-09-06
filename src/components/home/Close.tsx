@@ -100,7 +100,6 @@ export default function Close({
       chapter={chapter}
       title={title}
       titleClassName={titleClassName}
-      icon="spark"
       side="center"
       // The payoff comes up to meet the visitor instead of sliding past.
       entrance="zoom"

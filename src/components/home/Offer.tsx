@@ -56,7 +56,6 @@ export default function Offer({
       index={index}
       chapter={chapter}
       title={title}
-      icon="layers"
       side="left"
       // New subject after the trust argument — it tips up into place.
       entrance="unfold"
@@ -93,7 +92,14 @@ export default function Offer({
                 as="li"
                 from="up"
                 delay={BEAT.content + i * STAGGER.tight}
-                className="group flex items-baseline gap-3 border-t border-paper/20 py-4"
+                // The row's own air is the only thing tall enough to give
+                // this chapter back a screen it fits on: ten rows at py-4
+                // come to 600px, and on a 1280x800 laptop that pushed the
+                // last row ("10 AI-контент и автоматизация") below the fold,
+                // where the deck's desktop stepping makes it unreachable.
+                // Tightened by height, not by width — the constraint is how
+                // tall the screen is, not how wide.
+                className="group flex items-baseline gap-3 border-t border-paper/20 py-4 [@media(max-height:860px)]:py-2.5"
               >
                 <span className="font-mono text-[10px] text-paper/40">
                   {String(i + 1).padStart(2, "0")}

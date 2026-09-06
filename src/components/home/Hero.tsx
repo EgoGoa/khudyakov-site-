@@ -164,7 +164,7 @@ export default function Hero() {
             Заказать звонок
           </a>
           <a
-            href="https://t.me/+79925111812"
+            href="https://t.me/hdkv"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-neon btn-neon-cycle"

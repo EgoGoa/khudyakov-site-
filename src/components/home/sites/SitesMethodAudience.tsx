@@ -64,7 +64,6 @@ export default function SitesMethodAudience() {
       index={1}
       chapter="02"
       title="Никакой магии"
-      icon="code"
       side="right"
       entrance="slide-right"
       id="method"

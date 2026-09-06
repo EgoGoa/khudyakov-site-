@@ -20,7 +20,7 @@ import { useService } from "@/lib/service-context";
 // of these, so `size` and `align` are what stop them reading as six copies
 // of the same box.
 
-const TELEGRAM_URL = "https://t.me/+79925111812";
+const TELEGRAM_URL = "https://t.me/hdkv";
 
 export type FunnelKey = "brief" | "calculator" | "consult" | "discuss";
 
@@ -285,7 +285,13 @@ export default function FunnelCta({
             ? "bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)] backdrop-blur-2xl backdrop-saturate-150"
             : "bg-ink"
         } ${
-          spacious ? "rounded-3xl px-6 py-7 sm:px-8 sm:py-8" : "rounded-2xl px-5 py-4 sm:px-6"
+          // The spacious card is the tallest single block in a chapter that
+          // has to fit one screen, and its own padding is the cheapest thing
+          // in it to give back — nothing is dropped, the card just breathes
+          // less on a short display.
+          spacious
+            ? "rounded-3xl px-6 py-7 sm:px-8 sm:py-8 [@media(max-height:820px)]:py-4 [@media(max-height:820px)]:sm:py-5"
+            : "rounded-2xl px-5 py-4 sm:px-6"
         } ${CARD_WIDTH.sm} ${right ? "ml-auto" : ""} ${className}`}
       >
         {/* The light in the card. "warm" is lit from the button's corner in

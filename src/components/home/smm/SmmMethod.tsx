@@ -2,7 +2,7 @@
 
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { SMM_BEAT, SMM_DUR, SMM_STAGGER } from "@/components/home/smm/smmMotion";
+import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmChapterLayout from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 
@@ -69,14 +69,12 @@ export default function SmmMethod() {
       index={1}
       chapter="02"
       title="Не подрядчик"
-      icon="code"
       side="right"
       entrance="slide-right"
       id="method"
       spacious
       column
       headless
-      transitionDuration={SMM_DUR.chapter}
       /* The rule for every deco icon on this page, from Egor after seeing
          the first pass: an icon sits *beside* the elements with a slight
          overlap — never over a heading or a line of text. The first attempt
@@ -114,7 +112,7 @@ export default function SmmMethod() {
         primary={{ href: "/smm/cases", label: "Смотреть кейсы" }}
         secondary={{ href: "/brief", label: "Обсудить задачу" }}
       >
-        <Appear from="right" delay={SMM_BEAT.content} duration={SMM_DUR.item} blur blurPx={18}>
+        <Appear from="right" delay={BEAT.content} blurPx={18}>
           <div className="overflow-x-auto rounded-2xl border border-white/[0.12] bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150">
             <table className="w-full min-w-[520px] border-collapse text-left text-xs">
               <thead>
@@ -159,16 +157,16 @@ export default function SmmMethod() {
           </div>
         </Appear>
 
-        {/* One beat after the table (SMM_BEAT.cta lands after content), then
-            each pill cascades in on its own SMM_STAGGER step rather than the
+        {/* One beat after the table (BEAT.cta lands after content), then
+            each pill cascades in on its own STAGGER.normal step rather than the
             row popping in as one block. */}
         <div className="mt-4 flex flex-wrap gap-2.5">
           {SEGMENTS.map((s, i) => (
             <Appear
               key={s.tag}
               from="up"
-              delay={SMM_BEAT.cta + i * SMM_STAGGER}
-              duration={SMM_DUR.row}
+              delay={BEAT.cta + i * STAGGER.normal}
+              duration={DUR.row}
               blur
               blurPx={8}
             >

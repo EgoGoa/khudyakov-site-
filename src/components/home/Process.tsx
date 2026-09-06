@@ -134,7 +134,6 @@ export default function Process({
       index={index}
       chapter={chapter}
       title={title}
-      icon="route"
       side="right"
       entrance="slide-right"
       id="process"

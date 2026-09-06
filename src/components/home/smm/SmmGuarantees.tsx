@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { SMM_BEAT, SMM_DUR, SMM_STAGGER } from "@/components/home/smm/smmMotion";
+import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 
@@ -23,8 +23,8 @@ import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 // SmmChapterLayout, which takes a single child panel — same exception
 // SitesGuarantees makes for the same reason.
 //
-// Both the terms list and the FAQ cascade one row at a time (SMM_STAGGER,
-// smmMotion.ts) rather than arriving as two blocks — they run on the same
+// Both the terms list and the FAQ cascade one row at a time (STAGGER.tight,
+// lib/motion.ts) rather than arriving as two blocks — they run on the same
 // stagger step so the two columns settle together instead of one finishing
 // well before the other.
 
@@ -74,14 +74,12 @@ export default function SmmGuarantees() {
       index={4}
       chapter="05"
       title="Что входит"
-      icon="scale"
       side="left"
       entrance="unfold"
       id="guarantees"
       spacious
       column
       headless
-      transitionDuration={SMM_DUR.chapter}
       /* Placed to the exact box Egor drew: the empty pocket above the
          heading, right of the "05" marker, its lower edge just reaching the
          top of "ВХОДИТ" — the slight overlap he asked for, and nothing more.
@@ -104,14 +102,14 @@ export default function SmmGuarantees() {
     >
       <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
         <div className="w-full shrink-0 lg:w-[38%]">
-          <Appear from="up" delay={SMM_BEAT.eyebrow} duration={SMM_DUR.item} blur>
+          <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
               <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c4a0ff]">05</span>
               <span className="h-px w-8 bg-[#a855f7]/40" />
             </div>
           </Appear>
 
-          <Appear from="up" delay={SMM_BEAT.title} duration={SMM_DUR.item} blur>
+          <Appear from="up" delay={BEAT.title}>
             <h2 className="chapter-neon-violet mt-3 max-w-[6.7em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] lg:text-[3.6rem] xl:text-[4rem]">
               Что
               <br />
@@ -119,14 +117,14 @@ export default function SmmGuarantees() {
             </h2>
           </Appear>
 
-          <Appear from="up" delay={SMM_BEAT.intro} duration={SMM_DUR.item} blur>
+          <Appear from="up" delay={BEAT.intro}>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
               Покупаете не пост и не рилс — покупаете <span className="smm-accent">систему
               ведения</span>, зафиксированную в договоре.
             </p>
           </Appear>
 
-          <Appear from="up" delay={SMM_BEAT.cta} duration={SMM_DUR.item} blur>
+          <Appear from="up" delay={BEAT.cta}>
             <div className="mt-9 flex items-center gap-4">
               <Link href="/brief" className={PILL}>
                 Обсудить задачу
@@ -157,8 +155,8 @@ export default function SmmGuarantees() {
                 key={term.title}
                 as="li"
                 from="left"
-                delay={SMM_BEAT.content + i * SMM_STAGGER}
-                duration={SMM_DUR.row}
+                delay={BEAT.content + i * STAGGER.tight}
+                duration={DUR.row}
                 blur
                 blurPx={10}
                 className="border-t border-paper/20 py-3"
@@ -187,8 +185,8 @@ export default function SmmGuarantees() {
                   <Appear
                     key={item.q}
                     from="right"
-                    delay={SMM_BEAT.content + i * SMM_STAGGER}
-                    duration={SMM_DUR.row}
+                    delay={BEAT.content + i * STAGGER.tight}
+                    duration={DUR.row}
                     blur
                     blurPx={10}
                     className="border-b border-paper/10"

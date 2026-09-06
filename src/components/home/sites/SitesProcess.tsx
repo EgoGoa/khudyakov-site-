@@ -24,7 +24,6 @@ export default function SitesProcess() {
       index={3}
       chapter="04"
       title="Как проходит работа"
-      icon="route"
       side="right"
       entrance="slide-right"
       id="process"

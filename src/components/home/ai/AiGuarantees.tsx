@@ -77,7 +77,6 @@ export default function AiGuarantees() {
       index={5}
       chapter="06"
       title={<>Условия и <span className="kw">гарантии</span></>}
-      icon="scale"
       side="left"
       entrance="unfold"
       id="guarantees"

@@ -27,13 +27,15 @@ export default function AiPortfolio() {
       // One gradient keyword per chapter heading, at most — Egor's rule for
       // this page. Here it is the noun that names the chapter's subject.
       title={<>Портфолио <span className="kw">AI-работ</span></>}
-      icon="frames"
       side="right"
       entrance="rise"
       id="portfolio"
       intro={<>Первые кейсы — в работе. [TODO] — сюда встанут <span className="kw">реальные AI-проекты</span> по мере запуска.</>}
     >
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+      {/* Width-capped and tightened on a short screen for the same reason
+          the /content portfolio chapter is (see Works): the tiles are 16:9,
+          so extra width costs height on both rows at once. */}
+      <div className="mx-auto grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 [@media(max-height:860px)]:sm:gap-4 [@media(max-height:820px)]:max-w-[860px]">
         {TILES.map((i, idx) => (
           <Appear
             key={i}
