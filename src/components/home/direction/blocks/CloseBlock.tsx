@@ -10,15 +10,21 @@ import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
 import { useDirectionTask } from "../TaskContext";
-import { EMAIL, PHONE, PHONE_HREF, TELEGRAM_URL } from "../contacts";
+import { EMAIL, TELEGRAM_URL } from "../contacts";
 import type { DirectionContent } from "../types";
 
 // Финал: один следующий шаг, по центру, крупно, поверх кадра-перебивки.
 //
 // Контакты идут строкой под кнопками, а не карточкой сбоку: карточка
 // уравнивала «напишите нам» с «вот наш телефон», хотя действие тут одно.
-// Телефон и почта — запасные пути для тех, кому форма не подходит, и им
-// достаточно строки.
+// Почта — запасной путь для тех, кому форма не подходит, и ей достаточно
+// строки.
+//
+// Телефон здесь раньше стоял рядом с почтой и дублировал шапку буквально:
+// та же цифра, тот же tel:-номер, на каждой странице сайта одновременно.
+// Егор — «убери номера из подобных мест, в шапке есть и достаточно»: в
+// шапке телефон уже кликабелен на каждом экране, второй раз в финале
+// показывать его не нужно.
 export default function CloseBlock({ close }: { close: DirectionContent["close"] }) {
   const { active } = useDirectionTask();
 
@@ -71,10 +77,7 @@ export default function CloseBlock({ close }: { close: DirectionContent["close"]
         </div>
 
         <Appear from="up" delay={DIRECTION_BEAT.cta + STAGGER.normal * 2}>
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-mono text-[11px] uppercase tracking-[0.15em] text-white">
-            <a href={PHONE_HREF} className="transition hover:text-orange">
-              {PHONE}
-            </a>
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-display text-[11px] uppercase tracking-[0.15em] text-white">
             <a href={`mailto:${EMAIL}`} className="normal-case tracking-normal transition hover:text-orange">
               {EMAIL}
             </a>

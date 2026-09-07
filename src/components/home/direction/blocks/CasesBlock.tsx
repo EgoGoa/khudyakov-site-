@@ -41,7 +41,7 @@ function formatDuration(seconds?: number) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
-export default function CasesBlock({ cases }: { cases: DirectionContent["cases"] }) {
+export default function CasesBlock({ cases }: { cases: NonNullable<DirectionContent["cases"]> }) {
   const { active } = useDirectionTask();
 
   // Работы перечислены поимённо в файле направления, а не выбраны фильтром
@@ -105,7 +105,7 @@ export default function CasesBlock({ cases }: { cases: DirectionContent["cases"]
                 <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl">
                   {current.title}
                 </h3>
-                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white">
+                <span className="font-display text-[11px] uppercase tracking-[0.18em] text-white">
                   {[current.client, current.sphere, formatDuration(current.duration)]
                     .filter(Boolean)
                     .join(" · ")}
@@ -152,11 +152,11 @@ export default function CasesBlock({ cases }: { cases: DirectionContent["cases"]
 
                     <span className="min-w-0 flex-1 break-words">
                       <span className="flex items-center gap-2">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white">
+                        <span className="font-display text-[10px] uppercase tracking-[0.18em] text-white">
                           {work.sphere ?? work.category}
                         </span>
                         {suggested ? (
-                          <span className="rounded-full bg-orange/20 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-orange">
+                          <span className="rounded-full bg-orange/20 px-2 py-0.5 font-display text-[9px] uppercase tracking-[0.14em] text-orange">
                             под вашу задачу
                           </span>
                         ) : null}
@@ -170,7 +170,7 @@ export default function CasesBlock({ cases }: { cases: DirectionContent["cases"]
                       </span>
                     </span>
 
-                    <span className="shrink-0 font-mono text-[10px] text-white">
+                    <span className="shrink-0 font-display text-[10px] text-white">
                       {formatDuration(work.duration)}
                     </span>
                   </button>
@@ -181,7 +181,7 @@ export default function CasesBlock({ cases }: { cases: DirectionContent["cases"]
             <Appear from="up" delay={DIRECTION_BEAT.cta}>
               <Link
                 href="/works"
-                className="mt-8 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-white transition hover:text-orange"
+                className="mt-8 inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-white transition hover:text-orange"
               >
                 Весь каталог — 78 работ
                 <span aria-hidden="true">↗</span>

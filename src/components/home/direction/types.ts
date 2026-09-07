@@ -27,6 +27,19 @@ import type { ReactNode } from "react";
  *  кадры чередуются — «бумажные» блоки (смета, процесс, FAQ) идут на стоке,
  *  содержательные — на работах. */
 export type BlockMediaSpec = {
+  /** Акцентная заливка блока: два мягких пятна цветами страницы.
+   *
+   *  Стоит либо одна (тогда это «градиентный блок» — Егор просил на
+   *  страницах инструментов чередовать «один блок градиент, второй блок
+   *  картинка»), либо ПОД кадром. Второе — тоже его прямая просьба:
+   *  «нужно, чтобы фоны плавно через градиент и прозрачность
+   *  соединялись». Когда цвет лежит под каждым блоком, в зоне, где один
+   *  фон растворяется в другом, всегда остаётся свечение, и стык не
+   *  проваливается в чёрное.
+   *
+   *  Совсем пустой блок для этой роли не годится: без фона секция читается
+   *  как широкая чёрная полоса — ровно то, что Егор уже просил убрать. */
+  gradient?: { from: string; to: string };
   video?: string;
   /** Обязателен вместе с `video`: кадр с того же таймкода, иначе блок
    *  моргает чёрным до первого декодированного кадра. */
@@ -94,6 +107,21 @@ export type DirectionReason = {
   accent?: string;
 };
 
+/** Строка технического разбора — блок «Под капотом» на страницах
+ *  AI-инструментов.
+ *
+ *  Страницы направлений в /content обходятся без него: там продукт —
+ *  видео, и его достаточно показать. У инструмента показывать нечего, он
+ *  невидимый, поэтому Егор просил «именно технически показать, о чём эти
+ *  инструменты». Отсюда отдельный блок: короткая пара «ярлык — фраза», без
+ *  механики и без конкретных названий систем. */
+export type DirectionTechItem = {
+  /** Левая колонка: одно слово — «Каналы», «Данные», «Эскалация». */
+  label: string;
+  text: string;
+  accent?: string;
+};
+
 export type DirectionFaqItem = { q: string; a: string };
 
 /** Один вариант ответа на вопрос «зачем вы пришли». Выбор поднят в контекст
@@ -126,6 +154,10 @@ export type DirectionContent = {
   slug: string;
 
   hero: {
+    /** Ссылка «назад» над заголовком. По умолчанию — раздел «Создание
+     *  контента», откуда пришли направления; страницы AI-инструментов
+     *  ведут назад в /ai. */
+    parent?: { href: string; label: string };
     eyebrow: string;
     title: ReactNode;
     lead: ReactNode;
@@ -160,10 +192,16 @@ export type DirectionContent = {
 
   audience: DirectionSectionHead & { items: DirectionAudienceItem[] };
 
-  cases: DirectionSectionHead & {
+  /** Блок портфолио. Необязателен: у AI-инструментов снятых работ пока
+   *  нет, а заглушки «←ПРОВЕРИТЬ» Егор на новых страницах видеть не хочет.
+   *  Там, где кейсов нет, его место занимает `tech`. */
+  cases?: DirectionSectionHead & {
     /** id работ из lib/data.ts, перечисленные вручную и в нужном порядке. */
     workIds: string[];
   };
+
+  /** Технический разбор инструмента — см. DirectionTechItem. */
+  tech?: DirectionSectionHead & { items: DirectionTechItem[] };
 
   /** Фон второго блока персонализации (бюджет и срок). Он стоит вплотную
    *  перед сметой, поэтому кадр здесь тоже обязателен — иначе между двумя
@@ -187,4 +225,64 @@ export type DirectionContent = {
   faq: DirectionSectionHead & { items: DirectionFaqItem[] };
 
   close: DirectionSectionHead;
+};
+
+
+// ---------------------------------------------------------------------
+// Компактный шаблон — только для новых страниц AI-инструментов
+// (comms/crm/personalization/analytics/training).
+//
+// Полный DirectionContent выше — 12 экранов (герой + 11 глав), и это верно
+// для /content и для уже утверждённых пяти инструментов (agent, content,
+// video, voice, ops): их менять не просят, они уже приняты. Но для
+// следующей пятёрки Егор попросил «сократить блоки, объединив несколько,
+// или оптимизировать до 5–7» — и переписывать сам DirectionPage под это
+// было бы рискованно: тот же компонент держит уже готовые 10 страниц.
+//
+// Поэтому CompactToolContent — не урезанная версия DirectionContent, а
+// отдельный, более узкий тип для отдельного компонента (CompactToolPage).
+// Экономия шагов идёт по двум путям одновременно:
+//   1. Настоящее сокращение состава: персонализация — один шаг вместо
+//      трёх (нет бюджета/срока и «что у вас уже есть» отдельными
+//      экранами), блока «почему мы» нет вовсе.
+//   2. Слияние соседних смыслов в один экран: цифры живут в самом герое
+//      (см. `stats` проп DirectionHero) вместо отдельной главы, а FAQ и
+//      финальный призыв делят один экран (CompactFaqCloseBlock) вместо
+//      двух подряд.
+// Итог — 7 экранов: герой(+цифры) → задача → кому подходит → под капотом →
+// смета → процесс → FAQ+финал.
+export type CompactToolContent = {
+  /** Сегмент URL внутри /ai. */
+  slug: string;
+
+  hero: DirectionContent["hero"];
+  /** Цифры внутри героя — см. `stats` проп DirectionHero. */
+  stats: DirectionStat[];
+
+  /** Цвета градиентного фона страницы — как у DirectionContent. */
+  backdrop: { from: string; to: string };
+
+  /** Один вопрос вместо трёх экранов персонализации. Отвечает на него тот
+   *  же TaskPicker, что и в полном шаблоне — используется тот же тип
+   *  DirectionTask, чтобы смета и финал ниже реагировали на выбор так же,
+   *  как на agent/content/video/voice/ops. */
+  taskPrompt: string;
+  taskNote: string;
+  tasks: DirectionTask[];
+  taskMedia?: BlockMediaSpec;
+
+  audience: DirectionSectionHead & { items: DirectionAudienceItem[] };
+
+  tech: DirectionSectionHead & { items: DirectionTechItem[] };
+
+  pricing: DirectionSectionHead & { tiers: DirectionTier[]; note: string };
+
+  process: DirectionSectionHead & { steps: DirectionStep[]; typed?: string };
+
+  /** Общий экран для FAQ и финального призыва — см. CompactFaqCloseBlock.
+   *  `faq` несёт собственную шапку (эйбрау/заголовок/подзаголовок) и
+   *  список вопросов; `close` даёт заголовок и текст только для правой,
+   *  CTA-половины того же экрана. */
+  faq: DirectionSectionHead & { items: DirectionFaqItem[]; media?: BlockMediaSpec };
+  close: { eyebrow: string; title: ReactNode; sub: ReactNode };
 };

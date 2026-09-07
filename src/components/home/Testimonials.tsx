@@ -45,7 +45,7 @@ export default function Testimonials() {
                 <p className="mt-3 text-sm leading-relaxed text-paper/60">
                   {item.description}
                 </p>
-                <div className="mt-6 border-t border-paper/10 pt-4 font-mono text-xs uppercase tracking-[0.15em] text-glow">
+                <div className="mt-6 border-t border-paper/10 pt-4 font-display text-xs uppercase tracking-[0.15em] text-glow">
                   {item.tag}
                 </div>
               </GlassCard>

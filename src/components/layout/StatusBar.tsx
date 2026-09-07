@@ -17,7 +17,7 @@ export default function StatusBar() {
 
   return (
     <div className="fixed bottom-6 left-6 z-20">
-      <div className="text-xs uppercase tracking-[0.2em] text-glow/80 font-mono whitespace-nowrap">
+      <div className="text-xs uppercase tracking-[0.2em] text-glow/80 font-display whitespace-nowrap">
         <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-glow mr-2" />
         <span className="typewriter">ваш проект в работе{dots}</span>
       </div>

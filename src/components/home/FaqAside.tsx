@@ -90,7 +90,7 @@ export default function FaqAside() {
 
   return (
     <div>
-      <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange">
+      <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
         <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
         FAQ · до старта
       </span>

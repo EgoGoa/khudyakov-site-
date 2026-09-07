@@ -74,7 +74,7 @@ export default function PricingBlock({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -6 }}
                         transition={{ duration: 0.35, ease: EASE }}
-                        className="absolute -top-3 left-8 rounded-full bg-orange px-3 py-1 font-mono text-[9px] uppercase tracking-[0.16em] text-white"
+                        className="absolute -top-3 left-8 rounded-full bg-orange px-3 py-1 font-display text-[9px] uppercase tracking-[0.16em] text-white"
                       >
                         Под вашу задачу
                       </motion.span>

@@ -52,7 +52,7 @@ export default function ProjectMockup() {
               <span className="h-3 w-3 rounded-full bg-[#F59E0B]" />
               <span className="h-3 w-3 rounded-full bg-[#10B981]" />
             </div>
-            <span className="font-mono text-xs text-paper/50">KHUDYAKOV — Проекты</span>
+            <span className="font-display text-xs text-paper/50">KHUDYAKOV — Проекты</span>
             <span className="w-14" />
           </div>
 
@@ -73,7 +73,7 @@ export default function ProjectMockup() {
                   >
                     <span>{item.label}</span>
                     {item.count !== null && (
-                      <span className="font-mono text-xs text-paper/40">{item.count}</span>
+                      <span className="font-display text-xs text-paper/40">{item.count}</span>
                     )}
                   </div>
                 ))}
@@ -120,11 +120,11 @@ export default function ProjectMockup() {
 
             <div className="lg:col-span-5">
               <div className="flex items-center justify-between border-b border-paper/10 px-5 py-3">
-                <div className="flex gap-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-paper/40">
+                <div className="flex gap-1.5 font-display text-[11px] uppercase tracking-[0.1em] text-paper/40">
                   <span className="rounded-md px-2 py-1 hover:bg-paper/5">Открыть бриф</span>
                   <span className="rounded-md px-2 py-1 hover:bg-paper/5">В архив</span>
                 </div>
-                <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-paper/30">
+                <span className="font-display text-[11px] uppercase tracking-[0.1em] text-paper/30">
                   ⋯
                 </span>
               </div>
@@ -138,7 +138,7 @@ export default function ProjectMockup() {
                     {active.client.charAt(0)}
                   </span>
                   <span className="text-sm text-paper/70">{active.client}</span>
-                  <span className="ml-auto rounded-full border border-paper/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-paper/50">
+                  <span className="ml-auto rounded-full border border-paper/10 px-2.5 py-1 font-display text-[10px] uppercase tracking-[0.1em] text-paper/50">
                     {active.category}
                   </span>
                 </div>

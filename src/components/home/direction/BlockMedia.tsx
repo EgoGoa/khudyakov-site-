@@ -85,7 +85,11 @@ export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const active = useChapterActive();
   const tone = INTENSITY[media.intensity ?? "quiet"];
-  const blurPx = media.blurPx ?? (media.video ? BLUR.base : BLUR.photo);
+  const frame = media.video ?? media.photo;
+  // Чистая градиентная заливка не размывается: размывать нечего, а лишний
+  // blur на полноэкранном слое стоит кадров на скролле. Если под градиентом
+  // лежит кадр — размытие обычное, оно нужно кадру.
+  const blurPx = frame ? media.blurPx ?? (media.video ? BLUR.base : BLUR.photo) : 0;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -125,6 +129,26 @@ export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
           transform: `scale(${1 + blurPx / 90})`,
         }}
       >
+        {/* Акцентная заливка. Она может стоять и одна (тогда это
+            «градиентный блок»), и под кадром — второе Егор попросил
+            отдельно: «нужно, чтобы фоны плавно через градиент и
+            прозрачность соединялись». Когда цвет лежит под КАЖДЫМ блоком,
+            в зоне растворения одного блока в другом всегда остаётся
+            свечение, и стык не проваливается в чёрное, даже если сверху
+            встречаются кадр и пустота.
+
+            Два пятна по углам, а не ровная линейная полоса: ровная читается
+            как плашка, пятна — как свет. */}
+        {media.gradient ? (
+          <div
+            className="absolute inset-0"
+            style={{
+              opacity: frame ? 0.85 : tone.opacity,
+              background: `radial-gradient(130% 105% at 12% 0%, ${media.gradient.from}52 0%, transparent 72%), radial-gradient(130% 105% at 88% 100%, ${media.gradient.to}5e 0%, transparent 74%)`,
+            }}
+          />
+        ) : null}
+
         {media.video ? (
           <video
             ref={videoRef}
@@ -134,13 +158,13 @@ export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
             loop
             playsInline
             preload="none"
-            className="h-full w-full object-cover"
+            className="relative h-full w-full object-cover"
             style={{
               opacity: tone.opacity,
               objectPosition: media.position ?? "center",
             }}
           />
-        ) : (
+        ) : media.photo ? (
           // Стоковый кадр рядом с видеоблоком не должен читаться как
           // «видео не загрузилось»: очень медленный наезд оживляет его
           // ровно настолько, чтобы страница осталась в движении.
@@ -148,24 +172,39 @@ export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
             src={media.photo}
             alt=""
             loading="lazy"
-            className="block-media-drift h-full w-full object-cover"
+            className="block-media-drift relative h-full w-full object-cover"
             style={{ opacity: tone.opacity, objectPosition: media.position ?? "center" }}
           />
-        )}
+        ) : null}
 
-        {/* Ровное затемнение — минимальное, только чтобы снять пересветы. */}
-        <div className="absolute inset-0" style={{ background: `rgba(11,11,16,${tone.veil})` }} />
+        {/* Ровное затемнение — минимальное, только чтобы снять пересветы.
+            Градиентной заливке оно не нужно: гасить в ней нечего, а с ним
+            акцент уходит в грязь. */}
+        {frame ? (
+          <div className="absolute inset-0" style={{ background: `rgba(11,11,16,${tone.veil})` }} />
+        ) : null}
 
         {/* Виньетка: центр кадра остаётся открытым, края уходят в фон
             страницы. Она же держит контраст под текстом у левого края, не
-            притушивая картинку целиком. */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(120% 90% at 50% 50%, rgba(11,11,16,0) 25%, rgba(11,11,16,0.55) 75%, rgba(11,11,16,0.9) 100%)",
-          }}
-        />
+            притушивая картинку целиком.
+
+            Градиентному блоку она не нужна и вредна: заливка и без того
+            полупрозрачная, а виньетка гасила её к краям почти в чёрный —
+            блок читался как та самая чёрная полоса, вместо которой он и
+            появился. */}
+        {frame ? (
+          <div
+            className="absolute inset-0"
+            style={{
+              // Под кадром с акцентной заливкой виньетка мягче: на полной
+              // силе она гасила и кадр, и подложенное свечение, и стык
+              // блоков снова уходил в чёрное.
+              background: media.gradient
+                ? "radial-gradient(125% 95% at 50% 50%, rgba(11,11,16,0) 35%, rgba(11,11,16,0.34) 78%, rgba(11,11,16,0.62) 100%)"
+                : "radial-gradient(120% 90% at 50% 50%, rgba(11,11,16,0) 25%, rgba(11,11,16,0.55) 75%, rgba(11,11,16,0.9) 100%)",
+            }}
+          />
+        ) : null}
       </div>
     </div>
   );

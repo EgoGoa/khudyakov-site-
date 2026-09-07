@@ -68,7 +68,7 @@ export default function AudienceBlock({
 
                   <Link
                     href={item.href}
-                    className="mt-7 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-white transition group-hover:text-orange"
+                    className="mt-7 inline-flex items-center gap-2 font-display text-[11px] uppercase tracking-[0.15em] text-white transition group-hover:text-orange"
                   >
                     {item.linkLabel}
                     <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">

@@ -252,7 +252,7 @@ export default function Header() {
         <Link
           href="/"
           onClick={navigateHome}
-          className="flex shrink-0 items-center gap-2 py-2 font-mono uppercase leading-none tracking-[0.08em] text-paper transition active:scale-[0.97] sm:gap-2.5"
+          className="flex shrink-0 items-center gap-2 py-2 font-display uppercase leading-none tracking-[0.08em] text-paper transition active:scale-[0.97] sm:gap-2.5"
         >
           <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full bg-rec sm:h-2.5 sm:w-2.5" />
           <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] uppercase tracking-tight">
@@ -412,7 +412,7 @@ export default function Header() {
                     active === s.id ? "text-glow" : "text-paper hover:text-glow"
                   }`}
                 >
-                  <span className="w-5 shrink-0 font-mono text-[clamp(0.6rem,1.5vw,0.8rem)] text-paper/40 group-hover:text-glow/60">
+                  <span className="w-5 shrink-0 font-display text-[clamp(0.6rem,1.5vw,0.8rem)] text-paper/40 group-hover:text-glow/60">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span className="font-display uppercase leading-none tracking-tight text-[clamp(1.5rem,7vw,3.25rem)] sm:hidden">
@@ -433,7 +433,7 @@ export default function Header() {
                     pathname === p.href ? "text-glow" : "text-paper hover:text-glow"
                   }`}
                 >
-                  <span className="w-5 shrink-0 font-mono text-[clamp(0.6rem,1.5vw,0.8rem)] text-paper/40 group-hover:text-glow/60">
+                  <span className="w-5 shrink-0 font-display text-[clamp(0.6rem,1.5vw,0.8rem)] text-paper/40 group-hover:text-glow/60">
                     {String(sections.length + i + 1).padStart(2, "0")}
                   </span>
                   <span className="font-display uppercase leading-none tracking-tight text-[clamp(1.5rem,7vw,3.25rem)]">

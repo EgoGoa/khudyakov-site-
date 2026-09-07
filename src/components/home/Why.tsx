@@ -37,14 +37,14 @@ export default function Why() {
 
           <Reveal delay={0.1}>
             <GlassCard className="p-5">
-              <div className="font-mono text-xs uppercase tracking-[0.15em] text-paper/40">
+              <div className="font-display text-xs uppercase tracking-[0.15em] text-paper/40">
                 {why.badge}
               </div>
               <div className="mt-4 space-y-3">
                 {why.reasons.map((reason, index) => (
                   <div key={reason.title} className="liquid-glass rounded-lg p-4">
                     <div className="flex items-center gap-2 text-sm font-semibold text-paper">
-                      <span className="font-mono text-xs text-glow">
+                      <span className="font-display text-xs text-glow">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       {reason.title}

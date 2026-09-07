@@ -33,7 +33,7 @@ export default function SeoAccordion({
     // visitor is actually looking at. Nothing is dropped: the rows just sit
     // closer together.
     <div className="mx-auto mt-5 w-full max-w-4xl rounded-2xl bg-ink/45 px-4 py-2.5 backdrop-blur-md sm:px-5 [@media(max-height:860px)]:mt-3 [@media(max-height:860px)]:py-1.5">
-      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-paper/45">
+      <span className="font-display text-[9px] uppercase tracking-[0.2em] text-paper/45">
         {eyebrow}
       </span>
 
@@ -49,7 +49,7 @@ export default function SeoAccordion({
                 className="flex w-full items-center justify-between gap-4 py-2 text-left [@media(max-height:860px)]:py-1.5"
               >
                 <span className="flex items-baseline gap-2.5">
-                  <span className="font-mono text-[9px] text-glow/70">
+                  <span className="font-display text-[9px] text-glow/70">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span className="text-xs font-medium leading-snug text-paper sm:text-[13px]">

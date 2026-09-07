@@ -1170,6 +1170,26 @@ body {
   color: #34d399;
 }
 
+/* Акценты в основном тексте на страницах /ai — изумрудные, а не оранжевые.
+   Компонент <Accent> (см. components/home/direction/Accent.tsx) подсвечивает
+   один смысловой фрагмент в каждом абзаце фирменным оранжевым — это цвет
+   /content. На странице AI-инструмента оранжевый спорит с лайм-изумрудным
+   акцентом страницы, поэтому здесь он перекрашивается в цвет стеклянных
+   иконок /ai. Тот же приём и та же причина, что у `.ai-cool-headings .kw`
+   выше: базовый класс не трогаем, страница перекрашивает его у себя. */
+.ai-cool-headings .text-orange {
+  color: #34d399;
+}
+
+/* Заголовок первого экрана на странице инструмента. DirectionHero носит
+   .chapter-neon-warm — тёплый оранжевый ореол /content; здесь он меняется
+   на изумрудный, чтобы первый экран не начинался в чужой палитре. */
+.ai-cool-headings .chapter-neon-warm {
+  color: #eafff5;
+  text-shadow: 0 0 0.72em rgba(52, 211, 153, 0.4), 0 0 1.39em rgba(16, 185, 129, 0.18),
+    0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
 .ai-cool-headings .group:hover .group-hover\:text-glow {
   color: #34d399;
 }
@@ -1222,12 +1242,49 @@ body {
   }
 }
 
+/* "Открыть инструмент" on the front card of the /ai carousel — Егор asked
+   for it to stand out and pulse, so the glow it already ships with
+   (rgba(16,185,129,...) box-shadow) breathes outward and back rather than
+   sitting static. The scale stays tiny (1 → 1.03): the button sits inside
+   a card that's itself already animating (idle rotation, ambient glow
+   above), so a showy scale would read as jittery on top of that rather than
+   as its own clear signal. */
+@keyframes ai-open-pulse {
+  0%, 100% {
+    box-shadow: 0 10px 26px -6px rgba(16, 185, 129, 0.7), 0 0 0 0 rgba(52, 211, 153, 0.55);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 12px 34px -4px rgba(16, 185, 129, 0.95), 0 0 0 9px rgba(52, 211, 153, 0);
+    transform: scale(1.03);
+  }
+}
+
+.ai-open-pulse {
+  animation: ai-open-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-open-pulse {
+    animation: none;
+  }
+}
+
 .ai-cool-headings .bg-orange\/15 {
   background-color: rgba(52, 211, 153, 0.15);
 }
 
 .ai-cool-headings .text-orange {
   color: #34d399;
+}
+
+/* Заголовок первого экрана на странице инструмента. DirectionHero носит
+   .chapter-neon-warm — тёплый оранжевый ореол /content; здесь он меняется
+   на изумрудный, чтобы первый экран не начинался в чужой палитре. */
+.ai-cool-headings .chapter-neon-warm {
+  color: #eafff5;
+  text-shadow: 0 0 0.72em rgba(52, 211, 153, 0.4), 0 0 1.39em rgba(16, 185, 129, 0.18),
+    0 2px 24px rgba(11, 11, 16, 0.9);
 }
 
 /* The same pill/tag treatment appears standalone in Offer's calculator
@@ -2572,5 +2629,37 @@ body {
 @media (min-width: 1024px) {
   .audience-stair {
     margin-left: var(--stair, 0);
+  }
+}
+
+/* ── Карточка AI-инструмента на /ai ────────────────────────────────────────
+
+   Пока на странице /ai ни одна ссылка не вела к живому инструменту
+   (/ai/agent существовал, но был недостижим). Егор попросил заметную кнопку
+   входа: «внутри окошка мигала и привлекала её нажать».
+
+   Пульсация здесь ПОСТОЯННАЯ, в отличие от .task-chip-idle на /content —
+   там кнопка гаснет после выбора, потому что отвечает на вопрос и синим
+   становится «применено». Здесь отвечать не на что: кнопка одна и всегда
+   ведёт на один и тот же инструмент, гасить пульсацию не по какому событию.
+   Изумрудный, а не оранжевый — /ai уже целиком в этой палитре (AI_PILL,
+   .ai-icon-ripple), заводить второй акцент на одной странице не нужно. */
+@keyframes ai-tool-cta-pulse {
+  0%,
+  100% {
+    box-shadow: 0 12px 30px -8px rgba(16, 185, 129, 0.55), 0 0 0 0 rgba(52, 211, 153, 0.5);
+  }
+  50% {
+    box-shadow: 0 12px 34px -6px rgba(16, 185, 129, 0.8), 0 0 22px 4px rgba(52, 211, 153, 0.55);
+  }
+}
+
+.ai-tool-cta {
+  animation: ai-tool-cta-pulse 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-tool-cta {
+    animation: none;
   }
 }

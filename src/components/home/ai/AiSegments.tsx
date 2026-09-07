@@ -53,7 +53,7 @@ const CASES = [
     task: "Клиенты писали в директ с вопросами по наличию и доставке, менеджер отвечал вручную 6–8 часов в день.",
     stack: "AI-бот на базе каталога, интеграция с CRM, эскалация сложных вопросов на человека.",
     where: "Сайт, Instagram*, Telegram.",
-    budget: "от $XXX ←ПРОВЕРИТЬ",
+    budget: "от XXX ₽ ←ПРОВЕРИТЬ",
   },
   {
     industry: "ЛОКАЛЬНЫЙ СЕРВИС",
@@ -61,7 +61,7 @@ const CASES = [
     task: "30% заявок приходило вечером и в выходные, когда администратор недоступен — половина уходила к конкурентам.",
     stack: "Голосовой/чат AI-бот, запись на приём, синхронизация с расписанием.",
     where: "Сайт, WhatsApp.",
-    budget: "от $XXX ←ПРОВЕРИТЬ",
+    budget: "от XXX ₽ ←ПРОВЕРИТЬ",
   },
   {
     industry: "ЛИЧНЫЙ БРЕНД / СТАРТАП",
@@ -69,7 +69,7 @@ const CASES = [
     task: "Нужно было проверить продуктовую гипотезу без бюджета на полноценный продакшн.",
     stack: "AI-генерация промо-роликов и визуалов, серия тестовых креативов под разные аудитории.",
     where: "Instagram*, Telegram, посадочная страница.",
-    budget: "от $XXX ←ПРОВЕРИТЬ",
+    budget: "от XXX ₽ ←ПРОВЕРИТЬ",
   },
 ];
 
@@ -92,7 +92,7 @@ export default function AiSegments() {
             delay={BEAT.content + i * STAGGER.tight}
             className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md"
           >
-            <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-emerald-300">{s.tag}</span>
+            <span className="font-display text-[9px] uppercase tracking-[0.15em] text-emerald-300">{s.tag}</span>
             <h3 className="mt-2 font-display text-base uppercase leading-tight tracking-tight text-white">
               {s.title}
             </h3>
@@ -116,7 +116,7 @@ export default function AiSegments() {
               delay={BEAT.content + (SEGMENTS.length + i) * STAGGER.tight}
               className="rounded-xl bg-ink/40 p-3.5 text-xs leading-relaxed text-paper/65"
             >
-              <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-emerald-300">{c.industry}</div>
+              <div className="font-display text-[10px] uppercase tracking-[0.1em] text-emerald-300">{c.industry}</div>
               <p className="mt-1 text-sm font-medium leading-snug text-white">{c.title}</p>
               <p className="mt-1.5 text-paper/60">
                 <span className="text-paper/40">Задача:</span> {c.task}
@@ -131,6 +131,7 @@ export default function AiSegments() {
             </Appear>
           ))}
         </div>
+
       </div>
     </CinematicSection>
   );

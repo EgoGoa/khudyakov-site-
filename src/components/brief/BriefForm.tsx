@@ -123,7 +123,7 @@ export default function BriefForm() {
   return (
     <section className="py-16 sm:py-24">
       <Container className="max-w-4xl">
-        <div className="mb-8 flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-rec">
+        <div className="mb-8 flex items-center gap-3 font-display text-xs uppercase tracking-[0.2em] text-rec">
           <span className="h-2 w-2 animate-pulse-rec rounded-full bg-rec" />
           {hud}
         </div>
@@ -158,7 +158,7 @@ export default function BriefForm() {
                   ].map(([big, small]) => (
                     <div key={big} className="border-l border-glow/30 pl-4">
                       <div className="font-display text-lg uppercase text-paper">{big}</div>
-                      <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.1em] text-paper/45">
+                      <div className="mt-1 font-display text-[11px] uppercase tracking-[0.1em] text-paper/45">
                         {small}
                       </div>
                     </div>
@@ -235,7 +235,7 @@ export default function BriefForm() {
                 <div className="mt-8 space-y-8">
                   {[1, 2, 3, 4, 5].map((scene) => (
                     <div key={scene}>
-                      <div className="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-glow">
+                      <div className="mb-3 font-display text-xs uppercase tracking-[0.2em] text-glow">
                         Сцена {String(scene).padStart(2, "0")} · {SCENE_NAMES[scene]}
                       </div>
                       <div className="liquid-glass rounded-2xl">
@@ -266,7 +266,7 @@ export default function BriefForm() {
                                       ?.scrollIntoView({ behavior: "smooth", block: "center" });
                                   }, 80);
                                 }}
-                                className="shrink-0 rounded-full border border-paper/15 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-paper/60 transition hover:border-glow/60 hover:text-glow"
+                                className="shrink-0 rounded-full border border-paper/15 px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.1em] text-paper/60 transition hover:border-glow/60 hover:text-glow"
                               >
                                 Изменить
                               </button>
@@ -318,7 +318,7 @@ export default function BriefForm() {
 
             {screen === "sent" && (
               <div>
-                <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-glow">
+                <div className="flex items-center gap-3 font-display text-xs uppercase tracking-[0.2em] text-glow">
                   <span className="h-2 w-2 rounded-full bg-glow" />
                   Запись завершена
                 </div>
@@ -365,7 +365,7 @@ export default function BriefForm() {
 
     return scenes.map((scene) => (
       <div key={scene}>
-        <div className="mb-5 font-mono text-xs uppercase tracking-[0.2em] text-glow">
+        <div className="mb-5 font-display text-xs uppercase tracking-[0.2em] text-glow">
           Сцена {String(scene).padStart(2, "0")} · {SCENE_NAMES[scene]}
         </div>
         <div className="space-y-6">
@@ -378,11 +378,11 @@ export default function BriefForm() {
               }`}
             >
               <div className="flex items-baseline gap-3">
-                <span className="font-mono text-xs text-paper/35">{numberOf[step.id]}</span>
+                <span className="font-display text-xs text-paper/35">{numberOf[step.id]}</span>
                 <span className="text-base font-medium text-paper">
                   {step.title}
                   {!step.required && (
-                    <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.1em] text-paper/35">
+                    <span className="ml-2 font-display text-[10px] uppercase tracking-[0.1em] text-paper/35">
                       необязательно
                     </span>
                   )}

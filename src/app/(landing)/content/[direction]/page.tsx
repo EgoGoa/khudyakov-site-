@@ -50,7 +50,7 @@ export default async function DirectionPage({ params }: { params: Promise<{ dire
         <Reveal>
           <Link
             href="/content"
-            className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-paper/50 transition-colors hover:text-glow"
+            className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-paper/50 transition-colors hover:text-glow"
           >
             <span aria-hidden="true">←</span>
             Создание контента
@@ -69,7 +69,7 @@ export default async function DirectionPage({ params }: { params: Promise<{ dire
           <ul className="mt-10 divide-y divide-paper/10 border-t border-paper/10">
             {direction.bullets.map((bullet, i) => (
               <li key={bullet} className="flex items-baseline gap-4 py-4">
-                <span className="font-mono text-xs text-paper/40">
+                <span className="font-display text-xs text-paper/40">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="text-sm leading-relaxed text-paper/80 sm:text-base">
@@ -87,7 +87,7 @@ export default async function DirectionPage({ params }: { params: Promise<{ dire
             </Link>
             <Link
               href="/content"
-              className="font-mono text-xs uppercase tracking-[0.15em] text-paper/50 transition-colors hover:text-glow"
+              className="font-display text-xs uppercase tracking-[0.15em] text-paper/50 transition-colors hover:text-glow"
             >
               Все направления →
             </Link>

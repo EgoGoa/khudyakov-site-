@@ -9,6 +9,7 @@ import PersonaBudget from "./blocks/PersonaBudget";
 import PersonaAssets from "./blocks/PersonaAssets";
 import AudienceBlock from "./blocks/AudienceBlock";
 import CasesBlock from "./blocks/CasesBlock";
+import TechBlock from "./blocks/TechBlock";
 import PricingBlock from "./blocks/PricingBlock";
 import WhyBlock from "./blocks/WhyBlock";
 import ProcessBlock from "./blocks/ProcessBlock";
@@ -48,7 +49,18 @@ import type { DirectionContent } from "./types";
 //
 // Обёртка .content-warm-headings переводит все .kw на странице в
 // магента→оранжевый — родной градиент /content (см. globals.css).
-export default function DirectionPage({ content }: { content: DirectionContent }) {
+// Страницы AI-инструментов (/ai/[tool]) используют ту же вёрстку, но
+// передают сюда .ai-cool-headings и получают лайм→изумруд — акцент /ai.
+// Класс приходит пропом, а не выводится из slug: это единственное, чем
+// страница инструмента отличается от страницы направления на уровне
+// раскладки.
+export default function DirectionPage({
+  content,
+  headingClass = "content-warm-headings",
+}: {
+  content: DirectionContent;
+  headingClass?: string;
+}) {
   return (
     <DirectionTaskProvider tasks={content.tasks} title={content.hero.eyebrow}>
       {/* overflow-x: clip, а не hidden.
@@ -59,7 +71,7 @@ export default function DirectionPage({ content }: { content: DirectionContent }
           в отличие от hidden, не создаёт скролл-контейнер, поэтому липкие
           заголовки блоков (lg:sticky в «под чью задачу», sticky в FAQ)
           продолжают работать. */}
-      <div className="content-warm-headings relative [overflow-x:clip]">
+      <div className={`${headingClass} relative [overflow-x:clip]`}>
         <DirectionBackdrop from={content.backdrop.from} to={content.backdrop.to} />
 
         <DirectionHero hero={content.hero} />
@@ -70,7 +82,12 @@ export default function DirectionPage({ content }: { content: DirectionContent }
           media={content.taskMedia}
         />
         <AudienceBlock audience={content.audience} />
-        <CasesBlock cases={content.cases} />
+        {/* Кейсы или технический разбор — одно место в странице, два
+            разных наполнения. У направлений /content есть снятые работы, у
+            AI-инструментов их пока нет, и вместо заглушек там стоит
+            спецификация инструмента. */}
+        {content.cases ? <CasesBlock cases={content.cases} /> : null}
+        {content.tech ? <TechBlock tech={content.tech} /> : null}
         <PersonaBudget media={content.budgetMedia} />
         <PricingBlock pricing={content.pricing} />
         {content.why ? <WhyBlock why={content.why} /> : null}

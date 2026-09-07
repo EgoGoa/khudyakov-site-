@@ -20,7 +20,7 @@ export default function Stats() {
                 <div className="font-display text-3xl uppercase text-paper sm:text-4xl">
                   {stat.value}
                 </div>
-                <div className="mt-1 font-mono text-xs uppercase tracking-[0.1em] text-paper/50 [hyphens:auto] [overflow-wrap:break-word]">
+                <div className="mt-1 font-display text-xs uppercase tracking-[0.1em] text-paper/50 [hyphens:auto] [overflow-wrap:break-word]">
                   {stat.label}
                 </div>
               </div>

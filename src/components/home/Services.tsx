@@ -31,7 +31,7 @@ export default function Services() {
             {services.map((service, index) => (
               <Reveal key={service.title} delay={(index % 5) * 0.05}>
                 <div className="group grid grid-cols-[2rem_1fr] gap-x-4 gap-y-1 border-b border-paper/10 py-5 transition-colors hover:bg-paper/[0.02] sm:grid-cols-[2.5rem_15rem_1fr] sm:items-baseline sm:gap-x-8 sm:gap-y-0">
-                  <span className="font-mono text-sm text-paper/40">
+                  <span className="font-display text-sm text-paper/40">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h3 className="font-display text-xl uppercase tracking-tight text-paper transition-colors group-hover:text-glow sm:text-2xl">

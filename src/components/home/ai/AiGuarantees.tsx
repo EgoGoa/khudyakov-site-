@@ -104,7 +104,7 @@ export default function AiGuarantees() {
               className="border-t border-paper/20 py-3"
             >
               <div className="flex items-baseline gap-3">
-                <span className="font-mono text-[10px] text-paper/40">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-display text-[10px] text-paper/40">{String(i + 1).padStart(2, "0")}</span>
                 <div>
                   <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
                     {term.title}

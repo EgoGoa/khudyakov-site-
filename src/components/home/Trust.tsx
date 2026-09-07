@@ -88,7 +88,7 @@ export default function Trust({
                 delay={BEAT.content + i * STAGGER.normal}
                 className="border-t border-paper/25 pt-4 [@media(max-height:860px)]:pt-2.5"
               >
-                <span className="font-mono text-[10px] tracking-[0.2em] text-glow">
+                <span className="font-display text-[10px] tracking-[0.2em] text-glow">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="mt-2 font-sans text-sm font-semibold leading-snug text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
@@ -110,7 +110,7 @@ export default function Trust({
               <span className={`${EYEBROW} text-paper/45`}>
                 Нам доверяют
               </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
+              <span className="font-display text-[11px] uppercase tracking-[0.1em] text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
                 {clients.join(" / ")}
               </span>
             </Appear>

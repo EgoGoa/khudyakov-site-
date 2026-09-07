@@ -46,13 +46,13 @@ export default function AiPortfolio() {
             <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-ink/60 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/80 via-ink/35 to-transparent" />
 
-            <span className="absolute left-4 top-4 font-mono text-xs tracking-[0.08em] text-paper/40 sm:left-5 sm:top-5">
+            <span className="absolute left-4 top-4 font-display text-xs tracking-[0.08em] text-paper/40 sm:left-5 sm:top-5">
               [TODO ДАТА]
             </span>
 
             <div className="absolute inset-x-4 bottom-4 flex flex-col items-start gap-2 sm:inset-x-5 sm:bottom-5">
-              <span className="font-mono text-xs tracking-[0.08em] text-paper/45">[TODO ХРОНОМЕТРАЖ]</span>
-              <span className="rounded-full bg-paper/[0.06] px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-paper/50 ring-1 ring-inset ring-paper/15 sm:text-[10px]">
+              <span className="font-display text-xs tracking-[0.08em] text-paper/45">[TODO ХРОНОМЕТРАЖ]</span>
+              <span className="rounded-full bg-paper/[0.06] px-2.5 py-1 font-display text-[9px] uppercase tracking-[0.12em] text-paper/50 ring-1 ring-inset ring-paper/15 sm:text-[10px]">
                 [TODO ФОРМАТ]
               </span>
               <span className="text-sm font-medium leading-snug text-paper/70">[TODO название кейса]</span>
@@ -73,7 +73,7 @@ export default function AiPortfolio() {
       </div>
 
       <Appear from="up" delay={BEAT.cta} className="mt-5 flex justify-end">
-        <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-paper/40">
+        <span className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-paper/40">
           Весь каталог AI-работ — [TODO]
           <span aria-hidden="true">→</span>
         </span>

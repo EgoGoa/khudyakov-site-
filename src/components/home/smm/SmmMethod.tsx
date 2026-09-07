@@ -119,7 +119,7 @@ export default function SmmMethod() {
                 <tr className="border-b border-paper/15">
                   <th
                     scope="col"
-                    className="p-3.5 font-mono font-normal uppercase tracking-[0.1em] text-paper/40"
+                    className="p-3.5 font-display font-normal uppercase tracking-[0.1em] text-paper/40"
                   >
                     &nbsp;
                   </th>
@@ -171,7 +171,7 @@ export default function SmmMethod() {
               blurPx={8}
             >
               <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-3.5 py-2 backdrop-blur-md">
-                <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#c4a0ff]">
+                <span className="font-display text-[9px] uppercase tracking-[0.15em] text-[#c4a0ff]">
                   {s.tag}
                 </span>
                 <span className="h-1 w-1 shrink-0 rounded-full bg-paper/30" />

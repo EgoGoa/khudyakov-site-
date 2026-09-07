@@ -18,16 +18,30 @@ export default function TaskPicker({
   prompt,
   note,
   media,
+  /** Сколько всего шагов персонализации на странице — пробрасывается в
+   *  PersonaShell. По умолчанию 3 (полный шаблон); компактные страницы
+   *  AI-инструментов передают 1, потому что у них нет отдельных шагов
+   *  «бюджет и срок» и «что у вас уже есть» — см. CompactToolContent. */
+  totalSteps = 3,
+  /** Что именно пересобралось после выбора — список меняется вместе с
+   *  тем, какие блоки вообще есть на странице. Полный шаблон трогает
+   *  смету, порядок кейсов, срок и финал; компактный не показывает кейсы
+   *  отдельным блоком, поэтому эта строка там не подтвердится, если её не
+   *  убрать. */
+  changed = ["Смета пересчитана", "Кейсы переставлены", "Срок уточнён", "Финал переписан"],
 }: {
   prompt: string;
   note: string;
   media?: BlockMediaSpec;
+  totalSteps?: number;
+  changed?: string[];
 }) {
   const { tasks, active, select } = useDirectionTask();
 
   return (
     <PersonaShell
       step={1}
+      totalSteps={totalSteps}
       prompt={prompt}
       note={note}
       media={media}
@@ -43,12 +57,7 @@ export default function TaskPicker({
                   <span className="font-medium text-orange">{active.promise}</span>
                 </>
               }
-              changed={[
-                "Смета пересчитана",
-                "Кейсы переставлены",
-                "Срок уточнён",
-                "Финал переписан",
-              ]}
+              changed={changed}
               onReset={() => select(active.id)}
             />
           ) : null}

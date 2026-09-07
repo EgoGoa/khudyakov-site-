@@ -57,7 +57,7 @@ export default function SitesProcess() {
               className="flex items-start gap-4 py-3.5"
             >
               <span
-                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-mono text-[10px]"
+                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-display text-[10px]"
                 style={{
                   borderColor: "rgba(255,106,61,0.35)",
                   color: "#ffd0bd",

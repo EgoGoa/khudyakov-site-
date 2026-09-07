@@ -150,7 +150,7 @@ export default function Calculator() {
 
       <div className="flex flex-col justify-between border-t border-paper/10 bg-paper/[0.02] p-6 sm:p-8 lg:border-l lg:border-t-0">
         <div>
-          <span className="font-mono text-xs uppercase tracking-[0.15em] text-paper/40">
+          <span className="font-display text-xs uppercase tracking-[0.15em] text-paper/40">
             Ориентировочный бюджет
           </span>
           <div className="mt-3 font-display text-3xl uppercase leading-none text-paper sm:text-4xl">
@@ -164,7 +164,7 @@ export default function Calculator() {
               </>
             )}
           </div>
-          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-paper/10 bg-paper/[0.04] px-3 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.1em] text-glow">
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-paper/10 bg-paper/[0.04] px-3 py-1.5 font-display text-[0.7rem] uppercase tracking-[0.1em] text-glow">
             Уровень «{result.tier}»
           </div>
 

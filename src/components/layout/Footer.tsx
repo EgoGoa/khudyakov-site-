@@ -103,7 +103,7 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
         </div>
 
         <div>
-          <div className="font-mono text-xs uppercase tracking-[0.2em] text-paper/40">
+          <div className="font-display text-xs uppercase tracking-[0.2em] text-paper/40">
             Навигация
           </div>
           <ul className="mt-4 space-y-3 text-sm">
@@ -118,7 +118,7 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
         </div>
 
         <div>
-          <div className="font-mono text-xs uppercase tracking-[0.2em] text-paper/40">
+          <div className="font-display text-xs uppercase tracking-[0.2em] text-paper/40">
             Направления
           </div>
           <ul className="mt-4 space-y-3 text-sm">
@@ -160,7 +160,7 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
       </Container>
 
       <Container className="border-t border-paper/10 py-6">
-        <p className="font-mono text-xs text-paper/30">
+        <p className="font-display text-xs text-paper/30">
           © {year} HDKV.AGENCY. Все права защищены.
         </p>
       </Container>

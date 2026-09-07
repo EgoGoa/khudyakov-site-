@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { servicesByCategory } from "@/lib/service-content";
 
@@ -34,22 +35,33 @@ type Card = {
    *  carousel can't drift from what chapter 05 (Offer) lists. */
   short: string;
   shape: Shape;
+  /** Route to that item's own deep-dive page, when one exists.
+   *
+   *  Five of the ten offer items now have a full page under /ai/[tool] (see
+   *  components/home/direction/toolRegistry.ts); the other five don't yet.
+   *  Egor's call on where the entry point lives: "карусель остаётся, но
+   *  чтобы через кнопку можно было нажимать на неё и проходить на отдельную
+   *  страницу" — the carousel itself stays exactly as it was, and a button
+   *  shows up on the info row below it only for the cards that actually
+   *  have somewhere to go. No `href` here means no button, not a dead
+   *  link. */
+  href?: string;
 };
 
 type Shape = "video" | "chat" | "flow" | "text" | "brain" | "crm" | "voice" | "split" | "chart" | "learn";
 
 // Index-aligned with servicesByCategory.ai — same order, same ten items.
 const CARDS: Card[] = [
-  { id: "gen", short: "Генерация\nвидео и фото", shape: "video" },
-  { id: "bots", short: "Чат-боты\nи AI-агенты", shape: "chat" },
-  { id: "auto", short: "Автоматизация\nкоммуникации", shape: "flow" },
-  { id: "text", short: "Текстовый\nконтент", shape: "text" },
-  { id: "inner", short: "Ассистенты\nдля процессов", shape: "brain" },
-  { id: "crm", short: "AI внутри\nCRM", shape: "crm" },
-  { id: "voice", short: "Голосовые\nрешения", shape: "voice" },
-  { id: "person", short: "Персонализация\nконтента", shape: "split" },
-  { id: "analytics", short: "AI-аналитика", shape: "chart" },
-  { id: "learn", short: "Обучение\nкоманды", shape: "learn" },
+  { id: "gen", short: "Генерация\nвидео и фото", shape: "video", href: "/ai/video" },
+  { id: "bots", short: "Чат-боты\nи AI-агенты", shape: "chat", href: "/ai/agent" },
+  { id: "auto", short: "Автоматизация\nкоммуникации", shape: "flow", href: "/ai/comms" },
+  { id: "text", short: "Текстовый\nконтент", shape: "text", href: "/ai/content" },
+  { id: "inner", short: "Ассистенты\nдля процессов", shape: "brain", href: "/ai/ops" },
+  { id: "crm", short: "AI внутри\nCRM", shape: "crm", href: "/ai/crm" },
+  { id: "voice", short: "Голосовые\nрешения", shape: "voice", href: "/ai/voice" },
+  { id: "person", short: "Персонализация\nконтента", shape: "split", href: "/ai/personalization" },
+  { id: "analytics", short: "AI-аналитика", shape: "chart", href: "/ai/analytics" },
+  { id: "learn", short: "Обучение\nкоманды", shape: "learn", href: "/ai/training" },
 ];
 
 const SERVICES = servicesByCategory.ai;
@@ -209,7 +221,7 @@ const POSE: Record<number, { x: number; z: number; ry: number; scale: number; op
 // site's orange: /ai's whole icon set and accent is emerald, and an orange
 // key here read as borrowed from the neighbouring page.
 export const AI_PILL =
-  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-7 py-3.5 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-[#03120d] shadow-[0_12px_30px_-8px_rgba(16,185,129,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
+  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#03120d] shadow-[0_12px_30px_-8px_rgba(16,185,129,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
 
 export const AI_ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-colors duration-300 hover:border-emerald-300/70 hover:text-emerald-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
@@ -323,58 +335,83 @@ export default function AiDeck() {
                 }
               />
 
-              <button
-                type="button"
-                onClick={(e) => {
-                  setActive(i);
-                  // Restore focus ourselves, without the scroll-into-view a
-                  // plain click's native focus would trigger — see the
-                  // onMouseDown comment below for why that scroll happens and
-                  // why it matters. `preventScroll` is what keeps the arrow
-                  // keys usable right after a mouse click without bringing
-                  // the jump back.
-                  e.currentTarget.focus({ preventScroll: true });
-                }}
-                // A card sitting off-centre is rotated in 3D (rotateY, inside
-                // the rail's own `perspective`). Focusing it on click — the
-                // browser's default for a <button> — makes Chrome/Safari run
-                // their native scroll-into-view against that rotated
-                // geometry, which they sometimes get wrong and answer by
-                // scrolling the whole page. CinematicStage's own scroll
-                // listener then reads that stray scroll as a real gesture and
-                // can swap the chapter under you — the "вся вёрстка прыгает"
-                // bug. Blocking focus on mousedown (the click itself still
-                // fires via mouseup, and onClick above re-focuses safely)
-                // removes the trigger entirely.
-                onMouseDown={(e) => e.preventDefault()}
-                tabIndex={isFront ? -1 : 0}
-                aria-label={`Показать: ${SERVICES[i].title}`}
-                aria-current={isFront ? "true" : undefined}
-                className={`absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] ring-1 transition-[box-shadow] duration-[560ms] motion-reduce:transition-none ${
-                  isFront ? "cursor-default ring-emerald-300/40" : "cursor-pointer ring-white/10"
-                }`}
-              >
-                <AiThumb shape={card.shape} />
+              {/* The front card is not a paging control — clicking it was
+                  always a no-op (tabIndex -1, onClick re-selecting the
+                  already-active index). That made it safe to stop rendering
+                  it as a <button> the moment it needed to carry a real
+                  navigation link inside it: a <Link>'s <a> nested inside a
+                  <button> is invalid HTML and fights the button for the
+                  click, so the front card is a plain <div> instead and the
+                  off-centre cards (which DO page the carousel) keep the
+                  <button>. */}
+              {isFront ? (
+                <div
+                  aria-current="true"
+                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] ring-1 ring-emerald-300/40"
+                >
+                  <AiThumb shape={card.shape} />
 
-                {/* Only the centre card is labelled, as in the reference. On a
-                    card turned 32° and scaled to 87% the type would be noise. */}
-                {isFront && (
-                  <>
-                    <span
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-32"
-                      style={{ background: "linear-gradient(180deg, rgba(10,13,16,0) 0%, rgba(10,13,16,0.94) 68%)" }}
-                    />
-                    <span className="absolute inset-x-5 bottom-5 block">
-                      <span className="block whitespace-pre-line font-display text-lg uppercase leading-[1.15] tracking-tight text-paper">
-                        {card.short}
-                      </span>
+                  <span
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-40"
+                    style={{ background: "linear-gradient(180deg, rgba(10,13,16,0) 0%, rgba(10,13,16,0.96) 62%)" }}
+                  />
+                  <span className="absolute inset-x-5 bottom-5 flex flex-col items-start gap-3">
+                    <span className="block whitespace-pre-line font-display text-lg uppercase leading-[1.15] tracking-tight text-paper">
+                      {card.short}
                     </span>
-                    <span className="absolute right-3.5 top-3.5 rounded-full bg-ink/70 px-2.5 py-1 font-mono text-[10px] tracking-[0.12em] text-paper/70">
-                      {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-                    </span>
-                  </>
-                )}
-              </button>
+                    {/* Was a small pill on the info row below the deck —
+                        Егор: "кнопки перемести во внутрь карточек и сделай
+                        их заметнее и пусть они пульсируют". Living on the
+                        card itself, it reads as the card's own action
+                        instead of a footnote under it; the pulse is what
+                        makes it read as clickable rather than as more
+                        label text next to the title above it. */}
+                    {card.href && (
+                      <Link
+                        href={card.href}
+                        className="ai-open-pulse inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-4 py-2.5 font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-[#03120d] motion-reduce:animate-none"
+                      >
+                        Открыть инструмент
+                        <span aria-hidden="true">→</span>
+                      </Link>
+                    )}
+                  </span>
+                  <span className="absolute right-3.5 top-3.5 rounded-full bg-ink/70 px-2.5 py-1 font-display text-[10px] tracking-[0.12em] text-paper/70">
+                    {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+                  </span>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    setActive(i);
+                    // Restore focus ourselves, without the scroll-into-view a
+                    // plain click's native focus would trigger — see the
+                    // onMouseDown comment below for why that scroll happens
+                    // and why it matters. `preventScroll` is what keeps the
+                    // arrow keys usable right after a mouse click without
+                    // bringing the jump back.
+                    e.currentTarget.focus({ preventScroll: true });
+                  }}
+                  // A card sitting off-centre is rotated in 3D (rotateY,
+                  // inside the rail's own `perspective`). Focusing it on
+                  // click — the browser's default for a <button> — makes
+                  // Chrome/Safari run their native scroll-into-view against
+                  // that rotated geometry, which they sometimes get wrong
+                  // and answer by scrolling the whole page. CinematicStage's
+                  // own scroll listener then reads that stray scroll as a
+                  // real gesture and can swap the chapter under you — the
+                  // "вся вёрстка прыгает" bug. Blocking focus on mousedown
+                  // (the click itself still fires via mouseup, and onClick
+                  // above re-focuses safely) removes the trigger entirely.
+                  onMouseDown={(e) => e.preventDefault()}
+                  tabIndex={0}
+                  aria-label={`Показать: ${SERVICES[i].title}`}
+                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] ring-1 ring-white/10 cursor-pointer transition-[box-shadow] duration-[560ms] motion-reduce:transition-none"
+                >
+                  <AiThumb shape={card.shape} />
+                </button>
+              )}
             </div>
           );
         })}
@@ -443,7 +480,7 @@ export default function AiDeck() {
                 boxShadow: on ? "0 0 12px rgba(52,211,153,0.9), 0 0 34px rgba(52,211,153,0.45)" : "none",
               }}
             >
-              <span className="font-mono text-[9px] text-emerald-100" style={{ opacity: on ? 1 : 0 }}>
+              <span className="font-display text-[9px] text-emerald-100" style={{ opacity: on ? 1 : 0 }}>
                 {String(i + 1).padStart(2, "0")}
               </span>
             </button>
@@ -463,9 +500,15 @@ export default function AiDeck() {
           entire row — the heading beside it visibly shifted on a swap. A
           hard height means the tallest entry defines the box once and
           nothing below or beside it ever moves again. */}
-      <div className="mt-6 h-[86px] overflow-hidden">
-        <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.title}</p>
-        <p className="mt-2 max-w-[420px] text-[13px] leading-snug text-paper/55">{front.description}</p>
+      {/* The "Открыть" button used to live here, in its own pill beside the
+          title. Moved onto the card itself (see isFront branch above) per
+          Егор's ask — this row is text-only again, same as before that
+          button existed. */}
+      <div className="mt-6 flex h-[86px] items-start overflow-hidden">
+        <div>
+          <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.title}</p>
+          <p className="mt-2 max-w-[420px] text-[13px] leading-snug text-paper/55">{front.description}</p>
+        </div>
       </div>
     </div>
   );

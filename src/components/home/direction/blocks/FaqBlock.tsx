@@ -42,7 +42,7 @@ export default function FaqBlock({ faq }: { faq: DirectionContent["faq"] }) {
                       className="group flex w-full items-center gap-4 py-4 text-left"
                     >
                       <span
-                        className={`font-mono text-[10px] tracking-[0.18em] transition-colors ${
+                        className={`font-display text-[10px] tracking-[0.18em] transition-colors ${
                           on ? "text-orange" : "text-white"
                         }`}
                       >

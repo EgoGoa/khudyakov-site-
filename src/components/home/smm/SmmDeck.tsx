@@ -135,7 +135,7 @@ function FormatThumb({ shape }: { shape: Format["shape"] }) {
 
       {shape === "ads" && (
         <div className="mt-2.5 px-2.5">
-          <span className="block font-mono text-[7px] uppercase tracking-[0.14em] text-[#7dd3fc]">
+          <span className="block font-display text-[7px] uppercase tracking-[0.14em] text-[#7dd3fc]">
             Реклама
           </span>
           <span className="mt-1 block h-[74px] rounded-[6px] bg-gradient-to-br from-[#38bdf8]/35 to-[#a855f7]/20" />
@@ -158,7 +158,7 @@ function FormatThumb({ shape }: { shape: Format["shape"] }) {
           </div>
           <span className="mt-2 block h-[74px] rounded-[6px] bg-paper/10" />
           <div className="mt-2 flex items-center gap-2">
-            <span className="font-mono text-[8px] text-[#f0a8ff]">♥</span>
+            <span className="font-display text-[8px] text-[#f0a8ff]">♥</span>
             {bar("45%", true)}
           </div>
         </div>
@@ -194,7 +194,7 @@ const CARD_SHELL =
 // to press. The violet stays where it belongs, on the heading keywords, the
 // chapter numbers and the rail, which are type rather than controls.
 export const PILL =
-  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange";
+  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange";
 
 export const ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-colors duration-300 hover:border-orange/60 hover:text-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange";
@@ -262,11 +262,11 @@ export default function SmmDeck() {
                     <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
                       {format.name}
                     </span>
-                    <span className="mt-1.5 block font-mono text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
+                    <span className="mt-1.5 block font-display text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
                       {format.meta}
                     </span>
                   </span>
-                  <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-mono text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+                  <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
                     {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
                   </span>
                 </>
@@ -318,7 +318,7 @@ export default function SmmDeck() {
               onClick={() => setActive(i)}
               aria-label={format.name}
               aria-current={on ? "true" : undefined}
-              className="relative grid h-8 w-8 place-items-center rounded-full border bg-ink font-mono text-[9px] transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a855f7] motion-reduce:transition-none"
+              className="relative grid h-8 w-8 place-items-center rounded-full border bg-ink font-display text-[9px] transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a855f7] motion-reduce:transition-none"
               style={{
                 borderColor: on ? "#a855f7" : "rgba(168,85,247,0.28)",
                 color: on ? "#e4d0ff" : "rgba(220,221,239,0.45)",

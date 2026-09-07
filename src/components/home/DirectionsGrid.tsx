@@ -122,13 +122,13 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
       <div className="mt-3 flex items-center gap-3">
         <Link
           href="/brief"
-          className="whitespace-nowrap rounded-full bg-gradient-to-r from-orange-bright to-rec px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_-4px_rgba(245,49,11,0.55)] transition-all hover:shadow-[0_6px_20px_-4px_rgba(245,49,11,0.75)] hover:brightness-110"
+          className="whitespace-nowrap rounded-full bg-gradient-to-r from-orange-bright to-rec px-4 py-2 font-display text-[10px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_-4px_rgba(245,49,11,0.55)] transition-all hover:shadow-[0_6px_20px_-4px_rgba(245,49,11,0.75)] hover:brightness-110"
         >
           Заполнить бриф
         </Link>
         <Link
           href={`/content/${direction.slug}`}
-          className="font-mono text-[10px] uppercase tracking-[0.1em] text-paper/55 transition-colors hover:text-glow"
+          className="font-display text-[10px] uppercase tracking-[0.1em] text-paper/55 transition-colors hover:text-glow"
         >
           Подробнее ↗
         </Link>
@@ -163,7 +163,7 @@ function ConsultCard() {
         href={TELEGRAM_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-3 inline-flex w-fit items-center whitespace-nowrap rounded-full bg-gradient-to-r from-orange-bright to-rec px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_-4px_rgba(245,49,11,0.55)] transition-all hover:shadow-[0_6px_20px_-4px_rgba(245,49,11,0.75)] hover:brightness-110"
+        className="mt-3 inline-flex w-fit items-center whitespace-nowrap rounded-full bg-gradient-to-r from-orange-bright to-rec px-4 py-2 font-display text-[10px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_-4px_rgba(245,49,11,0.55)] transition-all hover:shadow-[0_6px_20px_-4px_rgba(245,49,11,0.75)] hover:brightness-110"
       >
         Написать в Telegram
       </a>

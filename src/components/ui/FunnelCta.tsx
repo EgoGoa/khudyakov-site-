@@ -164,7 +164,7 @@ function EyebrowPill({
       : "border-orange/35 bg-orange/10 text-orange";
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-full border font-mono uppercase tracking-[0.18em] ${skin} ${
+      className={`inline-flex items-center gap-2 rounded-full border font-display uppercase tracking-[0.18em] ${skin} ${
         dense ? "px-3 py-1 text-[10px]" : "px-3.5 py-1.5 text-[11px]"
       }`}
     >

@@ -46,7 +46,7 @@ export default function StatsBand({
                 <div className="break-words font-display text-[1.6rem] uppercase leading-none text-white sm:text-5xl">
                   {stat.value}
                 </div>
-                <div className="mt-3 break-words font-mono text-[10px] uppercase leading-relaxed tracking-[0.08em] text-white sm:tracking-[0.14em]">
+                <div className="mt-3 break-words font-display text-[10px] uppercase leading-relaxed tracking-[0.08em] text-white sm:tracking-[0.14em]">
                   {stat.label}
                 </div>
               </div>

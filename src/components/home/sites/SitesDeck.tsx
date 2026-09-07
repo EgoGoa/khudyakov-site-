@@ -169,7 +169,7 @@ const CARD_SHELL =
 // he flagged as unfinished here, since a pressed-key button fights the flat
 // glass everything else in this chapter is made of.
 export const PILL =
-  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
+  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
 
 export const ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-colors duration-300 hover:border-glow/60 hover:text-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
@@ -238,11 +238,11 @@ export default function SitesDeck() {
                     <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
                       {service.name}
                     </span>
-                    <span className="mt-1.5 block font-mono text-[10px] uppercase tracking-[0.14em] text-orange">
+                    <span className="mt-1.5 block font-display text-[10px] uppercase tracking-[0.14em] text-orange">
                       {service.price}
                     </span>
                   </span>
-                  <span className="absolute right-3 top-3 rounded-full bg-ink/70 px-2 py-1 font-mono text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+                  <span className="absolute right-3 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
                     {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
                   </span>
                 </>
@@ -297,7 +297,7 @@ export default function SitesDeck() {
               onClick={() => setActive(i)}
               aria-label={service.name}
               aria-current={on ? "true" : undefined}
-              className="relative grid h-8 w-8 place-items-center rounded-full border bg-ink font-mono text-[9px] transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow motion-reduce:transition-none"
+              className="relative grid h-8 w-8 place-items-center rounded-full border bg-ink font-display text-[9px] transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow motion-reduce:transition-none"
               style={{
                 borderColor: on ? "#ff6a3d" : "rgba(255,106,61,0.28)",
                 color: on ? "#ffd0bd" : "rgba(220,221,239,0.45)",
@@ -318,7 +318,7 @@ export default function SitesDeck() {
           second copy of it here read as the same offer made twice. */}
       <div className="mt-6">
         <p className="min-h-[38px] max-w-[420px] text-[13px] leading-snug text-paper/55">{front.blurb}</p>
-        <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-paper/45">
+        <p className="mt-3 font-display text-[10px] uppercase tracking-[0.14em] text-paper/45">
           Срок · <span className="font-medium text-paper">{front.term}</span>
         </p>
       </div>

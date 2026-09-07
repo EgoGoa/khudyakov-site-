@@ -203,7 +203,7 @@ export default function Hero() {
               <span className="font-display text-2xl uppercase text-paper sm:text-3xl">
                 {stat.value}
               </span>
-              <span className="ml-2 font-mono text-xs uppercase tracking-[0.1em] text-paper/50">
+              <span className="ml-2 font-display text-xs uppercase tracking-[0.1em] text-paper/50">
                 {stat.label}
               </span>
             </div>

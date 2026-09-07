@@ -669,7 +669,7 @@ function VibeModeWindow({ item, onClose }: { item: RailItem; onClose: () => void
 
   return (
     <div>
-      <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange">
+      <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
         <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
         Vibe режим
       </span>
@@ -691,7 +691,7 @@ function VibeModeWindow({ item, onClose }: { item: RailItem; onClose: () => void
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-paper/10 text-paper/80">
                 {mode.glyph}
               </span>
-              <span className="rounded-full bg-paper/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-paper/45">
+              <span className="rounded-full bg-paper/10 px-2 py-0.5 font-display text-[9px] uppercase tracking-[0.14em] text-paper/45">
                 Скоро
               </span>
             </div>
@@ -732,7 +732,7 @@ function VibeModeWindow({ item, onClose }: { item: RailItem; onClose: () => void
                 <path d="M7 17 17 7M9 7h8v8" />
               </Glyph>
             </span>
-            <span className="rounded-full bg-orange/25 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-orange">
+            <span className="rounded-full bg-orange/25 px-2 py-0.5 font-display text-[9px] uppercase tracking-[0.14em] text-orange">
               Готово сейчас
             </span>
           </div>
@@ -1129,7 +1129,7 @@ export default function VibeRail() {
                 Opacity-only, same reveal timing as RailRow's own label, so
                 it appears together with the rest of the panel's text. */}
             <div
-              className={`px-3 pb-0.5 pt-0.5 font-mono text-[8px] uppercase tracking-[0.16em] text-paper/35 transition-opacity ${
+              className={`px-3 pb-0.5 pt-0.5 font-display text-[8px] uppercase tracking-[0.16em] text-paper/35 transition-opacity ${
                 expanded ? "opacity-100 duration-200 delay-200" : "opacity-0 duration-100"
               }`}
             >
@@ -1220,14 +1220,14 @@ export default function VibeRail() {
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center">
                   <VibeOrb size={28} />
                 </span>
-                <span className="font-mono text-xs uppercase tracking-[0.16em] text-paper">
+                <span className="font-display text-xs uppercase tracking-[0.16em] text-paper">
                   Vibe — выбор направления
                 </span>
               </button>
 
               <div className="my-2 h-px bg-paper/10" />
 
-              <div className="px-2 pb-1 font-mono text-[9px] uppercase tracking-[0.16em] text-paper/35">
+              <div className="px-2 pb-1 font-display text-[9px] uppercase tracking-[0.16em] text-paper/35">
                 Vibe-режим
               </div>
               {/* Same white/thin label treatment as the desktop rail, and

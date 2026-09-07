@@ -9,7 +9,7 @@ export default function Eyebrow({
 }) {
   return (
     <span
-      className={`mb-3 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] ${
+      className={`mb-3 inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] ${
         tone === "glow" ? "text-glow" : "text-rec"
       }`}
     >

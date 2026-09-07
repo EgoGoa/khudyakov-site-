@@ -115,7 +115,7 @@ export default function ContentServicePage() {
             filtersAside={
               <Link
                 href="/works"
-                className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-paper/80 transition hover:text-glow"
+                className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-paper/80 transition hover:text-glow"
               >
                 Весь каталог — 78 работ
                 <span aria-hidden="true">→</span>

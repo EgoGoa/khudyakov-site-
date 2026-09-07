@@ -87,14 +87,14 @@ export default function AiConsult() {
             <GlassCard className="overflow-hidden">
               <div className="flex items-center justify-between border-b border-paper/10 px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-glow/15 font-mono text-sm font-semibold text-glow">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-glow/15 font-display text-sm font-semibold text-glow">
                     AI
                   </div>
                   <div>
                     <div className="text-sm font-medium text-paper">
                       Ассистент HDKV.AGENCY
                     </div>
-                    <div className="font-mono text-xs text-paper/40">Демо-версия</div>
+                    <div className="font-display text-xs text-paper/40">Демо-версия</div>
                   </div>
                 </div>
               </div>

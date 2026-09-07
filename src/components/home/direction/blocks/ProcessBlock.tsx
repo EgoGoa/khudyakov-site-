@@ -87,7 +87,7 @@ export default function ProcessBlock({
                   <span className="absolute left-0 top-2 h-3.5 w-3.5 rounded-full border-2 border-orange bg-ink lg:left-1" />
 
                   <div className="flex items-baseline gap-4">
-                    <span className="font-mono text-[11px] tracking-[0.18em] text-orange">
+                    <span className="font-display text-[11px] tracking-[0.18em] text-orange">
                       {step.number}
                     </span>
                     <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl">

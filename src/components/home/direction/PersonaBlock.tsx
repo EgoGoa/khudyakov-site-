@@ -38,6 +38,15 @@ export type PersonaStepNo = 1 | 2 | 3;
 
 export function PersonaShell({
   step,
+  /** Сколько всего шагов в воронке персонализации на этой странице.
+   *
+   *  По умолчанию 3 — так устроены все уже готовые страницы направлений и
+   *  первых пяти AI-инструментов (задача → бюджет и срок → материалы).
+   *  Компактный шаблон для новых пяти инструментов оставляет только один
+   *  шаг («задача»), и с зашитой тройкой прогресс показывал бы «1 из 3» с
+   *  двумя мёртвыми полосками, которые никогда не загорятся — следующих
+   *  шагов там просто нет. */
+  totalSteps = 3,
   prompt,
   note,
   media,
@@ -47,6 +56,7 @@ export function PersonaShell({
   result,
 }: {
   step: PersonaStepNo;
+  totalSteps?: number;
   prompt: string;
   note: string;
   media?: BlockMediaSpec;
@@ -54,6 +64,7 @@ export function PersonaShell({
   children: ReactNode;
   result?: ReactNode;
 }) {
+  const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
   return (
     <SectionStage className="relative py-20 sm:py-24">
       {media ? <BlockMedia media={media} /> : null}
@@ -72,7 +83,7 @@ export function PersonaShell({
               Персонализация
             </span>
             <span className="inline-flex items-center gap-1" aria-hidden="true">
-              {([1, 2, 3] as const).map((n) => (
+              {steps.map((n) => (
                 <span
                   key={n}
                   className={`h-[3px] w-6 rounded-full transition-colors duration-300 ${
@@ -81,9 +92,9 @@ export function PersonaShell({
                 />
               ))}
             </span>
-            <span className="sr-only">{`Шаг ${step} из 3`}</span>
+            <span className="sr-only">{`Шаг ${step} из ${totalSteps}`}</span>
             <span aria-hidden="true" className="tabular-nums text-white/60">
-              {step} / 3
+              {step} / {totalSteps}
             </span>
           </span>
         </Appear>
@@ -164,7 +175,7 @@ export function PersonaChip({
         {/* Явная метка состояния: одного цвета обводки мало, чтобы понять,
             какой именно ответ сейчас применён. */}
         <span
-          className={`mt-3 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] transition ${
+          className={`mt-3 flex items-center gap-1.5 font-display text-[10px] uppercase tracking-[0.16em] transition ${
             on ? "text-orange" : "text-white/70 group-hover:text-orange"
           }`}
         >
@@ -208,7 +219,7 @@ export function PersonaResult({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.15 + i * 0.08, duration: 0.35, ease: EASE }}
-            className="rounded-full border border-orange/40 bg-orange/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-orange"
+            className="rounded-full border border-orange/40 bg-orange/10 px-3 py-1 font-display text-[10px] uppercase tracking-[0.16em] text-orange"
           >
             {label}
           </motion.li>
@@ -221,7 +232,7 @@ export function PersonaResult({
         <button
           type="button"
           onClick={onReset}
-          className="mt-6 font-mono text-[10px] uppercase tracking-[0.18em] text-white/70 underline-offset-4 transition hover:text-orange hover:underline"
+          className="mt-6 font-display text-[10px] uppercase tracking-[0.18em] text-white/70 underline-offset-4 transition hover:text-orange hover:underline"
         >
           {resetLabel}
         </button>

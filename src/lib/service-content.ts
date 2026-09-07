@@ -266,7 +266,7 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
   ai: [
     {
       name: "Старт",
-      price: "$500–1500 (разово)",
+      price: "50 000–150 000 ₽ (разово)",
       tagline: "Один процесс, быстрый результат",
       team: "Команда: 1–2 специалиста",
       features: [
@@ -278,7 +278,7 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
     },
     {
       name: "Рост",
-      price: "$1500–4000/мес",
+      price: "150 000–350 000 ₽/мес",
       tagline: "AI встроен в несколько процессов",
       team: "Команда: 2–3 специалиста",
       features: [
@@ -290,7 +290,7 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
     },
     {
       name: "Полный цикл",
-      price: "от $4000/мес",
+      price: "от 350 000 ₽/мес",
       tagline: "AI как часть операционки бизнеса",
       team: "Команда: 3–5 специалистов",
       features: [

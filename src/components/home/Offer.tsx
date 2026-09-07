@@ -102,7 +102,7 @@ export default function Offer({
                 // tall the screen is, not how wide.
                 className="group flex items-baseline gap-3 border-t border-paper/20 py-4 [@media(max-height:860px)]:py-2.5"
               >
-                <span className="font-mono text-[10px] text-paper/40">
+                <span className="font-display text-[10px] text-paper/40">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="font-display text-base uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-glow sm:text-lg [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
@@ -144,7 +144,7 @@ export default function Offer({
 
           {showCalculator && (
             <div className="mt-6 border-t border-paper/15 pt-6">
-              <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange">
+              <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
                 Не знаете формат?
               </span>

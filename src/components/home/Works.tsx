@@ -108,7 +108,7 @@ function FilterAxis({
   return (
     <div>
       <div className="font-sans text-sm text-paper/45">{label}</div>
-      <div className="mt-3 font-mono text-[11px] uppercase leading-[1.9] tracking-[0.1em] sm:text-xs">
+      <div className="mt-3 font-display text-[11px] uppercase leading-[1.9] tracking-[0.1em] sm:text-xs">
         {options.map((option, i) => (
           <span key={option}>
             {i > 0 && <span className="mx-1.5 text-paper/20">/</span>}
@@ -283,7 +283,7 @@ export default function Works({
           <>
             {!limit && (
               <Reveal delay={0.05}>
-                <div className="mt-8 font-mono text-xs uppercase tracking-[0.18em] text-paper">
+                <div className="mt-8 font-display text-xs uppercase tracking-[0.18em] text-paper">
                   {filtered.length} {plural(filtered.length)} НАЙДЕНО
                 </div>
               </Reveal>
@@ -414,7 +414,7 @@ export default function Works({
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/90 via-ink/45 to-transparent" />
 
                     {formatDate(work.date) && (
-                      <span className={`absolute left-4 top-4 font-mono tracking-[0.08em] text-white/90 sm:left-5 sm:top-5 ${limit ? "text-xs" : "text-[11px]"}`}>
+                      <span className={`absolute left-4 top-4 font-display tracking-[0.08em] text-white/90 sm:left-5 sm:top-5 ${limit ? "text-xs" : "text-[11px]"}`}>
                         {formatDate(work.date)}
                       </span>
                     )}
@@ -434,7 +434,7 @@ export default function Works({
                     }`}>
                       <div className="min-w-0">
                         {formatDuration(work.duration) && (
-                          <div className={`font-mono tracking-[0.08em] text-paper/80 ${limit ? "text-xs" : "text-[11px]"}`}>
+                          <div className={`font-display tracking-[0.08em] text-paper/80 ${limit ? "text-xs" : "text-[11px]"}`}>
                             {formatDuration(work.duration)}
                           </div>
                         )}
@@ -445,14 +445,14 @@ export default function Works({
                         {/* Сфера — нейтральным чипом, чтобы не путать оси:
                             подсвеченные чипы = формат. */}
                         {work.sphere && !limit && (
-                          <span className="rounded-full bg-paper/10 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-paper/70 ring-1 ring-inset ring-paper/15 backdrop-blur-sm sm:text-[10px]">
+                          <span className="rounded-full bg-paper/10 px-2.5 py-1 font-display text-[9px] uppercase tracking-[0.12em] text-paper/70 ring-1 ring-inset ring-paper/15 backdrop-blur-sm sm:text-[10px]">
                             {work.sphere}
                           </span>
                         )}
                         {(limit ? [work.category] : allCategories(work)).map((c) => (
                           <span
                             key={c}
-                            className="rounded-full bg-glow/15 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-glow ring-1 ring-inset ring-glow/30 backdrop-blur-sm sm:text-[10px]"
+                            className="rounded-full bg-glow/15 px-2.5 py-1 font-display text-[9px] uppercase tracking-[0.12em] text-glow ring-1 ring-inset ring-glow/30 backdrop-blur-sm sm:text-[10px]"
                           >
                             {c}
                           </span>
@@ -499,7 +499,7 @@ export default function Works({
                     setFilter(ALL);
                     setSphere(ALL_SPHERES);
                   }}
-                  className="rounded-full border border-paper/15 px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-paper/70 transition-colors duration-300 hover:border-glow/60 hover:text-glow"
+                  className="rounded-full border border-paper/15 px-4 py-1.5 font-display text-[11px] uppercase tracking-[0.12em] text-paper/70 transition-colors duration-300 hover:border-glow/60 hover:text-glow"
                 >
                   Сбросить фильтры
                 </button>
@@ -510,10 +510,10 @@ export default function Works({
               <div className="mt-8 flex justify-center">
                 <button
                   onClick={() => setVisible((v) => v + PAGE_SIZE)}
-                  className="inline-flex items-center gap-2 rounded-full border border-paper/15 px-6 py-2.5 font-mono text-xs uppercase tracking-[0.15em] text-paper/70 transition-all duration-300 hover:border-glow/60 hover:text-glow hover:shadow-[0_0_16px_rgba(0,210,255,0.2)]"
+                  className="inline-flex items-center gap-2 rounded-full border border-paper/15 px-6 py-2.5 font-display text-xs uppercase tracking-[0.15em] text-paper/70 transition-all duration-300 hover:border-glow/60 hover:text-glow hover:shadow-[0_0_16px_rgba(0,210,255,0.2)]"
                 >
                   Показать ещё
-                  <span className="font-mono text-paper/40">
+                  <span className="font-display text-paper/40">
                     {filtered.length - shown.length}
                   </span>
                   <span className="inline-block">↓</span>
@@ -559,7 +559,7 @@ export default function Works({
               </div>
               <div className="mt-4 flex flex-wrap items-end justify-between gap-4 text-paper">
                 <div>
-                  <div className="font-mono text-xs uppercase tracking-[0.15em] text-rec">
+                  <div className="font-display text-xs uppercase tracking-[0.15em] text-rec">
                     {allCategories(active).join(" / ")}
                     {active.sphere && (
                       <span className="text-paper/40"> · {active.sphere}</span>
@@ -572,7 +572,7 @@ export default function Works({
                     <p className="mt-1 text-sm text-paper/60">{formatDuration(active.duration)}</p>
                   )}
                 </div>
-                <div className="font-mono text-xs text-paper/40">Esc закрыть</div>
+                <div className="font-display text-xs text-paper/40">Esc закрыть</div>
               </div>
             </motion.div>
           </motion.div>

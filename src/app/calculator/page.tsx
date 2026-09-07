@@ -55,7 +55,7 @@ export default function CalculatorPage() {
                 <div className="font-display text-2xl uppercase text-paper sm:text-3xl">
                   {stat.value}
                 </div>
-                <div className="mt-1 font-mono text-xs uppercase tracking-[0.1em] text-paper/50">
+                <div className="mt-1 font-display text-xs uppercase tracking-[0.1em] text-paper/50">
                   {stat.label}
                 </div>
               </div>
@@ -69,7 +69,7 @@ export default function CalculatorPage() {
           <Reveal className="grid gap-4 sm:grid-cols-3">
             {reasons.map((reason, index) => (
               <div key={reason.title} className="liquid-glass rounded-xl p-5">
-                <span className="font-mono text-xs text-glow">
+                <span className="font-display text-xs text-glow">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <h3 className="mt-2 text-sm font-semibold text-paper">{reason.title}</h3>

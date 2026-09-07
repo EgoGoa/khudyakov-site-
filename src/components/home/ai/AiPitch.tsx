@@ -6,6 +6,7 @@ import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import AiDeck, { AI_PILL, AI_ROUND } from "@/components/home/ai/AiDeck";
 import { EYEBROW } from "@/lib/typography";
+import { aiToolLinks } from "@/components/home/direction/toolRegistry";
 
 // Chapter 01 of /ai's deck (see src/app/(landing)/ai/page.tsx) — rebuilt in
 // the composition Egor approved on /sites (see SitesPitch for the same
@@ -170,7 +171,7 @@ export default function AiPitch() {
               {STATS.map((stat) => (
                 <span key={stat.label} className="inline-flex items-baseline gap-1.5">
                   <span className="font-display text-base uppercase tabular-nums text-paper">{stat.value}</span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-paper/45">{stat.label}</span>
+                  <span className="font-display text-[10px] uppercase tracking-[0.1em] text-paper/45">{stat.label}</span>
                 </span>
               ))}
             </div>
@@ -182,6 +183,30 @@ export default function AiPitch() {
             SitesDeck — a compact swipeable variant is a later pass. */}
         <Appear from="right" delay={BEAT.content} className="mt-10 hidden lg:mt-0 lg:block lg:flex-1">
           <AiDeck />
+        </Appear>
+
+        {/* Below lg the deck above is `hidden`, and with it the ONLY way to
+            reach the five tool pages disappears — no carousel, no "Открыть"
+            button, nothing stands in the space where the second column used
+            to be. On a viewport at or under lg's 1024px (most phones, most
+            tablets, and this project's own preview pane at its default
+            width) that reads as "не вижу кнопок для переходов" and an empty
+            right half of the screen, "верстка справа слетела" — which is
+            exactly what was reported. This is the fallback: the same five
+            tool links AiDeck's button surfaces one at a time, laid out
+            plainly instead of riding the 3D carousel that needs room a
+            narrow screen doesn't have. */}
+        <Appear from="up" delay={BEAT.content} className="mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:hidden">
+          {aiToolLinks.map((tool) => (
+            <Link
+              key={tool.slug}
+              href={`/ai/${tool.slug}`}
+              className="inline-flex items-center justify-between gap-2 rounded-xl bg-ink/45 px-3.5 py-3 font-display text-[11px] uppercase leading-tight tracking-[0.04em] text-paper/85 ring-1 ring-paper/10 transition-colors duration-300 hover:text-emerald-200 hover:ring-emerald-300/50"
+            >
+              {tool.label}
+              <span aria-hidden="true" className="text-emerald-300">→</span>
+            </Link>
+          ))}
         </Appear>
       </div>
     </CinematicSection>
