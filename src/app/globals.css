@@ -1270,6 +1270,30 @@ body {
   }
 }
 
+/* SmmDeck's "Открыть услугу" — same pulse as .ai-open-pulse above (see its
+   own comment), violet/lavender in place of emerald so the glow matches
+   /smm's own accent instead of borrowing /ai's. */
+@keyframes smm-open-pulse {
+  0%, 100% {
+    box-shadow: 0 10px 26px -6px rgba(139, 63, 240, 0.7), 0 0 0 0 rgba(196, 160, 255, 0.55);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 12px 34px -4px rgba(139, 63, 240, 0.95), 0 0 0 9px rgba(196, 160, 255, 0);
+    transform: scale(1.03);
+  }
+}
+
+.smm-open-pulse {
+  animation: smm-open-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smm-open-pulse {
+    animation: none;
+  }
+}
+
 .ai-cool-headings .bg-orange\/15 {
   background-color: rgba(52, 211, 153, 0.15);
 }
