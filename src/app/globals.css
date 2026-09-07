@@ -2415,6 +2415,94 @@ body {
   background-color: #a855f7;
 }
 
+/* The selectors below extend `.smm-violet-headings` to the DirectionPage/
+   CompactToolPage family (see CompactToolPage's `headingClass` prop) —
+   /smm/[service] reuses that shared vertical-page layout the way /ai/[tool]
+   already does, and this is the same class this file already applies to
+   /smm's own CinematicStage deck above. Recipe copied 1:1 from
+   `.ai-cool-headings`'s equivalent block further up this file, violet/sky
+   in place of emerald — every one of these classes is a shared component
+   hardcoded to /content's orange (`.text-orange`, `.chapter-neon-warm`,
+   `.btn-neon.btn-warm`…) that this page's own wrapper repaints, same reason
+   as `.kw` and `.chapter-neon` above. */
+.smm-violet-headings .text-glow,
+.smm-violet-headings .group:hover .group-hover\:text-glow,
+.smm-violet-headings .text-orange {
+  color: #a855f7;
+}
+
+.smm-violet-headings .chapter-neon-warm {
+  color: #f4ecff;
+  text-shadow: 0 0 0.72em rgba(168, 85, 247, 0.42), 0 0 1.39em rgba(56, 189, 248, 0.2),
+    0 2px 24px rgba(11, 11, 16, 0.9);
+}
+
+.smm-violet-headings .border-glow\/60 {
+  border-color: rgba(168, 85, 247, 0.6);
+}
+
+.smm-violet-headings .border-orange\/30 {
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.smm-violet-headings .bg-orange\/15 {
+  background-color: rgba(168, 85, 247, 0.15);
+}
+
+.smm-violet-headings .border-orange\/35 {
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+.smm-violet-headings .bg-orange\/10 {
+  background-color: rgba(168, 85, 247, 0.1);
+}
+
+.smm-violet-headings .border-orange {
+  border-color: #a855f7;
+}
+
+.smm-violet-headings .bg-orange {
+  background-color: #a855f7;
+}
+
+.smm-violet-headings .btn-neon.btn-3d {
+  background-image: linear-gradient(180deg, #c4a0ff 0%, #8b3ff0 100%);
+  border-color: transparent;
+  color: #1a0933;
+  box-shadow: 0 12px 30px -8px rgba(139, 63, 240, 0.6);
+  transition: filter 0.3s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.smm-violet-headings .btn-neon.btn-3d:hover {
+  transform: none;
+  filter: brightness(1.1);
+  box-shadow: 0 14px 34px -8px rgba(139, 63, 240, 0.7);
+}
+
+.smm-violet-headings .btn-neon.btn-3d:active {
+  transform: translateY(1px);
+  box-shadow: 0 8px 20px -10px rgba(139, 63, 240, 0.6);
+}
+
+.smm-violet-headings .btn-neon.btn-warm {
+  background: linear-gradient(180deg, #c4a0ff 0%, #8b3ff0 100%);
+  border-color: transparent;
+  color: #1a0933;
+}
+
+.smm-violet-headings .btn-neon.btn-warm:hover {
+  background: linear-gradient(180deg, #d3b8ff 0%, #9c52f5 100%);
+  border-color: transparent;
+}
+
+.smm-violet-headings .c3-card-pro .c3-check {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.smm-violet-headings .c3-check {
+  background: rgba(168, 85, 247, 0.15);
+}
+
 /* Keyword accent inside a /smm chapter's supporting line (the "подзаголовок"
    under the big heading). Egor's call after the page was built: the headings
    already carry the violet→sky gradient keyword, and the sub-lines were left
