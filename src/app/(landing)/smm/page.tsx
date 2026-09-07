@@ -12,11 +12,24 @@ import SeoLongRead from "@/components/home/shared/SeoLongRead";
 import { SMM_SEO_SECTIONS } from "@/components/home/smm/smmSeoSections";
 import { ServiceProvider } from "@/lib/service-context";
 
+const TITLE = "SMM — HDKV.AGENCY";
+const DESCRIPTION =
+  "SMM силами продакшена: съёмка, монтаж и ведение соцсетей одной командой, без подрядчиков со стороны.";
+
 export const metadata: Metadata = {
-  title: "SMM — HDKV.AGENCY",
-  description:
-    "SMM силами продакшена: съёмка, монтаж и ведение соцсетей одной командой, без подрядчиков со стороны.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/smm" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [{ url: "/images/smm-reel-poster.jpg", width: 1280, height: 720 }],
+  },
+  twitter: {
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/images/smm-reel-poster.jpg"],
+  },
 };
 
 // public/video/smm-reel.mp4 is Egor's delivery for this page (bg-smm.mp4 was

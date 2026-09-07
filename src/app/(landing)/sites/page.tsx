@@ -12,10 +12,23 @@ import SeoLongRead from "@/components/home/shared/SeoLongRead";
 import { SITES_SEO_SECTIONS } from "@/components/home/sites/sitesSeoSections";
 import { ServiceProvider } from "@/lib/service-context";
 
+const TITLE = "Vibe сайты — HDKV.AGENCY";
+const DESCRIPTION = "Сайты под ключ с помощью AI-инструментов под контролем опытной команды.";
+
 export const metadata: Metadata = {
-  title: "Vibe сайты — HDKV.AGENCY",
-  description: "Сайты под ключ с помощью AI-инструментов под контролем опытной команды.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/sites" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [{ url: "/images/sites-reel-poster.jpg", width: 1280, height: 720 }],
+  },
+  twitter: {
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/images/sites-reel-poster.jpg"],
+  },
 };
 
 // public/video/sites-reel.mp4 is Egor's second delivery for this page (his

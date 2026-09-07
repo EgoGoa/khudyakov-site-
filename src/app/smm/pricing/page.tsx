@@ -6,10 +6,15 @@ import Eyebrow from "@/components/ui/Eyebrow";
 import { pricingByCategory } from "@/lib/service-content";
 import { EYEBROW } from "@/lib/typography";
 
+const TITLE = "Цены на SMM — HDKV.AGENCY";
+const DESCRIPTION = "Три пакета ведения соцсетей — от разового аудита до полного цикла с блогерами и таргетом.";
+
 export const metadata: Metadata = {
-  title: "Цены на SMM — HDKV.AGENCY",
-  description: "Три пакета ведения соцсетей — от разового аудита до полного цикла с блогерами и таргетом.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/smm/pricing" },
+  openGraph: { title: TITLE, description: DESCRIPTION, images: ["/images/smm-reel-poster.jpg"] },
+  twitter: { title: TITLE, description: DESCRIPTION, images: ["/images/smm-reel-poster.jpg"] },
 };
 
 function CheckIcon() {

@@ -13,10 +13,23 @@ import CinematicSection from "@/components/ui/CinematicSection";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import { ServiceProvider } from "@/lib/service-context";
 
+const TITLE = "Создание контента — HDKV.AGENCY";
+const DESCRIPTION = "Съёмка и монтаж роликов под ваш формат и площадку.";
+
 export const metadata: Metadata = {
-  title: "Создание контента — HDKV.AGENCY",
-  description: "Съёмка и монтаж роликов под ваш формат и площадку.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/content" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [{ url: "/images/content-reel-poster.jpg", width: 640, height: 360 }],
+  },
+  twitter: {
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/images/content-reel-poster.jpg"],
+  },
 };
 
 // public/video/content-reel.mp4 is the source reel whole and unedited — no

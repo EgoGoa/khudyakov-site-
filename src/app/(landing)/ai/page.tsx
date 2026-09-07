@@ -16,10 +16,23 @@ import { AI_SEO_SECTIONS } from "@/components/home/ai/aiSeoSections";
 import SeoLongRead from "@/components/home/shared/SeoLongRead";
 import { ServiceProvider } from "@/lib/service-context";
 
+const TITLE = "AI-решения — HDKV.AGENCY";
+const DESCRIPTION = "Внедряем ИИ-инструменты в продакшн и коммуникацию с клиентами.";
+
 export const metadata: Metadata = {
-  title: "AI-решения — HDKV.AGENCY",
-  description: "Внедряем ИИ-инструменты в продакшн и коммуникацию с клиентами.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/ai" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [{ url: "/images/ai-reel-poster.jpg", width: 1280, height: 720 }],
+  },
+  twitter: {
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/images/ai-reel-poster.jpg"],
+  },
 };
 
 // Same deck as /content: one continuous film pinned behind chapters that step

@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     siteName: "HDKV.AGENCY",
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: [{ url: "/images/showreel-frame.jpg", width: 1280, height: 720 }],
+    images: [{ url: "/images/showreel-frame.jpg", width: 640, height: 360 }],
   },
   twitter: {
     card: "summary_large_image",

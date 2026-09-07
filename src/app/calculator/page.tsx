@@ -4,11 +4,16 @@ import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Calculator from "@/components/calculator/Calculator";
 
+const TITLE = "Калькулятор стоимости — HDKV.AGENCY";
+const DESCRIPTION =
+  "Посчитайте ориентировочный бюджет проекта онлайн: тип ролика, хронометраж и дополнительные опции. HDKV.AGENCY — 8 лет на рынке, 450+ проектов, 350+ клиентов.";
+
 export const metadata: Metadata = {
-  title: "Калькулятор стоимости — HDKV.AGENCY",
-  description:
-    "Посчитайте ориентировочный бюджет проекта онлайн: тип ролика, хронометраж и дополнительные опции. HDKV.AGENCY — 8 лет на рынке, 450+ проектов, 350+ клиентов.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/calculator" },
+  openGraph: { title: TITLE, description: DESCRIPTION, images: ["/images/showreel-frame.jpg"] },
+  twitter: { title: TITLE, description: DESCRIPTION, images: ["/images/showreel-frame.jpg"] },
 };
 
 const stats = [

@@ -5,10 +5,15 @@ import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { EYEBROW } from "@/lib/typography";
 
+const TITLE = "Кейсы SMM — HDKV.AGENCY";
+const DESCRIPTION = "Кейсы ведения соцсетей HDKV.AGENCY появятся здесь по мере запуска проектов.";
+
 export const metadata: Metadata = {
-  title: "Кейсы SMM — HDKV.AGENCY",
-  description: "Кейсы ведения соцсетей HDKV.AGENCY появятся здесь по мере запуска проектов.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/smm/cases" },
+  openGraph: { title: TITLE, description: DESCRIPTION, images: ["/images/smm-reel-poster.jpg"] },
+  twitter: { title: TITLE, description: DESCRIPTION, images: ["/images/smm-reel-poster.jpg"] },
 };
 
 // Placeholder cards, not an empty section — content/site-copy.md's rule for

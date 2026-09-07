@@ -30,10 +30,13 @@ export async function generateMetadata({
   const { direction: slug } = await params;
   const direction = contentDirections.find((d) => d.slug === slug);
   if (!direction) return {};
+  const title = `${direction.title} — HDKV.AGENCY`;
   return {
-    title: `${direction.title} — HDKV.AGENCY`,
+    title,
     description: direction.description,
     alternates: { canonical: `/content/${slug}` },
+    openGraph: { title, description: direction.description, images: ["/images/content-reel-poster.jpg"] },
+    twitter: { title, description: direction.description, images: ["/images/content-reel-poster.jpg"] },
   };
 }
 
