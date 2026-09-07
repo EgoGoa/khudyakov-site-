@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
+import { smmServiceSlugByTitle } from "@/components/home/smm/smmServiceRegistry";
 
 // Chapter 03 of /smm — "что делаем".
 //
@@ -66,30 +68,50 @@ export default function SmmOffer() {
             on the same beat as the first row instead. */}
         <Appear from="right" delay={BEAT.content} blurPx={12} as="div">
         <ul className={`${SMM_PANEL} divide-y divide-paper/10 px-5 py-1`}>
-          {SERVICES.map((service, i) => (
-            <Appear
-              key={service.title}
-              as="li"
-              from="right"
-              delay={BEAT.content + i * STAGGER.tight}
-              duration={DUR.row}
-              blur
-              blurPx={10}
-              className="group flex items-baseline gap-3 py-3"
-            >
-              <span className="font-display text-[10px] text-paper/40">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <div className="min-w-0">
-                <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-[#c4a0ff]">
-                  {service.title}
-                </h3>
-                <p className="mt-1 text-xs leading-relaxed text-paper/55">
-                  {service.description}
-                </p>
-              </div>
-            </Appear>
-          ))}
+          {SERVICES.map((service, i) => {
+            const slug = smmServiceSlugByTitle[service.title];
+            const row = (
+              <>
+                <span className="font-display text-[10px] text-paper/40">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-[#c4a0ff]">
+                    {service.title}
+                  </h3>
+                  <p className="mt-1 text-xs leading-relaxed text-paper/55">
+                    {service.description}
+                  </p>
+                </div>
+                {slug ? (
+                  <span aria-hidden="true" className="self-center text-paper/30 transition-colors group-hover:text-[#c4a0ff]">
+                    →
+                  </span>
+                ) : null}
+              </>
+            );
+
+            return (
+              <Appear
+                key={service.title}
+                as="li"
+                from="right"
+                delay={BEAT.content + i * STAGGER.tight}
+                duration={DUR.row}
+                blur
+                blurPx={10}
+                className="group py-3"
+              >
+                {slug ? (
+                  <Link href={`/smm/${slug}`} className="flex items-baseline gap-3">
+                    {row}
+                  </Link>
+                ) : (
+                  <div className="flex items-baseline gap-3">{row}</div>
+                )}
+              </Appear>
+            );
+          })}
         </ul>
         </Appear>
       </SmmChapterLayout>

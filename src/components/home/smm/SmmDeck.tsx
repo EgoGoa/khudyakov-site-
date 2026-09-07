@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useState } from "react";
 
 // The format carousel on /smm's chapter 01 — the same fanned card rail
@@ -22,6 +23,20 @@ type Format = {
   meta: string;
   /** Which phone-screen mockup to draw inside the card — see FormatThumb. */
   shape: "reels" | "stories" | "carousel" | "ads" | "bloggers";
+  /** Route to that format's own deep-dive page under /smm/[service], when
+   *  one exists (see smmServiceRegistry.ts).
+   *
+   *  Egor, comparing this deck to AiDeck: "сделай так же кнопки для
+   *  перехода на страницу с главной" — the same optional-href, button-only-
+   *  on-the-front-card pattern AiDeck already uses for /ai's ten tools.
+   *  This deck's cards are content FORMATS, not the six SMM services
+   *  themselves, so only the three with an unambiguous 1:1 service get a
+   *  button: Reels is squarely "Съёмка и монтаж", Таргет is "Таргетированная
+   *  реклама", Блогеры is "Блогеры и инфлюенс-маркетинг". Сторис и Карусели
+   *  are also shot by the production team but don't point at one service
+   *  more than another, so — same as AiDeck's five href-less cards — they
+   *  stay without a button rather than get a dead or arbitrary link. */
+  href?: string;
 };
 
 // Wording taken from lib/service-content.ts (servicesByCategory.smm) rather
@@ -34,6 +49,7 @@ const FORMATS: Format[] = [
     blurb: "Вертикальные ролики снимаем и монтируем сами — те же операторы, что снимают рекламу.",
     meta: "8–12 роликов в месяц",
     shape: "reels",
+    href: "/smm/shooting",
   },
   {
     id: "stories",
@@ -55,6 +71,7 @@ const FORMATS: Format[] = [
     blurb: "Настройка, тесты креативов и оптимизация бюджета — реклама на том же контенте, что ведём.",
     meta: "тесты каждую неделю",
     shape: "ads",
+    href: "/smm/targeting",
   },
   {
     id: "bloggers",
@@ -62,6 +79,7 @@ const FORMATS: Format[] = [
     blurb: "Подбор блогеров под аудиторию и бюджет, согласование интеграций, замер результата.",
     meta: "в пакете Full-service",
     shape: "bloggers",
+    href: "/smm/bloggers",
   },
 ];
 
@@ -228,49 +246,81 @@ export default function SmmDeck() {
 
           const isFront = offset === 0;
 
-          return (
+          const cardStyle: React.CSSProperties = {
+            zIndex: pose.z,
+            opacity: pose.opacity,
+            filter: pose.blur ? `blur(${pose.blur}px)` : undefined,
+            transform: `translate(-50%, -50%) translate(${pose.x}px, ${pose.y}px) scale(${pose.scale})`,
+          };
+
+          // Caption (and, where the format has one, the open-page button) on
+          // the centre card only. On a card at 70% opacity behind a blur it
+          // would be unreadable noise.
+          const caption = isFront && (
+            <>
+              <span
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
+                style={{
+                  background: "linear-gradient(180deg, rgba(11,11,16,0) 0%, rgba(11,11,16,0.92) 70%)",
+                }}
+              />
+              <span className="absolute inset-x-3.5 bottom-4 flex flex-col items-start gap-2">
+                <span>
+                  <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
+                    {format.name}
+                  </span>
+                  <span className="mt-1.5 block font-display text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
+                    {format.meta}
+                  </span>
+                </span>
+                {/* Same idea as AiDeck's "Открыть инструмент": the button
+                    lives on the card itself, so it reads as the card's own
+                    action rather than a footnote below the deck — and it
+                    pulses for the same reason, so it reads as clickable
+                    rather than as more label text next to the title above
+                    it. */}
+                {format.href && (
+                  <Link
+                    href={format.href}
+                    className="smm-open-pulse inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#c4a0ff] to-[#8b3ff0] px-3 py-1.5 font-display text-[9px] font-semibold uppercase tracking-[0.1em] text-[#1a0933] motion-reduce:animate-none"
+                  >
+                    Открыть услугу
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                )}
+              </span>
+              <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+                {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+              </span>
+            </>
+          );
+
+          // The front card is not a paging control (clicking it is always a
+          // no-op), which is what makes it safe to render as a plain <div>
+          // rather than a <button> the moment it needs to carry a real
+          // navigation <Link> inside it — a <Link>'s <a> nested inside a
+          // <button> is invalid HTML and fights the button for the click.
+          // Off-centre cards (which DO page the carousel) keep the button.
+          return isFront ? (
+            <div
+              key={format.id}
+              aria-current="true"
+              className={`absolute left-1/2 top-1/2 h-[250px] w-[150px] overflow-hidden text-left transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${CARD_SHELL}`}
+              style={cardStyle}
+            >
+              <FormatThumb shape={format.shape} />
+              {caption}
+            </div>
+          ) : (
             <button
               key={format.id}
               type="button"
               onClick={() => setActive(i)}
-              tabIndex={isFront ? -1 : 0}
               aria-label={`Показать формат: ${format.name}`}
-              aria-current={isFront ? "true" : undefined}
-              className={`absolute left-1/2 top-1/2 h-[250px] w-[150px] overflow-hidden text-left transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${CARD_SHELL} ${
-                isFront ? "cursor-default" : "cursor-pointer"
-              }`}
-              style={{
-                zIndex: pose.z,
-                opacity: pose.opacity,
-                filter: pose.blur ? `blur(${pose.blur}px)` : undefined,
-                transform: `translate(-50%, -50%) translate(${pose.x}px, ${pose.y}px) scale(${pose.scale})`,
-              }}
+              className={`absolute left-1/2 top-1/2 h-[250px] w-[150px] cursor-pointer overflow-hidden text-left transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${CARD_SHELL}`}
+              style={cardStyle}
             >
               <FormatThumb shape={format.shape} />
-
-              {/* Caption on the centre card only. On a card at 70% behind a
-                  blur it would be unreadable noise. */}
-              {isFront && (
-                <>
-                  <span
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
-                    style={{
-                      background: "linear-gradient(180deg, rgba(11,11,16,0) 0%, rgba(11,11,16,0.92) 70%)",
-                    }}
-                  />
-                  <span className="absolute inset-x-3.5 bottom-4 block">
-                    <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
-                      {format.name}
-                    </span>
-                    <span className="mt-1.5 block font-display text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
-                      {format.meta}
-                    </span>
-                  </span>
-                  <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
-                    {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-                  </span>
-                </>
-              )}
             </button>
           );
         })}

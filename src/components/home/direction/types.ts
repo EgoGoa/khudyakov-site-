@@ -286,3 +286,38 @@ export type CompactToolContent = {
   faq: DirectionSectionHead & { items: DirectionFaqItem[]; media?: BlockMediaSpec };
   close: { eyebrow: string; title: ReactNode; sub: ReactNode };
 };
+
+// ---------------------------------------------------------------------
+// Ещё более узкий шаблон — страницы отдельных услуг /smm/[service].
+//
+// Егор попросил свести компактный шаблон до пяти экранов: герой(+цифры) →
+// рынок → смета → процесс → FAQ+финал. Это не CompactToolContent без двух
+// полей, а свой тип: там, где компактный тул сливает шаг персонализации в
+// один вопрос, здесь персонализации нет вовсе (нет TaskPicker), а «кому
+// подходит» и «под капотом» не убраны поодиночке — они заменены ОДНИМ
+// блоком `market`, тем же по форме, что и `tech` у CompactToolContent
+// (ярлык — фраза), но по содержанию — не техническая спецификация, а
+// рыночный контекст: чем ниша живёт в Москве в 2026-м и где в этом наше
+// место. Цифры источников — см. комментарий в начале каждого файла
+// content/smm-*.tsx.
+export type SmmServiceContent = {
+  /** Сегмент URL внутри /smm. */
+  slug: string;
+
+  hero: DirectionContent["hero"];
+  stats: DirectionStat[];
+
+  backdrop: { from: string; to: string };
+
+  /** Один блок вместо «кому подходит» + «под капотом» — рыночный контекст
+   *  услуги и наша позиция в нём. Тот же компонент, что рендерит `tech` у
+   *  CompactToolContent (TechBlock), с той же формой данных. */
+  market: DirectionSectionHead & { items: DirectionTechItem[] };
+
+  pricing: DirectionSectionHead & { tiers: DirectionTier[]; note: string };
+
+  process: DirectionSectionHead & { steps: DirectionStep[]; typed?: string };
+
+  faq: DirectionSectionHead & { items: DirectionFaqItem[]; media?: BlockMediaSpec };
+  close: { eyebrow: string; title: ReactNode; sub: ReactNode };
+};
