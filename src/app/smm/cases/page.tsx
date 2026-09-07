@@ -8,6 +8,7 @@ import { EYEBROW } from "@/lib/typography";
 export const metadata: Metadata = {
   title: "Кейсы SMM — HDKV.AGENCY",
   description: "Кейсы ведения соцсетей HDKV.AGENCY появятся здесь по мере запуска проектов.",
+  alternates: { canonical: "/smm/cases" },
 };
 
 // Placeholder cards, not an empty section — content/site-copy.md's rule for

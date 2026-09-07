@@ -16,6 +16,7 @@ import { ServiceProvider } from "@/lib/service-context";
 export const metadata: Metadata = {
   title: "Создание контента — HDKV.AGENCY",
   description: "Съёмка и монтаж роликов под ваш формат и площадку.",
+  alternates: { canonical: "/content" },
 };
 
 // public/video/content-reel.mp4 is the source reel whole and unedited — no

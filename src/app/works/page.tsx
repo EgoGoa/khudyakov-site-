@@ -5,6 +5,7 @@ import { ServiceProvider } from "@/lib/service-context";
 export const metadata: Metadata = {
   title: "Все работы — HDKV.AGENCY",
   description: "Полный каталог проектов: реклама, шоурилы, 3D и моушн, документальные и обучающие форматы.",
+  alternates: { canonical: "/works" },
 };
 
 // The full catalogue with both filter axes, moved off the service page so

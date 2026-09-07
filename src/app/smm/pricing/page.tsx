@@ -9,6 +9,7 @@ import { EYEBROW } from "@/lib/typography";
 export const metadata: Metadata = {
   title: "Цены на SMM — HDKV.AGENCY",
   description: "Три пакета ведения соцсетей — от разового аудита до полного цикла с блогерами и таргетом.",
+  alternates: { canonical: "/smm/pricing" },
 };
 
 function CheckIcon() {

@@ -19,6 +19,7 @@ import { ServiceProvider } from "@/lib/service-context";
 export const metadata: Metadata = {
   title: "AI-решения — HDKV.AGENCY",
   description: "Внедряем ИИ-инструменты в продакшн и коммуникацию с клиентами.",
+  alternates: { canonical: "/ai" },
 };
 
 // Same deck as /content: one continuous film pinned behind chapters that step

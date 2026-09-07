@@ -15,6 +15,7 @@ import { ServiceProvider } from "@/lib/service-context";
 export const metadata: Metadata = {
   title: "Vibe сайты — HDKV.AGENCY",
   description: "Сайты под ключ с помощью AI-инструментов под контролем опытной команды.",
+  alternates: { canonical: "/sites" },
 };
 
 // public/video/sites-reel.mp4 is Egor's second delivery for this page (his

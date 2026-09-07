@@ -33,6 +33,7 @@ export async function generateMetadata({
   return {
     title: `${direction.title} — HDKV.AGENCY`,
     description: direction.description,
+    alternates: { canonical: `/content/${slug}` },
   };
 }
 

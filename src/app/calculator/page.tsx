@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Калькулятор стоимости — HDKV.AGENCY",
   description:
     "Посчитайте ориентировочный бюджет проекта онлайн: тип ролика, хронометраж и дополнительные опции. HDKV.AGENCY — 8 лет на рынке, 450+ проектов, 350+ клиентов.",
+  alternates: { canonical: "/calculator" },
 };
 
 const stats = [

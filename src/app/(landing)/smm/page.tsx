@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "SMM — HDKV.AGENCY",
   description:
     "SMM силами продакшена: съёмка, монтаж и ведение соцсетей одной командой, без подрядчиков со стороны.",
+  alternates: { canonical: "/smm" },
 };
 
 // public/video/smm-reel.mp4 is Egor's delivery for this page (bg-smm.mp4 was

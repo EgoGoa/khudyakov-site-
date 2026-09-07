@@ -46,10 +46,41 @@ const azeretMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://hdkv.agency";
+const SITE_TITLE = "HDKV.AGENCY — AI-диджитал агентство полного цикла";
+const SITE_DESCRIPTION =
+  "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HDKV.AGENCY соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 8 лет опыта, 450+ проектов, 350+ клиентов.";
+
 export const metadata: Metadata = {
-  title: "HDKV.AGENCY — AI-диджитал агентство полного цикла",
-  description:
-    "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HDKV.AGENCY соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 8 лет опыта, 450+ проектов, 350+ клиентов.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_TITLE, template: "%s" },
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    siteName: "HDKV.AGENCY",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [{ url: "/images/showreel-frame.jpg", width: 1280, height: 720 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: ["/images/showreel-frame.jpg"],
+  },
+};
+
+const ORGANIZATION_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "HDKV.AGENCY",
+  url: SITE_URL,
+  logo: `${SITE_URL}/images/showreel-frame.jpg`,
+  email: "khudyakov.yegor@gmail.com",
+  telephone: "+7-992-511-18-12",
+  sameAs: ["https://t.me/hdkv"],
 };
 
 export default function RootLayout({
@@ -64,6 +95,10 @@ export default function RootLayout({
       className={`${montserrat.variable} ${bebas.variable} ${azeretMono.variable}`}
     >
       <body className="relative bg-ink font-sans text-paper antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_JSON_LD) }}
+        />
         <BackgroundFX />
         <FullpageProvider>
           <CinematicNavProvider>
