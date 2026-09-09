@@ -206,6 +206,7 @@ export default function ServicePicker() {
   // way the route can change (a header link, back/forward).
   const [previewKey, setPreviewKey] = useState<ServiceKey>(currentKey);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resyncs local preview state to the route for back/forward and header-link navigation (see comment above)
     setPreviewKey(currentKey);
   }, [currentKey]);
   const index = serviceOrder.indexOf(previewKey);

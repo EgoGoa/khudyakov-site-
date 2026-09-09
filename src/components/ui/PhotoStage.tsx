@@ -50,7 +50,10 @@ export default function PhotoStage({
   const [started, setStarted] = useState(false);
   const directionRef = useRef(1);
   const activeIndexRef = useRef(0);
-  activeIndexRef.current = activeIndex;
+  // Ref mirror written outside render (deps-less effect), not during it.
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  });
   const registerGoTo = useCinematicNavRegister();
 
   useEffect(() => {

@@ -173,6 +173,7 @@ export function VoiceMicButton({ onTranscript }: { onTranscript: (transcript: st
   const recognitionRef = useRef<MinimalSpeechRecognition | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, SpeechRecognition only exists in the browser
     if (!getSpeechRecognitionCtor()) setState("unsupported");
     return () => recognitionRef.current?.stop();
   }, []);
@@ -299,6 +300,7 @@ export default function WelcomeOverlay() {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, localStorage read has to happen post-hydration (see comment above on the initial useState)
     if (isSnoozed()) setVisible(false);
   }, []);
 

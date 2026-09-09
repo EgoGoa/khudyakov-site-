@@ -35,6 +35,7 @@ function useActiveRailId(anchorIds: string[]): string {
   useEffect(() => {
     const pageMatch = PAGE_ACTIVE_ID[pathname];
     if (pageMatch) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- fixed id for pages with no scroll-spy anchors, not derivable during this render
       setActiveId(pageMatch);
       return;
     }

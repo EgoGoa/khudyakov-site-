@@ -42,6 +42,7 @@ export default function LandingLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     const finePointer = window.matchMedia("(pointer: fine)").matches;
     const motionOk = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, matchMedia only exists in the browser
     setEnableSmoke(finePointer && motionOk);
   }, []);
 

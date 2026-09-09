@@ -222,10 +222,12 @@ export default function Works({
   const chapterActive = useChapterActive();
   const [chapterEverActive, setChapterEverActive] = useState(chapterActive);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- latches true once a chapter has been on stage; never flips back, so it can't cascade
     if (chapterActive) setChapterEverActive(true);
   }, [chapterActive]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resets filters when the active service changes, not derivable during this render
     setFilter(ALL);
     setSphere(ALL_SPHERES);
   }, [activeService]);
@@ -244,6 +246,7 @@ export default function Works({
   // Collapse back to the first page whenever the visible set changes, so the
   // section never stays 80 tiles tall after the visitor switches filters.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- collapses back to page one whenever the filters change (see comment above)
     setVisible(PAGE_SIZE);
   }, [filter, sphere, activeService]);
 

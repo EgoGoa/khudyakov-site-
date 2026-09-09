@@ -32,6 +32,7 @@ export function ServiceProvider({
     if (forcedValue) return;
     const saved = window.localStorage.getItem(STORAGE_KEY);
     if (saved && (serviceOrder as string[]).includes(saved)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount read, localStorage isn't available during SSR so this can't move to a lazy useState initializer without a hydration mismatch
       setActiveState(saved as ServiceKey);
     }
   }, [forcedValue]);

@@ -43,6 +43,7 @@ function useTypedPhrase(phrase: { text: string; charDelay: number }, reduced: bo
   useEffect(() => {
     if (!active) return;
     if (reduced) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reduced-motion skip, runs once per (phrase, reduced, active) change
       setText(phrase.text);
       setPhase("done");
       return;
@@ -104,6 +105,7 @@ export default function WelcomeWidget({
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, matchMedia only exists in the browser
     setReduced(mq.matches);
   }, []);
 

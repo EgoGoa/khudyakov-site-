@@ -97,8 +97,13 @@ export function FullpageProvider({ children }: { children: ReactNode }) {
   const idsRef = useRef<string[]>([]);
   const lastDirectionRef = useRef<1 | -1>(1);
   const hscrollCache = useRef<Map<number, HTMLElement | null>>(new Map());
-  activeIndexRef.current = activeIndex;
-  idsRef.current = ids;
+  // Kept in sync every render (not just on change) via a deps-less effect —
+  // refs mirroring current values for stable callbacks must be written
+  // outside render, never during it.
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+    idsRef.current = ids;
+  });
 
   const getHScroll = useCallback((index: number) => {
     if (hscrollCache.current.has(index)) return hscrollCache.current.get(index) ?? null;
@@ -153,6 +158,9 @@ export function FullpageProvider({ children }: { children: ReactNode }) {
     const hash = window.location.hash.replace("#", "");
     if (hash) {
       const i = ids.indexOf(hash);
+      // One-time correction from the URL hash on mount — the effect only
+      // ever runs once for this (empty deps array), so it can't cascade.
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount sync from window.location.hash, not reactive to renders
       if (i > 0) setActiveIndex(i);
     }
 

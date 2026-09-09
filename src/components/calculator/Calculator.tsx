@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import GlassCard from "@/components/ui/GlassCard";
 
 type VideoType = { id: string; label: string; hint: string; min: number; max: number };
@@ -175,12 +176,12 @@ export default function Calculator() {
           </p>
         </div>
 
-        <a
+        <Link
           href="/#contact"
           className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-rec px-6 py-3.5 text-center text-sm font-medium text-white transition hover:bg-rec-light"
         >
           Обсудить проект →
-        </a>
+        </Link>
       </div>
     </GlassCard>
   );

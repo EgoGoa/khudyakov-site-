@@ -28,6 +28,7 @@ function useTypeOnce(text: string, reduced: boolean, active: boolean) {
   useEffect(() => {
     if (!active) return;
     if (reduced) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reduced-motion skip, runs once per (text, reduced, active) change
       setRendered(text);
       setDone(true);
       return;
@@ -110,6 +111,7 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, matchMedia only exists in the browser
     setReduced(mq.matches);
     // Shares WelcomeOverlay's snooze — a visitor who already dismissed the
     // guided flow once (from either screen) skips straight past this one

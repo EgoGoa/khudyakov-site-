@@ -152,6 +152,7 @@ export default function Header() {
   // IntersectionObserver.
   useEffect(() => {
     if (fullpageActive) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- mirrors the fullpage deck's own state (see comment above), not derivable during this render
       setScrolled((api?.activeIndex ?? 0) > 0);
       setActive(api?.activeId ?? "");
       return;

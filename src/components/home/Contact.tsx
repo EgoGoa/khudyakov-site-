@@ -59,6 +59,7 @@ export default function Contact() {
   // homepage picker, but only before the visitor has touched the form —
   // don't clobber a choice they already made
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs from the homepage picker's external context, not derivable during this component's own render
     setForm((prev) =>
       prev.projectType === initialState.projectType
         ? { ...prev, projectType: projectTypeByCategory[active] }
