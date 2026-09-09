@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
+import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import { FullpageProvider } from "@/lib/fullpage";
 import { HeaderMenuProvider } from "@/lib/header-menu";
@@ -99,6 +100,10 @@ export default function RootLayout({
                 <ConditionalFooter />
               </div>
               <VibeRail />
+              {/* Кнопка «наверх» — здесь, а не в шаблонах страниц: она
+                  нужна на каждой странице сайта, и один экземпляр в layout
+                  закрывает и разделы, и подстраницы, и служебные. */}
+              <ScrollTopButton />
             </HeaderMenuProvider>
           </CinematicNavProvider>
         </FullpageProvider>

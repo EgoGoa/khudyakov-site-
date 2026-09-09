@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useRef, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
 
 // Header lives outside CinematicStage's own tree (siblings under RootLayout,
 // the same relationship FullpageProvider already bridges for the homepage's
@@ -20,24 +20,32 @@ import { createContext, useCallback, useContext, useRef, type ReactNode } from "
 type GoToFn = (id: string) => boolean;
 
 const CinematicNavContext = createContext<{
-  register: (fn: GoToFn | null) => void;
+  register: (fn: GoToFn | null, firstId?: string | null) => void;
   goTo: (id: string) => boolean;
+  /** id первой главы смонтированного дека, если он на странице есть. */
+  firstId: string | null;
 }>({
   register: () => {},
   goTo: () => false,
+  firstId: null,
 });
 
 export function CinematicNavProvider({ children }: { children: ReactNode }) {
   const fnRef = useRef<GoToFn | null>(null);
-  const register = useCallback((fn: GoToFn | null) => {
+  // id первой главы держится в состоянии, а не в ref: его читает кнопка
+  // «наверх» из корневого layout, и на ref она бы не перерисовалась —
+  // кнопка так и не узнала бы, что на странице появился дек.
+  const [firstId, setFirstId] = useState<string | null>(null);
+  const register = useCallback((fn: GoToFn | null, first: string | null = null) => {
     fnRef.current = fn;
+    setFirstId(first);
   }, []);
   // Stable identity so consumers (Header) don't need it in a dependency
   // array — always calls whichever CinematicStage is registered right now.
   const goTo = useCallback((id: string) => fnRef.current?.(id) ?? false, []);
 
   return (
-    <CinematicNavContext.Provider value={{ register, goTo }}>
+    <CinematicNavContext.Provider value={{ register, goTo, firstId }}>
       {children}
     </CinematicNavContext.Provider>
   );
@@ -52,4 +60,14 @@ export function useCinematicNavRegister() {
 /** For Header (or anything else wanting to jump straight to a chapter). */
 export function useCinematicGoTo() {
   return useContext(CinematicNavContext).goTo;
+}
+
+/** id первой главы дека на текущей странице — или null, если дека нет.
+ *
+ *  Нужен кнопке «наверх»: Егор просил, чтобы она возвращала не в самый верх
+ *  документа, а в первый блок страницы («в СММ это блок 01 — SMM силами
+ *  продакшена»). На страницах с деком верх документа — это ещё общий герой
+ *  сайта, а первый блок — нулевая глава дека. */
+export function useCinematicFirstId() {
+  return useContext(CinematicNavContext).firstId;
 }

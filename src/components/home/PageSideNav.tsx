@@ -20,7 +20,7 @@ const TOP_LEVEL_ROUTES = new Set(["/content", "/ai", "/sites", "/smm"]);
 // single accent letter read as barely-there, and /smm had no gradient at
 // all before this (its `.kw` only exists at heading scale). One consistent
 // per-page recipe here instead.
-const PAGE_GRADIENT: Record<ServiceKey, { from: string; via?: string; to: string }> = {
+export const PAGE_GRADIENT: Record<ServiceKey, { from: string; via?: string; to: string }> = {
   content: { from: "#ff4fd8", to: "#ff6a3d" },
   ai: { from: "#c8f169", to: "#10b981" },
   sites: { from: "#ff4fd8", to: "#00d2ff" },

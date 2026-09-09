@@ -7,6 +7,7 @@ import Eyebrow from "@/components/ui/Eyebrow";
 import { contentDirections } from "@/lib/service-content";
 import DirectionFullPage from "@/components/home/direction/DirectionPage";
 import { directionPages } from "@/components/home/direction/registry";
+import FormatSideNav from "@/components/home/direction/FormatSideNav";
 
 // Superficial on purpose — one screen of real copy per direction (pitch +
 // what's included) rather than the full ruvision-style case-study/pricing/
@@ -42,7 +43,18 @@ export default async function DirectionPage({ params }: { params: Promise<{ dire
   if (!direction) notFound();
 
   const fullPage = directionPages[slug];
-  if (fullPage) return <DirectionFullPage content={fullPage} />;
+  if (fullPage)
+    return (
+      <>
+        <DirectionFullPage content={fullPage} />
+        {/* Кольцо соседних направлений: те же неоновые стрелки, что стоят
+            по бокам основных страниц разделов, но шагают по направлениям
+            внутри /content. Ставится только
+            на полноценные страницы — у направления-заглушки ниже соседей
+            в кольце нет. */}
+        <FormatSideNav section="content" slug={slug} />
+      </>
+    );
 
   return (
     <section className="py-16 sm:py-24">

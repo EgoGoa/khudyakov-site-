@@ -2766,3 +2766,29 @@ body {
     animation: none;
   }
 }
+
+/* Стрелка кнопки «наверх» (ScrollTopButton) подрагивает вверх.
+   Мигает именно стрелка, а не круг: пульсирующая кнопка целиком читается
+   как тревога, а короткий подъём стрелки — как подсказка направления. Тот
+   же приём и та же длительность, что у указателя над каруселями. */
+.scroll-top-arrow {
+  animation: scroll-top-arrow 2.2s ease-in-out infinite;
+}
+
+@keyframes scroll-top-arrow {
+  0%,
+  100% {
+    transform: translateY(1px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-2px);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-top-arrow {
+    animation: none;
+  }
+}

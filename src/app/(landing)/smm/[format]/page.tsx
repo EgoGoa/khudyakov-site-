@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CompactToolPage from "@/components/home/direction/CompactToolPage";
 import { smmFormatPages, smmFormatMeta } from "@/components/home/direction/smmFormatRegistry";
+import FormatSideNav from "@/components/home/direction/FormatSideNav";
 
 // Страница одного формата SMM — /smm/reels и (со временем) ещё четыре:
 // stories, carousel, ads, bloggers — те же пять карточек, что в карусели
@@ -35,5 +36,13 @@ export default async function SmmFormatPage({ params }: { params: Promise<{ form
   const content = smmFormatPages[format];
   if (!content) notFound();
 
-  return <CompactToolPage content={content} headingClass="smm-violet-headings" />;
+  return (
+    <>
+      <CompactToolPage content={content} headingClass="smm-violet-headings" />
+      {/* Кольцо соседних форматов: те же неоновые стрелки, что стоят по бокам
+          основных страниц разделов, но шагают по форматам внутри одного
+          раздела, а не по разделам. */}
+      <FormatSideNav section="smm" slug={format} />
+    </>
+  );
 }

@@ -222,6 +222,10 @@ export default function CinematicStage({
     activeIndexRef.current = activeIndex;
   });
   const registerGoTo = useCinematicNavRegister();
+  // Строка, а не chapters[0] в зависимостях эффекта: массив глав приходит
+  // новым объектом на каждый рендер страницы, и эффект пересобирал бы все
+  // слушатели впустую. id первой главы меняется только вместе со страницей.
+  const firstChapterId = chapters[0]?.id ?? null;
 
   // globals.css sets html{scroll-behavior:smooth} for ordinary anchor-link
   // navigation elsewhere on the site. Inside this deck that fights every
@@ -502,7 +506,7 @@ export default function CinematicStage({
       extendLock(STEP_MS + 700);
       return true;
     };
-    registerGoTo(goToId);
+    registerGoTo(goToId, firstChapterId);
 
     const onWheel = (e: WheelEvent) => {
       const isEngagedNow = engaged();
@@ -723,9 +727,9 @@ export default function CinematicStage({
       }
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
-      registerGoTo(null);
+      registerGoTo(null, null);
     };
-  }, [chapters.length, registerGoTo]);
+  }, [chapters.length, firstChapterId, registerGoTo]);
 
   // Run the film only while the deck is actually the thing on screen.
   //

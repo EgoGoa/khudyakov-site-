@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CompactToolPage from "@/components/home/direction/CompactToolPage";
 import { sitesFormatPages, sitesFormatMeta } from "@/components/home/direction/sitesFormatRegistry";
+import FormatSideNav from "@/components/home/direction/FormatSideNav";
 
 // Страница одного формата /sites — /sites/landing и ещё четыре: card,
 // turnkey, assistant, redesign. Те же пять карточек, что в карусели
@@ -37,5 +38,13 @@ export default async function SitesFormatPage({ params }: { params: Promise<{ fo
   const content = sitesFormatPages[format];
   if (!content) notFound();
 
-  return <CompactToolPage content={content} headingClass="" />;
+  return (
+    <>
+      <CompactToolPage content={content} headingClass="" />
+      {/* Кольцо соседних форматов: те же неоновые стрелки, что стоят по бокам
+          основных страниц разделов, но шагают по форматам внутри одного
+          раздела, а не по разделам. */}
+      <FormatSideNav section="sites" slug={format} />
+    </>
+  );
 }

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import DirectionFullPage from "@/components/home/direction/DirectionPage";
 import CompactToolPage from "@/components/home/direction/CompactToolPage";
 import { aiToolPages, aiCompactToolPages, aiToolMeta } from "@/components/home/direction/toolRegistry";
+import FormatSideNav from "@/components/home/direction/FormatSideNav";
 
 // Страница одного AI-инструмента — /ai/agent и ещё девять.
 //
@@ -38,10 +39,22 @@ export default async function AiToolPage({ params }: { params: Promise<{ tool: s
   const { tool } = await params;
 
   const fullContent = aiToolPages[tool];
-  if (fullContent) return <DirectionFullPage content={fullContent} headingClass="ai-cool-headings" />;
-
   const compactContent = aiCompactToolPages[tool];
-  if (compactContent) return <CompactToolPage content={compactContent} />;
+  if (!fullContent && !compactContent) notFound();
 
-  notFound();
+  return (
+    <>
+      {fullContent ? (
+        <DirectionFullPage content={fullContent} headingClass="ai-cool-headings" />
+      ) : (
+        <CompactToolPage content={compactContent!} />
+      )}
+      {/* Кольцо соседних инструментов: те же неоновые стрелки, что стоят по
+          бокам основных страниц разделов, но шагают по инструментам
+          внутри /ai. Одно на оба
+          шаблона — для посетителя между «полной» и «компактной» страницей
+          инструмента разницы нет, кольцо у них общее. */}
+      <FormatSideNav section="ai" slug={tool} />
+    </>
+  );
 }
