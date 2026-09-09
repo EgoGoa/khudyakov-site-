@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import Link from "next/link";
+import { smmFormatPages } from "@/components/home/direction/smmFormatRegistry";
 
 // The format carousel on /smm's chapter 01 — the same fanned card rail
 // SitesDeck works out in detail (see that file for why the fan is built from
@@ -333,12 +335,23 @@ export default function SmmDeck() {
         })}
       </div>
 
-      {/* What the selected format is and at what cadence. No button of its own
-          — the chapter's single "Обсудить формат" lives in the copy column
-          beside the fan, and a second copy here read as the same offer made
-          twice. */}
-      <div className="mt-6">
-        <p className="min-h-[38px] max-w-[420px] text-[13px] leading-snug text-paper/55">{front.blurb}</p>
+      {/* What the selected format is and at what cadence, plus a link to that
+          format's own page — added once /smm/[format] existed (see that
+          route). Only formats present in the registry link out; the rest
+          fall back to plain text until their page ships, so this never
+          points at a 404. The chapter's "Обсудить формат" stays the one CTA
+          for the whole page — this is a secondary, read-more link, not
+          another offer competing with it. */}
+      <div className="mt-6 flex min-h-[38px] max-w-[420px] flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+        <p className="text-[13px] leading-snug text-paper/55">{front.blurb}</p>
+        {front.id in smmFormatPages && (
+          <Link
+            href={`/smm/${front.id}`}
+            className="shrink-0 font-display text-[10px] uppercase tracking-[0.12em] text-[#c4a0ff] transition-colors hover:text-white"
+          >
+            Подробнее →
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -32,12 +32,22 @@ import type { CompactToolContent } from "./types";
 // Итоговый маршрут: герой(+цифры) → задача → кому подходит → под капотом →
 // смета → процесс → FAQ+финал.
 //
-// `.ai-cool-headings` — тот же лайм-изумрудный акцент, что и у первых пяти
-// инструментов: это всё ещё семья страниц /ai, отличается только длина.
-export default function CompactToolPage({ content }: { content: CompactToolContent }) {
+// `.ai-cool-headings` (лайм-изумрудный акцент /ai) — значение по умолчанию,
+// раз все десять уже принятых страниц /ai/[tool] на нём и не передают проп.
+// /smm/[format] — тот же компонент, но с `.smm-violet-headings`, тем же
+// классом, что несёт заголовки шести глав /smm: страница формата остаётся
+// частью семьи /smm, а не заводит третий акцент на сайте. Механика ровно та
+// же, что у DirectionPage/headingClass — см. комментарий там.
+export default function CompactToolPage({
+  content,
+  headingClass = "ai-cool-headings",
+}: {
+  content: CompactToolContent;
+  headingClass?: string;
+}) {
   return (
     <DirectionTaskProvider tasks={content.tasks} title={content.hero.eyebrow}>
-      <div className="ai-cool-headings relative [overflow-x:clip]">
+      <div className={`${headingClass} relative [overflow-x:clip]`}>
         <DirectionBackdrop from={content.backdrop.from} to={content.backdrop.to} />
 
         <DirectionHero hero={content.hero} stats={content.stats} />
