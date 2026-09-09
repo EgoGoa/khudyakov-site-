@@ -1,6 +1,12 @@
 import Accent from "../Accent";
 import type { DirectionContent } from "../types";
 
+// Акцент страницы — те же два цвета, что и у градиента фона (`backdrop`).
+// Вынесен в константу, потому что его носит подложка каждого блока: без
+// неё в зоне, где один фон растворяется в другом, стык уходит в чёрное.
+const ACCENT = { from: "#00d2ff", to: "#ff4fd8" };
+
+
 // Направление «Графика и анимация» — /content/graphics.
 //
 // Единственное направление, где портфолио полностью закрывает тему: рубрика
@@ -34,7 +40,7 @@ export const graphicsContent: DirectionContent = {
 
   // Холодный конец палитры: моушн и 3D на сайте живут в цианово-синем
   // (см. фон /sites), и направление наследует эту связь.
-  backdrop: { from: "#00d2ff", to: "#ff4fd8" },
+  backdrop: ACCENT,
 
   stats: [
     { value: "8", label: "работ моушн и 3D в портфолио" },
@@ -42,10 +48,7 @@ export const graphicsContent: DirectionContent = {
     { value: "450+", label: "созданных проектов" },
     { value: "8 лет", label: "в видеопроизводстве" },
   ],
-  statsMedia: {
-    photo: "/images/blocks/stock-lightpaint.jpg",
-    intensity: "quiet",
-  },
+  statsMedia: { photo: "/images/stock/planner-desk.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
 
   taskPrompt: "Что нужно объяснить",
   taskNote:
@@ -79,10 +82,7 @@ export const graphicsContent: DirectionContent = {
       promise: "набор элементов, который живёт во всех ваших видео",
     },
   ],
-  taskMedia: {
-    photo: "/images/blocks/stock-brainstorm.jpg",
-    intensity: "quiet",
-  },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
     media: {
@@ -180,16 +180,10 @@ export const graphicsContent: DirectionContent = {
   },
 
   budgetMedia:
-  {
-    photo: "/images/blocks/stock-latenight.jpg",
-    intensity: "quiet",
-  },
+  { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: {
-      photo: "/images/blocks/stock-papers.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/team-ideas.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Три сценария запуска",
     align: "right",
     title: (
@@ -297,10 +291,7 @@ export const graphicsContent: DirectionContent = {
   },
 
   process: {
-    media: {
-      photo: "/images/blocks/stock-crew.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/businesswoman-office.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light", position: "25% 45%" },
     eyebrow: "Производство",
     align: "sticky",
     title: (
@@ -349,10 +340,7 @@ export const graphicsContent: DirectionContent = {
   },
 
   faq: {
-    media: {
-      photo: "/images/blocks/stock-nightdesk.jpg",
-      intensity: "quiet",
-    },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "FAQ",
     align: "right",
     title: (
@@ -389,10 +377,7 @@ export const graphicsContent: DirectionContent = {
   },
 
   assetsMedia:
-  {
-    photo: "/images/blocks/stock-briefing.jpg",
-    intensity: "quiet",
-  },
+  { photo: "/images/stock/desk-aerial.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
 
   close: {
     media: {

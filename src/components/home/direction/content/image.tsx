@@ -1,6 +1,12 @@
 import Accent from "../Accent";
 import type { DirectionContent } from "../types";
 
+// Акцент страницы — те же два цвета, что и у градиента фона (`backdrop`).
+// Вынесен в константу, потому что его носит подложка каждого блока: без
+// неё в зоне, где один фон растворяется в другом, стык уходит в чёрное.
+const ACCENT = { from: "#ff6a3d", to: "#ff8a5c" };
+
+
 // Направление «Имиджевые видео» — /content/image.
 //
 // Отличие от соседних страниц по смыслу: имиджевое видео не продаёт и не
@@ -34,7 +40,7 @@ export const imageContent: DirectionContent = {
 
   // Тёплый разворот родного для /content градиента: имиджевое направление
   // самое «мягкое» из пяти, и холодный конец палитры ему мешает.
-  backdrop: { from: "#ff6a3d", to: "#ff8a5c" },
+  backdrop: ACCENT,
 
   stats: [
     { value: "8 лет", label: "в видеопроизводстве" },
@@ -42,10 +48,7 @@ export const imageContent: DirectionContent = {
     { value: "60%", label: "заказов — возвратные клиенты" },
     { value: "5 стран", label: "международный опыт" },
   ],
-  statsMedia: {
-    photo: "/images/blocks/stock-lights.jpg",
-    intensity: "quiet",
-  },
+  statsMedia: { photo: "/images/stock/artist-tablet.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", position: "75% 45%" },
 
   taskPrompt: "Где будет жить это видео",
   taskNote:
@@ -79,10 +82,7 @@ export const imageContent: DirectionContent = {
       promise: "фильм, снимающий страх перед первым визитом",
     },
   ],
-  taskMedia: {
-    photo: "/images/blocks/stock-projector.jpg",
-    intensity: "quiet",
-  },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
     media: {
@@ -164,16 +164,10 @@ export const imageContent: DirectionContent = {
   },
 
   budgetMedia:
-  {
-    photo: "/images/blocks/stock-briefing.jpg",
-    intensity: "quiet",
-  },
+  { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: {
-      photo: "/images/blocks/stock-latenight.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/projector-life.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Три сценария запуска",
     align: "right",
     title: (
@@ -229,10 +223,7 @@ export const imageContent: DirectionContent = {
   },
 
   process: {
-    media: {
-      photo: "/images/blocks/stock-crew.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/surreal-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Как мы работаем",
     align: "sticky",
     title: (
@@ -281,10 +272,7 @@ export const imageContent: DirectionContent = {
   },
 
   faq: {
-    media: {
-      photo: "/images/blocks/stock-brainstorm.jpg",
-      intensity: "quiet",
-    },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "FAQ",
     align: "right",
     title: (
@@ -321,10 +309,7 @@ export const imageContent: DirectionContent = {
   },
 
   assetsMedia:
-  {
-    photo: "/images/blocks/stock-clapper.jpg",
-    intensity: "quiet",
-  },
+  { photo: "/images/stock/holi-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   close: {
     media: {

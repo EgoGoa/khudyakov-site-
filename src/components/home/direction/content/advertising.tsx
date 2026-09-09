@@ -1,6 +1,12 @@
 import Accent from "../Accent";
 import type { DirectionContent } from "../types";
 
+// Акцент страницы — те же два цвета, что и у градиента фона (`backdrop`).
+// Вынесен в константу, потому что его носит подложка каждого блока: без
+// неё в зоне, где один фон растворяется в другом, стык уходит в чёрное.
+const ACCENT = { from: "#ff6a3d", to: "#ff4fd8" };
+
+
 // Направление «Рекламные ролики» — /content/advertising.
 //
 // Собрано по механике ruvision.ru/advertising. Отличие от страницы
@@ -42,7 +48,7 @@ export const advertisingContent: DirectionContent = {
   // Зеркальная версия градиента соседней страницы: тот же родной для
   // /content магента→оранжевый, но развёрнутый — направления читаются как
   // одна семья, а не как одна и та же страница.
-  backdrop: { from: "#ff6a3d", to: "#ff4fd8" },
+  backdrop: ACCENT,
 
   stats: [
     { value: "8 лет", label: "в видеопроизводстве" },
@@ -50,10 +56,7 @@ export const advertisingContent: DirectionContent = {
     { value: "12", label: "рекламных роликов в портфолио" },
     { value: "350+", label: "клиентов" },
   ],
-  statsMedia: {
-    photo: "/images/blocks/stock-sparks.jpg",
-    intensity: "quiet",
-  },
+  statsMedia: { photo: "/images/stock/paint-purple-macro.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
 
   taskPrompt: "Где будет крутиться ролик",
   taskNote:
@@ -87,10 +90,7 @@ export const advertisingContent: DirectionContent = {
       promise: "быстрый ролик, чтобы проверить идею до больших вложений",
     },
   ],
-  taskMedia: {
-    photo: "/images/blocks/stock-clapper.jpg",
-    intensity: "quiet",
-  },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
     media: {
@@ -182,16 +182,10 @@ export const advertisingContent: DirectionContent = {
   },
 
   budgetMedia:
-  {
-    photo: "/images/blocks/stock-latenight.jpg",
-    intensity: "quiet",
-  },
+  { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: {
-      photo: "/images/blocks/stock-nightdesk.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/flower-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Три сценария запуска",
     align: "right",
     title: (
@@ -295,10 +289,7 @@ export const advertisingContent: DirectionContent = {
   },
 
   process: {
-    media: {
-      photo: "/images/blocks/stock-directing.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/statue-torn-paper.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Производство",
     align: "sticky",
     // Печатающийся элемент этой страницы — заголовок процесса, а не героя:
@@ -350,10 +341,7 @@ export const advertisingContent: DirectionContent = {
   },
 
   faq: {
-    media: {
-      photo: "/images/blocks/stock-papers.jpg",
-      intensity: "quiet",
-    },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "FAQ",
     align: "right",
     title: (
@@ -390,10 +378,7 @@ export const advertisingContent: DirectionContent = {
   },
 
   assetsMedia:
-  {
-    photo: "/images/blocks/stock-crew.jpg",
-    intensity: "quiet",
-  },
+  { photo: "/images/stock/statue-popart.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   close: {
     media: {

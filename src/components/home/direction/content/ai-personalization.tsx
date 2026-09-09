@@ -78,10 +78,10 @@ export const aiPersonalizationContent: CompactToolContent = {
       promise: "контент меняется вслед за тем, что делает клиент",
     },
   ],
-  taskMedia: { photo: "/images/blocks/ai-neon-abstract.jpg", gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/ai-wireframe-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },
     eyebrow: "Кому подходит",
     align: "center",
     title: (
@@ -127,7 +127,7 @@ export const aiPersonalizationContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/ai-corridor-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/brain-circuit.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -176,7 +176,7 @@ export const aiPersonalizationContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { photo: "/images/blocks/ai-keyboard-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "left",
     title: (
@@ -230,7 +230,7 @@ export const aiPersonalizationContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/ai-neon-desk.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/robot-hand-chip.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как одно письмо становится разным",
@@ -270,7 +270,7 @@ export const aiPersonalizationContent: CompactToolContent = {
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/hologram-laptop.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "FAQ",
     align: "center",
     title: (

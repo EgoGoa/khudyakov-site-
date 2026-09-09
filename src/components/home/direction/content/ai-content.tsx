@@ -92,10 +92,10 @@ export const aiContentContent: DirectionContent = {
       promise: "десять гипотез вместо одной дорогой",
     },
   ],
-  taskMedia: { photo: "/images/blocks/ai-keyboard-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { photo: "/images/stock/holo-keyboard.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
 
   audience: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { photo: "/images/stock/holo-heads.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light", position: "75% 45%" },
     eyebrow: "Где это выигрывает",
     align: "right",
     title: (
@@ -142,7 +142,7 @@ export const aiContentContent: DirectionContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/ai-neon-desk.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/robot-hand-white.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Под капотом",
     align: "left",
     title: (
@@ -190,10 +190,10 @@ export const aiContentContent: DirectionContent = {
     ],
   },
 
-  budgetMedia: { gradient: ALT, intensity: "medium" },
+  budgetMedia: { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: { photo: "/images/blocks/ai-nightwork.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/smart-glasses-pale.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -247,7 +247,7 @@ export const aiContentContent: DirectionContent = {
   },
 
   why: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { photo: "/images/stock/arch-3d-hand.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Почему мы",
     align: "left",
     title: (
@@ -290,7 +290,7 @@ export const aiContentContent: DirectionContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/ai-server-green.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/devs-night.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "25% 45%" },
     eyebrow: "Производство",
     align: "sticky",
     typed: "Как собирается партия",
@@ -336,7 +336,7 @@ export const aiContentContent: DirectionContent = {
   },
 
   faq: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "FAQ",
     align: "center",
     title: (
@@ -372,10 +372,10 @@ export const aiContentContent: DirectionContent = {
     ],
   },
 
-  assetsMedia: { photo: "/images/blocks/ai-corridor-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+  assetsMedia: { photo: "/images/stock/businesswoman-glasses.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
 
   close: {
-    media: { photo: "/images/blocks/ai-neon-abstract.jpg", gradient: ACCENT, intensity: "loud" },
+    media: { photo: "/images/stock/team-night-office.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full", position: "25% 45%" },
     eyebrow: "Один следующий шаг",
     align: "center",
     title: (

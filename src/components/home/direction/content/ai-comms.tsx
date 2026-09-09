@@ -79,10 +79,10 @@ export const aiCommsContent: CompactToolContent = {
       promise: "типовой вопрос закрывается без менеджера",
     },
   ],
-  taskMedia: { photo: "/images/blocks/ai-keyboard-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { photo: "/images/stock/robot-hand-chip.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/ai-wavy-text.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -128,7 +128,7 @@ export const aiCommsContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/ai-server-green.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -177,7 +177,7 @@ export const aiCommsContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { photo: "/images/blocks/ai-nightwork.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -231,7 +231,7 @@ export const aiCommsContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/ai-corridor-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/hand-light-ring.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как поток становится очередью",

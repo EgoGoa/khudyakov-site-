@@ -85,10 +85,31 @@ function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolea
 // still fit the chapter's one-screen budget. Fixed size decouples the two —
 // the card can now grow to fit three lines of copy without the circle
 // growing with it.
+// The whole card is the link to `/content/[slug]` now — Egor's ask: hover
+// anywhere on a direction card and it should glow and lift, click anywhere
+// on it (except "Заполнить бриф", its own separate offer) and it opens that
+// direction's page. A <Link> can't wrap "Заполнить бриф" (its own <Link>)
+// without nesting one <a> inside another, so this uses the standard
+// link-behind-content card: a full-cover Link at the back (z-0) catches
+// every click, the visible content sits above it with pointer-events
+// disabled so clicks fall through to that Link, and "Заполнить бриф" opts
+// back into pointer-events on its own to stay independently clickable. Cyan
+// glow (`--card-glow-rgb`, see .deck-card-glow in globals.css) matches the
+// hover colour "Подробнее ↗" already used on this exact link before this
+// change folded it into the whole card.
 function DirectionCard({ direction, work, active }: { direction: ContentDirection; work?: Work; active: boolean }) {
   return (
-    <div className="flex h-full flex-col justify-between rounded-2xl bg-ink/45 p-5 backdrop-blur-md sm:p-8">
-      <div className="flex items-start justify-between gap-3">
+    <div
+      className="deck-card-glow relative flex h-full flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-5 backdrop-blur-md sm:p-8"
+      style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
+    >
+      <Link
+        href={`/content/${direction.slug}`}
+        aria-label={`Подробнее: ${direction.title}`}
+        className="absolute inset-0 z-0 rounded-2xl"
+      />
+
+      <div className="pointer-events-none relative z-10 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-lg">
             {direction.title}
@@ -119,19 +140,16 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
         </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-3">
+      <div className="relative z-10 mt-3 flex items-center gap-3">
         <Link
           href="/brief"
-          className="whitespace-nowrap rounded-full bg-gradient-to-r from-orange-bright to-rec px-4 py-2 font-display text-[10px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_-4px_rgba(245,49,11,0.55)] transition-all hover:shadow-[0_6px_20px_-4px_rgba(245,49,11,0.75)] hover:brightness-110"
+          className="pointer-events-auto whitespace-nowrap rounded-full bg-gradient-to-r from-orange-bright to-rec px-4 py-2 font-display text-[10px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_-4px_rgba(245,49,11,0.55)] transition-all hover:shadow-[0_6px_20px_-4px_rgba(245,49,11,0.75)] hover:brightness-110"
         >
           Заполнить бриф
         </Link>
-        <Link
-          href={`/content/${direction.slug}`}
-          className="font-display text-[10px] uppercase tracking-[0.1em] text-paper/55 transition-colors hover:text-glow"
-        >
+        <span className="pointer-events-none font-display text-[10px] uppercase tracking-[0.1em] text-paper/55">
           Подробнее ↗
-        </Link>
+        </span>
       </div>
     </div>
   );

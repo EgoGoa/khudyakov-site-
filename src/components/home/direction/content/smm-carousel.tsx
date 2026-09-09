@@ -44,8 +44,8 @@ export const smmCarouselContent: CompactToolContent = {
         а сохранение сегодня самый сильный сигнал вовлечённости для алгоритмов.
       </>
     ),
-    video: "/video/smm-reel.mp4",
-    poster: "/images/smm-reel-poster.jpg",
+    photo: "/images/stock/books-vs-tech.webp",
+    photoPosition: "center",
   },
   stats: [
     { value: "0,50–0,55%", label: "средний engagement карусели во 2 кв. 2026" },
@@ -88,10 +88,10 @@ export const smmCarouselContent: CompactToolContent = {
       promise: "Reels и карусели работают в связке — приток и удержание одновременно",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/artist-tablet.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, position: "75% 45%" },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -137,7 +137,7 @@ export const smmCarouselContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/stock-papers.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/speaker-neon-swirl.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -176,7 +176,7 @@ export const smmCarouselContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { photo: "/images/blocks/stock-brainstorm.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -196,7 +196,7 @@ export const smmCarouselContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/stock-briefing.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/woman-3d-glasses.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как мысль становится слайдами",
@@ -236,7 +236,7 @@ export const smmCarouselContent: CompactToolContent = {
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/ink-pink.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
     eyebrow: "FAQ",
     align: "left",
     title: (

@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, type CSSProperties } from "react";
+import Link from "next/link";
+import DeckPointerArrow from "@/components/ui/DeckPointerArrow";
+import { sitesFormatPages } from "@/components/home/direction/sitesFormatRegistry";
+
+// Cyan — the site-wide `glow` accent /sites already uses for hover states
+// (ROUND below). See .deck-card-glow in globals.css for the hand-off.
+const CARD_GLOW_STYLE = { "--card-glow-rgb": "0, 210, 255" } as CSSProperties;
 
 // The service carousel on /sites' chapter 01.
 //
@@ -187,6 +194,15 @@ export default function SitesDeck() {
 
   return (
     <div className="w-full max-w-[560px]">
+      {/* Points at the front card — dead centre on this deck too (FAN[0].x
+          is 0). Cyan: the site's shared `glow` accent, the same colour
+          ROUND already turns on hover. Now that /sites/[format] exists,
+          gated the same way SmmDeck gates its own pointer/card link. */}
+      <DeckPointerArrow
+        href={front.id in sitesFormatPages ? `/sites/${front.id}` : undefined}
+        className="text-glow"
+      />
+
       {/* The fan. Fixed height so the chapter's layout doesn't shift as the
           description under it changes length. */}
       <div className="relative h-[290px]">
@@ -202,18 +218,39 @@ export default function SitesDeck() {
           if (!pose) return null;
 
           const isFront = offset === 0;
+          const hasPage = service.id in sitesFormatPages;
 
+          const caption = (
+            <>
+              <span
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
+                style={{
+                  background: "linear-gradient(180deg, rgba(11,11,16,0) 0%, rgba(11,11,16,0.92) 70%)",
+                }}
+              />
+              <span className="absolute inset-x-4 bottom-4 block">
+                <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
+                  {service.name}
+                </span>
+                <span className="mt-1.5 block font-display text-[10px] uppercase tracking-[0.14em] text-orange">
+                  {service.price}
+                </span>
+              </span>
+              <span className="absolute right-3 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+                {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+              </span>
+            </>
+          );
+
+          // The position/transition live on a stable outer <div> that never
+          // changes element type — see the matching comment in SmmDeck for
+          // why: a <button> and a <Link> are different tags, so a transform
+          // sitting directly on whichever one renders would make the card
+          // snap instead of slide every time it swaps between them.
           return (
-            <button
+            <div
               key={service.id}
-              type="button"
-              onClick={() => setActive(i)}
-              tabIndex={isFront ? -1 : 0}
-              aria-label={`Показать: ${service.name}`}
-              aria-current={isFront ? "true" : undefined}
-              className={`absolute left-1/2 top-1/2 h-[240px] w-[188px] overflow-hidden text-left transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${CARD_SHELL} ${
-                isFront ? "cursor-default" : "cursor-pointer"
-              }`}
+              className="absolute left-1/2 top-1/2 h-[240px] w-[188px] transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
               style={{
                 zIndex: pose.z,
                 opacity: pose.opacity,
@@ -221,33 +258,38 @@ export default function SitesDeck() {
                 transform: `translate(-50%, -50%) translate(${pose.x}px, ${pose.y}px) scale(${pose.scale})`,
               }}
             >
-              <SiteThumb shape={service.shape} />
-
-              {/* Caption inside the card, as in the reference — but only on
-                  the centre one. On a card at 70% behind a blur it would be
-                  unreadable noise. */}
-              {isFront && (
-                <>
-                  <span
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
-                    style={{
-                      background: "linear-gradient(180deg, rgba(11,11,16,0) 0%, rgba(11,11,16,0.92) 70%)",
-                    }}
-                  />
-                  <span className="absolute inset-x-4 bottom-4 block">
-                    <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
-                      {service.name}
-                    </span>
-                    <span className="mt-1.5 block font-display text-[10px] uppercase tracking-[0.14em] text-orange">
-                      {service.price}
-                    </span>
-                  </span>
-                  <span className="absolute right-3 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
-                    {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-                  </span>
-                </>
+              {/* Same mechanic as SmmDeck/AiDeck: once a format is front AND
+                  has its own page, the whole card becomes the link to it,
+                  with the cyan hover glow. Off-centre cards stay <button>s
+                  that page the carousel — click once to bring a card to
+                  front, click again (now that it fills this wrapper as the
+                  Link) to open its page. */}
+              {isFront && hasPage ? (
+                <Link
+                  href={`/sites/${service.id}`}
+                  aria-current="true"
+                  className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL}`}
+                  style={CARD_GLOW_STYLE}
+                >
+                  <SiteThumb shape={service.shape} />
+                  {caption}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setActive(i)}
+                  tabIndex={isFront ? -1 : 0}
+                  aria-label={`Показать: ${service.name}`}
+                  aria-current={isFront ? "true" : undefined}
+                  className={`absolute inset-0 overflow-hidden text-left ${CARD_SHELL} ${
+                    isFront ? "cursor-default" : "cursor-pointer"
+                  }`}
+                >
+                  <SiteThumb shape={service.shape} />
+                  {isFront && caption}
+                </button>
               )}
-            </button>
+            </div>
           );
         })}
 

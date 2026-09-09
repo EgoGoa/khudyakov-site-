@@ -46,10 +46,32 @@ const azeretMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://khudyakov-site.vercel.app";
+const TITLE = "HDKV.AGENCY — AI-диджитал агентство полного цикла";
+const DESCRIPTION =
+  "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HDKV.AGENCY соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 8 лет опыта, 450+ проектов, 350+ клиентов.";
+
 export const metadata: Metadata = {
-  title: "HDKV.AGENCY — AI-диджитал агентство полного цикла",
-  description:
-    "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HDKV.AGENCY соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 8 лет опыта, 450+ проектов, 350+ клиентов.",
+  // Absolute base for every relative URL below (opengraph-image.tsx included)
+  // — without it a shared link resolves those against the visitor's own
+  // origin instead of the site's, so Telegram/WhatsApp preview cards showed
+  // nothing at all.
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: "HDKV.AGENCY",
+    locale: "ru_RU",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

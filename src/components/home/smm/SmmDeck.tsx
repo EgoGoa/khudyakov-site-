@@ -1,8 +1,14 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { smmFormatPages } from "@/components/home/direction/smmFormatRegistry";
+import DeckPointerArrow from "@/components/ui/DeckPointerArrow";
+
+// Violet, matching the DeckPointerArrow above and this page's own accent —
+// see .deck-card-glow in globals.css for how this hands off to the hover
+// glow.
+const CARD_GLOW_STYLE = { "--card-glow-rgb": "168, 85, 247" } as CSSProperties;
 
 // The format carousel on /smm's chapter 01 — the same fanned card rail
 // SitesDeck works out in detail (see that file for why the fan is built from
@@ -214,6 +220,18 @@ export default function SmmDeck() {
 
   return (
     <div className="w-full max-w-[560px]">
+      {/* Points at the front card — always dead centre (FAN[0].x is 0), so a
+          fixed element above the deck, not something that tracks a moving
+          card. This IS the "Подробнее" control now (label + arrow, both
+          pulsing, wrapped in one Link) — gated on the format having a page
+          so it never points at a 404; the rest fall back to a plain
+          non-interactive pointer until their page ships. Violet: the page's
+          own identity colour. */}
+      <DeckPointerArrow
+        href={front.id in smmFormatPages ? `/smm/${front.id}` : undefined}
+        className="text-[#c4a0ff]"
+      />
+
       {/* Fixed height so the chapter's layout doesn't shift as the description
           under it changes length. */}
       <div className="relative h-[300px]">
@@ -229,18 +247,44 @@ export default function SmmDeck() {
           if (!pose) return null;
 
           const isFront = offset === 0;
+          const hasPage = format.id in smmFormatPages;
 
+          const caption = (
+            <>
+              <span
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
+                style={{
+                  background: "linear-gradient(180deg, rgba(11,11,16,0) 0%, rgba(11,11,16,0.92) 70%)",
+                }}
+              />
+              <span className="absolute inset-x-3.5 bottom-4 block">
+                <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
+                  {format.name}
+                </span>
+                <span className="mt-1.5 block font-display text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
+                  {format.meta}
+                </span>
+              </span>
+              <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+                {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+              </span>
+            </>
+          );
+
+          // The position/transition live on a stable outer <div> that never
+          // changes element type — only its child (Link vs button) swaps
+          // when a card becomes front-with-a-page. Same fix as AiDeck's own
+          // wrapper: a <button> and a <Link> are different tags, so if the
+          // TRANSFORM sat directly on whichever one was rendered, bringing a
+          // card to front would unmount the button and mount a fresh Link
+          // already sitting at its final position — no transition to
+          // animate, the card just snaps instead of sliding in. Wrapping
+          // keeps the transform on one element that's always present, so the
+          // fan animation stays smooth regardless of which control fills it.
           return (
-            <button
+            <div
               key={format.id}
-              type="button"
-              onClick={() => setActive(i)}
-              tabIndex={isFront ? -1 : 0}
-              aria-label={`Показать формат: ${format.name}`}
-              aria-current={isFront ? "true" : undefined}
-              className={`absolute left-1/2 top-1/2 h-[250px] w-[150px] overflow-hidden text-left transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${CARD_SHELL} ${
-                isFront ? "cursor-default" : "cursor-pointer"
-              }`}
+              className="absolute left-1/2 top-1/2 h-[250px] w-[150px] transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
               style={{
                 zIndex: pose.z,
                 opacity: pose.opacity,
@@ -248,32 +292,43 @@ export default function SmmDeck() {
                 transform: `translate(-50%, -50%) translate(${pose.x}px, ${pose.y}px) scale(${pose.scale})`,
               }}
             >
-              <FormatThumb shape={format.shape} />
-
-              {/* Caption on the centre card only. On a card at 70% behind a
-                  blur it would be unreadable noise. */}
-              {isFront && (
-                <>
-                  <span
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
-                    style={{
-                      background: "linear-gradient(180deg, rgba(11,11,16,0) 0%, rgba(11,11,16,0.92) 70%)",
-                    }}
-                  />
-                  <span className="absolute inset-x-3.5 bottom-4 block">
-                    <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
-                      {format.name}
-                    </span>
-                    <span className="mt-1.5 block font-display text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
-                      {format.meta}
-                    </span>
-                  </span>
-                  <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
-                    {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-                  </span>
-                </>
+              {/* Once a format is front AND has its own page, the whole
+                  card becomes the link to it — Egor's ask: click anywhere
+                  on the selected card (bar the dedicated buttons elsewhere
+                  on the page) and it opens the format's page, with a hover
+                  glow so the card reads as one big button rather than a
+                  picture. Off-centre cards stay <button>s that page the
+                  carousel; a card the visitor just brought to front by
+                  clicking it fills this same wrapper with the Link on the
+                  very next render, so "first click selects, second click
+                  opens" falls out of the existing active/front state rather
+                  than needing its own click-count tracking. */}
+              {isFront && hasPage ? (
+                <Link
+                  href={`/smm/${format.id}`}
+                  aria-current="true"
+                  className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL}`}
+                  style={CARD_GLOW_STYLE}
+                >
+                  <FormatThumb shape={format.shape} />
+                  {caption}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setActive(i)}
+                  tabIndex={isFront ? -1 : 0}
+                  aria-label={`Показать формат: ${format.name}`}
+                  aria-current={isFront ? "true" : undefined}
+                  className={`absolute inset-0 overflow-hidden text-left ${CARD_SHELL} ${
+                    isFront ? "cursor-default" : "cursor-pointer"
+                  }`}
+                >
+                  <FormatThumb shape={format.shape} />
+                  {isFront && caption}
+                </button>
               )}
-            </button>
+            </div>
           );
         })}
 
@@ -335,23 +390,12 @@ export default function SmmDeck() {
         })}
       </div>
 
-      {/* What the selected format is and at what cadence, plus a link to that
-          format's own page — added once /smm/[format] existed (see that
-          route). Only formats present in the registry link out; the rest
-          fall back to plain text until their page ships, so this never
-          points at a 404. The chapter's "Обсудить формат" stays the one CTA
-          for the whole page — this is a secondary, read-more link, not
-          another offer competing with it. */}
-      <div className="mt-6 flex min-h-[38px] max-w-[420px] flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-        <p className="text-[13px] leading-snug text-paper/55">{front.blurb}</p>
-        {front.id in smmFormatPages && (
-          <Link
-            href={`/smm/${front.id}`}
-            className="shrink-0 font-display text-[10px] uppercase tracking-[0.12em] text-[#c4a0ff] transition-colors hover:text-white"
-          >
-            Подробнее →
-          </Link>
-        )}
+      {/* What the selected format is and at what cadence. The "Подробнее"
+          button now lives on the card itself (see the isFront branch
+          above), so this row is text-only, same as before that button
+          existed. */}
+      <div className="mt-6">
+        <p className="min-h-[38px] max-w-[420px] text-[13px] leading-snug text-paper/55">{front.blurb}</p>
       </div>
     </div>
   );

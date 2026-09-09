@@ -48,17 +48,32 @@ export default function DirectionHero({
           WebkitMaskImage: "linear-gradient(to bottom, #000 0%, #000 82%, transparent 100%)",
         }}
       >
-        <video
-          src={hero.video}
-          poster={hero.poster}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-hidden="true"
-          className="h-full w-full object-cover"
-        />
+        {/* Ролик работы, а если своей работы под формат нет — стоковый
+            кадр. Кадр НЕ размывается: Егор просил «убрать размытость, чтобы
+            фоновые картинки считывались лучше». Читаемость заголовка держат
+            те же два грейда ниже, что и над видео, — темнеет только левая
+            треть, где стоит копия. */}
+        {hero.photo ? (
+          <img
+            src={hero.photo}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover"
+            style={{ objectPosition: hero.photoPosition ?? "center" }}
+          />
+        ) : (
+          <video
+            src={hero.video}
+            poster={hero.poster}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+            className="h-full w-full object-cover"
+          />
+        )}
         {/* Два слоя вместо одного ровного грейда.
             Вертикальный уводит низ кадра в непрозрачный ink, чтобы видео
             бесшовно перетекало в градиентный фон страницы, а не обрывалось

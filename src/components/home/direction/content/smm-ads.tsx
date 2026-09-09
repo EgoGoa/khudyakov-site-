@@ -44,8 +44,8 @@ export const smmAdsContent: CompactToolContent = {
         воронка ведёт в канал, бота или Mini App — не на лендинг.
       </>
     ),
-    video: "/video/smm-reel.mp4",
-    poster: "/images/smm-reel-poster.jpg",
+    photo: "/images/stock/uv-paint-face.webp",
+    photoPosition: "center",
   },
   stats: [
     { value: "до 90%", label: "аудитории теряется при переходе на внешний сайт" },
@@ -88,10 +88,10 @@ export const smmAdsContent: CompactToolContent = {
       promise: "бюджет распределяется по тому, что реально конвертит, а не поровну",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/flower-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -137,7 +137,7 @@ export const smmAdsContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/stock-sparks.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/paint-purple-macro.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -176,7 +176,7 @@ export const smmAdsContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { photo: "/images/blocks/stock-projector.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -196,7 +196,7 @@ export const smmAdsContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/stock-worker.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/statue-popart.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как клик становится заявкой",
@@ -236,7 +236,7 @@ export const smmAdsContent: CompactToolContent = {
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/holo-heads.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light", position: "75% 45%" },
     eyebrow: "FAQ",
     align: "left",
     title: (

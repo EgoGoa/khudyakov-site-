@@ -9,11 +9,13 @@ import { EYEBROW } from "@/lib/typography";
 // folded into one screen the way /content's own chapter 02 folds its
 // portfolio grid plus a "full catalogue" link.
 //
-// The case cards are working copy, not real projects yet — every card's
-// headline and budget carries a visible "←ПРОВЕРИТЬ" flag rather than the
-// earlier [TODO] placeholder styling, so the page reads as finished while
-// still marking exactly what needs replacing with a real number once a
-// project closes. See docs/ai-page-todo.md.
+// No AI case has actually closed yet, so these cards are framed as
+// illustrative pilot scenarios ("пример пилота"), not as completed real
+// projects with invented outcomes — claiming a specific real result ("closed
+// 40% of requests") without a real client behind it would be a false claim,
+// not just an unfilled field. Budgets are the Старт/Рост tier ranges from
+// AiClose's own pricing (see aiPricingTiers.ts) rather than a made-up number,
+// so they stay consistent with the tariffs shown lower on the same page.
 //
 // Instagram gets the site's standing "*" — see Footer.tsx for the required
 // disclaimer, already shown once per page there; no need to repeat it in
@@ -49,27 +51,27 @@ const SEGMENTS = [
 const CASES = [
   {
     industry: "E-COMMERCE",
-    title: "Чат-бот закрыл 40% обращений без менеджера ←ПРОВЕРИТЬ",
-    task: "Клиенты писали в директ с вопросами по наличию и доставке, менеджер отвечал вручную 6–8 часов в день.",
+    title: "Пример пилота: чат-бот берёт на себя вопросы по наличию и доставке",
+    task: "Клиенты пишут в директ с вопросами по наличию и доставке, менеджер отвечает вручную 6–8 часов в день.",
     stack: "AI-бот на базе каталога, интеграция с CRM, эскалация сложных вопросов на человека.",
     where: "Сайт, Instagram*, Telegram.",
-    budget: "от XXX ₽ ←ПРОВЕРИТЬ",
+    budget: "от 50 000 ₽ (разово)",
   },
   {
     industry: "ЛОКАЛЬНЫЙ СЕРВИС",
-    title: "Заявки перестали теряться в нерабочие часы ←ПРОВЕРИТЬ",
-    task: "30% заявок приходило вечером и в выходные, когда администратор недоступен — половина уходила к конкурентам.",
+    title: "Пример пилота: заявки не теряются в нерабочие часы",
+    task: "До 30% заявок приходит вечером и в выходные, когда администратор недоступен — часть уходит к конкурентам.",
     stack: "Голосовой/чат AI-бот, запись на приём, синхронизация с расписанием.",
     where: "Сайт, WhatsApp.",
-    budget: "от XXX ₽ ←ПРОВЕРИТЬ",
+    budget: "от 50 000 ₽ (разово)",
   },
   {
     industry: "ЛИЧНЫЙ БРЕНД / СТАРТАП",
-    title: "AI-контент заменил студийную съёмку на этапе теста гипотезы ←ПРОВЕРИТЬ",
-    task: "Нужно было проверить продуктовую гипотезу без бюджета на полноценный продакшн.",
+    title: "Пример пилота: AI-контент вместо студийной съёмки на этапе гипотезы",
+    task: "Нужно проверить продуктовую гипотезу без бюджета на полноценный продакшн.",
     stack: "AI-генерация промо-роликов и визуалов, серия тестовых креативов под разные аудитории.",
     where: "Instagram*, Telegram, посадочная страница.",
-    budget: "от XXX ₽ ←ПРОВЕРИТЬ",
+    budget: "от 75 000 ₽ (разово)",
   },
 ];
 

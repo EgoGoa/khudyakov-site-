@@ -42,8 +42,8 @@ export const smmReelsContent: CompactToolContent = {
         другого типа постов.</Accent>
       </>
     ),
-    video: "/video/smm-reel.mp4",
-    poster: "/images/smm-reel-poster.jpg",
+    photo: "/images/stock/smm-phone-bokeh.webp",
+    photoPosition: "75% 45%",
   },
   stats: [
     { value: "30,8%", label: "средний охват Reels" },
@@ -86,10 +86,10 @@ export const smmReelsContent: CompactToolContent = {
       promise: "съёмка, таргет и блогеры усиливают друг друга, а не идут порознь",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/smm-collage-phone.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -136,7 +136,7 @@ export const smmReelsContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/stock-clapper.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/smm-collage-megaphone.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light", position: "25% 45%" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -175,7 +175,7 @@ export const smmReelsContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { photo: "/images/blocks/stock-crew.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -202,7 +202,7 @@ export const smmReelsContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/stock-directing.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/woman-tablet-white.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light", position: "75% 45%" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как ролик становится частью ленты",
@@ -242,7 +242,7 @@ export const smmReelsContent: CompactToolContent = {
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/dj-neon.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", position: "25% 45%" },
     eyebrow: "FAQ",
     align: "left",
     title: (

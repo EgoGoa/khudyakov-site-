@@ -81,15 +81,45 @@ const FADE = "13%";
  *  основных страницах сайта поверх видеодека (см. CinematicSection). */
 export const MEDIA_TEXT = "[text-shadow:0_2px_28px_rgba(11,11,16,0.95)]";
 
+/** Направленные тени под текст. Ключ — сторона, где стоит текст; открытой
+ *  остаётся противоположная, и туда попадает персонаж или объект кадра.
+ *
+ *  Они плотнее обычной вуали (до 0.9), потому что работают в паре с
+ *  `sharp`: у чёткого кадра вся фактура на месте, и слабая тень не спасает
+ *  строку, которая прошла по лицу или по клавиатуре. */
+const SCRIM = {
+  left: "linear-gradient(90deg, rgba(11,11,16,0.9) 0%, rgba(11,11,16,0.78) 34%, rgba(11,11,16,0.3) 62%, rgba(11,11,16,0.06) 100%)",
+  right: "linear-gradient(270deg, rgba(11,11,16,0.9) 0%, rgba(11,11,16,0.78) 34%, rgba(11,11,16,0.3) 62%, rgba(11,11,16,0.06) 100%)",
+  bottom: "linear-gradient(0deg, rgba(11,11,16,0.92) 0%, rgba(11,11,16,0.7) 32%, rgba(11,11,16,0.16) 68%, rgba(11,11,16,0) 100%)",
+  // `full` мягче остальных намеренно: после просьбы Егора убрать размытие
+  // («чтобы фоновые картинки считывались лучше») эта тень встала почти на
+  // каждый блок, и на прежней плотности она гасила ровно то, ради чего
+  // размытие и убирали. Читаемость здесь держат text-shadow и стеклянные
+  // карточки, а тень только снимает пересветы под строкой.
+  full: "linear-gradient(180deg, rgba(11,11,16,0.42) 0%, rgba(11,11,16,0.56) 50%, rgba(11,11,16,0.42) 100%)",
+} as const;
+
 export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const active = useChapterActive();
-  const tone = INTENSITY[media.intensity ?? "quiet"];
+  const base = INTENSITY[media.intensity ?? "quiet"];
+  // Светлый сток на тёмном сайте: белый текст на нём не живёт, поэтому кадр
+  // притапливается сильнее — но не размывается, он остаётся узнаваемым.
+  const tone = media.tone === "light"
+    ? { opacity: base.opacity, veil: Math.min(base.veil + 0.24, 0.8) }
+    : base;
   const frame = media.video ?? media.photo;
   // Чистая градиентная заливка не размывается: размывать нечего, а лишний
   // blur на полноэкранном слое стоит кадров на скролле. Если под градиентом
   // лежит кадр — размытие обычное, оно нужно кадру.
-  const blurPx = frame ? media.blurPx ?? (media.video ? BLUR.base : BLUR.photo) : 0;
+  // Чёткий кадр — отдельный режим, а не blurPx: 0 в каждом вызове. Егор
+  // просил новую стоковую библиотеку не размывать, и читаемость текста в
+  // этом режиме держат scrim и panel, а не мыло.
+  const blurPx = media.sharp
+    ? 0
+    : frame
+      ? media.blurPx ?? (media.video ? BLUR.base : BLUR.photo)
+      : 0;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -192,6 +222,18 @@ export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
             полупрозрачная, а виньетка гасила её к краям почти в чёрный —
             блок читался как та самая чёрная полоса, вместо которой он и
             появился. */}
+        {/* Направленная тень под колонку текста. Ровное затемнение гасит и
+            кадр, и человека в нём; эта тень плотная только с той стороны,
+            где стоит текст, а половина с персонажем остаётся открытой и
+            чёткой — ровно то, о чём просил Егор: «чтобы блоки
+            располагались вокруг этих объектов». */}
+        {frame && media.scrim ? (
+          <div
+            className="absolute inset-0"
+            style={{ background: SCRIM[media.scrim] }}
+          />
+        ) : null}
+
         {frame ? (
           <div
             className="absolute inset-0"

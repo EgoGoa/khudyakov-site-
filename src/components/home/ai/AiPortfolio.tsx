@@ -1,23 +1,41 @@
 "use client";
 
+import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 
-// Chapter 02 — same logic and layout as /content's own chapter 02 (see that
-// page: <Works bare limit={4} filtersAside=.../>): a 2×2 grid of portfolio
-// tiles plus a "full catalogue" link. Not built on <Works> itself — that
-// component is driven entirely by real YouTube-hosted work entries
-// (worksByCategory), and worksByCategory.ai is empty (no AI case has been
-// produced yet, see servicesByCategory vs. worksByCategory in
-// service-content.ts). Reusing it here would render either broken empty
-// filters or nothing at all. This mirrors its tile proportions and caption
-// layout with honest [TODO] placeholders instead, so swapping in real AI
-// case videos later is a content change, not a rebuild — replace `TILES`
-// below with real work entries (or switch back to <Works> once
-// worksByCategory.ai has enough in it).
-
-const TILES = [1, 2, 3, 4];
+// Chapter 02 — no AI case has actually shipped yet (worksByCategory.ai is
+// empty, see service-content.ts), so this used to be a grid of video tiles
+// with [TODO] placeholders standing in for a date/runtime/title that don't
+// exist. Showing a "Смотреть" button next to a video that isn't there was
+// the actual problem, not just the visible [TODO] text — so instead of
+// filling those fields with invented numbers, the tiles became four
+// illustrative pilot scenarios (clearly framed as examples, no fake
+// date/runtime/"Смотреть"). Swap this whole block back for <Works> (or a
+// real tile grid) the moment worksByCategory.ai has real entries.
+const SCENARIOS = [
+  {
+    format: "Чат-бот",
+    title: "AI отвечает в директе и Telegram, пока менеджер занят",
+    result: "Пример пилота: первая линия ответов на вопросы по наличию и доставке.",
+  },
+  {
+    format: "Голосовой AI",
+    title: "Запись на приём вне рабочих часов",
+    result: "Пример пилота: приём заявок вечером и в выходные, синхронизация с расписанием.",
+  },
+  {
+    format: "AI-видео",
+    title: "Промо-ролик без съёмочной группы",
+    result: "Пример пилота: серия тестовых креативов под гипотезу за дни, не за производственный цикл.",
+  },
+  {
+    format: "AI в CRM",
+    title: "Автоматическая квалификация лидов",
+    result: "Пример пилота: горячие заявки — менеджеру сразу, остальные — в очередь на догрев.",
+  },
+];
 
 export default function AiPortfolio() {
   return (
@@ -30,53 +48,33 @@ export default function AiPortfolio() {
       side="right"
       entrance="rise"
       id="portfolio"
-      intro={<>Первые кейсы — в работе. [TODO] — сюда встанут <span className="kw">реальные AI-проекты</span> по мере запуска.</>}
+      intro={<>Первые кейсы — в работе, показываем их по мере запуска. Пока — <span className="kw">примеры пилотов</span>, которые запускаем чаще всего.</>}
     >
-      {/* Width-capped and tightened on a short screen for the same reason
-          the /content portfolio chapter is (see Works): the tiles are 16:9,
-          so extra width costs height on both rows at once. */}
-      <div className="mx-auto grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 [@media(max-height:860px)]:sm:gap-4 [@media(max-height:820px)]:max-w-[860px]">
-        {TILES.map((i, idx) => (
+      <div className="mx-auto grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 [@media(max-height:860px)]:sm:gap-4">
+        {SCENARIOS.map((s, idx) => (
           <Appear
-            key={i}
+            key={s.title}
             from="up"
             delay={BEAT.content + idx * STAGGER.normal}
-            className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-dashed border-paper/20 bg-ink-soft/60 sm:aspect-video lg:aspect-[16/7]"
+            className="relative overflow-hidden rounded-2xl border border-paper/15 bg-ink-soft/60 p-5 sm:p-6"
           >
-            <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-ink/60 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/80 via-ink/35 to-transparent" />
-
-            <span className="absolute left-4 top-4 font-display text-xs tracking-[0.08em] text-paper/40 sm:left-5 sm:top-5">
-              [TODO ДАТА]
-            </span>
-
-            <div className="absolute inset-x-4 bottom-4 flex flex-col items-start gap-2 sm:inset-x-5 sm:bottom-5">
-              <span className="font-display text-xs tracking-[0.08em] text-paper/45">[TODO ХРОНОМЕТРАЖ]</span>
-              <span className="rounded-full bg-paper/[0.06] px-2.5 py-1 font-display text-[9px] uppercase tracking-[0.12em] text-paper/50 ring-1 ring-inset ring-paper/15 sm:text-[10px]">
-                [TODO ФОРМАТ]
-              </span>
-              <span className="text-sm font-medium leading-snug text-paper/70">[TODO название кейса]</span>
-              <div className="mt-1 flex w-full flex-wrap items-center gap-2">
-                {/* Emerald, not the site-wide bg-orange these tiles borrowed by
-                    default — /ai's page accent, matching AI_PILL and the rest
-                    of this page's actions. */}
-                <span className="rounded-none bg-emerald-400 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-[#03120d]">
-                  Смотреть
-                </span>
-                <span className="rounded-none border border-paper/20 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-paper/60">
-                  Хочу так же
-                </span>
-              </div>
-            </div>
+            <span className="font-display text-[10px] uppercase tracking-[0.12em] text-emerald-300">Пример · {s.format}</span>
+            <p className="mt-2 text-base font-medium leading-snug text-paper">{s.title}</p>
+            <p className="mt-2 text-sm leading-relaxed text-paper/60">{s.result}</p>
+            <Link
+              href="/brief"
+              className="mt-4 inline-flex items-center gap-2 rounded-full border border-paper/20 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-paper/60 transition-colors hover:border-emerald-300/60 hover:text-emerald-300"
+            >
+              Хочу так же
+            </Link>
           </Appear>
         ))}
       </div>
 
-      <Appear from="up" delay={BEAT.cta} className="mt-5 flex justify-end">
-        <span className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-paper/40">
-          Весь каталог AI-работ — [TODO]
-          <span aria-hidden="true">→</span>
-        </span>
+      <Appear from="up" delay={BEAT.cta} className="mt-5">
+        <p className="text-xs text-paper/40">
+          Первые реальные AI-кейсы появятся здесь по мере запуска пилотов — заявки уже открыты.
+        </p>
       </Appear>
     </CinematicSection>
   );

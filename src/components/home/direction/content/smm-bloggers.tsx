@@ -44,8 +44,8 @@ export const smmBloggersContent: CompactToolContent = {
         не отдельная статья бюджета для больших компаний.
       </>
     ),
-    video: "/video/smm-reel.mp4",
-    poster: "/images/smm-reel-poster.jpg",
+    photo: "/images/stock/ink-black.webp",
+    photoPosition: "center",
   },
   stats: [
     { value: "94%", label: "блогеров РФ работают с бюджетом до 100 тыс. ₽" },
@@ -88,10 +88,10 @@ export const smmBloggersContent: CompactToolContent = {
       promise: "видно, работает ли формат, прежде чем закладывать его в бюджет постоянно",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/night-lights.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -138,7 +138,7 @@ export const smmBloggersContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/stock-lights.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/speed-lines-pink.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -177,7 +177,7 @@ export const smmBloggersContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { photo: "/images/blocks/stock-crew.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -196,7 +196,7 @@ export const smmBloggersContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/stock-briefing.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как подбор становится интеграцией",
@@ -236,7 +236,7 @@ export const smmBloggersContent: CompactToolContent = {
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/platform-speed.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
     eyebrow: "FAQ",
     align: "left",
     title: (

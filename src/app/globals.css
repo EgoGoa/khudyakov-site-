@@ -1019,7 +1019,7 @@ body {
     color: var(--paper);
     padding: 10px 22px;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     border-radius: 999px;
@@ -1083,70 +1083,55 @@ body {
   }
 }
 
-/* Volumetric control surface.
-   A pill is given real thickness the way a physical key has it: a light top
-   edge where a light source would catch it, a dark bottom edge in its own
-   shade, a cast shadow under it, and a top-to-bottom gradient across the face.
-   Pressing it drops the cast shadow and pushes the highlight inward, so the
-   key reads as travelling down rather than merely shrinking.
-
-   This is the one place the design leans skeuomorphic, and it is deliberate:
-   these are the page's actions (brief, calculator, consultation) and the
-   thickness is what separates them from the flat type they sit beside. */
+/* Flat control surface — the site-wide default as of Egor's site-wide pass:
+   every page that carried its own scoped override (.ai-cool-headings,
+   .content-warm-headings) had independently reached the same call — the
+   skeuomorphic pressed-key fought the flat glass everything else on the page
+   is made of — so this makes that the base instead of something each page
+   has to opt back into. /sites and /smm's own chapters, which never got a
+   scoped override of their own, pick up the flat treatment for free now
+   instead of staying the odd ones out.
+   .btn-3d still marks "this is the page's primary action" — a soft ambient
+   lift on hover instead of the old cast-shadow-plus-bevel travel. Pages that
+   want their OWN colour on it (.ai-cool-headings, .content-warm-headings,
+   .smm-violet-headings, .sites-warm-headings) still override the fill below;
+   this is only the shape and motion, shared by all of them. */
 .btn-3d {
   position: relative;
   border-radius: 999px;
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.16) 0%,
-    rgba(255, 255, 255, 0.04) 46%,
-    rgba(0, 0, 0, 0.14) 100%
-  );
-  box-shadow:
-    /* catch light along the top edge */ inset 0 1px 0 rgba(255, 255, 255, 0.42),
-    /* self-shade along the bottom edge */ inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-    /* the body of the key */ 0 1px 0 rgba(0, 0, 0, 0.5), 0 6px 18px -6px rgba(0, 0, 0, 0.75);
   transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease,
-    border-color 0.18s ease, color 0.18s ease;
+    filter 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
 .btn-3d:hover {
   transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-    0 2px 0 rgba(0, 0, 0, 0.5), 0 12px 26px -8px rgba(0, 0, 0, 0.8),
-    0 0 22px -4px rgba(255, 255, 255, 0.35);
+  filter: brightness(1.08);
 }
 
 .btn-3d:active {
   transform: translateY(1px);
-  box-shadow: inset 0 2px 7px rgba(0, 0, 0, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.08),
-    0 1px 2px rgba(0, 0, 0, 0.5);
+  filter: brightness(0.96);
 }
 
-/* .btn-neon is a flat fill now, so its 3D form just needs the edge/shade
-   pair without an extra rim glow riding on top of it. */
 .btn-neon.btn-3d {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
-    0 1px 0 rgba(0, 0, 0, 0.45), 0 8px 20px -8px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.7);
 }
 
 .btn-neon.btn-3d:hover {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
-    0 2px 0 rgba(0, 0, 0, 0.45), 0 14px 28px -10px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 12px 26px -8px rgba(0, 0, 0, 0.75);
 }
 
-/* The emphasised (.btn-warm) 3D button gets an orange rim instead — the one
-   action per screen that should glow. */
+/* The emphasised (.btn-warm) action — flat orange fill with an orange glow
+   instead of the old inset-bevel rim, so it still reads as the one action
+   per screen that should stand out. */
 .btn-neon.btn-warm.btn-3d {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), inset 0 -1px 0 rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(0, 0, 0, 0.4), 0 8px 20px -8px rgba(0, 0, 0, 0.8),
-    0 0 18px -6px rgba(255, 106, 61, 0.55);
+  background: linear-gradient(180deg, var(--orange-bright) 0%, var(--orange) 100%);
+  border-color: transparent;
+  box-shadow: 0 12px 30px -8px rgba(255, 106, 61, 0.6);
 }
 
 .btn-neon.btn-warm.btn-3d:hover {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.3),
-    0 2px 0 rgba(0, 0, 0, 0.4), 0 14px 28px -10px rgba(0, 0, 0, 0.85),
-    0 0 26px rgba(255, 106, 61, 0.7), 0 0 60px rgba(255, 106, 61, 0.35);
+  box-shadow: 0 14px 34px -8px rgba(255, 106, 61, 0.75);
 }
 
 /* /ai's action buttons.
@@ -2434,6 +2419,124 @@ body {
 .smm-accent {
   color: #5ee7ff;
   text-shadow: 0 0 14px rgba(94, 231, 255, 0.45), 0 2px 20px rgba(11, 11, 16, 0.9);
+}
+
+/* "Подробнее" pill on the front card of the /smm carousel — the SMM
+   equivalent of .ai-open-pulse. Orange, not this page's own violet: per the
+   PILL comment in SmmDeck.tsx, violet is reserved for headings/decoration on
+   this page and orange is the only colour that reads as "press me" here.
+   Kept visually smaller than the chapter's own PILL (Обсудить формат) so the
+   two don't compete as equal offers — this one is a secondary "read more",
+   not another primary CTA. */
+@keyframes smm-open-pulse {
+  0%, 100% {
+    box-shadow: 0 10px 26px -6px rgba(240, 81, 42, 0.65), 0 0 0 0 rgba(255, 138, 95, 0.55);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 12px 32px -4px rgba(240, 81, 42, 0.9), 0 0 0 8px rgba(255, 138, 95, 0);
+    transform: scale(1.03);
+  }
+}
+
+.smm-open-pulse {
+  animation: smm-open-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smm-open-pulse {
+    animation: none;
+  }
+}
+
+/* Pulsing arrow above a service carousel (AiDeck/SmmDeck/SitesDeck), pointing
+   down at the front card — that card sits dead-centre of its deck on every
+   one of the three (FAN[0].x is always 0), so the arrow is a fixed element
+   above the deck rather than something that has to track a moving target.
+   Colour comes from the page: each Deck sets `color` via a wrapping class or
+   inline style, and the glow follows via currentColor rather than a second
+   hardcoded hex per page. Bounce, not a flat blink — Egor's ask elsewhere on
+   this site (.ai-open-pulse, .page-nav-arrow-pulse) is consistently "breathe,
+   don't blink" for anything meant to sit on screen for a while. */
+@keyframes deck-arrow-pulse {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(7px);
+    opacity: 1;
+  }
+}
+
+.deck-arrow-pulse {
+  animation: deck-arrow-pulse 1.7s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-arrow-pulse {
+    animation: none;
+    opacity: 0.85;
+  }
+}
+
+/* The "Подробнее" label above that arrow — same 1.7s timing, so word and
+   arrow breathe as one unit instead of two things pulsing out of step. A
+   glow pulse rather than the arrow's bounce: bouncing text reads as glitchy,
+   not as an inviting control. */
+@keyframes deck-label-pulse {
+  0%, 100% {
+    opacity: 0.75;
+    text-shadow: 0 0 8px currentColor;
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 16px currentColor;
+  }
+}
+
+.deck-label-pulse {
+  animation: deck-label-pulse 1.7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-label-pulse {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Hover/focus glow for a whole clickable card — the service carousels'
+   front card and /content's direction grid. One shared class rather than
+   one per page: colour is the only thing that differs, and it comes in via
+   the `--card-glow-rgb` custom property (R,G,B, no rgb() wrapper) each
+   caller sets inline, the same hand-off ai-deck-glow already uses for its
+   own per-card colour. Egor's ask: hovering anywhere on the card should
+   light it up and nudge it forward, so the whole surface reads as one
+   button even where it's built from a link sitting behind plain text. */
+.deck-card-glow {
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 320ms ease, border-color 320ms ease;
+}
+
+.deck-card-glow:hover,
+.deck-card-glow:focus-visible {
+  transform: scale(1.035);
+  border-color: rgba(var(--card-glow-rgb), 0.6);
+  box-shadow:
+    0 0 0 1px rgba(var(--card-glow-rgb), 0.5),
+    0 0 40px 6px rgba(var(--card-glow-rgb), 0.4),
+    0 28px 70px -24px rgba(0, 0, 0, 0.85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-card-glow {
+    transition: box-shadow 200ms ease, border-color 200ms ease;
+  }
+  .deck-card-glow:hover,
+  .deck-card-glow:focus-visible {
+    transform: none;
+  }
 }
 
 /* ── A pinned chapter gets exactly one screen, and no more ───────────────

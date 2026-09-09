@@ -101,10 +101,10 @@ export const aiAgentContent: DirectionContent = {
       promise: "менеджер видит только горячих",
     },
   ],
-  taskMedia: { photo: "/images/blocks/ai-neon-desk.jpg", gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { photo: "/images/stock/ai-wireframe-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/robot-hand-chip.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, position: "75% 45%" },
     eyebrow: "Когда это окупается",
     align: "left",
     title: (
@@ -151,7 +151,7 @@ export const aiAgentContent: DirectionContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/ai-server-green.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/ai-wavy-text.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Под капотом",
     align: "sticky",
     title: (
@@ -202,7 +202,7 @@ export const aiAgentContent: DirectionContent = {
   budgetMedia: { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: { photo: "/images/blocks/ai-keyboard-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Три сценария запуска",
     align: "right",
     title: (
@@ -257,7 +257,7 @@ export const aiAgentContent: DirectionContent = {
   },
 
   why: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/hand-light-ring.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Почему мы",
     align: "center",
     title: (
@@ -301,7 +301,7 @@ export const aiAgentContent: DirectionContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/ai-corridor-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/server-room.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "25% 45%" },
     eyebrow: "Как это делается",
     align: "left",
     typed: "Как агент учится говорить за вас",
@@ -383,10 +383,10 @@ export const aiAgentContent: DirectionContent = {
     ],
   },
 
-  assetsMedia: { photo: "/images/blocks/ai-nightwork.jpg", gradient: ACCENT, intensity: "quiet" },
+  assetsMedia: { photo: "/images/stock/brain-circuit.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
 
   close: {
-    media: { photo: "/images/blocks/ai-neon-abstract.jpg", gradient: ACCENT, intensity: "loud" },
+    media: { photo: "/images/stock/hologram-laptop.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Один следующий шаг",
     align: "center",
     title: (

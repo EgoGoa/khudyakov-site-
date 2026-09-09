@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { servicesByCategory } from "@/lib/service-content";
+import DeckPointerArrow from "@/components/ui/DeckPointerArrow";
 
 // The service carousel on /ai's chapter 01.
 //
@@ -253,6 +254,15 @@ export default function AiDeck() {
 
   return (
     <div className="w-full max-w-[728px]">
+      {/* Points at the front card — dead centre on this deck too (FAN[0].x
+          is 0). Emerald: /ai's own accent, the same colour as AI_PILL and
+          .ai-open-pulse below. This pointer and the card's own "Открыть
+          инструмент" button both link to the same place — not a
+          duplication so much as belt-and-braces: the pointer names and aims
+          at the card before you're even looking at it, the in-card button
+          is the actual press once you are. */}
+      <DeckPointerArrow href={CARDS[active].href} className="text-emerald-300" />
+
       <div
         ref={railRef}
         className="relative h-[416px]"
@@ -337,17 +347,22 @@ export default function AiDeck() {
 
               {/* The front card is not a paging control — clicking it was
                   always a no-op (tabIndex -1, onClick re-selecting the
-                  already-active index). That made it safe to stop rendering
-                  it as a <button> the moment it needed to carry a real
-                  navigation link inside it: a <Link>'s <a> nested inside a
-                  <button> is invalid HTML and fights the button for the
-                  click, so the front card is a plain <div> instead and the
-                  off-centre cards (which DO page the carousel) keep the
-                  <button>. */}
+                  already-active index). That's what made it safe to stop
+                  rendering it as a <button> once it needed to carry a real
+                  navigation link: off-centre cards (which DO page the
+                  carousel) keep the <button>, the front card is the link
+                  itself now — the whole surface opens the tool, not just the
+                  pill inside it (Egor's ask: click anywhere on the selected
+                  card, not only its button). A <Link>'s <a> can't nest
+                  inside another <a> any more than inside a <button>, so the
+                  pill below is a plain <span> styled the same — decoration,
+                  not a second link. */}
               {isFront ? (
-                <div
+                <Link
+                  href={card.href ?? "#"}
                   aria-current="true"
-                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] ring-1 ring-emerald-300/40"
+                  className="deck-card-glow absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] ring-1 ring-emerald-300/40"
+                  style={{ "--card-glow-rgb": "16, 185, 129" } as React.CSSProperties}
                 >
                   <AiThumb shape={card.shape} />
 
@@ -367,19 +382,16 @@ export default function AiDeck() {
                         makes it read as clickable rather than as more
                         label text next to the title above it. */}
                     {card.href && (
-                      <Link
-                        href={card.href}
-                        className="ai-open-pulse inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-4 py-2.5 font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-[#03120d] motion-reduce:animate-none"
-                      >
+                      <span className="ai-open-pulse inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-4 py-2.5 font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-[#03120d] motion-reduce:animate-none">
                         Открыть инструмент
                         <span aria-hidden="true">→</span>
-                      </Link>
+                      </span>
                     )}
                   </span>
                   <span className="absolute right-3.5 top-3.5 rounded-full bg-ink/70 px-2.5 py-1 font-display text-[10px] tracking-[0.12em] text-paper/70">
                     {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
                   </span>
-                </div>
+                </Link>
               ) : (
                 <button
                   type="button"

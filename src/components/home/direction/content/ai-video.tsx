@@ -1,6 +1,12 @@
 import Accent from "../Accent";
 import type { DirectionContent } from "../types";
 
+// Акцент страницы — те же два цвета, что и у градиента фона (`backdrop`).
+// Вынесен в константу, потому что его носит подложка каждого блока: без
+// неё в зоне, где один фон растворяется в другом, стык уходит в чёрное.
+const ACCENT = { from: "#c8f169", to: "#10b981" };
+
+
 // Направление «AI-видео контент» — /content/ai-video.
 //
 // Честность портфолио здесь важнее полноты: настоящая AI-работа у нас одна —
@@ -40,7 +46,7 @@ export const aiVideoContent: DirectionContent = {
   // Единственная страница направления, уходящая в холодную часть палитры:
   // AI на сайте везде подан лаймово-изумрудным (см. /ai), и направление
   // внутри /content наследует эту связь, а не спорит с ней.
-  backdrop: { from: "#c8f169", to: "#10b981" },
+  backdrop: ACCENT,
 
   stats: [
     { value: "2024", label: "внедряем AI в продакшн" },
@@ -48,10 +54,7 @@ export const aiVideoContent: DirectionContent = {
     { value: "×3", label: "больше вариантов на том же бюджете" },
     { value: "8 лет", label: "в видеопроизводстве" },
   ],
-  statsMedia: {
-    photo: "/images/blocks/stock-lightpaint.jpg",
-    intensity: "quiet",
-  },
+  statsMedia: { photo: "/images/stock/paint-pastel.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
 
   taskPrompt: "Что нужно получить",
   taskNote:
@@ -85,10 +88,7 @@ export const aiVideoContent: DirectionContent = {
       promise: "картинка уровня съёмки без съёмочной сметы",
     },
   ],
-  taskMedia: {
-    photo: "/images/blocks/stock-nightdesk.jpg",
-    intensity: "quiet",
-  },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
     media: {
@@ -175,16 +175,10 @@ export const aiVideoContent: DirectionContent = {
   },
 
   budgetMedia:
-  {
-    photo: "/images/blocks/stock-papers.jpg",
-    intensity: "quiet",
-  },
+  { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: {
-      photo: "/images/blocks/stock-briefing.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/stage-hand-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Три сценария запуска",
     align: "right",
     title: (
@@ -287,10 +281,7 @@ export const aiVideoContent: DirectionContent = {
   },
 
   process: {
-    media: {
-      photo: "/images/blocks/stock-clapper.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/dj-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "25% 45%" },
     eyebrow: "Производство",
     align: "sticky",
     // Печатающийся элемент этой страницы.
@@ -337,10 +328,7 @@ export const aiVideoContent: DirectionContent = {
   },
 
   faq: {
-    media: {
-      photo: "/images/blocks/stock-latenight.jpg",
-      intensity: "quiet",
-    },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "FAQ",
     align: "right",
     title: (
@@ -377,10 +365,7 @@ export const aiVideoContent: DirectionContent = {
   },
 
   assetsMedia:
-  {
-    photo: "/images/blocks/stock-crew.jpg",
-    intensity: "quiet",
-  },
+  { photo: "/images/stock/collage-laptop-head.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
 
   close: {
     media: {

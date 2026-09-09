@@ -47,8 +47,8 @@ export const smmStoriesContent: CompactToolContent = {
         охватный инструмент.
       </>
     ),
-    video: "/video/smm-reel.mp4",
-    poster: "/images/smm-reel-poster.jpg",
+    photo: "/images/stock/stage-hand-neon.webp",
+    photoPosition: "center",
   },
   stats: [
     { value: "24 часа", label: "жизнь одной истории на платформе" },
@@ -91,10 +91,10 @@ export const smmStoriesContent: CompactToolContent = {
       promise: "истории становятся каналом диалога, а не просто напоминанием о себе",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/vr-neon-triangle.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", panel: true, position: "25% 45%" },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -140,7 +140,7 @@ export const smmStoriesContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/stock-lightpaint.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/projector-life.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -179,7 +179,7 @@ export const smmStoriesContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { photo: "/images/blocks/stock-latenight.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -199,7 +199,7 @@ export const smmStoriesContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/stock-nightdesk.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/holi-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как молчание превращается в ритм",
@@ -239,7 +239,7 @@ export const smmStoriesContent: CompactToolContent = {
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/surreal-face.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "FAQ",
     align: "left",
     title: (

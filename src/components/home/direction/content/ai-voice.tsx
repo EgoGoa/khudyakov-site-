@@ -80,10 +80,10 @@ export const aiVoiceContent: DirectionContent = {
       promise: "весь архив заговорил, а не один ролик",
     },
   ],
-  taskMedia: { photo: "/images/blocks/ai-nightwork.jpg", gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { photo: "/images/stock/night-lights.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { photo: "/images/stock/speed-lines-pink.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Когда это окупается",
     align: "left",
     title: (
@@ -129,7 +129,7 @@ export const aiVoiceContent: DirectionContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/ai-keyboard-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/team-ideas.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Под капотом",
     align: "center",
     title: (
@@ -177,10 +177,10 @@ export const aiVoiceContent: DirectionContent = {
     ],
   },
 
-  budgetMedia: { gradient: ALT, intensity: "medium" },
+  budgetMedia: { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: { photo: "/images/blocks/ai-neon-desk.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Три сценария",
     align: "right",
     title: (
@@ -234,7 +234,7 @@ export const aiVoiceContent: DirectionContent = {
   },
 
   why: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { photo: "/images/stock/desk-aerial.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Почему мы",
     align: "center",
     title: (
@@ -277,7 +277,7 @@ export const aiVoiceContent: DirectionContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/ai-server-green.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/platform-speed.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Производство",
     align: "sticky",
     typed: "Как ролик меняет язык",
@@ -323,7 +323,7 @@ export const aiVoiceContent: DirectionContent = {
   },
 
   faq: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "FAQ",
     align: "left",
     title: (
@@ -359,10 +359,10 @@ export const aiVoiceContent: DirectionContent = {
     ],
   },
 
-  assetsMedia: { photo: "/images/blocks/ai-corridor-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+  assetsMedia: { photo: "/images/stock/surreal-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
 
   close: {
-    media: { photo: "/images/blocks/ai-neon-abstract.jpg", gradient: ACCENT, intensity: "loud" },
+    media: { photo: "/images/stock/artist-tablet.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Один следующий шаг",
     align: "center",
     title: (

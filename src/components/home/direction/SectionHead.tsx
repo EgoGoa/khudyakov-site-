@@ -38,10 +38,30 @@ export default function SectionHead({
   const align = head.align ?? "left";
   const from = align === "right" ? "right" : align === "center" ? "up" : "left";
 
+  // «Окошко» под шапкой — по прямой просьбе Егора для чётких (неразмытых)
+  // кадров: «нужно либо блоки выделять, либо делать для них какие-то
+  // окошки, чтобы текст не сливался». Карточки внутри блоков уже лежат на
+  // стекле; без этого окна голым над фотографией оставался только
+  // заголовок с подзаголовком — как раз он и сливался.
+  //
+  // Окно не растягивается на всю колонку (`inline-block`): широкая плашка
+  // читалась бы как ещё одна секция и закрывала бы кадр целиком, а Егор
+  // просил обратного — чтобы фон оставался виден вокруг текста.
+  const panel = head.media?.panel;
+  const panelClass = panel
+    ? `glass-panel rounded-3xl px-6 py-7 sm:px-9 sm:py-9 ${
+        align === "left" || align === "sticky" ? "max-w-2xl" : ""
+      }`
+    : "";
+
   return (
     // Тень носит вся шапка, а не только блоки с кадром: над ровным фоном
     // она невидима, а над видео держит контраст без притушивания картинки.
-    <div className={`${ALIGN_CLASS[align]} ${MEDIA_TEXT}`}>
+    //
+    // Выравнивание живёт на внешнем контейнере, а стекло — на внутреннем:
+    // `mx-auto` из центрированной раскладки не центрирует сам себя, если
+    // на том же узле висит фон окна.
+    <div className={`${ALIGN_CLASS[align]} ${MEDIA_TEXT} ${panelClass}`}>
       <Appear from={from} delay={DIRECTION_BEAT.eyebrow}>
         <span
           className={`${EYEBROW} flex items-center gap-2 text-rec ${

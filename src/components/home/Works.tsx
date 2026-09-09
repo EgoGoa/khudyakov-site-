@@ -436,8 +436,13 @@ export default function Works({
                         : "inset-x-4 flex items-end justify-between sm:inset-x-5"
                     }`}>
                       <div className="min-w-0">
+                        {work.title && (
+                          <div className={`truncate font-display uppercase tracking-[0.02em] text-paper ${limit ? "text-sm sm:text-base" : "text-xs sm:text-sm"}`}>
+                            {work.title}
+                          </div>
+                        )}
                         {formatDuration(work.duration) && (
-                          <div className={`font-display tracking-[0.08em] text-paper/80 ${limit ? "text-xs" : "text-[11px]"}`}>
+                          <div className={`mt-0.5 font-display tracking-[0.08em] text-paper/60 ${limit ? "text-xs" : "text-[11px]"}`}>
                             {formatDuration(work.duration)}
                           </div>
                         )}

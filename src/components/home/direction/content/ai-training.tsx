@@ -77,10 +77,10 @@ export const aiTrainingContent: CompactToolContent = {
       promise: "видно по факту, изменилось ли поведение команды",
     },
   ],
-  taskMedia: { photo: "/images/blocks/ai-neon-desk.jpg", gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Кому подходит",
     align: "right",
     title: (
@@ -126,7 +126,7 @@ export const aiTrainingContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/ai-server-green.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/hand-light-ring.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Под капотом",
     align: "left",
     title: (
@@ -175,7 +175,7 @@ export const aiTrainingContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { photo: "/images/blocks/ai-nightwork.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -229,7 +229,7 @@ export const aiTrainingContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/ai-corridor-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/robot-hand-white.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как обучение превращается в привычку",
@@ -269,7 +269,7 @@ export const aiTrainingContent: CompactToolContent = {
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/smart-glasses-pale.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "FAQ",
     align: "right",
     title: (

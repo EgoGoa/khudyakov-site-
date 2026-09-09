@@ -85,10 +85,10 @@ export const aiOpsContent: DirectionContent = {
       promise: "отчёт собирается сам, человек его читает",
     },
   ],
-  taskMedia: { photo: "/images/blocks/ai-server-green.jpg", gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { photo: "/images/stock/dj-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "25% 45%" },
 
   audience: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { photo: "/images/stock/stage-hand-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },
     eyebrow: "Где это заметно",
     align: "right",
     title: (
@@ -134,7 +134,7 @@ export const aiOpsContent: DirectionContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/ai-neon-abstract.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/uv-paint-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Под капотом",
     align: "left",
     title: (
@@ -182,10 +182,10 @@ export const aiOpsContent: DirectionContent = {
     ],
   },
 
-  budgetMedia: { gradient: ALT, intensity: "medium" },
+  budgetMedia: { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: { photo: "/images/blocks/ai-keyboard-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/paint-purple-macro.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -240,7 +240,7 @@ export const aiOpsContent: DirectionContent = {
   },
 
   why: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { photo: "/images/stock/flower-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Почему мы",
     align: "center",
     title: (
@@ -283,7 +283,7 @@ export const aiOpsContent: DirectionContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/ai-nightwork.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/projector-life.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Внедрение",
     align: "sticky",
     typed: "Как процесс перестаёт быть ручным",
@@ -329,7 +329,7 @@ export const aiOpsContent: DirectionContent = {
   },
 
   faq: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "FAQ",
     align: "right",
     title: (
@@ -365,10 +365,10 @@ export const aiOpsContent: DirectionContent = {
     ],
   },
 
-  assetsMedia: { photo: "/images/blocks/ai-neon-desk.jpg", gradient: ACCENT, intensity: "quiet" },
+  assetsMedia: { photo: "/images/stock/ai-wireframe-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   close: {
-    media: { photo: "/images/blocks/ai-corridor-neon.jpg", gradient: ACCENT, intensity: "loud" },
+    media: { photo: "/images/stock/statue-popart.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full" },
     eyebrow: "Один следующий шаг",
     align: "center",
     title: (

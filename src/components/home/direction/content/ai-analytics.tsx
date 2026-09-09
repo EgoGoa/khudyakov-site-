@@ -77,10 +77,10 @@ export const aiAnalyticsContent: CompactToolContent = {
       promise: "отчёт приходит сам, вместо того чтобы его собирать",
     },
   ],
-  taskMedia: { photo: "/images/blocks/ai-server-green.jpg", gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { photo: "/images/stock/server-room.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", position: "25% 45%" },
 
   audience: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/holo-keyboard.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -126,7 +126,7 @@ export const aiAnalyticsContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/ai-neon-desk.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/holo-heads.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light", position: "75% 45%" },
     eyebrow: "Под капотом",
     align: "center",
     title: (
@@ -175,7 +175,7 @@ export const aiAnalyticsContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { photo: "/images/blocks/ai-nightwork.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "right",
     title: (
@@ -229,7 +229,7 @@ export const aiAnalyticsContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/ai-corridor-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/ai-wavy-text.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как таблицы становятся дашбордом",

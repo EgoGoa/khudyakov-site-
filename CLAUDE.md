@@ -2,6 +2,13 @@
 
 ## Copy Draft Status Checks
 
+### 2026-09-09 (pre-launch audit)
+- Agency name: Filled ("HDKV.AGENCY")
+- Deadline: Filled — clarified with Egor to mean the response-time promise on leads/brief. Already present and consistent across the site: "в течение дня" (Offer.tsx, AiConsult.tsx) / "в течение одного рабочего дня" (Contact.tsx). This field was marked Unfilled in every prior check only because nothing in the code referenced the literal word "Deadline" — the underlying copy was already there.
+- CTA channel: Filled ("khudyakov.yegor@gmail.com / +7 992 511-18-12")
+- Founder bio: Unfilled — Egor asked to skip for now, will dictate later.
+- Overall: 3 of 4 fields filled
+
 ### 2026-09-07 12:00
 - Agency name: Filled ("HDKV.AGENCY")
 - Deadline: Unfilled

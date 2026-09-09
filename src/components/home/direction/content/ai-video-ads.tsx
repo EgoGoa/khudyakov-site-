@@ -46,7 +46,7 @@ export const aiVideoAdsContent: DirectionContent = {
     { value: "−50%", label: "цена клика на такой подаче" },
     { value: "5 дней", label: "до первой линейки роликов" },
   ],
-  statsMedia: { gradient: ACCENT, intensity: "medium" },
+  statsMedia: { photo: "/images/stock/man-laptop-dark.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
 
   taskPrompt: "Что нужно снять без съёмки",
   taskNote:
@@ -80,10 +80,10 @@ export const aiVideoAdsContent: DirectionContent = {
       promise: "лицо бренда, которое не надо каждый раз собирать на смену",
     },
   ],
-  taskMedia: { photo: "/images/blocks/ai-neon-abstract.jpg", gradient: ACCENT, intensity: "quiet" },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { photo: "/images/stock/man-laptop-green.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Когда это выигрывает",
     align: "center",
     title: (
@@ -129,7 +129,7 @@ export const aiVideoAdsContent: DirectionContent = {
   },
 
   tech: {
-    media: { photo: "/images/blocks/ai-corridor-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/woman-coffee-desk.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -177,10 +177,10 @@ export const aiVideoAdsContent: DirectionContent = {
     ],
   },
 
-  budgetMedia: { gradient: ALT, intensity: "medium" },
+  budgetMedia: { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: { photo: "/images/blocks/ai-keyboard-neon.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/vr-neon-triangle.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "25% 45%" },
     eyebrow: "Три сценария",
     align: "left",
     title: (
@@ -234,7 +234,7 @@ export const aiVideoAdsContent: DirectionContent = {
   },
 
   why: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { photo: "/images/stock/ink-black.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Почему мы",
     align: "center",
     title: (
@@ -277,7 +277,7 @@ export const aiVideoAdsContent: DirectionContent = {
   },
 
   process: {
-    media: { photo: "/images/blocks/ai-neon-desk.jpg", gradient: ACCENT, intensity: "quiet" },
+    media: { photo: "/images/stock/speaker-neon-swirl.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Производство",
     align: "sticky",
     typed: "Как рождается ролик без камеры",
@@ -323,7 +323,7 @@ export const aiVideoAdsContent: DirectionContent = {
   },
 
   faq: {
-    media: { gradient: ALT, intensity: "medium" },
+    media: { gradient: ACCENT, intensity: "medium" },
     eyebrow: "FAQ",
     align: "right",
     title: (
@@ -359,10 +359,10 @@ export const aiVideoAdsContent: DirectionContent = {
     ],
   },
 
-  assetsMedia: { photo: "/images/blocks/ai-server-green.jpg", gradient: ACCENT, intensity: "quiet" },
+  assetsMedia: { photo: "/images/stock/ink-pink.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   close: {
-    media: { photo: "/images/blocks/ai-nightwork.jpg", gradient: ACCENT, intensity: "loud" },
+    media: { photo: "/images/stock/books-vs-tech.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full" },
     eyebrow: "Один следующий шаг",
     align: "center",
     title: (
