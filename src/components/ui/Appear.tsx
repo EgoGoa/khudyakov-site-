@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useRef, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { DUR, EASE } from "@/lib/motion";
 
@@ -93,6 +93,9 @@ export default function Appear({
 }) {
   const active = useContext(ChapterActive);
   const reduced = useReducedMotion();
+  // Держит сам DOM-узел, чтобы после посадки снять инлайновый filter
+  // руками — Framer Motion сам этого не делает (см. ниже).
+  const ref = useRef<HTMLElement>(null);
 
   if (reduced) {
     const Plain = PLAIN_TAGS[as];
@@ -103,6 +106,7 @@ export default function Appear({
 
   return (
     <MotionTag
+      ref={ref as never}
       initial={false}
       animate={
         active
@@ -110,6 +114,25 @@ export default function Appear({
           : { ...HIDDEN[from], opacity: 0, ...(blur ? { filter: `blur(${blurPx}px)` } : {}) }
       }
       transition={{ duration, delay: active ? delay : 0, ease: EASE }}
+      // После посадки Framer Motion оставляет инлайновый `filter:
+      // blur(0px)` висеть на узле — визуально это то же самое, что
+      // filter: none, но по спецификации CSS ЛЮБОЕ значение filter,
+      // включая blur(0px), заводит свой stacking context и обрезает
+      // «задник», который могут видеть backdrop-filter потомков. Внутри
+      // почти каждого блока сайта карточки — .glass-panel с backdrop-
+      // filter, а обёрнуты они в этот самый Appear; без этой чистки их
+      // блюр перестаёт видеть реальный фон блока, как только вход
+      // доигрывает, и превращается в no-op — ровно то, что Егор поймал
+      // на карточке «02»: у остальных двух filter ещё не устоялся до
+      // ровно blur(0px) в момент рендера/скриншота, у неё — устоялся, и
+      // разница читалась как «эта карточка вообще без блюра». Снимаем
+      // filter целиком (не через animate, а прямым style-патчем) только
+      // когда действительно осели в активном состоянии — на скрытом
+      // состоянии snapshot нужен, там backdrop-filter потомкам всё равно
+      // не важен.
+      onAnimationComplete={() => {
+        if (active && blur) ref.current?.style.removeProperty("filter");
+      }}
       className={className}
     >
       {children}
