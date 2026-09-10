@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useRef, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { DUR, EASE } from "@/lib/motion";
 
@@ -96,6 +96,28 @@ export default function Appear({
   // Держит сам DOM-узел, чтобы после посадки снять инлайновый filter
   // руками — Framer Motion сам этого не делает (см. ниже).
   const ref = useRef<HTMLElement>(null);
+
+  // Страховка на случай, если `onAnimationComplete` не сработает. Он не
+  // сработает, если реальной анимации не было вовсе: `initial={false}`
+  // означает, что при первом монтировании с уже активным `active` Framer
+  // Motion не переходит от скрытого состояния к видимому, а сразу
+  // проставляет конечные стили как есть — filter: blur(0px) в их числе —
+  // без единого кадра анимации. Раз анимации не было, «доиграла» она и не
+  // могла: событие просто не приходит, и filter повисает навсегда. Это
+  // ровно то, что Егор поймал — часть карточек чистилась, часть нет, без
+  // всякой системы: чистились те, что реально проигрывали вход, а не те,
+  // что рендерились сразу видимыми (например уже были в кадре при заходе
+  // на страницу). Таймер — грубее, чем колбэк, зато срабатывает всегда:
+  // ждёт время анимации с запасом и снимает filter принудительно, даже
+  // если Framer его не анимировал.
+  useEffect(() => {
+    if (!active || !blur) return;
+    const id = setTimeout(
+      () => ref.current?.style.removeProperty("filter"),
+      (duration + delay) * 1000 + 60,
+    );
+    return () => clearTimeout(id);
+  }, [active, blur, duration, delay]);
 
   if (reduced) {
     const Plain = PLAIN_TAGS[as];
