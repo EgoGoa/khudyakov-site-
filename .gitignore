@@ -38,3 +38,4 @@ next-env.d.ts
 
 # duplicated copy of public/video/bg-showreel.mp4, kept locally for the standalone demo
 reference/scroll-scrub-demo/assets/
+.env*

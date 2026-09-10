@@ -11,6 +11,7 @@ type AnswerValue = string | string[] | ContactValue | undefined;
 type Answers = Record<string, AnswerValue>;
 
 type Screen = "intro" | "page1" | "page2" | "review" | "sent";
+type SendState = "idle" | "sending" | "error";
 
 const inputClass =
   "w-full rounded-lg border border-paper/15 bg-paper/[0.04] px-4 py-3 text-sm text-paper placeholder:text-paper/35 transition focus:border-glow focus:outline-none";
@@ -57,6 +58,7 @@ export default function BriefForm() {
   const [screen, setScreen] = useState<Screen>("intro");
   const [answers, setAnswers] = useState<Answers>({});
   const [invalid, setInvalid] = useState<string[]>([]);
+  const [sendState, setSendState] = useState<SendState>("idle");
 
   const set = (id: string, value: AnswerValue) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -107,6 +109,37 @@ export default function BriefForm() {
     return `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(lines.join("\n"))}`;
+  };
+
+  const sendBrief = async () => {
+    setSendState("sending");
+    const contact = (answers[
+      (STEPS.find((s) => s.type === "contact") as BriefStep).id
+    ] || {}) as ContactValue;
+    const fields: Record<string, string> = {};
+    STEPS.forEach((step) => {
+      if (step.type === "contact") return;
+      fields[step.title] = formatAnswer(step, answers) || "—";
+    });
+
+    try {
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "brief",
+          name: typeof answers.name === "string" ? answers.name.trim() : "",
+          phone: contact.phone?.trim() || undefined,
+          email: contact.email?.trim(),
+          fields,
+        }),
+      });
+      if (!res.ok) throw new Error("send_failed");
+      setSendState("idle");
+      setScreen("sent");
+    } catch {
+      setSendState("error");
+    }
   };
 
   const hud =
@@ -292,27 +325,33 @@ export default function BriefForm() {
                   >
                     ← Назад
                   </button>
-                  <a
-                    href={contactOk ? mailtoHref() : undefined}
-                    onClick={() => {
-                      if (contactOk) setTimeout(() => setScreen("sent"), 250);
-                    }}
-                    aria-disabled={!contactOk}
+                  <button
+                    type="button"
+                    disabled={!contactOk || sendState === "sending"}
+                    onClick={sendBrief}
                     className={`rounded-full bg-rec px-8 py-3.5 text-sm font-medium text-white transition ${
-                      contactOk
+                      contactOk && sendState !== "sending"
                         ? "hover:bg-rec-light active:scale-95"
                         : "pointer-events-none opacity-40"
                     }`}
                   >
-                    Отправить бриф на почту →
-                  </a>
+                    {sendState === "sending" ? "Отправляем…" : "Отправить бриф на почту →"}
+                  </button>
                 </div>
 
-                <p className="mt-4 max-w-xl text-xs leading-relaxed text-paper/40">
-                  Кнопка откроет черновик письма в вашей почтовой программе,
-                  адресованный на {BRIEF_EMAIL}, с уже готовым текстом брифа —
-                  останется нажать «Отправить».
-                </p>
+                {sendState === "error" ? (
+                  <p className="mt-4 max-w-xl text-sm text-rec">
+                    Не получилось отправить автоматически. Откройте{" "}
+                    <a href={mailtoHref()} className="underline hover:text-paper">
+                      черновик письма
+                    </a>{" "}
+                    и отправьте его на {BRIEF_EMAIL} вручную.
+                  </p>
+                ) : (
+                  <p className="mt-4 max-w-xl text-xs leading-relaxed text-paper/40">
+                    Кнопка отправит бриф нам на {BRIEF_EMAIL} напрямую.
+                  </p>
+                )}
               </div>
             )}
 
@@ -323,16 +362,11 @@ export default function BriefForm() {
                   Запись завершена
                 </div>
                 <h2 className="mt-6 font-display text-3xl uppercase tracking-tight text-paper sm:text-5xl">
-                  Бриф готов к отправке
+                  Бриф отправлен
                 </h2>
                 <p className="mt-4 max-w-xl text-base leading-relaxed text-paper/60">
-                  Мы открыли черновик письма в вашей почте. Если он не появился —
-                  проверьте, назначена ли почтовая программа по умолчанию, или
-                  напишите нам напрямую на{" "}
-                  <a href={`mailto:${BRIEF_EMAIL}`} className="text-glow hover:underline">
-                    {BRIEF_EMAIL}
-                  </a>
-                  .
+                  Мы получили ваш бриф на {BRIEF_EMAIL} и свяжемся с вами в
+                  течение одного рабочего дня.
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <button
