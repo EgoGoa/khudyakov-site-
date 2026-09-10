@@ -30,7 +30,7 @@ body {
 .liquid-glass {
   background: rgba(255, 255, 255, 0.03);
   background-blend-mode: luminosity;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
   border: none;
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
   position: relative;
@@ -1456,7 +1456,7 @@ body {
    flat .btn-neon pills used everywhere else. */
 .btn-glass {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
-  backdrop-filter: blur(21px);
+  backdrop-filter: blur(23px);
   border: 1px solid rgba(255, 255, 255, 0.28);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.2),
     0 10px 30px -10px rgba(0, 0, 0, 0.6);
@@ -1515,7 +1515,7 @@ body {
     rgba(255, 255, 255, 0.02) 62%,
     rgba(255, 255, 255, 0.06) 100%
   );
-  backdrop-filter: blur(21px) saturate(165%) brightness(1.06);
+  backdrop-filter: blur(23px) saturate(165%) brightness(1.06);
   box-shadow:
     /* specular line along the top bevel */ inset 0 1px 0 rgba(255, 255, 255, 0.55),
     /* light bouncing back off the bottom bevel */ inset 0 -1px 0 rgba(255, 255, 255, 0.1),
@@ -1792,7 +1792,7 @@ body {
 
 .c3-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 32px;
   padding: 44px 28px;
@@ -2691,17 +2691,26 @@ body {
    строку, ЖЕЛАЯ БЫ standard, а оставлял webkit-версию — её не читает ни
    Chrome, ни Firefox. Одна строка без вендорного дубля обходит этот баг:
    Safari 16.4+ и все текущие Chromium/Firefox понимают unprefixed-свойство
-   само по себе. blur(23px) — на 15% больше прежних 20px: Егор прошёл три
-   итерации (20% → 30% → финально 15%), прежде чем зафиксировать цифру. Та
-   же прибавка применена и к остальным стеклянным поверхностям сайта
-   (.liquid-glass, .btn-glass, .glass-tile, .c3-card, .glass-strip), раз
-   просьба была «во всех окошках на сайте». */
+   само по себе.
+
+   blur(25px) — финально зафиксированные +25% к прежним 20px. Все более
+   ранние проценты (20% → 30% → 15%) Егор называл, глядя на скриншоты, где
+   backdrop-filter ИЗ-ЗА БАГА ВЫШЕ вообще не рендерился — то есть ни одна
+   из тех цифр не была проверена вживую. Когда баг починили, стало видно:
+   на фото с мягким светом и без резких линий (портрет, боке) даже
+   работающие 23px читаются как лёгкая дымка, а не как стекло — проверено
+   прямым экспериментом (переключала backdrop-filter вкл/выкл на живой
+   карточке поверх лица). Егор увидел разницу и сам назвал предел —
+   «20–25%» — 25px взяты по верхней границе. Та же прибавка применена и к
+   остальным стеклянным поверхностям сайта (.liquid-glass, .btn-glass,
+   .glass-tile, .c3-card, .glass-strip), раз просьба была «во всех окошках
+   на сайте». */
 .glass-panel {
   position: relative;
   background:
     linear-gradient(155deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.012) 55%),
     rgba(11, 11, 16, 0.56);
-  backdrop-filter: blur(23px) saturate(125%);
+  backdrop-filter: blur(25px) saturate(125%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.13),
     inset 0 0 0 1px rgba(255, 255, 255, 0.045),
@@ -2763,7 +2772,7 @@ body {
     rgba(11, 11, 16, 0.42) 78%,
     rgba(11, 11, 16, 0) 100%
   );
-  backdrop-filter: blur(16px) saturate(115%);
+  backdrop-filter: blur(18px) saturate(115%);
 }
 
 /* Лестница карточек в блоке «под чью задачу» на странице направления.
