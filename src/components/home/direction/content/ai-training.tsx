@@ -33,8 +33,8 @@ export const aiTrainingContent: CompactToolContent = {
         обучение AI в 2026-м.</Accent>
       </>
     ),
-    video: "/video/works/belykit-hero.mp4",
-    poster: "/images/works/belykit-hero.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
   stats: [
     { value: "50%+", label: "компаний РФ увеличивают бюджет на обучение AI" },
@@ -77,7 +77,7 @@ export const aiTrainingContent: CompactToolContent = {
       promise: "видно по факту, изменилось ли поведение команды",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { video: "/video/works/belykit-hero.mp4", poster: "/images/works/belykit-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },

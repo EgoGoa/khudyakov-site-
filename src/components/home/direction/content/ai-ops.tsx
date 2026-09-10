@@ -39,8 +39,8 @@ export const aiOpsContent: DirectionContent = {
     // но несёт в кадре наш собственный водяной знак HDKV.PRO и широкие
     // чёрные поля сверху и снизу — на полноэкранном герое читается и то и
     // другое. Здесь отрывок без текста в кадре.
-    video: "/video/works/showreel-2024-mood-hero.mp4",
-    poster: "/images/works/showreel-2024-mood-hero.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
 
   backdrop: ACCENT,
@@ -51,7 +51,7 @@ export const aiOpsContent: DirectionContent = {
     { value: "46%", label: "компаний в России внедряют или тестируют" },
     { value: "2 недели", label: "до первого работающего процесса" },
   ],
-  statsMedia: { gradient: ACCENT, intensity: "medium" },
+  statsMedia: { video: "/video/works/showreel-2024-mood-hero.mp4", poster: "/images/works/showreel-2024-mood-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   taskPrompt: "Что съедает время",
   taskNote:
@@ -365,7 +365,7 @@ export const aiOpsContent: DirectionContent = {
     ],
   },
 
-  assetsMedia: { photo: "/images/stock/ai-wireframe-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+  assetsMedia: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   close: {
     media: { photo: "/images/stock/statue-popart.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full" },

@@ -37,8 +37,8 @@ export const presentationContent: DirectionContent = {
         пришлём структуру фильма и смету в трёх вариантах.
       </>
     ),
-    video: "/video/works/showreel-2018-hero.mp4",
-    poster: "/images/works/showreel-2018-hero.jpg",
+    photo: "/images/stock/stage-hand-neon.webp",
+    photoPosition: "50% 18%",
     // Единственная печатающаяся точка на этой странице. На /content/advertising
     // печатается заголовок процесса — чтобы страницы не повторяли приём.
     typed: "Фильм, который представляет компанию за вас",
@@ -90,7 +90,7 @@ export const presentationContent: DirectionContent = {
       promise: "компания, показанная так, как есть",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { video: "/video/works/showreel-2018-hero.mp4", poster: "/images/works/showreel-2018-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
     media: {
@@ -333,7 +333,7 @@ export const presentationContent: DirectionContent = {
   },
 
   assetsMedia:
-  { photo: "/images/stock/uv-paint-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+  { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   close: {
     media: {

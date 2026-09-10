@@ -44,8 +44,8 @@ export const smmCarouselContent: CompactToolContent = {
         а сохранение сегодня самый сильный сигнал вовлечённости для алгоритмов.
       </>
     ),
-    photo: "/images/stock/books-vs-tech.webp",
-    photoPosition: "center",
+    photo: "/images/stock/smm-phone-bokeh.webp",
+    photoPosition: "75% 45%",
   },
   stats: [
     { value: "0,50–0,55%", label: "средний engagement карусели во 2 кв. 2026" },
@@ -88,7 +88,7 @@ export const smmCarouselContent: CompactToolContent = {
       promise: "Reels и карусели работают в связке — приток и удержание одновременно",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { photo: "/images/stock/books-vs-tech.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/artist-tablet.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, position: "75% 45%" },

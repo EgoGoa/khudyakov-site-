@@ -242,7 +242,7 @@ export const smmReelsContent: CompactToolContent = {
   },
 
   faq: {
-    media: { photo: "/images/stock/dj-neon.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", position: "25% 45%" },
+    media: { photo: "/images/stock/speaker-neon-swirl.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", position: "25% 45%" },
     eyebrow: "FAQ",
     align: "left",
     title: (

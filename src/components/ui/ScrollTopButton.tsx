@@ -85,36 +85,30 @@ export default function ScrollTopButton() {
       // Правый верхний угол ниже шапки. Вертикальный «вайб-рельс» стоит
       // справа по центру экрана (fixed right-2 top-1/2), поэтому по высоте
       // они не встречаются.
-      className={`fixed right-[14px] top-20 z-[64] grid h-9 w-9 place-items-center rounded-full text-paper/80 backdrop-blur-md transition-[opacity,transform,color] duration-500 hover:text-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange sm:top-24 ${
+      //
+      // Без кружка. Первая версия сидела в круглой стеклянной подложке той
+      // же ширины, что свёрнутый вайб-рельс — Егор посмотрел и сказал
+      // прямо: «убери из кружка кнопки, оставь просто пульсирующую
+      // стрелочку, сейчас забирает много внимания на себя». Здесь и так уже
+      // висит рельс той же формы чуть ниже — вторая круглая подложка рядом
+      // читалась как повтор одного и того же элемента. Стрелка без рамки и
+      // фона гораздо тише и не спорит с рельсом за внимание.
+      className={`fixed right-[18px] top-20 z-[64] grid h-9 w-9 place-items-center text-paper/70 transition-[opacity,transform,color] duration-500 hover:text-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange sm:top-24 ${
         shown ? "pointer-events-auto opacity-100" : "pointer-events-none translate-y-2 opacity-0"
       }`}
-      // Кнопка уже вайб-рельса и стоит с ним на одной вертикальной оси.
-      //
-      // Егор попросил её «меньше по размеру, не шире, чем вайп-бар, более
-      // ёмкую»: равная по ширине она читалась как вторая, оборванная секция
-      // того же рельса. 36px против 48 — заметно меньше, и иерархия
-      // восстанавливается: рельс главный, кнопка при нём.
-      //
-      // right-[14px], а не right-2: рельс шириной 48 стоит на right-2, его
-      // центр — в 32px от края, и кнопка 36px попадает на ту же ось только
-      // с этим отступом. По краю они бы не совпали ни левым, ни центром.
-      //
-      // Подложка и кант — ровно значения свёрнутого рельса: разные стёкла у
-      // соседних круглых элементов читаются как разные системы.
-      style={{
-        background: "rgba(7,7,11,0.4)",
-        boxShadow:
-          "inset 0 0 0 1px rgba(255,138,92,0.42), inset 0 0 14px rgba(255,106,61,0.22), inset 0 0 30px rgba(236,72,153,0.14)",
-      }}
     >
       {/* Пульсирует сама стрелка, а не круг: мигающая кнопка целиком
           читается как уведомление об ошибке, а подрагивающая вверх стрелка —
           как подсказка направления. Та же логика, что у указателя над
-          каруселями (DeckPointerArrow). */}
+          каруселями (DeckPointerArrow).
+
+          drop-shadow вместо подложки держит стрелку видимой на любом фоне
+          страницы — светлом кадре или тёмном видео — раз своего стекла под
+          ней больше нет. */}
       <svg
-        className="scroll-top-arrow"
-        width="14"
-        height="14"
+        className="scroll-top-arrow drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]"
+        width="16"
+        height="16"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"

@@ -33,8 +33,8 @@ export const aiCrmContent: CompactToolContent = {
         закрыть. <Accent>Рост конверсии — 30–45% без участия человека.</Accent>
       </>
     ),
-    video: "/video/works/uraltrubodetal.mp4",
-    poster: "/images/works/uraltrubodetal.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
   stats: [
     { value: "70%", label: "рутины в CRM берёт на себя AI" },
@@ -77,7 +77,7 @@ export const aiCrmContent: CompactToolContent = {
       promise: "видно заранее, где стоит дожимать, а где нет",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { video: "/video/works/uraltrubodetal.mp4", poster: "/images/works/uraltrubodetal.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/ink-black.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },

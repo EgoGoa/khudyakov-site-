@@ -44,8 +44,8 @@ export const smmAdsContent: CompactToolContent = {
         воронка ведёт в канал, бота или Mini App — не на лендинг.
       </>
     ),
-    photo: "/images/stock/uv-paint-face.webp",
-    photoPosition: "center",
+    photo: "/images/stock/smm-phone-bokeh.webp",
+    photoPosition: "75% 45%",
   },
   stats: [
     { value: "до 90%", label: "аудитории теряется при переходе на внешний сайт" },
@@ -88,7 +88,7 @@ export const smmAdsContent: CompactToolContent = {
       promise: "бюджет распределяется по тому, что реально конвертит, а не поровну",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { photo: "/images/stock/uv-paint-face.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/flower-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },
@@ -236,7 +236,7 @@ export const smmAdsContent: CompactToolContent = {
   },
 
   faq: {
-    media: { photo: "/images/stock/holo-heads.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light", position: "75% 45%" },
+    media: { photo: "/images/stock/smm-collage-megaphone.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light", position: "75% 45%" },
     eyebrow: "FAQ",
     align: "left",
     title: (

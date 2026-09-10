@@ -45,8 +45,8 @@ export const sitesAssistantContent: CompactToolContent = {
         пока менеджер не освободился.</Accent>
       </>
     ),
-    photo: "/images/stock/night-lights.webp",
-    photoPosition: "center",
+    photo: "/images/stock/hologram-laptop.webp",
+    photoPosition: "55% 40%",
   },
   stats: [
     { value: "+391%", label: "к конверсии при ответе в первую минуту" },
@@ -89,7 +89,7 @@ export const sitesAssistantContent: CompactToolContent = {
       promise: "посетитель находит нужное, не перебирая всё вручную",
     },
   ],
-  taskMedia: { gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" },
+  taskMedia: { photo: "/images/stock/night-lights.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/businesswoman-glasses.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
@@ -197,7 +197,7 @@ export const sitesAssistantContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/stock/hologram-laptop.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
+    media: { photo: "/images/stock/holo-keyboard.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как сайт учится отвечать",

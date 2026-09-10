@@ -33,8 +33,8 @@ export const graphicsContent: DirectionContent = {
         текста</Accent> — и не требует ни площадки, ни съёмочной смены.
       </>
     ),
-    video: "/video/works/showreel-2024-motion-hero.mp4",
-    poster: "/images/works/showreel-2024-motion-hero.jpg",
+    photo: "/images/stock/stage-hand-neon.webp",
+    photoPosition: "50% 18%",
     typed: "Показать то, что не покажет камера",
   },
 
@@ -82,7 +82,7 @@ export const graphicsContent: DirectionContent = {
       promise: "набор элементов, который живёт во всех ваших видео",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { video: "/video/works/showreel-2024-motion-hero.mp4", poster: "/images/works/showreel-2024-motion-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
     media: {
@@ -291,7 +291,7 @@ export const graphicsContent: DirectionContent = {
   },
 
   process: {
-    media: { photo: "/images/stock/businesswoman-office.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light", position: "25% 45%" },
+    media: { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light", position: "25% 45%" },
     eyebrow: "Производство",
     align: "sticky",
     title: (

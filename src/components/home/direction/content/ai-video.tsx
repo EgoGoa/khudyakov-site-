@@ -39,8 +39,8 @@ export const aiVideoContent: DirectionContent = {
         за месяцы</Accent> — там, где это действительно уместно.
       </>
     ),
-    video: "/video/works/showreel-2026-hero.mp4",
-    poster: "/images/works/showreel-2026-hero.jpg",
+    photo: "/images/stock/stage-hand-neon.webp",
+    photoPosition: "50% 18%",
   },
 
   // Единственная страница направления, уходящая в холодную часть палитры:
@@ -88,7 +88,7 @@ export const aiVideoContent: DirectionContent = {
       promise: "картинка уровня съёмки без съёмочной сметы",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { video: "/video/works/showreel-2026-hero.mp4", poster: "/images/works/showreel-2026-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
     media: {
@@ -178,7 +178,7 @@ export const aiVideoContent: DirectionContent = {
   { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: { photo: "/images/stock/stage-hand-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+    media: { photo: "/images/stock/arch-3d-hand.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "Три сценария запуска",
     align: "right",
     title: (

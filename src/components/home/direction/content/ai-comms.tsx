@@ -35,8 +35,8 @@ export const aiCommsContent: CompactToolContent = {
         входящих.
       </>
     ),
-    video: "/video/works/rustech.mp4",
-    poster: "/images/works/rustech.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
   stats: [
     { value: "98,2%", label: "точность отсева спама и фишинга" },
@@ -79,7 +79,7 @@ export const aiCommsContent: CompactToolContent = {
       promise: "типовой вопрос закрывается без менеджера",
     },
   ],
-  taskMedia: { photo: "/images/stock/robot-hand-chip.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
+  taskMedia: { video: "/video/works/rustech.mp4", poster: "/images/works/rustech.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/ai-wavy-text.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },

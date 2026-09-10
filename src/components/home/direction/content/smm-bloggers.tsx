@@ -44,8 +44,8 @@ export const smmBloggersContent: CompactToolContent = {
         не отдельная статья бюджета для больших компаний.
       </>
     ),
-    photo: "/images/stock/ink-black.webp",
-    photoPosition: "center",
+    photo: "/images/stock/smm-phone-bokeh.webp",
+    photoPosition: "75% 45%",
   },
   stats: [
     { value: "94%", label: "блогеров РФ работают с бюджетом до 100 тыс. ₽" },
@@ -88,7 +88,7 @@ export const smmBloggersContent: CompactToolContent = {
       promise: "видно, работает ли формат, прежде чем закладывать его в бюджет постоянно",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { photo: "/images/stock/ink-black.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/night-lights.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },

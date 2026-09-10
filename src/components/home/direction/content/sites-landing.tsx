@@ -50,8 +50,8 @@ export const sitesLandingContent: CompactToolContent = {
         всегда не в дизайне, а в скорости загрузки и длине страницы.
       </>
     ),
-    photo: "/images/stock/devs-night.webp",
-    photoPosition: "30% 45%",
+    photo: "/images/stock/hologram-laptop.webp",
+    photoPosition: "55% 40%",
   },
   stats: [
     { value: "6,6%", label: "средняя конверсия лендинга по рынку" },
@@ -94,7 +94,7 @@ export const sitesLandingContent: CompactToolContent = {
       promise: "решение о большом сайте принимается по цифрам, а не наугад",
     },
   ],
-  taskMedia: { gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" },
+  taskMedia: { photo: "/images/stock/devs-night.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/desk-aerial.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
@@ -241,7 +241,7 @@ export const sitesLandingContent: CompactToolContent = {
   },
 
   faq: {
-    media: { photo: "/images/stock/man-laptop-dark.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
+    media: { photo: "/images/stock/holo-keyboard.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
     eyebrow: "FAQ",
     align: "left",
     title: (

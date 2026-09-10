@@ -34,8 +34,8 @@ export const aiVoiceContent: DirectionContent = {
         выходит вся линейка версий.
       </>
     ),
-    video: "/video/works/maya.mp4",
-    poster: "/images/works/maya.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
 
   backdrop: ACCENT,
@@ -46,7 +46,7 @@ export const aiVoiceContent: DirectionContent = {
     { value: "часы", label: "вместо недель на пакет версий" },
     { value: "голос", label: "спикера сохраняется на всех языках" },
   ],
-  statsMedia: { gradient: ACCENT, intensity: "medium" },
+  statsMedia: { video: "/video/works/maya.mp4", poster: "/images/works/maya.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   taskPrompt: "Что нужно озвучить",
   taskNote:
@@ -362,7 +362,7 @@ export const aiVoiceContent: DirectionContent = {
   assetsMedia: { photo: "/images/stock/surreal-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
 
   close: {
-    media: { photo: "/images/stock/artist-tablet.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full", position: "75% 45%" },
+    media: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Один следующий шаг",
     align: "center",
     title: (

@@ -45,8 +45,8 @@ export const sitesRedesignContent: CompactToolContent = {
         клиенты и недополученная выручка.</Accent>
       </>
     ),
-    photo: "/images/stock/speed-lines-pink.webp",
-    photoPosition: "center",
+    photo: "/images/stock/hologram-laptop.webp",
+    photoPosition: "55% 40%",
   },
   stats: [
     { value: "75%", label: "судят о надёжности компании по дизайну" },
@@ -89,7 +89,7 @@ export const sitesRedesignContent: CompactToolContent = {
       promise: "редизайн не откатывает накопленные позиции в поиске",
     },
   ],
-  taskMedia: { gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" },
+  taskMedia: { photo: "/images/stock/speed-lines-pink.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/robot-hand-white.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },

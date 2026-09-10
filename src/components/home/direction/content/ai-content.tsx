@@ -46,8 +46,8 @@ export const aiContentContent: DirectionContent = {
     // блоков размывается и титры там становятся фактурой, а герой — нет:
     // он идёт резким, поэтому для него годятся только отрывки без текста
     // в кадре.
-    video: "/video/works/ivella.mp4",
-    poster: "/images/works/ivella.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
 
   backdrop: ACCENT,
@@ -58,7 +58,7 @@ export const aiContentContent: DirectionContent = {
     { value: "3 дня", label: "до первой партии карточек" },
     { value: "2026", label: "AI стал базовым инструментом на маркетплейсах" },
   ],
-  statsMedia: { gradient: ACCENT, intensity: "medium" },
+  statsMedia: { video: "/video/works/ivella.mp4", poster: "/images/works/ivella.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   taskPrompt: "Что нужно наполнить",
   taskNote:
@@ -372,7 +372,7 @@ export const aiContentContent: DirectionContent = {
     ],
   },
 
-  assetsMedia: { photo: "/images/stock/businesswoman-glasses.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
+  assetsMedia: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
 
   close: {
     media: { photo: "/images/stock/team-night-office.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full", position: "25% 45%" },

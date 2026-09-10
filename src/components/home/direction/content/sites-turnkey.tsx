@@ -44,8 +44,8 @@ export const sitesTurnkeyContent: CompactToolContent = {
         что превращает визит в сделку.</Accent>
       </>
     ),
-    photo: "/images/stock/platform-speed.webp",
-    photoPosition: "center",
+    photo: "/images/stock/hologram-laptop.webp",
+    photoPosition: "55% 40%",
   },
   stats: [
     { value: "10+", label: "страниц — типовой объём сайта под ключ" },
@@ -88,7 +88,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
       promise: "первый ответ клиенту даёт ассистент, а не тишина до утра",
     },
   ],
-  taskMedia: { gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" },
+  taskMedia: { photo: "/images/stock/platform-speed.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/vr-fitness-white.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light", position: "75% 45%" },

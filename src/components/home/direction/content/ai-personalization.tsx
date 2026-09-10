@@ -34,8 +34,8 @@ export const aiPersonalizationContent: CompactToolContent = {
         сообщение по существу.
       </>
     ),
-    video: "/video/works/carpoint.mp4",
-    poster: "/images/works/carpoint.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
   stats: [
     { value: "57%", label: "маркетологов уже персонализируют контент" },
@@ -78,7 +78,7 @@ export const aiPersonalizationContent: CompactToolContent = {
       promise: "контент меняется вслед за тем, что делает клиент",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { video: "/video/works/carpoint.mp4", poster: "/images/works/carpoint.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/ai-wireframe-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true },
@@ -230,7 +230,7 @@ export const aiPersonalizationContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/stock/robot-hand-chip.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
+    media: { photo: "/images/stock/holo-keyboard.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как одно письмо становится разным",

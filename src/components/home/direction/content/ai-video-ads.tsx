@@ -34,8 +34,8 @@ export const aiVideoAdsContent: DirectionContent = {
         тестировать можно линейку, а не одну ставку.
       </>
     ),
-    video: "/video/works/showreel-2026-hero.mp4",
-    poster: "/images/works/showreel-2026-hero.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
 
   backdrop: ACCENT,
@@ -80,10 +80,10 @@ export const aiVideoAdsContent: DirectionContent = {
       promise: "лицо бренда, которое не надо каждый раз собирать на смену",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { video: "/video/works/showreel-2026-hero.mp4", poster: "/images/works/showreel-2026-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
-    media: { photo: "/images/stock/man-laptop-green.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
+    media: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Когда это выигрывает",
     align: "center",
     title: (
@@ -180,7 +180,7 @@ export const aiVideoAdsContent: DirectionContent = {
   budgetMedia: { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: { photo: "/images/stock/vr-neon-triangle.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "25% 45%" },
+    media: { photo: "/images/stock/ai-wavy-text.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "25% 45%" },
     eyebrow: "Три сценария",
     align: "left",
     title: (

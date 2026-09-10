@@ -33,8 +33,8 @@ export const imageContent: DirectionContent = {
         потом узнают</Accent> на сайте, в соцсетях и при первой встрече.
       </>
     ),
-    video: "/video/works/showreel-2024-mood-hero.mp4",
-    poster: "/images/works/showreel-2024-mood-hero.jpg",
+    photo: "/images/stock/stage-hand-neon.webp",
+    photoPosition: "50% 18%",
     typed: "Настроение, с которым вас запоминают",
   },
 
@@ -82,7 +82,7 @@ export const imageContent: DirectionContent = {
       promise: "фильм, снимающий страх перед первым визитом",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { video: "/video/works/showreel-2024-mood-hero.mp4", poster: "/images/works/showreel-2024-mood-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
     media: {
@@ -167,7 +167,7 @@ export const imageContent: DirectionContent = {
   { gradient: ACCENT, intensity: "medium" },
 
   pricing: {
-    media: { photo: "/images/stock/projector-life.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
+    media: { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Три сценария запуска",
     align: "right",
     title: (
@@ -309,7 +309,7 @@ export const imageContent: DirectionContent = {
   },
 
   assetsMedia:
-  { photo: "/images/stock/holi-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+  { photo: "/images/stock/ink-black.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   close: {
     media: {

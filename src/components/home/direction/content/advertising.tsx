@@ -41,8 +41,8 @@ export const advertisingContent: DirectionContent = {
         пришлём идею и смету.
       </>
     ),
-    video: "/video/works/showreel-2021-hero.mp4",
-    poster: "/images/works/showreel-2021-hero.jpg",
+    photo: "/images/stock/stage-hand-neon.webp",
+    photoPosition: "50% 18%",
   },
 
   // Зеркальная версия градиента соседней страницы: тот же родной для
@@ -90,7 +90,7 @@ export const advertisingContent: DirectionContent = {
       promise: "быстрый ролик, чтобы проверить идею до больших вложений",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { video: "/video/works/showreel-2021-hero.mp4", poster: "/images/works/showreel-2021-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
     media: {
@@ -378,7 +378,7 @@ export const advertisingContent: DirectionContent = {
   },
 
   assetsMedia:
-  { photo: "/images/stock/statue-popart.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+  { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   close: {
     media: {

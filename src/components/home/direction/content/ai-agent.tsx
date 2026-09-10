@@ -55,8 +55,8 @@ export const aiAgentContent: DirectionContent = {
         человек освободился.</Accent>
       </>
     ),
-    video: "/video/works/aishowreel.mp4",
-    poster: "/images/works/aishowreel.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
 
   backdrop: ACCENT,
@@ -67,7 +67,7 @@ export const aiAgentContent: DirectionContent = {
     { value: "46%", label: "компаний в России уже внедряют ИИ-агентов" },
     { value: "7 дней", label: "до первой рабочей версии" },
   ],
-  statsMedia: { gradient: ACCENT, intensity: "medium" },
+  statsMedia: { video: "/video/works/aishowreel.mp4", poster: "/images/works/aishowreel.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   taskPrompt: "Что должен закрыть агент",
   taskNote:
@@ -104,7 +104,7 @@ export const aiAgentContent: DirectionContent = {
   taskMedia: { photo: "/images/stock/ai-wireframe-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   audience: {
-    media: { photo: "/images/stock/robot-hand-chip.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, position: "75% 45%" },
+    media: { photo: "/images/stock/holo-keyboard.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left", panel: true, position: "75% 45%" },
     eyebrow: "Когда это окупается",
     align: "left",
     title: (

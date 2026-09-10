@@ -42,8 +42,8 @@ export const sitesCardContent: CompactToolContent = {
         <Accent>Решение принимается быстрее, чем посетитель прочитал хоть слово текста.</Accent>
       </>
     ),
-    photo: "/images/stock/man-laptop-green.webp",
-    photoPosition: "center",
+    photo: "/images/stock/hologram-laptop.webp",
+    photoPosition: "55% 40%",
   },
   stats: [
     { value: "0,05 сек", label: "формируется первое впечатление от сайта" },
@@ -86,10 +86,10 @@ export const sitesCardContent: CompactToolContent = {
       promise: "структура сразу закладывается под каталог и интеграции",
     },
   ],
-  taskMedia: { gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" },
+  taskMedia: { photo: "/images/stock/man-laptop-green.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
-    media: { photo: "/images/stock/team-ideas.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
+    media: { photo: "/images/stock/holo-keyboard.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Кому подходит",
     align: "left",
     title: (

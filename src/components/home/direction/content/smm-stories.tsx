@@ -47,8 +47,8 @@ export const smmStoriesContent: CompactToolContent = {
         охватный инструмент.
       </>
     ),
-    photo: "/images/stock/stage-hand-neon.webp",
-    photoPosition: "center",
+    photo: "/images/stock/smm-phone-bokeh.webp",
+    photoPosition: "75% 45%",
   },
   stats: [
     { value: "24 часа", label: "жизнь одной истории на платформе" },
@@ -91,7 +91,7 @@ export const smmStoriesContent: CompactToolContent = {
       promise: "истории становятся каналом диалога, а не просто напоминанием о себе",
     },
   ],
-  taskMedia: { gradient: ACCENT, intensity: "medium" },
+  taskMedia: { photo: "/images/stock/stage-hand-neon.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
     media: { photo: "/images/stock/vr-neon-triangle.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", panel: true, position: "25% 45%" },
@@ -140,7 +140,7 @@ export const smmStoriesContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/stock/projector-life.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
+    media: { photo: "/images/stock/smm-collage-megaphone.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -239,7 +239,7 @@ export const smmStoriesContent: CompactToolContent = {
   },
 
   faq: {
-    media: { photo: "/images/stock/surreal-face.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
+    media: { photo: "/images/stock/smm-collage-phone.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "FAQ",
     align: "left",
     title: (

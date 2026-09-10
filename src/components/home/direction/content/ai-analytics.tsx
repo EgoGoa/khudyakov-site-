@@ -33,8 +33,8 @@ export const aiAnalyticsContent: CompactToolContent = {
         месячная отчётность сократилась с 3 дней до 15 минут.</Accent>
       </>
     ),
-    video: "/video/works/atomus.mp4",
-    poster: "/images/works/atomus.jpg",
+    photo: "/images/stock/robot-hand-chip.webp",
+    photoPosition: "50% 22%",
   },
   stats: [
     { value: "3 дня → 15 мин", label: "подготовка отчёта в одном кейсе" },
@@ -269,7 +269,7 @@ export const aiAnalyticsContent: CompactToolContent = {
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { video: "/video/works/atomus.mp4", poster: "/images/works/atomus.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
     eyebrow: "FAQ",
     align: "left",
     title: (
