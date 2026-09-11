@@ -216,7 +216,10 @@ body {
   /* Type metrics ported from the mockup's .headline rule rather than left
      to Tailwind's own scale — inherited by the h1 inside, which drops its
      size, leading and tracking utilities so nothing overrides these. */
-  font-size: clamp(2.1rem, 5.2vw, 3.6rem);
+  /* -30% off the mockup's original clamp — Egor's site-wide ask: chapter
+     and hero titles were eating more vertical room than the copy under
+     them needed. */
+  font-size: clamp(1.47rem, 3.64vw, 2.52rem);
   line-height: 0.98;
   letter-spacing: 0.005em;
 }
@@ -580,6 +583,19 @@ body {
   filter: drop-shadow(0 0 10px rgba(255, 79, 216, 0.4)) drop-shadow(0 0 26px rgba(255, 106, 61, 0.42));
 }
 
+/* Chapter 01's direction cards ("окошки") — on hover the card already
+   glows cyan (.deck-card-glow); the title now repaints in the same
+   magenta→orange gradient as the page's own .kw keywords, so the card
+   itself confirms it's a /content surface instead of just glowing. */
+.content-warm-headings .deck-card-glow:hover .direction-card-title,
+.content-warm-headings .deck-card-glow:focus-visible .direction-card-title {
+  background-image: linear-gradient(90deg, #ff4fd8 0%, #ff6a3d 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 .chapter-neon-cool {
   color: #eafff5;
   text-shadow: 0 0 0.72em rgba(52, 211, 153, 0.4), 0 0 1.39em rgba(16, 185, 129, 0.18),
@@ -618,6 +634,56 @@ body {
   }
 
   .icon-neon-pulse {
+    animation: none;
+  }
+}
+
+/* Team bubble (TeamCard) — the "write to a real person" card. Egor's ask
+   after seeing the first pass live: the pulse must read as a soft green
+   halo breathing off the photo, not a branded ring — and definitely not
+   square. `border-image` was the bug: it does not respect `border-radius`
+   in any browser, so the "ring" rendered with hard corners peeking past the
+   circular photo. box-shadow has no such issue — a spreading, fading
+   box-shadow on a rounded element is round by construction, which is also
+   what gives it the soft diffused edge Egor asked for (a hard-edged ring
+   never reads as "soft"). Animated on the photo's own rounded-full wrapper,
+   not a separate element. */
+@keyframes team-photo-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5), 0 0 0 0 rgba(16, 185, 129, 0.28);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0), 0 0 16px 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0), 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.team-photo-pulse {
+  animation: team-photo-pulse 2.4s ease-out infinite;
+}
+
+@keyframes team-online-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0);
+  }
+}
+
+.team-online-dot {
+  animation: team-online-dot 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-photo-pulse {
+    animation: none;
+  }
+
+  .team-online-dot {
     animation: none;
   }
 }
@@ -1113,8 +1179,409 @@ body {
   animation: btn-neon-outline-pulse 3.6s ease-in-out infinite;
 }
 
+/* The orange twin of .btn-neon-outline-pulse, half a cycle out of phase
+   (animation-delay = half the 3.6s duration) — pairing .btn-neon-cycle on
+   one button with .btn-neon-cycle-warm on its neighbour makes the two take
+   turns lighting up instead of glowing in lockstep. Used on Works.tsx's
+   "Смотреть"/"Обсудить" pair, both flat/transparent .btn-neon pills so the
+   only difference between them is which one is lit and in which colour. */
+@keyframes btn-neon-outline-pulse-warm {
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 0 rgba(255, 106, 61, 0);
+  }
+  50% {
+    border-color: rgba(255, 138, 92, 0.9);
+    box-shadow: 0 0 14px rgba(255, 106, 61, 0.5), 0 0 28px rgba(255, 106, 61, 0.25);
+  }
+}
+
+.btn-neon-cycle-warm {
+  animation: btn-neon-outline-pulse-warm 3.6s ease-in-out infinite;
+  animation-delay: 1.8s;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .btn-neon-cycle {
+  .btn-neon-cycle,
+  .btn-neon-cycle-warm {
+    animation: none;
+  }
+}
+
+/* LeadModal's choice screen ("Заказать звонок" / "Консультация с
+   продюсером") — two solid gradient pills in the two accents the rest of
+   the page already carries (rec→orange for the call CTA everywhere else,
+   glow cyan for the site's default accent), each breathing on its own
+   half-cycle so the pair alternates rather than glowing together. Egor's
+   ask after the first pass read as too uniform: flat, same-colour outline
+   buttons with no life to them. */
+@keyframes lead-choice-pulse-call {
+  0%,
+  100% {
+    box-shadow: 0 4px 20px -6px rgba(245, 49, 11, 0.45);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 8px 32px -4px rgba(245, 49, 11, 0.85), 0 0 30px rgba(255, 138, 92, 0.35);
+    transform: scale(1.015);
+  }
+}
+
+@keyframes lead-choice-pulse-consult {
+  0%,
+  100% {
+    box-shadow: 0 4px 20px -6px rgba(0, 210, 255, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 8px 32px -4px rgba(0, 210, 255, 0.8), 0 0 30px rgba(168, 85, 247, 0.35);
+    transform: scale(1.015);
+  }
+}
+
+.lead-choice-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  border-radius: 999px;
+  padding: 11px 20px;
+  font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #ffffff;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: filter 0.25s ease;
+}
+
+.lead-choice-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.lead-choice-btn:hover {
+  filter: brightness(1.12);
+}
+
+.lead-choice-call {
+  background: linear-gradient(135deg, var(--rec) 0%, var(--orange-bright) 100%);
+  animation: lead-choice-pulse-call 3.2s ease-in-out infinite;
+}
+
+.lead-choice-consult {
+  background: linear-gradient(135deg, #00b8e0 0%, #a855f7 100%);
+  animation: lead-choice-pulse-consult 3.2s ease-in-out infinite;
+  animation-delay: 1.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lead-choice-call,
+  .lead-choice-consult {
+    animation: none;
+  }
+}
+
+/* PromoCard (FaqAside's neighbour on chapter 03) — the one bright,
+   sale-poster-styled surface on an otherwise quiet dark page, per Egor's
+   own reference screenshot: a saturated blue gradient, a bold price, a
+   breathing glow instead of a static border. The AI photo (promo-card-image
+   — a hand holding a glowing AI chip/eye, unambiguous at a glance, unlike
+   the earlier wireframe-face texture) sits under a top-heavy blue tint
+   (promo-card-tint) rather than the card being a flat gradient fill, so the
+   image's own glow stays visible toward the bottom where the copy ends. */
+.promo-card {
+  background: #071026;
+  box-shadow: 0 20px 50px -20px rgba(20, 71, 230, 0.55);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.promo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 26px 60px -18px rgba(20, 71, 230, 0.7);
+}
+
+.promo-card:hover .promo-card-image {
+  opacity: 0.62;
+  transform: scale(1.04);
+}
+
+.promo-card-image {
+  opacity: 0.52;
+  object-position: center 35%;
+  filter: saturate(1.15);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.promo-card-tint {
+  background: linear-gradient(180deg, rgba(20, 71, 230, 0.82) 0%, rgba(14, 33, 82, 0.5) 45%, rgba(7, 16, 38, 0.78) 100%);
+}
+
+/* The card's own border — /content's page colour (magenta→orange, the same
+   ramp `.kw` runs in) breathing around the edge instead of a static grey
+   ring, so the card visibly belongs to this page rather than reading as a
+   generic blue banner that happens to sit on it. Painted as a pseudo-layer
+   with a transparent centre (mask) rather than a plain `border`, so the
+   gradient can actually run around all four sides. */
+.promo-card-border {
+  padding: 1.5px;
+  background: linear-gradient(120deg, #ff4fd8, #ff6a3d, #ff4fd8);
+  background-size: 220% 220%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: promo-card-border-flow 5s ease-in-out infinite;
+}
+
+@keyframes promo-card-border-flow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-card-border {
+    animation: none;
+  }
+}
+
+/* "Акция только в сентябре" — the same magenta→orange gradient as the
+   headline, shifting slowly across the pill instead of sitting flat, so
+   the badge reads as lit rather than just a label. */
+.promo-card-badge {
+  background: linear-gradient(90deg, #ff4fd8, #ff6a3d, #ff4fd8);
+  background-size: 200% 100%;
+  animation: promo-card-badge-shimmer 4s ease-in-out infinite;
+}
+
+@keyframes promo-card-badge-shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-card-badge {
+    animation: none;
+  }
+}
+
+.promo-card-glow {
+  background: radial-gradient(120% 90% at 100% 0%, rgba(96, 165, 250, 0.35), transparent 60%),
+    radial-gradient(90% 70% at 0% 100%, rgba(236, 72, 153, 0.18), transparent 65%);
+  animation: promo-card-breathe 3.6s ease-in-out infinite;
+}
+
+@keyframes promo-card-breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-card-glow {
+    animation: none;
+  }
+}
+
+/* A diagonal highlight sweeping across a button on a loop — "переливается,
+   создаёт желание нажать" (Egor's ask for the promo card's CTA). Layered
+   on top of whatever fill the button already has via ::after, clipped to
+   its own rounded corners, so it works on any button without touching that
+   button's own background. */
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.55) 48%, transparent 66%);
+  transform: translateX(-120%);
+  animation: shimmer-sweep 2.6s ease-in-out infinite;
+}
+
+@keyframes shimmer-sweep {
+  0%,
+  25% {
+    transform: translateX(-120%);
+  }
+  55%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-btn::after {
+    animation: none;
+    display: none;
+  }
+}
+
+/* Trust.tsx's Telegram card — PromoCard's quieter twin on the opposite
+   side of the chapter: same card footprint, a soft Telegram-blue glow
+   instead of PromoCard's loud photo+gradient, since this one isn't a sale. */
+.telegram-cta-glow {
+  background: radial-gradient(90% 70% at 0% 0%, rgba(38, 165, 228, 0.16), transparent 65%);
+}
+
+/* PromoCard's optional `glow` prop (Trust.tsx, under the five reasons) — an
+   external box-shadow breathing in the card's own magenta→orange pair, the
+   same slow cadence and easing as assistant-bar-glow below it on the page,
+   so the two read as one system rather than two different pulses. Painted
+   as a box-shadow rather than another inset layer (promo-card-glow already
+   owns that) so it actually escapes the card's rounded edge instead of
+   staying trapped by its own overflow-hidden. */
+@keyframes promo-card-pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 22px 1px rgba(255, 79, 216, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 30px 3px rgba(255, 106, 61, 0.3);
+  }
+}
+
+.promo-card-pulse-glow {
+  animation: promo-card-pulse-glow 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-card-pulse-glow {
+    animation: none;
+  }
+}
+
+/* PromoCard's "cyan" palette (Process.tsx, chapter 05's image-video offer)
+   — the same sale-banner mechanic as the warm magenta→orange card on
+   chapter 03, repainted in the site's own cyan→indigo so two September
+   offers on the same page don't read as one banner copy-pasted twice.
+   Each rule below repaints exactly the layer its warm counterpart above
+   paints, nothing more. */
+.promo-card-cyan {
+  background: #051826;
+  box-shadow: 0 20px 50px -20px rgba(0, 180, 216, 0.5);
+}
+
+.promo-card-cyan:hover {
+  box-shadow: 0 26px 60px -18px rgba(0, 180, 216, 0.65);
+}
+
+.promo-card-cyan .promo-card-tint {
+  background: linear-gradient(180deg, rgba(0, 150, 190, 0.8) 0%, rgba(10, 40, 70, 0.5) 45%, rgba(5, 18, 30, 0.78) 100%);
+}
+
+.promo-card-cyan .promo-card-border {
+  background: linear-gradient(120deg, #00d2ff, #6a5cff, #00d2ff);
+  background-size: 220% 220%;
+}
+
+.promo-card-cyan .promo-card-badge {
+  background: linear-gradient(90deg, #00d2ff, #6a5cff, #00d2ff);
+  background-size: 200% 100%;
+}
+
+.promo-card-cyan .promo-card-glow {
+  background: radial-gradient(120% 90% at 100% 0%, rgba(106, 92, 255, 0.35), transparent 60%),
+    radial-gradient(90% 70% at 0% 100%, rgba(0, 210, 255, 0.2), transparent 65%);
+}
+
+.promo-card-title-cyan {
+  background-image: linear-gradient(90deg, #00d2ff 0%, #6a5cff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.4)) drop-shadow(0 0 22px rgba(106, 92, 255, 0.4));
+}
+
+@keyframes promo-card-pulse-glow-cyan {
+  0%,
+  100% {
+    box-shadow: 0 0 22px 1px rgba(0, 210, 255, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 30px 3px rgba(106, 92, 255, 0.3);
+  }
+}
+
+.promo-card-pulse-glow-cyan {
+  animation: promo-card-pulse-glow-cyan 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-card-pulse-glow-cyan {
+    animation: none;
+  }
+}
+
+/* BlockAssistant's search bar (Trust.tsx, under the chapter header) — the
+   mic badge breathes on its own even at rest, so the bar reads as an
+   invitation rather than a plain disabled-looking input. */
+@keyframes assistant-mic-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(0, 210, 255, 0);
+  }
+}
+
+.assistant-mic {
+  animation: assistant-mic-pulse 2.4s ease-in-out infinite;
+}
+
+/* The bar's own border/glow breathes in /content's page colour (the same
+   magenta→orange pair .content-warm-headings runs its keywords in) rather
+   than staying a plain static ring — a slow, smooth cycle so it reads as
+   alive without competing with the mic's own faster pulse. */
+@keyframes assistant-bar-glow {
+  0%,
+  100% {
+    border-color: rgba(255, 79, 216, 0.45);
+    box-shadow: 0 0 18px rgba(255, 79, 216, 0.18);
+  }
+  50% {
+    border-color: rgba(255, 106, 61, 0.5);
+    box-shadow: 0 0 22px rgba(255, 106, 61, 0.22);
+  }
+}
+
+.assistant-bar {
+  border: 1px solid rgba(255, 79, 216, 0.45);
+  animation: assistant-bar-glow 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assistant-bar {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assistant-mic {
     animation: none;
   }
 }
@@ -1291,6 +1758,31 @@ body {
   }
 }
 
+/* /content's consult card (DirectionsGrid's ConsultCard) — a slow breathing
+   glow in the page's own rec→orange-bright red, on the whole card rather
+   than just its pill. Both shadow layers carry blur and no spread, so this
+   is pure glow — an unblurred spread ring (0 blur, N spread) paints as a
+   hard rectangular outline around the card's rounded corners, which read as
+   an unwanted border rather than light. */
+@keyframes consult-card-pulse {
+  0%, 100% {
+    box-shadow: 0 10px 30px -8px rgba(245, 49, 11, 0.35), 0 0 26px 4px rgba(255, 138, 92, 0.2);
+  }
+  50% {
+    box-shadow: 0 16px 44px -6px rgba(245, 49, 11, 0.6), 0 0 48px 10px rgba(255, 138, 92, 0.4);
+  }
+}
+
+.consult-card-pulse {
+  animation: consult-card-pulse 3.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consult-card-pulse {
+    animation: none;
+  }
+}
+
 .ai-cool-headings .bg-orange\/15 {
   background-color: rgba(52, 211, 153, 0.15);
 }
@@ -1444,6 +1936,371 @@ body {
 
 .content-warm-headings .c3-card-pro:hover {
   border-color: rgba(255, 106, 61, 0.75);
+}
+
+/* Per-tier glow cards for /content's own pricing row (Close.tsx passes
+   `tier-glow-0/1/2` only when `active === "content"` — /ai, /sites, /smm
+   keep the plain shared .c3-card look). Each tier gets its own colour: warm
+   orange for the entry tier, the page's own magenta for the recommended
+   middle tier (doubling up with .c3-card-pro above), and a cool violet for
+   the top tier so the row reads as three distinct choices rather than one
+   colour repeated three times. Hover brightens the glow and grows the card
+   in place — the same 0.6s Apple-style ease the rest of the site's cards
+   already use for their own hover lift, so this reads as the same motion
+   system, not a new one. */
+.content-warm-headings .tier-glow-0 {
+  border-color: rgba(255, 122, 61, 0.35);
+  box-shadow: 0 0 0 1px rgba(255, 122, 61, 0.08), 0 0 32px -8px rgba(255, 122, 61, 0.35);
+}
+
+/* !important on `transform` in the three hover rules below: Close.tsx wraps
+   each card in a framer-motion `motion.div` whose entrance animation leaves
+   `style="transform: none"` on the element once it settles. An inline style
+   always wins over a class selector regardless of specificity, so without
+   !important here the hover scale/lift would be silently dropped. */
+.content-warm-headings .tier-glow-0:hover {
+  border-color: rgba(255, 122, 61, 0.75);
+  box-shadow: 0 0 0 1px rgba(255, 122, 61, 0.16), 0 0 56px -6px rgba(255, 122, 61, 0.65);
+  transform: translateY(-10px) scale(1.035) !important;
+}
+
+.content-warm-headings .tier-glow-1 {
+  border-color: rgba(255, 79, 216, 0.4);
+  box-shadow: 0 0 0 1px rgba(255, 79, 216, 0.1), 0 0 36px -8px rgba(255, 79, 216, 0.45);
+}
+
+.content-warm-headings .tier-glow-1:hover {
+  border-color: rgba(255, 79, 216, 0.85);
+  box-shadow: 0 0 0 1px rgba(255, 79, 216, 0.2), 0 0 64px -6px rgba(255, 79, 216, 0.75);
+  transform: translateY(-10px) scale(1.045) !important;
+}
+
+.content-warm-headings .tier-glow-2 {
+  border-color: rgba(139, 92, 246, 0.35);
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.08), 0 0 32px -8px rgba(139, 92, 246, 0.35);
+}
+
+.content-warm-headings .tier-glow-2:hover {
+  border-color: rgba(139, 92, 246, 0.75);
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.16), 0 0 56px -6px rgba(139, 92, 246, 0.65);
+  transform: translateY(-10px) scale(1.035) !important;
+}
+
+/* Name + price as the card's own subheadings — the brief asked for both to
+   read as big accented type, not the previous small semibold price line
+   under a 1.9rem name. Scoped to /content only; /ai, /sites, /smm keep
+   .c3-tier-large's original size since their own Close call doesn't pass
+   these tier-glow classes. */
+.content-warm-headings .tier-glow-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 6px;
+}
+
+.content-warm-headings .tier-glow-0 .tier-glow-price {
+  color: #ff9d6e;
+}
+
+.content-warm-headings .tier-glow-1 .tier-glow-price {
+  color: #ff8bec;
+}
+
+.content-warm-headings .tier-glow-2 .tier-glow-price {
+  color: #b79bff;
+}
+
+/* Tier name ("Стартовый"/"Профессиональный"/"Премиальный") in the site's own
+   display face instead of the default body font, the tagline above it
+   shrunk a notch and turned solid white (was a dim 45%-opacity grey), and
+   the feature checklist text turned solid white too (was 85%-opacity) — per
+   Egor's standing rule that body copy reads white with explicit accents,
+   never a washed-out grey. */
+.content-warm-headings .c3-tier-large {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+}
+
+.content-warm-headings .c3-tier-small {
+  font-size: 0.68rem;
+  color: #fff;
+}
+
+.content-warm-headings .c3-list li {
+  color: #fff;
+}
+
+/* The two non-recommended tiers' "Выбрать план" button stays the flat white
+   pill (.bg-paper) but picks up its own card's glow on hover, so the button
+   reads as part of that card rather than a generic control shared by all
+   three. */
+.content-warm-headings .tier-glow-btn-0:hover {
+  box-shadow: 0 8px 24px -8px rgba(255, 122, 61, 0.55);
+}
+
+.content-warm-headings .tier-glow-btn-2:hover {
+  box-shadow: 0 8px 24px -8px rgba(139, 92, 246, 0.55);
+}
+
+/* /ai's own tier-glow set (InteractiveTierCard.tsx) — same mechanism as
+   /content above, recoloured into the page's lime→emerald→teal family: lime
+   for the entry tier, emerald for the recommended middle tier (doubling up
+   with .ai-cool-headings .c3-card-pro, same pairing /content uses), and a
+   cooler teal for the top tier so the row still reads as three distinct
+   choices rather than one hue repeated three times. */
+.ai-cool-headings .tier-glow-0 {
+  border-color: rgba(200, 241, 105, 0.35);
+  box-shadow: 0 0 0 1px rgba(200, 241, 105, 0.08), 0 0 32px -8px rgba(200, 241, 105, 0.35);
+}
+
+.ai-cool-headings .tier-glow-0:hover {
+  border-color: rgba(200, 241, 105, 0.75);
+  box-shadow: 0 0 0 1px rgba(200, 241, 105, 0.16), 0 0 56px -6px rgba(200, 241, 105, 0.65);
+  transform: translateY(-10px) scale(1.035) !important;
+}
+
+.ai-cool-headings .tier-glow-1 {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.1), 0 0 36px -8px rgba(16, 185, 129, 0.45);
+}
+
+.ai-cool-headings .tier-glow-1:hover {
+  border-color: rgba(16, 185, 129, 0.85);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2), 0 0 64px -6px rgba(16, 185, 129, 0.75);
+  transform: translateY(-10px) scale(1.045) !important;
+}
+
+.ai-cool-headings .tier-glow-2 {
+  border-color: rgba(45, 212, 191, 0.35);
+  box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.08), 0 0 32px -8px rgba(45, 212, 191, 0.35);
+}
+
+.ai-cool-headings .tier-glow-2:hover {
+  border-color: rgba(45, 212, 191, 0.75);
+  box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.16), 0 0 56px -6px rgba(45, 212, 191, 0.65);
+  transform: translateY(-10px) scale(1.035) !important;
+}
+
+.ai-cool-headings .tier-glow-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ai-cool-headings .tier-glow-0 .tier-glow-price {
+  color: #c8f169;
+}
+
+.ai-cool-headings .tier-glow-1 .tier-glow-price {
+  color: #34d399;
+}
+
+.ai-cool-headings .tier-glow-2 .tier-glow-price {
+  color: #5eead4;
+}
+
+.ai-cool-headings .c3-tier-large {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+}
+
+.ai-cool-headings .c3-tier-small {
+  font-size: 0.68rem;
+  color: #fff;
+}
+
+.ai-cool-headings .c3-list li {
+  color: #fff;
+}
+
+.ai-cool-headings .tier-glow-btn-0:hover {
+  box-shadow: 0 8px 24px -8px rgba(200, 241, 105, 0.55);
+}
+
+.ai-cool-headings .tier-glow-btn-2:hover {
+  box-shadow: 0 8px 24px -8px rgba(45, 212, 191, 0.55);
+}
+
+/* /sites' own tier-glow set (SitesClose.tsx). /sites never repainted the
+   default magenta→cyan `.kw` gradient (only the heading glow itself runs
+   warm — see .chapter-neon-warm above), so those are already this page's
+   own two accent colours; the entry tier is /sites' own PILL orange
+   instead, giving the same warm/warm-cool/cool spread /content uses. */
+.sites-warm-headings .bg-rec {
+  background-image: linear-gradient(180deg, #ff8a5f 0%, #f0512a 100%);
+  background-color: transparent;
+  color: #1a0a04;
+}
+
+.sites-warm-headings .hover\:bg-rec-light:hover {
+  filter: brightness(1.1);
+}
+
+.sites-warm-headings .c3-card-pro {
+  background: linear-gradient(135deg, rgba(255, 79, 216, 0.1), rgba(0, 0, 0, 0.2));
+  border-color: rgba(240, 81, 42, 0.45);
+}
+
+.sites-warm-headings .c3-card-pro:hover {
+  border-color: rgba(240, 81, 42, 0.75);
+}
+
+.sites-warm-headings .tier-glow-0 {
+  border-color: rgba(255, 138, 95, 0.35);
+  box-shadow: 0 0 0 1px rgba(255, 138, 95, 0.08), 0 0 32px -8px rgba(255, 138, 95, 0.35);
+}
+
+.sites-warm-headings .tier-glow-0:hover {
+  border-color: rgba(255, 138, 95, 0.75);
+  box-shadow: 0 0 0 1px rgba(255, 138, 95, 0.16), 0 0 56px -6px rgba(255, 138, 95, 0.65);
+  transform: translateY(-10px) scale(1.035) !important;
+}
+
+.sites-warm-headings .tier-glow-1 {
+  border-color: rgba(255, 79, 216, 0.4);
+  box-shadow: 0 0 0 1px rgba(255, 79, 216, 0.1), 0 0 36px -8px rgba(255, 79, 216, 0.45);
+}
+
+.sites-warm-headings .tier-glow-1:hover {
+  border-color: rgba(255, 79, 216, 0.85);
+  box-shadow: 0 0 0 1px rgba(255, 79, 216, 0.2), 0 0 64px -6px rgba(255, 79, 216, 0.75);
+  transform: translateY(-10px) scale(1.045) !important;
+}
+
+.sites-warm-headings .tier-glow-2 {
+  border-color: rgba(0, 210, 255, 0.35);
+  box-shadow: 0 0 0 1px rgba(0, 210, 255, 0.08), 0 0 32px -8px rgba(0, 210, 255, 0.35);
+}
+
+.sites-warm-headings .tier-glow-2:hover {
+  border-color: rgba(0, 210, 255, 0.75);
+  box-shadow: 0 0 0 1px rgba(0, 210, 255, 0.16), 0 0 56px -6px rgba(0, 210, 255, 0.65);
+  transform: translateY(-10px) scale(1.035) !important;
+}
+
+.sites-warm-headings .tier-glow-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 6px;
+}
+
+.sites-warm-headings .tier-glow-0 .tier-glow-price {
+  color: #ff9d6e;
+}
+
+.sites-warm-headings .tier-glow-1 .tier-glow-price {
+  color: #ff8bec;
+}
+
+.sites-warm-headings .tier-glow-2 .tier-glow-price {
+  color: #5be0ff;
+}
+
+.sites-warm-headings .c3-tier-large {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+}
+
+.sites-warm-headings .c3-tier-small {
+  font-size: 0.68rem;
+  color: #fff;
+}
+
+.sites-warm-headings .c3-list li {
+  color: #fff;
+}
+
+.sites-warm-headings .tier-glow-btn-0:hover {
+  box-shadow: 0 8px 24px -8px rgba(255, 138, 95, 0.55);
+}
+
+.sites-warm-headings .tier-glow-btn-2:hover {
+  box-shadow: 0 8px 24px -8px rgba(0, 210, 255, 0.55);
+}
+
+/* /smm's own tier-glow set (SmmClose.tsx) — violet→sky is already this
+   page's own accent (see .smm-violet-headings .kw and .c3-card-pro above);
+   the top tier adds a fuchsia third so the row spans sky→violet→fuchsia
+   instead of repeating the same two hues. */
+.smm-violet-headings .bg-rec {
+  background-image: linear-gradient(180deg, #c084fc 0%, #8b3ff0 100%);
+  background-color: transparent;
+  color: #fff;
+}
+
+.smm-violet-headings .hover\:bg-rec-light:hover {
+  filter: brightness(1.1);
+}
+
+.smm-violet-headings .tier-glow-0 {
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.08), 0 0 32px -8px rgba(56, 189, 248, 0.35);
+}
+
+.smm-violet-headings .tier-glow-0:hover {
+  border-color: rgba(56, 189, 248, 0.75);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.16), 0 0 56px -6px rgba(56, 189, 248, 0.65);
+  transform: translateY(-10px) scale(1.035) !important;
+}
+
+.smm-violet-headings .tier-glow-1 {
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.1), 0 0 36px -8px rgba(168, 85, 247, 0.45);
+}
+
+.smm-violet-headings .tier-glow-1:hover {
+  border-color: rgba(168, 85, 247, 0.85);
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.2), 0 0 64px -6px rgba(168, 85, 247, 0.75);
+  transform: translateY(-10px) scale(1.045) !important;
+}
+
+.smm-violet-headings .tier-glow-2 {
+  border-color: rgba(232, 121, 249, 0.35);
+  box-shadow: 0 0 0 1px rgba(232, 121, 249, 0.08), 0 0 32px -8px rgba(232, 121, 249, 0.35);
+}
+
+.smm-violet-headings .tier-glow-2:hover {
+  border-color: rgba(232, 121, 249, 0.75);
+  box-shadow: 0 0 0 1px rgba(232, 121, 249, 0.16), 0 0 56px -6px rgba(232, 121, 249, 0.65);
+  transform: translateY(-10px) scale(1.035) !important;
+}
+
+.smm-violet-headings .tier-glow-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 6px;
+}
+
+.smm-violet-headings .tier-glow-0 .tier-glow-price {
+  color: #7dd3fc;
+}
+
+.smm-violet-headings .tier-glow-1 .tier-glow-price {
+  color: #d8b4fe;
+}
+
+.smm-violet-headings .tier-glow-2 .tier-glow-price {
+  color: #f0abfc;
+}
+
+.smm-violet-headings .c3-tier-large {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+}
+
+.smm-violet-headings .c3-tier-small {
+  font-size: 0.68rem;
+  color: #fff;
+}
+
+.smm-violet-headings .c3-list li {
+  color: #fff;
+}
+
+.smm-violet-headings .tier-glow-btn-0:hover {
+  box-shadow: 0 8px 24px -8px rgba(56, 189, 248, 0.55);
+}
+
+.smm-violet-headings .tier-glow-btn-2:hover {
+  box-shadow: 0 8px 24px -8px rgba(232, 121, 249, 0.55);
 }
 
 /* Frosted-glass pill — a real pane of glass rather than a flat fill: a
@@ -1944,6 +2801,53 @@ body {
 .c3-card-dense .c3-check svg {
   width: 9px;
   height: 9px;
+}
+
+/* Process's six step cards (chapter 05, "PRO хронология"/"процесс" — shared
+   by /content, /ai, /sites, /smm, each with its own step text). On hover a
+   card lifts, grows slightly and glows in the page's own accent instead of
+   the flat static box it was — the same lift/scale language the pricing
+   tier cards above already use, so a visitor moving from one chapter to the
+   next reads it as one motion system rather than two.
+
+   !important on `transform` in the hover rule: Appear wraps each card in a
+   framer-motion element that leaves an inline `transform` style once its
+   entrance animation settles (see Appear.tsx), and an inline style always
+   wins over a plain class selector regardless of specificity — without
+   !important the hover lift/scale would be silently dropped, exactly the
+   bug already found and fixed the same way on Close's tier cards. */
+.process-step-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.6s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-step-card:hover {
+  transform: translateY(-8px) scale(1.03) !important;
+  background-color: rgba(20, 22, 30, 0.6);
+  border-color: rgba(0, 210, 255, 0.45);
+  box-shadow: 0 0 0 1px rgba(0, 210, 255, 0.1), 0 24px 48px -20px rgba(0, 210, 255, 0.45);
+}
+
+.content-warm-headings .process-step-card:hover {
+  border-color: rgba(255, 106, 61, 0.5);
+  box-shadow: 0 0 0 1px rgba(255, 79, 216, 0.12), 0 24px 48px -18px rgba(255, 106, 61, 0.5);
+}
+
+.ai-cool-headings .process-step-card:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 0 1px rgba(200, 241, 105, 0.12), 0 24px 48px -18px rgba(16, 185, 129, 0.5);
+}
+
+.sites-warm-headings .process-step-card:hover {
+  border-color: rgba(255, 106, 61, 0.5);
+  box-shadow: 0 0 0 1px rgba(255, 106, 61, 0.12), 0 24px 48px -18px rgba(255, 106, 61, 0.5);
+}
+
+.smm-violet-headings .process-step-card:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.12), 0 24px 48px -18px rgba(56, 189, 248, 0.45);
 }
 
 @media (max-width: 1024px) {
@@ -2549,15 +3453,13 @@ body {
    light it up and nudge it forward, so the whole surface reads as one
    button even where it's built from a link sitting behind plain text. */
 .deck-card-glow {
-  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 320ms ease, border-color 320ms ease;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 320ms ease;
 }
 
 .deck-card-glow:hover,
 .deck-card-glow:focus-visible {
   transform: scale(1.035);
-  border-color: rgba(var(--card-glow-rgb), 0.6);
   box-shadow:
-    0 0 0 1px rgba(var(--card-glow-rgb), 0.5),
     0 0 40px 6px rgba(var(--card-glow-rgb), 0.4),
     0 28px 70px -24px rgba(0, 0, 0, 0.85);
 }

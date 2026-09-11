@@ -91,18 +91,18 @@ export default function ContentServicePage() {
           // (the deck can't scroll a chapter internally on desktop — see
           // CinematicStage's paneRoom comment). A smaller title reclaims the
           // header space instead of shrinking the tiles themselves.
-          titleClassName="text-4xl sm:text-5xl lg:text-6xl xl:text-6xl"
-          // Sits behind the title's left half (lower in the DOM/paint order
-          // than the h2 below it, so the glow shows through around the
-          // letters rather than covering them) rather than beside it.
+          titleClassName="text-[1.575rem] sm:text-[2.1rem] lg:text-[2.625rem] xl:text-[2.625rem]"
+          // Was 216px sitting squarely behind "Наши" — same fix as chapter
+          // 01's cluster: pulled up above the title and shrunk+dimmed so it
+          // reads as a corner accent instead of a patch over the word.
           decor={
             <ContentDecoIcon
               src="/images/icons/content/process.png"
-              size={216}
+              size={205}
               rotate={-10}
               variant={2}
               z={-1}
-              className="left-[20%] -top-10"
+              className="left-[5%] top-12 opacity-70"
             />
           }
         >

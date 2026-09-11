@@ -1,6 +1,13 @@
 export type Service = {
   title: string;
   description: string;
+  /** Draft copy for Offer.tsx's per-service widget — Egor's own numbers
+   *  haven't replaced these yet, so treat every value here as a
+   *  placeholder pending his review, not published pricing. */
+  budget?: string;
+  timeline?: string;
+  /** Who this service actually fits — one short sentence. */
+  audience?: string;
 };
 
 export type Work = {

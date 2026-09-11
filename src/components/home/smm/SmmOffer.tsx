@@ -6,6 +6,8 @@ import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 03 of /smm — "что делаем".
 //
@@ -59,6 +61,16 @@ export default function SmmOffer() {
         }
         primary={{ href: "/brief", label: "Обсудить формат" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
+        askCard={
+          <TeamAskCard
+            member={TEAM.tanya}
+            question="Привет, какой формат нужен?"
+            pitch="Сторис, рилс, карусели или комплекс — подберу под нишу и бюджет."
+            actionLabel="Обсудить формат"
+            href="/brief"
+            compact
+          />
+        }
       >
         {/* The glass panel (SMM_PANEL) used to render statically, popping in
             with the chapter's own quick wipe well before the rows cascading

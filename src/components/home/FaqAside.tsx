@@ -1,6 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+// Smooth open/close for the answer text below — Egor's ask, "в стиле
+// Apple": animating to height "auto" (framer-motion measures it) rather
+// than the plain mount/unmount this used to be, with the same easeOutExpo-
+// ish curve CinematicSection's own chapter transitions use, so every open
+// interaction on the page settles the same way.
+const ANSWER_EASE = [0.22, 1, 0.36, 1] as const;
 
 // Fills the empty desktop-only margin beside the "Why us" reasons — a short
 // FAQ answers the concrete questions a visitor has before they'll act on any
@@ -90,37 +98,44 @@ export default function FaqAside() {
 
   return (
     <div>
-      <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
-        FAQ · до старта
-      </span>
-
-      <h3 className="mt-4 font-display text-2xl uppercase leading-[0.95] tracking-tight text-paper">
+      {/* The "FAQ · до старта" badge and the subtitle both moved out —
+          Egor's ask: the badge now sits above this card, level with the
+          search bar (see Trust.tsx), and the subtitle just went (it wasn't
+          saying anything the title didn't already). Removing both is most
+          of what makes this card short enough to sit level with the five
+          reasons opposite it. */}
+      <h3 className="font-display text-lg uppercase leading-[0.95] tracking-tight text-paper">
         Отвечаем на вопросы до старта
       </h3>
-      <p className="mt-2.5 text-xs leading-relaxed text-paper/55">
-        Без общих формулировок — про бюджет, сроки и процесс.
-      </p>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {CATEGORIES.map((cat, i) => (
-          <button
-            key={cat.label}
-            type="button"
-            onClick={() => selectCategory(i)}
-            aria-pressed={category === i}
-            className={`rounded-full border px-3 py-1.5 text-[11px] font-medium leading-none transition ${
-              category === i
-                ? "border-orange bg-orange text-white"
-                : "border-paper/20 text-paper/60 hover:border-paper/40 hover:text-paper"
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
+      {/* Collapses to just the active pill while an answer is open — Egor's
+          ask: an open answer needs the room the other three tabs were
+          taking, not a scrollbar. Closing the answer brings the full row
+          back. This (not a fixed height + internal scroll, tried and
+          rejected) is what keeps the card's total height constant without
+          ever showing a scroll affordance. */}
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {CATEGORIES.map((cat, i) => {
+          if (open !== null && i !== category) return null;
+          return (
+            <button
+              key={cat.label}
+              type="button"
+              onClick={() => selectCategory(i)}
+              aria-pressed={category === i}
+              className={`rounded-full border px-3 py-1.5 text-[11px] font-medium leading-none transition ${
+                category === i
+                  ? "border-orange bg-orange text-white shadow-[0_0_16px_rgba(255,106,61,0.45)]"
+                  : "border-paper/20 text-paper/60 hover:border-paper/40 hover:text-paper"
+              }`}
+            >
+              {cat.label}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="mt-4 border-t border-paper/10">
+      <div className="mt-3 border-t border-paper/10">
         {CATEGORIES[category].items.map((item, i) => {
           const isOpen = open === i;
           return (
@@ -129,7 +144,7 @@ export default function FaqAside() {
                 type="button"
                 onClick={() => setOpen(isOpen ? null : i)}
                 aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-3 py-3.5 text-left"
+                className="flex w-full items-center justify-between gap-3 py-2.5 text-left"
               >
                 <span className="text-sm font-medium leading-snug text-paper">{item.q}</span>
                 <span
@@ -141,9 +156,20 @@ export default function FaqAside() {
                   +
                 </span>
               </button>
-              {isOpen && (
-                <p className="max-w-sm pb-4 text-xs leading-relaxed text-paper/55">{item.a}</p>
-              )}
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    key="answer"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: ANSWER_EASE }}
+                    className="max-w-sm overflow-hidden"
+                  >
+                    <p className="pb-3 text-xs leading-relaxed text-paper/55">{item.a}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}

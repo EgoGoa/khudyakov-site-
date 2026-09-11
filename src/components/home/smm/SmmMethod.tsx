@@ -5,6 +5,8 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmChapterLayout from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 02 of /smm — "продюсерский центр, не подрядчик".
 //
@@ -111,6 +113,15 @@ export default function SmmMethod() {
         }
         primary={{ href: "/smm/cases", label: "Смотреть кейсы" }}
         secondary={{ href: "/brief", label: "Обсудить задачу" }}
+        askCard={
+          <TeamAskCard
+            member={TEAM.tanya}
+            question="Привет, что входит в ведение?"
+            pitch="5 шагов: аудит → стратегия → контент → таргет → отчёт. Веду сама."
+            actionLabel="Уточнить систему ведения"
+            compact
+          />
+        }
       >
         <Appear from="right" delay={BEAT.content} blurPx={18}>
           <div className="overflow-x-auto rounded-2xl border border-white/[0.12] bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150">

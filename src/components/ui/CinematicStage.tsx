@@ -108,6 +108,13 @@ const HOLD_BACK_SECONDS = 0.12;
 // for, so one physical flick cannot cascade through several chapters.
 const WHEEL_THRESHOLD = 12; // px of accumulated deltaY that counts as a flick
 const WHEEL_RESET_MS = 120; // trackpads fire many tiny events — coalesce them
+// How long scrolling must sit quiet before the safety-net full resync below
+// (armSettleSync) is allowed to fire. Deliberately longer than
+// WHEEL_RESET_MS: that one only coalesces a single flick's tiny events, but
+// this has to stay dormant through an entire multi-chapter scroll session,
+// re-arming on every scroll event, and only fire once the visitor has
+// actually stopped.
+const ACTIVE_INDEX_SETTLE_MS = 320;
 const SWIPE_THRESHOLD = 36; // px of touch travel that counts as a swipe
 const MOMENTUM_MS = 220;
 const STEP_MS = 420; // the glide from one chapter to the next
@@ -310,6 +317,16 @@ export default function CinematicStage({
       lock = Math.max(lock, performance.now() + ms);
     };
 
+    // A CenterModal-based overlay (LeadModal, WelcomeOverlay, ServiceMenuOverlay,
+    // VibeRail) locks body scroll via useBodyScrollLock while it's open — see
+    // that hook. This deck's own wheel/touch/key listeners sit on `window`
+    // with `{ passive: false }` so they can preventDefault, which meant they
+    // kept firing (and swallowing the gesture) even while a modal was open on
+    // top: scrolling inside the modal instead stepped the chapter underneath
+    // it. Bailing out here whenever the body is locked hands every gesture
+    // back to whatever's actually on screen — the modal's own scroll area.
+    const scrollLocked = () => document.body.style.overflow === "hidden";
+
     // Is the deck the thing on screen right now?
     const engaged = () => {
       const wrap = wrapRef.current;
@@ -509,6 +526,7 @@ export default function CinematicStage({
     registerGoTo(goToId, firstChapterId);
 
     const onWheel = (e: WheelEvent) => {
+      if (scrollLocked()) return;
       const isEngagedNow = engaged();
       if (!isEngagedNow) {
         wasEngaged = false;
@@ -575,10 +593,12 @@ export default function CinematicStage({
     };
 
     const onTouchStart = (e: TouchEvent) => {
+      if (scrollLocked()) return;
       touchStartY = e.touches[0]?.clientY ?? null;
       paneMoved = false;
     };
     const onTouchMove = (e: TouchEvent) => {
+      if (scrollLocked()) return;
       const isEngagedNow = engaged();
       if (!isEngagedNow) {
         wasEngaged = false;
@@ -612,7 +632,7 @@ export default function CinematicStage({
       e.preventDefault();
     };
     const onTouchEnd = (e: TouchEvent) => {
-      if (touchStartY === null || !engaged() || isLocked()) return;
+      if (scrollLocked() || touchStartY === null || !engaged() || isLocked()) return;
       const dy = touchStartY - (e.changedTouches[0]?.clientY ?? touchStartY);
       touchStartY = null;
       if (Math.abs(dy) < SWIPE_THRESHOLD) return;
@@ -625,6 +645,7 @@ export default function CinematicStage({
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
+      if (scrollLocked()) return;
       const isEngagedNow = engaged();
       if (!isEngagedNow) {
         wasEngaged = false;
@@ -691,6 +712,28 @@ export default function CinematicStage({
     // is only ever allowed to advance the deck one chapter at a time,
     // exactly like a normal step.
     let syncedInitialScroll = false;
+    // The clamp below (one step per event) exists so a *live* gesture can
+    // never skip a chapter it's still passing through. But a burst of scroll
+    // events that lands more than one chapter away from wherever activeIndex
+    // last was — a fast flick through several chapters, or several
+    // programmatic scrolls fired close together — then only ever catches up
+    // by one step per event, and once the gesture stops producing events
+    // there is nothing left to finish the catch-up: activeIndex is stuck
+    // permanently behind the chapter actually on screen (its header pinned
+    // in the "off" entrance state — faded eyebrow number, cramped title —
+    // this is the "нумерации не видно" bug). Once scrolling has been quiet
+    // for a beat, there is no live gesture left to protect from
+    // overshooting, so this snaps straight to the true index instead of
+    // clamping — a self-healing safety net under the step logic above, not
+    // a replacement for it.
+    let settleTimer: number | null = null;
+    const armSettleSync = () => {
+      if (settleTimer) window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        const trueIndex = indexNow();
+        setActiveIndex((prev) => (prev === trueIndex ? prev : trueIndex));
+      }, ACTIVE_INDEX_SETTLE_MS);
+    };
     const onScroll = () => {
       if (isLocked()) return;
       const next = indexNow();
@@ -703,6 +746,7 @@ export default function CinematicStage({
         if (prev === next) return prev;
         return Math.max(prev - 1, Math.min(prev + 1, next));
       });
+      armSettleSync();
     };
 
     onScroll();
@@ -718,6 +762,7 @@ export default function CinematicStage({
     return () => {
       cancelAnimationFrame(tween);
       if (wheelReset) window.clearTimeout(wheelReset);
+      if (settleTimer) window.clearTimeout(settleTimer);
       if (!reducedMotion) {
         window.removeEventListener("wheel", onWheel);
         window.removeEventListener("touchstart", onTouchStart);

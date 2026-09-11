@@ -7,6 +7,8 @@ import { BEAT } from "@/lib/motion";
 import SitesDeck, { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { EYEBROW } from "@/lib/typography";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 01 of /sites — the opening pitch, one level in from the site's own
 // universal Hero (see (landing)/layout.tsx, and the same reasoning in
@@ -90,42 +92,15 @@ export default function SitesPitch() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <div className="mt-9 flex items-center gap-4">
-              {/* The cursor is anchored to the primary button rather than to
-                  the heading it sat on before: its whole point is the click
-                  animation (see .sites-deco-icon-click), and a cursor caught
-                  mid-click reads as pointing at the thing you actually press.
-                  `relative` on this wrapper is what the icon's own `absolute`
-                  positions against, so it stays on the button's corner at any
-                  width instead of drifting as the copy reflows. */}
-              <span className="relative inline-flex">
-                <Link href="/brief" className={PILL}>
-                  Обсудить проект
-                </Link>
-                <SitesDecoIcon
-                  src="/images/icons/sites/cursor.png"
-                  size={72}
-                  rotate={-14}
-                  click
-                  className="-bottom-9 right-1"
-                />
-              </span>
-              <Link href="/calculator" aria-label="Рассчитать бюджет" className={ROUND}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M7 17 17 7M9 7h8v8" />
-                </svg>
-              </Link>
-            </div>
+            <TeamAskCard
+              member={TEAM.egor}
+              question="Привет, давай обсудим проект?"
+              pitch="Расскажу, что войдёт в сайт, сроки и бюджет — до брифа, бесплатно."
+              actionLabel="Обсудить проект"
+              href="/brief"
+              compact
+              className="mt-4"
+            />
           </Appear>
         </div>
 

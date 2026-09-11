@@ -142,7 +142,6 @@ export default function AiServicePage() {
           chapter="04"
           title={<>Продюсерский центр, <span className="kw">не коробка</span></>}
           intro={<>AI-инструменты внедряем с 2024 года внутри агентства полного цикла. Около <span className="kw">60% заказов</span> — клиенты, которые возвращаются.</>}
-          clients={[]}
         />
         <Offer
           index={4}
@@ -165,7 +164,7 @@ export default function AiServicePage() {
           intro={<>Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: <span className="kw">консультация, смета</span> и 2–3 концепции.</>}
           dense
           interactiveTiers={AI_INTERACTIVE_TIERS}
-          titleClassName="text-[1.6rem] sm:text-[2.6rem] lg:text-[2.6rem] xl:text-[3.15rem]"
+          titleClassName="text-[1.12rem] sm:text-[1.82rem] lg:text-[1.82rem] xl:text-[2.205rem]"
           // The cursor used to float in the header corner via `decor`,
           // unrelated to any particular piece of copy. Moved here instead —
           // Close renders it right beside "Начать проект сейчас" (its own

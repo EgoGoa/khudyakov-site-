@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
@@ -9,6 +9,7 @@ import Appear, { useChapterActive } from "@/components/ui/Appear";
 import { BEAT, EASE as MOTION_EASE, STAGGER } from "@/lib/motion";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { CloseIcon } from "@/components/ui/Icons";
+import LeadModal from "@/components/home/LeadModal";
 import { useService } from "@/lib/service-context";
 import { worksByCategory } from "@/lib/service-content";
 import type { Work } from "@/lib/types";
@@ -211,6 +212,7 @@ export default function Works({
   const [sphere, setSphere] = useState(ALL_SPHERES);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [visible, setVisible] = useState(PAGE_SIZE);
+  const [leadOpen, setLeadOpen] = useState(false);
 
   // Chapter tiles autoplay a video embed each — mounting all of them the
   // moment the page loads (this chapter sits off-stage but still mounted,
@@ -225,6 +227,20 @@ export default function Works({
     // eslint-disable-next-line react-hooks/set-state-in-effect -- latches true once a chapter has been on stage; never flips back, so it can't cascade
     if (chapterActive) setChapterEverActive(true);
   }, [chapterActive]);
+
+  // BEAT.content (2.65s) is the chapter's own cinematic entrance pause —
+  // meant to run once, the first time these tiles ever appear, so the
+  // header gets its moment before the grid shows up. Every re-mount past
+  // that (switching the format/sphere filter, which swaps `shown` via
+  // AnimatePresence's popLayout) was paying that same 2.65s wait again
+  // before the new tiles faded in — read as the grid hanging, not as a
+  // deliberate pause. `hasEntered` latches true right after first mount, so
+  // only that very first reveal keeps the long beat; a filter change after
+  // that gets a near-instant stagger instead.
+  const hasEntered = useRef(false);
+  useEffect(() => {
+    hasEntered.current = true;
+  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- resets filters when the active service changes, not derivable during this render
@@ -363,7 +379,9 @@ export default function Works({
                       // In a chapter the four tiles arrive in a clear sequence
                       // rather than as a block: left, right, left, right.
                       delay: limit
-                        ? BEAT.content + index * STAGGER.normal
+                        ? hasEntered.current
+                          ? index * 0.05
+                          : BEAT.content + index * STAGGER.normal
                         : Math.min((index % PAGE_SIZE) * 0.05, 0.35),
                       ease: MOTION_EASE,
                     }}
@@ -479,14 +497,25 @@ export default function Works({
                           <button
                             type="button"
                             onClick={() => setActiveId(work.id)}
-                            className="btn-neon inline-flex items-center gap-1.5 !px-5 !py-2.5 !text-[11px]"
+                            className="btn-neon btn-neon-cycle inline-flex items-center gap-1.5 !px-5 !py-2.5 !text-[11px]"
                           >
                             <span aria-hidden="true">▶</span>
                             Смотреть
                           </button>
-                          <Link href="/brief" className="btn-neon btn-warm inline-flex items-center !px-5 !py-2.5 !text-[11px]">
-                            Хочу так же
-                          </Link>
+                          {/* Same flat/transparent .btn-neon pill as "Смотреть",
+                              not the old solid-orange .btn-warm fill — Egor's
+                              ask was for the two to read as siblings, not
+                              "primary vs secondary". Each carries the other
+                              half of the .btn-neon-cycle breathing pair (see
+                              globals.css), so the two take turns glowing
+                              rather than pulsing in sync or not at all. */}
+                          <button
+                            type="button"
+                            onClick={() => setLeadOpen(true)}
+                            className="btn-neon btn-neon-cycle-warm inline-flex items-center !px-5 !py-2.5 !text-[11px]"
+                          >
+                            Обсудить
+                          </button>
                         </div>
                       )}
                     </div>
@@ -586,6 +615,8 @@ export default function Works({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {limit && <LeadModal open={leadOpen} onClose={() => setLeadOpen(false)} />}
     </section>
   );
 }

@@ -6,6 +6,8 @@ import { BEAT, STAGGER } from "@/lib/motion";
 import SitesChapterLayout, { SITES_PANEL } from "@/components/home/sites/SitesChapterLayout";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 03 of /sites — "what we actually build".
 //
@@ -49,6 +51,16 @@ export default function SitesOffer() {
         sub="От одностраничного лендинга до сайта под ключ с интеграциями — вёрстка на React/HTML, без привязки к конструктору."
         primary={{ href: "/brief", label: "Обсудить проект" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
+        askCard={
+          <TeamAskCard
+            member={TEAM.sasha}
+            question="Привет, давай обсудим сайт?"
+            pitch="Покажу примеры под вашу нишу и подберу формат — лендинг или сайт под ключ."
+            actionLabel="Обсудить проект"
+            href="/brief"
+            compact
+          />
+        }
       >
         {/* The glass panel (SITES_PANEL) used to render statically and pop in
             with the chapter's own quick wipe, empty, well before the rows

@@ -37,21 +37,26 @@ export default function Opening() {
       // repeated each other word for word on the way down the page. This
       // line does the job the picker's cannot: it says what the six cards
       // below actually are.
-      intro={<>Пять форматов, которые мы снимаем чаще всего — от презентационного фильма до <span className="kw">AI-видео</span>.</>}
+      intro={<><span className="kw">Пять форматов</span>, которые мы снимаем чаще всего — от презентационного фильма до <span className="chapter-neon">AI-видео</span>.</>}
       // Same reasoning as chapter 02's: the body is a six-card grid, and at
       // the default header size it loses its bottom row on short viewports
       // (a chapter cannot scroll internally inside the deck — see
       // CinematicStage). A smaller title buys that room back from the
       // header rather than from the cards.
-      titleClassName="text-4xl sm:text-5xl lg:text-6xl xl:text-6xl"
+      titleClassName="text-[1.575rem] sm:text-[2.1rem] lg:text-[2.625rem] xl:text-[2.625rem]"
       decor={
         <>
+          {/* Was 238px at right-6%/top-0 — on wide desktop viewports that
+              sat squarely on top of "НАПРАВЛЕНИЯ" instead of the empty
+              header space above it. Pulled up above the title and shrunk
+              +dimmed so the cluster reads as a corner accent again, not a
+              second layer over the word. */}
           <ContentDecoIcon
             src="/images/icons/content/presentation.png"
-            size={238}
+            size={150}
             rotate={-6}
             variant={1}
-            className="right-[6%] top-0"
+            className="right-[3%] -top-14 opacity-70"
           />
           {/* AI direction's own icon, tucked just in front of the
               presentation icon's left edge so the two read as one small
@@ -59,11 +64,11 @@ export default function Opening() {
               icon, never the title or the cards below it. */}
           <ContentDecoIcon
             src="/images/icons/content/ai-video.png"
-            size={168}
+            size={108}
             rotate={4}
             variant={4}
             z={1}
-            className="right-[19%] top-6"
+            className="right-[16%] -top-6 opacity-70"
           />
         </>
       }

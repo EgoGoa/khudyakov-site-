@@ -7,6 +7,8 @@ import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import { EYEBROW } from "@/lib/typography";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 02 — merges the former SitesMethod and SitesAudience chapters into
 // one screen. sites-reel.mp4 (Egor's second delivery for /sites) only cuts
@@ -114,26 +116,15 @@ export default function SitesMethodAudience() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <div className="mt-9 flex items-center gap-4">
-              <Link href="/calculator" className={PILL}>
-                Рассчитать бюджет
-              </Link>
-              <Link href="/brief" aria-label="Заполнить бриф" className={ROUND}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M7 17 17 7M9 7h8v8" />
-                </svg>
-              </Link>
-            </div>
+            <TeamAskCard
+              member={TEAM.sasha}
+              question="Привет, давай обсудим дизайн?"
+              pitch="Покажу, как будет выглядеть сайт под вашу нишу, и посчитаю бюджет."
+              actionLabel="Рассчитать бюджет"
+              href="/calculator"
+              compact
+              className="mt-4"
+            />
           </Appear>
         </div>
 

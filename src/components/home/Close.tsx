@@ -12,6 +12,8 @@ import { pricingByCategory } from "@/lib/service-content";
 import InteractiveTierCard from "@/components/home/ai/InteractiveTierCard";
 import type { InteractiveTier } from "@/components/home/ai/aiPricingTiers";
 import SeoAccordion, { type SeoSection } from "@/components/ui/SeoAccordion";
+import TeamRow from "@/components/home/TeamRow";
+import { PAGE_TEAM } from "@/lib/team";
 
 // Chapter 06 — pricing, the closing pitch and the contact form, which used to
 // be three consecutive full sections. Reading a price, deciding, and typing
@@ -153,11 +155,15 @@ export default function Close({
                 transition={{ duration: 0.8, delay: BEAT.content + i * STAGGER.normal, ease: EASE }}
                 className={`c3-card !min-h-0 !rounded-3xl ${spacious ? "!p-5 c3-card-compact" : "!p-6"} ${
                   dense ? "c3-card-dense" : ""
-                } ${tier.pro ? "c3-card-pro" : ""}`}
+                } ${tier.pro ? "c3-card-pro" : ""} ${active === "content" ? `tier-glow-${i}` : ""}`}
               >
                 <span className="c3-tier-small relative">{tier.tagline}</span>
                 <div className={`c3-tier-large relative ${dense ? "!text-lg" : "!text-2xl"}`}>{tier.name}</div>
-                <div className={`relative mt-2 font-semibold text-paper ${dense ? "text-xs" : "text-base"}`}>
+                <div
+                  className={`relative font-semibold text-paper ${
+                    active === "content" ? "tier-glow-price" : "mt-2"
+                  } ${dense ? "text-xs" : "text-base"}`}
+                >
                   {tier.price}
                 </div>
                 <div className={`c3-team relative ${dense ? "mb-3" : "mb-6"}`}>{tier.team}</div>
@@ -184,9 +190,22 @@ export default function Close({
                 <div className="relative mt-auto flex flex-col items-center gap-2 self-stretch">
                   <a
                     href="/brief"
-                    className={`w-full rounded-full px-8 text-center font-semibold transition ${
-                      dense ? "py-2 text-xs" : "py-2.5 text-sm"
-                    } ${tier.pro ? "bg-rec text-white hover:bg-rec-light" : "bg-paper text-ink hover:bg-white"}`}
+                    className={
+                      tier.pro
+                        ? `w-full rounded-full px-8 text-center font-bold transition bg-rec text-white hover:bg-rec-light ${
+                            dense ? "py-2 text-xs" : "py-2.5 text-sm"
+                          }`
+                        : active === "content"
+                        ? // /content's own buttons match the hero's own secondary
+                          // CTAs (see Hero.tsx's `.btn-neon` pills) instead of the
+                          // plain white fill /ai, /sites, /smm still use below.
+                          `btn-neon w-full justify-center !font-bold tier-glow-btn-${i} ${
+                            dense ? "!py-2 !text-xs" : "!py-2.5 !text-sm"
+                          }`
+                        : `w-full rounded-full px-8 text-center font-semibold transition bg-paper text-ink hover:bg-white ${
+                            dense ? "py-2 text-xs" : "py-2.5 text-sm"
+                          }`
+                    }
                   >
                     Выбрать план
                   </a>
@@ -215,6 +234,17 @@ export default function Close({
             <SeoAccordion eyebrow={seoEyebrow ?? "Подробнее"} sections={seoSections} />
           </Appear>
         )}
+
+        {/* Real people instead of a faceless "оставьте заявку" — Egor's ask.
+            Hidden on short viewports rather than shrunk: this chapter is
+            already tuned to fit one screen (see the file header comment),
+            and a name/photo card is the one piece here safe to drop, not
+            resize, when height is tight. */}
+        <Appear from="up" delay={BEAT.controls}>
+          <div className="mt-6 [@media(max-height:820px)]:hidden">
+            <TeamRow members={PAGE_TEAM[active]} />
+          </div>
+        </Appear>
 
         <Appear from="up" delay={BEAT.cta}>
           <div className="relative flex justify-center">

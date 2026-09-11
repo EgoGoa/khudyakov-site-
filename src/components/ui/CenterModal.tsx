@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { CloseIcon } from "@/components/ui/Icons";
@@ -27,11 +28,18 @@ export default function CenterModal({
   onClose,
   ariaLabel,
   children,
+  // The welcome/service overlays' content (voice wave, 4-5 menu buttons)
+  // wants the wider 2xl card this defaults to. LeadModal's brief — a
+  // vertical stack of question rows — read as "taking over the page" at
+  // that width on a normal laptop, so it opts into a narrower card with
+  // tighter padding instead of every CenterModal getting smaller.
+  compact = false,
 }: {
   open: boolean;
   onClose: () => void;
   ariaLabel: string;
   children: ReactNode;
+  compact?: boolean;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -75,7 +83,19 @@ export default function CenterModal({
 
   if (!open && !keepAlive) return null;
 
-  return (
+  // `position: fixed` is positioned relative to the nearest ancestor with a
+  // `transform` (or filter/perspective/will-change), not the viewport, per
+  // spec — and any caller mounted inside an `Appear` (this whole site's
+  // entrance-animation wrapper, which leaves a non-identity `transform` on
+  // its own motion.div even once settled) turns that ancestor into exactly
+  // such a containing block. That trapped this dialog inside whatever small
+  // card happened to open it (PromoCard, BlockAssistant's bar) instead of
+  // covering the screen. A portal to `document.body` sidesteps the whole
+  // class of bug: this dialog is never a descendant of the caller's own DOM
+  // position, so no ancestor the caller doesn't control can affect it.
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -119,7 +139,9 @@ export default function CenterModal({
               // its own.
               boxShadow: "0 0 70px rgba(236,72,153,0.22), 0 0 100px rgba(56,189,248,0.19)",
             }}
-            className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] px-6 py-10 sm:px-12 sm:py-14"
+            className={`relative max-h-[85vh] w-full overflow-y-auto rounded-[2rem] ${
+              compact ? "max-w-lg px-5 py-8 sm:px-8 sm:py-10" : "max-w-2xl px-6 py-10 sm:px-12 sm:py-14"
+            }`}
           >
             <button
               type="button"
@@ -133,6 +155,7 @@ export default function CenterModal({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

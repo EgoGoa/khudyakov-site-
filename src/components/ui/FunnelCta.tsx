@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { useService } from "@/lib/service-context";
+import type { TeamMember } from "@/lib/team";
 
 // One way forward per chapter, with the sentence that earns the click.
 //
@@ -176,6 +178,28 @@ function EyebrowPill({
   );
 }
 
+// A small face above the pill — Egor's ask: every funnel card on the site
+// should feel answered by a specific person, not a form. Doesn't change
+// what the button does (still goes to /brief, /calculator or Telegram); it
+// just says who's on the other end of it.
+export function PersonBadge({ person }: { person: TeamMember }) {
+  return (
+    <span className="mb-2 flex items-center gap-2">
+      <span className="relative h-6 w-6 shrink-0">
+        <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-1 ring-paper/25">
+          <Image src={person.photo} alt={person.name} fill sizes="24px" className="object-cover" />
+        </span>
+        <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-ink">
+          <span className="team-online-dot h-[7px] w-[7px] rounded-full bg-emerald-400" />
+        </span>
+      </span>
+      <span className="text-[11px] text-paper/70">
+        Ответит {person.name} <span className="text-paper/45">· {person.role}</span>
+      </span>
+    </span>
+  );
+}
+
 function CtaButton({
   funnel,
   size,
@@ -223,6 +247,7 @@ export default function FunnelCta({
   flatButton = false,
   tone = "warm",
   className = "",
+  person,
 }: {
   item: FunnelKey;
   /** Short tag naming the situation this offer answers — "ЕСТЬ ТОЛЬКО ИДЕЯ?" */
@@ -265,6 +290,10 @@ export default function FunnelCta({
   /** Card chrome — see FunnelTone. "glass" is currently "sm" only. */
   tone?: FunnelTone;
   className?: string;
+  /** Who answers this ask — renders a small photo+pulse badge above the
+   *  eyebrow. Optional: call sites that haven't been assigned a person yet
+   *  keep the plain card. */
+  person?: TeamMember;
 }) {
   const funnel = FUNNELS[item];
   const right = align === "right";
@@ -346,6 +375,7 @@ export default function FunnelCta({
                 : "flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2"
             }
           >
+            {person && <PersonBadge person={person} />}
             <EyebrowPill dense tone={tone}>
               {eyebrow}
             </EyebrowPill>
@@ -401,6 +431,7 @@ export default function FunnelCta({
         }`}
       >
         <div className="min-w-0 flex-1">
+          {person && <PersonBadge person={person} />}
           <EyebrowPill>{eyebrow}</EyebrowPill>
 
           <p className={`mt-3 font-sans leading-[1.15] text-paper ${HEADLINE_SIZE[size]}`}>

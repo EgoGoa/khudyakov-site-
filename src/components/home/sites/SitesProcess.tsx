@@ -5,6 +5,8 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import SitesChapterLayout, { SITES_PANEL } from "@/components/home/sites/SitesChapterLayout";
 import { SITES_PROCESS_STEPS } from "@/components/home/sites/sitesProcessSteps";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 04 of /sites — the five steps from brief to launch.
 //
@@ -43,6 +45,16 @@ export default function SitesProcess() {
         sub="Пять шагов от брифа до запуска — на каждом понятный результат и точка согласования."
         primary={{ href: "/brief", label: "Заполнить бриф" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
+        askCard={
+          <TeamAskCard
+            member={TEAM.egor}
+            question="Привет, есть вопрос по этапам?"
+            pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
+            actionLabel="Заполнить бриф"
+            href="/brief"
+            compact
+          />
+        }
       >
         {/* Same fix as SitesOffer's list: the glass panel itself now arrives
             on the same beat as the first row instead of popping in early. */}

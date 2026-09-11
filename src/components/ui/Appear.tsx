@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { motion } from "framer-motion";
 import { DUR, EASE } from "@/lib/motion";
 
 // Per-element entrance inside a chapter.
@@ -92,7 +92,24 @@ export default function Appear({
   children: ReactNode;
 }) {
   const active = useContext(ChapterActive);
-  const reduced = useReducedMotion();
+  // framer-motion's own useReducedMotion reads matchMedia synchronously
+  // during render, not in an effect — SSR sees no window and returns null,
+  // but the client's very first (hydration) render already returns the real
+  // true/false. Whenever a visitor's OS actually has reduced motion on, that
+  // flips which branch below renders (Plain vs MotionTag) between server and
+  // client, a structural mismatch React's hydration diff catches. Starting
+  // false here and only picking up the real value a tick later in an effect
+  // keeps the server and first client render identical, same pattern as
+  // WelcomeOverlay's snooze check.
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, matchMedia only exists in the browser
+    setReduced(mq.matches);
+    const onChange = () => setReduced(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
   // Держит сам DOM-узел, чтобы после посадки снять инлайновый filter
   // руками — Framer Motion сам этого не делает (см. ниже).
   const ref = useRef<HTMLElement>(null);

@@ -7,6 +7,8 @@ import { BEAT } from "@/lib/motion";
 import AiDeck, { AI_PILL, AI_ROUND } from "@/components/home/ai/AiDeck";
 import { EYEBROW } from "@/lib/typography";
 import { aiToolLinks } from "@/components/home/direction/toolRegistry";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 01 of /ai's deck (see src/app/(landing)/ai/page.tsx) — rebuilt in
 // the composition Egor approved on /sites (see SitesPitch for the same
@@ -96,73 +98,15 @@ export default function AiPitch() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <div className="mt-8 flex items-center gap-4">
-              {/* The cursor is anchored to the primary button, not to the
-                  heading it floated near before: the icon's whole point is
-                  its click animation, and a cursor caught mid-click reads as
-                  pointing at the thing you actually press. `relative` here is
-                  what its own `absolute` positions against, so it holds the
-                  button's corner as the copy reflows. */}
-              <span className="relative inline-flex">
-                <Link href="/brief" className={AI_PILL}>
-                  Обсудить внедрение
-                </Link>
-                {/* Three rings blooming from the cursor's actual tip — not
-                    the button's center — like ripples spreading from the
-                    point where something touches water. The anchor span is
-                    zero-size, planted at the tip's on-screen position (see
-                    the close.png tip-fraction math on .ai-deco-icon-click
-                    below: with the box at -bottom-8/right-1/w-14, the 81%/4%
-                    tip lands ~15px from the right edge and ~17px above the
-                    bottom edge); each ring is centered on it with a static
-                    translate(-50%,-50%) so the animated scale never fights
-                    that centering. The three share one 2.4s loop, delayed by
-                    a third of a beat each, so they trail one another
-                    outward instead of pulsing in unison. */}
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute bottom-[17px] right-[15px] h-0 w-0"
-                >
-                  {[0, 0.28, 0.56].map((delay) => (
-                    <span key={delay} className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2">
-                      <span
-                        className="ai-icon-ripple block h-3 w-3 rounded-full"
-                        style={{ animationDelay: `${delay}s` }}
-                      />
-                    </span>
-                  ))}
-                </span>
-                <img
-                  src="/images/icons/ai/close.png?v=2"
-                  alt=""
-                  aria-hidden="true"
-                  width={64}
-                  // close.png's painted tip points ~28deg right of vertical
-                  // in the source file itself (measured from its alpha
-                  // channel), not straight up like a plain arrow. -50deg
-                  // cancelled that built-in tilt to land on the classic
-                  // up-left pointer angle (~-22deg from vertical); -65deg
-                  // tilts it 15deg further left from there, per Egor's call.
-                  className="ai-deco-icon-click pointer-events-none absolute -bottom-8 right-1 w-14 rounded-[12px]"
-                  style={{ "--r": "-65deg" } as React.CSSProperties}
-                />
-              </span>
-              <Link href="/calculator" aria-label="Рассчитать бюджет" className={AI_ROUND}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M7 17 17 7M9 7h8v8" />
-                </svg>
-              </Link>
-            </div>
+            <TeamAskCard
+              member={TEAM.dima}
+              question="Привет, давай обсудим внедрение?"
+              pitch="Подберу AI-инструмент под задачу и покажу, как это будет работать у вас."
+              actionLabel="Обсудить внедрение"
+              href="/brief"
+              compact
+              className="mt-4"
+            />
           </Appear>
 
           {/* One thin line instead of the old bordered four-cell block. */}

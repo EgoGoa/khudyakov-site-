@@ -342,11 +342,14 @@ export default function CinematicSection({
         >
           <motion.h2
             variants={reduced ? undefined : HEADER_TITLE}
-            // 2x the previous scale (text-3xl/4xl/4xl/5xl) — the chapter
-            // name is meant to carry the whole header now, not share the
-            // weight with the icon/eyebrow row above it.
+            // -30% off the previous scale (text-4xl/6xl/6xl/7xl) — Egor's
+            // ask site-wide: chapter titles were eating more vertical room
+            // than the copy under them needed. Written as arbitrary rem
+            // values rather than the next Tailwind step down so the cut is
+            // the exact 30% he asked for, not whatever the nearest size
+            // token happens to land on.
             className={`chapter-neon font-display uppercase leading-[0.95] tracking-tight ${
-              titleClassName || "text-4xl sm:text-6xl lg:text-6xl xl:text-7xl"
+              titleClassName || "text-[1.575rem] sm:text-[2.625rem] lg:text-[2.625rem] xl:text-[3.15rem]"
             }`}
           >
             {title}

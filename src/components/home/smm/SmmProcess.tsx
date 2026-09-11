@@ -7,6 +7,8 @@ import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { SMM_PROCESS_STEPS } from "@/components/home/smm/smmProcessSteps";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 04 of /smm — the five steps from audit to report.
 //
@@ -74,6 +76,15 @@ export default function SmmProcess() {
         }
         primary={{ href: "/brief", label: "Заполнить бриф" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
+        askCard={
+          <TeamAskCard
+            member={TEAM.egor}
+            question="Привет, есть вопрос по этапам?"
+            pitch="Отвечу быстрее, чем вы заполните бриф."
+            actionLabel="Спросить Егора"
+            compact
+          />
+        }
       >
         {/* Same fix as SmmOffer's list: the panel now arrives on the same
             beat as the first row instead of popping in early and empty. */}

@@ -8,6 +8,8 @@ import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 import { EYEBROW } from "@/lib/typography";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 05 — the terms plus a compact FAQ folded into one screen, the same
 // shape AiGuarantees and SitesGuarantees use.
@@ -126,26 +128,15 @@ export default function SmmGuarantees() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <div className="mt-9 flex items-center gap-4">
-              <Link href="/brief" className={PILL}>
-                Обсудить задачу
-              </Link>
-              <Link href="/smm/pricing" aria-label="Смотреть цены" className={ROUND}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M7 17 17 7M9 7h8v8" />
-                </svg>
-              </Link>
-            </div>
+            <TeamAskCard
+              member={TEAM.egor}
+              question="Обсудить условия и сроки?"
+              pitch="Отвечу по договору, срокам и оплате — без сюрпризов и мелкого шрифта."
+              actionLabel="Обсудить задачу"
+              href="/brief"
+              compact
+              className="mt-4"
+            />
           </Appear>
         </div>
 

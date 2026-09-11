@@ -6,6 +6,8 @@ import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import SmmDeck, { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 import { EYEBROW } from "@/lib/typography";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 01 of /smm — the opening pitch, one level in from the site's own
 // universal Hero (see (landing)/layout.tsx, and the same reasoning in
@@ -87,26 +89,15 @@ export default function SmmPitch() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <div className="mt-9 flex items-center gap-4">
-              <Link href="/brief" className={PILL}>
-                Обсудить формат
-              </Link>
-              <Link href="/smm/pricing" aria-label="Смотреть цены" className={ROUND}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M7 17 17 7M9 7h8v8" />
-                </svg>
-              </Link>
-            </div>
+            <TeamAskCard
+              member={TEAM.egor}
+              question="Привет, давай обсудим формат?"
+              pitch="Съёмка, монтаж и ведение — расскажу, что войдёт в ваш пакет и сколько это займёт."
+              actionLabel="Обсудить формат"
+              href="/brief"
+              compact
+              className="mt-4"
+            />
           </Appear>
         </div>
 

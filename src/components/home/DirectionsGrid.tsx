@@ -4,12 +4,11 @@ import Link from "next/link";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import { useStageActive, useStageStarted } from "@/components/ui/CinematicStage";
-import { TelegramIcon } from "@/components/ui/Icons";
 import { contentDirections, type ContentDirection } from "@/lib/service-content";
 import { works } from "@/lib/data";
 import type { Work } from "@/lib/types";
-
-const TELEGRAM_URL = "https://t.me/hdkv";
+import TeamAskCard from "@/components/home/TeamAskCard";
+import { TEAM } from "@/lib/team";
 
 // hqdefault always exists for any YouTube video; maxresdefault looks sharper
 // but isn't guaranteed — same fallback dance as Works.tsx.
@@ -111,7 +110,7 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
 
       <div className="pointer-events-none relative z-10 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-lg">
+          <h3 className="direction-card-title font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] transition-[color] sm:text-lg">
             {direction.title}
           </h3>
           <p className="mt-2 line-clamp-5 text-xs leading-relaxed text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-sm">
@@ -140,52 +139,48 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
         </div>
       </div>
 
-      <div className="relative z-10 mt-3 flex items-center gap-3">
-        <Link
-          href="/brief"
-          className="pointer-events-auto whitespace-nowrap rounded-full bg-gradient-to-r from-orange-bright to-rec px-4 py-2 font-display text-[10px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_-4px_rgba(245,49,11,0.55)] transition-all hover:shadow-[0_6px_20px_-4px_rgba(245,49,11,0.75)] hover:brightness-110"
-        >
-          Заполнить бриф
-        </Link>
-        <span className="pointer-events-none font-display text-[10px] uppercase tracking-[0.1em] text-paper/55">
-          Подробнее ↗
+      <div className="pointer-events-none relative z-10 mt-3 flex items-center gap-3">
+        <span className="btn-neon btn-neon-cycle pointer-events-none !px-4 !py-2 !text-[10px]">
+          Узнать больше
         </span>
+        <Link
+          href={`/content/${direction.slug}`}
+          aria-label={`Подробнее: ${direction.title}`}
+          className="btn-neon-cycle-warm pointer-events-auto grid h-9 w-9 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-colors duration-300 hover:text-orange"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M7 17 17 7M9 7h8v8" />
+          </svg>
+        </Link>
       </div>
     </div>
   );
 }
 
-// The reference's fifth card is a manager's photo + name — we have no named
-// contact person on the site yet (see CLAUDE.md: founder bio unfilled), so
-// this keeps the same slot and CTA-on-a-real-channel mechanic without
-// inventing a persona: a Telegram badge stands in for the avatar.
+// A real person instead of a Telegram badge — Egor's ask once every other
+// "есть вопрос" card on the site got a face: this is the same slot and the
+// same job (help picking a format), now answered by name. Egor himself
+// rather than a specialist — "не знаете формат" is exactly the
+// admin/producer question he described handling on every page.
 function ConsultCard() {
   return (
-    <div className="flex h-full flex-col justify-between rounded-2xl bg-gradient-to-br from-orange/15 via-ink/55 to-ink/70 p-5 backdrop-blur-md sm:p-8">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-lg">
-            Не знаете, какой формат нужен?
-          </h3>
-          <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-[15px]">
-            Напишите — поможем выбрать формат и ответим на вопросы.
-          </p>
-        </div>
-
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#26A5E4]/15 ring-1 ring-[#26A5E4]/40 sm:h-20 sm:w-20">
-          <TelegramIcon className="h-7 w-7 text-[#26A5E4] sm:h-8 sm:w-8" />
-        </div>
-      </div>
-
-      <a
-        href={TELEGRAM_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-3 inline-flex w-fit items-center whitespace-nowrap rounded-full bg-gradient-to-r from-orange-bright to-rec px-4 py-2 font-display text-[10px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_-4px_rgba(245,49,11,0.55)] transition-all hover:shadow-[0_6px_20px_-4px_rgba(245,49,11,0.75)] hover:brightness-110"
-      >
-        Написать в Telegram
-      </a>
-    </div>
+    <TeamAskCard
+      member={TEAM.egor}
+      question="Не знаете, какой формат нужен?"
+      pitch="Разберу задачу за пару минут и предложу формат и бюджет — до брифа, бесплатно."
+      actionLabel="Спросить Егора"
+      className="h-full"
+    />
   );
 }
 

@@ -55,9 +55,9 @@ export default function InteractiveTierCard({
       initial={{ opacity: 0, y: 28, x: index === 0 ? -40 : index === 2 ? 40 : 0, scale: index === 1 ? 0.94 : 1 }}
       animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
       transition={{ duration: 0.8, delay: BEAT.content + index * STAGGER.normal, ease: EASE }}
-      className={`c3-card !min-h-0 !rounded-3xl c3-card-dense ${spacious ? "!p-5 c3-card-compact" : "!p-6"} ${
-        tier.pro ? "c3-card-pro" : ""
-      }`}
+      className={`c3-card !min-h-0 !rounded-3xl c3-card-dense tier-glow-${index} ${
+        spacious ? "!p-5 c3-card-compact" : "!p-6"
+      } ${tier.pro ? "c3-card-pro" : ""}`}
     >
       <span className="c3-tier-small relative">{tier.tagline}</span>
       <div className="c3-tier-large relative !text-lg">{tier.name}</div>
@@ -65,13 +65,15 @@ export default function InteractiveTierCard({
       {/* The number itself is the live part — it's what changes as items get
           checked, so it's kept visually apart from the static floor/ceiling
           note below it rather than folded into one line the way the static
-          card's plain price string was. */}
-      <div className="relative mt-2 flex items-baseline gap-1.5">
-        <span className="font-display text-2xl text-paper">
+          card's plain price string was. Same tier-glow-price treatment
+          /content's own cards use (see globals.css), just recoloured per
+          index into /ai's lime→emerald→teal family. */}
+      <div className="relative mt-1 flex items-baseline gap-1.5 tier-glow-price">
+        <span>
           {tier.currency}
           {formatPrice(price)}
         </span>
-        <span className="text-xs text-paper/45">{tier.suffix}</span>
+        <span className="text-xs font-normal text-paper/45">{tier.suffix}</span>
       </div>
       <div className="relative mt-0.5 text-[11px] text-paper/40">
         {hasCeiling
@@ -129,8 +131,11 @@ export default function InteractiveTierCard({
         <a
           href="/brief"
           // Emerald, not the site-wide orange — /ai's own accent, matching
-          // AI_PILL and the rest of the page's actions.
-          className="w-full rounded-none bg-emerald-400 px-8 py-2 text-center font-display text-xs uppercase tracking-[0.08em] text-[#03120d] transition hover:bg-emerald-300"
+          // AI_PILL and the rest of the page's actions. tier-glow-btn-{index}
+          // adds the same per-card hover glow /content's own tier buttons
+          // pick up (see globals.css) — only tiers 0/2 have a rule since 1 is
+          // already emerald at rest.
+          className={`w-full rounded-none bg-emerald-400 px-8 py-2 text-center font-display text-xs uppercase tracking-[0.08em] text-[#03120d] transition hover:bg-emerald-300 tier-glow-btn-${index}`}
         >
           Выбрать план
         </a>

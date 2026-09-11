@@ -2,11 +2,13 @@
 
 import type { ReactNode } from "react";
 import CinematicSection from "@/components/ui/CinematicSection";
-import FunnelCta from "@/components/ui/FunnelCta";
+import TeamAskCard from "@/components/home/TeamAskCard";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import Appear from "@/components/ui/Appear";
+import PromoCard from "@/components/home/PromoCard";
 import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
+import { TEAM } from "@/lib/team";
 
 // Chapter 05 on /content (the deck position `index`/`chapter` default to).
 // Six steps instead of the earlier three broad phases — the same path from
@@ -51,7 +53,8 @@ export function StepIcon({ children }: { children: React.ReactNode }) {
 const STEPS = [
   {
     title: "Оценка проекта",
-    description: "Бриф и консультация — предлагаем 2–3 концепции бесплатно.",
+    description:
+      "Обсуждаем цели, аудиторию и бюджет на бесплатной консультации — без универсальных шаблонов. Продюсер разбирает референсы и задачу, а команда готовит 2–3 рабочие концепции с примерным сценарием и визуальным языком, чтобы вы увидели будущий ролик ещё до старта производства.",
     icon: (
       <StepIcon>
         <path d="M6 3.5h9l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
@@ -61,7 +64,8 @@ const STEPS = [
   },
   {
     title: "Подписание договора",
-    description: "Утверждаем смету, сроки и ТЗ — работаем после согласования.",
+    description:
+      "Фиксируем финальную концепцию, детальную смету и сроки по каждому этапу — прозрачно, без скрытых доплат и «плавающих» пунктов. Работа стартует только после вашего согласования договора и ТЗ: вы заранее точно знаете, за что платите и когда получите результат.",
     icon: (
       <StepIcon>
         <path d="M4 20 15.5 8.5l3.8-3.8a1.4 1.4 0 0 1 2 2L17.5 10.5 6 22H4v-2z" />
@@ -71,7 +75,8 @@ const STEPS = [
   },
   {
     title: "Препродакшн",
-    description: "Прорабатываем сценарий, локации и кастинг.",
+    description:
+      "Дорабатываем сценарий до покадровой раскадровки, подбираем локации и реквизит под задачу, проводим кастинг актёров или дикторов. Составляем постановочный план по часам — чтобы съёмочный день прошёл точно по нему, без импровизации и лишних правок на площадке.",
     icon: (
       <StepIcon>
         <rect x="3.5" y="4" width="17" height="16" rx="2" />
@@ -81,7 +86,8 @@ const STEPS = [
   },
   {
     title: "Съёмки",
-    description: "Снимаем по утверждённому сценарию в назначенный день.",
+    description:
+      "Снимаем по утверждённому сценарию на профессиональном оборудовании и свете — режиссёр и оператор на площадке контролируют каждый кадр. Вы или ваш представитель можете присутствовать на съёмке и сразу видеть отснятый материал на плейбэке.",
     icon: (
       <StepIcon>
         <rect x="3" y="7" width="13" height="11" rx="2" />
@@ -91,7 +97,8 @@ const STEPS = [
   },
   {
     title: "Постпродакшн",
-    description: "Монтаж, графика, цветокоррекция и саунд-дизайн.",
+    description:
+      "Монтируем ролик под ритм и посыл, добавляем 2D/3D-графику и анимацию там, где это усиливает историю. Делаем профессиональную цветокоррекцию и сводим звук с диктором, музыкой и шумовыми эффектами — так, чтобы ролик звучал и смотрелся на уровне федеральной рекламы.",
     icon: (
       <StepIcon>
         <rect x="3" y="4" width="18" height="16" rx="2" />
@@ -101,7 +108,8 @@ const STEPS = [
   },
   {
     title: "Правки и сдача",
-    description: "2–3 круга правок, затем передаём готовый ролик.",
+    description:
+      "Показываем черновой монтаж и собираем правки — до 2–3 кругов входят в стоимость, без доплат за разумные корректировки. После утверждения передаём финальные файлы во всех нужных форматах и разрешениях: под YouTube, соцсети, ТВ или наружную рекламу.",
     icon: (
       <StepIcon>
         <path d="M20 6 9 17l-5-5" />
@@ -129,6 +137,11 @@ export default function Process({
   spacious?: boolean;
 }) {
   const { active } = useService();
+  // A third specialist per page (past the two Close.tsx already carries),
+  // tied to what this chapter is actually about — production/edit timeline.
+  // /ai already has Dima on Close, so Process picks Max there instead, to
+  // spread across three different faces rather than repeating one.
+  const processPerson = active === "ai" ? TEAM.max : TEAM.dima;
   return (
     <CinematicSection
       index={index}
@@ -162,7 +175,7 @@ export default function Process({
             key={`${index}-${i}`}
             from="up"
             delay={BEAT.content + i * STAGGER.tight}
-            className="rounded-2xl bg-ink/45 p-5 backdrop-blur-md"
+            className="process-step-card rounded-2xl bg-ink/45 p-5 backdrop-blur-md"
           >
             {step.icon}
             <h3 className="mt-3 font-display text-sm uppercase leading-tight tracking-tight text-white">
@@ -174,18 +187,58 @@ export default function Process({
         ))}
       </div>
 
-      <Appear from="up" delay={BEAT.cta}>
-        <FunnelCta
-          item="brief"
-          align="right"
-          size="sm"
-          eyebrow="Готовы начать?"
-          headline="Первый шаг"
-          accent="5 минут"
-          pitch="Дальше — 2–3 концепции и смета за 3–5 дней, бесплатно."
-          className="mt-5"
-        />
-      </Appear>
+      {/* The step grid above leaves the row under it mostly empty — six
+          short cards plus a right-aligned FunnelCta bar never fill the
+          chapter's own width. On /content that space now holds a second
+          promo card (Egor's ask: the September offer PromoCard already
+          carries on chapter 03 fits here too, for a different service —
+          image video instead of AI-video, cyan instead of the page's warm
+          magenta→orange so the two banners don't read as one repeated).
+          Other pages keep the original single centred/right FunnelCta bar
+          untouched. */}
+      {active === "content" ? (
+        <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-stretch">
+          <Appear from="up" delay={BEAT.cta} className="lg:max-w-sm lg:flex-1">
+            <PromoCard
+              palette="cyan"
+              image="/images/service-video.jpg"
+              badge="Акция только в сентябре"
+              title="Имиджевое видео"
+              subtitle="30-секундный ролик, который формирует доверие к бренду"
+              price="42 000 ₽"
+              oldPrice="60 000 ₽"
+              href="/content/image"
+              leadPrefill={{
+                format: "Имиджевое видео",
+                wishes: "Акция сентября — 30-секундный имиджевый ролик за 42 000 ₽",
+              }}
+            />
+          </Appear>
+          <Appear from="up" delay={BEAT.cta} className="lg:w-[300px] lg:shrink-0">
+            <TeamAskCard
+              member={processPerson}
+              question="Привет, давай обсудим правки?"
+              pitch="Отвечу быстрее, чем вы заполните бриф — вопросы по монтажу и срокам."
+              actionLabel="Заполнить бриф"
+              href="/brief"
+              compact
+              className="h-full"
+            />
+          </Appear>
+        </div>
+      ) : (
+        <Appear from="up" delay={BEAT.cta}>
+          <TeamAskCard
+            member={processPerson}
+            question="Привет, есть вопрос по этапам?"
+            pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
+            actionLabel="Заполнить бриф"
+            href="/brief"
+            compact
+            className="mt-5 lg:ml-auto lg:max-w-sm"
+          />
+        </Appear>
+      )}
     </CinematicSection>
   );
 }

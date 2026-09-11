@@ -8,6 +8,8 @@ import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import { EYEBROW } from "@/lib/typography";
+import { TEAM } from "@/lib/team";
+import TeamAskCard from "@/components/home/TeamAskCard";
 
 // Chapter 05 — "why us" (brief §9) plus the FAQ (brief §10), folded into one
 // screen the same way AiGuarantees.tsx pairs its terms list with an FAQ
@@ -121,26 +123,15 @@ export default function SitesGuarantees() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <div className="mt-9 flex items-center gap-4">
-              <Link href="/brief" className={PILL}>
-                Обсудить проект
-              </Link>
-              <Link href="/calculator" aria-label="Рассчитать бюджет" className={ROUND}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M7 17 17 7M9 7h8v8" />
-                </svg>
-              </Link>
-            </div>
+            <TeamAskCard
+              member={TEAM.egor}
+              question="Привет, давай обсудим сроки?"
+              pitch="Отвечу по договору, срокам и оплате — фиксируем всё на берегу."
+              actionLabel="Обсудить проект"
+              href="/brief"
+              compact
+              className="mt-4"
+            />
           </Appear>
         </div>
 

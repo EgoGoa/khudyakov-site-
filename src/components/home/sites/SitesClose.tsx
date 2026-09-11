@@ -6,6 +6,8 @@ import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import { pricingByCategory } from "@/lib/service-content";
+import TeamRow from "@/components/home/TeamRow";
+import { PAGE_TEAM } from "@/lib/team";
 
 // Chapter 06 of /sites — the closing chapter: three price tiers and the last
 // call to action.
@@ -66,7 +68,7 @@ export default function SitesClose() {
       entrance="zoom"
       id="close"
       spacious
-      titleClassName="chapter-neon-warm text-4xl sm:text-5xl lg:text-5xl xl:text-6xl"
+      titleClassName="chapter-neon-warm text-[1.575rem] sm:text-[2.1rem] lg:text-[2.1rem] xl:text-[2.625rem]"
     >
       {/* The supporting line is rendered here rather than through
           CinematicSection's `intro` slot, which sets its text as tiny
@@ -82,11 +84,19 @@ export default function SitesClose() {
 
       <Appear from="up" delay={BEAT.content}>
         <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3 [@media(max-height:820px)]:max-w-4xl">
-          {TIERS.map((tier) => (
-            <article key={tier.name} className={`c3-card sites-tier ${tier.pro ? "c3-card-pro" : ""}`}>
+          {/* tier-glow-{i} / tier-glow-price / .btn-neon: the same per-card
+              neon treatment /content's own Close.tsx cards use, recoloured
+              into /sites' own orange/magenta/cyan set (see
+              .sites-warm-headings in globals.css) instead of building a
+              second, page-local version of the same idea. */}
+          {TIERS.map((tier, i) => (
+            <article
+              key={tier.name}
+              className={`c3-card sites-tier tier-glow-${i} ${tier.pro ? "c3-card-pro" : ""}`}
+            >
               <span className="c3-tier-small relative">{tier.tagline}</span>
               <div className="c3-tier-large relative !text-xl">{tier.name}</div>
-              <div className="relative mt-2 text-base font-semibold text-paper">{tier.price}</div>
+              <div className="relative tier-glow-price">{tier.price}</div>
               <div className="c3-team relative mb-5">{tier.team}</div>
 
               <ul className="c3-list relative">
@@ -103,17 +113,23 @@ export default function SitesClose() {
               <div className="relative mt-auto self-stretch pt-4">
                 <Link
                   href="/brief"
-                  className={`block w-full rounded-full py-2.5 text-center text-sm font-semibold transition ${
+                  className={
                     tier.pro
-                      ? "bg-rec text-white hover:bg-rec-light"
-                      : "bg-paper text-ink hover:bg-white"
-                  }`}
+                      ? "block w-full rounded-full py-2.5 text-center text-sm font-semibold transition bg-rec text-white hover:bg-rec-light"
+                      : `btn-neon w-full justify-center !font-bold !py-2.5 !text-sm tier-glow-btn-${i}`
+                  }
                 >
                   Выбрать план
                 </Link>
               </div>
             </article>
           ))}
+        </div>
+      </Appear>
+
+      <Appear from="up" delay={BEAT.content + 0.1}>
+        <div className="mt-6 [@media(max-height:820px)]:hidden">
+          <TeamRow members={PAGE_TEAM.sites} />
         </div>
       </Appear>
 

@@ -6,6 +6,8 @@ import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import { EYEBROW } from "@/lib/typography";
+import { PersonBadge } from "@/components/ui/FunnelCta";
+import type { TeamMember } from "@/lib/team";
 
 // The shared two-column chapter skeleton.
 //
@@ -51,6 +53,8 @@ export default function ChapterLayout({
   primary,
   secondary,
   columnClassName = "lg:w-[38%]",
+  person,
+  askCard,
   children,
 }: {
   accent: ChapterAccent;
@@ -69,6 +73,17 @@ export default function ChapterLayout({
   /** Left column width at lg. Chapter 01 runs wider on both pages because
    *  its carousel is narrower than the other chapters' panels. */
   columnClassName?: string;
+  /** Who answers this chapter's ask — a small photo+pulse badge above the
+   *  button row. Egor's ask: every funnel button on the site should read as
+   *  written to a specific person. Optional so a chapter not yet assigned
+   *  one keeps the plain buttons. */
+  person?: TeamMember;
+  /** A full TeamAskCard (big photo, specific question, one button) — when
+   *  given, this replaces the primary/secondary button row entirely rather
+   *  than sitting beside it, per Egor's ask: one window with one button,
+   *  not a small badge bolted onto the old two-button row. `person` above
+   *  is ignored when this is set (the card already carries its own face). */
+  askCard?: ReactNode;
   /** The right column. */
   children: ReactNode;
 }) {
@@ -97,26 +112,33 @@ export default function ChapterLayout({
         </Appear>
 
         <Appear from="up" delay={BEAT.cta}>
-          <div className="mt-9 flex items-center gap-4">
-            <Link href={primary.href} className={accent.pill}>
-              {primary.label}
-            </Link>
-            <Link href={secondary.href} aria-label={secondary.label} className={accent.round}>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M7 17 17 7M9 7h8v8" />
-              </svg>
-            </Link>
-          </div>
+          {askCard ? (
+            <div className="mt-8">{askCard}</div>
+          ) : (
+            <>
+              {person && <PersonBadge person={person} />}
+              <div className="mt-9 flex items-center gap-4">
+                <Link href={primary.href} className={accent.pill}>
+                  {primary.label}
+                </Link>
+                <Link href={secondary.href} aria-label={secondary.label} className={accent.round}>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M7 17 17 7M9 7h8v8" />
+                  </svg>
+                </Link>
+              </div>
+            </>
+          )}
         </Appear>
       </div>
 
