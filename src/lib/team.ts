@@ -1,10 +1,15 @@
 export type TeamMember = {
   id: string;
   name: string;
+  /** Dative form of `name` — Russian declines by case, and "Написать Макс"
+   *  reads as broken where "Написать Максу" doesn't. Used anywhere the name
+   *  follows "написать"/"позвонить"/etc. */
+  nameDative: string;
   role: string;
-  /** What this person can help with — shown as the bubble's hover/tap hint
-   *  and as the modal's opening line, so a visitor knows *why* to write to
-   *  this specific person rather than a generic "оставить заявку". */
+  /** What this person can help with, in the instrumental case — this always
+   *  follows "помогу с:" ("помогу с чем?" asks for the instrumental), shown
+   *  as the modal's opening line so a visitor knows *why* to write to this
+   *  specific person rather than a generic "оставить заявку". */
   helpsWith: string;
   photo: string;
 };
@@ -17,36 +22,41 @@ export const TEAM: Record<string, TeamMember> = {
   egor: {
     id: "egor",
     name: "Егор",
+    nameDative: "Егору",
     role: "генеральный продюсер",
-    helpsWith: "сроки, бюджет и любые вопросы по проекту",
+    helpsWith: "сроками, бюджетом и любыми вопросами по проекту",
     photo: "/team/egor.jpg",
   },
   dima: {
     id: "dima",
     name: "Вадим",
+    nameDative: "Вадиму",
     role: "моушн и монтаж",
-    helpsWith: "AI-генерации, монтаж и моушн-графику",
+    helpsWith: "AI-генерациями, монтажом и моушн-графикой",
     photo: "/team/dima.jpg",
   },
   max: {
     id: "max",
     name: "Макс",
+    nameDative: "Максу",
     role: "креативный сценарист",
-    helpsWith: "сценарий и концепцию ролика",
+    helpsWith: "сценарием и концепцией ролика",
     photo: "/team/max.jpg",
   },
   sasha: {
     id: "sasha",
     name: "Саша",
+    nameDative: "Саше",
     role: "визуальный дизайнер",
-    helpsWith: "стиль, вёрстку и дизайн сайта",
+    helpsWith: "стилем, вёрсткой и дизайном сайта",
     photo: "/team/sasha.jpg",
   },
   tanya: {
     id: "tanya",
     name: "Таня",
+    nameDative: "Тане",
     role: "SMM-специалист",
-    helpsWith: "продвижение и рекламу в соцсетях",
+    helpsWith: "продвижением и рекламой в соцсетях",
     photo: "/team/tanya.jpg",
   },
 };

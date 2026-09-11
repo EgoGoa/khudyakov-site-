@@ -214,7 +214,7 @@ export default function Process({
               }}
             />
           </Appear>
-          <Appear from="up" delay={BEAT.cta} className="lg:w-[300px] lg:shrink-0">
+          <Appear from="up" delay={BEAT.cta} className="flex flex-col gap-3 lg:w-[300px] lg:shrink-0">
             <TeamAskCard
               member={processPerson}
               question="Привет, давай обсудим правки?"
@@ -222,7 +222,13 @@ export default function Process({
               actionLabel="Заполнить бриф"
               href="/brief"
               compact
-              className="h-full"
+            />
+            <TeamAskCard
+              member={TEAM.egor}
+              question="Всё ли понятно?"
+              pitch="Готов созвониться — разберём проект голосом, если так удобнее."
+              actionLabel="Созвониться"
+              compact
             />
           </Appear>
         </div>

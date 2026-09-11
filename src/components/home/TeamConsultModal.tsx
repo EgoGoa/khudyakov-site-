@@ -74,7 +74,7 @@ export default function TeamConsultModal({
   };
 
   return (
-    <CenterModal open={open} onClose={close} ariaLabel={`Написать ${member.name}`} compact>
+    <CenterModal open={open} onClose={close} ariaLabel={`Написать ${member.nameDative}`} compact>
       <div className="flex h-fit w-full flex-col text-center">
         {screen === "form" && (
           <>
@@ -88,7 +88,7 @@ export default function TeamConsultModal({
             </span>
 
             <h3 className="mt-4 font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">
-              Написать {member.name}
+              Написать {member.nameDative}
             </h3>
             <p className="mt-2 text-sm text-paper/60">
               {member.role} · помогу с: {member.helpsWith}
