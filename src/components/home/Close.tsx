@@ -191,19 +191,15 @@ export default function Close({
                   <a
                     href="/brief"
                     className={
-                      tier.pro
-                        ? `w-full rounded-full px-8 text-center font-bold transition bg-rec text-white hover:bg-rec-light ${
-                            dense ? "py-2 text-xs" : "py-2.5 text-sm"
-                          }`
-                        : active === "content"
-                        ? // /content's own buttons match the hero's own secondary
-                          // CTAs (see Hero.tsx's `.btn-neon` pills) instead of the
-                          // plain white fill /ai, /sites, /smm still use below.
+                      active === "content"
+                        ? // Every tier's button — pro included — reads as one
+                          // family now: same .btn-neon pill, same font, same
+                          // glow mechanic, no separate solid-fill "pro" style.
                           // btn-neon-breathe adds the inviting "мы на связи"
                           // pulse on top, scoped to this page's own pricing +
                           // closing buttons rather than the site-wide default.
-                          `btn-neon btn-neon-breathe w-full justify-center !font-bold tier-glow-btn-${i} ${
-                            dense ? "!py-2 !text-xs" : "!py-2.5 !text-sm"
+                          `btn-neon btn-neon-breathe w-[70%] justify-center !font-bold tier-glow-btn-${i} ${
+                            dense ? "!py-1 !text-[8px]" : "!py-1.5 !text-[10px]"
                           }`
                         : `w-full rounded-full px-8 text-center font-semibold transition bg-paper text-ink hover:bg-white ${
                             dense ? "py-2 text-xs" : "py-2.5 text-sm"
@@ -213,7 +209,7 @@ export default function Close({
                     Выбрать план
                   </a>
                   {showCalculator && (
-                    <Link href="/calculator" className="btn-neon btn-neon-breathe w-full justify-center !py-2.5 !text-[12px]">
+                    <Link href="/calculator" className="btn-neon btn-neon-breathe w-[70%] justify-center !py-1.5 !text-[8px]">
                       Рассчитать
                     </Link>
                   )}
@@ -245,22 +241,12 @@ export default function Close({
             resize, when height is tight. */}
         <Appear from="up" delay={BEAT.controls}>
           <div className="mt-6 [@media(max-height:820px)]:hidden">
-            <TeamRow members={PAGE_TEAM[active]} planeMemberId={active === "content" ? "egor" : undefined} />
+            <TeamRow members={PAGE_TEAM[active]} />
           </div>
         </Appear>
 
         <Appear from="up" delay={BEAT.cta}>
           <div className="relative flex justify-center">
-            {active === "content" && (
-              <ContentDecoIcon
-                src="/images/icons/content/contact.png"
-                size={110}
-                rotate={-10}
-                variant={1}
-                z={10}
-                className="left-[26%] top-full mt-1"
-              />
-            )}
             <Link
               href="/brief"
               className={`chapter-neon group inline-flex items-center gap-3 text-center font-display uppercase leading-[0.95] tracking-tight transition-opacity hover:opacity-80 ${
