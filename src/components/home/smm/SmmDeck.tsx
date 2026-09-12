@@ -3,11 +3,9 @@
 import { useCallback, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { smmFormatPages } from "@/components/home/direction/smmFormatRegistry";
-import DeckPointerArrow from "@/components/ui/DeckPointerArrow";
 
-// Violet, matching the DeckPointerArrow above and this page's own accent —
-// see .deck-card-glow in globals.css for how this hands off to the hover
-// glow.
+// Violet, this page's own accent — see .deck-card-glow in globals.css for
+// how this hands off to the hover glow.
 const CARD_GLOW_STYLE = { "--card-glow-rgb": "168, 85, 247" } as CSSProperties;
 
 // The format carousel on /smm's chapter 01 — the same fanned card rail
@@ -220,18 +218,6 @@ export default function SmmDeck() {
 
   return (
     <div className="w-full max-w-[560px]">
-      {/* Points at the front card — always dead centre (FAN[0].x is 0), so a
-          fixed element above the deck, not something that tracks a moving
-          card. This IS the "Подробнее" control now (label + arrow, both
-          pulsing, wrapped in one Link) — gated on the format having a page
-          so it never points at a 404; the rest fall back to a plain
-          non-interactive pointer until their page ships. Violet: the page's
-          own identity colour. */}
-      <DeckPointerArrow
-        href={front.id in smmFormatPages ? `/smm/${front.id}` : undefined}
-        className="text-[#c4a0ff]"
-      />
-
       {/* Fixed height so the chapter's layout doesn't shift as the description
           under it changes length. */}
       <div className="relative h-[300px]">

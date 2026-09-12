@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { servicesByCategory } from "@/lib/service-content";
-import DeckPointerArrow from "@/components/ui/DeckPointerArrow";
 
 // The service carousel on /ai's chapter 01.
 //
@@ -47,12 +46,20 @@ type Card = {
    *  have somewhere to go. No `href` here means no button, not a dead
    *  link. */
   href?: string;
+  /** "Хит месяца" — Egor's flagship pick. Draws the card's badge and swaps
+   *  its glow/ring/CTA from the deck's default emerald to a pink→orange
+   *  pair (same #ff4fd8→#ff6a3d ramp as PromoCard's badge, so it reads as
+   *  the site's one established "featured" language, not a new colour
+   *  invented for this card alone). */
+  hit?: boolean;
 };
 
-type Shape = "video" | "chat" | "flow" | "text" | "brain" | "crm" | "voice" | "split" | "chart" | "learn";
+type Shape = "video" | "chat" | "flow" | "text" | "brain" | "crm" | "voice" | "split" | "chart" | "learn" | "hub";
 
-// Index-aligned with servicesByCategory.ai — same order, same ten items.
+// Index-aligned with servicesByCategory.ai — same order, now eleven items
+// (the "хит месяца" card added at the front, everything else unchanged).
 const CARDS: Card[] = [
+  { id: "chathub", short: "Единый AI-чат\nдля мессенджеров", shape: "hub", href: "/ai/chat-hub", hit: true },
   { id: "gen", short: "Генерация\nвидео и фото", shape: "video", href: "/ai/video" },
   { id: "bots", short: "Чат-боты\nи AI-агенты", shape: "chat", href: "/ai/agent" },
   { id: "auto", short: "Автоматизация\nкоммуникации", shape: "flow", href: "/ai/comms" },
@@ -82,7 +89,11 @@ function AiThumb({ shape }: { shape: Shape }) {
     <div className="absolute inset-0 bg-[linear-gradient(160deg,#16241f_0%,#0c1013_58%,#0a0d10_100%)]">
       {/* A faint emerald aurora in the corner so every card reads as part of
           the /ai icon set rather than as a grey box. */}
-      <span className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full bg-emerald-400/20 blur-2xl" />
+      <span
+        className={`pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full blur-2xl ${
+          shape === "hub" ? "bg-[#ff6a3d]/25" : "bg-emerald-400/20"
+        }`}
+      />
 
       <div className="relative grid gap-2 p-3.5 pt-4">
         {shape === "video" && (
@@ -179,6 +190,24 @@ function AiThumb({ shape }: { shape: Shape }) {
             {bar("46%", true)}
           </>
         )}
+        {shape === "hub" && (
+          <>
+            {/* Four channel chips converging into one — the card's own
+                pitch (Telegram/WhatsApp/Instagram/site → one thread) drawn
+                the same primitive way as the other nine shapes, but in the
+                card's pink→orange rather than the deck's default emerald. */}
+            <div className="grid grid-cols-2 gap-1.5">
+              <span className="block h-9 rounded-md bg-[#ff4fd8]/20 ring-1 ring-[#ff4fd8]/35" />
+              <span className="block h-9 rounded-md bg-[#ff6a3d]/20 ring-1 ring-[#ff6a3d]/35" />
+              <span className="block h-9 rounded-md bg-[#ff6a3d]/20 ring-1 ring-[#ff6a3d]/35" />
+              <span className="block h-9 rounded-md bg-[#ff4fd8]/20 ring-1 ring-[#ff4fd8]/35" />
+            </div>
+            <span className="mx-auto block h-4 w-px bg-[#ff8a5c]/50" />
+            <span className="mx-auto block h-7 w-7 rounded-full bg-gradient-to-b from-[#ff8a5c] to-[#ff4fd8]" />
+            {bar("84%")}
+            {bar("52%", true)}
+          </>
+        )}
         {shape === "learn" && (
           <>
             <div className="flex items-center gap-1.5">
@@ -254,15 +283,6 @@ export default function AiDeck() {
 
   return (
     <div className="w-full max-w-[728px]">
-      {/* Points at the front card — dead centre on this deck too (FAN[0].x
-          is 0). Emerald: /ai's own accent, the same colour as AI_PILL and
-          .ai-open-pulse below. This pointer and the card's own "Открыть
-          инструмент" button both link to the same place — not a
-          duplication so much as belt-and-braces: the pointer names and aims
-          at the card before you're even looking at it, the in-card button
-          is the actual press once you are. */}
-      <DeckPointerArrow href={CARDS[active].href} className="text-emerald-300" />
-
       <div
         ref={railRef}
         className="relative h-[416px]"
@@ -334,9 +354,17 @@ export default function AiDeck() {
                 style={
                   {
                     filter: "blur(24px)",
-                    background: isFront
-                      ? "radial-gradient(circle, rgba(167,139,250,0.95) 0%, rgba(56,189,248,0.55) 55%, rgba(56,189,248,0) 75%)"
-                      : `radial-gradient(circle, rgba(52,211,153,${dist === 1 ? 0.4 : 0.2}) 0%, rgba(52,211,153,0) 70%)`,
+                    // The "хит месяца" card keeps this same pink→orange glow
+                    // at every distance from centre, not only when active —
+                    // Egor's ask was for the card itself to read as lit
+                    // while scrolling past it, not just once it's front.
+                    background: card.hit
+                      ? isFront
+                        ? "radial-gradient(circle, rgba(255,79,216,0.95) 0%, rgba(255,106,61,0.6) 55%, rgba(255,106,61,0) 75%)"
+                        : `radial-gradient(circle, rgba(255,106,61,${dist === 1 ? 0.45 : 0.24}) 0%, rgba(255,79,216,0) 70%)`
+                      : isFront
+                        ? "radial-gradient(circle, rgba(167,139,250,0.95) 0%, rgba(56,189,248,0.55) 55%, rgba(56,189,248,0) 75%)"
+                        : `radial-gradient(circle, rgba(52,211,153,${dist === 1 ? 0.4 : 0.2}) 0%, rgba(52,211,153,0) 70%)`,
                     "--flicker-min": isFront ? 0.65 : dist === 1 ? 0.25 : 0.12,
                     "--flicker-max": isFront ? 1 : dist === 1 ? 0.5 : 0.3,
                     "--flicker-duration": isFront ? "3.2s" : "3.8s",
@@ -344,6 +372,22 @@ export default function AiDeck() {
                   } as React.CSSProperties
                 }
               />
+
+              {/* "Хит месяца" — same badge language as PromoCard's own
+                  featured pill (.promo-card-badge-lift: pink→orange
+                  shimmer + blink glow), reused rather than invented, so the
+                  site has one "featured" visual vocabulary and not two.
+                  Lives on the posed wrapper (not inside AiThumb), so it
+                  moves/blurs with the card like the glow above it. */}
+              {card.hit && (
+                <span
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3.5 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  aria-hidden="true"
+                >
+                  <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
+                  Хит месяца
+                </span>
+              )}
 
               {/* The front card is not a paging control — clicking it was
                   always a no-op (tabIndex -1, onClick re-selecting the
@@ -361,8 +405,10 @@ export default function AiDeck() {
                 <Link
                   href={card.href ?? "#"}
                   aria-current="true"
-                  className="deck-card-glow absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] ring-1 ring-emerald-300/40"
-                  style={{ "--card-glow-rgb": "16, 185, 129" } as React.CSSProperties}
+                  className={`deck-card-glow absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] ring-1 ${
+                    card.hit ? "ring-[#ff8a5c]/45" : "ring-emerald-300/40"
+                  }`}
+                  style={{ "--card-glow-rgb": card.hit ? "255, 106, 61" : "16, 185, 129" } as React.CSSProperties}
                 >
                   <AiThumb shape={card.shape} />
 
@@ -382,7 +428,13 @@ export default function AiDeck() {
                         makes it read as clickable rather than as more
                         label text next to the title above it. */}
                     {card.href && (
-                      <span className="ai-open-pulse inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-4 py-2.5 font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-[#03120d] motion-reduce:animate-none">
+                      <span
+                        className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 font-display text-[11px] font-semibold uppercase tracking-[0.14em] motion-reduce:animate-none ${
+                          card.hit
+                            ? "ai-open-pulse-hit bg-gradient-to-b from-[#ff8a5c] to-[#ff4fd8] text-[#1a0a04]"
+                            : "ai-open-pulse bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] text-[#03120d]"
+                        }`}
+                      >
                         Открыть инструмент
                         <span aria-hidden="true">→</span>
                       </span>

@@ -37,7 +37,7 @@ export default function Opening() {
       // repeated each other word for word on the way down the page. This
       // line does the job the picker's cannot: it says what the six cards
       // below actually are.
-      intro={<><span className="kw">Пять форматов</span>, которые мы снимаем чаще всего — от презентационного фильма до <span className="chapter-neon">AI-видео</span>.</>}
+      intro={<><span className="kw">Пять форматов</span>, на которые приходится большая часть наших смен — от презентационного фильма до <span className="chapter-neon">AI-видео</span>.</>}
       // Same reasoning as chapter 02's: the body is a six-card grid, and at
       // the default header size it loses its bottom row on short viewports
       // (a chapter cannot scroll internally inside the deck — see

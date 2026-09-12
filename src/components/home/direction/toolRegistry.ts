@@ -9,6 +9,7 @@ import { aiCrmContent } from "./content/ai-crm";
 import { aiPersonalizationContent } from "./content/ai-personalization";
 import { aiAnalyticsContent } from "./content/ai-analytics";
 import { aiTrainingContent } from "./content/ai-training";
+import { aiChatHubContent } from "./content/ai-chat-hub";
 
 // Страницы отдельных AI-инструментов внутри /ai.
 //
@@ -34,12 +35,17 @@ export const aiToolPages: Record<string, DirectionContent> = {
   [aiOpsContent.slug]: aiOpsContent,
 };
 
-/** Вторая пятёрка — компактный шаблон (см. CompactToolPage), 7 экранов
- *  вместо 12. Отдельный реестр, а не общий с `aiToolPages`, потому что
- *  страница /ai/[tool] должна знать, каким компонентом рендерить каждый
- *  slug — DirectionPage или CompactToolPage, — и Record с двумя формами
- *  значения внутри был бы источником путаницы, а не решением. */
+/** Вторая пятёрка плюс chat-hub — компактный шаблон (см. CompactToolPage),
+ *  7 экранов вместо 12. Отдельный реестр, а не общий с `aiToolPages`,
+ *  потому что страница /ai/[tool] должна знать, каким компонентом
+ *  рендерить каждый slug — DirectionPage или CompactToolPage, — и Record с
+ *  двумя формами значения внутри был бы источником путаницы, а не решением.
+ *
+ *  chat-hub стоит первым не по хронологии добавления, а по позиции своей
+ *  карточки в карусели /ai (см. AiDeck.tsx) — «хит месяца» с собственным
+ *  розово-оранжевым свечением и первой позицией в CARDS. */
 export const aiCompactToolPages: Record<string, CompactToolContent> = {
+  [aiChatHubContent.slug]: aiChatHubContent,
   [aiCommsContent.slug]: aiCommsContent,
   [aiCrmContent.slug]: aiCrmContent,
   [aiPersonalizationContent.slug]: aiPersonalizationContent,
@@ -50,6 +56,7 @@ export const aiCompactToolPages: Record<string, CompactToolContent> = {
 /** Короткие подписи для ссылок на /ai. Отдельно от `aiToolMeta`, потому что
  *  в строку ссылки нужен ярлык в два-три слова, а не заголовок страницы. */
 export const aiToolLinks: { slug: string; label: string }[] = [
+  { slug: "chat-hub", label: "AI-чат для мессенджеров" },
   { slug: "agent", label: "Агент по заявкам" },
   { slug: "content", label: "Карточки и контент" },
   { slug: "video", label: "Видеореклама" },
@@ -65,6 +72,11 @@ export const aiToolLinks: { slug: string; label: string }[] = [
 /** Короткие тексты для <head> — держатся рядом с реестром, чтобы новый
  *  инструмент добавлялся одной правкой в одном месте. */
 export const aiToolMeta: Record<string, { title: string; description: string }> = {
+  "chat-hub": {
+    title: "Единый AI-чат для мессенджеров",
+    description:
+      "Один ассистент на Telegram, WhatsApp, Instagram и сайт — отвечает клиентам в каждом канале и сводит переписку в одну ленту.",
+  },
   agent: {
     title: "AI-агент по заявкам",
     description:

@@ -85,7 +85,7 @@ export default function ContentServicePage() {
           chapter="02"
           title={<>Наши <span className="kw">работы</span></>}
           side="right"
-          intro={<><span className="kw">78 проектов</span>: реклама, шоурилы, 3D и моушн.</>}
+          intro={<><span className="kw">78 работ</span> в открытом доступе: реклама, шоурилы, 3D и моушн. Остальное — под NDA.</>}
           // A 2×2 grid of video tiles under the default text-8xl title was
           // tall enough to clip its own bottom row on short/wide viewports
           // (the deck can't scroll a chapter internally on desktop — see
@@ -126,7 +126,7 @@ export default function ContentServicePage() {
 
         <Trust
           title={<>Именно <span className="kw">мы</span></>}
-          intro={<>Продюсерский центр полного цикла: от идеи до готового ролика. Около <span className="kw">60% заказов</span> — клиенты, которые возвращаются.</>}
+          intro={<>Продюсерский центр полного цикла: от первого созвона до файлов в вашей папке. <span className="kw">Шесть из десяти заказов</span> — от клиентов, которые уже работали с нами.</>}
         />
         {/* Not "…под формат и площадку" any more: the ServicePicker above the
             deck and chapter 01 both already used that phrase, so it landed
@@ -138,11 +138,11 @@ export default function ContentServicePage() {
         />
         <Process
           title={<>PRO <span className="kw">хронология</span></>}
-          intro={<>Шесть шагов от брифа до сдачи. На каждом вы видите <span className="kw">прогресс</span> и можете вносить правки.</>}
+          intro={<>Шесть шагов от брифа до сдачи. На каждом видно <span className="kw">прогресс</span> и есть точка, где можно вмешаться.</>}
         />
         <Close
           title={<>Персональные <span className="kw">условия</span></>}
-          intro={<>Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: <span className="kw">консультация, смета</span> и 2–3 концепции.</>}
+          intro={<>Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: <span className="kw">консультация, смета</span> и 2–3 концепции до договора.</>}
         />
       </CinematicStage>
       </div>

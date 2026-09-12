@@ -2,7 +2,6 @@
 
 import { useCallback, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import DeckPointerArrow from "@/components/ui/DeckPointerArrow";
 import { sitesFormatPages } from "@/components/home/direction/sitesFormatRegistry";
 
 // Cyan — the site-wide `glow` accent /sites already uses for hover states
@@ -194,15 +193,6 @@ export default function SitesDeck() {
 
   return (
     <div className="w-full max-w-[560px]">
-      {/* Points at the front card — dead centre on this deck too (FAN[0].x
-          is 0). Cyan: the site's shared `glow` accent, the same colour
-          ROUND already turns on hover. Now that /sites/[format] exists,
-          gated the same way SmmDeck gates its own pointer/card link. */}
-      <DeckPointerArrow
-        href={front.id in sitesFormatPages ? `/sites/${front.id}` : undefined}
-        className="text-glow"
-      />
-
       {/* The fan. Fixed height so the chapter's layout doesn't shift as the
           description under it changes length. */}
       <div className="relative h-[290px]">

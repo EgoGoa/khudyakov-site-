@@ -144,12 +144,6 @@ function formatDuration(seconds?: number) {
   return `${h ? `${h}:` : ""}${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-function formatDate(date?: string) {
-  if (!date) return null;
-  const [y, m, d] = date.split("-");
-  return `${d}/${m}/${y}`;
-}
-
 // «1 работа», «2 работы», «5 работ» — обычные русские правила для счётного
 // существительного.
 function plural(count: number) {
@@ -419,12 +413,6 @@ export default function Works({
                         градиент по всей высоте читается как леттербокс. */}
                     <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-ink/75 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/90 via-ink/45 to-transparent" />
-
-                    {formatDate(work.date) && (
-                      <span className={`absolute left-4 top-4 font-display tracking-[0.08em] text-white/90 sm:left-5 sm:top-5 ${limit ? "text-xs" : "text-[11px]"}`}>
-                        {formatDate(work.date)}
-                      </span>
-                    )}
 
                     {!limit && (
                       <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">

@@ -1972,6 +1972,31 @@ body {
   }
 }
 
+/* Same pulse as .ai-open-pulse, repainted pink→orange for the "хит месяца"
+   card's own CTA pill — that pill's fill is already this gradient (see
+   AiDeck.tsx), and the plain emerald shadow above read as mismatched glow
+   glued onto a differently-coloured button. */
+@keyframes ai-open-pulse-hit {
+  0%, 100% {
+    box-shadow: 0 10px 26px -6px rgba(255, 106, 61, 0.7), 0 0 0 0 rgba(255, 79, 216, 0.55);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 12px 22px -4px rgba(255, 106, 61, 0.9), 0 0 0 4px rgba(255, 79, 216, 0);
+    transform: scale(1.02);
+  }
+}
+
+.ai-open-pulse-hit {
+  animation: ai-open-pulse-hit 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-open-pulse-hit {
+    animation: none;
+  }
+}
+
 /* /content's consult card (DirectionsGrid's ConsultCard) — a slow breathing
    glow in the page's own rec→orange-bright red, on the whole card rather
    than just its pill. Both shadow layers carry blur and no spread, so this
@@ -3031,17 +3056,77 @@ body {
    !important the hover lift/scale would be silently dropped, exactly the
    bug already found and fixed the same way on Close's tier cards. */
 .process-step-card {
+  --process-glow-border: rgba(0, 210, 255, 0.65);
+  --process-glow-ring: rgba(0, 210, 255, 0.2);
+  --process-glow-shadow: rgba(0, 210, 255, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: border-color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.6s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+  transition: background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Runs the page's own accent through the six cards one at a time —
+     each card gets the same 21.6s loop, staggered a sixth apart below, so
+     the glow reads as one light drifting through the timeline rather than
+     six cards blinking independently. Egor asked for this "в разы"
+     slower and smoother than the first pass (which cycled every 7.2s with
+     an near-instant spike) — tripling the loop and widening the bump into
+     a gradual rise/fall reads as a slow breath instead of a blink. */
+  animation: process-step-sequential-glow 21.6s ease-in-out infinite;
 }
 
+.process-step-card:nth-child(1) { animation-delay: 0s; }
+.process-step-card:nth-child(2) { animation-delay: 3.6s; }
+.process-step-card:nth-child(3) { animation-delay: 7.2s; }
+.process-step-card:nth-child(4) { animation-delay: 10.8s; }
+.process-step-card:nth-child(5) { animation-delay: 14.4s; }
+.process-step-card:nth-child(6) { animation-delay: 18s; }
+
+@keyframes process-step-sequential-glow {
+  0%, 100% {
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+  }
+  8% {
+    border-color: var(--process-glow-border);
+    box-shadow: 0 0 0 1px var(--process-glow-ring), 0 0 36px 6px var(--process-glow-shadow);
+  }
+  16% {
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+  }
+}
+
+/* A running animation outranks a plain rule for the same property
+   regardless of specificity, so without turning it off here the hover
+   glow below would never show — the loop would just keep overriding it. */
 .process-step-card:hover {
+  animation: none;
   transform: translateY(-8px) scale(1.03) !important;
   background-color: rgba(20, 22, 30, 0.6);
   border-color: rgba(0, 210, 255, 0.45);
   box-shadow: 0 0 0 1px rgba(0, 210, 255, 0.1), 0 24px 48px -20px rgba(0, 210, 255, 0.45);
+}
+
+.content-warm-headings .process-step-card {
+  --process-glow-border: rgba(255, 106, 61, 0.7);
+  --process-glow-ring: rgba(255, 79, 216, 0.25);
+  --process-glow-shadow: rgba(255, 106, 61, 0.6);
+}
+
+.ai-cool-headings .process-step-card {
+  --process-glow-border: rgba(16, 185, 129, 0.7);
+  --process-glow-ring: rgba(200, 241, 105, 0.25);
+  --process-glow-shadow: rgba(16, 185, 129, 0.6);
+}
+
+.sites-warm-headings .process-step-card {
+  --process-glow-border: rgba(255, 106, 61, 0.7);
+  --process-glow-ring: rgba(255, 106, 61, 0.25);
+  --process-glow-shadow: rgba(255, 106, 61, 0.6);
+}
+
+.smm-violet-headings .process-step-card {
+  --process-glow-border: rgba(168, 85, 247, 0.7);
+  --process-glow-ring: rgba(56, 189, 248, 0.25);
+  --process-glow-shadow: rgba(168, 85, 247, 0.6);
 }
 
 .content-warm-headings .process-step-card:hover {
@@ -3062,6 +3147,12 @@ body {
 .smm-violet-headings .process-step-card:hover {
   border-color: rgba(168, 85, 247, 0.5);
   box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.12), 0 24px 48px -18px rgba(56, 189, 248, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .process-step-card {
+    animation: none;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -3597,64 +3688,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .smm-open-pulse {
     animation: none;
-  }
-}
-
-/* Pulsing arrow above a service carousel (AiDeck/SmmDeck/SitesDeck), pointing
-   down at the front card — that card sits dead-centre of its deck on every
-   one of the three (FAN[0].x is always 0), so the arrow is a fixed element
-   above the deck rather than something that has to track a moving target.
-   Colour comes from the page: each Deck sets `color` via a wrapping class or
-   inline style, and the glow follows via currentColor rather than a second
-   hardcoded hex per page. Bounce, not a flat blink — Egor's ask elsewhere on
-   this site (.ai-open-pulse, .page-nav-arrow-pulse) is consistently "breathe,
-   don't blink" for anything meant to sit on screen for a while. */
-@keyframes deck-arrow-pulse {
-  0%, 100% {
-    transform: translateY(0);
-    opacity: 0.6;
-  }
-  50% {
-    transform: translateY(7px);
-    opacity: 1;
-  }
-}
-
-.deck-arrow-pulse {
-  animation: deck-arrow-pulse 1.7s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px currentColor);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .deck-arrow-pulse {
-    animation: none;
-    opacity: 0.85;
-  }
-}
-
-/* The "Подробнее" label above that arrow — same 1.7s timing, so word and
-   arrow breathe as one unit instead of two things pulsing out of step. A
-   glow pulse rather than the arrow's bounce: bouncing text reads as glitchy,
-   not as an inviting control. */
-@keyframes deck-label-pulse {
-  0%, 100% {
-    opacity: 0.75;
-    text-shadow: 0 0 8px currentColor;
-  }
-  50% {
-    opacity: 1;
-    text-shadow: 0 0 16px currentColor;
-  }
-}
-
-.deck-label-pulse {
-  animation: deck-label-pulse 1.7s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .deck-label-pulse {
-    animation: none;
-    opacity: 1;
   }
 }
 

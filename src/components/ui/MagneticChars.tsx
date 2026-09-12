@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef, type CSSProperties } from "react";
 
 // Splits `text` into one <span> per character and nudges each one a few px
 // toward the cursor as it passes near — the letter-level sibling of
@@ -32,9 +32,15 @@ const MAX_PULL = 7; // px — "не много": a nudge, not a jump
 export default function MagneticChars({
   text,
   className = "",
+  style,
 }: {
   text: string;
   className?: string;
+  /** Merged into every letter's own inline style — used to override the
+   *  className's gradient `background-image` per caller (e.g. HeroHeadline
+   *  recolouring the same .hero-neon-word/.hero-gradient-text classes to a
+   *  different service's accent) without a CSS class per colour variant. */
+  style?: CSSProperties;
 }) {
   const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
   const frameRef = useRef<number | null>(null);
@@ -93,7 +99,7 @@ export default function MagneticChars({
                     lettersRef.current[idx] = el;
                   }}
                   className={`magnetic-char ${className}`}
-                  style={{ display: "inline-block" }}
+                  style={{ display: "inline-block", ...style }}
                 >
                   {char}
                 </span>

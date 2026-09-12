@@ -6,7 +6,9 @@ import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Magnetic from "@/components/ui/Magnetic";
 import MagneticChars from "@/components/ui/MagneticChars";
+import HeroHeadline from "@/components/home/HeroHeadline";
 import { PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
+import { HERO_LEAD } from "@/lib/typography";
 
 
 // Same numbers as Stats.tsx, but a plain inline row here — no border, no
@@ -105,7 +107,17 @@ export default function Hero() {
               itself would get its rotateX/scale silently overwritten the
               instant framer's animation ran. */}
           <div className="hero-monolith-wrap">
-            <div className="hero-monolith">
+            {/* The 3D tilt (rotateX(18deg) scale(1.02)) was tuned for the
+                fixed two-word "DIGITAL AI" wordmark this slot used to hold.
+                Now that it shows a real, changing service name, that same
+                perspective skew reads as the letters being warped/deformed
+                — Egor's "деформация" complaint, confirmed by comparing
+                computed styles against ServicePicker's flat "СОЗДАНИЕ
+                КОНТЕНТА" (identical font-weight/gradient/glow already;
+                the only structural difference was this transform).
+                Flattened here, keeping .hero-monolith's font-size/
+                line-height/letter-spacing metrics untouched. */}
+            <div className="hero-monolith" style={{ transform: "none" }}>
               <motion.h1
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -114,25 +126,35 @@ export default function Hero() {
                 // line-height and letter-spacing come from .hero-monolith
                 // so they stay exactly the mockup's values.
                 className="relative max-w-4xl font-display font-extrabold uppercase"
+                // Reserved for the tallest a cycling title can get (title
+                // wrapping to 2 lines + the slogan line below it) — without
+                // this, a short service name left the H1 shorter than a
+                // long one and everything below (CTAs, stats, the lead
+                // paragraph) jumped every 4.2s as HeroHeadline cycled.
+                // em-based so it scales with .hero-monolith's own
+                // responsive font-size.
+                style={{ minHeight: "3.2em" }}
               >
-                <MagneticChars text="DIGITAL " className="hero-neon-word" />
-                <span className="hero-ai-gradient-smoke">AI</span>
-                {" "}
-                <MagneticChars text="- который" className="hero-gradient-text" />
-                <br />
-                <MagneticChars text="быстрее рынка" className="hero-gradient-text" />
+                <HeroHeadline />
               </motion.h1>
             </div>
           </div>
         </div>
 
+        {/* Back above the CTAs, its original spot, and left-aligned like it
+            always was — the centred/full-width pass was a detour. No
+            Container wrapper here: this already sits inside the outer one
+            (line 92) the same way the H1 above it does, and a nested
+            Container was doubling the left padding, pushing this out of
+            alignment with the headline's own left edge. */}
         <motion.p
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-5 max-w-xl text-base leading-relaxed text-paper/70 sm:text-lg"
+          transition={{ duration: 0.7, delay: 0.25 }}
+          className={`mt-2 max-w-2xl text-left ${HERO_LEAD}`}
+          style={{ fontSize: "clamp(0.4032rem, 1.296vw, 0.63rem)", lineHeight: 1.15 }}
         >
-          Продакшн, брендинг и SMM — усиленные AI там, где это ускоряет результат, а не там, где модно. Снимаем, придумываем и запускаем контент, который бренды не могут себе позволить не заметить.
+          В основе агентства — команда, а не технологии: продюсеры и монтажёры в продакшне, <span className="kw">AI-инженеры</span> в AI-решениях, разработчики на сайтах, SMM-специалисты в соцсетях. AI мы подключили как инструмент — и стали не просто быстрее, а <span className="kw">глубже и эффективнее</span> для каждого клиента.
         </motion.p>
 
         <motion.div
@@ -180,7 +202,7 @@ export default function Hero() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.4 }}
+        transition={{ duration: 0.7, delay: 0.35 }}
         className="relative mt-10 shrink-0"
       >
         <Container className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-4 pb-6">

@@ -45,9 +45,14 @@ export default function CompactToolPage({
   content: CompactToolContent;
   headingClass?: string;
 }) {
+  // A page can pin its own heading class (see `headingClass` on
+  // CompactToolContent) — used by the "хит месяца" chat-hub page to carry
+  // its pink→orange accent into its `.kw` headings instead of every /ai
+  // tool's shared emerald default.
+  const resolvedHeadingClass = content.headingClass ?? headingClass;
   return (
     <DirectionTaskProvider tasks={content.tasks} title={content.hero.eyebrow}>
-      <div className={`${headingClass} relative [overflow-x:clip]`}>
+      <div className={`${resolvedHeadingClass} relative [overflow-x:clip]`}>
         <DirectionBackdrop from={content.backdrop.from} to={content.backdrop.to} />
 
         <DirectionHero hero={content.hero} stats={content.stats} />

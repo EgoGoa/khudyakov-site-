@@ -36,6 +36,12 @@ export default function TeamAskCard({
    *  omitting it keeps the plain gradient-only look every other caller
    *  still uses. */
   backgroundImage,
+  /** Off only for Process.tsx's /content pair (Вадим/Егор) — sitting right
+   *  under the six now-animated process-step-card glows, their own
+   *  always-on pulse competed with that new sequential light instead of
+   *  reading as a separate, calmer element. Every other caller keeps the
+   *  pulse. */
+  glow = true,
 }: {
   member: TeamMember;
   question: ReactNode;
@@ -45,12 +51,13 @@ export default function TeamAskCard({
   compact?: boolean;
   className?: string;
   backgroundImage?: string;
+  glow?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
   const card = compact ? (
     <div
-      className={`team-ask-window consult-card-pulse group relative flex h-full flex-col justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-orange/15 via-ink/80 to-ink p-4 text-left sm:p-5 ${className}`}
+      className={`team-ask-window group relative flex h-full flex-col justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-orange/15 via-ink/80 to-ink p-4 text-left sm:p-5 ${glow ? "consult-card-pulse" : ""} ${className}`}
     >
       <div className="flex items-start gap-3">
         <span className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
@@ -73,7 +80,7 @@ export default function TeamAskCard({
     </div>
   ) : (
     <div
-      className={`team-ask-window consult-card-pulse group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-orange/20 via-ink/85 to-ink p-6 text-center sm:p-8 ${className}`}
+      className={`team-ask-window group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-orange/20 via-ink/85 to-ink p-6 text-center sm:p-8 ${glow ? "consult-card-pulse" : ""} ${className}`}
     >
       {backgroundImage && (
         <>
