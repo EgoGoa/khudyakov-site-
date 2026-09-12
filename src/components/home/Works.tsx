@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
@@ -15,17 +15,10 @@ import { worksByCategory } from "@/lib/service-content";
 import type { Work } from "@/lib/types";
 import { EYEBROW } from "@/lib/typography";
 
-// hqdefault always exists for any YouTube video; maxresdefault looks much
-// sharper but isn't guaranteed, so the <img> below falls back to hqdefault
-// on load error rather than risk a broken thumbnail in the grid.
-const maxThumb = (youtubeId: string) => `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
-const fallbackThumb = (youtubeId: string) => `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
-
-function swapToFallback(img: HTMLImageElement, youtubeId?: string) {
-  if (img.dataset.fallback || !youtubeId) return;
-  img.dataset.fallback = "1";
-  img.src = fallbackThumb(youtubeId);
-}
+// Self-hosted now (was img.youtube.com/vi/.../maxresdefault.jpg with a
+// hqdefault fallback for videos missing a maxres thumbnail) — one less
+// third-party origin the grid has to reach just to paint static thumbnails.
+const workThumb = (youtubeId: string) => `/images/works/${youtubeId}.jpg`;
 
 const ALL = "Все работы";
 const ALL_SPHERES = "Все сферы";
@@ -54,27 +47,29 @@ function SegmentedAxis({
   const shown = expanded || head.includes(value) ? head : [...head.slice(0, -1), value];
   const rest = expanded ? tail : [];
 
-  // Same tab-pill look as FaqAside's category switcher (rounded border,
-  // solid orange when active) — asked to bring the two in line rather than
-  // the glass/cyan .seg-pill treatment this used to have.
-  const pillClass = (isActive: boolean) =>
-    `rounded-full border px-3 py-1.5 text-[11px] font-medium leading-none transition ${
-      isActive
-        ? "border-orange bg-orange text-white"
-        : "border-paper/20 text-paper/60 hover:border-paper/40 hover:text-paper"
+  // Same transparent .btn-neon pill used everywhere on the site — its
+  // running-light border spins on its own timer per tab (.tab-neon-row +
+  // --tab-delay stagger them so they don't spin in unison), and hovering
+  // one freezes it bright while .tab-neon-row's CSS dims and pauses the
+  // rest (globals.css).
+  const pillClass = (isActive: boolean, index: number) =>
+    `btn-neon tab-neon rounded-full px-3 py-1.5 font-display text-[11px] uppercase tracking-wide leading-none transition ${
+      isActive ? "text-white" : "text-paper/60"
     }`;
+  const pillStyle = (index: number) => ({ "--tab-delay": `${(index % 4) * 0.9}s` }) as CSSProperties;
 
   return (
     <div>
       <div className={`${EYEBROW} text-paper/45`}>{label}</div>
-      <div className="mt-2.5 flex flex-wrap gap-2">
-        {[...shown, ...rest].map((option) => (
+      <div className="tab-neon-row mt-2.5 flex flex-wrap gap-2">
+        {[...shown, ...rest].map((option, i) => (
           <button
             key={option}
             type="button"
             onClick={() => onChange(option)}
             aria-pressed={value === option}
-            className={pillClass(value === option)}
+            className={pillClass(value === option, i)}
+            style={pillStyle(i)}
           >
             {option}
           </button>
@@ -84,7 +79,8 @@ function SegmentedAxis({
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className={pillClass(false)}
+            className={pillClass(false, shown.length + rest.length)}
+            style={pillStyle(shown.length + rest.length)}
           >
             {expanded ? "Свернуть" : `+${tail.length}`}
           </button>
@@ -412,17 +408,7 @@ export default function Works({
                       />
                     ) : (
                       <img
-                        src={work.youtubeId ? maxThumb(work.youtubeId) : ""}
-                        onError={(e) => swapToFallback(e.currentTarget, work.youtubeId)}
-                        // maxresdefault отсутствует у части видео, но YouTube
-                        // отвечает не пустым 404, а серой заглушкой 120×90 —
-                        // onError на неё не срабатывает, поэтому подмену делаем
-                        // и по факту загрузки слишком маленькой картинки.
-                        onLoad={(e) => {
-                          if (e.currentTarget.naturalWidth <= 120) {
-                            swapToFallback(e.currentTarget, work.youtubeId);
-                          }
-                        }}
+                        src={work.youtubeId ? workThumb(work.youtubeId) : ""}
                         alt=""
                         loading="lazy"
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
@@ -497,7 +483,7 @@ export default function Works({
                           <button
                             type="button"
                             onClick={() => setActiveId(work.id)}
-                            className="btn-neon btn-neon-cycle inline-flex items-center gap-1.5 !px-5 !py-2.5 !text-[11px]"
+                            className="btn-neon inline-flex items-center gap-1.5 !px-5 !py-2.5 !text-[11px]"
                           >
                             <span aria-hidden="true">▶</span>
                             Смотреть
@@ -505,14 +491,14 @@ export default function Works({
                           {/* Same flat/transparent .btn-neon pill as "Смотреть",
                               not the old solid-orange .btn-warm fill — Egor's
                               ask was for the two to read as siblings, not
-                              "primary vs secondary". Each carries the other
-                              half of the .btn-neon-cycle breathing pair (see
-                              globals.css), so the two take turns glowing
-                              rather than pulsing in sync or not at all. */}
+                              "primary vs secondary". Staggered by half the
+                              running-light's own cycle so the two don't spin
+                              in lockstep (see --btn-neon-delay, globals.css). */}
                           <button
                             type="button"
                             onClick={() => setLeadOpen(true)}
-                            className="btn-neon btn-neon-cycle-warm inline-flex items-center !px-5 !py-2.5 !text-[11px]"
+                            className="btn-neon inline-flex items-center !px-5 !py-2.5 !text-[11px]"
+                            style={{ "--btn-neon-delay": "1.8s" } as CSSProperties}
                           >
                             Обсудить
                           </button>

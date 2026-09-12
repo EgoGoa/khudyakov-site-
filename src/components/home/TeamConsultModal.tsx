@@ -82,9 +82,6 @@ export default function TeamConsultModal({
               <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-2 ring-glow/50">
                 <Image src={member.photo} alt={member.name} fill sizes="64px" className="object-cover" />
               </span>
-              <span className="absolute bottom-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-ink">
-                <span className="team-online-dot h-2.5 w-2.5 rounded-full bg-emerald-400" />
-              </span>
             </span>
 
             <h3 className="mt-4 font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">

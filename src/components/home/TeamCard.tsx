@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { TeamMember } from "@/lib/team";
 import TeamConsultModal from "@/components/home/TeamConsultModal";
 
@@ -19,7 +19,7 @@ import TeamConsultModal from "@/components/home/TeamConsultModal";
 // (not photo + separate "Написать" pill) — an earlier pass with both a name
 // line and a button text lost the name to `truncate` in this card's own
 // width; one click target with an arrow says the same thing in less room.
-export default function TeamCard({ member }: { member: TeamMember }) {
+export default function TeamCard({ member, decor }: { member: TeamMember; decor?: ReactNode }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,14 +27,12 @@ export default function TeamCard({ member }: { member: TeamMember }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="team-card glass-panel group flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left transition hover:glass-panel-on sm:px-4"
+        className="team-card glass-panel group relative flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left transition hover:glass-panel-on sm:px-4"
       >
+        {decor}
         <span className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
           <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-2 ring-paper/20 transition group-hover:ring-glow">
             <Image src={member.photo} alt={member.name} fill sizes="56px" className="object-cover" />
-          </span>
-          <span className="absolute bottom-0 right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-ink">
-            <span className="team-online-dot h-2 w-2 rounded-full bg-emerald-400" />
           </span>
         </span>
 

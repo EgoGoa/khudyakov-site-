@@ -39,7 +39,7 @@ export const TEAM: Record<string, TeamMember> = {
     id: "max",
     name: "Макс",
     nameDative: "Максу",
-    role: "креативный сценарист",
+    role: "креативный продюсер",
     helpsWith: "сценарием и концепцией ролика",
     photo: "/team/max.jpg",
   },
@@ -81,7 +81,10 @@ export const TRUST_ASK: Record<
 > = {
   content: {
     member: TEAM.max,
-    question: "Не знаете, какой сценарий выбрать?",
+    // Rendered through TeamAskCard's compact variant, which only shows
+    // `question` (not `pitch`) — the whole reply has to live here. No need
+    // to repeat "Макс" — the card already shows his name/role above this.
+    question: "Поддержу в любом креативе!",
     pitch: "Разберу задачу и предложу 2–3 варианта подачи — до брифа, бесплатно.",
     actionLabel: "Обсудить сценарий",
   },

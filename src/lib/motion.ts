@@ -15,23 +15,23 @@ export const EASE = [0.22, 1, 0.36, 1] as const;
 
 /** Seconds after the chapter takes the stage.
  *
- *  `content` sits a full 2s after `intro` on purpose — Egor asked for the
- *  heading and its supporting line to hold alone on screen for a couple of
- *  seconds before anything else moves, so the eye reads the chapter's point
- *  (and the footage behind it) before the substance arrives. Everything
- *  after `content` (`controls`, `cta`) is unchanged in *spacing* from before,
- *  just shifted later by that same 2s. */
+ *  `content` used to sit a full 2s after `intro` — the heading and its
+ *  supporting line held alone on screen before anything else moved. Egor
+ *  later found that pause read as the page hanging rather than as a
+ *  deliberate beat, so it's cut to 0.6s: still long enough for the heading
+ *  to register as its own moment, short enough that the chapter doesn't
+ *  feel stalled. `controls`/`cta` keep the same spacing *after* `content`
+ *  they always had, just carried on the shorter gap. */
 export const BEAT = {
   eyebrow: 0.1, // chapter number + icon — "where am I"
   title: 0.35, // "what is this"
-  intro: 0.65, // "what does it mean" — heading + this line hold alone for 2s
-  content: 2.65, // the substance: tiles, cards, lists
+  intro: 0.65, // "what does it mean" — heading + this line hold alone briefly
+  content: 1.25, // the substance: tiles, cards, lists
   // Filters and catalogue links act *on* the substance, so they arrive after
-  // it rather than a hair before it — the value used to be 2.6, which put
-  // them 0.05s ahead of the thing they control and made the two read as one
-  // simultaneous slab. Still comfortably before `cta`.
-  controls: 2.95,
-  cta: 3.2, // the ask, last — after the reason for it has landed
+  // it rather than a hair before it — same 0.3s gap this always had after
+  // `content`, so the two don't read as one simultaneous slab.
+  controls: 1.55,
+  cta: 1.8, // the ask, last — after the reason for it has landed
 } as const;
 
 /** How long each kind of element takes to settle.

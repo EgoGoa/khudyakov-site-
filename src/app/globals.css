@@ -650,10 +650,10 @@ body {
    not a separate element. */
 @keyframes team-photo-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5), 0 0 0 0 rgba(16, 185, 129, 0.28);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.65), 0 0 0 0 rgba(16, 185, 129, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0), 0 0 16px 10px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 11px rgba(16, 185, 129, 0), 0 0 22px 15px rgba(16, 185, 129, 0);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0), 0 0 0 0 rgba(16, 185, 129, 0);
@@ -1110,24 +1110,67 @@ body {
    "hidden sm:inline-flex" pattern used to show/hide this button per
    breakpoint) still win the cascade — plain CSS here would sit after
    @tailwind utilities in the compiled output and always beat "hidden". */
+/* Animatable custom properties for the running-light border below — plain
+   custom properties don't tween, but ones registered via @property do, so
+   the angle can spin via keyframes and the colour can cross-fade on hover
+   with a normal `transition` instead of a hard cut. */
+@property --btn-neon-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+@property --btn-neon-c1 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #22d8ff;
+}
+@property --btn-neon-c2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #6ad1ff;
+}
+
+@keyframes btn-neon-spin {
+  to {
+    --btn-neon-angle: 360deg;
+  }
+}
+
 @layer components {
-  /* Flat pill, not a glass/neon panel: solid fill at rest, a hairline border
-     only appears on hover rather than an always-on glow ring. This is the
-     everyday, many-per-screen action style — the one action per screen that
-     should stand out gets .btn-warm on top of it instead of its own class. */
+  /* Every button on the site, one shared look: a transparent pill with a
+     thin light comet running around its own border, blue at rest, that
+     cross-fades to a pink→orange gradient on hover/focus. The comet lives
+     in two stacked pseudo-elements (a crisp ring + a blurred trail behind
+     it) so the element's own border/background stay free for the flat
+     glass fill — no per-block copies of this, everything using .btn-neon
+     gets it for free. */
   .btn-neon {
+    position: relative;
+    isolation: isolate;
     background: rgba(255, 255, 255, 0.06);
     border: 1.4px solid rgba(255, 255, 255, 0.14);
+    /* The browser's own default focus outline is a rectangle — it doesn't
+       bend to match a pill's border-radius, so on click/keyboard focus it
+       shows as a thin straight-edged ring poking out past the rounded
+       corners. We already draw our own focus indicator (the box-shadow
+       ring below), so the native one is redundant as well as visibly
+       broken here. */
+    outline: none;
     color: var(--paper);
-    padding: 10px 22px;
-    font-size: 12px;
+    padding: 10px 24px;
+    /* Brand display face on every button site-wide, regardless of whether
+       the call site remembers to add `font-display` itself — some (e.g.
+       TeamAskCard's) didn't, and fell back to the body's plain sans font,
+       reading as off-brand next to every other neon button. */
+    font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     border-radius: 999px;
     cursor: pointer;
     transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
-      transform 0.15s ease;
+      transform 0.15s ease, --btn-neon-c1 0.35s ease, --btn-neon-c2 0.35s ease;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -1136,10 +1179,72 @@ body {
     white-space: nowrap;
   }
 
-  .btn-neon:hover {
+  .btn-neon::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    /* A full ring, not an arc with dark gaps — dim on most of the circle,
+       one bright highlight sweeping around it, same shape as .grad-border's
+       reference look. color-mix so the whole ring (not just the highlight)
+       recolours with --btn-neon-c1/c2 on hover. No separate blurred ::after
+       duplicate — masking a thin ring and then blurring it left a faint
+       stray edge past the intended glow radius in every browser tested;
+       the box-shadow below already does the "bleeds outward" part cleanly. */
+    background: conic-gradient(
+      from var(--btn-neon-angle),
+      color-mix(in srgb, var(--btn-neon-c1) 22%, transparent) 0deg,
+      color-mix(in srgb, var(--btn-neon-c1) 75%, transparent) 60deg,
+      var(--btn-neon-c2) 100deg,
+      color-mix(in srgb, var(--btn-neon-c1) 65%, transparent) 150deg,
+      color-mix(in srgb, var(--btn-neon-c1) 16%, transparent) 230deg,
+      color-mix(in srgb, var(--btn-neon-c1) 22%, transparent) 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: btn-neon-spin 9s linear infinite;
+    /* Per-instance stagger so a row of buttons doesn't spin in lockstep —
+       set inline as `style={{ "--btn-neon-delay": "1.2s" }}` on the element;
+       an inline `animationDelay` style wouldn't reach these pseudo-elements. */
+    animation-delay: var(--btn-neon-delay, 0s);
+    pointer-events: none;
+    transition: filter 0.35s ease;
+    z-index: 1;
+  }
+
+  .btn-neon:hover::before,
+  .btn-neon:focus-visible::before {
+    filter: brightness(1.5) saturate(1.15);
+    animation-duration: 4.5s;
+  }
+
+  /* A soft always-on colour wash behind the moving light — without this the
+     button reads as "dark pill with a thin bright line" between passes of
+     the comet; with it, the whole border area stays visibly tinted so the
+     button never looks unlit even when the bright arc is on the far side. */
+  .btn-neon {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--btn-neon-c1) 35%, transparent),
+      0 0 22px 2px color-mix(in srgb, var(--btn-neon-c1) 32%, transparent);
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
+      transform 0.15s ease, --btn-neon-c1 0.35s ease, --btn-neon-c2 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  .btn-neon > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .btn-neon:hover,
+  .btn-neon:focus-visible {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--btn-neon-c1) 55%, transparent),
+      0 0 26px 3px color-mix(in srgb, var(--btn-neon-c1) 55%, transparent);
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.4);
     color: #ffffff;
+    --btn-neon-c1: #ff5fa2;
+    --btn-neon-c2: #ff8a5c;
   }
 
   .btn-neon:active {
@@ -1161,50 +1266,60 @@ body {
   }
 }
 
-/* A quiet cyan-neon breathe around the outline, one button at a time — see
-   .btn-neon-cycle below for how the stagger is set per instance. */
-@keyframes btn-neon-outline-pulse {
-  0%,
-  100% {
-    border-color: rgba(255, 255, 255, 0.14);
-    box-shadow: 0 0 0 rgba(0, 210, 255, 0);
-  }
-  50% {
-    border-color: rgba(0, 210, 255, 0.85);
-    box-shadow: 0 0 14px rgba(0, 210, 255, 0.45), 0 0 28px rgba(0, 210, 255, 0.2);
-  }
+/* Category tab rows (Works.tsx SegmentedAxis, FaqAside.tsx): every pill
+   spins its own comet on its own timer, staggered by --tab-delay. Hovering
+   one pauses and dims every sibling's ring so only the pointed-at tab reads
+   as "lit"; the active/selected tab gets a steady glow on top so it stays
+   identifiable even while not hovered. */
+.tab-neon-row .tab-neon::before,
+.tab-neon-row .tab-neon::after {
+  animation-delay: var(--tab-delay, 0s);
 }
 
-.btn-neon-cycle {
-  animation: btn-neon-outline-pulse 3.6s ease-in-out infinite;
+.tab-neon-row:hover .tab-neon:not(:hover)::before,
+.tab-neon-row:hover .tab-neon:not(:hover)::after {
+  animation-play-state: paused;
+  opacity: 0.3;
 }
 
-/* The orange twin of .btn-neon-outline-pulse, half a cycle out of phase
-   (animation-delay = half the 3.6s duration) — pairing .btn-neon-cycle on
-   one button with .btn-neon-cycle-warm on its neighbour makes the two take
-   turns lighting up instead of glowing in lockstep. Used on Works.tsx's
-   "Смотреть"/"Обсудить" pair, both flat/transparent .btn-neon pills so the
-   only difference between them is which one is lit and in which colour. */
-@keyframes btn-neon-outline-pulse-warm {
-  0%,
-  100% {
-    border-color: rgba(255, 255, 255, 0.14);
-    box-shadow: 0 0 0 rgba(255, 106, 61, 0);
-  }
-  50% {
-    border-color: rgba(255, 138, 92, 0.9);
-    box-shadow: 0 0 14px rgba(255, 106, 61, 0.5), 0 0 28px rgba(255, 106, 61, 0.25);
-  }
+.tab-neon-row .tab-neon:hover::before,
+.tab-neon-row .tab-neon:hover::after {
+  animation-play-state: paused;
 }
 
-.btn-neon-cycle-warm {
-  animation: btn-neon-outline-pulse-warm 3.6s ease-in-out infinite;
-  animation-delay: 1.8s;
+.tab-neon-row .tab-neon[aria-pressed="true"] {
+  box-shadow: 0 0 12px rgba(34, 216, 255, 0.35);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn-neon-cycle,
-  .btn-neon-cycle-warm {
+  .btn-neon::before,
+  .btn-neon::after {
+    animation: none;
+  }
+}
+
+/* An inviting "мы на связи" breathe on top of the base running-light border
+   — /content's pricing + closing CTA buttons only, not the whole site's
+   .btn-neon (that would read as every button on every page nagging for a
+   click). Small scale + a soft glow pulse, slow enough to read as calm
+   rather than urgent. */
+@keyframes btn-neon-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(34, 216, 255, 0);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 16px 2px rgba(34, 216, 255, 0.3);
+  }
+}
+
+.btn-neon-breathe {
+  animation: btn-neon-breathe 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-neon-breathe {
     animation: none;
   }
 }
@@ -1377,6 +1492,105 @@ body {
   .promo-card-badge {
     animation: none;
   }
+}
+
+/* Lifted out of the card's own content flow, half over its top edge — same
+   gradient shimmer as `.promo-card-badge` plus a pink-orange glow of its
+   own (the badge is now the one part of the pattern that sits outside the
+   card's border, so it needs to read as lit on its own rather than borrow
+   the card's ambient glow underneath it). */
+.promo-card-badge-lift {
+  background: linear-gradient(90deg, #ff4fd8, #ff6a3d, #ff4fd8);
+  background-size: 200% 100%;
+  animation: promo-card-badge-shimmer 6s ease-in-out infinite, promo-card-badge-blink 3.2s ease-in-out infinite;
+  box-shadow: 0 4px 14px -2px rgba(255, 79, 216, 0.6), 0 0 10px 0px rgba(255, 106, 61, 0.5);
+}
+
+/* Egor's second pass on this: the first blink swung brightness too far and
+   too fast (read as flickering rather than lit) — slower, a smaller
+   brightness swing, but a punchier peak glow (tighter blur, higher alpha)
+   so the contrast between rest/peak still reads clearly at a glance. */
+@keyframes promo-card-badge-blink {
+  0%,
+  100% {
+    filter: brightness(1);
+    box-shadow: 0 4px 14px -2px rgba(255, 79, 216, 0.6), 0 0 10px 0px rgba(255, 106, 61, 0.5);
+  }
+  50% {
+    filter: brightness(1.18);
+    box-shadow: 0 4px 18px -2px rgba(255, 79, 216, 0.95), 0 0 16px 2px rgba(255, 106, 61, 0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-card-badge-lift {
+    animation: none;
+  }
+}
+
+/* Process.tsx's "Имиджевое видео" promo — three small icons drifting
+   upward and fading out, looping, staggered, tucked in the card's own
+   right side so they never cross the text column on the left. Purely
+   decorative (aria-hidden) and cheap: opacity+transform only, no layout
+   thrash. */
+.process-promo-deco-icon {
+  position: absolute;
+  right: 10%;
+  bottom: 8%;
+  font-size: 15px;
+  opacity: 0;
+  animation: process-promo-deco-rise 4.5s ease-in infinite;
+}
+
+.process-promo-deco-1 {
+  right: 22%;
+  animation-delay: 0s;
+}
+
+.process-promo-deco-2 {
+  right: 10%;
+  animation-delay: 1.5s;
+}
+
+.process-promo-deco-3 {
+  right: 34%;
+  animation-delay: 3s;
+}
+
+@keyframes process-promo-deco-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.9);
+  }
+  15% {
+    opacity: 0.85;
+  }
+  80% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-70px) scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .process-promo-deco-icon {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* The video variant plays instead of a still photo, so it earns a brighter,
+   less tinted treatment than `.promo-card-image`'s default dimming — motion
+   already draws the eye, dimming it as much as a static photo just muddies
+   the footage. */
+.promo-card-video {
+  opacity: 0.78;
+}
+
+.promo-card:hover .promo-card-video {
+  opacity: 0.9;
 }
 
 .promo-card-glow {
@@ -1743,8 +1957,8 @@ body {
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 12px 34px -4px rgba(16, 185, 129, 0.95), 0 0 0 9px rgba(52, 211, 153, 0);
-    transform: scale(1.03);
+    box-shadow: 0 12px 22px -4px rgba(16, 185, 129, 0.9), 0 0 0 4px rgba(52, 211, 153, 0);
+    transform: scale(1.02);
   }
 }
 
@@ -1766,10 +1980,10 @@ body {
    an unwanted border rather than light. */
 @keyframes consult-card-pulse {
   0%, 100% {
-    box-shadow: 0 10px 30px -8px rgba(245, 49, 11, 0.35), 0 0 26px 4px rgba(255, 138, 92, 0.2);
+    box-shadow: 0 10px 30px -8px rgba(245, 49, 11, 0.35), 0 0 14px 2px rgba(255, 138, 92, 0.2);
   }
   50% {
-    box-shadow: 0 16px 44px -6px rgba(245, 49, 11, 0.6), 0 0 48px 10px rgba(255, 138, 92, 0.4);
+    box-shadow: 0 16px 44px -6px rgba(245, 49, 11, 0.55), 0 0 24px 5px rgba(255, 138, 92, 0.32);
   }
 }
 
@@ -3460,7 +3674,7 @@ body {
 .deck-card-glow:focus-visible {
   transform: scale(1.035);
   box-shadow:
-    0 0 40px 6px rgba(var(--card-glow-rgb), 0.4),
+    0 0 18px 2px rgba(var(--card-glow-rgb), 0.4),
     0 28px 70px -24px rgba(0, 0, 0, 0.85);
 }
 

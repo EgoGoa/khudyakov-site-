@@ -1,25 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import { useStageActive, useStageStarted } from "@/components/ui/CinematicStage";
-import { contentDirections, type ContentDirection } from "@/lib/service-content";
+import { contentDirections, serviceMeta, type ContentDirection } from "@/lib/service-content";
 import { works } from "@/lib/data";
 import type { Work } from "@/lib/types";
 import TeamAskCard from "@/components/home/TeamAskCard";
 import { TEAM } from "@/lib/team";
-
-// hqdefault always exists for any YouTube video; maxresdefault looks sharper
-// but isn't guaranteed — same fallback dance as Works.tsx.
-const maxThumb = (youtubeId: string) => `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
-const fallbackThumb = (youtubeId: string) => `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
-
-function swapToFallback(img: HTMLImageElement, youtubeId: string) {
-  if (img.dataset.fallback) return;
-  img.dataset.fallback = "1";
-  img.src = fallbackThumb(youtubeId);
-}
 
 // Picks one work per direction, greedily excluding whatever an earlier
 // direction already claimed. Several works[] categories share pieces via
@@ -43,37 +33,43 @@ function pickWorks(directions: ContentDirection[]): (Work | undefined)[] {
   });
 }
 
-// The circle: a still thumbnail everywhere, and — only while this chapter is
-// the one on stage — a live autoplaying embed. This chapter lives inside
-// CinematicStage, the scroll-jank-sensitive pinned deck; mounting a YouTube
-// iframe per card unconditionally would keep six of them decoding off-stage
-// for nothing, so the iframe only exists at all once the visitor has
-// actually scrolled to this chapter (same gate SlideVideo uses on
-// ServicePicker for its one background video).
+// The circle: a short local clip, self-hosted (was a live YouTube embed —
+// one less third-party origin, and no per-card iframe decoding off-stage).
+// Same on-stage gate as before: this chapter lives inside CinematicStage,
+// the scroll-jank-sensitive pinned deck, so the <video> only autoplays once
+// the visitor has actually scrolled to this chapter (same gate SlideVideo
+// uses on ServicePicker for its one background video); at rest it shows the
+// poster frame instead of decoding anything.
 function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolean }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // The `autoPlay` attribute only fires the moment a <video> starts loading
+  // — flipping it true after the element already exists (which is exactly
+  // what happens here as `active` turns on once this chapter is scrolled
+  // into view) does not retroactively start playback in any browser. This
+  // element never unmounts (see the file header note on why), so play/pause
+  // has to be driven imperatively off `active` instead.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (active) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [active]);
+
   return (
-    <>
-      {active ? (
-        <iframe
-          src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&modestbranding=1&playsinline=1&rel=0`}
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[230%] w-[230%] -translate-x-1/2 -translate-y-1/2"
-          allow="autoplay; encrypted-media"
-          title=""
-          aria-hidden="true"
-        />
-      ) : (
-        <img
-          src={maxThumb(youtubeId)}
-          onError={(e) => swapToFallback(e.currentTarget, youtubeId)}
-          onLoad={(e) => {
-            if (e.currentTarget.naturalWidth <= 120) swapToFallback(e.currentTarget, youtubeId);
-          }}
-          alt=""
-          loading="lazy"
-          className="h-full w-full object-cover"
-        />
-      )}
-    </>
+    <video
+      ref={videoRef}
+      src={`/video/directions/${youtubeId}.mp4`}
+      poster={`/images/directions/${youtubeId}.jpg`}
+      className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+      muted
+      loop
+      playsInline
+      preload="metadata"
+    />
   );
 }
 
@@ -99,7 +95,7 @@ function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolea
 function DirectionCard({ direction, work, active }: { direction: ContentDirection; work?: Work; active: boolean }) {
   return (
     <div
-      className="deck-card-glow relative flex h-full flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-5 backdrop-blur-md sm:p-8"
+      className="deck-card-glow relative flex h-full min-h-[260px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-5 backdrop-blur-md sm:p-8"
       style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
     >
       <Link
@@ -128,10 +124,20 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
           ) : (
             <video
               src="/video/bg-ai.mp4"
+              // Without a poster and with preload="none", the browser has
+              // nothing to paint until the visitor scrolls this chapter into
+              // view and `active` flips true — a real black circle, not a
+              // still frame, for however long the fetch then takes. The same
+              // still image /ai's own hero already uses as this reel's
+              // poster elsewhere (serviceMeta.ai.image) covers that gap, and
+              // preload="metadata" lets the browser paint a real decoded
+              // frame the moment it can, without downloading the whole clip
+              // up front like "auto" would.
+              poster={serviceMeta.ai.image}
               muted
               loop
               playsInline
-              preload="none"
+              preload="metadata"
               autoPlay={active}
               className="h-full w-full object-cover"
             />
@@ -140,13 +146,14 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
       </div>
 
       <div className="pointer-events-none relative z-10 mt-3 flex items-center gap-3">
-        <span className="btn-neon btn-neon-cycle pointer-events-none !px-4 !py-2 !text-[10px]">
+        <span className="btn-neon pointer-events-none !px-4 !py-2 !text-[10px]">
           Узнать больше
         </span>
         <Link
           href={`/content/${direction.slug}`}
           aria-label={`Подробнее: ${direction.title}`}
-          className="btn-neon-cycle-warm pointer-events-auto grid h-9 w-9 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-colors duration-300 hover:text-orange"
+          className="btn-neon pointer-events-auto grid h-9 w-9 shrink-0 !p-0 place-items-center text-paper/85 transition-colors duration-300 hover:text-orange"
+          style={{ "--btn-neon-delay": "1.8s" } as React.CSSProperties}
         >
           <svg
             width="14"
@@ -176,10 +183,11 @@ function ConsultCard() {
   return (
     <TeamAskCard
       member={TEAM.egor}
-      question="Не знаете, какой формат нужен?"
-      pitch="Разберу задачу за пару минут и предложу формат и бюджет — до брифа, бесплатно."
-      actionLabel="Спросить Егора"
+      question="Подскажу, какой формат нужен!"
+      pitch="Помогу понять задачу и проработать концепцию — в формате видеосессии или аудиоконференции."
+      actionLabel="Узнать больше"
       className="h-full"
+      backgroundImage="/images/blocks/stock-brainstorm.jpg"
     />
   );
 }
@@ -229,7 +237,13 @@ export default function DirectionsGrid() {
           from="up"
           delay={BEAT.content + i * STAGGER.normal}
           duration={DUR.row}
-          className="h-full"
+          // The consult card (last, i === contentDirections.length) is
+          // deliberately the tall one — Egor's ask: its own row shouldn't
+          // stretch the plain direction cards next to it up to match. Grid
+          // rows still size to the tallest cell either way, so without
+          // `self-start` the shorter cards were being pulled down to fill
+          // that leftover height instead of staying their own natural size.
+          className={i === contentDirections.length ? "h-full" : "self-start"}
         >
           {card}
         </Appear>

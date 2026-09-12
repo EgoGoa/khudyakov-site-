@@ -241,7 +241,9 @@ export default function Offer({
                     scriptwriter) fits directly — concepts are his own work. */}
                 <TeamAskCard
                   member={TEAM.max}
-                  question={`Привет, давай обсудим «${selectedService.title}»?`}
+                  // Compact variant only shows `question`, not `pitch` — the
+                  // whole reply has to live in one string here.
+                  question="Готов обсудить твою задачу: наполнение социальных сетей, рекламные ролики, контент под запуск."
                   pitch="Подготовлю 2–3 концепции под вашу задачу — бесплатно, до брифа."
                   actionLabel="Получить 3 концепции"
                   compact

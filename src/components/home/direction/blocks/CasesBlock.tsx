@@ -27,14 +27,9 @@ import type { Work } from "@/lib/types";
 // перестановка: скрывать половину портфолио за чипом было бы обманом
 // ожиданий, человек пришёл смотреть работы.
 
-const maxThumb = (id: string) => `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
-const fallbackThumb = (id: string) => `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-
-function swapToFallback(img: HTMLImageElement, id: string) {
-  if (img.dataset.fallback) return;
-  img.dataset.fallback = "1";
-  img.src = fallbackThumb(id);
-}
+// Self-hosted now (was img.youtube.com/vi/.../maxresdefault.jpg with a
+// hqdefault fallback) — same static-thumbnail files Works.tsx uses.
+const workThumb = (id: string) => `/images/works/${id}.jpg`;
 
 function formatDuration(seconds?: number) {
   if (!seconds) return null;
@@ -135,12 +130,7 @@ export default function CasesBlock({ cases }: { cases: NonNullable<DirectionCont
                     <span className="relative h-14 w-24 shrink-0 overflow-hidden rounded-lg bg-ink">
                       {work.youtubeId ? (
                         <img
-                          src={maxThumb(work.youtubeId)}
-                          onError={(e) => swapToFallback(e.currentTarget, work.youtubeId!)}
-                          onLoad={(e) => {
-                            if (e.currentTarget.naturalWidth <= 120)
-                              swapToFallback(e.currentTarget, work.youtubeId!);
-                          }}
+                          src={workThumb(work.youtubeId)}
                           alt=""
                           loading="lazy"
                           className={`h-full w-full object-cover transition ${

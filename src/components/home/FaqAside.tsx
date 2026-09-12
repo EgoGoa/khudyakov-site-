@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Smooth open/close for the answer text below — Egor's ask, "в стиле
@@ -114,7 +114,7 @@ export default function FaqAside() {
           back. This (not a fixed height + internal scroll, tried and
           rejected) is what keeps the card's total height constant without
           ever showing a scroll affordance. */}
-      <div className="mt-3 flex flex-wrap gap-1.5">
+      <div className="tab-neon-row mt-3 flex flex-wrap gap-1.5">
         {CATEGORIES.map((cat, i) => {
           if (open !== null && i !== category) return null;
           return (
@@ -123,11 +123,10 @@ export default function FaqAside() {
               type="button"
               onClick={() => selectCategory(i)}
               aria-pressed={category === i}
-              className={`rounded-full border px-3 py-1.5 text-[11px] font-medium leading-none transition ${
-                category === i
-                  ? "border-orange bg-orange text-white shadow-[0_0_16px_rgba(255,106,61,0.45)]"
-                  : "border-paper/20 text-paper/60 hover:border-paper/40 hover:text-paper"
+              className={`btn-neon tab-neon rounded-full px-3 py-1.5 font-display text-[11px] uppercase tracking-wide leading-none transition ${
+                category === i ? "text-white" : "text-paper/60"
               }`}
+              style={{ "--tab-delay": `${(i % 4) * 0.9}s` } as CSSProperties}
             >
               {cat.label}
             </button>

@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Magnetic from "@/components/ui/Magnetic";
 import MagneticChars from "@/components/ui/MagneticChars";
 import { PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
-
-const SHOWREEL_YOUTUBE_ID = "HC5SMCQuoms";
 
 
 // Same numbers as Stats.tsx, but a plain inline row here — no border, no
@@ -21,15 +19,13 @@ const heroStats = [
 ];
 
 export default function Hero() {
-  const frameRef = useRef<HTMLIFrameElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const titleWrapRef = useRef<HTMLDivElement>(null);
 
-  // The YouTube embed (its own player JS + video stream) was mounting the
-  // instant the page loaded, competing with the headline/CTAs — the actual
-  // content of the very first screen — for bandwidth and main-thread time.
-  // A static frame from the reel covers the same spot immediately; the
-  // embed itself is deferred a beat so the critical content settles first,
-  // then fades in once it's ready.
+  // Self-hosted now (was a YouTube embed) — one less third-party origin to
+  // connect to on the very first screen. Still deferred a beat so the
+  // headline/CTAs settle first: a static frame from the reel covers the
+  // spot immediately, and the <video> fades in once it's ready.
   const [loadReel, setLoadReel] = useState(false);
   useEffect(() => {
     if (typeof window.requestIdleCallback === "function") {
@@ -70,22 +66,16 @@ export default function Hero() {
           }`}
         />
         {loadReel && (
-          // Laid out ~33% smaller than the visual size it ends up at (the
-          // matching scale-[1.5] below stretches it back) rather than at
-          // its full on-screen size directly: YouTube picks a stream
-          // resolution from the iframe's actual layout box, and this was
-          // requesting a needlessly high one for a video that's blurred at
-          // rest and, even sharp on hover, is still just a background loop
-          // behind text — CSS can't lower an already-negotiated resolution,
-          // only the box size fed into that negotiation can.
-          <iframe
-            ref={frameRef}
-            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 blur-[3px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]"
-            src={`https://www.youtube.com/embed/${SHOWREEL_YOUTUBE_ID}?autoplay=1&mute=1&loop=1&playlist=${SHOWREEL_YOUTUBE_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
-            title="Шоурил HDKV.AGENCY"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            referrerPolicy="strict-origin-when-cross-origin"
-            loading="eager"
+          <video
+            ref={videoRef}
+            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 object-cover blur-[3px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]"
+            src="/video/showreel-hero.mp4"
+            poster="/images/showreel-frame.jpg"
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-label="Шоурил HDKV.AGENCY"
           />
         )}
         <div
@@ -151,15 +141,11 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.3 }}
           className="mt-8 flex flex-wrap items-center gap-3"
         >
-          <Magnetic>
-            <Link
-              href="#works"
-              className="rounded-full bg-rec px-7 py-3.5 text-sm font-medium text-white transition hover:bg-rec-light"
-            >
-              Смотреть работы
-            </Link>
-          </Magnetic>
-          <a href="tel:+79925111812" className="btn-neon btn-neon-cycle" style={{ animationDelay: "0s" }}>
+          <a
+            href="tel:+79925111812"
+            className="btn-neon !px-4 !py-2 !text-[9px]"
+            style={{ "--btn-neon-delay": "0s" } as CSSProperties}
+          >
             <PhoneIcon className="animate-pulse" />
             Заказать звонок
           </a>
@@ -167,8 +153,8 @@ export default function Hero() {
             href="https://t.me/hdkv"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-neon btn-neon-cycle"
-            style={{ animationDelay: "1.2s" }}
+            className="btn-neon !px-4 !py-2 !text-[9px]"
+            style={{ "--btn-neon-delay": "1.2s" } as CSSProperties}
           >
             <TelegramIcon />
             Написать в Telegram
@@ -177,8 +163,8 @@ export default function Hero() {
             href="https://wa.me/79925111812"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-neon btn-neon-cycle"
-            style={{ animationDelay: "2.4s" }}
+            className="btn-neon !px-4 !py-2 !text-[9px]"
+            style={{ "--btn-neon-delay": "2.4s" } as CSSProperties}
           >
             <WhatsAppIcon />
             Написать в WhatsApp

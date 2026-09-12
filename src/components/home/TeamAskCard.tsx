@@ -31,6 +31,11 @@ export default function TeamAskCard({
   href,
   compact = false,
   className = "",
+  /** Full-variant only: a photo behind the card's own gradient, dimmed
+   *  enough that the question/pitch stay readable on top of it. Optional —
+   *  omitting it keeps the plain gradient-only look every other caller
+   *  still uses. */
+  backgroundImage,
 }: {
   member: TeamMember;
   question: ReactNode;
@@ -39,6 +44,7 @@ export default function TeamAskCard({
   href?: string;
   compact?: boolean;
   className?: string;
+  backgroundImage?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -50,9 +56,6 @@ export default function TeamAskCard({
         <span className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
           <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-1 ring-paper/25">
             <Image src={member.photo} alt={member.name} fill sizes="56px" className="object-cover" />
-          </span>
-          <span className="absolute bottom-0 right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-ink">
-            <span className="team-online-dot h-2 w-2 rounded-full bg-emerald-400" />
           </span>
         </span>
         <div className="min-w-0">
@@ -72,27 +75,49 @@ export default function TeamAskCard({
     <div
       className={`team-ask-window consult-card-pulse group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-orange/20 via-ink/85 to-ink p-6 text-center sm:p-8 ${className}`}
     >
-      <span className="relative mx-auto block h-24 w-24 sm:h-28 sm:w-28">
-        <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-4 ring-paper/95">
-          <Image src={member.photo} alt={member.name} fill sizes="112px" className="object-cover" />
+      {backgroundImage && (
+        <>
+          <Image
+            src={backgroundImage}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="480px"
+            className="pointer-events-none absolute inset-0 object-cover"
+          />
+          {/* Exposure-style darkening so the question/pitch text on top stays
+              readable against whatever the photo is doing underneath. */}
+          <span
+            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/70 to-ink/90"
+            aria-hidden="true"
+          />
+        </>
+      )}
+      {/* Everything below needs to be in its own positioned stacking layer —
+          without `relative`, plain in-flow text paints *behind* the
+          absolutely-positioned background image/tint above regardless of
+          DOM order (that's how CSS stacking works: positioned elements with
+          z-index:auto always sit above non-positioned in-flow content). */}
+      <div className="relative z-10">
+        <span className="relative mx-auto block h-24 w-24 sm:h-28 sm:w-28">
+          <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-4 ring-paper/95">
+            <Image src={member.photo} alt={member.name} fill sizes="112px" className="object-cover" />
+          </span>
         </span>
-        <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-ink ring-2 ring-ink">
-          <span className="team-online-dot h-3 w-3 rounded-full bg-emerald-400" />
+
+        <p className="mt-3 font-display text-[13px] uppercase tracking-tight text-paper/70">
+          {member.name} <span className="text-paper/40">· {member.role}</span>
+        </p>
+
+        <h3 className="mx-auto mt-3 max-w-sm font-display text-xl uppercase leading-[1.05] tracking-tight text-white sm:text-2xl">
+          {question}
+        </h3>
+        <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-paper/70 sm:text-[15px]">{pitch}</p>
+
+        <span className="btn-neon btn-warm mt-5 inline-flex transition group-hover:brightness-110">
+          {actionLabel} →
         </span>
-      </span>
-
-      <p className="mt-3 font-display text-[13px] uppercase tracking-tight text-paper/70">
-        Привет! Я {member.name} <span className="text-paper/40">· {member.role}</span>
-      </p>
-
-      <h3 className="mx-auto mt-3 max-w-sm font-display text-xl uppercase leading-[1.05] tracking-tight text-white sm:text-2xl">
-        {question}
-      </h3>
-      <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-paper/70 sm:text-[15px]">{pitch}</p>
-
-      <span className="btn-neon btn-warm mt-5 inline-flex transition group-hover:brightness-110">
-        {actionLabel} →
-      </span>
+      </div>
     </div>
   );
 

@@ -234,9 +234,10 @@ export default function Trust({
             <PromoCard
               glow
               image="/images/service-ai.jpg"
+              video="/video/ai-reel.mp4"
               badge="Акция только в сентябре"
               title="AI-видеоконтент"
-              subtitle="10-секундный ролик по последней AI-модели"
+              subtitle="AI Reels на последних моделях генерации. Не просто красивая картинка — креативный сценарий и маркетинговая логика внутри: цепляющий первый кадр, удержание до конца, чёткий призыв к действию. 10 секунд, которые работают на продажи."
               price="9 500 ₽"
               oldPrice="17 500 ₽"
               href="/content/ai-video"

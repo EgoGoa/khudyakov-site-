@@ -197,14 +197,23 @@ export default function Process({
           Other pages keep the original single centred/right FunnelCta bar
           untouched. */}
       {active === "content" ? (
-        <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-stretch">
-          <Appear from="up" delay={BEAT.cta} className="lg:max-w-sm lg:flex-1">
+        // Same three-column grid the step cards above use — Egor's ask: the
+        // promo card and the two team cards read as one row, same width as
+        // the steps, not a wide banner plus a narrow sidebar.
+        <div className="mt-5 grid gap-4 sm:grid-cols-3">
+          <Appear from="up" delay={BEAT.cta} className="h-full">
             <PromoCard
               palette="cyan"
               image="/images/service-video.jpg"
               badge="Акция только в сентябре"
               title="Имиджевое видео"
-              subtitle="30-секундный ролик, который формирует доверие к бренду"
+              subtitle="Что входит в акцию сентября:"
+              details={[
+                "— имиджевое видео по вашему сценарию;",
+                "— адаптация под вертикальный и горизонтальный формат;",
+                "— 2 круга правок без доплаты;",
+                "— готовые обложки и нарезки под Reels.",
+              ]}
               price="42 000 ₽"
               oldPrice="60 000 ₽"
               href="/content/image"
@@ -212,23 +221,38 @@ export default function Process({
                 format: "Имиджевое видео",
                 wishes: "Акция сентября — 30-секундный имиджевый ролик за 42 000 ₽",
               }}
+              decor={
+                <span className="process-promo-deco pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden="true">
+                  <span className="process-promo-deco-icon process-promo-deco-1">✋</span>
+                  <span className="process-promo-deco-icon process-promo-deco-2">✨</span>
+                  <span className="process-promo-deco-icon process-promo-deco-3">🎬</span>
+                </span>
+              }
             />
           </Appear>
-          <Appear from="up" delay={BEAT.cta} className="flex flex-col gap-3 lg:w-[300px] lg:shrink-0">
+          <Appear from="up" delay={BEAT.cta} className="h-full">
             <TeamAskCard
               member={processPerson}
-              question="Привет, давай обсудим правки?"
+              // Compact variant only shows `question`, not `pitch` — the
+              // whole reply has to live in one string here.
+              question="Создаю то, что снять камерой невозможно. На связи!"
               pitch="Отвечу быстрее, чем вы заполните бриф — вопросы по монтажу и срокам."
               actionLabel="Заполнить бриф"
               href="/brief"
               compact
+              className="h-full"
             />
+          </Appear>
+          <Appear from="up" delay={BEAT.cta} className="h-full">
             <TeamAskCard
               member={TEAM.egor}
-              question="Всё ли понятно?"
+              // Card already shows "Егор · генеральный продюсер" above this
+              // line (member.name/role) — no need to repeat his name here.
+              question="Работаем индивидуально — раскрываем именно ваш потенциал, а не шаблон."
               pitch="Готов созвониться — разберём проект голосом, если так удобнее."
               actionLabel="Созвониться"
               compact
+              className="h-full"
             />
           </Appear>
         </div>

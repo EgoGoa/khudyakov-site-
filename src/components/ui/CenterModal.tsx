@@ -81,6 +81,10 @@ export default function CenterModal({
     return () => window.clearTimeout(id);
   }, [open]);
 
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount flag, see the comment at its use below
+  useEffect(() => setMounted(true), []);
+
   if (!open && !keepAlive) return null;
 
   // `position: fixed` is positioned relative to the nearest ancestor with a
@@ -93,7 +97,17 @@ export default function CenterModal({
   // covering the screen. A portal to `document.body` sidesteps the whole
   // class of bug: this dialog is never a descendant of the caller's own DOM
   // position, so no ancestor the caller doesn't control can affect it.
-  if (typeof document === "undefined") return null;
+  //
+  // The portal needs `document`, which doesn't exist during SSR — but
+  // branching on `typeof document` directly is exactly the server/client
+  // branch React's hydration warning calls out: SSR always saw `undefined`
+  // and returned null, while the client's very first render already has a
+  // `document` and returns the portal, so React throws away the whole page
+  // and rebuilds it from scratch on every load (the visible flash/jump on
+  // /content Egor flagged). Gating on a `mounted` flag that starts false
+  // keeps the first client render identical to the server's, and only flips
+  // to the portal a tick later in a normal effect-driven re-render.
+  if (!mounted) return null;
 
   return createPortal(
     <AnimatePresence>

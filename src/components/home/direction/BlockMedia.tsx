@@ -187,7 +187,16 @@ export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
             muted
             loop
             playsInline
-            preload="none"
+            // "none" leaves nothing decoded for the browser to paint until
+            // this block scrolls into view and `active` calls .play() — on
+            // some engines that shows flat black instead of `poster` for
+            // however long the fetch then takes, exactly the flash this
+            // component's own poster was meant to prevent (see the comment
+            // above). "metadata" fetches just enough for the browser to
+            // decode and hold a real frame immediately, at a small fraction
+            // of "auto"'s full-file cost — cheap enough to do for every
+            // block's clip up front instead of only once scrolled to.
+            preload="metadata"
             className="relative h-full w-full object-cover"
             style={{
               opacity: tone.opacity,
