@@ -32,7 +32,7 @@ export default function SitesOffer() {
       headless
       bodyDecor={
         <SitesDecoIcon
-          src="/images/icons/sites/code.png"
+          src="/images/icons/sites/code.webp"
           size={210}
           rotate={8}
           className="-right-4 bottom-0 opacity-70 lg:right-2"

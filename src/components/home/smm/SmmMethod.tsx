@@ -89,7 +89,7 @@ export default function SmmMethod() {
          the type rather than on it. */
       bodyDecor={
         <SmmDecoIcon
-          src="/images/icons/smm/influencer.png"
+          src="/images/icons/smm/influencer.webp"
           size={200}
           rotate={-8}
           className="left-0 -top-32 xl:left-4"

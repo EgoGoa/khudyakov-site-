@@ -183,7 +183,7 @@ export default function AiServicePage() {
               // element itself is the contained fix; the alternative is
               // restructuring Close's own markup for every page that uses it.
               key="cta-icon"
-              src="/images/icons/ai/close.png?v=2"
+              src="/images/icons/ai/close.webp?v=2"
               alt=""
               aria-hidden="true"
               width={34}

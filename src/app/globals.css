@@ -4008,3 +4008,15 @@ body {
     animation: none;
   }
 }
+
+/* Пауза анимаций в секциях за пределами экрана.
+   Класс вешает OffscreenAnimationPause (см. этот компонент — там же
+   объяснение, почему пауза, а не content-visibility). Правило намеренно
+   бьёт по всем потомкам: анимации живут на карточках, кнопках и фото
+   внутри блока, а не на самой секции. */
+.anim-offscreen,
+.anim-offscreen *,
+.anim-offscreen *::before,
+.anim-offscreen *::after {
+  animation-play-state: paused !important;
+}

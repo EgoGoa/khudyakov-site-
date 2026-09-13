@@ -52,7 +52,7 @@ export default function SmmProcess() {
          the panel is empty in both the layout and the shot. */
       bodyDecor={
         <SmmDecoIcon
-          src="/images/icons/smm/strategy.png"
+          src="/images/icons/smm/strategy.webp"
           size={185}
           rotate={-8}
           className="right-[18px] -top-[118px]"

@@ -86,7 +86,7 @@ export default function AiGuarantees() {
       intro={<>Покупаете не пост и не ролик — покупаете <span className="kw">работающую систему</span>, зафиксированную в договоре.</>}
       decor={
         <AiDecoIcon
-          src="/images/icons/ai/guarantees.png?v=2"
+          src="/images/icons/ai/guarantees.webp?v=2"
           size={240}
           rotate={8}
           variant={2}

@@ -79,7 +79,7 @@ export default function Offer({
       decor={
         active === "content" ? (
           <ContentDecoIcon
-            src="/images/icons/content/services.png"
+            src="/images/icons/content/services.webp"
             size={260}
             rotate={-8}
             variant={2}

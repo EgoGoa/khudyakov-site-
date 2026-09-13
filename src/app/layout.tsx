@@ -6,6 +6,7 @@ import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import BackgroundFX from "@/components/layout/BackgroundFX";
+import OffscreenAnimationPause from "@/components/layout/OffscreenAnimationPause";
 import { FullpageProvider } from "@/lib/fullpage";
 import { HeaderMenuProvider } from "@/lib/header-menu";
 import { CinematicNavProvider } from "@/lib/cinematic-nav";
@@ -88,6 +89,11 @@ export default function RootLayout({
     >
       <body className="relative bg-ink font-sans text-paper antialiased">
         <BackgroundFX />
+        {/* Замораживает CSS-анимации в блоках за пределами экрана — см.
+            сам компонент. Здесь, а не в шаблонах страниц: бесконечные
+            анимации (неоновые пульсации кнопок, карточек, фото команды)
+            живут на каждой странице сайта. */}
+        <OffscreenAnimationPause />
         <FullpageProvider>
           <CinematicNavProvider>
             <HeaderMenuProvider>

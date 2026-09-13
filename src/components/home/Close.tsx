@@ -112,7 +112,7 @@ export default function Close({
       decor={
         active === "content" ? (
           <ContentDecoIcon
-            src="/images/icons/content/pricing.png"
+            src="/images/icons/content/pricing.webp"
             size={220}
             rotate={-14}
             variant={4}

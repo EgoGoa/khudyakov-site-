@@ -90,7 +90,7 @@ export default function SitesGuarantees() {
       headless
       bodyDecor={
         <SitesDecoIcon
-          src="/images/icons/sites/shield.png"
+          src="/images/icons/sites/shield.webp"
           size={230}
           rotate={7}
           z={0}

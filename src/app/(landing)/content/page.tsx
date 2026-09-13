@@ -97,7 +97,7 @@ export default function ContentServicePage() {
           // reads as a corner accent instead of a patch over the word.
           decor={
             <ContentDecoIcon
-              src="/images/icons/content/process.png"
+              src="/images/icons/content/process.webp"
               size={205}
               rotate={-10}
               variant={2}

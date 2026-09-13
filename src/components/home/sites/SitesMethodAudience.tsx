@@ -80,7 +80,7 @@ export default function SitesMethodAudience() {
          over it. */
       bodyDecor={
         <SitesDecoIcon
-          src="/images/icons/sites/bolt.png"
+          src="/images/icons/sites/bolt.webp"
           size={300}
           rotate={10}
           pulse

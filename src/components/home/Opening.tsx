@@ -52,7 +52,7 @@ export default function Opening() {
               +dimmed so the cluster reads as a corner accent again, not a
               second layer over the word. */}
           <ContentDecoIcon
-            src="/images/icons/content/presentation.png"
+            src="/images/icons/content/presentation.webp"
             size={150}
             rotate={-6}
             variant={1}
@@ -63,7 +63,7 @@ export default function Opening() {
               cluster — sized and placed to only ever overlap that one
               icon, never the title or the cards below it. */}
           <ContentDecoIcon
-            src="/images/icons/content/ai-video.png"
+            src="/images/icons/content/ai-video.webp"
             size={108}
             rotate={4}
             variant={4}

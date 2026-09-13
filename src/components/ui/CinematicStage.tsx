@@ -1017,7 +1017,13 @@ export default function CinematicStage({
               poster={poster}
               muted
               playsInline
-              preload="auto"
+              // `auto` только когда дек реально доехал до экрана (`started`).
+              // Раньше стояло `auto` всегда, и браузер тянул весь ролик —
+              // 6–7 МБ — сразу при открытии страницы, даже если посетитель
+              // до дека вообще не долистывал. `auto` всё же нужен, но
+              // позже: глава перематывает ролик по фазам, и без полной
+              // буферизации переход между главами ловит паузу на подгрузку.
+              preload={started ? "auto" : "metadata"}
               aria-hidden="true"
               onLoadedMetadata={() => {
                 const video = videoRef.current;

@@ -96,7 +96,7 @@ export default function SmmGuarantees() {
          container caps at max-w-7xl, so the pair holds from lg up. */
       bodyDecor={
         <SmmDecoIcon
-          src="/images/icons/smm/handshake.png"
+          src="/images/icons/smm/handshake.webp"
           size={160}
           rotate={7}
           className="left-[148px] -top-[42px]"

@@ -37,7 +37,7 @@ export default function SmmOffer() {
       headless
       bodyDecor={
         <SmmDecoIcon
-          src="/images/icons/smm/reels.png"
+          src="/images/icons/smm/reels.webp"
           size={230}
           rotate={7}
           className="-right-10 -top-12 xl:-right-4"
