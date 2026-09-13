@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { useStageActive, useIsStaged } from "@/components/ui/CinematicStage";
+import { useStageActive, useIsStaged, useHasSeenChapter } from "@/components/ui/CinematicStage";
 import { ChapterActiveProvider } from "@/components/ui/Appear";
 import { BEAT, DUR, EASE as MOTION_EASE } from "@/lib/motion";
 
@@ -82,33 +82,39 @@ function entranceFor(kind: EntranceKind, active: boolean) {
 // not only /smm's. Only opacity/transform/filter animate, matching Appear's
 // own rule: a full-screen blur was tried once on this stage and dropped for
 // stuttering, but a blur scoped to three short header lines is cheap.
-const HEADER_EYEBROW: Variants = {
+//
+// Functions of `instant` rather than plain objects: a chapter revisited
+// later this same page load (see CinematicStage's `seen` tracking) needs
+// these to land at duration 0 instead of replaying the BEAT delay and
+// blur-in — the header's own version of what Appear does for everything
+// inside the body.
+const HEADER_EYEBROW = (instant: boolean): Variants => ({
   off: { opacity: 0, y: 10, filter: "blur(8px)" },
   on: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: DUR.text, delay: BEAT.eyebrow, ease: MOTION_EASE },
+    transition: { duration: instant ? 0 : DUR.text, delay: instant ? 0 : BEAT.eyebrow, ease: MOTION_EASE },
   },
-};
-const HEADER_TITLE: Variants = {
+});
+const HEADER_TITLE = (instant: boolean): Variants => ({
   off: { opacity: 0, y: 22, filter: "blur(18px)" },
   on: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: DUR.title, delay: BEAT.title, ease: MOTION_EASE },
+    transition: { duration: instant ? 0 : DUR.title, delay: instant ? 0 : BEAT.title, ease: MOTION_EASE },
   },
-};
-const HEADER_INTRO: Variants = {
+});
+const HEADER_INTRO = (instant: boolean): Variants => ({
   off: { opacity: 0, y: 16, filter: "blur(14px)" },
   on: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: DUR.text, delay: BEAT.intro, ease: MOTION_EASE },
+    transition: { duration: instant ? 0 : DUR.text, delay: instant ? 0 : BEAT.intro, ease: MOTION_EASE },
   },
-};
+});
 
 // `decor`/`bodyDecor` (the illustrated icon graphics — camera, shield, etc.)
 // used to render as plain children with no animation of their own, so they
@@ -123,14 +129,14 @@ const HEADER_INTRO: Variants = {
 // `scale` value would add) makes this wrapper a new containing block, which
 // would silently move the icon's absolute offset to be relative to this div
 // instead of the header.
-const DECOR: Variants = {
+const DECOR = (instant: boolean): Variants => ({
   off: { opacity: 0, filter: "blur(16px)" },
   on: {
     opacity: 1,
     filter: "blur(0px)",
-    transition: { duration: DUR.item, delay: BEAT.content, ease: MOTION_EASE },
+    transition: { duration: instant ? 0 : DUR.item, delay: instant ? 0 : BEAT.content, ease: MOTION_EASE },
   },
-};
+});
 
 export default function CinematicSection({
   index,
@@ -225,6 +231,11 @@ export default function CinematicSection({
   const staged = useIsStaged();
   const stageActive = useStageActive(index);
   const active = staged ? stageActive : true;
+  // Once this chapter has taken the stage before this page load, every later
+  // return to it (scrolling back up, then down again) renders instantly
+  // instead of replaying its entrance — see CinematicStage's `seen` state.
+  const alreadySeen = useHasSeenChapter(index);
+  const instant = staged && alreadySeen;
   // `spacious` exists to give a chapter a full screen of room on a page that
   // has no deck — see the prop's own note. Inside a deck every pane already
   // *is* exactly one screen (`absolute inset-0`), so applying it there did
@@ -250,7 +261,7 @@ export default function CinematicSection({
       // Only transform and opacity are animated — a blur() on a full-screen
       // layer was tried and dropped: it forces a repaint of the whole stage on
       // every frame and made the swap visibly stutter.
-      transition={{ duration: DUR.chapter, ease: EASE }}
+      transition={{ duration: instant ? 0 : DUR.chapter, ease: EASE }}
       aria-hidden={!active}
       data-chapter-pane={staged ? "" : undefined}
       data-active={active ? "true" : "false"}
@@ -304,7 +315,7 @@ export default function CinematicSection({
         }`}
       >
         {decor && (
-          <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR}>
+          <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR(instant)}>
             {decor}
           </motion.div>
         )}
@@ -318,7 +329,7 @@ export default function CinematicSection({
         <motion.div
           initial={false}
           animate={active ? "on" : "off"}
-          variants={reduced ? undefined : HEADER_EYEBROW}
+          variants={reduced ? undefined : HEADER_EYEBROW(instant)}
           className={`flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)] ${
             alignRight ? "lg:justify-end" : ""
           }`}
@@ -341,7 +352,7 @@ export default function CinematicSection({
           }`}
         >
           <motion.h2
-            variants={reduced ? undefined : HEADER_TITLE}
+            variants={reduced ? undefined : HEADER_TITLE(instant)}
             // -30% off the previous scale (text-4xl/6xl/6xl/7xl) — Egor's
             // ask site-wide: chapter titles were eating more vertical room
             // than the copy under them needed. Written as arbitrary rem
@@ -357,7 +368,7 @@ export default function CinematicSection({
 
           {intro && (
             <motion.p
-              variants={reduced ? undefined : HEADER_INTRO}
+              variants={reduced ? undefined : HEADER_INTRO(instant)}
               // White and at reading size, not the 10–12px uppercase display
               // this used to be. Egor asked for the supporting line back at
               // the weight it carries on /sites, on every page — at the old
@@ -383,13 +394,13 @@ export default function CinematicSection({
           className={`relative mx-auto w-full max-w-7xl py-2 ${roomy && !headless ? "" : "my-auto"}`}
         >
           {bodyDecor && (
-            <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR}>
+            <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR(instant)}>
               {bodyDecor}
             </motion.div>
           )}
           {/* Children use <Appear> to arrive on their own beat and from their
               own direction; this is what tells them the chapter is on stage. */}
-          <ChapterActiveProvider active={active}>{children}</ChapterActiveProvider>
+          <ChapterActiveProvider active={active} instant={instant}>{children}</ChapterActiveProvider>
         </div>
       )}
     </motion.div>

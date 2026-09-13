@@ -151,8 +151,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25 }}
-          className={`mt-2 max-w-2xl text-left ${HERO_LEAD}`}
-          style={{ fontSize: "clamp(0.4032rem, 1.296vw, 0.63rem)", lineHeight: 1.15 }}
+          className={`mt-2 max-w-[70%] text-left ${HERO_LEAD}`}
         >
           В основе агентства — команда, а не технологии: продюсеры и монтажёры в продакшне, <span className="kw">AI-инженеры</span> в AI-решениях, разработчики на сайтах, SMM-специалисты в соцсетях. AI мы подключили как инструмент — и стали не просто быстрее, а <span className="kw">глубже и эффективнее</span> для каждого клиента.
         </motion.p>

@@ -48,6 +48,12 @@ export default function PhotoStage({
   const wrapRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [started, setStarted] = useState(false);
+  // Same "played once per page visit" tracking as CinematicStage — see that
+  // file's own `seen` state for the full reasoning.
+  const [seen, setSeen] = useState<ReadonlySet<number>>(() => new Set());
+  useEffect(() => {
+    setSeen((prev) => (prev.has(activeIndex) ? prev : new Set(prev).add(activeIndex)));
+  }, [activeIndex]);
   const directionRef = useRef(1);
   const activeIndexRef = useRef(0);
   // Ref mirror written outside render (deps-less effect), not during it.
@@ -362,7 +368,10 @@ export default function PhotoStage({
   }, [activeIndex]);
   // ---- end verbatim gesture stepping ----
 
-  const api = useMemo(() => ({ activeIndex, staged: true, started }), [activeIndex, started]);
+  const api = useMemo(
+    () => ({ activeIndex, staged: true, started, seen }),
+    [activeIndex, started, seen],
+  );
 
   return (
     <StageContext.Provider value={api}>

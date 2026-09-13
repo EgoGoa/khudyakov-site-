@@ -13,19 +13,29 @@ import { DUR, EASE } from "@/lib/motion";
 // right, tiles lifting one after another, the offer rising last.
 //
 // Entrances are tied to the chapter being on stage rather than to the
-// viewport, so they replay every time the visitor comes back to that chapter
-// instead of firing once per page load.
+// viewport. `instant` (set by CinematicSection from CinematicStage's
+// per-chapter "seen" tracking) is what keeps them from replaying on every
+// return visit: the first time a chapter takes the stage its children arrive
+// on the normal beat; every time after that within the same page visit,
+// `instant` is true and every Appear below settles at duration 0 instead of
+// replaying its slide/blur-in. Only a fresh page load resets "seen" and lets
+// the choreography play again.
 
-const ChapterActive = createContext(true);
+type ChapterState = { active: boolean; instant: boolean };
+const ChapterActive = createContext<ChapterState>({ active: true, instant: false });
 
 export function ChapterActiveProvider({
   active,
+  instant = false,
   children,
 }: {
   active: boolean;
+  /** True once this chapter has already played its entrance before —
+   *  collapses every Appear inside to duration 0 instead of replaying it. */
+  instant?: boolean;
   children: ReactNode;
 }) {
-  return <ChapterActive.Provider value={active}>{children}</ChapterActive.Provider>;
+  return <ChapterActive.Provider value={{ active, instant }}>{children}</ChapterActive.Provider>;
 }
 
 /** Whether the nearest ChapterActiveProvider ancestor is currently the
@@ -34,7 +44,7 @@ export function ChapterActiveProvider({
  *  visitor has actually scrolled to it). Defaults to true outside a
  *  provider, matching ChapterActive's own default. */
 export function useChapterActive() {
-  return useContext(ChapterActive);
+  return useContext(ChapterActive).active;
 }
 
 export type AppearFrom = "left" | "right" | "up" | "down" | "scale" | "fade";
@@ -91,7 +101,9 @@ export default function Appear({
   as?: keyof typeof MOTION_TAGS;
   children: ReactNode;
 }) {
-  const active = useContext(ChapterActive);
+  const { active, instant } = useContext(ChapterActive);
+  const effDuration = instant ? 0 : duration;
+  const effDelay = instant ? 0 : delay;
   // framer-motion's own useReducedMotion reads matchMedia synchronously
   // during render, not in an effect — SSR sees no window and returns null,
   // but the client's very first (hydration) render already returns the real
@@ -131,10 +143,10 @@ export default function Appear({
     if (!active || !blur) return;
     const id = setTimeout(
       () => ref.current?.style.removeProperty("filter"),
-      (duration + delay) * 1000 + 60,
+      (effDuration + effDelay) * 1000 + 60,
     );
     return () => clearTimeout(id);
-  }, [active, blur, duration, delay]);
+  }, [active, blur, effDuration, effDelay]);
 
   if (reduced) {
     const Plain = PLAIN_TAGS[as];
@@ -152,7 +164,7 @@ export default function Appear({
           ? { x: 0, y: 0, scale: 1, opacity: 1, ...(blur ? { filter: "blur(0px)" } : {}) }
           : { ...HIDDEN[from], opacity: 0, ...(blur ? { filter: `blur(${blurPx}px)` } : {}) }
       }
-      transition={{ duration, delay: active ? delay : 0, ease: EASE }}
+      transition={{ duration: effDuration, delay: active ? effDelay : 0, ease: EASE }}
       // После посадки Framer Motion оставляет инлайновый `filter:
       // blur(0px)` висеть на узле — визуально это то же самое, что
       // filter: none, но по спецификации CSS ЛЮБОЕ значение filter,

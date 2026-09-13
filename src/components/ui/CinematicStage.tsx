@@ -54,7 +54,7 @@ export type Phase = {
 };
 export type ChapterMeta = { id: string };
 
-type StageApi = { activeIndex: number; staged: boolean; started: boolean };
+type StageApi = { activeIndex: number; staged: boolean; started: boolean; seen: ReadonlySet<number> };
 
 // `staged: false` on the default value (no Provider above) is what lets
 // CinematicSection tell "really inside a CinematicStage" apart from "the
@@ -68,7 +68,12 @@ type StageApi = { activeIndex: number; staged: boolean; started: boolean };
 // CinematicSection's hooks below then work under either stage unmodified,
 // since a React Context is just an object identity — which component
 // provides it doesn't matter.
-export const StageContext = createContext<StageApi>({ activeIndex: 0, staged: false, started: false });
+export const StageContext = createContext<StageApi>({
+  activeIndex: 0,
+  staged: false,
+  started: false,
+  seen: new Set(),
+});
 
 // Seeking is only accurate to the nearest keyframe; the reel carries one per
 // second (-g 25), so land slightly inside the phase rather than exactly on its
@@ -221,6 +226,19 @@ export default function CinematicStage({
   // its start when the visitor arrives and the built-in blur-in plays for
   // real instead of having already finished off-screen.
   const [started, setStarted] = useState(false);
+  // Chapters visited at least once this page load. Egor's ask: a chapter's
+  // entrance (the whole choreography — its own slide-in plus every <Appear>
+  // inside it) should play once per visit to the page, not every time the
+  // visitor scrolls back to a chapter they've already seen. First time
+  // `activeIndex` becomes N, N isn't in this set yet, so CinematicSection
+  // plays the real entrance; the effect below then adds it, so every later
+  // return to chapter N renders instantly (see CinematicSection's `instant`
+  // and Appear's own comment). Cleared only by a fresh mount of this
+  // component, i.e. navigating away and back.
+  const [seen, setSeen] = useState<ReadonlySet<number>>(() => new Set());
+  useEffect(() => {
+    setSeen((prev) => (prev.has(activeIndex) ? prev : new Set(prev).add(activeIndex)));
+  }, [activeIndex]);
   // Which way the last step went, so a chapter can be entered at the right edge.
   const directionRef = useRef(1);
   const activeIndexRef = useRef(0);
@@ -983,7 +1001,10 @@ export default function CinematicStage({
     return () => cancelAnimationFrame(raf);
   }, [activeIndex, phases, started, maxBlurPx, blurSeconds, push, brightness]);
 
-  const api = useMemo<StageApi>(() => ({ activeIndex, staged: true, started }), [activeIndex, started]);
+  const api = useMemo<StageApi>(
+    () => ({ activeIndex, staged: true, started, seen }),
+    [activeIndex, started, seen],
+  );
 
   return (
     <StageContext.Provider value={api}>
@@ -1110,4 +1131,12 @@ export function useStageStarted() {
 // to always-visible, normal-flow rendering outside a stage.
 export function useIsStaged() {
   return useContext(StageContext).staged;
+}
+
+/** Has this chapter index already taken the stage once this page load? Used
+ *  by CinematicSection to collapse a repeat visit's entrance (its own slide-
+ *  in and every <Appear> inside it) to duration 0 instead of replaying it —
+ *  see the `seen` state above for why. */
+export function useHasSeenChapter(index: number) {
+  return useContext(StageContext).seen.has(index);
 }
