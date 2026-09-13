@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import CenterModal from "@/components/ui/CenterModal";
+import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { MicIcon } from "@/components/ui/Icons";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useDictation } from "@/lib/use-dictation";
@@ -30,6 +31,7 @@ export default function TeamConsultModal({
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [message, setMessage] = useState("");
+  const [consent, setConsent] = useState(false);
   const { listening, supported, toggle } = useDictation((t) =>
     setMessage((prev) => (prev ? `${prev} ${t}` : t))
   );
@@ -41,6 +43,7 @@ export default function TeamConsultModal({
     setName("");
     setContact("");
     setMessage("");
+    setConsent(false);
   };
 
   const close = () => {
@@ -48,7 +51,7 @@ export default function TeamConsultModal({
     setTimeout(reset, 400);
   };
 
-  const canSend = name.trim() && contact.trim();
+  const canSend = name.trim() && contact.trim() && consent;
 
   const submit = async () => {
     setScreen("sending");
@@ -127,6 +130,7 @@ export default function TeamConsultModal({
                   </button>
                 )}
               </div>
+              <ConsentCheckbox checked={consent} onChange={setConsent} />
             </div>
 
             <button

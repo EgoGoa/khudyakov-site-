@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CenterModal from "@/components/ui/CenterModal";
+import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { MicIcon, PhoneIcon, UserIcon } from "@/components/ui/Icons";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useDictation } from "@/lib/use-dictation";
@@ -212,6 +213,7 @@ export default function LeadModal({
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [values, setValues] = useState<Record<string, string>>(prefill ?? {});
+  const [consent, setConsent] = useState(false);
 
   // Without this, the page underneath (CinematicStage's pinned chapter deck)
   // kept reading every wheel/touch gesture as its own — scrolling inside
@@ -224,6 +226,7 @@ export default function LeadModal({
     setName("");
     setPhone("");
     setValues(prefill ?? {});
+    setConsent(false);
   };
 
   const close = () => {
@@ -245,7 +248,7 @@ export default function LeadModal({
 
   const formType: "call" | "consult" | null = screen === "call" ? "call" : screen === "consult" ? "consult" : null;
   const fieldsFor = formType === "call" ? CALL_FIELDS : formType === "consult" ? CONSULT_FIELDS : null;
-  const canSend = name.trim() && phone.trim();
+  const canSend = name.trim() && phone.trim() && consent;
 
   return (
     <CenterModal open={open} onClose={close} ariaLabel="Связаться с HDKV.AGENCY" compact>
@@ -304,6 +307,7 @@ export default function LeadModal({
               <p className="flex items-center gap-1.5 text-xs text-paper/40">
                 <MicIcon className="h-3.5 w-3.5" /> В «Свой вариант» можно надиктовать ответ голосом.
               </p>
+              <ConsentCheckbox checked={consent} onChange={setConsent} accent={formType === "consult" ? "glow" : "rec"} />
             </div>
 
             <div className="mt-7 flex flex-wrap justify-center gap-3">

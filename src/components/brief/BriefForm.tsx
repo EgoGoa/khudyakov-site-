@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
+import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { BRIEF_EMAIL, SCENE_NAMES, STEPS, type BriefStep } from "@/lib/brief";
 
 type ContactValue = { email: string; phone: string };
@@ -59,6 +60,7 @@ export default function BriefForm() {
   const [answers, setAnswers] = useState<Answers>({});
   const [invalid, setInvalid] = useState<string[]>([]);
   const [sendState, setSendState] = useState<SendState>("idle");
+  const [consent, setConsent] = useState(false);
 
   const set = (id: string, value: AnswerValue) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -317,7 +319,11 @@ export default function BriefForm() {
                   </p>
                 )}
 
-                <div className="mt-8 flex flex-wrap gap-3">
+                <div className="mt-6">
+                  <ConsentCheckbox checked={consent} onChange={setConsent} />
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-3">
                   <button
                     type="button"
                     onClick={() => setScreen("page2")}
@@ -327,10 +333,10 @@ export default function BriefForm() {
                   </button>
                   <button
                     type="button"
-                    disabled={!contactOk || sendState === "sending"}
+                    disabled={!contactOk || !consent || sendState === "sending"}
                     onClick={sendBrief}
                     className={`rounded-full bg-rec px-8 py-3.5 text-sm font-medium text-white transition ${
-                      contactOk && sendState !== "sending"
+                      contactOk && consent && sendState !== "sending"
                         ? "hover:bg-rec-light active:scale-95"
                         : "pointer-events-none opacity-40"
                     }`}
