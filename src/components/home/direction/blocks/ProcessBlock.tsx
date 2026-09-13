@@ -9,6 +9,8 @@ import SectionHead from "../SectionHead";
 import BlockMedia, { MEDIA_TEXT } from "../BlockMedia";
 import { withAccent } from "../Accent";
 import { SPEED_CHOICES, useDirectionTask } from "../TaskContext";
+import TeamAskCard from "@/components/home/TeamAskCard";
+import { TEAM } from "@/lib/team";
 import type { DirectionContent } from "../types";
 import { EYEBROW } from "@/lib/typography";
 
@@ -66,6 +68,19 @@ export default function ProcessBlock({
                 </motion.div>
               ) : null}
             </AnimatePresence>
+
+            {process.teamAsk ? (
+              <div className="mt-8 max-w-sm">
+                <TeamAskCard
+                  compact
+                  member={TEAM[process.teamAsk.memberId]}
+                  question={process.teamAsk.question}
+                  pitch={process.teamAsk.pitch}
+                  actionLabel={process.teamAsk.actionLabel}
+                  href={process.teamAsk.href}
+                />
+              </div>
+            ) : null}
           </div>
 
           <ol className="mt-14 lg:mt-0">

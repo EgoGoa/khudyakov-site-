@@ -42,6 +42,12 @@ export default function TeamAskCard({
    *  reading as a separate, calmer element. Every other caller keeps the
    *  pulse. */
   glow = true,
+  /** Второе, независимое действие рядом с основной кнопкой — сейчас только
+   *  для DirectionHero: там Telegram раньше стоял отдельной кнопкой снаружи
+   *  окошка, и Егор попросил свести оба действия («присоединиться» + мессенджер)
+   *  в одно окно. Задаются вместе — без одного из двух не рендерится. */
+  secondaryHref,
+  secondaryIcon,
 }: {
   member: TeamMember;
   question: ReactNode;
@@ -52,8 +58,62 @@ export default function TeamAskCard({
   className?: string;
   backgroundImage?: string;
   glow?: boolean;
+  secondaryHref?: string;
+  secondaryIcon?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+
+  // Второе действие ломает обычное предположение раскладки — там всей
+  // карточкой можно кликнуть (Link/button снаружи). С двумя независимыми
+  // действиями оборачивать нечего: каждое само по себе Link/button, а
+  // карточка — просто контейнер.
+  if (compact && secondaryHref && secondaryIcon) {
+    const primaryClass =
+      "btn-neon btn-warm mt-1 inline-flex w-fit !px-3.5 !py-1.5 !text-[9px] transition group-hover:brightness-110";
+    return (
+      <>
+        <div
+          className={`team-ask-window group relative flex h-full flex-col justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-orange/15 via-ink/80 to-ink p-4 text-left sm:p-5 ${glow ? "consult-card-pulse" : ""} ${className}`}
+        >
+          <div className="flex items-start gap-3">
+            <span className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
+              <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-1 ring-paper/25">
+                <Image src={member.photo} alt={member.name} fill sizes="56px" className="object-cover" />
+              </span>
+            </span>
+            <div className="min-w-0">
+              <span className="block font-display text-[9px] uppercase tracking-[0.16em] text-orange">
+                {member.name} · {member.role}
+              </span>
+              <span className="mt-1 block font-display text-sm uppercase leading-tight tracking-tight text-white">
+                {question}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {href ? (
+              <Link href={href} className={primaryClass}>
+                {actionLabel} →
+              </Link>
+            ) : (
+              <button type="button" onClick={() => setOpen(true)} className={primaryClass}>
+                {actionLabel} →
+              </button>
+            )}
+            <a
+              href={secondaryHref}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-neon mt-1 inline-flex !px-3 !py-1.5 transition hover:brightness-110"
+            >
+              {secondaryIcon}
+            </a>
+          </div>
+        </div>
+        {!href && <TeamConsultModal open={open} onClose={() => setOpen(false)} member={member} />}
+      </>
+    );
+  }
 
   const card = compact ? (
     <div

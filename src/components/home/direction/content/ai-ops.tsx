@@ -41,6 +41,13 @@ export const aiOpsContent: DirectionContent = {
     // другое. Здесь отрывок без текста в кадре.
     photo: "/images/stock/robot-hand-chip.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "С какого процесса начать?",
+      pitch: "Расскажите задачу — предложим, где AI даст быстрый результат.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
 
   backdrop: ACCENT,
@@ -56,6 +63,12 @@ export const aiOpsContent: DirectionContent = {
   taskPrompt: "Что съедает время",
   taskNote:
     "Разные процессы автоматизируются по-разному. Отметьте свой — смета, срок и финал ниже пересоберутся.",
+  taskSuggested: [
+    "Придётся менять программы, в которых мы работаем?",
+    "Насколько можно доверять ответам системы?",
+    "Наши внутренние документы уйдут наружу?",
+    "Кто-то из команды увидит лишнее?",
+  ],
   tasks: [
     {
       id: "meetings",
@@ -131,6 +144,12 @@ export const aiOpsContent: DirectionContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какой процесс отнимает больше всего времени?",
+      pitch: "Подскажу, с чего начать внедрение.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -180,6 +199,12 @@ export const aiOpsContent: DirectionContent = {
         accent: "фиксируем письменно до старта",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как AI работает с вашими документами?",
+      pitch: "Объясню механику простыми словами.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   budgetMedia: { gradient: ACCENT, intensity: "medium" },
@@ -326,6 +351,12 @@ export const aiOpsContent: DirectionContent = {
         accent: "это решение по цифрам",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам внедрения?",
+      pitch: "Отвечу, сколько займёт первый процесс.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

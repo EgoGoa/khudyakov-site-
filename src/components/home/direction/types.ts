@@ -161,6 +161,21 @@ export type DirectionTechItem = {
 
 export type DirectionFaqItem = { q: string; a: string };
 
+/** Окошко «спросить у команды» (TeamAskCard) на одном блоке страницы.
+ *
+ *  Опционально — большинство блоков на большинстве страниц без него, это
+ *  точечная механика, а не обязательный элемент шаблона. `href` ведёт сразу
+ *  на страницу (обычно /brief); без него клик открывает TeamConsultModal —
+ *  чат с конкретным человеком, когда вопрос требует ответа до брифа. */
+export type DirectionTeamAsk = {
+  /** id из lib/team.ts: "egor" | "max" | "dima" | "sasha" | "tanya". */
+  memberId: string;
+  question: ReactNode;
+  pitch: ReactNode;
+  actionLabel: string;
+  href?: string;
+};
+
 /** Один вариант ответа на вопрос «зачем вы пришли». Выбор поднят в контекст
  *  страницы (см. TaskContext) и меняет сразу несколько блоков. */
 export type DirectionTask = {
@@ -217,6 +232,8 @@ export type DirectionContent = {
      *  Ровно один печатающийся элемент на страницу: либо здесь, либо
      *  `typed` у одного из блоков ниже. */
     typed?: string;
+    /** Окошко с человеком команды прямо в шапке — см. DirectionTeamAsk. */
+    teamAsk?: DirectionTeamAsk;
   };
 
   /** Цвета градиентного фона страницы — два пятна. */
@@ -239,8 +256,15 @@ export type DirectionContent = {
   tasks: DirectionTask[];
   /** Фон блока выбора задачи — по той же причине, что и statsMedia. */
   taskMedia?: BlockMediaSpec;
+  /** Четыре готовых вопроса умной строки (TaskAssistant) над кнопками
+   *  выбора задачи — свои под тему каждой страницы, не общий набор с
+   *  /content. Клик отвечает AI-репликой прямо в окне (тот же /api/ask, что
+   *  несёт BlockAssistant на /content); произвольный текст в той же строке
+   *  вместо этого уходит бригом на почту через /api/lead. Опционально: без
+   *  массива строка не показывается вовсе. */
+  taskSuggested?: string[];
 
-  audience: DirectionSectionHead & { items: DirectionAudienceItem[] };
+  audience: DirectionSectionHead & { items: DirectionAudienceItem[]; teamAsk?: DirectionTeamAsk };
 
   /** Блок портфолио. Необязателен: у AI-инструментов снятых работ пока
    *  нет, а заглушки «←ПРОВЕРИТЬ» Егор на новых страницах видеть не хочет.
@@ -248,10 +272,11 @@ export type DirectionContent = {
   cases?: DirectionSectionHead & {
     /** id работ из lib/data.ts, перечисленные вручную и в нужном порядке. */
     workIds: string[];
+    teamAsk?: DirectionTeamAsk;
   };
 
   /** Технический разбор инструмента — см. DirectionTechItem. */
-  tech?: DirectionSectionHead & { items: DirectionTechItem[] };
+  tech?: DirectionSectionHead & { items: DirectionTechItem[]; teamAsk?: DirectionTeamAsk };
 
   /** Фон второго блока персонализации (бюджет и срок). Он стоит вплотную
    *  перед сметой, поэтому кадр здесь тоже обязателен — иначе между двумя
@@ -270,6 +295,7 @@ export type DirectionContent = {
     steps: DirectionStep[];
     /** Печатать заголовок этого блока вместо героя. */
     typed?: string;
+    teamAsk?: DirectionTeamAsk;
   };
 
   faq: DirectionSectionHead & { items: DirectionFaqItem[] };
@@ -329,6 +355,7 @@ export type CompactToolContent = {
   taskNote: string;
   tasks: DirectionTask[];
   taskMedia?: BlockMediaSpec;
+  taskSuggested?: string[];
 
   audience: DirectionSectionHead & { items: DirectionAudienceItem[] };
 

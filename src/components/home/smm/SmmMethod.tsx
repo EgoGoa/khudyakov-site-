@@ -7,6 +7,7 @@ import SmmChapterLayout from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { TEAM } from "@/lib/team";
 import TeamAskCard from "@/components/home/TeamAskCard";
+import PromoCard from "@/components/home/PromoCard";
 
 // Chapter 02 of /smm — "продюсерский центр, не подрядчик".
 //
@@ -98,6 +99,11 @@ export default function SmmMethod() {
     >
       <SmmChapterLayout
         number="02"
+        // Widened from the shared 38% default — Egor's ask: with the promo
+        // card now stacked under Таня's, the column read cramped next to
+        // the comparison table. 44% gives both cards more room to breathe
+        // without crowding the table on lg+.
+        columnClassName="lg:w-[44%]"
         title={
           <>
             Не
@@ -114,13 +120,41 @@ export default function SmmMethod() {
         primary={{ href: "/smm/cases", label: "Смотреть кейсы" }}
         secondary={{ href: "/brief", label: "Обсудить задачу" }}
         askCard={
-          <TeamAskCard
-            member={TEAM.tanya}
-            question="Привет, что входит в ведение?"
-            pitch="5 шагов: аудит → стратегия → контент → таргет → отчёт. Веду сама."
-            actionLabel="Уточнить систему ведения"
-            compact
-          />
+          <>
+            <TeamAskCard
+              member={TEAM.tanya}
+              question="Веду соцсети сама: аудит → стратегия → контент → таргет → отчёт"
+              pitch="5 шагов: аудит → стратегия → контент → таргет → отчёт. Веду сама."
+              actionLabel="Уточнить систему ведения"
+              compact
+            />
+            {/* /smm's own September offer — sits under Таня's card in the
+                same left column instead of at the bottom of the
+                comparison-table column (Egor's ask). Gap bumped to mt-8
+                (was mt-4, read too close to Таня's card) and the photo
+                swapped for the site's own stock library (was the generic
+                service-smm.jpg) — a clapperboard, matching this specific
+                service (Egor's ask: pick the stock photo closest to the
+                service's own topic, not a generic page photo, everywhere
+                on the site). Priced off this service's own real price, not
+                the page's cheapest unrelated tariff (Egor's correction) —
+                see servicesByCategory.smm/pricingByCategory.smm; no
+                per-service price is published yet for "Съёмка и монтаж
+                контента", so 36 000/45 000 ₽ here is still the page's
+                cheapest-tariff placeholder pending Egor's real number. */}
+            <div className="mt-8">
+              <PromoCard
+                image="/images/blocks/stock-clapper.jpg"
+                badge="Акция сентября"
+                title="Съёмка и монтаж контента"
+                subtitle="Reels, сторис, карусели снимаем и монтируем сами."
+                price="36 000 ₽/мес"
+                oldPrice="45 000 ₽/мес"
+                href="/brief"
+                leadPrefill={{ format: "Съёмка и монтаж контента", wishes: "Акция сентября — от 45 000 до 36 000 ₽/мес" }}
+              />
+            </div>
+          </>
         }
       >
         <Appear from="right" delay={BEAT.content} blurPx={18}>

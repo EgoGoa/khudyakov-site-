@@ -80,6 +80,9 @@ export default function DirectionPage({
           prompt={content.taskPrompt}
           note={content.taskNote}
           media={content.taskMedia}
+          taskSuggested={content.taskSuggested}
+          assistantContext={content.hero.eyebrow}
+          pageLabel={content.hero.eyebrow}
         />
         <AudienceBlock audience={content.audience} />
         {/* Кейсы или технический разбор — одно место в странице, два
@@ -89,7 +92,7 @@ export default function DirectionPage({
         {content.cases ? <CasesBlock cases={content.cases} /> : null}
         {content.tech ? <TechBlock tech={content.tech} /> : null}
         <PersonaBudget media={content.budgetMedia} />
-        <PricingBlock pricing={content.pricing} />
+        <PricingBlock pricing={content.pricing} headingClass={headingClass} />
         {content.why ? <WhyBlock why={content.why} /> : null}
         <ProcessBlock process={content.process} />
         <FaqBlock faq={content.faq} />

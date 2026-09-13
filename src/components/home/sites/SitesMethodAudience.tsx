@@ -9,6 +9,7 @@ import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import { EYEBROW } from "@/lib/typography";
 import { TEAM } from "@/lib/team";
 import TeamAskCard from "@/components/home/TeamAskCard";
+import PromoCard from "@/components/home/PromoCard";
 
 // Chapter 02 — merges the former SitesMethod and SitesAudience chapters into
 // one screen. sites-reel.mp4 (Egor's second delivery for /sites) only cuts
@@ -92,7 +93,10 @@ export default function SitesMethodAudience() {
       {/* relative z-10 for the same reason as chapter 01: keep the absolutely
           positioned bodyDecor behind the content it sits under. */}
       <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
-        <div className="w-full shrink-0 lg:w-[38%]">
+        {/* Widened from 38% — Egor's ask: with the promo card stacked under
+            Саша's card, the narrower column read cramped next to the
+            comparison table. */}
+        <div className="w-full shrink-0 lg:w-[44%]">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
               <span className={`${EYEBROW} text-glow`}>02</span>
@@ -118,12 +122,34 @@ export default function SitesMethodAudience() {
           <Appear from="up" delay={BEAT.cta}>
             <TeamAskCard
               member={TEAM.sasha}
-              question="Привет, давай обсудим дизайн?"
+              question="Покажу, как будет выглядеть сайт под вашу нишу — на реальных примерах"
               pitch="Покажу, как будет выглядеть сайт под вашу нишу, и посчитаю бюджет."
               actionLabel="Рассчитать бюджет"
               href="/calculator"
               compact
               className="mt-4"
+            />
+          </Appear>
+
+          {/* /sites' own September offer — sits under Саша's card (Egor's
+              ask, same fix as /smm's chapter 02). Gap bumped to mt-8 (was
+              mt-4, too close to Саша's card) and the photo swapped for the
+              site's own stock library — a design tablet, closer to
+              "лендинг" than the generic service-sites.jpg (Egor's ask,
+              applied site-wide). Priced off this service's own real tier in
+              pricingByCategory.sites ("Лендинг", от 60 000 ₽) with a flat
+              20% off: 60 000 → 48 000 ₽ — this one already matched its own
+              service before Egor's correction, so the number is unchanged. */}
+          <Appear from="up" delay={BEAT.cta} className="mt-8">
+            <PromoCard
+              image="/images/stock/design-tablet.webp"
+              badge="Акция сентября"
+              title="Лендинг под продукт"
+              subtitle="Одна страница, которая доводит трафик до заявки."
+              price="48 000 ₽"
+              oldPrice="60 000 ₽"
+              href="/brief"
+              leadPrefill={{ format: "Лендинг", wishes: "Акция сентября — от 60 000 до 48 000 ₽" }}
             />
           </Appear>
         </div>

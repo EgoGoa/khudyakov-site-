@@ -94,7 +94,7 @@ export default function SitesPitch() {
           <Appear from="up" delay={BEAT.cta}>
             <TeamAskCard
               member={TEAM.egor}
-              question="Привет, давай обсудим проект?"
+              question="Скажу сроки и бюджет сайта сразу, без долгого КП"
               pitch="Расскажу, что войдёт в сайт, сроки и бюджет — до брифа, бесплатно."
               actionLabel="Обсудить проект"
               href="/brief"

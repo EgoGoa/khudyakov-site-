@@ -54,6 +54,12 @@ export function PersonaShell({
   answered,
   children,
   result,
+  /** Слот между поясняющей строкой и рядом кнопок — сейчас несёт умную
+   *  строку TaskAssistant на первом шаге (TaskPicker). Отдельный слот, а не
+   *  часть `children`: `children` дальше оборачивается в div со световой
+   *  волной активации, а строка ввода — самостоятельный элемент, а не
+   *  часть волны по кнопкам. */
+  beforeChildren,
 }: {
   step: PersonaStepNo;
   totalSteps?: number;
@@ -63,6 +69,7 @@ export function PersonaShell({
   answered: boolean;
   children: ReactNode;
   result?: ReactNode;
+  beforeChildren?: ReactNode;
 }) {
   const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
   return (
@@ -108,6 +115,12 @@ export function PersonaShell({
         <Appear from="up" delay={DIRECTION_BEAT.intro}>
           <p className={`mx-auto mt-6 max-w-[34em] ${CHAPTER_INTRO}`}>{note}</p>
         </Appear>
+
+        {beforeChildren ? (
+          <Appear from="up" delay={DIRECTION_BEAT.intro + 0.05}>
+            <div className="mx-auto mt-6 max-w-2xl">{beforeChildren}</div>
+          </Appear>
+        ) : null}
 
         {/* Обёртка нужна ради волны: она рисуется поверх всего ряда кнопок,
             а не внутри одной из них. */}

@@ -241,11 +241,47 @@ export default function Process({
             />
           </Appear>
         </div>
+      ) : active === "ai" ? (
+        // /ai's second September offer — stacked under the team card rather
+        // than beside it (Egor's ask, same fix as /sites and /smm's
+        // matching chapters): a narrow side-by-side pair read cramped, so
+        // this is now one column, wider (max-w-md, was max-w-sm) with real
+        // gap between the two cards. Photo swapped for a stock shot actually
+        // showing AI-generated visuals (was the generic service-ai.jpg,
+        // Egor's ask, applied site-wide). Priced off the same real budget
+        // figure already published on this page's own portfolio chapter
+        // (AiPortfolio's "Личный бренд / Стартап" case — AI-generated promo
+        // content — "от 75 000 ₽") rather than the unrelated cheapest
+        // tariff: 75 000 → 60 000 ₽ at 20% off.
+        <div className="mt-5 lg:ml-auto lg:max-w-md">
+          <Appear from="up" delay={BEAT.cta}>
+            <TeamAskCard
+              member={processPerson}
+              question="Отвечу по этапам быстрее, чем вы заполните бриф — прямо в переписке"
+              pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
+              actionLabel="Заполнить бриф"
+              href="/brief"
+              compact
+            />
+          </Appear>
+          <Appear from="up" delay={BEAT.cta} className="mt-8">
+            <PromoCard
+              image="/images/stock/hologram-laptop.webp"
+              badge="Акция сентября"
+              title="AI-генерация видео и фото"
+              subtitle="Контент под бренд без съёмочной группы: продуктовые ролики, аватары, визуалы для соцсетей."
+              price="60 000 ₽"
+              oldPrice="75 000 ₽"
+              href="/brief"
+              leadPrefill={{ format: "AI-генерация видео и фото", wishes: "Акция сентября — пилот за 60 000 ₽ вместо 75 000 ₽" }}
+            />
+          </Appear>
+        </div>
       ) : (
         <Appear from="up" delay={BEAT.cta}>
           <TeamAskCard
             member={processPerson}
-            question="Привет, есть вопрос по этапам?"
+            question="Отвечу по этапам быстрее, чем вы заполните бриф — прямо в переписке"
             pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
             actionLabel="Заполнить бриф"
             href="/brief"

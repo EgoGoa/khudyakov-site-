@@ -36,6 +36,13 @@ export const imageContent: DirectionContent = {
     photo: "/images/stock/stage-hand-neon.webp",
     photoPosition: "50% 18%",
     typed: "Настроение, с которым вас запоминают",
+    teamAsk: {
+      memberId: "egor",
+      question: "Готовы обсудить образ бренда на созвоне?",
+      pitch: "Расскажите про бренд — предложим концепцию и смету.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
 
   // Тёплый разворот родного для /content градиента: имиджевое направление
@@ -53,6 +60,12 @@ export const imageContent: DirectionContent = {
   taskPrompt: "Где будет жить это видео",
   taskNote:
     "От площадки зависит и формат, и бюджет. Отметьте свою — смета, кейсы, срок и финальное предложение ниже пересоберутся под неё.",
+  taskSuggested: [
+    "Чем имиджевое видео отличается от рекламного?",
+    "Сколько времени занимает производство?",
+    "Нужен ли сценарий?",
+    "Можно снимать без актёров, с нашими сотрудниками?",
+  ],
   tasks: [
     {
       id: "site",
@@ -132,6 +145,12 @@ export const imageContent: DirectionContent = {
         linkLabel: "Обсудить задачу",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Кому в компании нужен этот фильм?",
+      pitch: "Расскажу, какой формат решает именно вашу задачу.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   cases: {
@@ -161,6 +180,12 @@ export const imageContent: DirectionContent = {
       "fKODIj4svZU", // ZEN FACTORY · промо — 1:00
       "pOV5EnAB05U", // Федеральная школа вождения VEKTOR — 3:06
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какая работа ближе к вашему бренду?",
+      pitch: "Подберу похожий пример из портфолио.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   budgetMedia:
@@ -269,6 +294,12 @@ export const imageContent: DirectionContent = {
         accent: "Исходники передаём вместе с готовым видео",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по этапам съёмки?",
+      pitch: "Отвечу, что происходит на каждом шаге.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

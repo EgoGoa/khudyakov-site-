@@ -130,7 +130,7 @@ export default function SmmGuarantees() {
           <Appear from="up" delay={BEAT.cta}>
             <TeamAskCard
               member={TEAM.egor}
-              question="Обсудить условия и сроки?"
+              question="Фиксирую условия и сроки в договоре — без мелкого шрифта"
               pitch="Отвечу по договору, срокам и оплате — без сюрпризов и мелкого шрифта."
               actionLabel="Обсудить задачу"
               href="/brief"

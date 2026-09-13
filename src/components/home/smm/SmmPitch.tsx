@@ -91,7 +91,7 @@ export default function SmmPitch() {
           <Appear from="up" delay={BEAT.cta}>
             <TeamAskCard
               member={TEAM.egor}
-              question="Привет, давай обсудим формат?"
+              question="Расскажу, что войдёт в пакет — съёмка, монтаж и ведение одной командой"
               pitch="Съёмка, монтаж и ведение — расскажу, что войдёт в ваш пакет и сколько это займёт."
               actionLabel="Обсудить формат"
               href="/brief"

@@ -41,6 +41,13 @@ export const aiVideoContent: DirectionContent = {
     ),
     photo: "/images/stock/stage-hand-neon.webp",
     photoPosition: "50% 18%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Хотите понять, что реально умеет AI-видео?",
+      pitch: "Обсудим задачу — покажем, что получится, а что нет.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
 
   // Единственная страница направления, уходящая в холодную часть палитры:
@@ -59,6 +66,12 @@ export const aiVideoContent: DirectionContent = {
   taskPrompt: "Что нужно получить",
   taskNote:
     "AI решает разные задачи по-разному. Отметьте свою — смета, кейсы, срок и финальное предложение ниже пересоберутся под неё.",
+  taskSuggested: [
+    "Это будет выглядеть как дешёвая нейросетевая картинка?",
+    "Когда дешевле снять, а не генерировать?",
+    "Кому принадлежат права на сгенерированное видео?",
+    "Можно смешивать съёмку и генерацию в одном ролике?",
+  ],
   tasks: [
     {
       id: "impossible",
@@ -138,6 +151,12 @@ export const aiVideoContent: DirectionContent = {
         linkLabel: "Посчитать объём",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Для какой задачи нужен AI-аватар или генерация?",
+      pitch: "Расскажу, что уже работает, а что рано пробовать.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   cases: {
@@ -172,6 +191,12 @@ export const aiVideoContent: DirectionContent = {
       "LJI_uG5nKEQ", // Проморолик · «Росальянс» — 2:22
       "nxKCmw16vbU", // Шоурил 2024 — 2:32
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какой пример AI-видео ближе к вашей задаче?",
+      pitch: "Покажу похожий кейс и как он был снят.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   budgetMedia:
@@ -325,6 +350,12 @@ export const aiVideoContent: DirectionContent = {
         accent: "вместе с правилами генерации",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам генерации?",
+      pitch: "Отвечу, сколько занимает каждый этап.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

@@ -36,6 +36,13 @@ export const graphicsContent: DirectionContent = {
     photo: "/images/stock/stage-hand-neon.webp",
     photoPosition: "50% 18%",
     typed: "Показать то, что не покажет камера",
+    teamAsk: {
+      memberId: "egor",
+      question: "Нужна графика под конкретный продукт?",
+      pitch: "Расскажите задачу — предложим формат и смету.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
 
   // Холодный конец палитры: моушн и 3D на сайте живут в цианово-синем
@@ -53,6 +60,12 @@ export const graphicsContent: DirectionContent = {
   taskPrompt: "Что нужно объяснить",
   taskNote:
     "Инфографика, 3D и анимация решают разные задачи. Отметьте свою — смета, кейсы, срок и финальное предложение ниже пересоберутся под неё.",
+  taskSuggested: [
+    "Нужны ли вам наши чертежи или 3D-модели?",
+    "Сколько времени занимает 3D-ролик?",
+    "Можно совместить графику с нашей съёмкой?",
+    "Что будет, если после рендера захотим поменять сцену?",
+  ],
   tasks: [
     {
       id: "product",
@@ -136,6 +149,12 @@ export const graphicsContent: DirectionContent = {
         linkLabel: "Собрать комплект",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Где именно нужна графика?",
+      pitch: "Расскажу, какой формат подойдёт под вашу задачу.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   cases: {
@@ -177,6 +196,12 @@ export const graphicsContent: DirectionContent = {
       "OFHITIVB36I", // AGGA EMPIRE · анимация логотипа — 0:07
       "lcIUQ6Mo_to", // Первый гипермаркет мебели · анимационный ролик — 0:10
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какая работа ближе к вашей задаче?",
+      pitch: "Подберу похожий пример из портфолио.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   budgetMedia:
@@ -337,6 +362,12 @@ export const graphicsContent: DirectionContent = {
         accent: "3D-сцены и проектные файлы передаём вместе с готовым роликом",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам рендера?",
+      pitch: "Отвечу, сколько займёт каждый этап.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

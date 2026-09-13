@@ -8,6 +8,7 @@ import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
 import { TEAM } from "@/lib/team";
 import TeamAskCard from "@/components/home/TeamAskCard";
+import PromoCard from "@/components/home/PromoCard";
 
 // Chapter 03 of /smm — "что делаем".
 //
@@ -46,6 +47,7 @@ export default function SmmOffer() {
     >
       <SmmChapterLayout
         number="03"
+        columnClassName="lg:w-[44%]"
         title={
           <>
             Что
@@ -62,14 +64,40 @@ export default function SmmOffer() {
         primary={{ href: "/brief", label: "Обсудить формат" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
         askCard={
-          <TeamAskCard
-            member={TEAM.tanya}
-            question="Привет, какой формат нужен?"
-            pitch="Сторис, рилс, карусели или комплекс — подберу под нишу и бюджет."
-            actionLabel="Обсудить формат"
-            href="/brief"
-            compact
-          />
+          <>
+            <TeamAskCard
+              member={TEAM.tanya}
+              question="Подберу формат — сторис, рилс или комплекс — под вашу нишу"
+              pitch="Сторис, рилс, карусели или комплекс — подберу под нишу и бюджет."
+              actionLabel="Обсудить формат"
+              href="/brief"
+              compact
+            />
+            {/* /smm's second September offer — sits under Таня's card
+                (Egor's ask, same fix as chapter 02). Photo swapped for the
+                site's stock library — a hand on a phone with like/comment
+                bubbles, the closest match to community management, instead
+                of the generic service-smm.jpg (Egor's ask, applied
+                site-wide). PRICE STILL PENDING: Egor flagged that reusing
+                the page's cheapest tariff floor here is wrong — this needs
+                комьюнити-менеджмент's own real monthly price, which isn't
+                published anywhere in the codebase (pricingByCategory.smm's
+                tiers are packages, not per-service prices). 36 000/45 000 ₽
+                below is the old placeholder, kept only until Egor gives the
+                real number. */}
+            <div className="mt-8">
+              <PromoCard
+                image="/images/stock/smm-collage-phone.webp"
+                badge="Акция сентября"
+                title="Комьюнити-менеджмент"
+                subtitle="Отвечаем в директ и комментарии от лица бренда."
+                price="36 000 ₽/мес"
+                oldPrice="45 000 ₽/мес"
+                href="/brief"
+                leadPrefill={{ format: "Комьюнити-менеджмент", wishes: "Акция сентября — от 45 000 до 36 000 ₽/мес" }}
+              />
+            </div>
+          </>
         }
       >
         {/* The glass panel (SMM_PANEL) used to render statically, popping in

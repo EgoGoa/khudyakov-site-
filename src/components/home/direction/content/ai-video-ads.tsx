@@ -36,6 +36,13 @@ export const aiVideoAdsContent: DirectionContent = {
     ),
     photo: "/images/stock/robot-hand-chip.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Нужна линейка креативов без съёмки?",
+      pitch: "Расскажите продукт и площадки — прикинем варианты.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
 
   backdrop: ACCENT,
@@ -51,6 +58,12 @@ export const aiVideoAdsContent: DirectionContent = {
   taskPrompt: "Что нужно снять без съёмки",
   taskNote:
     "Промо, отзыв и продуктовый ролик собираются по-разному. Отметьте своё — смета, срок и финал ниже пересоберутся.",
+  taskSuggested: [
+    "Это будет выглядеть как дешёвая нейросетевая картинка?",
+    "Когда дешевле снять, а не генерировать?",
+    "Аватар будет похож на конкретного человека?",
+    "Можно смешивать съёмку и генерацию в одном ролике?",
+  ],
   tasks: [
     {
       id: "test",
@@ -126,6 +139,12 @@ export const aiVideoAdsContent: DirectionContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Для какой площадки нужны креативы?",
+      pitch: "Подскажу, что сработает лучше — аватар или AI-ролик.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -175,6 +194,12 @@ export const aiVideoAdsContent: DirectionContent = {
         accent: "фиксируем письменно до старта",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как AI-аватар говорит на разных языках?",
+      pitch: "Объясню механику простыми словами.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   budgetMedia: { gradient: ACCENT, intensity: "medium" },
@@ -320,6 +345,12 @@ export const aiVideoAdsContent: DirectionContent = {
         accent: "вместе с правилами генерации",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам линейки?",
+      pitch: "Отвечу, сколько займёт партия креативов.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

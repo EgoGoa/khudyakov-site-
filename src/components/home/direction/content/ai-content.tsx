@@ -48,6 +48,13 @@ export const aiContentContent: DirectionContent = {
     // в кадре.
     photo: "/images/stock/robot-hand-chip.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Нужен контент под каталог или соцсети?",
+      pitch: "Расскажите объём — прикинем формат и смету.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
 
   backdrop: ACCENT,
@@ -63,6 +70,12 @@ export const aiContentContent: DirectionContent = {
   taskPrompt: "Что нужно наполнить",
   taskNote:
     "Карточки, соцсети и реклама считаются по-разному. Отметьте своё — смета, срок и финал ниже пересоберутся.",
+  taskSuggested: [
+    "Будет видно, что это нейросеть?",
+    "Товар будет похож на настоящий?",
+    "Маркетплейсы это пропустят?",
+    "Кому принадлежат права на результат?",
+  ],
   tasks: [
     {
       id: "cards",
@@ -139,6 +152,12 @@ export const aiContentContent: DirectionContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько карточек или постов нужно в месяц?",
+      pitch: "Подскажу, как считать объём и смету.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -188,6 +207,12 @@ export const aiContentContent: DirectionContent = {
         accent: "и сам шаблон",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как AI-контент выглядит на практике?",
+      pitch: "Покажу примеры под ваш формат.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   budgetMedia: { gradient: ACCENT, intensity: "medium" },
@@ -333,6 +358,12 @@ export const aiContentContent: DirectionContent = {
         accent: "правила уже написаны",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам партии?",
+      pitch: "Отвечу, сколько займёт первая поставка.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

@@ -244,6 +244,28 @@ export default function Trust({
               leadPrefill={{ format: "AI-видео", wishes: "Акция сентября — 10-секундный ролик за 9 500 ₽" }}
             />
           )}
+          {/* /ai's own September offer. Photo swapped for a stock shot of
+              an AI assistant/automation panel — closer to "AI-чат" than the
+              generic service-ai.jpg (Egor's ask, applied site-wide). Priced
+              off the same real budget figure already published on this
+              page's own portfolio chapter (AiPortfolio's e-commerce
+              chat-bot case — "от 50 000 ₽"), not the page's cheapest
+              tariff — the two happen to be the same tier ("Старт") here,
+              so the number itself is unchanged: 50 000 → 40 000 ₽ at 20%
+              off. */}
+          {active === "ai" && (
+            <PromoCard
+              glow
+              image="/images/stock/ai-desk-ui.webp"
+              badge="Акция сентября"
+              title="AI-чат для мессенджеров"
+              subtitle="Telegram, WhatsApp, Instagram и сайт — один ассистент отвечает везде и сводит переписку в одну ленту."
+              price="40 000 ₽"
+              oldPrice="50 000 ₽"
+              href="/brief"
+              leadPrefill={{ format: "AI-чат для мессенджеров", wishes: "Акция сентября — пилот за 40 000 ₽ вместо 50 000 ₽" }}
+            />
+          )}
         </Appear>
       </div>
       </div>

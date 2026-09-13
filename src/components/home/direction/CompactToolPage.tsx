@@ -63,11 +63,14 @@ export default function CompactToolPage({
           media={content.taskMedia}
           totalSteps={1}
           changed={["Смета пересчитана", "Срок уточнён", "Финал переписан"]}
+          taskSuggested={content.taskSuggested}
+          assistantContext={content.hero.eyebrow}
+          pageLabel={content.hero.eyebrow}
         />
 
         <AudienceBlock audience={content.audience} />
         <TechBlock tech={content.tech} />
-        <PricingBlock pricing={content.pricing} />
+        <PricingBlock pricing={content.pricing} headingClass={resolvedHeadingClass} />
         <ProcessBlock process={content.process} />
         <FaqCloseBlock faq={content.faq} close={content.close} />
       </div>

@@ -37,11 +37,18 @@ export const presentationContent: DirectionContent = {
         пришлём структуру фильма и смету в трёх вариантах.
       </>
     ),
-    photo: "/images/stock/stage-hand-neon.webp",
-    photoPosition: "50% 18%",
+    video: "/video/works/showreel-2024-mood-hero.mp4",
+    poster: "/images/works/showreel-2024-mood-hero.jpg",
     // Единственная печатающаяся точка на этой странице. На /content/advertising
     // печатается заголовок процесса — чтобы страницы не повторяли приём.
     typed: "Фильм, который представляет компанию за вас",
+    teamAsk: {
+      memberId: "egor",
+      question: "Готовы провести онлайн-креатив-сессию?",
+      pitch: "Присоединяйтесь — обсудим задачу и структуру фильма вместе с командой.",
+      actionLabel: "Присоединиться",
+      href: "/brief",
+    },
   },
 
   // Магента→оранжевый — родной градиент /content.
@@ -61,6 +68,12 @@ export const presentationContent: DirectionContent = {
   taskPrompt: "Зачем вам фильм",
   taskNote:
     "Три сценария, три разных фильма. Отметьте свой — смета, кейсы, срок и финальное предложение ниже пересоберутся под него.",
+  taskSuggested: [
+    "Сколько стоит фильм под тендер?",
+    "Какие сроки на съёмку и монтаж?",
+    "Можно снимать на действующем производстве?",
+    "Сделаете несколько версий из одной съёмки?",
+  ],
   tasks: [
     {
       id: "tender",
@@ -90,18 +103,14 @@ export const presentationContent: DirectionContent = {
       promise: "компания, показанная так, как есть",
     },
   ],
-  taskMedia: { video: "/video/works/showreel-2018-hero.mp4", poster: "/images/works/showreel-2018-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+  taskMedia: { gradient: ACCENT, intensity: "medium" },
 
   audience: {
-    media: {
-      video: "/video/works/uraltrubodetal.mp4",
-      poster: "/images/works/uraltrubodetal.jpg",
-      // В кадре этой работы вшит текст (титры, спецификации,
-      // рекламные плашки). На базовом размытии он читается как
-      // чужая надпись посреди блока, на BLUR.heavy — как фактура.
-      blurPx: 11,
-      intensity: "quiet",
-    },
+    // Было наше видео (uraltrubodetal.mp4) — на quiet-размытии оно читалось
+    // как ровный чёрный фон без картинки. Блок про заказчика (первое лицо,
+    // маркетинг, HR), поэтому берём тематический сток — люди в кадре,
+    // чёткий, с затемнением слева, где стоит заголовок и текст.
+    media: { photo: "/images/stock/team-night-office.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left" },
     eyebrow: "Задача в центре внимания",
     align: "left",
     title: (
@@ -146,18 +155,21 @@ export const presentationContent: DirectionContent = {
         linkLabel: "Обсудить задачу",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Тендер, переговоры или найм?",
+      pitch: "Расскажите, какая задача у вас — подскажу формат и хронометраж.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   cases: {
-    media: {
-      video: "/video/works/atomus.mp4",
-      poster: "/images/works/atomus.jpg",
-      // В кадре этой работы вшит текст (титры, спецификации,
-      // рекламные плашки). На базовом размытии он читается как
-      // чужая надпись посреди блока, на BLUR.heavy — как фактура.
-      blurPx: 11,
-      intensity: "quiet",
-    },
+    // Градиент вместо видео-фона, чтобы блок не повторял тактику остальных
+    // содержательных блоков страницы. Цвета — та же пара, что и у страницы,
+    // но развёрнутая (оранж→магента вместо магента→оранж) и с другим весом
+    // (loud вместо medium) — иначе секция читалась бы как копия тех, что уже
+    // на градиенте (задача, бюджет, FAQ).
+    media: { gradient: { from: "#ff6a3d", to: "#ff4fd8" }, intensity: "loud" },
     eyebrow: "Наши работы",
     align: "center",
     title: (
@@ -184,10 +196,19 @@ export const presentationContent: DirectionContent = {
       "04cOzeUw3A4", // Имиджевый фильм · отель ELOVOE — 2:32
       "cHp-k-aBAgE", // Фильм для Ani d. Zop — 2:07
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какой кейс ближе к вашей задаче?",
+      pitch: "Покажу похожую работу и распишу, как решали именно её.",
+      actionLabel: "Написать Максу",
+    },
   },
 
+  // Стоковый кадр вместо градиента: блок «Бюджет и срок» — «бумажный», без
+  // собственного видео, и стоковый кадр про документы читается ближе к теме,
+  // чем ещё одно градиентное пятно.
   budgetMedia:
-  { gradient: ACCENT, intensity: "medium" },
+  { photo: "/images/stock/planner-desk.webp", intensity: "medium", sharp: true, scrim: "full" },
 
   pricing: {
     media: { photo: "/images/stock/design-tablet.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
@@ -293,6 +314,12 @@ export const presentationContent: DirectionContent = {
         accent: "Исходники передаём вместе с готовым фильмом",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по этапам съёмки?",
+      pitch: "Отвечу, что именно происходит на каждом шаге и сколько это займёт.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

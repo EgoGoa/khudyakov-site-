@@ -7,6 +7,8 @@ import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
 import { withAccent } from "../Accent";
+import TeamAskCard from "@/components/home/TeamAskCard";
+import { TEAM } from "@/lib/team";
 import type { DirectionContent } from "../types";
 
 // «Под капотом» — блок, которого нет на страницах /content.
@@ -53,6 +55,21 @@ export default function TechBlock({ tech }: { tech: NonNullable<DirectionContent
             </Appear>
           ))}
         </div>
+
+        {tech.teamAsk ? (
+          <Appear from="up" delay={DIRECTION_BEAT.cta}>
+            <div className="mt-8 max-w-sm">
+              <TeamAskCard
+                compact
+                member={TEAM[tech.teamAsk.memberId]}
+                question={tech.teamAsk.question}
+                pitch={tech.teamAsk.pitch}
+                actionLabel={tech.teamAsk.actionLabel}
+                href={tech.teamAsk.href}
+              />
+            </div>
+          </Appear>
+        ) : null}
       </Container>
     </SectionStage>
   );

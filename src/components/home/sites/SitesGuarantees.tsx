@@ -125,7 +125,7 @@ export default function SitesGuarantees() {
           <Appear from="up" delay={BEAT.cta}>
             <TeamAskCard
               member={TEAM.egor}
-              question="Привет, давай обсудим сроки?"
+              question="Фиксирую сроки и оплату в договоре — без сюрпризов"
               pitch="Отвечу по договору, срокам и оплате — фиксируем всё на берегу."
               actionLabel="Обсудить проект"
               href="/brief"

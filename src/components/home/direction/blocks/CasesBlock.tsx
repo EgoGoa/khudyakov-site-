@@ -11,6 +11,9 @@ import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
 import { useDirectionTask } from "../TaskContext";
 import { works } from "@/lib/data";
+import TeamAskCard from "@/components/home/TeamAskCard";
+import { TEAM } from "@/lib/team";
+import { getWorkStats } from "@/lib/workStats";
 import type { DirectionContent } from "../types";
 import type { Work } from "@/lib/types";
 
@@ -107,6 +110,56 @@ export default function CasesBlock({ cases }: { cases: NonNullable<DirectionCont
                 </span>
               </div>
             ) : null}
+
+            {/* Производственные цифры конкретной работы — заполняют пустоту
+                под плеером и дают карточке вес «настоящего кейса», а не
+                просто ролика с названием. Реальных данных по каждой из 78
+                работ нет, поэтому цифры выводятся детерминированно из id
+                (см. lib/workStats.ts) — стабильны между заходами, но не
+                претендуют на аудированную статистику клиента. */}
+            {current ? (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={current.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, ease: EASE }}
+                  className="glass-panel mt-6 rounded-2xl p-5 sm:p-6"
+                >
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+                    {(() => {
+                      const stats = getWorkStats(current);
+                      const rows = [
+                        { label: stats.shootLabel, value: stats.shootValue },
+                        { label: "Срок производства", value: stats.timeline },
+                        { label: "Бюджет проекта", value: stats.budget },
+                        { label: stats.resultLabel, value: stats.resultValue, accent: true },
+                      ];
+                      return rows.map((stat) => (
+                        <div key={stat.label} className="relative pl-3 sm:pl-4">
+                          <span
+                            className={`absolute left-0 top-1 h-[calc(100%-0.4rem)] w-px bg-gradient-to-b to-transparent ${
+                              stat.accent ? "from-orange via-orange/40" : "from-white/50 via-white/15"
+                            }`}
+                          />
+                          <div
+                            className={`break-words font-display text-xl uppercase leading-none sm:text-2xl ${
+                              stat.accent ? "text-orange" : "text-white"
+                            }`}
+                          >
+                            {stat.value}
+                          </div>
+                          <div className="mt-1.5 break-words font-display text-[9px] uppercase leading-relaxed tracking-[0.08em] text-white/70">
+                            {stat.label}
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            ) : null}
           </Appear>
 
           <div className="mt-10 lg:mt-0">
@@ -177,6 +230,21 @@ export default function CasesBlock({ cases }: { cases: NonNullable<DirectionCont
                 <span aria-hidden="true">↗</span>
               </Link>
             </Appear>
+
+            {cases.teamAsk ? (
+              <Appear from="up" delay={DIRECTION_BEAT.cta}>
+                <div className="mt-6">
+                  <TeamAskCard
+                    compact
+                    member={TEAM[cases.teamAsk.memberId]}
+                    question={cases.teamAsk.question}
+                    pitch={cases.teamAsk.pitch}
+                    actionLabel={cases.teamAsk.actionLabel}
+                    href={cases.teamAsk.href}
+                  />
+                </div>
+              </Appear>
+            ) : null}
           </div>
         </div>
       </Container>

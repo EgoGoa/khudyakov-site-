@@ -120,13 +120,18 @@ export default function SmmClose() {
             </ul>
 
             <div className="relative mt-auto self-stretch pt-4">
+              {/* Every tier's button reads as one family now — same
+                  .btn-neon pill, same font, same glow mechanic, no separate
+                  solid-fill "pro" style (Egor's ask: the old bg-rec pill on
+                  "Комплексный" read out of style next to the other two's
+                  neon outline — same fix /content's Close.tsx already
+                  carries). All three now the same size too — Egor's
+                  correction after a first pass sized "Комплексный" up to
+                  stand out: sized down ~20% instead (py-2.5/text-sm →
+                  py-2/text-xs), same on every card. */}
               <Link
                 href="/brief"
-                className={
-                  tier.pro
-                    ? "block w-full rounded-full py-2.5 text-center text-sm font-semibold transition bg-rec text-white hover:bg-rec-light"
-                    : `btn-neon w-full justify-center !font-bold !py-2.5 !text-sm tier-glow-btn-${i}`
-                }
+                className={`btn-neon w-full justify-center !py-2 !text-xs !font-bold tier-glow-btn-${i}`}
               >
                 Выбрать пакет
               </Link>

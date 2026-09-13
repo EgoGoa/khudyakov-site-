@@ -111,13 +111,16 @@ export default function SitesClose() {
               </ul>
 
               <div className="relative mt-auto self-stretch pt-4">
+                {/* Same fix as /smm's SmmClose: every tier's button is one
+                    family now — same .btn-neon pill, same size, no separate
+                    solid-fill "pro" style (the old bg-rec pill on the
+                    middle tier read out of style next to the other two's
+                    neon outline). Sized down ~20% (py-2.5/text-sm →
+                    py-2/text-xs) on all three, matching /smm and
+                    /content's own tier buttons. */}
                 <Link
                   href="/brief"
-                  className={
-                    tier.pro
-                      ? "block w-full rounded-full py-2.5 text-center text-sm font-semibold transition bg-rec text-white hover:bg-rec-light"
-                      : `btn-neon w-full justify-center !font-bold !py-2.5 !text-sm tier-glow-btn-${i}`
-                  }
+                  className={`btn-neon w-full justify-center !py-2 !text-xs !font-bold tier-glow-btn-${i}`}
                 >
                   Выбрать план
                 </Link>

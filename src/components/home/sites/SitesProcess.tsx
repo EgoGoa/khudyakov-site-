@@ -7,6 +7,7 @@ import SitesChapterLayout, { SITES_PANEL } from "@/components/home/sites/SitesCh
 import { SITES_PROCESS_STEPS } from "@/components/home/sites/sitesProcessSteps";
 import { TEAM } from "@/lib/team";
 import TeamAskCard from "@/components/home/TeamAskCard";
+import PromoCard from "@/components/home/PromoCard";
 
 // Chapter 04 of /sites — the five steps from brief to launch.
 //
@@ -35,6 +36,7 @@ export default function SitesProcess() {
     >
       <SitesChapterLayout
         number="04"
+        columnClassName="lg:w-[44%]"
         title={
           <>
             Как проходит
@@ -46,14 +48,40 @@ export default function SitesProcess() {
         primary={{ href: "/brief", label: "Заполнить бриф" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
         askCard={
-          <TeamAskCard
-            member={TEAM.egor}
-            question="Привет, есть вопрос по этапам?"
-            pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
-            actionLabel="Заполнить бриф"
-            href="/brief"
-            compact
-          />
+          <>
+            <TeamAskCard
+              member={TEAM.egor}
+              question="Отвечу по этапам быстрее, чем вы заполните бриф"
+              pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
+              actionLabel="Заполнить бриф"
+              href="/brief"
+              compact
+            />
+            {/* /sites' second September offer — sits under Егор's card
+                (Egor's ask, same fix as /smm's chapter 02). Gap bumped to
+                mt-8 and the photo swapped for the site's own stock library
+                — an overhead desk shot with a "Contact us" page open on
+                screen, closer to "сайт-визитка" than the generic
+                service-sites.jpg (Egor's ask, applied site-wide). Priced
+                off this service's OWN tier in pricingByCategory.sites
+                ("Сайт-визитка", от 120 000 ₽ — not the cheaper "Лендинг"
+                tier chapter 02's offer uses) with a flat 20% off:
+                120 000 → 96 000 ₽. Egor's correction: every offer discounts
+                its own service's real price, never the page's cheapest
+                unrelated tariff. */}
+            <div className="mt-8">
+              <PromoCard
+                image="/images/stock/desk-aerial.webp"
+                badge="Акция сентября"
+                title="Сайт-визитка"
+                subtitle="Несколько страниц: о компании, услуги, контакты — без раздутого бюджета."
+                price="96 000 ₽"
+                oldPrice="120 000 ₽"
+                href="/brief"
+                leadPrefill={{ format: "Сайт-визитка", wishes: "Акция сентября — от 120 000 до 96 000 ₽" }}
+              />
+            </div>
+          </>
         }
       >
         {/* Same fix as SitesOffer's list: the glass panel itself now arrives

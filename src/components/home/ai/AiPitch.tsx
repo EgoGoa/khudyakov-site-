@@ -100,7 +100,7 @@ export default function AiPitch() {
           <Appear from="up" delay={BEAT.cta}>
             <TeamAskCard
               member={TEAM.dima}
-              question="Привет, давай обсудим внедрение?"
+              question="Подбираю AI-инструмент под задачу, а не для галочки"
               pitch="Подберу AI-инструмент под задачу и покажу, как это будет работать у вас."
               actionLabel="Обсудить внедрение"
               href="/brief"

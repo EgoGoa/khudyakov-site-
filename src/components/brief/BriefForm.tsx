@@ -15,7 +15,7 @@ type Screen = "intro" | "page1" | "page2" | "review" | "sent";
 type SendState = "idle" | "sending" | "error";
 
 const inputClass =
-  "w-full rounded-lg border border-paper/15 bg-paper/[0.04] px-4 py-3 text-sm text-paper placeholder:text-paper/35 transition focus:border-glow focus:outline-none";
+  "w-full rounded-xl border border-white/15 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder:text-white/35 transition focus:border-glow focus:outline-none";
 
 function isAnswered(step: BriefStep, answers: Answers) {
   const v = answers[step.id];
@@ -158,8 +158,8 @@ export default function BriefForm() {
   return (
     <section className="py-16 sm:py-24">
       <Container className="max-w-4xl">
-        <div className="mb-8 flex items-center gap-3 font-display text-xs uppercase tracking-[0.2em] text-rec">
-          <span className="h-2 w-2 animate-pulse-rec rounded-full bg-rec" />
+        <div className="mb-8 flex items-center gap-3 font-display text-xs uppercase tracking-[0.2em] text-orange">
+          <span className="h-2 w-2 animate-pulse-rec rounded-full bg-orange" />
           {hud}
         </div>
 
@@ -173,15 +173,15 @@ export default function BriefForm() {
           >
             {screen === "intro" && (
               <div>
-                <h1 className="font-display text-4xl uppercase leading-[1.02] tracking-tight text-paper sm:text-6xl">
+                <h1 className="font-display text-4xl uppercase leading-[1.02] tracking-tight text-white sm:text-6xl">
                   Съёмка начинается
                   <br />
-                  <span className="text-glow">с брифа</span>
+                  <span className="kw">с брифа</span>
                 </h1>
-                <p className="mt-6 max-w-xl text-base leading-relaxed text-paper/60">
+                <p className="mt-6 max-w-xl text-base leading-relaxed text-white">
                   Ответьте на 20 вопросов о проекте — это займёт около пяти
-                  минут. В конце мы соберём всё в один документ, который
-                  останется только отправить нам на почту.
+                  минут. <span className="font-medium text-orange">В конце мы соберём всё в
+                  один документ</span>, который останется только отправить нам на почту.
                 </p>
 
                 <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -191,9 +191,9 @@ export default function BriefForm() {
                     ["2 страницы", "с навигацией"],
                     ["Без регистрации", "ничего не храним"],
                   ].map(([big, small]) => (
-                    <div key={big} className="border-l border-glow/30 pl-4">
-                      <div className="font-display text-lg uppercase text-paper">{big}</div>
-                      <div className="mt-1 font-display text-[11px] uppercase tracking-[0.1em] text-paper/45">
+                    <div key={big} className="border-l border-orange/30 pl-4">
+                      <div className="font-display text-lg uppercase text-white">{big}</div>
+                      <div className="mt-1 font-display text-[11px] uppercase tracking-[0.1em] text-white/70">
                         {small}
                       </div>
                     </div>
@@ -203,7 +203,7 @@ export default function BriefForm() {
                 <button
                   type="button"
                   onClick={() => setScreen("page1")}
-                  className="mt-10 rounded-full bg-rec px-8 py-4 text-sm font-medium text-white transition hover:bg-rec-light active:scale-95"
+                  className="btn-neon btn-warm btn-3d mt-10 !py-4 !px-8"
                 >
                   Начать бриф →
                 </button>
@@ -212,10 +212,10 @@ export default function BriefForm() {
 
             {(screen === "page1" || screen === "page2") && (
               <div>
-                <h2 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl">
+                <h2 className="font-display text-3xl uppercase tracking-tight text-white sm:text-4xl">
                   {screen === "page1" ? "О вас и о цели" : "Формат, стиль и логистика"}
                 </h2>
-                <p className="mt-3 text-sm text-paper/55">
+                <p className="mt-3 text-sm text-white/70">
                   {screen === "page1"
                     ? "Вопросы 01–08. Отвечайте свободно — коротко или развёрнуто, как удобно."
                     : "Вопросы 09–20. Часть можно пропустить, если пока нет ответа."}
@@ -230,7 +230,7 @@ export default function BriefForm() {
                     <button
                       type="button"
                       onClick={() => setScreen("page1")}
-                      className="rounded-full border border-paper/20 px-7 py-3.5 text-sm font-medium text-paper transition hover:border-paper/50"
+                      className="btn-neon btn-3d !py-3.5 !px-7"
                     >
                       ← К странице 1
                     </button>
@@ -244,14 +244,14 @@ export default function BriefForm() {
                         setScreen("review");
                       }
                     }}
-                    className="rounded-full bg-rec px-7 py-3.5 text-sm font-medium text-white transition hover:bg-rec-light active:scale-95"
+                    className="btn-neon btn-warm btn-3d !py-3.5 !px-7"
                   >
                     {screen === "page1" ? "К странице 2 →" : "К монтажному листу →"}
                   </button>
                 </div>
 
                 {invalid.length > 0 && (
-                  <p className="mt-4 text-sm text-rec">
+                  <p className="mt-4 text-sm text-orange">
                     Заполните обязательные поля — их осталось {invalid.length}.
                   </p>
                 )}
@@ -260,10 +260,10 @@ export default function BriefForm() {
 
             {screen === "review" && (
               <div>
-                <h2 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl">
+                <h2 className="font-display text-3xl uppercase tracking-tight text-white sm:text-4xl">
                   Монтажный лист
                 </h2>
-                <p className="mt-3 text-sm text-paper/55">
+                <p className="mt-3 text-sm text-white/70">
                   Проверьте ответы — всё можно поправить прямо здесь.
                 </p>
 
@@ -273,19 +273,19 @@ export default function BriefForm() {
                       <div className="mb-3 font-display text-xs uppercase tracking-[0.2em] text-glow">
                         Сцена {String(scene).padStart(2, "0")} · {SCENE_NAMES[scene]}
                       </div>
-                      <div className="liquid-glass rounded-2xl">
+                      <div className="glass-panel rounded-2xl">
                         {STEPS.filter((s) => s.scene === scene).map((step) => {
                           const ans = formatAnswer(step, answers);
                           return (
                             <div
                               key={step.id}
-                              className="flex items-start justify-between gap-4 border-b border-paper/10 p-4 last:border-b-0"
+                              className="flex items-start justify-between gap-4 border-b border-white/10 p-4 last:border-b-0"
                             >
                               <div className="min-w-0">
-                                <div className="text-sm text-paper/80">{step.title}</div>
+                                <div className="text-sm text-white/80">{step.title}</div>
                                 <div
                                   className={`mt-1 text-sm ${
-                                    ans ? "text-paper" : "text-paper/35"
+                                    ans ? "text-white" : "text-white/40"
                                   }`}
                                 >
                                   {ans || "— не указано —"}
@@ -301,7 +301,7 @@ export default function BriefForm() {
                                       ?.scrollIntoView({ behavior: "smooth", block: "center" });
                                   }, 80);
                                 }}
-                                className="shrink-0 rounded-full border border-paper/15 px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.1em] text-paper/60 transition hover:border-glow/60 hover:text-glow"
+                                className="shrink-0 rounded-full border border-white/15 px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.1em] text-white/70 transition hover:border-glow/60 hover:text-glow"
                               >
                                 Изменить
                               </button>
@@ -314,7 +314,7 @@ export default function BriefForm() {
                 </div>
 
                 {!contactOk && (
-                  <p className="mt-6 rounded-lg border border-rec/40 bg-rec/10 p-4 text-sm text-paper">
+                  <p className="mt-6 rounded-lg border border-orange/40 bg-orange/10 p-4 text-sm text-white">
                     Укажите email для связи — без него письмо не сформируется.
                   </p>
                 )}
@@ -327,7 +327,7 @@ export default function BriefForm() {
                   <button
                     type="button"
                     onClick={() => setScreen("page2")}
-                    className="rounded-full border border-paper/20 px-7 py-3.5 text-sm font-medium text-paper transition hover:border-paper/50"
+                    className="btn-neon btn-3d !py-3.5 !px-7"
                   >
                     ← Назад
                   </button>
@@ -335,9 +335,9 @@ export default function BriefForm() {
                     type="button"
                     disabled={!contactOk || !consent || sendState === "sending"}
                     onClick={sendBrief}
-                    className={`rounded-full bg-rec px-8 py-3.5 text-sm font-medium text-white transition ${
+                    className={`btn-neon btn-warm btn-3d !py-3.5 !px-8 ${
                       contactOk && consent && sendState !== "sending"
-                        ? "hover:bg-rec-light active:scale-95"
+                        ? ""
                         : "pointer-events-none opacity-40"
                     }`}
                   >
@@ -346,15 +346,15 @@ export default function BriefForm() {
                 </div>
 
                 {sendState === "error" ? (
-                  <p className="mt-4 max-w-xl text-sm text-rec">
+                  <p className="mt-4 max-w-xl text-sm text-orange">
                     Не получилось отправить автоматически. Откройте{" "}
-                    <a href={mailtoHref()} className="underline hover:text-paper">
+                    <a href={mailtoHref()} className="underline hover:text-white">
                       черновик письма
                     </a>{" "}
                     и отправьте его на {BRIEF_EMAIL} вручную.
                   </p>
                 ) : (
-                  <p className="mt-4 max-w-xl text-xs leading-relaxed text-paper/40">
+                  <p className="mt-4 max-w-xl text-xs leading-relaxed text-white/50">
                     Кнопка отправит бриф нам на {BRIEF_EMAIL} напрямую.
                   </p>
                 )}
@@ -367,25 +367,25 @@ export default function BriefForm() {
                   <span className="h-2 w-2 rounded-full bg-glow" />
                   Запись завершена
                 </div>
-                <h2 className="mt-6 font-display text-3xl uppercase tracking-tight text-paper sm:text-5xl">
+                <h2 className="mt-6 font-display text-3xl uppercase tracking-tight text-white sm:text-5xl">
                   Бриф отправлен
                 </h2>
-                <p className="mt-4 max-w-xl text-base leading-relaxed text-paper/60">
-                  Мы получили ваш бриф на {BRIEF_EMAIL} и свяжемся с вами в
-                  течение одного рабочего дня.
+                <p className="mt-4 max-w-xl text-base leading-relaxed text-white">
+                  Мы получили ваш бриф на {BRIEF_EMAIL} и{" "}
+                  <span className="font-medium text-orange">
+                    свяжемся с вами в течение одного рабочего дня
+                  </span>
+                  .
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <button
                     type="button"
                     onClick={() => setScreen("review")}
-                    className="rounded-full border border-paper/20 px-7 py-3.5 text-sm font-medium text-paper transition hover:border-paper/50"
+                    className="btn-neon btn-3d !py-3.5 !px-7"
                   >
                     ← К монтажному листу
                   </button>
-                  <Link
-                    href="/"
-                    className="rounded-full bg-rec px-7 py-3.5 text-sm font-medium text-white transition hover:bg-rec-light"
-                  >
+                  <Link href="/" className="btn-neon btn-warm btn-3d !py-3.5 !px-7">
                     На главную
                   </Link>
                 </div>
@@ -413,27 +413,27 @@ export default function BriefForm() {
             <div
               key={step.id}
               id={`field-${step.id}`}
-              className={`liquid-glass rounded-2xl p-5 transition ${
-                invalid.includes(step.id) ? "ring-1 ring-rec" : ""
+              className={`glass-panel rounded-2xl p-5 transition ${
+                invalid.includes(step.id) ? "ring-1 ring-orange" : ""
               }`}
             >
               <div className="flex items-baseline gap-3">
-                <span className="font-display text-xs text-paper/35">{numberOf[step.id]}</span>
-                <span className="text-base font-medium text-paper">
+                <span className="font-display text-xs text-white/50">{numberOf[step.id]}</span>
+                <span className="text-base font-medium text-white">
                   {step.title}
                   {!step.required && (
-                    <span className="ml-2 font-display text-[10px] uppercase tracking-[0.1em] text-paper/35">
+                    <span className="ml-2 font-display text-[10px] uppercase tracking-[0.1em] text-white/50">
                       необязательно
                     </span>
                   )}
                 </span>
               </div>
               {step.help && (
-                <p className="ml-8 mt-1.5 text-sm text-paper/45">{step.help}</p>
+                <p className="ml-8 mt-1.5 text-sm text-white/70">{step.help}</p>
               )}
               <div className="ml-0 mt-4 sm:ml-8">{renderControl(step)}</div>
               {invalid.includes(step.id) && (
-                <p className="ml-0 mt-2 text-xs text-rec sm:ml-8">
+                <p className="ml-0 mt-2 text-xs text-orange sm:ml-8">
                   Пожалуйста, заполните это поле.
                 </p>
               )}
@@ -509,8 +509,8 @@ export default function BriefForm() {
                 }
                 className={`rounded-full border px-4 py-2 text-sm transition ${
                   on
-                    ? "border-glow bg-glow/15 text-paper"
-                    : "border-paper/15 text-paper/65 hover:border-glow/50 hover:text-paper"
+                    ? "border-glow bg-glow/15 text-white"
+                    : "border-white/15 text-white/70 hover:border-glow/50 hover:text-white"
                 }`}
               >
                 {opt}
@@ -533,8 +533,8 @@ export default function BriefForm() {
                 onClick={() => set(step.id, opt)}
                 className={`rounded-full border px-4 py-2 text-sm transition ${
                   on
-                    ? "border-rec bg-rec/15 text-paper"
-                    : "border-paper/15 text-paper/65 hover:border-rec/50 hover:text-paper"
+                    ? "border-orange bg-orange/15 text-white"
+                    : "border-white/15 text-white/70 hover:border-orange/50 hover:text-white"
                 }`}
               >
                 {opt}

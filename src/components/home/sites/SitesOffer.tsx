@@ -54,7 +54,7 @@ export default function SitesOffer() {
         askCard={
           <TeamAskCard
             member={TEAM.sasha}
-            question="Привет, давай обсудим сайт?"
+            question="Подберу формат — лендинг или сайт под ключ — под вашу задачу"
             pitch="Покажу примеры под вашу нишу и подберу формат — лендинг или сайт под ключ."
             actionLabel="Обсудить проект"
             href="/brief"

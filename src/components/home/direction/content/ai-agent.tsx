@@ -57,6 +57,13 @@ export const aiAgentContent: DirectionContent = {
     ),
     photo: "/images/stock/robot-hand-chip.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Теряете заявки в мессенджерах?",
+      pitch: "Расскажите, как сейчас приходят обращения — прикинем решение.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
 
   backdrop: ACCENT,
@@ -72,6 +79,12 @@ export const aiAgentContent: DirectionContent = {
   taskPrompt: "Что должен закрыть агент",
   taskNote:
     "Задачи разные, и агент под них собирается по-разному. Отметьте свою — смета, срок и финальное предложение ниже пересоберутся.",
+  taskSuggested: [
+    "Клиент поймёт, что говорит с ботом?",
+    "А если агент придумает цену или условия?",
+    "В каких каналах он работает?",
+    "Наши данные уйдут в обучение чужой модели?",
+  ],
   tasks: [
     {
       id: "catch",
@@ -148,6 +161,12 @@ export const aiAgentContent: DirectionContent = {
         linkLabel: "Заполнить бриф",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какие заявки чаще всего теряются?",
+      pitch: "Расскажу, как агент их подхватит.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -197,6 +216,12 @@ export const aiAgentContent: DirectionContent = {
         accent: "фиксируем письменно до старта",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как агент передаёт заявку менеджеру?",
+      pitch: "Объясню механику простыми словами.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   budgetMedia: { gradient: ACCENT, intensity: "medium" },
@@ -344,6 +369,12 @@ export const aiAgentContent: DirectionContent = {
         accent: "либо вы сами, либо мы на сопровождении",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько займёт внедрение?",
+      pitch: "Отвечу по срокам и что нужно от вас.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

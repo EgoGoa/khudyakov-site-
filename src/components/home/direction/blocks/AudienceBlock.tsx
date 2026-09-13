@@ -9,6 +9,8 @@ import SectionStage from "../SectionStage";
 import SectionHead from "../SectionHead";
 import BlockMedia from "../BlockMedia";
 import { withAccent } from "../Accent";
+import TeamAskCard from "@/components/home/TeamAskCard";
+import { TEAM } from "@/lib/team";
 import type { DirectionContent } from "../types";
 import { EYEBROW } from "@/lib/typography";
 
@@ -32,6 +34,18 @@ export default function AudienceBlock({
         <div className="lg:grid lg:grid-cols-[38%_1fr] lg:gap-16">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <SectionHead head={audience} titleClassName="text-[2rem] sm:text-[2.6rem] lg:text-[3rem]" />
+            {audience.teamAsk ? (
+              <div className="mt-8 max-w-sm">
+                <TeamAskCard
+                  compact
+                  member={TEAM[audience.teamAsk.memberId]}
+                  question={audience.teamAsk.question}
+                  pitch={audience.teamAsk.pitch}
+                  actionLabel={audience.teamAsk.actionLabel}
+                  href={audience.teamAsk.href}
+                />
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-14 space-y-5 lg:mt-0">

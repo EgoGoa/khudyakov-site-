@@ -5,6 +5,12 @@ import type { DirectionContent } from "../types";
 // Вынесен в константу, потому что его носит подложка каждого блока: без
 // неё в зоне, где один фон растворяется в другом, стык уходит в чёрное.
 const ACCENT = { from: "#ff6a3d", to: "#ff4fd8" };
+// Необычный градиент для блока «Где будет крутиться ролик» — синий→фиолетовый,
+// сознательно не пересекается ни с одним другим градиентом на странице.
+const TASK_GRADIENT = { from: "#38bdf8", to: "#a855f7" };
+// Светлый градиент для «Реклама, которая продаёт» — бело-голубой, тёплый
+// оранж→магента страницы здесь намеренно не несётся.
+const CASES_GRADIENT = { from: "#e0f2fe", to: "#93c5fd" };
 
 
 // Направление «Рекламные ролики» — /content/advertising.
@@ -41,8 +47,15 @@ export const advertisingContent: DirectionContent = {
         пришлём идею и смету.
       </>
     ),
-    photo: "/images/stock/stage-hand-neon.webp",
-    photoPosition: "50% 18%",
+    video: "/video/works/showreel-2021-hero.mp4",
+    poster: "/images/works/showreel-2021-hero.jpg",
+    teamAsk: {
+      memberId: "egor",
+      question: "Нужен ролик под конкретный канал?",
+      pitch: "Расскажите площадку и хронометраж — подберём формат и смету.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
 
   // Зеркальная версия градиента соседней страницы: тот же родной для
@@ -61,6 +74,12 @@ export const advertisingContent: DirectionContent = {
   taskPrompt: "Где будет крутиться ролик",
   taskNote:
     "Площадка диктует хронометраж и монтаж. Отметьте свою — смета, кейсы, срок и финальное предложение ниже пересоберутся под неё.",
+  taskSuggested: [
+    "Сколько стоит рекламный ролик?",
+    "Как рождается идея ролика?",
+    "Сколько времени занимает производство?",
+    "Сделаете версии под разные площадки?",
+  ],
   tasks: [
     {
       id: "digital",
@@ -90,14 +109,10 @@ export const advertisingContent: DirectionContent = {
       promise: "быстрый ролик, чтобы проверить идею до больших вложений",
     },
   ],
-  taskMedia: { video: "/video/works/showreel-2021-hero.mp4", poster: "/images/works/showreel-2021-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+  taskMedia: { gradient: TASK_GRADIENT, intensity: "medium" },
 
   audience: {
-    media: {
-      video: "/video/works/surfcoffee-chel.mp4",
-      poster: "/images/works/surfcoffee-chel.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/platform-speed.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left" },
     eyebrow: "Задача в центре внимания",
     align: "left",
     title: (
@@ -141,18 +156,16 @@ export const advertisingContent: DirectionContent = {
         linkLabel: "Обсудить проект",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какой канал у вас в приоритете?",
+      pitch: "TV, digital или соцсети — расскажу, что решает эту задачу.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   cases: {
-    media: {
-      video: "/video/works/belykit-hero.mp4",
-      poster: "/images/works/belykit-hero.jpg",
-      // В кадре этой работы вшит текст (титры, спецификации,
-      // рекламные плашки). На базовом размытии он читается как
-      // чужая надпись посреди блока, на BLUR.heavy — как фактура.
-      blurPx: 11,
-      intensity: "quiet",
-    },
+    media: { gradient: CASES_GRADIENT, intensity: "loud" },
     eyebrow: "Наши работы",
     align: "center",
     title: (
@@ -179,10 +192,16 @@ export const advertisingContent: DirectionContent = {
       "DlR4RTFiWC8", // ТВ-ролик «Школа Мира» — 0:21, образование
       "zo0YyrkyI7w", // Батл дизайнеров · Лига дизайнеров — 1:00, события
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какой ролик ближе к вашей задаче?",
+      pitch: "Подберу похожий пример из портфолио.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   budgetMedia:
-  { gradient: ACCENT, intensity: "medium" },
+  { photo: "/images/stock/desk-aerial.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   pricing: {
     media: { photo: "/images/stock/flower-neon.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
@@ -338,6 +357,12 @@ export const advertisingContent: DirectionContent = {
         accent: "Исходники передаём вместе с готовым роликом",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам съёмки?",
+      pitch: "Отвечу, сколько займёт монтаж и согласование.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {
@@ -381,11 +406,7 @@ export const advertisingContent: DirectionContent = {
   { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   close: {
-    media: {
-      video: "/video/works/surfcoffee.mp4",
-      poster: "/images/works/surfcoffee.jpg",
-      intensity: "loud",
-    },
+    media: { photo: "/images/stock/night-lights.webp", intensity: "loud" },
     eyebrow: "Один следующий шаг",
     align: "center",
     title: (

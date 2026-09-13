@@ -36,6 +36,13 @@ export const aiVoiceContent: DirectionContent = {
     ),
     photo: "/images/stock/robot-hand-chip.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Нужна локализация под другой рынок?",
+      pitch: "Расскажите языки и объём — прикинем смету.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
 
   backdrop: ACCENT,
@@ -51,6 +58,12 @@ export const aiVoiceContent: DirectionContent = {
   taskPrompt: "Что нужно озвучить",
   taskNote:
     "Дубляж, закадровый голос и субтитры считаются по-разному. Отметьте своё — смета, срок и финал ниже пересоберутся.",
+  taskSuggested: [
+    "Будет слышно, что это синтез?",
+    "Можно сохранить голос нашего спикера?",
+    "Сколько языков можно сделать сразу?",
+    "А если в кадре вшиты титры на исходном языке?",
+  ],
   tasks: [
     {
       id: "voiceover",
@@ -126,6 +139,12 @@ export const aiVoiceContent: DirectionContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "На сколько языков нужна локализация?",
+      pitch: "Подскажу, что учесть при переводе и озвучке.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -175,6 +194,12 @@ export const aiVoiceContent: DirectionContent = {
         accent: "Чужой голос без разрешения не клонируем",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Голос сохраняется при переводе?",
+      pitch: "Объясню, как это работает.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   budgetMedia: { gradient: ACCENT, intensity: "medium" },
@@ -320,6 +345,12 @@ export const aiVoiceContent: DirectionContent = {
         accent: "вместе с глоссарием",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам дубляжа?",
+      pitch: "Отвечу, сколько займёт локализация.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

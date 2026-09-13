@@ -79,7 +79,7 @@ export default function SmmProcess() {
         askCard={
           <TeamAskCard
             member={TEAM.egor}
-            question="Привет, есть вопрос по этапам?"
+            question="Отвечу по этапам быстрее, чем вы заполните бриф"
             pitch="Отвечу быстрее, чем вы заполните бриф."
             actionLabel="Спросить Егора"
             compact

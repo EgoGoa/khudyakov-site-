@@ -3,6 +3,7 @@
 import { AnimatePresence } from "framer-motion";
 import { PersonaChip, PersonaResult, PersonaShell } from "../PersonaBlock";
 import { useDirectionTask } from "../TaskContext";
+import TaskAssistant from "./TaskAssistant";
 import type { BlockMediaSpec } from "../types";
 
 // Шаг 1 воронки персонализации: зачем посетитель пришёл.
@@ -29,12 +30,23 @@ export default function TaskPicker({
    *  отдельным блоком, поэтому эта строка там не подтвердится, если её не
    *  убрать. */
   changed = ["Смета пересчитана", "Кейсы переставлены", "Срок уточнён", "Финал переписан"],
+  /** Готовые вопросы умной строки TaskAssistant — свои под тему страницы.
+   *  Без массива (или с пустым) строка не рендерится вовсе: не у каждой
+   *  страницы он ещё написан. */
+  taskSuggested,
+  /** Тема страницы для system-промпта AI и для темы письма-брифа —
+   *  обычно `hero.eyebrow` страницы. */
+  assistantContext,
+  pageLabel,
 }: {
   prompt: string;
   note: string;
   media?: BlockMediaSpec;
   totalSteps?: number;
   changed?: string[];
+  taskSuggested?: string[];
+  assistantContext?: string;
+  pageLabel?: string;
 }) {
   const { tasks, active, select } = useDirectionTask();
 
@@ -46,6 +58,15 @@ export default function TaskPicker({
       note={note}
       media={media}
       answered={Boolean(active)}
+      beforeChildren={
+        taskSuggested && taskSuggested.length > 0 ? (
+          <TaskAssistant
+            suggested={taskSuggested}
+            context={assistantContext ?? prompt}
+            pageLabel={pageLabel ?? prompt}
+          />
+        ) : null
+      }
       result={
         <AnimatePresence mode="wait">
           {active ? (

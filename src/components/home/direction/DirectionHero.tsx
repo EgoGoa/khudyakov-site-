@@ -8,6 +8,8 @@ import { HERO_LEAD, EYEBROW } from "@/lib/typography";
 import Typewriter from "./Typewriter";
 import { TelegramIcon } from "@/components/ui/Icons";
 import { TELEGRAM_URL } from "./contacts";
+import TeamAskCard from "@/components/home/TeamAskCard";
+import { TEAM } from "@/lib/team";
 import type { DirectionContent } from "./types";
 
 // Первый экран страницы направления.
@@ -139,23 +141,39 @@ export default function DirectionHero({
               читались так же, как на /content, /ai, /sites и /smm. */}
           <p className={`mt-7 max-w-3xl ${HERO_LEAD}`}>{hero.lead}</p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Link href="/brief" className="btn-neon btn-warm btn-3d !py-3.5">
-              Получить смету
-            </Link>
-            <a
-              href={TELEGRAM_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-neon btn-3d !py-3.5"
-            >
-              <TelegramIcon />
-              Telegram
-            </a>
-            {/* Телефон убран из этой строки: он уже стоит в шапке на каждой
-                странице сайта, и здесь дублировал её. Егор — «убери номера
-                из подобных мест, в шапке есть и достаточно». */}
-          </div>
+          {/* «Получить смету» и Telegram раньше стояли отдельной строкой
+              кнопок под лидом. Егор попросил свести оба действия в одно
+              окошко с Егором — «присоединиться» и Telegram теперь одна
+              карточка, а не карточка плюс дублирующие её кнопки рядом. */}
+          {hero.teamAsk ? (
+            <div className="mt-10 max-w-sm">
+              <TeamAskCard
+                compact
+                member={TEAM[hero.teamAsk.memberId]}
+                question={hero.teamAsk.question}
+                pitch={hero.teamAsk.pitch}
+                actionLabel={hero.teamAsk.actionLabel}
+                href={hero.teamAsk.href}
+                secondaryHref={TELEGRAM_URL}
+                secondaryIcon={<TelegramIcon />}
+              />
+            </div>
+          ) : (
+            // Запасной вариант для гипотетической страницы без teamAsk —
+            // герой не должен остаться без единого следующего шага.
+            <div className="mt-10 flex flex-wrap items-center gap-3">
+              <Link href="/brief" className="btn-neon btn-warm btn-3d !py-3.5">
+                Получить смету
+              </Link>
+              <a href={TELEGRAM_URL} target="_blank" rel="noreferrer" className="btn-neon btn-3d !py-3.5">
+                <TelegramIcon />
+                Telegram
+              </a>
+            </div>
+          )}
+          {/* Телефон убран из этой строки: он уже стоит в шапке на каждой
+              странице сайта, и здесь дублировал её. Егор — «убери номера
+              из подобных мест, в шапке есть и достаточно». */}
 
           {stats ? (
             // То же начертание, что у StatsBand, только вжатое в строку без
