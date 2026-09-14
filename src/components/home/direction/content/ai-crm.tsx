@@ -33,8 +33,15 @@ export const aiCrmContent: CompactToolContent = {
         закрыть. <Accent>Рост конверсии — 30–45% без участия человека.</Accent>
       </>
     ),
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/brain-circuit.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Какой CRM пользуетесь?",
+      pitch: "Расскажите про воронку — прикинем, что автоматизировать.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "70%", label: "рутины в CRM берёт на себя AI" },
@@ -129,6 +136,12 @@ export const aiCrmContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько заявок в месяц проходит через CRM?",
+      pitch: "Подскажу, где скоринг даст быстрый эффект.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -177,6 +190,12 @@ export const aiCrmContent: CompactToolContent = {
         accent: "фиксируем письменно до старта",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как разметка встраивается в нашу CRM?",
+      pitch: "Объясню механику простыми словами.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -271,6 +290,12 @@ export const aiCrmContent: CompactToolContent = {
         accent: "правим модель по результату",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам внедрения скоринга?",
+      pitch: "Отвечу, сколько займёт пилот.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

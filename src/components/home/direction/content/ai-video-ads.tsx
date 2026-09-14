@@ -34,7 +34,7 @@ export const aiVideoAdsContent: DirectionContent = {
         тестировать можно линейку, а не одну ставку.
       </>
     ),
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/holi-face.webp",
     photoPosition: "50% 22%",
     teamAsk: {
       memberId: "egor",

@@ -52,6 +52,13 @@ export const sitesLandingContent: CompactToolContent = {
     ),
     photo: "/images/stock/hologram-laptop.webp",
     photoPosition: "55% 40%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Куда сейчас ведёт трафик?",
+      pitch: "Расскажите оффер — прикинем формат и срок.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "6,6%", label: "средняя конверсия лендинга по рынку" },
@@ -146,6 +153,12 @@ export const sitesLandingContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Куда сейчас идёт трафик с рекламы?",
+      pitch: "Подскажу, что можно закрыть за 5 дней.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -185,6 +198,12 @@ export const sitesLandingContent: CompactToolContent = {
         accent: "каждое лишнее поле снижает вероятность",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Что важнее — скорость или полнота страницы?",
+      pitch: "Объясню, где здесь баланс.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -244,6 +263,12 @@ export const sitesLandingContent: CompactToolContent = {
         accent: "готовность принимать трафик",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам запуска?",
+      pitch: "Отвечу, что войдёт в 5 дней.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

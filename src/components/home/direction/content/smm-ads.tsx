@@ -44,8 +44,15 @@ export const smmAdsContent: CompactToolContent = {
         воронка ведёт в канал, бота или Mini App — не на лендинг.
       </>
     ),
-    photo: "/images/stock/smm-phone-bokeh.webp",
+    photo: "/images/stock/brain-circuit.webp",
     photoPosition: "75% 45%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Куда сейчас ведёт реклама?",
+      pitch: "Расскажите — прикинем воронку.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "до 90%", label: "аудитории теряется при переходе на внешний сайт" },
@@ -140,6 +147,12 @@ export const smmAdsContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Куда сейчас идёт клик с рекламы?",
+      pitch: "Подскажу, где теряется аудитория.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -179,6 +192,12 @@ export const smmAdsContent: CompactToolContent = {
         accent: "никто не трогает месяцами",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Почему не вести рекламу сразу на сайт?",
+      pitch: "Объясню логику воронки внутри площадки.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -239,6 +258,12 @@ export const smmAdsContent: CompactToolContent = {
         accent: "что изменили и почему",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам запуска кампании?",
+      pitch: "Отвечу, сколько займёт первый тест.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

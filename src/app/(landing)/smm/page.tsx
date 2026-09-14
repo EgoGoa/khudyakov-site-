@@ -8,8 +8,6 @@ import SmmOffer from "@/components/home/smm/SmmOffer";
 import SmmProcess from "@/components/home/smm/SmmProcess";
 import SmmGuarantees from "@/components/home/smm/SmmGuarantees";
 import SmmClose from "@/components/home/smm/SmmClose";
-import SeoLongRead from "@/components/home/shared/SeoLongRead";
-import { SMM_SEO_SECTIONS } from "@/components/home/smm/smmSeoSections";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -65,15 +63,24 @@ const PHASES: Phase[] = [
   { start: 13.52, end: 19.64 },
   { start: 19.64, end: 23.44 },
   { start: 23.44, end: 28.5 },
-  // Ends a shade before the file's 32.583 so the last chapter holds on a real
-  // frame rather than on whatever the decoder leaves at the very tail.
+  // Ends at 30.5, not the file's 32.583 — this chapter now grew taller (the
+  // SEO accordion moved in under its CTA, see SmmClose), and a taller
+  // chapter holds on its phase's own end frame for as long as the visitor
+  // keeps scrolling through that extra content (see CinematicStage's own
+  // note on tall chapters). At the old end (32.5) that hold frame was two
+  // people fading to a near-black silhouette against a spent sunset — Egor's
+  // ask was to hold somewhere the two are still lit and clearly readable.
+  // Checked frame by frame with ffmpeg between 28.5 and 32.583: 30.5 is the
+  // last timestamp with the sun still bright and both silhouettes sharp:
+  // 31 already loses the sun's disc, 31.5 loses the rim light, 32+ is flat
+  // black.
   //
   // Brightness is lifted for this phase alone. Egor's timecode of 29 stands —
   // the boundary is not moved — but the fragment it opens is by far the
   // darkest in the reel (a terrace after sunset), and at the page's 1.16 the
   // closing chapter read as an unlit black page rather than as film. 1.5 is
   // the phase's own multiplier; every other chapter keeps 1.16.
-  { start: 28.5, end: 32.5, brightness: 1.5 },
+  { start: 28.5, end: 30.5, brightness: 1.5 },
 ];
 
 const CHAPTERS: ChapterMeta[] = [
@@ -132,8 +139,6 @@ export default function SmmServicePage() {
           <SmmClose />
         </CinematicStage>
       </div>
-
-      <SeoLongRead eyebrow="Подробнее о SMM" sections={SMM_SEO_SECTIONS} />
     </ServiceProvider>
   );
 }

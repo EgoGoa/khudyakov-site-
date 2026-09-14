@@ -33,8 +33,15 @@ export const aiTrainingContent: CompactToolContent = {
         обучение AI в 2026-м.</Accent>
       </>
     ),
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/team-ideas.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Какой инструмент команда использует не в полную силу?",
+      pitch: "Расскажите — прикинем формат программы.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "50%+", label: "компаний РФ увеличивают бюджет на обучение AI" },
@@ -129,6 +136,12 @@ export const aiTrainingContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько человек в команде нужно обучить?",
+      pitch: "Подскажу формат программы под размер команды.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -178,6 +191,12 @@ export const aiTrainingContent: CompactToolContent = {
         accent: "без отрыва команды на несколько дней",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как проверяете, что обучение сработало?",
+      pitch: "Объясню механику контроля простыми словами.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -272,6 +291,12 @@ export const aiTrainingContent: CompactToolContent = {
         accent: "по фактическому использованию, а не по опросу",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по формату сессии?",
+      pitch: "Отвечу, как проходит обучение.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

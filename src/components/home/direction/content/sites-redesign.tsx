@@ -45,8 +45,15 @@ export const sitesRedesignContent: CompactToolContent = {
         клиенты и недополученная выручка.</Accent>
       </>
     ),
-    photo: "/images/stock/hologram-laptop.webp",
+    photo: "/images/stock/ink-black.webp",
     photoPosition: "55% 40%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Что не так с текущим сайтом?",
+      pitch: "Расскажите — прикинем объём переделки.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "75%", label: "судят о надёжности компании по дизайну" },
@@ -141,6 +148,12 @@ export const sitesRedesignContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сайт правда устарел или просто разонравился?",
+      pitch: "Подскажу, что смотреть на аудите.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -180,6 +193,12 @@ export const sitesRedesignContent: CompactToolContent = {
         accent: "каждая лишняя секунда стоит 7%",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Боитесь потерять позиции в поиске?",
+      pitch: "Объясню, как проходит SEO-миграция.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -240,6 +259,12 @@ export const sitesRedesignContent: CompactToolContent = {
         accent: "а не рестартует с нуля в поиске",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам редизайна?",
+      pitch: "Отвечу, сколько займёт аудит и запуск.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

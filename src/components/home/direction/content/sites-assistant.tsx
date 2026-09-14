@@ -45,8 +45,15 @@ export const sitesAssistantContent: CompactToolContent = {
         пока менеджер не освободился.</Accent>
       </>
     ),
-    photo: "/images/stock/hologram-laptop.webp",
+    photo: "/images/stock/ai-wireframe-face.webp",
     photoPosition: "55% 40%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Что должен закрывать ассистент?",
+      pitch: "Расскажите задачу — прикинем формат.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "+391%", label: "к конверсии при ответе в первую минуту" },
@@ -141,6 +148,12 @@ export const sitesAssistantContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько обращений в день сейчас пропускаете?",
+      pitch: "Подскажу, что закроет ассистент.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -180,6 +193,12 @@ export const sitesAssistantContent: CompactToolContent = {
         accent: "тем же путём, что и обычные формы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как ассистент понимает, когда позвать менеджера?",
+      pitch: "Объясню механику простыми словами.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -240,6 +259,12 @@ export const sitesAssistantContent: CompactToolContent = {
         accent: "самостоятельно или с нашим сопровождением",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам настройки ассистента?",
+      pitch: "Отвечу, сколько займёт пилот.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

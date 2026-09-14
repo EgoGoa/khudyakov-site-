@@ -42,8 +42,15 @@ export const sitesCardContent: CompactToolContent = {
         <Accent>Решение принимается быстрее, чем посетитель прочитал хоть слово текста.</Accent>
       </>
     ),
-    photo: "/images/stock/hologram-laptop.webp",
+    photo: "/images/stock/design-tablet.webp",
     photoPosition: "55% 40%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Что сейчас представляет компанию в интернете?",
+      pitch: "Расскажите — прикинем формат и срок.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "0,05 сек", label: "формируется первое впечатление от сайта" },
@@ -138,6 +145,12 @@ export const sitesCardContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Что сейчас есть у компании в сети?",
+      pitch: "Подскажу, какая структура подойдёт.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -177,6 +190,12 @@ export const sitesCardContent: CompactToolContent = {
         accent: "где посетитель их ожидает увидеть",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько разделов реально нужно?",
+      pitch: "Объясню, как выбрать структуру.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -237,6 +256,12 @@ export const sitesCardContent: CompactToolContent = {
         accent: "а не черновик на доработку",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам запуска визитки?",
+      pitch: "Отвечу, сколько займёт сборка.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

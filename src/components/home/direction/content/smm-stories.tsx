@@ -47,8 +47,15 @@ export const smmStoriesContent: CompactToolContent = {
         охватный инструмент.
       </>
     ),
-    photo: "/images/stock/smm-phone-bokeh.webp",
+    photo: "/images/stock/night-lights.webp",
     photoPosition: "75% 45%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Как часто сейчас выходят истории?",
+      pitch: "Расскажите ритм — прикинем формат.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "24 часа", label: "жизнь одной истории на платформе" },
@@ -143,6 +150,12 @@ export const smmStoriesContent: CompactToolContent = {
         linkLabel: "Посчитать бюджет",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько историй в неделю выходит сейчас?",
+      pitch: "Подскажу, какой ритм закроет разрыв.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -182,6 +195,12 @@ export const smmStoriesContent: CompactToolContent = {
         accent: "в первую секунду",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Нужна отдельная команда под сторис?",
+      pitch: "Объясню, почему нет.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -242,6 +261,12 @@ export const smmStoriesContent: CompactToolContent = {
         accent: "идут в план следующей недели",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по ежедневному ритму?",
+      pitch: "Отвечу, как это встроить в график.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

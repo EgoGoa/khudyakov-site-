@@ -7,6 +7,10 @@ import { sitesFormatPages } from "@/components/home/direction/sitesFormatRegistr
 // Cyan — the site-wide `glow` accent /sites already uses for hover states
 // (ROUND below). See .deck-card-glow in globals.css for the hand-off.
 const CARD_GLOW_STYLE = { "--card-glow-rgb": "0, 210, 255" } as CSSProperties;
+// "Хит месяца" — same pink→orange ramp AiDeck's flagship pick uses
+// (#ff4fd8→#ff6a3d), so the whole site shares one "featured" colour
+// language instead of inventing a second one here.
+const CARD_GLOW_STYLE_HIT = { "--card-glow-rgb": "255, 106, 61" } as CSSProperties;
 
 // The service carousel on /sites' chapter 01.
 //
@@ -34,8 +38,15 @@ type Service = {
   blurb: string;
   price: string;
   term: string;
+  /** Кому подходит формат — второй факт в окошке под деком. */
+  audience: string;
+  /** Почему это актуально сейчас, а не «когда-нибудь» — третий факт там же. */
+  now: string;
   /** Which mini-site mockup to draw inside the card — see SiteThumb. */
   shape: "landing" | "pages" | "shop" | "chat" | "redesign";
+  /** "Хит месяца" — Egor's flagship pick, same badge/glow language as
+   *  AiDeck's own hit card. */
+  hit?: boolean;
 };
 
 // Wording taken verbatim from lib/service-content.ts (the offer list and the
@@ -49,7 +60,10 @@ const SERVICES: Service[] = [
     blurb: "Одна страница, которая доводит трафик до заявки. Тексты, дизайн и вёрстка с нуля.",
     price: "от 60 000 ₽",
     term: "5 рабочих дней",
+    audience: "Компаниям, которые запускают продукт, акцию или рекламную кампанию.",
+    now: "Трафик уже идёт или вот-вот пойдёт — страница нужна раньше первого клика.",
     shape: "landing",
+    hit: true,
   },
   {
     id: "card",
@@ -57,6 +71,8 @@ const SERVICES: Service[] = [
     blurb: "Несколько страниц: о компании, услуги, контакты — без раздутого бюджета.",
     price: "от 120 000 ₽",
     term: "8 рабочих дней",
+    audience: "Малому бизнесу и специалистам, которым до сих пор верят на слово в мессенджере.",
+    now: "Клиент проверяет компанию в поиске до звонка — без сайта проверка обрывается.",
     shape: "pages",
   },
   {
@@ -65,6 +81,8 @@ const SERVICES: Service[] = [
     blurb: "Многостраничный сайт с формами, интеграцией CRM и разделами каталога.",
     price: "от 220 000 ₽",
     term: "14 рабочих дней",
+    audience: "Компаниям с каталогом, несколькими направлениями или растущей воронкой заявок.",
+    now: "Заявки уже не помещаются в один лендинг — нужна структура, а не ещё одна страница.",
     shape: "shop",
   },
   {
@@ -73,6 +91,8 @@ const SERVICES: Service[] = [
     blurb: "Чат-бот на сайте, который отвечает на вопросы посетителей до подключения менеджера.",
     price: "по запросу",
     term: "от 5 дней",
+    audience: "Сайтам с потоком однотипных вопросов, на которые сейчас отвечает менеджер вручную.",
+    now: "Посетитель уходит, не дождавшись ответа в оффлайне — бот отвечает раньше, чем человек.",
     shape: "chat",
   },
   {
@@ -81,6 +101,8 @@ const SERVICES: Service[] = [
     blurb: "Переносим на актуальный стек, не теряя структуру и позиции в поиске.",
     price: "по запросу",
     term: "от 7 дней",
+    audience: "Владельцам сайта, который стыдно показать клиенту или неудобно редактировать самим.",
+    now: "Старый стек и вёрстка тормозят каждое обновление — держать его дальше дороже переезда.",
     shape: "redesign",
   },
 ];
@@ -248,18 +270,36 @@ export default function SitesDeck() {
                 transform: `translate(-50%, -50%) translate(${pose.x}px, ${pose.y}px) scale(${pose.scale})`,
               }}
             >
+              {/* "Хит месяца" — same badge language as AiDeck's own flagship
+                  card (.promo-card-badge-lift: pink→orange shimmer + blink
+                  glow), shown at every distance from centre so the card
+                  reads as lit while scrolling past it too, not only once
+                  front. */}
+              {service.hit && (
+                <span
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  aria-hidden="true"
+                >
+                  <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
+                  Хит месяца
+                </span>
+              )}
+
               {/* Same mechanic as SmmDeck/AiDeck: once a format is front AND
                   has its own page, the whole card becomes the link to it,
-                  with the cyan hover glow. Off-centre cards stay <button>s
-                  that page the carousel — click once to bring a card to
-                  front, click again (now that it fills this wrapper as the
-                  Link) to open its page. */}
+                  with the cyan hover glow — pink→orange instead for the hit
+                  card, same ramp as the badge above. Off-centre cards stay
+                  <button>s that page the carousel — click once to bring a
+                  card to front, click again (now that it fills this wrapper
+                  as the Link) to open its page. */}
               {isFront && hasPage ? (
                 <Link
                   href={`/sites/${service.id}`}
                   aria-current="true"
-                  className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL}`}
-                  style={CARD_GLOW_STYLE}
+                  className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL} ${
+                    service.hit ? "ring-2 ring-[#ff8a5c]/50" : ""
+                  }`}
+                  style={service.hit ? CARD_GLOW_STYLE_HIT : CARD_GLOW_STYLE}
                 >
                   <SiteThumb shape={service.shape} />
                   {caption}
@@ -273,7 +313,7 @@ export default function SitesDeck() {
                   aria-current={isFront ? "true" : undefined}
                   className={`absolute inset-0 overflow-hidden text-left ${CARD_SHELL} ${
                     isFront ? "cursor-default" : "cursor-pointer"
-                  }`}
+                  } ${service.hit ? "ring-2 ring-[#ff8a5c]/50" : ""}`}
                 >
                   <SiteThumb shape={service.shape} />
                   {isFront && caption}
@@ -344,16 +384,45 @@ export default function SitesDeck() {
         })}
       </div>
 
-      {/* The reference's pill toolbar: what the selected category is and what
-          it costs in time. No button of its own — the chapter's single
-          "Обсудить проект" lives in the copy column beside the fan, and a
-          second copy of it here read as the same offer made twice. */}
-      <div className="mt-6">
-        <p className="min-h-[38px] max-w-[420px] text-[13px] leading-snug text-paper/55">{front.blurb}</p>
-        <p className="mt-3 font-display text-[10px] uppercase tracking-[0.14em] text-paper/45">
-          Срок · <span className="font-medium text-paper">{front.term}</span>
-        </p>
+      {/* Окошко под деком — тот же приём, что и на /ai (AiDeck.tsx): стекло
+          .glass-panel со статичной каймой в акценте страницы (циан, а не
+          изумруд /ai — Егор попросил цвет свой на каждой странице, а не
+          общий), три факта белым текстом вместо одной приглушённой строки.
+          Название формата и цена/срок остаются над фактами — это то, что
+          раньше жило в отдельной строке "Срок · …" под описанием. No
+          button of its own — the chapter's single "Обсудить проект" lives
+          in the copy column beside the fan, and a second copy of it here
+          read as the same offer made twice. */}
+      <div
+        className="glass-panel mt-6 flex h-[240px] items-start overflow-hidden rounded-3xl px-6 py-6"
+        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), inset 0 0 0 1px rgba(255,255,255,0.045), 0 0 0 1px rgba(0,210,255,0.22), 0 0 32px -6px rgba(0,210,255,0.35), 0 28px 70px -34px rgba(0,0,0,0.95)" }}
+      >
+        <div className="max-w-[460px]">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.name}</p>
+            <p className="font-display text-[11px] uppercase tracking-[0.1em] text-glow">
+              {front.price} · {front.term}
+            </p>
+          </div>
+          <dl className="mt-3 grid gap-2.5">
+            <SitesFact label="Что даёт" text={front.blurb} />
+            <SitesFact label="Кому" text={front.audience} />
+            <SitesFact label="Почему сейчас" text={front.now} />
+          </dl>
+        </div>
       </div>
+    </div>
+  );
+}
+
+// Одна строка факта — тот же рисунок, что у AiDeck's Fact, в акценте /sites.
+function SitesFact({ label, text }: { label: string; text: string }) {
+  return (
+    <div className="flex gap-3">
+      <dt className="w-[92px] shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-glow/80">
+        {label}
+      </dt>
+      <dd className="text-[13px] leading-snug text-white">{text}</dd>
     </div>
   );
 }

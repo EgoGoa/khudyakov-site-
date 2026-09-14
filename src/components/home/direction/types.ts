@@ -357,13 +357,13 @@ export type CompactToolContent = {
   taskMedia?: BlockMediaSpec;
   taskSuggested?: string[];
 
-  audience: DirectionSectionHead & { items: DirectionAudienceItem[] };
+  audience: DirectionSectionHead & { items: DirectionAudienceItem[]; teamAsk?: DirectionTeamAsk };
 
-  tech: DirectionSectionHead & { items: DirectionTechItem[] };
+  tech: DirectionSectionHead & { items: DirectionTechItem[]; teamAsk?: DirectionTeamAsk };
 
   pricing: DirectionSectionHead & { tiers: DirectionTier[]; note: string };
 
-  process: DirectionSectionHead & { steps: DirectionStep[]; typed?: string };
+  process: DirectionSectionHead & { steps: DirectionStep[]; typed?: string; teamAsk?: DirectionTeamAsk };
 
   /** Общий экран для FAQ и финального призыва — см. CompactFaqCloseBlock.
    *  `faq` несёт собственную шапку (эйбрау/заголовок/подзаголовок) и

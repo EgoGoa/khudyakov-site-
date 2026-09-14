@@ -14,14 +14,13 @@ import { EYEBROW } from "@/lib/typography";
 import { TEAM } from "@/lib/team";
 import TeamAskCard from "@/components/home/TeamAskCard";
 
-// Chapter 04 — the services list plus, on /content, an interactive widget
-// beside it (Egor's ask): pick any of the ten services and the panel on the
+// Chapter 04 — the services list plus, on /content and /ai, an interactive
+// widget beside it (Egor's ask): pick any service and the panel on the
 // right adapts — a BlockAssistant search bar scoped to that one service on
-// top, its budget/timeline/audience below, two lead-capture buttons at the
-// foot. /ai, /sites and /smm keep the old static teaser+calculator card
-// (their services have no budget/timeline/audience copy yet — see
-// data.ts's own note on where those numbers came from), gated the same way
-// showCalculator already was.
+// top, its description/audience/timeline/budget below, a TeamAskCard at the
+// foot. /sites and /smm still keep the old static teaser+calculator card —
+// their service lists (service-content.ts) don't carry timeline/budget
+// copy yet, so there is nothing for the rich panel to show.
 
 export default function Offer({
   index = 3,
@@ -57,11 +56,26 @@ export default function Offer({
   // one on /ai, /sites or /smm, which don't share that pricing model. Same
   // gating Close.tsx already applies to its own "Рассчитать" button below.
   const showCalculator = active === "content";
-  // The interactive widget only has real copy on /content right now (see
-  // data.ts) — everywhere else falls back to the old static card below.
-  const interactive = active === "content";
+  // The interactive widget needs real per-service copy (description,
+  // audience, timeline, budget) — /content and /ai both have it now (see
+  // service-content.ts); /sites and /smm still fall back to the old static
+  // card below until their service lists get the same treatment.
+  const interactive = active === "content" || active === "ai";
   const [selected, setSelected] = useState(0);
   const selectedService = services[selected];
+  const pageLabel = active === "ai" ? "AI-решения" : "Создание контента";
+  const teamAskCopy =
+    active === "ai"
+      ? {
+          question: "Готов обсудить твою задачу: любой инструмент из списка слева.",
+          pitch: "Подскажу формат и посчитаю смету — бесплатно, до брифа.",
+          actionLabel: "Написать Максу",
+        }
+      : {
+          question: "Готов обсудить твою задачу: наполнение социальных сетей, рекламные ролики, контент под запуск.",
+          pitch: "Подготовлю 2–3 концепции под вашу задачу — бесплатно, до брифа.",
+          actionLabel: "Получить 3 концепции",
+        };
 
   return (
     <CinematicSection
@@ -123,19 +137,30 @@ export default function Offer({
                   // The row's own air is the only thing tall enough to give
                   // this chapter back a screen it fits on: ten rows at py-4
                   // come to 600px, and on a 1280x800 laptop that pushed the
-                  // last row ("10 AI-контент и автоматизация") below the fold,
-                  // where the deck's desktop stepping makes it unreachable.
-                  // Tightened by height, not by width — the constraint is how
-                  // tall the screen is, not how wide.
-                  className="border-t border-paper/20 [@media(max-height:860px)]:py-0"
+                  // last row below the fold, where the deck's desktop
+                  // stepping makes it unreachable. Tightened by height, not
+                  // by width — the constraint is how tall the screen is, not
+                  // how wide.
+                  //
+                  // Interactive lists (up to eleven rows on /ai) get a
+                  // tighter py-3 across every height, not just short
+                  // screens: at py-4 the list ran taller than the widget
+                  // beside it, so the two columns' bottom edges no longer
+                  // lined up — Egor's ask was for the list to end exactly
+                  // where the Max card on the right ends.
+                  className={`border-t border-paper/20 ${
+                    interactive ? "" : "[@media(max-height:860px)]:py-0"
+                  }`}
                 >
                   <button
                     type="button"
                     disabled={!interactive}
                     onClick={() => setSelected(i)}
                     aria-pressed={isSelected}
-                    className={`group flex w-full items-baseline gap-3 py-4 text-left transition-colors [@media(max-height:860px)]:py-2.5 ${
-                      interactive ? "cursor-pointer" : "cursor-default"
+                    className={`group flex w-full items-baseline gap-3 text-left transition-colors ${
+                      interactive
+                        ? "cursor-pointer py-3"
+                        : "cursor-default py-4 [@media(max-height:860px)]:py-2.5"
                     }`}
                   >
                     <span
@@ -146,9 +171,9 @@ export default function Offer({
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span
-                      className={`font-display text-base uppercase leading-tight tracking-tight transition-colors sm:text-lg [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] ${
-                        isSelected ? "text-orange" : "text-white group-hover:text-glow"
-                      }`}
+                      className={`font-display uppercase leading-tight tracking-tight transition-colors [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] ${
+                        interactive ? "text-sm sm:text-base" : "text-base sm:text-lg"
+                      } ${isSelected ? "text-orange" : "text-white group-hover:text-glow"}`}
                     >
                       {service.title}
                     </span>
@@ -180,7 +205,7 @@ export default function Offer({
                   вопрос по данной услуге", answered by the same agent/producer
                   flow rather than a new mechanism. */}
               <BlockAssistant
-                context={`Страница /content (Создание контента), услуга «${selectedService.title}». ${selectedService.description}`}
+                context={`Страница /${active} (${pageLabel}), услуга «${selectedService.title}». ${selectedService.description}`}
               />
 
               {/* Что это → Для кого → Сроки → Бюджет — Egor's order. Each
@@ -243,9 +268,9 @@ export default function Offer({
                   member={TEAM.max}
                   // Compact variant only shows `question`, not `pitch` — the
                   // whole reply has to live in one string here.
-                  question="Готов обсудить твою задачу: наполнение социальных сетей, рекламные ролики, контент под запуск."
-                  pitch="Подготовлю 2–3 концепции под вашу задачу — бесплатно, до брифа."
-                  actionLabel="Получить 3 концепции"
+                  question={teamAskCopy.question}
+                  pitch={teamAskCopy.pitch}
+                  actionLabel={teamAskCopy.actionLabel}
                   compact
                 />
               </div>

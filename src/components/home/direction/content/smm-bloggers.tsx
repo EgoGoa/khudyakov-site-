@@ -44,8 +44,15 @@ export const smmBloggersContent: CompactToolContent = {
         не отдельная статья бюджета для больших компаний.
       </>
     ),
-    photo: "/images/stock/smm-phone-bokeh.webp",
+    photo: "/images/stock/vr-neon-triangle.webp",
     photoPosition: "75% 45%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Какая задача у интеграции?",
+      pitch: "Расскажите — подберём блогеров под неё.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "94%", label: "блогеров РФ работают с бюджетом до 100 тыс. ₽" },
@@ -141,6 +148,12 @@ export const smmBloggersContent: CompactToolContent = {
         linkLabel: "Обсудить формат",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Работали раньше с блогерами?",
+      pitch: "Подскажу, с чего начать подбор.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -180,6 +193,12 @@ export const smmBloggersContent: CompactToolContent = {
         accent: "сверяем с тем, что обещал блогер",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как выбираете, с кем сотрудничать?",
+      pitch: "Объясню, на что смотрим при подборе.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -239,6 +258,12 @@ export const smmBloggersContent: CompactToolContent = {
         accent: "окупилась ли интеграция",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам подбора?",
+      pitch: "Отвечу, сколько займёт первая интеграция.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

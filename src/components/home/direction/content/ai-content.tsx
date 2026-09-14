@@ -46,7 +46,7 @@ export const aiContentContent: DirectionContent = {
     // блоков размывается и титры там становятся фактурой, а герой — нет:
     // он идёт резким, поэтому для него годятся только отрывки без текста
     // в кадре.
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/ink-pink.webp",
     photoPosition: "50% 22%",
     teamAsk: {
       memberId: "egor",

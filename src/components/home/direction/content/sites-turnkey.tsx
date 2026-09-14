@@ -44,8 +44,15 @@ export const sitesTurnkeyContent: CompactToolContent = {
         что превращает визит в сделку.</Accent>
       </>
     ),
-    photo: "/images/stock/hologram-laptop.webp",
+    photo: "/images/stock/server-room.webp",
     photoPosition: "55% 40%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Сколько позиций в каталоге?",
+      pitch: "Расскажите объём — прикинем структуру и срок.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "10+", label: "страниц — типовой объём сайта под ключ" },
@@ -140,6 +147,12 @@ export const sitesTurnkeyContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "С какой CRM нужна интеграция?",
+      pitch: "Подскажу, что войдёт в пакет.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -179,6 +192,12 @@ export const sitesTurnkeyContent: CompactToolContent = {
         accent: "без обращения к разработчику на каждое изменение",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Нужен ли AI-ассистент сразу или можно позже?",
+      pitch: "Объясню, как это влияет на смету.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -238,6 +257,12 @@ export const sitesTurnkeyContent: CompactToolContent = {
         accent: "три итерации правок включены",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам сайта под ключ?",
+      pitch: "Отвечу, что войдёт в 14 дней.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

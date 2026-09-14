@@ -44,6 +44,13 @@ export const smmReelsContent: CompactToolContent = {
     ),
     photo: "/images/stock/smm-phone-bokeh.webp",
     photoPosition: "75% 45%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Какой охват у аккаунта сейчас?",
+      pitch: "Расскажите — прикинем объём съёмки.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "30,8%", label: "средний охват Reels" },
@@ -139,6 +146,12 @@ export const smmReelsContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько Reels сейчас выходит в месяц?",
+      pitch: "Подскажу, какой ритм нужен для роста.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -178,6 +191,12 @@ export const smmReelsContent: CompactToolContent = {
         accent: "когда аудитория реально онлайн",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Чем ваша съёмка отличается от фрилансера?",
+      pitch: "Объясню, как устроена команда.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -245,6 +264,12 @@ export const smmReelsContent: CompactToolContent = {
         accent: "как меняем план следующего месяца",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам первой съёмки?",
+      pitch: "Отвечу, когда выйдут первые ролики.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

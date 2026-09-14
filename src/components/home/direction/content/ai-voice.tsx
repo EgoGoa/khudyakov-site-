@@ -34,7 +34,7 @@ export const aiVoiceContent: DirectionContent = {
         выходит вся линейка версий.
       </>
     ),
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/hologram-laptop.webp",
     photoPosition: "50% 22%",
     teamAsk: {
       memberId: "egor",

@@ -26,6 +26,10 @@ type Format = {
   name: string;
   blurb: string;
   meta: string;
+  /** Кому подходит формат — второй факт в окошке под деком. */
+  audience: string;
+  /** Почему это актуально сейчас, а не «когда-нибудь» — третий факт там же. */
+  now: string;
   /** Which phone-screen mockup to draw inside the card — see FormatThumb. */
   shape: "reels" | "stories" | "carousel" | "ads" | "bloggers";
 };
@@ -39,6 +43,8 @@ const FORMATS: Format[] = [
     name: "Reels",
     blurb: "Вертикальные ролики снимаем и монтируем сами — те же операторы, что снимают рекламу.",
     meta: "8–12 роликов в месяц",
+    audience: "Брендам, у которых охваты в ленте просели, а в Reels ещё нет.",
+    now: "Площадка отдаёт органический охват бесплатно, пока в него не зашли все конкуренты.",
     shape: "reels",
   },
   {
@@ -46,6 +52,8 @@ const FORMATS: Format[] = [
     name: "Сторис",
     blurb: "Ежедневная лента историй: анонсы, закулисье, опросы — держит аккаунт живым между роликами.",
     meta: "каждый рабочий день",
+    audience: "Аккаунтам, где подписчики есть, а вовлечённость между постами проседает.",
+    now: "Без ежедневного присутствия алгоритм и аудитория забывают об аккаунте за неделю.",
     shape: "stories",
   },
   {
@@ -53,6 +61,8 @@ const FORMATS: Format[] = [
     name: "Карусели",
     blurb: "Посты-объяснения на несколько экранов — то, что аудитория сохраняет и пересылает.",
     meta: "4–8 постов в месяц",
+    audience: "Экспертам и брендам, которым есть что объяснить, а не только показать.",
+    now: "Формат, который сохраняют и пересылают, приносит охват без рекламного бюджета.",
     shape: "carousel",
   },
   {
@@ -60,6 +70,8 @@ const FORMATS: Format[] = [
     name: "Таргет",
     blurb: "Настройка, тесты креативов и оптимизация бюджета — реклама на том же контенте, что ведём.",
     meta: "тесты каждую неделю",
+    audience: "Брендам, которым органики уже недостаточно и нужен управляемый приток лидов.",
+    now: "Каждая неделя без тестов — упущенные данные о том, какой креатив реально продаёт.",
     shape: "ads",
   },
   {
@@ -67,6 +79,8 @@ const FORMATS: Format[] = [
     name: "Блогеры",
     blurb: "Подбор блогеров под аудиторию и бюджет, согласование интеграций, замер результата.",
     meta: "в пакете Full-service",
+    audience: "Брендам, которым нужно доверие чужой аудитории, а не ещё один свой пост.",
+    now: "Своя аудитория уже видела бренд — блогер приносит тех, кто о нём ещё не слышал.",
     shape: "bloggers",
   },
 ];
@@ -376,13 +390,42 @@ export default function SmmDeck() {
         })}
       </div>
 
-      {/* What the selected format is and at what cadence. The "Подробнее"
-          button now lives on the card itself (see the isFront branch
-          above), so this row is text-only, same as before that button
-          existed. */}
-      <div className="mt-6">
-        <p className="min-h-[38px] max-w-[420px] text-[13px] leading-snug text-paper/55">{front.blurb}</p>
+      {/* Окошко под деком — тот же приём, что и на /ai (AiDeck.tsx) и /sites
+          (SitesDeck.tsx): стекло .glass-panel со статичной каймой в
+          акценте страницы (фиолетовый /smm, не изумруд/циан соседних
+          деков — Егор попросил цвет свой на каждой странице), три факта
+          белым текстом вместо одной приглушённой строки. The "Подробнее"
+          button lives on the card itself (see the isFront branch above),
+          so this row stays text-only. */}
+      <div
+        className="glass-panel mt-6 flex h-[240px] items-start overflow-hidden rounded-3xl px-6 py-6"
+        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), inset 0 0 0 1px rgba(255,255,255,0.045), 0 0 0 1px rgba(168,85,247,0.22), 0 0 32px -6px rgba(168,85,247,0.35), 0 28px 70px -34px rgba(0,0,0,0.95)" }}
+      >
+        <div className="max-w-[460px]">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.name}</p>
+            <p className="font-display text-[11px] uppercase tracking-[0.1em] text-[#c9a4ff]">{front.meta}</p>
+          </div>
+          <dl className="mt-3 grid gap-2.5">
+            <SmmFact label="Что даёт" text={front.blurb} />
+            <SmmFact label="Кому" text={front.audience} />
+            <SmmFact label="Почему сейчас" text={front.now} />
+          </dl>
+        </div>
       </div>
+    </div>
+  );
+}
+
+// Одна строка факта — тот же рисунок, что у AiDeck's Fact / SitesDeck's
+// SitesFact, в акценте /smm.
+function SmmFact({ label, text }: { label: string; text: string }) {
+  return (
+    <div className="flex gap-3">
+      <dt className="w-[92px] shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-[#c9a4ff]/80">
+        {label}
+      </dt>
+      <dd className="text-[13px] leading-snug text-white">{text}</dd>
     </div>
   );
 }

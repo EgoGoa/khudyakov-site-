@@ -8,6 +8,10 @@ export type Service = {
   timeline?: string;
   /** Who this service actually fits — one short sentence. */
   audience?: string;
+  /** Why this is relevant now, not "someday" — the third fact in the
+   *  chat/tools carousel info row (AiDeck.tsx), beside "что даёт"
+   *  (description) and "кому" (audience). One short, concrete sentence. */
+  now?: string;
 };
 
 export type Work = {

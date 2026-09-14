@@ -33,8 +33,15 @@ export const aiAnalyticsContent: CompactToolContent = {
         месячная отчётность сократилась с 3 дней до 15 минут.</Accent>
       </>
     ),
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/platform-speed.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Сколько источников данных нужно свести?",
+      pitch: "Расскажите кабинеты — прикинем формат дашборда.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "3 дня → 15 мин", label: "подготовка отчёта в одном кейсе" },
@@ -129,6 +136,12 @@ export const aiAnalyticsContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какие отчёты сейчас собираются вручную?",
+      pitch: "Подскажу, что автоматизировать в первую очередь.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -178,6 +191,12 @@ export const aiAnalyticsContent: CompactToolContent = {
         accent: "согласуем до старта",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как AI находит аномалию в данных?",
+      pitch: "Объясню механику простыми словами.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -272,6 +291,12 @@ export const aiAnalyticsContent: CompactToolContent = {
         accent: "с тем, что вы уже знаете сами",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам настройки дашборда?",
+      pitch: "Отвечу, сколько займёт подключение источников.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

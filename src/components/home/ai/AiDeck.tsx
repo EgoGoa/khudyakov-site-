@@ -552,28 +552,61 @@ export default function AiDeck() {
         })}
       </div>
 
-      {/* The reference's pill toolbar: the full name and the sentence for
-          whichever card is up front.
+      {/* The reference's pill toolbar: the full name and, below it, three
+          short facts about whichever card is up front — что даёт / кому /
+          почему сейчас. Раньше здесь стояла одна строка описания без ответа
+          на "кому" и "почему сейчас", и карточка читалась как список
+          инструментов без объяснения, зачем конкретно этот нужен именно
+          сейчас — Егор попросил разложить это тезисами, а не абзацем.
 
-          A *fixed* height, not a min-height. The ten titles run 19–38
-          characters and the descriptions 48–97, so at this width they set to
-          a different number of lines from one card to the next. Under
-          `min-h` the block was free to grow past it, and because this whole
-          chapter is centred against the copy column beside it
-          (`lg:items-center` in AiPitch), every extra line re-centred the
-          entire row — the heading beside it visibly shifted on a swap. A
-          hard height means the tallest entry defines the box once and
-          nothing below or beside it ever moves again. */}
+          A *fixed* height, not a min-height. The eleven titles and facts run
+          different lengths, so at this width they set to a different number
+          of lines from one card to the next. Under `min-h` the block was
+          free to grow past it, and because this whole chapter is centred
+          against the copy column beside it (`lg:items-center` in AiPitch),
+          every extra line re-centred the entire row — the heading beside it
+          visibly shifted on a swap. A hard height means the tallest entry
+          defines the box once and nothing below or beside it ever moves
+          again. */}
       {/* The "Открыть" button used to live here, in its own pill beside the
           title. Moved onto the card itself (see isFront branch above) per
           Егор's ask — this row is text-only again, same as before that
           button existed. */}
-      <div className="mt-6 flex h-[86px] items-start overflow-hidden">
-        <div>
+      {/* Окошко — тот же `.glass-panel`, что несут шапки блоков на страницах
+          направлений (SectionHead), плюс статичная (без пульса — рядом уже
+          дышит эмбиент-свечение самого дека, вторая анимация спорила бы с
+          ней) кайма в emerald дека. Раньше факты лежали прямо на фоне
+          страницы и читались тише самого дека — теперь у них своя рамка и
+          свой свет, а тезисы набраны белым, а не приглушённым paper/70. */}
+      <div
+        className="glass-panel mt-6 flex h-[226px] items-start overflow-hidden rounded-3xl px-6 py-6"
+        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), inset 0 0 0 1px rgba(255,255,255,0.045), 0 0 0 1px rgba(52,211,153,0.22), 0 0 32px -6px rgba(52,211,153,0.35), 0 28px 70px -34px rgba(0,0,0,0.95)" }}
+      >
+        <div className="max-w-[460px]">
           <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.title}</p>
-          <p className="mt-2 max-w-[420px] text-[13px] leading-snug text-paper/55">{front.description}</p>
+          <dl className="mt-3 grid gap-2.5">
+            <Fact label="Что даёт" text={front.description} />
+            {front.audience && <Fact label="Кому" text={front.audience} />}
+            {front.now && <Fact label="Почему сейчас" text={front.now} />}
+          </dl>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Одна строка факта: короткая emerald-подпись слева (та же гарнитура и
+// трекинг, что у EYEBROW по сайту, но не самим компонентом — здесь не
+// нужен ни индекс, ни точка перед подписью) и сам тезис справа, белым по
+// основному — Егор попросил убрать притушенный paper/70, факты должны
+// читаться так же чётко, как заголовок над ними, а не как подпись к нему.
+function Fact({ label, text }: { label: string; text: string }) {
+  return (
+    <div className="flex gap-3">
+      <dt className="w-[92px] shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300/80">
+        {label}
+      </dt>
+      <dd className="text-[13px] leading-snug text-white">{text}</dd>
     </div>
   );
 }

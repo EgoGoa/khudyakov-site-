@@ -5,6 +5,12 @@ import type { DirectionContent } from "../types";
 // Вынесен в константу, потому что его носит подложка каждого блока: без
 // неё в зоне, где один фон растворяется в другом, стык уходит в чёрное.
 const ACCENT = { from: "#ff6a3d", to: "#ff8a5c" };
+// Необычный градиент для блока «Где будет жить это видео» — золото→розовый,
+// в тон настроенческой теме страницы, но не пересекается с ACCENT.
+const TASK_GRADIENT = { from: "#fbbf24", to: "#f43f5e" };
+// Громкий разворот ACCENT для блока кейсов — тот же приём, что у
+// presentation.tsx: развёрнутая пара цветов страницы, а не новый набор.
+const CASES_GRADIENT = { from: "#ff8a5c", to: "#ff6a3d" };
 
 
 // Направление «Имиджевые видео» — /content/image.
@@ -33,8 +39,8 @@ export const imageContent: DirectionContent = {
         потом узнают</Accent> на сайте, в соцсетях и при первой встрече.
       </>
     ),
-    photo: "/images/stock/stage-hand-neon.webp",
-    photoPosition: "50% 18%",
+    video: "/video/works/showreel-2018-hero.mp4",
+    poster: "/images/works/showreel-2018-hero.jpg",
     typed: "Настроение, с которым вас запоминают",
     teamAsk: {
       memberId: "egor",
@@ -55,7 +61,7 @@ export const imageContent: DirectionContent = {
     { value: "60%", label: "заказов — возвратные клиенты" },
     { value: "5 стран", label: "международный опыт" },
   ],
-  statsMedia: { photo: "/images/stock/artist-tablet.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", position: "75% 45%" },
+  statsMedia: { gradient: ACCENT, intensity: "quiet" },
 
   taskPrompt: "Где будет жить это видео",
   taskNote:
@@ -95,14 +101,10 @@ export const imageContent: DirectionContent = {
       promise: "фильм, снимающий страх перед первым визитом",
     },
   ],
-  taskMedia: { video: "/video/works/showreel-2024-mood-hero.mp4", poster: "/images/works/showreel-2024-mood-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+  taskMedia: { gradient: TASK_GRADIENT, intensity: "medium" },
 
   audience: {
-    media: {
-      video: "/video/works/zenfactory.mp4",
-      poster: "/images/works/zenfactory.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/paint-pastel.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left" },
     eyebrow: "Что вы получаете",
     align: "left",
     title: (
@@ -154,11 +156,7 @@ export const imageContent: DirectionContent = {
   },
 
   cases: {
-    media: {
-      video: "/video/works/amsarveda.mp4",
-      poster: "/images/works/amsarveda.jpg",
-      intensity: "quiet",
-    },
+    media: { gradient: CASES_GRADIENT, intensity: "loud" },
     eyebrow: "Наши работы",
     align: "center",
     title: (
@@ -189,7 +187,7 @@ export const imageContent: DirectionContent = {
   },
 
   budgetMedia:
-  { gradient: ACCENT, intensity: "medium" },
+  { photo: "/images/stock/desk-aerial.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   pricing: {
     media: { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },

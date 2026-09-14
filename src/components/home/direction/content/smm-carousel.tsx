@@ -44,8 +44,15 @@ export const smmCarouselContent: CompactToolContent = {
         а сохранение сегодня самый сильный сигнал вовлечённости для алгоритмов.
       </>
     ),
-    photo: "/images/stock/smm-phone-bokeh.webp",
+    photo: "/images/stock/dj-neon.webp",
     photoPosition: "75% 45%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Что должна делать карусель?",
+      pitch: "Расскажите задачу — прикинем структуру.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "0,50–0,55%", label: "средний engagement карусели во 2 кв. 2026" },
@@ -140,6 +147,12 @@ export const smmCarouselContent: CompactToolContent = {
         linkLabel: "Посчитать бюджет",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Аудитория сохраняет ваши посты?",
+      pitch: "Подскажу, как это проверить.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -179,6 +192,12 @@ export const smmCarouselContent: CompactToolContent = {
         accent: "тестируем, а не угадываем",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Нужна отдельная съёмка под карусель?",
+      pitch: "Объясню, когда она нужна, а когда нет.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -239,6 +258,12 @@ export const smmCarouselContent: CompactToolContent = {
         accent: "идёт в план следующего месяца",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам первой карусели?",
+      pitch: "Отвечу, сколько займёт сборка.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

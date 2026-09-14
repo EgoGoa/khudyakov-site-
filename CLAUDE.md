@@ -2,6 +2,13 @@
 
 ## Copy Draft Status Checks
 
+### 2026-09-14 10:50
+- Agency name: Filled ("HDKV.AGENCY")
+- Deadline: Unfilled — draft file still shows literal placeholder ("[TBD] — уточнить, что именно имеется в виду"); note the 2026-09-09 entry judged this concept already covered elsewhere in the live copy, but this check reads only my-site-copy-draft.md per the task spec
+- CTA channel: Filled ("khudyakov.yegor@gmail.com / +7 992 511-18-12")
+- Founder bio: Unfilled ("[TBD] — ждём текста")
+- Overall: 2 of 4 fields filled
+
 ### 2026-09-09 (pre-launch audit)
 - Agency name: Filled ("HDKV.AGENCY")
 - Deadline: Filled — clarified with Egor to mean the response-time promise on leads/brief. Already present and consistent across the site: "в течение дня" (Offer.tsx, AiConsult.tsx) / "в течение одного рабочего дня" (Contact.tsx). This field was marked Unfilled in every prior check only because nothing in the code referenced the literal word "Deadline" — the underlying copy was already there.

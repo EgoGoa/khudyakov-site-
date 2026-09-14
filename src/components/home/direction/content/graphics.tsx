@@ -5,6 +5,12 @@ import type { DirectionContent } from "../types";
 // Вынесен в константу, потому что его носит подложка каждого блока: без
 // неё в зоне, где один фон растворяется в другом, стык уходит в чёрное.
 const ACCENT = { from: "#00d2ff", to: "#ff4fd8" };
+// Янтарно-фиолетовый дуэт для блока «Что нужно объяснить» — цвета
+// дата-визуализации, не пересекается ни с цианово-магентовым ACCENT
+// страницы, ни с градиентами соседних направлений.
+const TASK_GRADIENT = { from: "#f59e0b", to: "#8b5cf6" };
+// Развёрнутый ACCENT для блока кейсов — тот же приём, что у presentation.tsx.
+const CASES_GRADIENT = { from: "#ff4fd8", to: "#00d2ff" };
 
 
 // Направление «Графика и анимация» — /content/graphics.
@@ -33,8 +39,8 @@ export const graphicsContent: DirectionContent = {
         текста</Accent> — и не требует ни площадки, ни съёмочной смены.
       </>
     ),
-    photo: "/images/stock/stage-hand-neon.webp",
-    photoPosition: "50% 18%",
+    video: "/video/works/showreel-2024-motion-hero.mp4",
+    poster: "/images/works/showreel-2024-motion-hero.jpg",
     typed: "Показать то, что не покажет камера",
     teamAsk: {
       memberId: "egor",
@@ -95,18 +101,10 @@ export const graphicsContent: DirectionContent = {
       promise: "набор элементов, который живёт во всех ваших видео",
     },
   ],
-  taskMedia: { video: "/video/works/showreel-2024-motion-hero.mp4", poster: "/images/works/showreel-2024-motion-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+  taskMedia: { gradient: TASK_GRADIENT, intensity: "medium" },
 
   audience: {
-    media: {
-      video: "/video/works/profilactika.mp4",
-      poster: "/images/works/profilactika.jpg",
-      // В кадре этой работы вшит текст (титры, спецификации,
-      // рекламные плашки). На базовом размытии он читается как
-      // чужая надпись посреди блока, на BLUR.heavy — как фактура.
-      blurPx: 11,
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/brain-circuit.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left" },
     eyebrow: "Где это незаменимо",
     align: "left",
     title: (
@@ -158,15 +156,7 @@ export const graphicsContent: DirectionContent = {
   },
 
   cases: {
-    media: {
-      video: "/video/works/smetchiki.mp4",
-      poster: "/images/works/smetchiki.jpg",
-      // В кадре этой работы вшит текст (титры, спецификации,
-      // рекламные плашки). На базовом размытии он читается как
-      // чужая надпись посреди блока, на BLUR.heavy — как фактура.
-      blurPx: 11,
-      intensity: "quiet",
-    },
+    media: { gradient: CASES_GRADIENT, intensity: "loud" },
     eyebrow: "Наши работы",
     align: "center",
     title: (
@@ -205,7 +195,7 @@ export const graphicsContent: DirectionContent = {
   },
 
   budgetMedia:
-  { gradient: ACCENT, intensity: "medium" },
+  { photo: "/images/stock/woman-coffee-desk.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   pricing: {
     media: { photo: "/images/stock/team-ideas.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },

@@ -35,8 +35,15 @@ export const aiCommsContent: CompactToolContent = {
         входящих.
       </>
     ),
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/man-laptop-dark.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Сколько обращений приходит в день?",
+      pitch: "Расскажите поток — прикинем, что можно отсеять.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "98,2%", label: "точность отсева спама и фишинга" },
@@ -131,6 +138,12 @@ export const aiCommsContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько спама реально доходит до менеджера?",
+      pitch: "Подскажу, что фильтр отсеет в первую очередь.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -180,6 +193,12 @@ export const aiCommsContent: CompactToolContent = {
         accent: "фиксируем письменно до старта",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как фильтр отличает спам от обычной заявки?",
+      pitch: "Объясню механику простыми словами.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -274,10 +293,16 @@ export const aiCommsContent: CompactToolContent = {
         accent: "можно взять сопровождение или вести самим",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам запуска фильтра?",
+      pitch: "Отвечу, сколько займёт настройка.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/night-lights.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
     eyebrow: "FAQ",
     align: "left",
     title: (

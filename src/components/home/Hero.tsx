@@ -38,6 +38,18 @@ export default function Hero() {
     return () => window.clearTimeout(id);
   }, []);
 
+  // The still image used to fade out the instant `loadReel` flipped —
+  // i.e. the moment the <video> was mounted, not the moment it actually had
+  // a frame to show. Mounting a <video autoPlay> doesn't paint anything
+  // right away: the browser still has to fetch, decode, and start playing
+  // it, and on a slow connection or a busy tab that gap outlasted the
+  // still's own 500ms fade — exactly the "чёрный фон вместо видео" flash
+  // Egor kept seeing. Now the still only fades once the video reports an
+  // actual decoded frame (`onPlaying`/`onLoadedData`), so there is always
+  // either the still or the real video on screen, never the video
+  // element's own blank black canvas in between.
+  const [videoReady, setVideoReady] = useState(false);
+
   // Track the cursor as CSS custom properties (not React state) so the
   // glow can follow the mouse every frame without triggering re-renders.
   const handleTitleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -64,7 +76,7 @@ export default function Hero() {
           alt=""
           aria-hidden="true"
           className={`pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 object-cover blur-[3px] brightness-[0.85] transition-opacity duration-500 sm:w-[200%] md:w-[147%] lg:w-[127%] ${
-            loadReel ? "opacity-0" : "opacity-100"
+            videoReady ? "opacity-0" : "opacity-100"
           }`}
         />
         {loadReel && (
@@ -77,6 +89,8 @@ export default function Hero() {
             muted
             loop
             playsInline
+            onLoadedData={() => setVideoReady(true)}
+            onPlaying={() => setVideoReady(true)}
             aria-label="Шоурил HDKV.AGENCY"
           />
         )}

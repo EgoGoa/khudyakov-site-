@@ -34,8 +34,15 @@ export const aiPersonalizationContent: CompactToolContent = {
         сообщение по существу.
       </>
     ),
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/vr-neon-triangle.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Сколько сегментов аудитории у вас сейчас?",
+      pitch: "Расскажите про базу — прикинем, что персонализировать.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "57%", label: "маркетологов уже персонализируют контент" },
@@ -130,6 +137,12 @@ export const aiPersonalizationContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Чем реально отличаются ваши сегменты?",
+      pitch: "Подскажу, с какого сегмента начать.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -179,6 +192,12 @@ export const aiPersonalizationContent: CompactToolContent = {
         accent: "фиксируем письменно до старта",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Как версии не расходятся с голосом бренда?",
+      pitch: "Объясню механику простыми словами.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -273,6 +292,12 @@ export const aiPersonalizationContent: CompactToolContent = {
         accent: "можно донастраивать самим",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Есть вопрос по срокам первой волны?",
+      pitch: "Отвечу, сколько займёт настройка сегментов.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {

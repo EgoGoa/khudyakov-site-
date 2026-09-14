@@ -6,19 +6,62 @@ import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Appear, { useChapterActive } from "@/components/ui/Appear";
+import BlockMedia from "@/components/home/direction/BlockMedia";
 import { BEAT, EASE as MOTION_EASE, STAGGER } from "@/lib/motion";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { CloseIcon } from "@/components/ui/Icons";
 import LeadModal from "@/components/home/LeadModal";
+import TeamAskCard from "@/components/home/TeamAskCard";
+import Accent from "@/components/home/direction/Accent";
+import { TEAM } from "@/lib/team";
 import { useService } from "@/lib/service-context";
 import { worksByCategory } from "@/lib/service-content";
 import type { Work } from "@/lib/types";
-import { EYEBROW } from "@/lib/typography";
+import { EYEBROW, CHAPTER_INTRO } from "@/lib/typography";
 
 // Self-hosted now (was img.youtube.com/vi/.../maxresdefault.jpg with a
 // hqdefault fallback for videos missing a maxres thumbnail) — one less
 // third-party origin the grid has to reach just to paint static thumbnails.
 const workThumb = (youtubeId: string) => `/images/works/${youtubeId}.jpg`;
+
+// Chapter tiles used to autoplay a YouTube iframe as their background — up
+// to four full embedded players mounted at once (see chapterEverActive
+// below). A local mp4 loop is a fraction of that weight: no player chrome,
+// no third-party script, no per-embed network round-trips. Where we already
+// have the work's own footage self-hosted (the same files the direction
+// pages use for their hero/section backgrounds), we play that muted loop
+// instead; a work without a local file falls back to its static thumbnail
+// rather than paying for a YouTube embed just to sit still in a 2×2 grid.
+const WORK_VIDEO: Record<string, string> = {
+  HC5SMCQuoms: "showreel-2026-hero", // AI-шоурил 2026
+  nxKCmw16vbU: "showreel24", // Шоурил 2024
+  WKuMmgTUoRA: "showreel-2021-hero", // Шоурил 2021 · реклама
+  "4yyRujtEtvA": "showreel-2018-hero", // Шоурил 2018–2019
+  iaHvMPD9xQs: "carpoint", // Имиджевое промо CARPOINT
+  zo0YyrkyI7w: "designbattle", // Батл дизайнеров · Лига дизайнеров
+  O0hXaBeKF3k: "artrussia", // ART from Russia
+  "4Aj7F2Nz7BM": "belykit-32", // БЕЛЫЙ КИТ · 32 оттенка белого
+  Vssrdgfc_nI: "belykit-hero", // БЕЛЫЙ КИТ · Герой
+  eTCJAyq91dY: "bitcoin", // Арт-промо · Bitcoin
+  ChdRTxmaFkM: "surfcoffee", // Surf Coffee® · «Делаем красиво»
+  "08xxA0RpjCU": "art99", // Арт-фильм «99»
+  VSvzGCTaKDg: "surftrash", // SURF · Треш-Фреш, 3 серия
+  _0ATM3z0rEQ: "surfcoffee-chel", // Surf Coffee Челябинск
+  "04cOzeUw3A4": "elovoe", // Имиджевый фильм · отель ELOVOE
+  U4eC0MxLHe8: "uraltrubodetal", // ОАО «УралТрубоДеталь»
+  qCMME_ZRnu0: "ivella", // Имиджевый фильм «Ивелла»
+  "6faTn2p6O4E": "atomus", // Корпоративный фильм · ATOMUS GROUP
+  "6up7b9Slc2s": "amsarveda", // AMSARVEDA · Гоа
+  dG75H7jiYq8: "zhksolo", // ЖК SOLO
+  "Xp3-jI6KOf0": "maya", // Art Music Video · MAYA
+  fKODIj4svZU: "zenfactory", // ZEN FACTORY · промо
+  znxECfyxtX0: "profilactika", // PROFILACTIKA · моушн-промо
+  xnb_uuddJpA: "smetchiki", // Школа сметчиков
+  LJI_uG5nKEQ: "rosalyans", // Проморолик · «Росальянс»
+  FtwaFzYvwkc: "rustech", // РУСТЕХ · 3D-трекинг и инфографика
+  C6LmeiF9taA: "infographics", // Инфографика · школа иностранных языков
+};
+const workVideo = (id: string) => (WORK_VIDEO[id] ? `/video/works/${WORK_VIDEO[id]}.mp4` : null);
 
 const ALL = "Все работы";
 const ALL_SPHERES = "Все сферы";
@@ -271,15 +314,43 @@ export default function Works({
   }, [activeId]);
 
   return (
-    <section id={bare ? undefined : "works"} className={bare ? "" : "py-10 sm:py-14"}>
+    <section id={bare ? undefined : "works"} className={bare ? "" : "relative py-10 sm:py-14"}>
+      {!bare && (
+        // Полный каталог раньше стоял на голом сквозном портрете
+        // (BackgroundFX) без своей подложки — единственная страница такого
+        // калибра без кинематографичного фона. Чистый фирменный градиент
+        // сайта (маджента→циан, тот же, что в навигации), без фото: любой
+        // стоковый кадр здесь спорил бы с реальными кадрами работ в сетке
+        // ниже, а каталог не принадлежит одному направлению, чтобы брать
+        // его акцент.
+        <BlockMedia media={{ gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" }} />
+      )}
       <Container className={bare ? "!px-0" : ""}>
         {!bare && (
-          <Reveal>
-            <Eyebrow index="01" label="Работы" />
-            <h2 className="font-sans text-3xl font-light uppercase tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
-              Портфолио
-            </h2>
-          </Reveal>
+          <>
+            <Reveal>
+              <Eyebrow index="01" label="Работы" />
+              <h2 className="chapter-neon-warm break-words font-display text-3xl uppercase leading-[0.95] tracking-tight text-paper sm:text-4xl md:text-5xl">
+                Всё, что мы <span className="kw">уже сняли</span>
+              </h2>
+              <p className={`mt-5 max-w-2xl ${CHAPTER_INTRO}`}>
+                Реклама, шоурилы, 3D и моушн — <Accent>78 работ с фильтром по формату и сфере</Accent>,
+                а не общий каталог на глаз.
+              </p>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <div className="mt-8 max-w-sm">
+                <TeamAskCard
+                  compact
+                  member={TEAM.egor}
+                  question="Не нашли похожий проект?"
+                  pitch="Покажу похожие работы в портфолио и подскажу формат под вашу задачу."
+                  actionLabel="Обсудить с Егором"
+                  href="/brief"
+                />
+              </div>
+            </Reveal>
+          </>
         )}
 
         {works.length === 0 ? (
@@ -388,15 +459,23 @@ export default function Works({
                         : "aspect-[16/10] cursor-pointer"
                     }`}
                   >
-                    {limit && work.youtubeId && chapterEverActive ? (
+                    {limit && work.youtubeId && chapterEverActive && workVideo(work.id) ? (
                       // Chapter tiles autoplay a muted loop instead of a
-                      // static thumbnail — pointer-events-none so the click
-                      // still reaches "Смотреть"/"Хочу так же" underneath.
-                      <iframe
+                      // static thumbnail — a self-hosted <video>, not a
+                      // YouTube iframe: four of these mount at once (one per
+                      // tile in the 2×2 grid), and four embedded YouTube
+                      // players was the actual weight, not the looping idea
+                      // itself. pointer-events-none so the click still
+                      // reaches "Смотреть"/"Хочу так же" underneath.
+                      <video
                         className="pointer-events-none absolute inset-0 h-full w-full scale-[1.35] object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.42]"
-                        src={`https://www.youtube.com/embed/${work.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${work.youtubeId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1`}
-                        title={work.title}
-                        allow="autoplay; encrypted-media"
+                        src={workVideo(work.id)!}
+                        poster={workThumb(work.youtubeId)}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
                         aria-hidden="true"
                         tabIndex={-1}
                       />

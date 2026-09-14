@@ -249,7 +249,7 @@ export default function Close({
           <div className="relative flex justify-center">
             <Link
               href="/brief"
-              className={`chapter-neon group inline-flex items-center gap-3 text-center font-display uppercase leading-[0.95] tracking-tight transition-opacity hover:opacity-80 ${
+              className={`chapter-neon group relative inline-block text-center font-display uppercase leading-[0.95] tracking-tight transition-opacity hover:opacity-80 ${
                 active === "content"
                   ? "mt-10 text-[clamp(0.9rem,3vw,1.9rem)]"
                   : dense
@@ -257,8 +257,15 @@ export default function Close({
                   : "mt-6 text-[clamp(1.5rem,5vw,3.4rem)]"
               }`}
             >
+              {/* ctaIcon used to sit inline right after "сейчас" — Egor asked
+                  to move it under the "Н" of "Начать" instead, so it reads as
+                  a small accent under the first letter rather than trailing
+                  the line. Absolute + left-0 keeps it pinned there at every
+                  width since the word "Начать" always starts flush left. */}
+              {ctaIcon && (
+                <span className="absolute -left-2 top-full -mt-4">{ctaIcon}</span>
+              )}
               Начать проект сейчас
-              {ctaIcon}
             </Link>
           </div>
         </Appear>

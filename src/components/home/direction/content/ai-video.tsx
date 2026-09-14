@@ -5,6 +5,12 @@ import type { DirectionContent } from "../types";
 // Вынесен в константу, потому что его носит подложка каждого блока: без
 // неё в зоне, где один фон растворяется в другом, стык уходит в чёрное.
 const ACCENT = { from: "#c8f169", to: "#10b981" };
+// Техно-холодный дуэт для блока «Что нужно получить» — фиолетовый→бирюзовый,
+// не пересекается ни с лаймовым ACCENT страницы, ни с градиентами соседних
+// направлений (жёлто-розовый у image, сине-фиолетовый у advertising).
+const TASK_GRADIENT = { from: "#7c3aed", to: "#22d3ee" };
+// Развёрнутый ACCENT для блока кейсов — тот же приём, что у presentation.tsx.
+const CASES_GRADIENT = { from: "#10b981", to: "#c8f169" };
 
 
 // Направление «AI-видео контент» — /content/ai-video.
@@ -15,8 +21,9 @@ const ACCENT = { from: "#c8f169", to: "#10b981" };
 // то, что нельзя снять камерой. Подзаголовок блока говорит это прямо, а не
 // маскирует графику под нейросети.
 //
-// Фоны блоков здесь — наши же кадры из ai-reel: направление про
-// сгенерированную картинку, и показывать её своей уместнее всего.
+// Единственное видео на странице — герой и финал (собственный AI-шоурил и
+// общий шоурил студии): остальные фоны блоков — градиенты и тематический
+// сток, как на соседних страницах направления.
 //
 // Печатающийся элемент — заголовок процесса.
 
@@ -39,8 +46,8 @@ export const aiVideoContent: DirectionContent = {
         за месяцы</Accent> — там, где это действительно уместно.
       </>
     ),
-    photo: "/images/stock/stage-hand-neon.webp",
-    photoPosition: "50% 18%",
+    video: "/video/works/showreel-2026-hero.mp4",
+    poster: "/images/works/showreel-2026-hero.jpg",
     teamAsk: {
       memberId: "egor",
       question: "Хотите понять, что реально умеет AI-видео?",
@@ -101,14 +108,10 @@ export const aiVideoContent: DirectionContent = {
       promise: "картинка уровня съёмки без съёмочной сметы",
     },
   ],
-  taskMedia: { video: "/video/works/showreel-2026-hero.mp4", poster: "/images/works/showreel-2026-hero.jpg", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
+  taskMedia: { gradient: TASK_GRADIENT, intensity: "medium" },
 
   audience: {
-    media: {
-      video: "/video/works/artrussia.mp4",
-      poster: "/images/works/artrussia.jpg",
-      intensity: "quiet",
-    },
+    media: { photo: "/images/stock/ai-wireframe-face.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "left" },
     eyebrow: "Когда это работает",
     align: "left",
     title: (
@@ -160,15 +163,7 @@ export const aiVideoContent: DirectionContent = {
   },
 
   cases: {
-    media: {
-      video: "/video/works/goodgame.mp4",
-      poster: "/images/works/goodgame.jpg",
-      // В кадре этой работы вшит текст (титры, спецификации,
-      // рекламные плашки). На базовом размытии он читается как
-      // чужая надпись посреди блока, на BLUR.heavy — как фактура.
-      blurPx: 11,
-      intensity: "quiet",
-    },
+    media: { gradient: CASES_GRADIENT, intensity: "loud" },
     eyebrow: "Наши работы",
     align: "center",
     title: (
@@ -200,7 +195,7 @@ export const aiVideoContent: DirectionContent = {
   },
 
   budgetMedia:
-  { gradient: ACCENT, intensity: "medium" },
+  { photo: "/images/stock/hologram-laptop.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
   pricing: {
     media: { photo: "/images/stock/arch-3d-hand.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },

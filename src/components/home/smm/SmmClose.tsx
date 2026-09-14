@@ -8,14 +8,24 @@ import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 import { pricingByCategory } from "@/lib/service-content";
 import TeamRow from "@/components/home/TeamRow";
 import { PAGE_TEAM } from "@/lib/team";
+import SeoAccordion from "@/components/ui/SeoAccordion";
+import { SMM_SEO_SECTIONS } from "@/components/home/smm/smmSeoSections";
 
-// Chapter 06 of /smm — the closing chapter: three monthly packages, the SEO
-// long-read, and the last call to action.
+// Chapter 06 of /smm — the closing chapter: three monthly packages, the last
+// call to action, and the SEO long-read.
 //
 // A /smm-only component rather than the shared <Close>, so this page can
 // carry its own style without moving /ai, /sites and /content with it. The
-// tiers are the same pricingByCategory.smm data and the long-read the same
-// copy the standalone SmmSeoText used to hold.
+// tiers are the same pricingByCategory.smm data.
+//
+// The long-read used to render below the pinned deck (see shared/
+// SeoLongRead's own note on why: on a short viewport it pushed this
+// chapter's own CTA past the fold). Egor asked for it back inside this
+// chapter instead — flat black with no film behind it read as a slab
+// disconnected from the page, worse than the fold risk it was solving.
+// It now sits under "Начать вести соцсети", on the same pinned frame as the
+// tier cards, so it inherits the chapter's own footage instead of standing
+// on bare black.
 //
 // This chapter is the page's one exception to the two-column skeleton
 // (SmmChapterLayout), matching the decision Egor made on /sites: the closing
@@ -170,6 +180,12 @@ export default function SmmClose() {
               <path d="M7 17 17 7M9 7h8v8" />
             </svg>
           </Link>
+        </div>
+      </Appear>
+
+      <Appear from="up" delay={BEAT.cta + 2 * STAGGER.normal}>
+        <div className="mx-auto mt-10 w-full max-w-3xl [@media(max-height:860px)]:hidden">
+          <SeoAccordion eyebrow="Подробнее о SMM" sections={SMM_SEO_SECTIONS} />
         </div>
       </Appear>
 

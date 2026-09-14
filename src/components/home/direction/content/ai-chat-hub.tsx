@@ -44,8 +44,15 @@ export const aiChatHubContent: CompactToolContent = {
         сводит переписку в одну ленту вместо пяти вкладок.
       </>
     ),
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/devs-night.webp",
     photoPosition: "50% 22%",
+    teamAsk: {
+      memberId: "egor",
+      question: "Сколько каналов нужно объединить?",
+      pitch: "Расскажите, где сейчас переписка — прикинем формат.",
+      actionLabel: "Обсудить с Егором",
+      href: "/brief",
+    },
   },
   stats: [
     { value: "24/7", label: "ассистент на связи в каждом канале" },
@@ -140,6 +147,12 @@ export const aiChatHubContent: CompactToolContent = {
         linkLabel: "Смотреть работы",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько сообщений в день приходит сейчас?",
+      pitch: "Подскажу, какой формат ассистента подойдёт.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   tech: {
@@ -189,6 +202,12 @@ export const aiChatHubContent: CompactToolContent = {
         accent: "отключить можно в любой момент",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Какие каналы у вас уже есть?",
+      pitch: "Объясню, как быстро их объединить.",
+      actionLabel: "Написать Максу",
+    },
   },
 
   pricing: {
@@ -283,10 +302,16 @@ export const aiChatHubContent: CompactToolContent = {
         accent: "становится точнее со временем",
       },
     ],
+    teamAsk: {
+      memberId: "max",
+      question: "Сколько времени займёт запуск?",
+      pitch: "Отвечу по срокам для ваших каналов.",
+      actionLabel: "Связаться с Максимом",
+    },
   },
 
   faq: {
-    media: { gradient: ACCENT, intensity: "medium" },
+    media: { photo: "/images/stock/smm-phone-bokeh.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full" },
     eyebrow: "FAQ",
     align: "left",
     title: (

@@ -39,7 +39,7 @@ export const aiOpsContent: DirectionContent = {
     // но несёт в кадре наш собственный водяной знак HDKV.PRO и широкие
     // чёрные поля сверху и снизу — на полноэкранном герое читается и то и
     // другое. Здесь отрывок без текста в кадре.
-    photo: "/images/stock/robot-hand-chip.webp",
+    photo: "/images/stock/planner-desk.webp",
     photoPosition: "50% 22%",
     teamAsk: {
       memberId: "egor",

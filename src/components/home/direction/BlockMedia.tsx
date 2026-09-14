@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChapterActive } from "@/components/ui/Appear";
 import type { BlockMediaSpec } from "./types";
 
@@ -102,6 +102,18 @@ const SCRIM = {
 export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const active = useChapterActive();
+  // `<video>` paints an opaque black rectangle for every frame it hasn't
+  // decoded yet — poster is meant to cover exactly that gap, but on a slow
+  // connection or a busy first paint the browser can still show black for a
+  // beat before either the poster or the first real frame lands (the exact
+  // "чёрный фон вместо видео" Egor kept hitting). Rather than trust poster
+  // alone, the video itself starts invisible and only fades in once it has
+  // reported an actual decoded frame (`onPlaying`/`onLoadedData` — whichever
+  // fires first, and checked synchronously too in case it already fired
+  // before this ref/listener existed, e.g. a cached clip). Until then the
+  // gradient/veil already in this stack — which never depends on the
+  // video — is what shows, never a bare black rectangle.
+  const [videoReady, setVideoReady] = useState(false);
   const base = INTENSITY[media.intensity ?? "quiet"];
   // Светлый сток на тёмном сайте: белый текст на нём не живёт, поэтому кадр
   // притапливается сильнее — но не размывается, он остаётся узнаваемым.
@@ -129,6 +141,16 @@ export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
     if (active) video.play().catch(() => {});
     else video.pause();
   }, [active]);
+
+  useEffect(() => {
+    setVideoReady(false);
+    const video = videoRef.current;
+    // readyState >= 2 (HAVE_CURRENT_DATA) means a frame is already decoded —
+    // true immediately for a clip the browser already cached from an
+    // earlier visit to this block, whose "playing"/"loadeddata" event fired
+    // before this effect ever attached a listener for it.
+    if (video && video.readyState >= 2) setVideoReady(true);
+  }, [media.video]);
 
   return (
     <div
@@ -180,29 +202,55 @@ export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
         ) : null}
 
         {media.video ? (
-          <video
-            ref={videoRef}
-            src={media.video}
-            poster={media.poster}
-            muted
-            loop
-            playsInline
-            // "none" leaves nothing decoded for the browser to paint until
-            // this block scrolls into view and `active` calls .play() — on
-            // some engines that shows flat black instead of `poster` for
-            // however long the fetch then takes, exactly the flash this
-            // component's own poster was meant to prevent (see the comment
-            // above). "metadata" fetches just enough for the browser to
-            // decode and hold a real frame immediately, at a small fraction
-            // of "auto"'s full-file cost — cheap enough to do for every
-            // block's clip up front instead of only once scrolled to.
-            preload="metadata"
-            className="relative h-full w-full object-cover"
-            style={{
-              opacity: tone.opacity,
-              objectPosition: media.position ?? "center",
-            }}
-          />
+          <>
+            {/* A real <img>, not just the video's own `poster` attribute:
+                poster usually covers the gap fine on its own, but the
+                video element's poster and the video's decoded frames share
+                one paint surface — the moment autoplay calls .play(), some
+                engines (Chrome on a slow decode path especially) drop the
+                poster and paint one or more solid-black frames before the
+                first real frame is ready. A separate <img> sitting on its
+                own layer can't be blanked by that; it only fades out once
+                `videoReady` (an actual "playing"/"loadeddata" event, not a
+                timer) confirms the video underneath has a frame to show. */}
+            {media.poster && (
+              <img
+                src={media.poster}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-out"
+                style={{
+                  opacity: videoReady ? 0 : tone.opacity,
+                  objectPosition: media.position ?? "center",
+                }}
+              />
+            )}
+            <video
+              ref={videoRef}
+              src={media.video}
+              poster={media.poster}
+              muted
+              loop
+              playsInline
+              // "none" leaves nothing decoded for the browser to paint until
+              // this block scrolls into view and `active` calls .play() — on
+              // some engines that shows flat black instead of `poster` for
+              // however long the fetch then takes, exactly the flash this
+              // component's own poster was meant to prevent (see the comment
+              // above). "metadata" fetches just enough for the browser to
+              // decode and hold a real frame immediately, at a small fraction
+              // of "auto"'s full-file cost — cheap enough to do for every
+              // block's clip up front instead of only once scrolled to.
+              preload="metadata"
+              onLoadedData={() => setVideoReady(true)}
+              onPlaying={() => setVideoReady(true)}
+              className="relative h-full w-full object-cover transition-opacity duration-300 ease-out"
+              style={{
+                opacity: media.poster ? (videoReady ? tone.opacity : 0) : tone.opacity,
+                objectPosition: media.position ?? "center",
+              }}
+            />
+          </>
         ) : media.photo ? (
           // Стоковый кадр рядом с видеоблоком не должен читаться как
           // «видео не загрузилось»: очень медленный наезд оживляет его
