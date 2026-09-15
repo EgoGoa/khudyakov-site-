@@ -138,9 +138,7 @@ export default function PricingBlock({
                 <ul className="c3-list relative mt-8 flex-1">
                   {tier.features.map((feature) => (
                     <li key={feature}>
-                      <span className="c3-check text-paper">
-                        <CheckIcon />
-                      </span>
+                      <span className="c3-check text-paper" />
                       {feature}
                     </li>
                   ))}
@@ -195,10 +193,3 @@ export default function PricingBlock({
   );
 }
 
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
-}

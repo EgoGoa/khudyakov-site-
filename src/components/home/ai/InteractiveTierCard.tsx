@@ -5,14 +5,6 @@ import { motion } from "framer-motion";
 import { BEAT, EASE, STAGGER } from "@/lib/motion";
 import type { InteractiveTier } from "@/components/home/ai/aiPricingTiers";
 
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
-}
-
 function formatPrice(n: number) {
   return Math.round(n / 10) * 10 >= 1000
     ? `${Math.round(n).toLocaleString("ru-RU")}`
@@ -92,9 +84,7 @@ export default function InteractiveTierCard({
           .filter((item) => item.required)
           .map((item) => (
             <li key={item.label} className="cursor-default opacity-90">
-              <span className="c3-check text-paper">
-                <CheckIcon />
-              </span>
+              <span className="c3-check text-paper" />
               {item.label}
             </li>
           ))}
@@ -107,7 +97,7 @@ export default function InteractiveTierCard({
               className="flex w-full items-start gap-3 text-left"
             >
               <span
-                className="c3-check shrink-0 transition-colors"
+                className="c3-check shrink-0 text-paper transition-colors"
                 style={{
                   color: checked[i] ? undefined : "transparent",
                   background: checked[i]
@@ -116,9 +106,7 @@ export default function InteractiveTierCard({
                   outline: checked[i] ? undefined : "1px dashed rgba(220,221,239,0.25)",
                   outlineOffset: -1,
                 }}
-              >
-                {checked[i] && <CheckIcon />}
-              </span>
+              />
               <span className={checked[i] ? "text-paper/85" : "text-paper/40 line-through decoration-paper/25"}>
                 {item.label}
               </span>

@@ -1011,6 +1011,27 @@ export default function CinematicStage({
       <div ref={wrapRef} className="relative">
         <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
           <div ref={frameRef} className="absolute inset-0 h-full w-full">
+            {/* The reel's own still, permanently underneath the <video> —
+                not the element's `poster` attribute, which a browser drops
+                for good the moment the first real frame decodes.
+                This is the fix for "фон то слетает, то появляется". The
+                stage deliberately *pauses* the video on every chapter hold
+                (see the tick loop above), and a paused, filtered, sticky
+                video is exactly what Chrome and Safari pick first when they
+                reclaim decode buffers: the element keeps its box but paints
+                nothing, so the page's own black showed through until
+                playback resumed and a new frame arrived. A still sitting
+                behind it turns that failure mode from "black screen" into
+                "the same frame, not moving" — which is what the held
+                chapters look like anyway.
+                Inside `frameRef`, so it takes the same blur/push/brightness
+                grade as the footage and the swap stays invisible. */}
+            <img
+              src={poster}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
             <video
               ref={videoRef}
               src={src}
@@ -1030,7 +1051,12 @@ export default function CinematicStage({
                 const phase = phases[activeIndexRef.current];
                 if (video && phase) video.currentTime = phase.start + SEEK_EPSILON;
               }}
-              className="h-full w-full object-cover"
+              // `relative` purely for paint order: the still above is
+              // absolutely positioned, and a positioned element paints over
+              // an in-flow sibling regardless of DOM order. Positioning the
+              // video too puts DOM order back in charge — still first, video
+              // over it.
+              className="relative h-full w-full object-cover"
             />
           </div>
           {/* Two-part grade. A flat wash across the whole frame drops the

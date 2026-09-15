@@ -1937,9 +1937,205 @@ body {
   animation: ai-deck-ambient-breathe 5.5s ease-in-out infinite;
 }
 
+/* ── Живая схема на выбранной карточке /ai ─────────────────────────────
+   Егор: не «просто появилась и исчезла», а чтобы каждая схема играла свой
+   смысл — в чате идёт переписка, на видео едет полоса воспроизведения и
+   моргает иконка, в аналитике столбцы ходят вверх-вниз, в обучении таблички
+   набегают по очереди.
+
+   Всё вложено в `.ai-thumb-live`, который висит ТОЛЬКО на карточке в центре
+   рейки. У остальных четырёх видимых карточек не крутится ни одна из этих
+   анимаций: схема на них замирает в своём обычном виде. Это и вопрос покоя
+   (одна живая карточка читается как выбранная, пять — как рябь), и вопрос
+   стоимости — анимируются только `transform`/`opacity`, но их всё равно нет
+   смысла гонять на карточках, которые повёрнуты в 3D и размыты.
+
+   Общий такт у всех — 5.6s, поэтому разные элементы одной схемы совпадают
+   по фазе, а задержки (`animation-delay` инлайном) расставляют их в
+   очередь внутри этого такта. */
+
+/* Появление элемента по очереди: приходит, держится почти весь такт, уходит
+   к концу — на этом построены чат, текст, обучение. */
+@keyframes ai-seq {
+  0%,
+  4% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  14%,
+  84% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  96%,
+  100% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* Моргание — иконка play на видео, флаг аномалии в аналитике, узел хаба. */
+@keyframes ai-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Полоса воспроизведения / прогресса. scaleX, а не width: ширину браузер
+   пересчитывает раскладкой каждый кадр, transform — нет. */
+@keyframes ai-progress {
+  0% {
+    transform: scaleX(0);
+  }
+  88%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* Столбец диаграммы ходит вверх-вниз от своего основания. */
+@keyframes ai-bar {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.52);
+  }
+}
+
+/* Столбик звуковой волны — от центра в обе стороны. */
+@keyframes ai-wave {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* Плейхед, едущий по волне. */
+@keyframes ai-travel {
+  0% {
+    left: 6%;
+  }
+  100% {
+    left: 94%;
+  }
+}
+
+/* Спутники вокруг ядра ассистента. */
+@keyframes ai-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Дышащий узел: ядро ассистента, точка сборки каналов в хабе. */
+@keyframes ai-node {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.16);
+    opacity: 1;
+  }
+}
+
+/* Три точки «печатает…». */
+@keyframes ai-typing {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* Карточка лида, которую поднимает и переносит по воронке. */
+@keyframes ai-lift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Мигающий каретка-курсор в конце строки текста. */
+@keyframes ai-caret {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.ai-thumb-live .ai-a-seq {
+  animation: ai-seq 5.6s ease-in-out infinite both;
+}
+.ai-thumb-live .ai-a-blink {
+  animation: ai-blink 1.6s ease-in-out infinite;
+}
+.ai-thumb-live .ai-a-progress {
+  animation: ai-progress 5.6s linear infinite;
+  transform-origin: left center;
+}
+.ai-thumb-live .ai-a-bar {
+  animation: ai-bar 2.8s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+.ai-thumb-live .ai-a-wave {
+  animation: ai-wave 1.4s ease-in-out infinite;
+  transform-origin: center;
+}
+.ai-thumb-live .ai-a-travel {
+  animation: ai-travel 5.6s linear infinite;
+}
+.ai-thumb-live .ai-a-orbit {
+  animation: ai-orbit 14s linear infinite;
+}
+.ai-thumb-live .ai-a-node {
+  animation: ai-node 2.4s ease-in-out infinite;
+}
+.ai-thumb-live .ai-a-typing {
+  animation: ai-typing 1.1s ease-in-out infinite;
+}
+.ai-thumb-live .ai-a-lift {
+  animation: ai-lift 3.2s ease-in-out infinite;
+}
+.ai-thumb-live .ai-a-caret {
+  animation: ai-caret 1s step-end infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ai-deck-glow,
-  .ai-deck-ambient-glow {
+  .ai-deck-ambient-glow,
+  .ai-thumb-live .ai-a-seq,
+  .ai-thumb-live .ai-a-blink,
+  .ai-thumb-live .ai-a-progress,
+  .ai-thumb-live .ai-a-bar,
+  .ai-thumb-live .ai-a-wave,
+  .ai-thumb-live .ai-a-travel,
+  .ai-thumb-live .ai-a-orbit,
+  .ai-thumb-live .ai-a-node,
+  .ai-thumb-live .ai-a-typing,
+  .ai-thumb-live .ai-a-lift,
+  .ai-thumb-live .ai-a-caret {
     animation: none;
   }
 }
@@ -1993,6 +2189,31 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .ai-open-pulse-hit {
+    animation: none;
+  }
+}
+
+/* Same pulse again, repainted cyan for /sites' own "Подробнее" pill
+   (SitesDeck.tsx) — that page's accent is glow/cyan rather than /ai's
+   emerald, so it gets its own copy of the shadow colour instead of
+   reusing .ai-open-pulse and reading as a mismatched green flash. */
+@keyframes sites-open-pulse {
+  0%, 100% {
+    box-shadow: 0 10px 26px -6px rgba(0, 210, 255, 0.55), 0 0 0 0 rgba(79, 224, 255, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 12px 22px -4px rgba(0, 210, 255, 0.8), 0 0 0 4px rgba(79, 224, 255, 0);
+    transform: scale(1.02);
+  }
+}
+
+.sites-open-pulse {
+  animation: sites-open-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sites-open-pulse {
     animation: none;
   }
 }
@@ -2979,14 +3200,50 @@ body {
 }
 
 .c3-check {
-  width: 24px;
-  height: 24px;
+  position: relative;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: rgba(0, 210, 255, 0.15);
+  background: rgba(0, 210, 255, 0.1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+/* Pulsing dot instead of a checkmark glyph — Egor's ask: the tick-in-a-
+   circle read as a checklist/form, and a plain breathing dot fits the
+   site's own neon-pulse language (see .btn-neon-breathe, .team-photo-pulse)
+   better than a UI-kit icon. `background: currentColor` rather than a fixed
+   colour: every caller already sets the ring's text colour per its own
+   state (`text-paper` on the static lists, `color: transparent` on
+   InteractiveTierCard's unchecked items) — the dot inherits that for free,
+   including "no dot at all" when an item is unchecked, with no extra
+   conditional needed.
+   The surrounding ring shrank to a thin halo (was 24px) and the dot itself
+   picked up a `currentColor` glow — Egor's follow-up: the first pass read as
+   dim and still too much like a UI kit's checkbox ring. Brighter, smaller,
+   plainer. */
+.c3-check::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+  animation: c3-check-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes c3-check-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
 }
 
 .c3-card-pro .c3-check {
@@ -3033,13 +3290,13 @@ body {
 }
 
 .c3-card-dense .c3-check {
-  width: 19px;
-  height: 19px;
+  width: 13px;
+  height: 13px;
 }
 
-.c3-card-dense .c3-check svg {
-  width: 9px;
-  height: 9px;
+.c3-card-dense .c3-check::after {
+  width: 5px;
+  height: 5px;
 }
 
 /* Process's six step cards (chapter 05, "PRO хронология"/"процесс" — shared

@@ -38,18 +38,6 @@ export default function Hero() {
     return () => window.clearTimeout(id);
   }, []);
 
-  // The still image used to fade out the instant `loadReel` flipped —
-  // i.e. the moment the <video> was mounted, not the moment it actually had
-  // a frame to show. Mounting a <video autoPlay> doesn't paint anything
-  // right away: the browser still has to fetch, decode, and start playing
-  // it, and on a slow connection or a busy tab that gap outlasted the
-  // still's own 500ms fade — exactly the "чёрный фон вместо видео" flash
-  // Egor kept seeing. Now the still only fades once the video reports an
-  // actual decoded frame (`onPlaying`/`onLoadedData`), so there is always
-  // either the still or the real video on screen, never the video
-  // element's own blank black canvas in between.
-  const [videoReady, setVideoReady] = useState(false);
-
   // Track the cursor as CSS custom properties (not React state) so the
   // glow can follow the mouse every frame without triggering re-renders.
   const handleTitleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -71,13 +59,23 @@ export default function Hero() {
         {/* Same still the iframe itself would show at rest — covers the spot
             immediately so there's no blank/black flash while the embed is
             deferred. */}
+        {/* The still no longer fades out once the video is up — it simply
+            stays underneath it for the whole page, permanently.
+            Fading it left the reel as the only thing painting this area, and
+            a <video> does not always paint: pause it (background tab), let
+            the browser reclaim its decode buffer under memory pressure, or
+            hit a stall mid-stream, and the element keeps its box while
+            drawing nothing — the black flash Egor kept catching, now with
+            no still left behind it to cover the gap. An mp4 has no alpha, so
+            the playing video hides the still completely anyway; keeping it
+            costs a layer that was already decoded and turns every one of
+            those failures into "the reel's own frame, held" instead of
+            black. */}
         <img
           src="/images/showreel-frame.jpg"
           alt=""
           aria-hidden="true"
-          className={`pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 object-cover blur-[3px] brightness-[0.85] transition-opacity duration-500 sm:w-[200%] md:w-[147%] lg:w-[127%] ${
-            videoReady ? "opacity-0" : "opacity-100"
-          }`}
+          className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 object-cover blur-[3px] brightness-[0.85] sm:w-[200%] md:w-[147%] lg:w-[127%]"
         />
         {loadReel && (
           <video
@@ -89,8 +87,6 @@ export default function Hero() {
             muted
             loop
             playsInline
-            onLoadedData={() => setVideoReady(true)}
-            onPlaying={() => setVideoReady(true)}
             aria-label="Шоурил HDKV.AGENCY"
           />
         )}

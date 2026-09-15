@@ -51,24 +51,6 @@ import { SMM_SEO_SECTIONS } from "@/components/home/smm/smmSeoSections";
 // the bottom of SmmProcess.
 const TIERS = pricingByCategory.smm;
 
-function CheckIcon() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 12.5l5.5 5.5L20 6.5" />
-    </svg>
-  );
-}
-
 export default function SmmClose() {
   return (
     <CinematicSection
@@ -121,9 +103,7 @@ export default function SmmClose() {
             <ul className="c3-list relative">
               {tier.features.map((feature) => (
                 <li key={feature}>
-                  <span className="c3-check text-paper">
-                    <CheckIcon />
-                  </span>
+                  <span className="c3-check text-paper" />
                   {feature}
                 </li>
               ))}

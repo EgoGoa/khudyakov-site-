@@ -47,6 +47,11 @@ type Service = {
   /** "Хит месяца" — Egor's flagship pick, same badge/glow language as
    *  AiDeck's own hit card. */
   hit?: boolean;
+  /** Themed backdrop photo, held at low exposure behind the mockup — same
+   *  trick as AiThumb on /ai. One distinct image per format, matched to
+   *  what that format's own page (sites-*.tsx) already uses as its hero
+   *  media, so the card previews the page it opens. */
+  image: string;
 };
 
 // Wording taken verbatim from lib/service-content.ts (the offer list and the
@@ -64,6 +69,7 @@ const SERVICES: Service[] = [
     now: "Трафик уже идёт или вот-вот пойдёт — страница нужна раньше первого клика.",
     shape: "landing",
     hit: true,
+    image: "/images/stock/desk-aerial.webp",
   },
   {
     id: "card",
@@ -74,6 +80,7 @@ const SERVICES: Service[] = [
     audience: "Малому бизнесу и специалистам, которым до сих пор верят на слово в мессенджере.",
     now: "Клиент проверяет компанию в поиске до звонка — без сайта проверка обрывается.",
     shape: "pages",
+    image: "/images/stock/design-tablet.webp",
   },
   {
     id: "turnkey",
@@ -84,6 +91,7 @@ const SERVICES: Service[] = [
     audience: "Компаниям с каталогом, несколькими направлениями или растущей воронкой заявок.",
     now: "Заявки уже не помещаются в один лендинг — нужна структура, а не ещё одна страница.",
     shape: "shop",
+    image: "/images/stock/team-night-office.webp",
   },
   {
     id: "assistant",
@@ -94,6 +102,7 @@ const SERVICES: Service[] = [
     audience: "Сайтам с потоком однотипных вопросов, на которые сейчас отвечает менеджер вручную.",
     now: "Посетитель уходит, не дождавшись ответа в оффлайне — бот отвечает раньше, чем человек.",
     shape: "chat",
+    image: "/images/stock/holo-keyboard.webp",
   },
   {
     id: "redesign",
@@ -104,72 +113,133 @@ const SERVICES: Service[] = [
     audience: "Владельцам сайта, который стыдно показать клиенту или неудобно редактировать самим.",
     now: "Старый стек и вёрстка тормозят каждое обновление — держать его дальше дороже переезда.",
     shape: "redesign",
+    image: "/images/stock/paint-purple-macro.webp",
   },
 ];
 
-// Placeholder artwork, drawn in CSS rather than shipped as images: a browser
-// chrome plus the block rhythm of that kind of site. Zero bytes, always on
-// palette, and it reads as the category at card size. Swap for real
-// screenshots or generated art later by replacing this one component.
-function SiteThumb({ shape }: { shape: Service["shape"] }) {
-  const line = (w: string) => <span className="block h-1.5 rounded-[2px] bg-paper/20" style={{ width: w }} />;
-  const cta = <span className="block h-3 w-1/3 rounded-[3px] bg-orange/85" />;
+// Card artwork: a themed stock frame held at low exposure underneath, and
+// the format's own browser-chrome mockup drawn in CSS on top — same trick
+// AiThumb uses on /ai (image dimmed + scrim so the mockup keeps contrast,
+// zero extra bytes for the diagram itself). `animate` gates the per-format
+// loop below: only the front card gets it, via `.ai-thumb-live` — the exact
+// same animation hook /ai's own deck already defines in globals.css, reused
+// rather than duplicated so both pages share one motion system.
+function SiteThumb({ shape, image, animate = false }: { shape: Service["shape"]; image: string; animate?: boolean }) {
+  const line = (w: string, dim = false, cls = "", style?: React.CSSProperties) => (
+    <span className={`block h-1.5 rounded-[2px] ${dim ? "bg-paper/12" : "bg-paper/20"} ${cls}`} style={{ width: w, ...style }} />
+  );
+  const cta = (cls = "") => <span className={`block h-3 w-1/3 rounded-[3px] bg-orange/85 ${cls}`} />;
+  const d = (s: number): React.CSSProperties => ({ animationDelay: `${s}s` });
 
   return (
-    <div className="absolute inset-0 bg-gradient-to-br from-[#1b2030] to-[#0d0f16]">
-      <div className="flex h-5 items-center gap-1 bg-paper/[0.07] px-2">
+    <div className="absolute inset-0 bg-[linear-gradient(160deg,#1b2030_0%,#0d0f16_58%,#0a0b10_100%)]">
+      {/* Themed photo, dimmed — Egor's ask, same treatment as /ai's cards. */}
+      <img
+        src={image}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover opacity-[0.42] [filter:grayscale(0.3)_contrast(1.05)]"
+      />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "linear-gradient(165deg, rgba(15,18,28,0.74) 0%, rgba(10,11,16,0.87) 55%, rgba(10,11,16,0.95) 100%)",
+        }}
+      />
+
+      <div className="relative flex h-5 items-center gap-1 bg-paper/[0.07] px-2">
         <span className="h-1 w-1 rounded-full bg-paper/30" />
         <span className="h-1 w-1 rounded-full bg-paper/30" />
         <span className="h-1 w-1 rounded-full bg-paper/30" />
       </div>
-      <div className="grid gap-1.5 p-2.5">
+      <div className={`relative grid gap-1.5 p-2.5 ${animate ? "ai-thumb-live" : ""}`}>
         <span className="block h-14 w-full rounded-[3px] bg-gradient-to-br from-glow/35 to-[#e85fa0]/30" />
+
         {shape === "landing" && (
           <>
-            {line("70%")}
-            {line("45%")}
-            {cta}
+            {/* Scroll runs down the page, the CTA blinks, then "Заявка ✓"
+                lands and holds — the visit that ends in a lead. */}
+            {line("70%", false, "ai-a-seq", d(0))}
+            {line("45%", false, "ai-a-seq", d(0.25))}
+            <span className="relative block h-1 w-full overflow-hidden rounded-full bg-paper/10">
+              <span className="ai-a-progress absolute inset-0 origin-left rounded-full bg-glow/70" />
+            </span>
+            {cta("ai-a-blink")}
+            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(1.9)}>
+              <span className="h-1 w-1 rounded-full bg-glow" />
+              Заявка ✓
+            </span>
           </>
         )}
+
         {shape === "pages" && (
           <>
+            {/* The site assembles itself, section by section — nav, three
+                blocks, footer, cta — then resets and builds again. */}
             <div className="grid grid-cols-3 gap-1.5">
-              {line("100%")}
-              {line("100%")}
-              {line("100%")}
+              <span className="ai-a-seq block h-2.5 rounded-[2px] bg-paper/18" style={d(0)} />
+              <span className="ai-a-seq block h-2.5 rounded-[2px] bg-paper/18" style={d(0.2)} />
+              <span className="ai-a-seq block h-2.5 rounded-[2px] bg-paper/18" style={d(0.4)} />
             </div>
-            {line("60%")}
-            {cta}
+            {line("60%", false, "ai-a-seq", d(0.6))}
+            {line("38%", true, "ai-a-seq", d(0.8))}
+            {cta("ai-a-seq")}
           </>
         )}
+
         {shape === "shop" && (
           <>
+            {/* Catalogue tiles light up in turn, then feed one line into the
+                CRM node — the structure that a single landing can't hold. */}
             <div className="grid grid-cols-4 gap-1.5">
-              <span className="block h-4 rounded-[3px] bg-paper/15" />
-              <span className="block h-4 rounded-[3px] bg-paper/15" />
-              <span className="block h-4 rounded-[3px] bg-paper/15" />
-              <span className="block h-4 rounded-[3px] bg-paper/15" />
+              {[0, 1, 2, 3].map((i) => (
+                <span key={i} className="ai-a-blink block h-4 rounded-[3px] bg-glow/20 ring-1 ring-glow/25" style={d(i * 0.3)} />
+              ))}
             </div>
-            {line("50%")}
-            {cta}
+            <div className="relative h-3">
+              <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-glow/40" />
+            </div>
+            <span className="ai-a-seq mx-auto flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(1.4)}>
+              CRM
+            </span>
+            {cta()}
           </>
         )}
+
         {shape === "chat" && (
           <>
-            {line("55%")}
-            <span className="ml-auto block h-1.5 w-2/5 rounded-[2px] bg-glow/45" />
-            {line("40%")}
-            {cta}
+            {/* A visitor's question answered before a manager would even
+                open the chat — same conversational beat as /ai's own bot
+                diagram, themed cyan for /sites. */}
+            <div className="ai-a-seq flex items-start gap-1.5" style={d(0)}>
+              <span className="mt-0.5 block h-4 w-4 shrink-0 rounded-full bg-paper/15" />
+              <span className="block w-[70%] rounded-lg rounded-bl-sm bg-paper/10 p-1.5">{line("85%")}</span>
+            </div>
+            <span className="ai-a-seq ml-auto flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-1 ring-1 ring-glow/30" style={d(0.7)}>
+              <span className="ai-a-typing block h-1 w-1 rounded-full bg-glow" style={d(0)} />
+              <span className="ai-a-typing block h-1 w-1 rounded-full bg-glow" style={d(0.18)} />
+              <span className="ai-a-typing block h-1 w-1 rounded-full bg-glow" style={d(0.36)} />
+            </span>
+            <span className="ai-a-seq ml-auto block w-[72%] rounded-lg rounded-br-sm bg-glow/20 p-1.5 ring-1 ring-glow/30" style={d(1.3)}>
+              {line("60%")}
+            </span>
+            {cta()}
           </>
         )}
+
         {shape === "redesign" && (
           <>
-            <div className="grid grid-cols-2 gap-1.5">
+            {/* A before/after wipe: the dim old layout gives way to the lit
+                new one as the divider travels across, then resets. */}
+            <div className="relative grid grid-cols-2 gap-1.5 overflow-hidden">
               <span className="block h-5 rounded-[3px] bg-paper/10" />
-              <span className="block h-5 rounded-[3px] bg-gradient-to-br from-glow/30 to-transparent" />
+              <span className="block h-5 rounded-[3px] bg-gradient-to-br from-glow/35 to-transparent ring-1 ring-glow/25" />
+              <span className="ai-a-travel pointer-events-none absolute top-0 h-full w-px bg-glow/70" />
             </div>
-            {line("65%")}
-            {cta}
+            {line("65%", false, "ai-a-seq", d(0.4))}
+            {cta("ai-a-seq")}
           </>
         )}
       </div>
@@ -180,12 +250,16 @@ function SiteThumb({ shape }: { shape: Service["shape"] }) {
 // One entry per signed distance from the centre card. Anything further out
 // than ±2 is not drawn — a sixth card would sit past the container's edge and
 // only ever be a sliver.
+// Egor's call: the front card grows ~20% (1 → 1.2), the immediate
+// neighbours shrink a little from before (0.85 → 0.76) rather than staying
+// put, and the outer pair shrink further still (0.7 → 0.56) — so depth
+// reads as one continuous step rather than "big card, then two flat sizes".
 const FAN: Record<number, { x: number; y: number; scale: number; opacity: number; blur: number; z: number }> = {
-  [-2]: { x: -214, y: 26, scale: 0.7, opacity: 0.45, blur: 1.4, z: 10 },
-  [-1]: { x: -122, y: 10, scale: 0.85, opacity: 0.78, blur: 0.4, z: 20 },
-  [0]: { x: 0, y: -8, scale: 1, opacity: 1, blur: 0, z: 30 },
-  [1]: { x: 122, y: 10, scale: 0.85, opacity: 0.78, blur: 0.4, z: 20 },
-  [2]: { x: 214, y: 26, scale: 0.7, opacity: 0.45, blur: 1.4, z: 10 },
+  [-2]: { x: -226, y: 30, scale: 0.56, opacity: 0.42, blur: 1.4, z: 10 },
+  [-1]: { x: -132, y: 12, scale: 0.76, opacity: 0.76, blur: 0.4, z: 20 },
+  [0]: { x: 0, y: -10, scale: 1.2, opacity: 1, blur: 0, z: 30 },
+  [1]: { x: 132, y: 12, scale: 0.76, opacity: 0.76, blur: 0.4, z: 20 },
+  [2]: { x: 226, y: 30, scale: 0.56, opacity: 0.42, blur: 1.4, z: 10 },
 };
 
 const CARD_SHELL =
@@ -216,8 +290,10 @@ export default function SitesDeck() {
   return (
     <div className="w-full max-w-[560px]">
       {/* The fan. Fixed height so the chapter's layout doesn't shift as the
-          description under it changes length. */}
-      <div className="relative h-[290px]">
+          description under it changes length — grown from 290 to fit the
+          front card's new +20% size (240px tall × 1.2 ≈ 288px) plus its
+          upward y-nudge. */}
+      <div className="relative h-[320px]">
         {SERVICES.map((service, i) => {
           // Signed, wrapped distance from the active card: -2..+2, so the
           // last card sits to the *left* of the first rather than looping
@@ -240,13 +316,25 @@ export default function SitesDeck() {
                   background: "linear-gradient(180deg, rgba(11,11,16,0) 0%, rgba(11,11,16,0.92) 70%)",
                 }}
               />
-              <span className="absolute inset-x-4 bottom-4 block">
+              <span className="absolute inset-x-4 bottom-4 flex flex-col items-start gap-2">
                 <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
                   {service.name}
                 </span>
-                <span className="mt-1.5 block font-display text-[10px] uppercase tracking-[0.14em] text-orange">
-                  {service.price}
-                </span>
+                {/* Same pattern as /ai's front-card pill: small, pulsing,
+                    living on the card itself rather than as a separate
+                    button below the deck. */}
+                {hasPage && (
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-display text-[8px] font-semibold uppercase tracking-[0.14em] motion-reduce:animate-none ${
+                      service.hit
+                        ? "ai-open-pulse-hit bg-gradient-to-b from-[#ff8a5c] to-[#ff4fd8] text-[#1a0a04]"
+                        : "sites-open-pulse bg-gradient-to-b from-[#4fe0ff] to-[#0090b8] text-[#03181d]"
+                    }`}
+                  >
+                    Подробнее
+                    <span aria-hidden="true">→</span>
+                  </span>
+                )}
               </span>
               <span className="absolute right-3 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
                 {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
@@ -301,7 +389,7 @@ export default function SitesDeck() {
                   }`}
                   style={service.hit ? CARD_GLOW_STYLE_HIT : CARD_GLOW_STYLE}
                 >
-                  <SiteThumb shape={service.shape} />
+                  <SiteThumb shape={service.shape} image={service.image} animate />
                   {caption}
                 </Link>
               ) : (
@@ -315,7 +403,7 @@ export default function SitesDeck() {
                     isFront ? "cursor-default" : "cursor-pointer"
                   } ${service.hit ? "ring-2 ring-[#ff8a5c]/50" : ""}`}
                 >
-                  <SiteThumb shape={service.shape} />
+                  <SiteThumb shape={service.shape} image={service.image} animate={isFront} />
                   {isFront && caption}
                 </button>
               )}

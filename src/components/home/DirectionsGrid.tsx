@@ -10,6 +10,7 @@ import { works } from "@/lib/data";
 import type { Work } from "@/lib/types";
 import TeamAskCard from "@/components/home/TeamAskCard";
 import { TEAM } from "@/lib/team";
+import { EYEBROW } from "@/lib/typography";
 
 // Picks one work per direction, greedily excluding whatever an earlier
 // direction already claimed. Several works[] categories share pieces via
@@ -95,7 +96,7 @@ function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolea
 function DirectionCard({ direction, work, active }: { direction: ContentDirection; work?: Work; active: boolean }) {
   return (
     <div
-      className="deck-card-glow relative flex h-full min-h-[260px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-5 backdrop-blur-md sm:p-8"
+      className="deck-card-glow relative flex h-full min-h-[190px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
       style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
     >
       <Link
@@ -109,12 +110,12 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
           <h3 className="direction-card-title font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] transition-[color] sm:text-lg">
             {direction.title}
           </h3>
-          <p className="mt-2 line-clamp-5 text-xs leading-relaxed text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-sm">
+          <p className="mt-1.5 line-clamp-3 text-xs leading-snug text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-sm">
             {direction.description}
           </p>
         </div>
 
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-ink ring-1 ring-paper/15 sm:h-20 sm:w-20">
+        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-ink ring-1 ring-paper/15 sm:h-14 sm:w-14">
           {/* AI-видео has no matching works[] category (no AI-generated
               piece in the portfolio to point at), so its circle plays the
               AI direction's own background loop instead — a real, local,
@@ -145,19 +146,77 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
         </div>
       </div>
 
-      <div className="pointer-events-none relative z-10 mt-3 flex items-center gap-3">
-        <span className="btn-neon pointer-events-none !px-4 !py-2 !text-[10px]">
+      <div className="pointer-events-none relative z-10 mt-2 flex items-center gap-3">
+        <span className="btn-neon pointer-events-none !px-3.5 !py-1.5 !text-[10px]">
           Узнать больше
         </span>
         <Link
           href={`/content/${direction.slug}`}
           aria-label={`Подробнее: ${direction.title}`}
-          className="btn-neon pointer-events-auto grid h-9 w-9 shrink-0 !p-0 place-items-center text-paper/85 transition-colors duration-300 hover:text-orange"
+          className="btn-neon pointer-events-auto grid h-8 w-8 shrink-0 !p-0 place-items-center text-paper/85 transition-colors duration-300 hover:text-orange"
           style={{ "--btn-neon-delay": "1.8s" } as React.CSSProperties}
         >
           <svg
-            width="14"
-            height="14"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M7 17 17 7M9 7h8v8" />
+          </svg>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+// Sixth tile, between the five direction cards and the consult card —
+// Egor's ask after seeing the grid live: five cards plus the tall consult
+// card left an empty gap under "AI-видео" and "Графика" (that row's height
+// follows the consult card, and the two plain cards next to it stop early).
+// Rather than paper over the gap with spacing, it gets real content: a
+// pitch for formats that don't have their own direction card at all —
+// podcast, documentary, music video — the point being the range is wider
+// than the five tiles above suggest, not just these five. Styled like
+// DirectionCard (same glass tile, same "Узнать больше" pill) so it reads as
+// a sixth format rather than a decoration, but it links to /brief instead
+// of a /content/[slug] page — there is no dedicated landing page for "an
+// unlisted custom format" to send anyone to.
+function SpecialFormatCard() {
+  return (
+    <div
+      className="deck-card-glow relative flex h-full min-h-[190px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
+      style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
+    >
+      <Link href="/brief" aria-label="Обсудить свой формат" className="absolute inset-0 z-0 rounded-2xl" />
+
+      <div className="pointer-events-none relative z-10">
+        <span className={`${EYEBROW} text-glow`}>Формат не из списка?</span>
+        <h3 className="direction-card-title mt-1.5 font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] transition-[color] sm:text-lg">
+          Подкаст, документалка, клип и другое…
+        </h3>
+        <p className="mt-1.5 line-clamp-3 text-xs leading-snug text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-sm">
+          Пять форматов выше — не весь диапазон. Подберём формат под цель и обсудим на бесплатной креативной сессии
+          онлайн.
+        </p>
+      </div>
+
+      <div className="pointer-events-none relative z-10 mt-2 flex items-center gap-3">
+        <span className="btn-neon pointer-events-none !px-3.5 !py-1.5 !text-[10px]">Обсудить формат</span>
+        <Link
+          href="/brief"
+          aria-label="Обсудить свой формат"
+          className="btn-neon pointer-events-auto grid h-8 w-8 shrink-0 !p-0 place-items-center text-paper/85 transition-colors duration-300 hover:text-orange"
+          style={{ "--btn-neon-delay": "1.8s" } as React.CSSProperties}
+        >
+          <svg
+            width="12"
+            height="12"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -179,6 +238,13 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
 // same job (help picking a format), now answered by name. Egor himself
 // rather than a specialist — "не знаете формат" is exactly the
 // admin/producer question he described handling on every page.
+//
+// Full (non-compact) card, with its own background photo — Egor's original
+// design, reinstated after a compact-bar version briefly stood here to buy
+// back some of the row's height; he asked for the original look back
+// instead. What actually keeps this row from overflowing is the grid's own
+// explicit placement below (this card spans two row tracks in column 3),
+// not the card's own size.
 function ConsultCard() {
   return (
     <TeamAskCard
@@ -221,6 +287,7 @@ export default function DirectionsGrid() {
     ...contentDirections.map((direction, i) => (
       <DirectionCard key={direction.slug} direction={direction} work={picks[i]} active={active} />
     )),
+    <SpecialFormatCard key="special" />,
     <ConsultCard key="consult" />,
   ];
 
@@ -231,19 +298,29 @@ export default function DirectionsGrid() {
         // a plain wrapping <div> would still be the grid cell, but article
         // is what the card actually is, and it matches how /smm's own
         // cascading card grids are built.
+        //
+        // Explicit placement on the last two cards, not auto-flow: the
+        // consult card is pinned to column 3 and spans both of the grid's
+        // two rows (`lg:row-span-2`), which is what makes it read taller
+        // than its neighbours in the first place. The five direction cards
+        // above still auto-flow into row 1 (3 cards) and row 2 columns 1–2
+        // (AI-видео, Графика) — CSS grid skips column 3 there because the
+        // consult card already claims it. That leaves exactly one empty
+        // cell, row 3 columns 1–2, which the special-format card fills by
+        // spanning both (`lg:col-span-2`) instead of sitting alone.
         <Appear
           key={card.key}
           as="article"
           from="up"
           delay={BEAT.content + i * STAGGER.normal}
           duration={DUR.row}
-          // The consult card (last, i === contentDirections.length) is
-          // deliberately the tall one — Egor's ask: its own row shouldn't
-          // stretch the plain direction cards next to it up to match. Grid
-          // rows still size to the tallest cell either way, so without
-          // `self-start` the shorter cards were being pulled down to fill
-          // that leftover height instead of staying their own natural size.
-          className={i === contentDirections.length ? "h-full" : "self-start"}
+          className={
+            card.key === "consult"
+              ? "h-full lg:col-start-3 lg:row-start-2 lg:row-span-2"
+              : card.key === "special"
+                ? "self-start lg:col-start-1 lg:col-span-2 lg:row-start-3"
+                : "self-start"
+          }
         >
           {card}
         </Appear>

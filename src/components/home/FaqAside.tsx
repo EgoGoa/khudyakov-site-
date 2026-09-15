@@ -165,7 +165,7 @@ export default function FaqAside() {
                     transition={{ duration: 0.35, ease: ANSWER_EASE }}
                     className="max-w-sm overflow-hidden"
                   >
-                    <p className="pb-3 text-xs leading-relaxed text-paper/55">{item.a}</p>
+                    <p className="pb-3 text-xs leading-relaxed text-paper">{item.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
