@@ -104,8 +104,8 @@ export default function SitesClose() {
                     py-2/text-xs) on all three, matching /smm and
                     /content's own tier buttons. */}
                 <Link
-                  href="/brief"
-                  className={`btn-neon w-full justify-center !py-2 !text-xs !font-bold tier-glow-btn-${i}`}
+                  href="/brief/sites"
+                  className={`btn-neon btn-neon-breathe w-full justify-center !py-2 !text-xs !font-bold tier-glow-btn-${i}`}
                 >
                   Выбрать план
                 </Link>
@@ -123,7 +123,7 @@ export default function SitesClose() {
 
       <Appear from="up" delay={BEAT.cta}>
         <div className="mt-8 flex items-center justify-center gap-4">
-          <Link href="/brief" className={PILL}>
+          <Link href="/brief/sites" className={PILL}>
             Начать проект
           </Link>
           <Link href="/calculator" aria-label="Рассчитать бюджет" className={ROUND}>

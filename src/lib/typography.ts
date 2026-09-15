@@ -9,8 +9,10 @@
 /** Подзаголовок главы — строка под заголовком. Белая и в читаемом кегле, а
  *  не мелкий капс-caption: Егор просил вернуть этой строке тот вес, который
  *  она несёт на /sites, и сделать так на каждой странице. */
+// One step down from text-sm/text-base — Egor's ask: this line was reading
+// too heavy against the chapter title above it and the card copy below.
 export const CHAPTER_INTRO =
-  "font-display text-sm uppercase leading-snug tracking-tight text-white sm:text-base";
+  "font-display text-xs uppercase leading-snug tracking-tight text-white sm:text-sm";
 
 /** Лид первого экрана — строка под заголовком героя.
  *

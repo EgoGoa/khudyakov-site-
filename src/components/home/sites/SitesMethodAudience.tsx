@@ -148,7 +148,7 @@ export default function SitesMethodAudience() {
               subtitle="Одна страница, которая доводит трафик до заявки."
               price="48 000 ₽"
               oldPrice="60 000 ₽"
-              href="/brief"
+              href="/brief/sites"
               leadPrefill={{ format: "Лендинг", wishes: "Акция сентября — от 60 000 до 48 000 ₽" }}
             />
           </Appear>

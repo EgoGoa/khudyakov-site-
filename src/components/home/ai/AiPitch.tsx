@@ -103,7 +103,7 @@ export default function AiPitch() {
               question="Подбираю AI-инструмент под задачу, а не для галочки"
               pitch="Подберу AI-инструмент под задачу и покажу, как это будет работать у вас."
               actionLabel="Обсудить внедрение"
-              href="/brief"
+              href="/brief/ai"
               compact
               className="mt-4"
             />

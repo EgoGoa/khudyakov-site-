@@ -5,7 +5,14 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
-import { BRIEF_EMAIL, SCENE_NAMES, STEPS, type BriefStep } from "@/lib/brief";
+import {
+  BRIEF_EMAIL,
+  BRIEF_META,
+  SCENE_NAMES_BY_VARIANT,
+  STEPS_BY_VARIANT,
+  type BriefStep,
+  type BriefVariant,
+} from "@/lib/brief";
 
 type ContactValue = { email: string; phone: string };
 type AnswerValue = string | string[] | ContactValue | undefined;
@@ -55,12 +62,23 @@ function formatAnswer(step: BriefStep, answers: Answers): string | null {
   return typeof v === "string" && v.trim() ? v.trim() : null;
 }
 
-export default function BriefForm() {
+export default function BriefForm({ variant = "video" }: { variant?: BriefVariant }) {
+  const STEPS = STEPS_BY_VARIANT[variant];
+  const SCENE_NAMES = SCENE_NAMES_BY_VARIANT[variant];
+  const meta = BRIEF_META[variant];
+
   const [screen, setScreen] = useState<Screen>("intro");
   const [answers, setAnswers] = useState<Answers>({});
   const [invalid, setInvalid] = useState<string[]>([]);
   const [sendState, setSendState] = useState<SendState>("idle");
   const [consent, setConsent] = useState(false);
+
+  const page1Count = STEPS.filter((s) => s.page === 1).length;
+  const total = STEPS.length;
+  const sceneOrder: number[] = [];
+  STEPS.forEach((s) => {
+    if (!sceneOrder.includes(s.scene)) sceneOrder.push(s.scene);
+  });
 
   const set = (id: string, value: AnswerValue) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -95,7 +113,7 @@ export default function BriefForm() {
   };
 
   const mailtoHref = () => {
-    const lines: string[] = ["БРИФ НА ВИДЕОПРОДАКШН — HDKV.AGENCY", ""];
+    const lines: string[] = [`${meta.docTitle} — HDKV.AGENCY`, ""];
     const seen: number[] = [];
     STEPS.forEach((step) => {
       if (!seen.includes(step.scene)) {
@@ -107,7 +125,7 @@ export default function BriefForm() {
       lines.push("");
     });
     const company = typeof answers.company === "string" ? answers.company.trim() : "";
-    const subject = `Бриф на видео — ${company || "новый проект"}`;
+    const subject = `Бриф на ${meta.subjectNoun} — ${company || "новый проект"}`;
     return `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(lines.join("\n"))}`;
@@ -129,7 +147,7 @@ export default function BriefForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: "brief",
+          type: meta.leadType,
           name: typeof answers.name === "string" ? answers.name.trim() : "",
           phone: contact.phone?.trim() || undefined,
           email: contact.email?.trim(),
@@ -146,7 +164,7 @@ export default function BriefForm() {
 
   const hud =
     screen === "intro"
-      ? "Бриф · 20 вопросов"
+      ? `Бриф · ${total} вопросов`
       : screen === "page1"
       ? "Страница 1 из 2"
       : screen === "page2"
@@ -156,11 +174,16 @@ export default function BriefForm() {
       : "Отправлено";
 
   return (
-    <section className="py-16 sm:py-24">
+    <section className={`py-16 sm:py-24 ${meta.wrapClass}`}>
       <Container className="max-w-4xl">
         <div className="mb-8 flex items-center gap-3 font-display text-xs uppercase tracking-[0.2em] text-orange">
           <span className="h-2 w-2 animate-pulse-rec rounded-full bg-orange" />
           {hud}
+          {variant !== "video" && (
+            <span className="rounded-full border border-white/15 px-2.5 py-0.5 text-white/60">
+              {meta.badge}
+            </span>
+          )}
         </div>
 
         <AnimatePresence mode="wait">
@@ -174,12 +197,12 @@ export default function BriefForm() {
             {screen === "intro" && (
               <div>
                 <h1 className="font-display text-4xl uppercase leading-[1.02] tracking-tight text-white sm:text-6xl">
-                  Съёмка начинается
+                  {meta.heroWord} начинается
                   <br />
                   <span className="kw">с брифа</span>
                 </h1>
                 <p className="mt-6 max-w-xl text-base leading-relaxed text-white">
-                  Ответьте на 20 вопросов о проекте — это займёт около пяти
+                  Ответьте на {total} вопрос{total >= 5 ? "ов" : total >= 2 ? "а" : ""} о проекте — это займёт несколько
                   минут. <span className="font-medium text-orange">В конце мы соберём всё в
                   один документ</span>, который останется только отправить нам на почту.
                 </p>
@@ -187,7 +210,7 @@ export default function BriefForm() {
                 <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
                   {[
                     ["~5 минут", "на заполнение"],
-                    ["20 вопросов", "по делу"],
+                    [`${total} вопросов`, "по делу"],
                     ["2 страницы", "с навигацией"],
                     ["Без регистрации", "ничего не храним"],
                   ].map(([big, small]) => (
@@ -213,12 +236,12 @@ export default function BriefForm() {
             {(screen === "page1" || screen === "page2") && (
               <div>
                 <h2 className="font-display text-3xl uppercase tracking-tight text-white sm:text-4xl">
-                  {screen === "page1" ? "О вас и о цели" : "Формат, стиль и логистика"}
+                  {screen === "page1" ? "О вас и о задаче" : "Формат, бюджет и сроки"}
                 </h2>
                 <p className="mt-3 text-sm text-white/70">
                   {screen === "page1"
-                    ? "Вопросы 01–08. Отвечайте свободно — коротко или развёрнуто, как удобно."
-                    : "Вопросы 09–20. Часть можно пропустить, если пока нет ответа."}
+                    ? `Вопросы 01–${String(page1Count).padStart(2, "0")}. Отвечайте свободно — коротко или развёрнуто, как удобно.`
+                    : `Вопросы ${String(page1Count + 1).padStart(2, "0")}–${String(total).padStart(2, "0")}. Часть можно пропустить, если пока нет ответа.`}
                 </p>
 
                 <div className="mt-10 space-y-10">
@@ -268,7 +291,7 @@ export default function BriefForm() {
                 </p>
 
                 <div className="mt-8 space-y-8">
-                  {[1, 2, 3, 4, 5].map((scene) => (
+                  {sceneOrder.map((scene) => (
                     <div key={scene}>
                       <div className="mb-3 font-display text-xs uppercase tracking-[0.2em] text-glow">
                         Сцена {String(scene).padStart(2, "0")} · {SCENE_NAMES[scene]}

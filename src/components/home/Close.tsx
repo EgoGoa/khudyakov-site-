@@ -8,6 +8,7 @@ import Appear from "@/components/ui/Appear";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import { BEAT, EASE, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
+import { briefHrefFor } from "@/lib/brief";
 import { pricingByCategory } from "@/lib/service-content";
 import InteractiveTierCard from "@/components/home/ai/InteractiveTierCard";
 import type { InteractiveTier } from "@/components/home/ai/aiPricingTiers";
@@ -150,7 +151,14 @@ export default function Close({
                 } ${tier.pro ? "c3-card-pro" : ""} tier-glow-${i}`}
               >
                 <span className="c3-tier-small relative">{tier.tagline}</span>
-                <div className={`c3-tier-large relative ${dense ? "!text-lg" : "!text-2xl"}`}>{tier.name}</div>
+                {/* !text-xl, not the class's own 1.9rem/!text-2xl default — a
+                    long single-word tier name ("Профессиональный") has
+                    nowhere to break inside a ~270px card and was clipped by
+                    the card's own overflow:hidden at the larger size.
+                    !text-xl is also what SitesClose/SmmClose already use for
+                    this same line, so this brings /content in line with the
+                    rest of the site rather than sizing it uniquely. */}
+                <div className={`c3-tier-large relative ${dense ? "!text-lg" : "!text-xl"}`}>{tier.name}</div>
                 <div
                   className={`relative font-semibold text-paper tier-glow-price ${dense ? "text-xs" : "text-base"}`}
                 >
@@ -188,7 +196,7 @@ export default function Close({
                       связи" pulse on top, scoped to pricing + closing
                       buttons rather than the site-wide default. */}
                   <a
-                    href="/brief"
+                    href={briefHrefFor(active)}
                     className={`btn-neon btn-neon-breathe w-[70%] justify-center !font-bold tier-glow-btn-${i} ${
                       dense ? "!py-1 !text-[8px]" : "!py-1.5 !text-[10px]"
                     }`}
@@ -221,7 +229,7 @@ export default function Close({
         <Appear from="up" delay={BEAT.cta}>
           <div className="relative flex justify-center">
             <Link
-              href="/brief"
+              href={briefHrefFor(active)}
               className={`chapter-neon group relative inline-block text-center font-display uppercase leading-[0.95] tracking-tight transition-opacity hover:opacity-80 ${
                 active === "content"
                   ? "mt-10 text-[clamp(0.9rem,3vw,1.9rem)]"

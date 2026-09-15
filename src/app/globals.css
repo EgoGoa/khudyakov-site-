@@ -21,6 +21,26 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Site-wide fix for ugly heading line-breaks (Egor's ask, found across
+   several chapters): a heading wrapping one or two orphaned letters onto
+   their own last line, or a tight word count landing an awkward split.
+   `text-wrap: pretty` asks the browser's own line-breaker to balance the
+   last few lines instead of greedily filling every line until the last
+   word doesn't fit — it costs nothing to set (browsers without support
+   just ignore it and keep normal wrapping) and needs no per-heading
+   tuning. Scoped to the shared display-font utility rather than every
+   heading tag individually since that's the class nearly every heading
+   and card title on the site already carries. */
+.font-display {
+  text-wrap: pretty;
+  /* Same safety net as .c3-tier-large below, applied to every heading on
+     the site rather than just tier names: if a single word is ever wider
+     than the box it sits in (a long tariff name, a translated label, copy
+     nobody has measured against every card width yet), it wraps mid-word
+     instead of silently overflowing past the card's edge. */
+  overflow-wrap: break-word;
+}
+
 body {
   background-color: var(--ink);
 }
@@ -1524,6 +1544,34 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .promo-card-badge-lift {
+    animation: none;
+  }
+}
+
+/* DirectionsGrid's "формат не из списка" badge — Egor's ask: the shimmer
+   stays, but the blink itself is half as intense as every other
+   .promo-card-badge-lift on the site (a real discount offer earns a
+   louder blink; a free-consult pitch doesn't need to shout as hard). Kept
+   as its own class rather than edited on .promo-card-badge-blink directly
+   so every other page's promo badges keep their original strength. */
+.format-badge-soft-blink {
+  animation: promo-card-badge-shimmer 6s ease-in-out infinite, format-badge-blink-soft 3.2s ease-in-out infinite;
+}
+
+@keyframes format-badge-blink-soft {
+  0%,
+  100% {
+    filter: brightness(1);
+    box-shadow: 0 4px 12px -2px rgba(255, 79, 216, 0.55), 0 0 8px 0px rgba(255, 106, 61, 0.45);
+  }
+  50% {
+    filter: brightness(1.09);
+    box-shadow: 0 4px 16px -2px rgba(255, 79, 216, 0.775), 0 0 13px 1px rgba(255, 106, 61, 0.7);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .format-badge-soft-blink {
     animation: none;
   }
 }
@@ -3195,6 +3243,13 @@ body {
   letter-spacing: -0.01em;
   color: #fff;
   margin-top: 10px;
+  /* A single long word ("Профессиональный") has nowhere to break under
+     `white-space: normal` and was silently clipped by the card's own
+     `overflow: hidden` instead of wrapping — Egor's ask: no heading
+     anywhere should overflow its box uncaught. Letting it break mid-word
+     as a last resort is uglier than a clean wrap but strictly better than
+     text vanishing off the edge of the card. */
+  overflow-wrap: break-word;
 }
 
 .c3-team {
@@ -3212,12 +3267,19 @@ body {
   line-height: 1.5;
 }
 
+/* Bold, near-white body text — Egor's ask: these lines are the actual
+   value a visitor is paying for (what's included in the tier), and the
+   original regular-weight/85%-opacity type read as filler next to the
+   card's bold display headings. Shared by every page's tier cards (Close,
+   SitesClose, SmmClose, InteractiveTierCard) since they all render this
+   same class. */
 .c3-list li {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   font-size: 0.9rem;
-  color: rgba(220, 221, 239, 0.85);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
   margin-bottom: 16px;
   line-height: 1.4;
 }
@@ -4378,3 +4440,110 @@ body {
 .anim-offscreen *::after {
   animation-play-state: paused !important;
 }
+
+/* The three direction briefs (/brief/ai, /brief/smm, /brief/sites) reuse
+   BriefForm.tsx as-is — same layout, same orange/cyan utility classes
+   (.text-orange/.bg-orange for the primary accent, .text-glow/.bg-glow for
+   the secondary one, .kw for the headline gradient) the video brief already
+   used. Rather than branching the component's markup per direction, each
+   variant just gets a wrapper class here that repaints those exact classes
+   into that page's own accent — the same "scope a wrapper class, leave the
+   base utility alone" pattern /ai, /smm and /sites already use for their
+   shared chapters (see .ai-cool-headings above). Each variant maps BOTH
+   roles to a single accent (no orange-vs-cyan split) so the brief reads as
+   one colour, matching how /ai's own .ai-cool-headings does it. */
+.brief-ai .text-orange,
+.brief-ai .text-glow,
+.brief-ai .hover\:text-glow:hover {
+  color: #34d399;
+}
+.brief-ai .bg-orange,
+.brief-ai .bg-glow {
+  background-color: #10b981;
+}
+.brief-ai .bg-orange\/10 {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+.brief-ai .bg-orange\/15,
+.brief-ai .bg-glow\/15 {
+  background-color: rgba(16, 185, 129, 0.15);
+}
+.brief-ai .border-orange,
+.brief-ai .border-glow,
+.brief-ai .ring-orange {
+  border-color: #10b981;
+}
+.brief-ai .border-orange\/30 {
+  border-color: rgba(16, 185, 129, 0.3);
+}
+.brief-ai .border-orange\/40 {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+.brief-ai .focus\:border-glow:focus,
+.brief-ai .hover\:border-glow\/50:hover,
+.brief-ai .hover\:border-glow\/60:hover,
+.brief-ai .hover\:border-orange\/50:hover {
+  border-color: rgba(16, 185, 129, 0.6);
+}
+.brief-ai .kw {
+  background-image: linear-gradient(90deg, #c8f169 0%, #10b981 100%);
+}
+.brief-ai .btn-neon.btn-warm.btn-3d {
+  background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 12px 30px -8px rgba(16, 185, 129, 0.6);
+}
+.brief-ai .btn-neon.btn-warm.btn-3d:hover {
+  box-shadow: 0 14px 34px -8px rgba(16, 185, 129, 0.75);
+}
+
+.brief-smm .text-orange,
+.brief-smm .text-glow,
+.brief-smm .hover\:text-glow:hover {
+  color: #c084fc;
+}
+.brief-smm .bg-orange,
+.brief-smm .bg-glow {
+  background-color: #8b3ff0;
+}
+.brief-smm .bg-orange\/10 {
+  background-color: rgba(139, 63, 240, 0.1);
+}
+.brief-smm .bg-orange\/15,
+.brief-smm .bg-glow\/15 {
+  background-color: rgba(139, 63, 240, 0.15);
+}
+.brief-smm .border-orange,
+.brief-smm .border-glow,
+.brief-smm .ring-orange {
+  border-color: #8b3ff0;
+}
+.brief-smm .border-orange\/30 {
+  border-color: rgba(139, 63, 240, 0.3);
+}
+.brief-smm .border-orange\/40 {
+  border-color: rgba(139, 63, 240, 0.4);
+}
+.brief-smm .focus\:border-glow:focus,
+.brief-smm .hover\:border-glow\/50:hover,
+.brief-smm .hover\:border-glow\/60:hover,
+.brief-smm .hover\:border-orange\/50:hover {
+  border-color: rgba(139, 63, 240, 0.6);
+}
+.brief-smm .kw {
+  background-image: linear-gradient(90deg, #a855f7 0%, #38bdf8 100%);
+}
+.brief-smm .btn-neon.btn-warm.btn-3d {
+  background: linear-gradient(180deg, #c084fc 0%, #8b3ff0 100%);
+  box-shadow: 0 12px 30px -8px rgba(139, 63, 240, 0.6);
+}
+.brief-smm .btn-neon.btn-warm.btn-3d:hover {
+  box-shadow: 0 14px 34px -8px rgba(139, 63, 240, 0.75);
+}
+
+.brief-sites .kw {
+  background-image: linear-gradient(90deg, #ff8a5f 0%, #f0512a 100%);
+}
+/* /sites already IS the site's own warm-orange page — its brief keeps the
+   default orange/cyan palette (that's already this page's own colour), so
+   only the headline gradient and hero copy need the direction's own words;
+   no utility-class repaint needed here. */

@@ -61,7 +61,7 @@ export default function SmmOffer() {
             до таргета и еженедельного отчёта.
           </>
         }
-        primary={{ href: "/brief", label: "Обсудить формат" }}
+        primary={{ href: "/brief/smm", label: "Обсудить формат" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
         askCard={
           <>
@@ -70,7 +70,7 @@ export default function SmmOffer() {
               question="Подберу формат — сторис, рилс или комплекс — под вашу нишу"
               pitch="Сторис, рилс, карусели или комплекс — подберу под нишу и бюджет."
               actionLabel="Обсудить формат"
-              href="/brief"
+              href="/brief/smm"
               compact
             />
             {/* /smm's second September offer — sits under Таня's card
@@ -93,7 +93,7 @@ export default function SmmOffer() {
                 subtitle="Отвечаем в директ и комментарии от лица бренда."
                 price="36 000 ₽/мес"
                 oldPrice="45 000 ₽/мес"
-                href="/brief"
+                href="/brief/smm"
                 leadPrefill={{ format: "Комьюнити-менеджмент", wishes: "Акция сентября — от 45 000 до 36 000 ₽/мес" }}
               />
             </div>

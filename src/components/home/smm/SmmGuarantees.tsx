@@ -133,7 +133,7 @@ export default function SmmGuarantees() {
               question="Фиксирую условия и сроки в договоре — без мелкого шрифта"
               pitch="Отвечу по договору, срокам и оплате — без сюрпризов и мелкого шрифта."
               actionLabel="Обсудить задачу"
-              href="/brief"
+              href="/brief/smm"
               compact
               className="mt-4"
             />

@@ -43,7 +43,10 @@ export default function Opening() {
       // (a chapter cannot scroll internally inside the deck — see
       // CinematicStage). A smaller title buys that room back from the
       // header rather than from the cards.
-      titleClassName="text-[1.575rem] sm:text-[2.1rem] lg:text-[2.625rem] xl:text-[2.625rem]"
+      // -15% again on top of the already-reduced size above — Egor's ask:
+      // this heading still read as too heavy against the intro line and
+      // cards under it.
+      titleClassName="text-[1.34rem] sm:text-[1.785rem] lg:text-[2.23rem] xl:text-[2.23rem]"
       decor={
         <>
           {/* Was 238px at right-6%/top-0 — on wide desktop viewports that

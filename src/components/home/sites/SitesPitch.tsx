@@ -97,7 +97,7 @@ export default function SitesPitch() {
               question="Скажу сроки и бюджет сайта сразу, без долгого КП"
               pitch="Расскажу, что войдёт в сайт, сроки и бюджет — до брифа, бесплатно."
               actionLabel="Обсудить проект"
-              href="/brief"
+              href="/brief/sites"
               compact
               className="mt-4"
             />

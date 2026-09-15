@@ -10,7 +10,6 @@ import { works } from "@/lib/data";
 import type { Work } from "@/lib/types";
 import TeamAskCard from "@/components/home/TeamAskCard";
 import { TEAM } from "@/lib/team";
-import { EYEBROW } from "@/lib/typography";
 
 // Picks one work per direction, greedily excluding whatever an earlier
 // direction already claimed. Several works[] categories share pieces via
@@ -110,7 +109,7 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
           <h3 className="direction-card-title font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] transition-[color] sm:text-lg">
             {direction.title}
           </h3>
-          <p className="mt-1.5 line-clamp-3 text-xs leading-snug text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-sm">
+          <p className="mt-1.5 line-clamp-3 text-[0.6rem] leading-snug text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-[0.7rem]">
             {direction.description}
           </p>
         </div>
@@ -189,45 +188,69 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
 // unlisted custom format" to send anyone to.
 function SpecialFormatCard() {
   return (
-    <div
-      className="deck-card-glow relative flex h-full min-h-[190px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
-      style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
-    >
-      <Link href="/brief" aria-label="Обсудить свой формат" className="absolute inset-0 z-0 rounded-2xl" />
+    // Outer wrapper stays un-clipped so the badge below can sit lifted half
+    // over the card's own top edge (PromoCard's own trick — see that
+    // component) instead of being cut off by the inner card's
+    // overflow-hidden, which it needs for the gradient border ring.
+    <div className="relative h-full">
+      {/* Brought back after Egor's correction: not the plain small-caps
+          label this briefly became, but the same lifted, pulsing
+          magenta→orange pill PromoCard's own badge uses (.promo-card-badge-
+          lift in globals.css) — this page's own warm gradient, breathing
+          instead of static, bolder than a caption. */}
+      <span
+        className="promo-card-badge-lift format-badge-soft-blink absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-[0.14em] text-white"
+        aria-hidden="true"
+      >
+        <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
+        Формат не из списка?
+      </span>
 
-      <div className="pointer-events-none relative z-10">
-        <span className={`${EYEBROW} text-glow`}>Формат не из списка?</span>
-        <h3 className="direction-card-title mt-1.5 font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] transition-[color] sm:text-lg">
-          Подкаст, документалка, клип и другое…
-        </h3>
-        <p className="mt-1.5 line-clamp-3 text-xs leading-snug text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-sm">
-          Пять форматов выше — не весь диапазон. Подберём формат под цель и обсудим на бесплатной креативной сессии
-          онлайн.
-        </p>
-      </div>
+      <div
+        className="deck-card-glow relative flex h-full min-h-[190px] flex-col justify-between overflow-hidden rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
+        style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
+      >
+        <Link href="/brief" aria-label="Обсудить свой формат" className="absolute inset-0 z-0 rounded-2xl" />
 
-      <div className="pointer-events-none relative z-10 mt-2 flex items-center gap-3">
-        <span className="btn-neon pointer-events-none !px-3.5 !py-1.5 !text-[10px]">Обсудить формат</span>
-        <Link
-          href="/brief"
-          aria-label="Обсудить свой формат"
-          className="btn-neon pointer-events-auto grid h-8 w-8 shrink-0 !p-0 place-items-center text-paper/85 transition-colors duration-300 hover:text-orange"
-          style={{ "--btn-neon-delay": "1.8s" } as React.CSSProperties}
-        >
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
+        <div className="pointer-events-none relative z-10 mt-2">
+          <h3 className="direction-card-title font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] transition-[color] sm:text-lg">
+            Подкаст, документалка, клип и другое…
+          </h3>
+          {/* Egor's follow-up: too big, and plain sans read flat next to the
+              badge/heading's own character. Set in the site's display face
+              (Bebas — same family the headings use, just mixed case here
+              instead of shouting caps) rather than loading a new font for
+              one line — reads distinctive without introducing a font
+              nobody else on the page uses. */}
+          <p className="mt-1.5 line-clamp-3 font-display text-xs leading-snug tracking-tight text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-sm">
+            Пять форматов выше — не весь диапазон. Подберём формат под цель и обсудим на бесплатной креативной сессии
+            онлайн.
+          </p>
+        </div>
+
+        <div className="pointer-events-none relative z-10 mt-2 flex items-center gap-3">
+          <span className="btn-neon pointer-events-none !px-3.5 !py-1.5 !text-[10px]">Обсудить формат</span>
+          <Link
+            href="/brief"
+            aria-label="Обсудить свой формат"
+            className="btn-neon pointer-events-auto grid h-8 w-8 shrink-0 !p-0 place-items-center text-paper/85 transition-colors duration-300 hover:text-orange"
+            style={{ "--btn-neon-delay": "1.8s" } as React.CSSProperties}
           >
-            <path d="M7 17 17 7M9 7h8v8" />
-          </svg>
-        </Link>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17 17 7M9 7h8v8" />
+            </svg>
+          </Link>
+        </div>
       </div>
     </div>
   );

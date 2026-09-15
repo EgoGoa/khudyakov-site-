@@ -9,6 +9,7 @@ import BlockAssistant from "@/components/home/BlockAssistant";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
+import { briefHrefFor } from "@/lib/brief";
 import { whyByCategory } from "@/lib/service-content";
 import TeamAskCard from "@/components/home/TeamAskCard";
 import { TRUST_ASK } from "@/lib/team";
@@ -262,7 +263,7 @@ export default function Trust({
               subtitle="Telegram, WhatsApp, Instagram и сайт — один ассистент отвечает везде и сводит переписку в одну ленту."
               price="40 000 ₽"
               oldPrice="50 000 ₽"
-              href="/brief"
+              href={briefHrefFor(active)}
               leadPrefill={{ format: "AI-чат для мессенджеров", wishes: "Акция сентября — пилот за 40 000 ₽ вместо 50 000 ₽" }}
             />
           )}

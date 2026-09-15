@@ -128,7 +128,7 @@ export default function SitesGuarantees() {
               question="Фиксирую сроки и оплату в договоре — без сюрпризов"
               pitch="Отвечу по договору, срокам и оплате — фиксируем всё на берегу."
               actionLabel="Обсудить проект"
-              href="/brief"
+              href="/brief/sites"
               compact
               className="mt-4"
             />

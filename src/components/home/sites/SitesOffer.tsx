@@ -49,7 +49,7 @@ export default function SitesOffer() {
           </>
         }
         sub="От одностраничного лендинга до сайта под ключ с интеграциями — вёрстка на React/HTML, без привязки к конструктору."
-        primary={{ href: "/brief", label: "Обсудить проект" }}
+        primary={{ href: "/brief/sites", label: "Обсудить проект" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
         askCard={
           <TeamAskCard
@@ -57,7 +57,7 @@ export default function SitesOffer() {
             question="Подберу формат — лендинг или сайт под ключ — под вашу задачу"
             pitch="Покажу примеры под вашу нишу и подберу формат — лендинг или сайт под ключ."
             actionLabel="Обсудить проект"
-            href="/brief"
+            href="/brief/sites"
             compact
           />
         }

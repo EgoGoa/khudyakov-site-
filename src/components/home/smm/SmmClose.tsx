@@ -120,8 +120,8 @@ export default function SmmClose() {
                   stand out: sized down ~20% instead (py-2.5/text-sm →
                   py-2/text-xs), same on every card. */}
               <Link
-                href="/brief"
-                className={`btn-neon w-full justify-center !py-2 !text-xs !font-bold tier-glow-btn-${i}`}
+                href="/brief/smm"
+                className={`btn-neon btn-neon-breathe w-full justify-center !py-2 !text-xs !font-bold tier-glow-btn-${i}`}
               >
                 Выбрать пакет
               </Link>
@@ -142,7 +142,7 @@ export default function SmmClose() {
 
       <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
         <div className="mt-7 flex items-center justify-center gap-4 [@media(max-height:860px)]:mt-4">
-          <Link href="/brief" className={PILL}>
+          <Link href="/brief/smm" className={PILL}>
             Начать вести соцсети
           </Link>
           <Link href="/smm/pricing" aria-label="Смотреть цены" className={ROUND}>

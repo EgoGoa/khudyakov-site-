@@ -1,22 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { BEAT, EASE, STAGGER } from "@/lib/motion";
 import type { InteractiveTier } from "@/components/home/ai/aiPricingTiers";
 
-function formatPrice(n: number) {
-  return Math.round(n / 10) * 10 >= 1000
-    ? `${Math.round(n).toLocaleString("ru-RU")}`
-    : `${Math.round(n)}`;
-}
-
-/** One tier card whose optional items can be checked/unchecked, moving the
- *  displayed price between the tier's own already-published floor and
- *  ceiling — see aiPricingTiers.ts for why it interpolates rather than
- *  summing per-item prices nobody has confirmed. Required items are always
- *  counted (rendered checked, not clickable) since they're the part of the
- *  tier that defines its floor in the first place. */
+/** One /ai tier card. Static now — Egor's ask: this used to let a visitor
+ *  check/uncheck optional items, with unchecked ones greyed out and struck
+ *  through. That read as a checklist form and "missing", not "optional", so
+ *  every item is shown the same way /content's plain tier cards show
+ *  theirs — a full white line with the same pulsing dot every item on this
+ *  site gets, nothing clickable, nothing crossed out. The item *count*
+ *  itself (3 → 5 → 7 across the three tiers) is what still tells a visitor
+ *  "Рост" carries more scope than "Старт", the one part of the old toggle
+ *  design worth keeping. */
 export default function InteractiveTierCard({
   tier,
   index,
@@ -26,22 +22,6 @@ export default function InteractiveTierCard({
   index: number;
   spacious: boolean;
 }) {
-  const optionalItems = useMemo(() => tier.items.filter((item) => !item.required), [tier.items]);
-  // Starts at the floor (only required items counted) — a visitor adds scope
-  // and watches the price grow from there, rather than starting maxed out.
-  const [checked, setChecked] = useState<boolean[]>(() => optionalItems.map(() => false));
-
-  const checkedCount = checked.filter(Boolean).length;
-  const hasCeiling = tier.max !== undefined;
-  const price =
-    hasCeiling && optionalItems.length > 0
-      ? tier.min + ((tier.max! - tier.min) * checkedCount) / optionalItems.length
-      : tier.min;
-
-  const toggle = (i: number) => {
-    setChecked((prev) => prev.map((v, idx) => (idx === i ? !v : v)));
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 28, x: index === 0 ? -40 : index === 2 ? 40 : 0, scale: index === 1 ? 0.94 : 1 }}
@@ -54,75 +34,27 @@ export default function InteractiveTierCard({
       <span className="c3-tier-small relative">{tier.tagline}</span>
       <div className="c3-tier-large relative !text-lg">{tier.name}</div>
 
-      {/* The number itself is the live part — it's what changes as items get
-          checked, so it's kept visually apart from the static floor/ceiling
-          note below it rather than folded into one line the way the static
-          card's plain price string was. Same tier-glow-price treatment
-          /content's own cards use (see globals.css), just recoloured per
-          index into /ai's lime→emerald→teal family. */}
-      <div className="relative mt-1 flex items-baseline gap-1.5 tier-glow-price">
-        <span>
-          {tier.currency}
-          {formatPrice(price)}
-        </span>
-        <span className="text-xs font-normal text-paper/45">{tier.suffix}</span>
-      </div>
-      <div className="relative mt-0.5 text-[11px] text-paper/40">
-        {hasCeiling
-          ? `${tier.currency}${formatPrice(tier.min)}–${formatPrice(tier.max!)}${tier.suffix} по составу ниже`
-          : "точная сумма — по объёму, обсуждаем на аудите"}
-      </div>
+      {/* Same tier-glow-price treatment /content's own cards use (see
+          globals.css), recoloured per index into /ai's lime→emerald→teal
+          family — one static line now instead of a live number plus a
+          dimmed range note, matching how every other page's tier card
+          prints its price. */}
+      <div className="relative mt-1 font-semibold tier-glow-price">{tier.priceLabel}</div>
 
       <div className="c3-team relative mb-3">{tier.team}</div>
 
-      {/* Required items read exactly like the checked optional ones —
-          same check glyph, same line — so the list doesn't visually split
-          into two different kinds of row; only the disabled cursor and the
-          lack of a hover state give away that these can't be unchecked. */}
       <ul className="c3-list relative">
-        {tier.items
-          .filter((item) => item.required)
-          .map((item) => (
-            <li key={item.label} className="cursor-default opacity-90">
-              <span className="c3-check text-paper" />
-              {item.label}
-            </li>
-          ))}
-        {optionalItems.map((item, i) => (
+        {tier.items.map((item) => (
           <li key={item.label}>
-            <button
-              type="button"
-              onClick={() => toggle(i)}
-              aria-pressed={checked[i]}
-              className="flex w-full items-start gap-3 text-left"
-            >
-              <span
-                className="c3-check shrink-0 text-paper transition-colors"
-                style={{
-                  color: checked[i] ? undefined : "transparent",
-                  background: checked[i]
-                    ? undefined
-                    : "rgba(220,221,239,0.06)",
-                  outline: checked[i] ? undefined : "1px dashed rgba(220,221,239,0.25)",
-                  outlineOffset: -1,
-                }}
-              />
-              <span className={checked[i] ? "text-paper/85" : "text-paper/40 line-through decoration-paper/25"}>
-                {item.label}
-              </span>
-            </button>
+            <span className="c3-check text-paper" />
+            {item.label}
           </li>
         ))}
       </ul>
 
       <div className="relative mt-auto flex flex-col items-center gap-2 self-stretch">
-        {/* Same .btn-neon.btn-neon-breathe pill /content's own tier cards
-            use (see Close.tsx) — this was a flat rounded-none rectangle
-            before, the one place /ai's pricing read as a different button
-            family from every other page's. tier-glow-btn-{index} still adds
-            the same per-card hover glow /content's buttons pick up. */}
         <a
-          href="/brief"
+          href="/brief/ai"
           className={`btn-neon btn-neon-breathe w-[70%] justify-center !py-1 !text-[8px] !font-bold tier-glow-btn-${index}`}
         >
           Выбрать план
