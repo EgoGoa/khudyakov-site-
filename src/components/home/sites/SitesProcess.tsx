@@ -39,13 +39,23 @@ export default function SitesProcess() {
         columnClassName="lg:w-[44%]"
         title={
           <>
-            Как проходит
+            Как
+            <br />
+            {/* "проходит" alone still didn't fit the column at the exact
+                viewport width where the lg breakpoint's bigger heading
+                font meets its narrower lg column (~1024–1279px) — the box
+                itself, not the heading's own max-width, was the real
+                constraint there, so widening max-width alone (tried first)
+                did nothing. Scaling just this one word down 15% is what
+                actually keeps it on one line at that width without
+                touching "Как"/"работа" or any other heading on the site. */}
+            <span style={{ fontSize: "0.85em" }}>проходит</span>
             <br />
             <span className="kw">работа</span>
           </>
         }
         sub="Пять шагов от брифа до запуска — на каждом понятный результат и точка согласования."
-        primary={{ href: "/brief", label: "Заполнить бриф" }}
+        primary={{ href: "/brief/sites", label: "Заполнить бриф" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
         askCard={
           <>
@@ -54,7 +64,7 @@ export default function SitesProcess() {
               question="Отвечу по этапам быстрее, чем вы заполните бриф"
               pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
               actionLabel="Заполнить бриф"
-              href="/brief"
+              href="/brief/sites"
               compact
             />
             {/* /sites' second September offer — sits under Егор's card
@@ -77,7 +87,7 @@ export default function SitesProcess() {
                 subtitle="Несколько страниц: о компании, услуги, контакты — без раздутого бюджета."
                 price="96 000 ₽"
                 oldPrice="120 000 ₽"
-                href="/brief"
+                href="/brief/sites"
                 leadPrefill={{ format: "Сайт-визитка", wishes: "Акция сентября — от 120 000 до 96 000 ₽" }}
               />
             </div>

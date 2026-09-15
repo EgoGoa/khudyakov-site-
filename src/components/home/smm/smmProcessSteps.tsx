@@ -13,6 +13,11 @@ export const SMM_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M15.3 15.3 20 20" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🔍", label: "Аккаунт" },
+      { icon: "🏆", label: "Конкуренты" },
+      { icon: "📅", label: "План 90 дней" },
+    ],
   },
   {
     title: "Контент-план",
@@ -24,6 +29,11 @@ export const SMM_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M7.5 13.5h3M7.5 16.5h6" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🗓", label: "Публикации" },
+      { icon: "✅", label: "Согласование" },
+      { icon: "📤", label: "Месяц вперёд" },
+    ],
   },
   {
     title: "Съёмка и монтаж",
@@ -34,6 +44,11 @@ export const SMM_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M16 10.2 21 7.5v9L16 13.8" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🎥", label: "Reels" },
+      { icon: "📱", label: "Сторис" },
+      { icon: "🎞", label: "Карусели" },
+    ],
   },
   {
     title: "Публикация и продвижение",
@@ -43,6 +58,11 @@ export const SMM_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M4 12l16-8-6 16-3-6-7-2z" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "📤", label: "Публикация" },
+      { icon: "💬", label: "Комьюнити" },
+      { icon: "🎯", label: "Таргет" },
+    ],
   },
   {
     title: "Отчёт и корректировка",
@@ -53,5 +73,10 @@ export const SMM_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M3 19h18" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "📊", label: "Отчёт" },
+      { icon: "🔁", label: "Корректировка" },
+      { icon: "📅", label: "Раз в неделю" },
+    ],
   },
 ];

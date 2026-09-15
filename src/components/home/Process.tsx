@@ -7,6 +7,7 @@ import Appear from "@/components/ui/Appear";
 import PromoCard from "@/components/home/PromoCard";
 import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
+import { briefHrefFor } from "@/lib/brief";
 import { TEAM } from "@/lib/team";
 
 // Chapter 05 on /content (the deck position `index`/`chapter` default to).
@@ -26,7 +27,67 @@ import { TEAM } from "@/lib/team";
 // chapter header highlights correctly regardless of where it sits in a
 // different deck.
 
-export type ProcessStepItem = { title: string; description: string; icon: ReactNode };
+export type ProcessStepItem = {
+  title: string;
+  description: string;
+  icon: ReactNode;
+  /** 2–3 short sub-actions that make up this step, rendered as a small
+   *  looping "story" above the card text — see StepStory below. */
+  beats: { icon: string; label: string }[];
+};
+
+/** The top-of-card diagram: `beats` connect left-to-right with a drawing
+ *  line and close on a pulsing checkmark, staggered so each chip's own
+ *  ai-seq fade-in/hold/fade-out lands at a different point in the shared
+ *  5.6s loop — the same "one beat at a time" read as AiThumb's chat/text
+ *  shapes, just built from text+icon chips so it scales to every step on
+ *  every page's process chapter instead of needing bespoke SVG per step. */
+function StepStory({ beats }: { beats: ProcessStepItem["beats"] }) {
+  const stagger = 5.6 / (beats.length + 0.6);
+  return (
+    <div className="relative z-10 flex min-w-0 items-center justify-center gap-0.5">
+      {beats.map((beat, i) => (
+        <div key={beat.label} className="flex min-w-0 items-center gap-0.5">
+          {i > 0 && (
+            <span
+              className="step-story-line block h-px w-1.5 shrink-0 sm:w-2"
+              style={{
+                background: "var(--process-glow-border, rgba(255,255,255,0.4))",
+                animationDelay: `${i * stagger - 0.25}s`,
+              }}
+            />
+          )}
+          {/* px-1.5/gap-0.5/text-[6px], down from px-2/gap-1/text-[7px] — the
+              three chips plus connecting lines and the closing checkmark
+              were overflowing the card's own top panel at the original
+              size (worst case ~338px of content in a ~295px box, clipped
+              symmetrically on both edges since the row is centered) on
+              longer labels like "Раскадровка"/"Локации"/"Кастинг". Egor's
+              ask: nothing should overflow its own card, so this shrinks
+              until the widest real combination on the site fits. */}
+          <span
+            className="step-story-chip inline-flex min-w-0 items-center gap-0.5 rounded-full bg-white/[0.07] px-1.5 py-0.5 ring-1 ring-white/[0.12]"
+            style={{ animationDelay: `${i * stagger}s` }}
+          >
+            <span className="shrink-0 text-[9px] leading-none">{beat.icon}</span>
+            <span className="truncate font-display text-[6px] uppercase leading-none tracking-[0.04em] text-white/80">
+              {beat.label}
+            </span>
+          </span>
+        </div>
+      ))}
+      <span
+        className="step-story-check ml-0.5 grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full text-[6px] text-ink"
+        style={{
+          background: "var(--process-glow-border, rgba(52,211,153,0.9))",
+          animationDelay: `${beats.length * stagger}s`,
+        }}
+      >
+        ✓
+      </span>
+    </div>
+  );
+}
 
 export function StepIcon({ children }: { children: React.ReactNode }) {
   return (
@@ -53,67 +114,97 @@ const STEPS = [
   {
     title: "Разбор задачи",
     description:
-      "Бесплатный созвон: цель, аудитория, бюджет, ваши референсы — и почему они вам нравятся, это важнее самих ссылок. Дальше команда готовит 2–3 рабочие концепции со сценарной канвой и визуальным языком, чтобы вы увидели будущий ролик до того, как за него заплатите.",
+      "Бесплатный созвон: цель, аудитория, бюджет, референсы. Дальше — 2–3 концепции со сценарной канвой, чтобы вы увидели ролик до оплаты.",
     icon: (
       <StepIcon>
         <path d="M6 3.5h9l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
         <path d="M14 3.5V8h4M8 12.5h8M8 16h5" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🎯", label: "Цель" },
+      { icon: "👥", label: "Аудитория" },
+      { icon: "📋", label: "2–3 концепции" },
+    ],
   },
   {
     title: "Смета и договор",
     description:
-      "Фиксируем концепцию, смету по строкам и даты каждого этапа. Работа стартует после согласования договора и ТЗ — не раньше. Скрытых доплат нет: всё, что появится сверх сметы, обсуждается отдельно и до, а не после.",
+      "Фиксируем смету по строкам и даты каждого этапа. Работа стартует после договора и ТЗ. Скрытых доплат нет: всё сверх сметы — отдельно и до, не после.",
     icon: (
       <StepIcon>
         <path d="M4 20 15.5 8.5l3.8-3.8a1.4 1.4 0 0 1 2 2L17.5 10.5 6 22H4v-2z" />
         <path d="M13 10.5 17.5 15" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "📝", label: "Концепция" },
+      { icon: "💰", label: "Смета" },
+      { icon: "✍️", label: "Договор" },
+    ],
   },
   {
     title: "Подготовка к смене",
     description:
-      "Сценарий доводим до раскадровки, подбираем локации и реквизит, проводим кастинг актёров или дикторов. Постановочный план расписан по часам — чтобы съёмочный день шёл по нему, а не по импровизации, когда группа уже на площадке и час стоит денег.",
+      "Раскадровка, локации, реквизит, кастинг. Постановочный план расписан по часам — съёмочный день идёт по нему, не по импровизации на площадке.",
     icon: (
       <StepIcon>
         <rect x="3.5" y="4" width="17" height="16" rx="2" />
         <path d="M3.5 9.5h17M8 4v5.5M14.5 14h3" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🎬", label: "Раскадровка" },
+      { icon: "📍", label: "Локации" },
+      { icon: "🎭", label: "Кастинг" },
+    ],
   },
   {
     title: "Съёмочная смена",
     description:
-      "Снимаем по утверждённой раскадровке, свет и оборудование — под задачу кадра. Режиссёр и оператор держат каждый дубль. Вы или ваш представитель можете быть на площадке и видеть материал на плейбэке сразу, а не через неделю в черновом монтаже.",
+      "Снимаем по раскадровке, свет и оборудование — под задачу кадра. Вы можете быть на площадке и видеть материал на плейбэке сразу, не через неделю в монтаже.",
     icon: (
       <StepIcon>
         <rect x="3" y="7" width="13" height="11" rx="2" />
         <path d="M16 10.2 21 7.5v9L16 13.8" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🎥", label: "Съёмка" },
+      { icon: "💡", label: "Свет" },
+      { icon: "▶", label: "Плейбэк" },
+    ],
   },
   {
     title: "Монтаж и постпродакшн",
     description:
-      "Собираем ролик под ритм и посыл, добавляем 2D/3D-графику там, где она усиливает историю, а не заполняет паузы. Цветокоррекция, диктор, музыка, шумовой слой — сведение до уровня, на котором ролик не стыдно поставить рядом с федеральной рекламой.",
+      "Собираем ролик под ритм и посыл, добавляем графику, где она усиливает историю. Цветокоррекция, диктор, музыка — сведение до уровня федеральной рекламы.",
     icon: (
       <StepIcon>
         <rect x="3" y="4" width="18" height="16" rx="2" />
         <path d="M8 4v16M16 4v16M3 9.5h5M3 15h5M16 9.5h5M16 15h5" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "✂️", label: "Монтаж" },
+      { icon: "🎨", label: "Графика" },
+      { icon: "🎚", label: "Сведение" },
+    ],
   },
   {
     title: "Правки и передача",
     description:
-      "Показываем черновой монтаж, собираем правки — 2–3 круга входят в стоимость без доплат. После утверждения отдаём финальные файлы во всех нужных форматах и разрешениях: YouTube, соцсети, ТВ, наружная реклама. Исходники храним 3 месяца после сдачи — нужен архив дольше, прописываем это в договоре отдельным пунктом.",
+      "Показываем черновой монтаж, собираем правки — 2–3 круга включены в стоимость. Отдаём финальные файлы во всех форматах: YouTube, соцсети, ТВ, наружка.",
     icon: (
       <StepIcon>
         <path d="M20 6 9 17l-5-5" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "👁", label: "Черновик" },
+      { icon: "🔁", label: "Правки" },
+      { icon: "📦", label: "Финал" },
+    ],
   },
 ];
 
@@ -158,14 +249,31 @@ export default function Process({
             key={`${index}-${i}`}
             from="up"
             delay={BEAT.content + i * STAGGER.tight}
-            className="process-step-card rounded-2xl bg-ink/45 p-5 backdrop-blur-md"
+            className="process-step-card flex h-full flex-col overflow-hidden rounded-2xl bg-ink/45 backdrop-blur-md"
           >
-            {step.icon}
-            <h3 className="mt-3 font-display text-sm uppercase leading-tight tracking-tight text-white">
-              <span className="mr-1.5 text-orange">{String(i + 1).padStart(2, "0")}</span>
-              {step.title}
-            </h3>
-            <p className="mt-1.5 text-xs leading-snug text-paper/65">{step.description}</p>
+            {/* Top graphic: a looping, self-contained diagram rather than the
+                small corner badge this used to be — Egor's ask, same spirit
+                as the carousel decks (AiDeck etc.) where every card animates
+                on its own loop. Was a ghost step number + sweeping scan
+                light + pulse ring; now a small "story" of the step's own
+                sub-actions (see StepStory) so the top of the card actually
+                explains what happens in this step, not just decorates it.
+                The step's own icon badge used to sit above the story and
+                doubled its height for no extra information (the beat chips
+                already say what the step does) — Egor's ask: drop it, let
+                the story sit right under the border on its own, so six
+                cards read as compact rows again instead of pushing the
+                team/promo row below the fold. */}
+            <div className="process-step-visual relative flex h-14 shrink-0 items-center justify-center overflow-hidden border-b border-white/10 px-3">
+              <StepStory beats={step.beats} />
+            </div>
+            <div className="flex flex-1 flex-col p-5">
+              <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
+                <span className="mr-1.5 text-orange">{String(i + 1).padStart(2, "0")}</span>
+                {step.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-white/85">{step.description}</p>
+            </div>
           </Appear>
         ))}
       </div>
@@ -221,7 +329,7 @@ export default function Process({
               question="Создаю то, что снять камерой невозможно. На связи!"
               pitch="Отвечу быстрее, чем вы заполните бриф — вопросы по монтажу и срокам."
               actionLabel="Заполнить бриф"
-              href="/brief"
+              href={briefHrefFor(active)}
               compact
               glow={false}
               className="h-full"
@@ -242,29 +350,30 @@ export default function Process({
           </Appear>
         </div>
       ) : active === "ai" ? (
-        // /ai's second September offer — stacked under the team card rather
-        // than beside it (Egor's ask, same fix as /sites and /smm's
-        // matching chapters): a narrow side-by-side pair read cramped, so
-        // this is now one column, wider (max-w-md, was max-w-sm) with real
-        // gap between the two cards. Photo swapped for a stock shot actually
-        // showing AI-generated visuals (was the generic service-ai.jpg,
-        // Egor's ask, applied site-wide). Priced off the same real budget
-        // figure already published on this page's own portfolio chapter
-        // (AiPortfolio's "Личный бренд / Стартап" case — AI-generated promo
-        // content — "от 75 000 ₽") rather than the unrelated cheapest
-        // tariff: 75 000 → 60 000 ₽ at 20% off.
-        <div className="mt-5 lg:ml-auto lg:max-w-md">
-          <Appear from="up" delay={BEAT.cta}>
+        // Max's card sits beside the September offer, on the same plane,
+        // instead of stacked above it (Egor's ask) — the same side-by-side
+        // row /content's chapter already uses for its own team+promo
+        // pairing, just two columns since /ai only carries one team card
+        // here. Photo is a stock shot actually showing AI-generated
+        // visuals (was the generic service-ai.jpg, Egor's ask, applied
+        // site-wide). Priced off the same real budget figure already
+        // published on this page's own portfolio chapter (AiPortfolio's
+        // "Личный бренд / Стартап" case — AI-generated promo content —
+        // "от 75 000 ₽") rather than the unrelated cheapest tariff:
+        // 75 000 → 60 000 ₽ at 20% off.
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <Appear from="up" delay={BEAT.cta} className="h-full">
             <TeamAskCard
               member={processPerson}
               question="Отвечу по этапам быстрее, чем вы заполните бриф — прямо в переписке"
               pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
               actionLabel="Заполнить бриф"
-              href="/brief"
+              href={briefHrefFor(active)}
               compact
+              className="h-full"
             />
           </Appear>
-          <Appear from="up" delay={BEAT.cta} className="mt-8">
+          <Appear from="up" delay={BEAT.cta} className="h-full">
             <PromoCard
               image="/images/stock/hologram-laptop.webp"
               badge="Акция сентября"
@@ -272,7 +381,7 @@ export default function Process({
               subtitle="Контент под бренд без съёмочной группы: продуктовые ролики, аватары, визуалы для соцсетей."
               price="60 000 ₽"
               oldPrice="75 000 ₽"
-              href="/brief"
+              href={briefHrefFor(active)}
               leadPrefill={{ format: "AI-генерация видео и фото", wishes: "Акция сентября — пилот за 60 000 ₽ вместо 75 000 ₽" }}
             />
           </Appear>
@@ -284,7 +393,7 @@ export default function Process({
             question="Отвечу по этапам быстрее, чем вы заполните бриф — прямо в переписке"
             pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
             actionLabel="Заполнить бриф"
-            href="/brief"
+            href={briefHrefFor(active)}
             compact
             className="mt-5 lg:ml-auto lg:max-w-sm"
           />

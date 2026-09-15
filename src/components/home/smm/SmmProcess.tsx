@@ -63,7 +63,13 @@ export default function SmmProcess() {
         number="04"
         title={
           <>
-            Как проходит
+            Как
+            <br />
+            {/* Same fix as SitesProcess — see that file's comment. Widening
+                max-width alone (tried first) did nothing, because at this
+                breakpoint the column itself, not the heading's max-width,
+                was the actual constraint. */}
+            <span style={{ fontSize: "0.85em" }}>проходит</span>
             <br />
             <span className="kw">работа</span>
           </>
@@ -74,7 +80,7 @@ export default function SmmProcess() {
             результат и точка согласования.
           </>
         }
-        primary={{ href: "/brief", label: "Заполнить бриф" }}
+        primary={{ href: "/brief/smm", label: "Заполнить бриф" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
         askCard={
           <TeamAskCard

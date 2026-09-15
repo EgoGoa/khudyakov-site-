@@ -3435,6 +3435,84 @@ body {
   }
 }
 
+/* The looping diagram at the top of each Process step card. Was a ghost
+   step number + a sweeping scan light + a pulse ring — Egor's later call:
+   that read as decoration, not as a diagram, and on /ai the scan light
+   picked up --process-glow-ring's lime tint (rgba(200,241,105,...)), which
+   read as an ugly stray yellow bar rather than the page's own emerald.
+   Replaced by a small sequential "story": 2–3 labelled beats (the step's
+   own sub-actions, passed as `beats` on each ProcessStepItem) connect
+   left-to-right with a drawing line and close on a pulsing checkmark, all
+   inside one 5.6s loop that then repeats — same beat length and repeat
+   idea as AiDeck's per-shape diagrams, just built from short text+icon
+   chips instead of bespoke SVG so it scales to 22 steps across 4 pages.
+   --process-glow-* still carries each page's own accent (set per
+   `*-headings` class above), now driving the chip ring/line/checkmark
+   instead of the old scan gradient. */
+.process-step-visual {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 65%);
+}
+
+.step-story-chip {
+  animation: ai-seq 5.6s ease-in-out infinite both;
+}
+
+.step-story-line {
+  animation: ai-progress 5.6s ease-in-out infinite both;
+  transform-origin: left center;
+}
+
+.step-story-check {
+  animation: ai-seq 5.6s ease-in-out infinite both, ai-node 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-story-chip,
+  .step-story-line,
+  .step-story-check {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ── AiGuarantees' "условия и гарантии" infographic ────────────────────
+   Rebuilt after Egor saw the first pass ("немного не то") — the box now
+   retells the seven TERMS one at a time instead of running its own
+   separate abstract scene. One shared keyframe (`guar-slide`) at 28s
+   duration, staggered by `i * 4s` per term (Egor's second round: 2s read
+   as rushed, 4s gives each scene room for its own two-beat story) — the
+   same "one shape, offset by delay" trick ai-seq uses elsewhere — so all
+   seven slides (and their pagination dots, `guar-dot`) stay locked to a
+   single 4s-per-term timeline without needing seven bespoke keyframes.
+   The window width (1.5%–12.5% of the loop) is unchanged — it's still
+   1/7 of the total either way — only the total duration and per-slide
+   delay scaled from 14s/2s to 28s/4s. */
+@keyframes guar-slide {
+  0%, 100% { opacity: 0; transform: translateY(6px); }
+  1.5% { opacity: 1; transform: translateY(0); }
+  12.5% { opacity: 1; transform: translateY(0); }
+  14% { opacity: 0; transform: translateY(-4px); }
+}
+@keyframes guar-dot {
+  0%, 100% { background-color: rgba(255, 255, 255, 0.15); transform: scale(1); }
+  1.5%, 12.5% { background-color: #c8f169; transform: scale(1.35); }
+  14% { background-color: rgba(255, 255, 255, 0.15); transform: scale(1); }
+}
+
+.guar-term-slide { animation: guar-slide 28s ease-in-out infinite both; }
+.guar-dot { animation: guar-dot 28s ease-in-out infinite both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .guar-term-slide,
+  .guar-dot {
+    animation: none;
+  }
+  .guar-term-slide {
+    position: static;
+    opacity: 1;
+  }
+}
+
 @media (max-width: 1024px) {
   .c3-watermark-main {
     /* 3rem reads fine at tablet widths but a single long word like

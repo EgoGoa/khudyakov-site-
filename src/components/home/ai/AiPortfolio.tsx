@@ -164,35 +164,42 @@ export default function AiPortfolio() {
             key={s.title}
             from="up"
             delay={BEAT.content + idx * STAGGER.normal}
-            className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-paper/15 bg-ink-soft/60 p-5 sm:flex-row sm:items-stretch sm:gap-5 sm:p-6"
+            className="glass-panel relative flex flex-col gap-4 overflow-hidden rounded-2xl p-5 sm:flex-row sm:items-stretch sm:gap-5 sm:p-6"
           >
+            {/* Was a stock photo behind the whole card — Egor's call after
+                seeing it live: it blocked the page's own background reel
+                (CinematicStage) the same way the card's old opaque fill
+                did. Back to a plain frosted-glass tile (.glass-panel, the
+                same blurred surface the site's other windows use) so the
+                reel reads straight through. */}
             {/* Текст слева (~58%), живая схема инструмента справа (~42%) —
                 Егор: весь текст в одну колонку, а освободившееся место
                 отдать под инфографику конкретного инструмента, не под
                 общую картинку на все четыре карточки. */}
-            <div className="sm:w-[58%]">
+            <div className="relative sm:w-[58%]">
               <span className="font-display text-[10px] uppercase tracking-[0.12em] text-emerald-300">Пример · {s.format}</span>
-              <p className="mt-2 text-base font-medium leading-snug text-paper">{s.title}</p>
+              {/* Bold — Egor's ask: this line reads as the actual headline
+                  of the card and was getting lost at font-medium next to
+                  the bold eyebrow above it. */}
+              <p className="mt-2 text-base font-bold leading-snug text-paper">{s.title}</p>
               <p className="mt-2 text-sm leading-relaxed text-paper/60">{s.result}</p>
+              {/* Filled gradient pill + the same breathing glow AiDeck's own
+                  "Открыть инструмент" CTA uses (.ai-open-pulse) — Egor's
+                  ask: this button should read as the page's one CTA
+                  language, not the quiet outlined ghost link it was. */}
               <Link
-                href="/brief"
-                className="mt-4 inline-flex items-center gap-2 rounded-full border border-paper/20 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-paper/60 transition-colors hover:border-emerald-300/60 hover:text-emerald-300"
+                href="/brief/ai"
+                className="ai-open-pulse mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-3.5 py-1.5 font-display text-[11px] font-medium uppercase tracking-[0.08em] text-[#03120d] transition-[filter] duration-300 hover:brightness-110"
               >
                 Хочу так же
               </Link>
             </div>
-            <div className="sm:w-[42%]">
+            <div className="relative sm:w-[42%]">
               <PilotGraphic format={s.format} />
             </div>
           </Appear>
         ))}
       </div>
-
-      <Appear from="up" delay={BEAT.cta} className="mt-5">
-        <p className="text-xs text-paper/40">
-          Первые реальные AI-кейсы появятся здесь по мере запуска пилотов — заявки уже открыты.
-        </p>
-      </Appear>
     </CinematicSection>
   );
 }

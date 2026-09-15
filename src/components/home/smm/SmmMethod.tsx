@@ -108,7 +108,13 @@ export default function SmmMethod() {
           <>
             Не
             <br />
-            <span className="kw">подрядчик</span>
+            {/* "подрядчик" alone force-broke mid-word ("ПОДРЯДЧ"/"ИК") at
+                the same lg-breakpoint pinch as SitesProcess/SmmProcess's
+                "проходит" — same fix: scale just this word down, the box
+                itself (not max-width) is the real constraint there. */}
+            <span className="kw" style={{ fontSize: "0.72em" }}>
+              подрядчик
+            </span>
           </>
         }
         sub={
@@ -118,7 +124,7 @@ export default function SmmMethod() {
           </>
         }
         primary={{ href: "/smm/cases", label: "Смотреть кейсы" }}
-        secondary={{ href: "/brief", label: "Обсудить задачу" }}
+        secondary={{ href: "/brief/smm", label: "Обсудить задачу" }}
         askCard={
           <>
             <TeamAskCard
@@ -150,7 +156,7 @@ export default function SmmMethod() {
                 subtitle="Reels, сторис, карусели снимаем и монтируем сами."
                 price="36 000 ₽/мес"
                 oldPrice="45 000 ₽/мес"
-                href="/brief"
+                href="/brief/smm"
                 leadPrefill={{ format: "Съёмка и монтаж контента", wishes: "Акция сентября — от 45 000 до 36 000 ₽/мес" }}
               />
             </div>

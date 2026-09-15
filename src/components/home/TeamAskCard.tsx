@@ -48,6 +48,11 @@ export default function TeamAskCard({
    *  в одно окно. Задаются вместе — без одного из двух не рендерится. */
   secondaryHref,
   secondaryIcon,
+  /** Full-variant only: a tighter photo/heading/padding scale for slots
+   *  that don't have ConsultCard's full two-row-span height to work with
+   *  (e.g. AiGuarantees' Egor card, pinned to half a fixed-height column).
+   *  Default sizes stay untouched everywhere else. */
+  dense = false,
 }: {
   member: TeamMember;
   question: ReactNode;
@@ -60,6 +65,7 @@ export default function TeamAskCard({
   glow?: boolean;
   secondaryHref?: string;
   secondaryIcon?: ReactNode;
+  dense?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -140,7 +146,7 @@ export default function TeamAskCard({
     </div>
   ) : (
     <div
-      className={`team-ask-window group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-orange/20 via-ink/85 to-ink p-6 text-center sm:p-8 ${glow ? "consult-card-pulse" : ""} ${className}`}
+      className={`team-ask-window group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-orange/20 via-ink/85 to-ink text-center ${dense ? "p-5" : "p-6 sm:p-8"} ${glow ? "consult-card-pulse" : ""} ${className}`}
     >
       {backgroundImage && (
         <>
@@ -166,22 +172,36 @@ export default function TeamAskCard({
           DOM order (that's how CSS stacking works: positioned elements with
           z-index:auto always sit above non-positioned in-flow content). */}
       <div className="relative z-10">
-        <span className="relative mx-auto block h-24 w-24 sm:h-28 sm:w-28">
+        <span className={`relative mx-auto block ${dense ? "h-14 w-14" : "h-24 w-24 sm:h-28 sm:w-28"}`}>
           <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-4 ring-paper/95">
             <Image src={member.photo} alt={member.name} fill sizes="112px" className="object-cover" />
           </span>
         </span>
 
-        <p className="mt-3 font-display text-[13px] uppercase tracking-tight text-paper/70">
+        <p className={`font-display uppercase tracking-tight text-paper/70 ${dense ? "mt-2 text-[11px]" : "mt-3 text-[13px]"}`}>
           {member.name} <span className="text-paper/40">· {member.role}</span>
         </p>
 
-        <h3 className="mx-auto mt-3 max-w-sm font-display text-xl uppercase leading-[1.05] tracking-tight text-white sm:text-2xl">
+        <h3
+          className={`mx-auto font-display uppercase leading-[1.1] tracking-tight text-white ${
+            dense ? "mt-1.5 max-w-[22em] text-sm" : "mt-3 max-w-sm text-xl sm:text-2xl"
+          }`}
+        >
           {question}
         </h3>
-        <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-paper/70 sm:text-[15px]">{pitch}</p>
+        <p
+          className={`mx-auto max-w-sm leading-relaxed text-paper/70 ${
+            dense ? "mt-2 max-w-[24em] text-xs" : "mt-3 text-sm sm:text-[15px]"
+          }`}
+        >
+          {pitch}
+        </p>
 
-        <span className="btn-neon btn-warm mt-5 inline-flex transition group-hover:brightness-110">
+        <span
+          className={`btn-neon btn-warm inline-flex transition group-hover:brightness-110 ${
+            dense ? "mt-3 !px-4 !py-2 !text-[10px]" : "mt-5"
+          }`}
+        >
           {actionLabel} →
         </span>
       </div>

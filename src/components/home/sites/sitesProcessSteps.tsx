@@ -13,6 +13,11 @@ export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M14 3.5V8h4M8 12.5h8M8 16h5" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "📝", label: "Форма" },
+      { icon: "🏢", label: "Бизнес" },
+      { icon: "🎯", label: "Цели" },
+    ],
   },
   {
     title: "Концепция",
@@ -23,6 +28,11 @@ export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M12.5 7h8M7 15.5v5M4.5 20.5h5M12.5 12h8M12.5 17h5" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🗂", label: "Структура" },
+      { icon: "🎨", label: "Стиль" },
+      { icon: "✅", label: "Согласование" },
+    ],
   },
   {
     title: "Сборка",
@@ -33,6 +43,11 @@ export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M13.2 5.5l-2.4 13" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🤖", label: "AI-черновик" },
+      { icon: "🛠", label: "Доработка" },
+      { icon: "💻", label: "Код" },
+    ],
   },
   {
     title: "Правки",
@@ -43,6 +58,11 @@ export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M13 10.5 17.5 15" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "👁", label: "Просмотр" },
+      { icon: "🔁", label: "Итерации" },
+      { icon: "✅", label: "Готово" },
+    ],
   },
   {
     title: "Запуск",
@@ -53,5 +73,10 @@ export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
         <circle cx="12" cy="13" r="1.6" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "☁️", label: "Деплой" },
+      { icon: "🌐", label: "Домен" },
+      { icon: "🔑", label: "Передача" },
+    ],
   },
 ];

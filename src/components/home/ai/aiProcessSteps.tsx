@@ -17,6 +17,11 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M8.5 12l2.2 2.2 4.3-4.4" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "📊", label: "Продажи" },
+      { icon: "💬", label: "Контент" },
+      { icon: "🎯", label: "Узкое место" },
+    ],
   },
   {
     title: "Согласование пилота",
@@ -28,6 +33,11 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M8.5 13.5h7M8.5 17h4.5" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🎯", label: "Задача" },
+      { icon: "📈", label: "Метрика" },
+      { icon: "📝", label: "Договор" },
+    ],
   },
   {
     title: "Настройка и интеграция",
@@ -40,6 +50,11 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
         <rect x="16" y="3" width="5" height="5" rx="1.5" transform="rotate(-45 18.5 5.5)" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "⚙️", label: "Инструмент" },
+      { icon: "🔗", label: "CRM" },
+      { icon: "🌐", label: "Сайт" },
+    ],
   },
   {
     title: "Тест на реальных данных",
@@ -50,6 +65,11 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M3 19h18" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "📡", label: "Трафик" },
+      { icon: "📊", label: "Прогресс" },
+      { icon: "✅", label: "Проверка" },
+    ],
   },
   {
     title: "Запуск",
@@ -60,6 +80,11 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
         <circle cx="12" cy="13" r="1.6" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🚀", label: "Запуск" },
+      { icon: "📖", label: "Инструкция" },
+      { icon: "👥", label: "Команда" },
+    ],
   },
   {
     title: "Сопровождение",
@@ -70,5 +95,10 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
         <path d="M5.6 9.5A7 7 0 0 1 19 8.5M18.4 14.5A7 7 0 0 1 5 15.5" />
       </StepIcon>
     ),
+    beats: [
+      { icon: "🔧", label: "Донастройка" },
+      { icon: "📈", label: "Метрики" },
+      { icon: "🔁", label: "Расширение" },
+    ],
   },
 ];

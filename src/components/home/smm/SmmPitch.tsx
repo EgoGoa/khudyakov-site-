@@ -73,11 +73,20 @@ export default function SmmPitch() {
             {/* The explicit break is what puts "продакшена" on its own line as
                 the keyword; no automatic wrap does it at every step of the
                 responsive type scale, and the measure is in `em` so the shape
-                survives all of them. */}
+                survives all of them.
+                "продакшена" (10 letters) still didn't fit its own line at
+                the width around the lg breakpoint, where the column narrows
+                and the heading font jumps at the same time — `.font-display`'s
+                site-wide `overflow-wrap: break-word` then force-broke the
+                word itself ("ПРОДАКШ"/"ЕНА"). Scaling just this word down
+                keeps it on one line there without touching "SMM силами" or
+                any other heading's size. */}
             <h2 className="chapter-neon-violet mt-3 max-w-[6.7em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] lg:text-[3.6rem] xl:text-[4rem]">
               SMM силами
               <br />
-              <span className="kw">продакшена</span>
+              <span className="kw" style={{ fontSize: "0.72em" }}>
+                продакшена
+              </span>
             </h2>
           </Appear>
 
@@ -94,7 +103,7 @@ export default function SmmPitch() {
               question="Расскажу, что войдёт в пакет — съёмка, монтаж и ведение одной командой"
               pitch="Съёмка, монтаж и ведение — расскажу, что войдёт в ваш пакет и сколько это займёт."
               actionLabel="Обсудить формат"
-              href="/brief"
+              href="/brief/smm"
               compact
               className="mt-4"
             />
