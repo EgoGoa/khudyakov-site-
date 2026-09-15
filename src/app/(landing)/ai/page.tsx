@@ -13,7 +13,6 @@ import { AI_PROCESS_STEPS } from "@/components/home/ai/aiProcessSteps";
 import { AI_INTERACTIVE_TIERS } from "@/components/home/ai/aiPricingTiers";
 import Close from "@/components/home/Close";
 import { AI_SEO_SECTIONS } from "@/components/home/ai/aiSeoSections";
-import SeoLongRead from "@/components/home/shared/SeoLongRead";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -164,6 +163,8 @@ export default function AiServicePage() {
           intro={<>Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: <span className="kw">консультация, смета</span> и 2–3 концепции.</>}
           dense
           interactiveTiers={AI_INTERACTIVE_TIERS}
+          seoSections={AI_SEO_SECTIONS}
+          seoEyebrow="Подробнее о AI-решениях"
           titleClassName="text-[1.12rem] sm:text-[1.82rem] lg:text-[1.82rem] xl:text-[2.205rem]"
           // The cursor used to float in the header corner via `decor`,
           // unrelated to any particular piece of copy. Moved here instead —
@@ -194,8 +195,6 @@ export default function AiServicePage() {
         />
       </CinematicStage>
       </div>
-
-      <SeoLongRead eyebrow="Подробнее о AI-решениях" sections={AI_SEO_SECTIONS} />
     </ServiceProvider>
   );
 }

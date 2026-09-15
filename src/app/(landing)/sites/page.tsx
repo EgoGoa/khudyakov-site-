@@ -8,8 +8,6 @@ import SitesOffer from "@/components/home/sites/SitesOffer";
 import SitesProcess from "@/components/home/sites/SitesProcess";
 import SitesGuarantees from "@/components/home/sites/SitesGuarantees";
 import SitesClose from "@/components/home/sites/SitesClose";
-import SeoLongRead from "@/components/home/shared/SeoLongRead";
-import { SITES_SEO_SECTIONS } from "@/components/home/sites/sitesSeoSections";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
@@ -142,9 +140,6 @@ export default function SitesServicePage() {
         <SitesClose />
       </CinematicStage>
       </div>
-
-      <SeoLongRead eyebrow="Подробнее о сайтах на AI" sections={SITES_SEO_SECTIONS} />
-
     </ServiceProvider>
   );
 }

@@ -35,7 +35,115 @@ const SCENARIOS = [
     title: "Автоматическая квалификация лидов",
     result: "Пример пилота: горячие заявки — менеджеру сразу, остальные — в очередь на догрев.",
   },
-];
+] as const;
+
+/** Живой блок справа от текста — тот же приём, что несёт AiThumb в колоде
+ *  чуть выше по странице (те же .ai-a-* хуки из globals.css), но постоянно
+ *  в цикле: у этих четырёх карточек нет выбора «какая активна», так что
+ *  анимация не выключается ни у одной. Своя схема под каждый инструмент —
+ *  не переиспользованная картинка на все четыре формата. */
+function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"] }) {
+  const d = (s: number): React.CSSProperties => ({ animationDelay: `${s}s` });
+  const dot = (cls = "bg-emerald-300/80", extra = "") => <span className={`block h-1.5 w-1.5 shrink-0 rounded-full ${cls} ${extra}`} />;
+
+  return (
+    <div className="ai-thumb-live relative flex h-full min-h-[132px] w-full flex-col justify-center gap-2 overflow-hidden rounded-xl border border-paper/10 bg-paper/[0.03] p-3">
+      {format === "Чат-бот" && (
+        <>
+          {/* Директ и Telegram отвечают сами, пока менеджер занят — та же
+              переписка, что и в колоде, без счётчика "24/7": тут это уже
+              сказано текстом слева. */}
+          <div className="ai-a-seq flex items-start gap-1.5" style={d(0)}>
+            <span className="mt-0.5 block h-4 w-4 shrink-0 rounded-full bg-paper/15" />
+            <span className="block w-[70%] rounded-lg rounded-bl-sm bg-paper/10 p-1.5">
+              <span className="block h-1.5 w-[85%] rounded-[2px] bg-paper/22" />
+            </span>
+          </div>
+          <span className="ai-a-seq ml-auto flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-1.5 ring-1 ring-emerald-300/25" style={d(0.8)}>
+            {dot("bg-emerald-300", "ai-a-typing")}
+            {dot("bg-emerald-300", "ai-a-typing")}
+            {dot("bg-emerald-300", "ai-a-typing")}
+          </span>
+          <span
+            className="ai-a-seq ml-auto block w-[74%] rounded-lg rounded-br-sm bg-emerald-400/20 p-1.5 ring-1 ring-emerald-300/30"
+            style={d(1.5)}
+          >
+            <span className="block h-1.5 w-[80%] rounded-[2px] bg-emerald-200/60" />
+          </span>
+        </>
+      )}
+
+      {format === "Голосовой AI" && (
+        <>
+          {/* Запись на приём вечером — волна принимает звонок, затем слот в
+              расписании подсвечивается вне рабочих часов. */}
+          <span className="relative block h-9 w-full">
+            <span className="absolute inset-0 flex items-center justify-center gap-[3px]">
+              {[10, 22, 34, 44, 30, 40, 20, 14].map((h, i) => (
+                <span key={i} className="ai-a-wave block w-[3px] rounded-full bg-emerald-300" style={{ height: `${h}%`, ...d((i % 4) * 0.16) }} />
+              ))}
+            </span>
+          </span>
+          <div className="flex items-center gap-1.5">
+            {["Пн", "Вт", "Ср", "Чт"].map((day, i) => (
+              <span
+                key={day}
+                className={`grid h-5 w-5 place-items-center rounded-[3px] font-display text-[6px] ${i === 2 ? "ai-a-blink bg-emerald-400/30 text-emerald-100 ring-1 ring-emerald-300/40" : "bg-paper/[0.07] text-paper/40"}`}
+              >
+                {day}
+              </span>
+            ))}
+          </div>
+          <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(1.6)}>
+            <span aria-hidden="true">🕗</span>Ср, 21:40
+          </span>
+        </>
+      )}
+
+      {format === "AI-видео" && (
+        <>
+          {/* Рендер идёт без съёмочной группы: плеер играет, полоса кадров
+              бежит, и в конце цикла падает бейдж "готово". */}
+          <span className="relative block aspect-[16/10] w-full overflow-hidden rounded-md bg-[linear-gradient(135deg,rgba(52,211,153,0.4),rgba(0,210,255,0.22))]">
+            <span className="absolute inset-0 grid place-items-center">
+              <span className="ai-a-blink grid h-7 w-7 place-items-center rounded-full bg-ink/70 text-[8px] text-emerald-200 ring-1 ring-emerald-300/40">▶</span>
+            </span>
+          </span>
+          <div className="flex gap-1">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <span key={i} className={`ai-a-blink block h-3 flex-1 rounded-[2px] ${i === 2 ? "bg-emerald-400/45" : "bg-paper/[0.08]"}`} style={d(i * 0.25)} />
+            ))}
+          </div>
+          <span className="ai-a-node flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(1.8)}>
+            <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-emerald-300" />Креатив готов
+          </span>
+        </>
+      )}
+
+      {format === "AI в CRM" && (
+        <>
+          {/* Лид падает в воронку и сортируется сам — горячий поднимается в
+              колонку "менеджеру", остальные остаются ждать очереди. */}
+          <div className="grid grid-cols-2 gap-1.5">
+            <span className="grid gap-1 rounded-md bg-emerald-400/15 p-1.5 ring-1 ring-emerald-300/35">
+              <span className="block font-display text-[6px] uppercase tracking-[0.04em] text-emerald-200">Менеджеру</span>
+              <span className="ai-a-lift block h-5 rounded-[3px] bg-emerald-400/30 ring-1 ring-emerald-300/40" />
+            </span>
+            <span className="grid gap-1 rounded-md bg-paper/[0.06] p-1.5">
+              <span className="block font-display text-[6px] uppercase tracking-[0.04em] text-paper/35">На догрев</span>
+              <span className="block h-5 rounded-[3px] bg-paper/[0.08]" />
+              <span className="block h-5 rounded-[3px] bg-paper/[0.05]" />
+            </span>
+          </div>
+          <span className="ai-a-seq flex items-center gap-1.5" style={d(1.2)}>
+            <span className="ai-a-blink rounded-full bg-emerald-400/25 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-100 ring-1 ring-emerald-300/40">92</span>
+            <span className="font-display text-[6px] tracking-[0.04em] text-paper/45">score → горячий</span>
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function AiPortfolio() {
   return (
@@ -56,17 +164,26 @@ export default function AiPortfolio() {
             key={s.title}
             from="up"
             delay={BEAT.content + idx * STAGGER.normal}
-            className="relative overflow-hidden rounded-2xl border border-paper/15 bg-ink-soft/60 p-5 sm:p-6"
+            className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-paper/15 bg-ink-soft/60 p-5 sm:flex-row sm:items-stretch sm:gap-5 sm:p-6"
           >
-            <span className="font-display text-[10px] uppercase tracking-[0.12em] text-emerald-300">Пример · {s.format}</span>
-            <p className="mt-2 text-base font-medium leading-snug text-paper">{s.title}</p>
-            <p className="mt-2 text-sm leading-relaxed text-paper/60">{s.result}</p>
-            <Link
-              href="/brief"
-              className="mt-4 inline-flex items-center gap-2 rounded-full border border-paper/20 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-paper/60 transition-colors hover:border-emerald-300/60 hover:text-emerald-300"
-            >
-              Хочу так же
-            </Link>
+            {/* Текст слева (~58%), живая схема инструмента справа (~42%) —
+                Егор: весь текст в одну колонку, а освободившееся место
+                отдать под инфографику конкретного инструмента, не под
+                общую картинку на все четыре карточки. */}
+            <div className="sm:w-[58%]">
+              <span className="font-display text-[10px] uppercase tracking-[0.12em] text-emerald-300">Пример · {s.format}</span>
+              <p className="mt-2 text-base font-medium leading-snug text-paper">{s.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-paper/60">{s.result}</p>
+              <Link
+                href="/brief"
+                className="mt-4 inline-flex items-center gap-2 rounded-full border border-paper/20 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.08em] text-paper/60 transition-colors hover:border-emerald-300/60 hover:text-emerald-300"
+              >
+                Хочу так же
+              </Link>
+            </div>
+            <div className="sm:w-[42%]">
+              <PilotGraphic format={s.format} />
+            </div>
           </Appear>
         ))}
       </div>

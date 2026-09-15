@@ -116,14 +116,14 @@ export default function InteractiveTierCard({
       </ul>
 
       <div className="relative mt-auto flex flex-col items-center gap-2 self-stretch">
+        {/* Same .btn-neon.btn-neon-breathe pill /content's own tier cards
+            use (see Close.tsx) — this was a flat rounded-none rectangle
+            before, the one place /ai's pricing read as a different button
+            family from every other page's. tier-glow-btn-{index} still adds
+            the same per-card hover glow /content's buttons pick up. */}
         <a
           href="/brief"
-          // Emerald, not the site-wide orange — /ai's own accent, matching
-          // AI_PILL and the rest of the page's actions. tier-glow-btn-{index}
-          // adds the same per-card hover glow /content's own tier buttons
-          // pick up (see globals.css) — only tiers 0/2 have a rule since 1 is
-          // already emerald at rest.
-          className={`w-full rounded-none bg-emerald-400 px-8 py-2 text-center font-display text-xs uppercase tracking-[0.08em] text-[#03120d] transition hover:bg-emerald-300 tier-glow-btn-${index}`}
+          className={`btn-neon btn-neon-breathe w-[70%] justify-center !py-1 !text-[8px] !font-bold tier-glow-btn-${index}`}
         >
           Выбрать план
         </a>

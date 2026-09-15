@@ -133,19 +133,22 @@ function SiteThumb({ shape, image, animate = false }: { shape: Service["shape"];
 
   return (
     <div className="absolute inset-0 bg-[linear-gradient(160deg,#1b2030_0%,#0d0f16_58%,#0a0b10_100%)]">
-      {/* Themed photo, dimmed — Egor's ask, same treatment as /ai's cards. */}
+      {/* Themed photo — Egor's ask, raised twice now: 0.42 first pass, then
+          brighter still with the scrim behind it cut (raising the photo
+          alone didn't read as changed the first time on /ai either — the
+          scrim was still eating the extra light). Same values as AiThumb. */}
       <img
         src={image}
         alt=""
         aria-hidden="true"
         loading="lazy"
-        className="absolute inset-0 h-full w-full object-cover opacity-[0.42] [filter:grayscale(0.3)_contrast(1.05)]"
+        className="absolute inset-0 h-full w-full object-cover opacity-[0.85] [filter:grayscale(0.3)_contrast(1.05)]"
       />
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          background: "linear-gradient(165deg, rgba(15,18,28,0.74) 0%, rgba(10,11,16,0.87) 55%, rgba(10,11,16,0.95) 100%)",
+          background: "linear-gradient(165deg, rgba(15,18,28,0.5) 0%, rgba(10,11,16,0.6) 55%, rgba(10,11,16,0.7) 100%)",
         }}
       />
 
@@ -154,55 +157,92 @@ function SiteThumb({ shape, image, animate = false }: { shape: Service["shape"];
         <span className="h-1 w-1 rounded-full bg-paper/30" />
         <span className="h-1 w-1 rounded-full bg-paper/30" />
       </div>
-      <div className={`relative grid gap-1.5 p-2.5 ${animate ? "ai-thumb-live" : ""}`}>
-        <span className="block h-14 w-full rounded-[3px] bg-gradient-to-br from-glow/35 to-[#e85fa0]/30" />
-
+      {/* The static blue placeholder rectangle that used to sit above every
+          diagram is gone — Egor: it read the same on all five cards and
+          crowded out the part that's actually supposed to differ. Each
+          shape's own live graphic now fills that space too, so the whole
+          body of the card is the thing that tells formats apart. */}
+      <div className={`relative grid gap-2 p-3 pt-3.5 ${animate ? "ai-thumb-live" : ""}`}>
         {shape === "landing" && (
           <>
-            {/* Scroll runs down the page, the CTA blinks, then "Заявка ✓"
-                lands and holds — the visit that ends in a lead. */}
-            {line("70%", false, "ai-a-seq", d(0))}
-            {line("45%", false, "ai-a-seq", d(0.25))}
+            {/* A visit that ends in a lead: the page scrolls, a cursor
+                drifts down toward the button, the button blinks live, and
+                a lead card lands and holds. */}
+            <span className="block h-2.5 w-[62%] rounded-[3px] bg-paper/30 ai-a-seq" style={d(0)} />
+            {line("78%", false, "ai-a-seq", d(0.15))}
+            {line("50%", true, "ai-a-seq", d(0.3))}
             <span className="relative block h-1 w-full overflow-hidden rounded-full bg-paper/10">
               <span className="ai-a-progress absolute inset-0 origin-left rounded-full bg-glow/70" />
             </span>
-            {cta("ai-a-blink")}
-            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(1.9)}>
-              <span className="h-1 w-1 rounded-full bg-glow" />
-              Заявка ✓
+            <span className="relative flex items-center gap-2">
+              {cta("ai-a-blink")}
+              <span className="ai-a-lift block h-2.5 w-2.5 rounded-full bg-paper/70 ring-2 ring-glow/40" style={d(0.4)} />
+            </span>
+            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(2.1)}>
+              <span className="ai-a-blink block h-1 w-1 rounded-full bg-glow" />
+              Заявка
             </span>
           </>
         )}
 
         {shape === "pages" && (
           <>
-            {/* The site assembles itself, section by section — nav, three
-                blocks, footer, cta — then resets and builds again. */}
-            <div className="grid grid-cols-3 gap-1.5">
-              <span className="ai-a-seq block h-2.5 rounded-[2px] bg-paper/18" style={d(0)} />
-              <span className="ai-a-seq block h-2.5 rounded-[2px] bg-paper/18" style={d(0.2)} />
-              <span className="ai-a-seq block h-2.5 rounded-[2px] bg-paper/18" style={d(0.4)} />
+            {/* A visitor clicking between pages — the nav tabs light up one
+                at a time — while the "о компании" section and its contact
+                line build underneath. */}
+            <div className="flex items-center gap-1.5">
+              {["О нас", "Услуги", "Контакты"].map((label, i) => (
+                <span
+                  key={label}
+                  className="ai-a-blink rounded-[3px] bg-glow/15 px-1.5 py-0.5 font-display text-[6px] uppercase tracking-[0.08em] text-glow ring-1 ring-glow/25"
+                  style={d(i * 0.5)}
+                >
+                  {label}
+                </span>
+              ))}
             </div>
-            {line("60%", false, "ai-a-seq", d(0.6))}
-            {line("38%", true, "ai-a-seq", d(0.8))}
+            <div className="ai-a-seq flex items-center gap-1.5" style={d(0.2)}>
+              <span className="block h-5 w-5 shrink-0 rounded-full bg-gradient-to-br from-glow/40 to-[#e85fa0]/30" />
+              <div className="grid flex-1 gap-1">
+                {line("90%")}
+                {line("60%", true)}
+              </div>
+            </div>
+            <span className="ai-a-seq flex items-center gap-1.5" style={d(0.9)}>
+              <span className="block h-1.5 w-1.5 rounded-full bg-orange/70" />
+              {line("42%")}
+            </span>
             {cta("ai-a-seq")}
+            {/* Egor's ask: same detail level as /ai's cards — a closing
+                status, not just a build-up with no payoff. */}
+            <span className="ai-a-node flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(2.3)}>
+              <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-glow" />Найден в поиске
+            </span>
           </>
         )}
 
         {shape === "shop" && (
           <>
-            {/* Catalogue tiles light up in turn, then feed one line into the
-                CRM node — the structure that a single landing can't hold. */}
+            {/* Catalogue tiles light up in turn with price tags underneath,
+                then one line feeds down into the CRM node — the structure a
+                single landing can't hold. Egor's ask: a catalogue count up
+                top instead of the grid speaking for itself alone. */}
+            <span className="ai-a-seq block font-display text-[7px] uppercase tracking-[0.08em] text-paper/45" style={d(0)}>
+              Каталог · 24 товара
+            </span>
             <div className="grid grid-cols-4 gap-1.5">
               {[0, 1, 2, 3].map((i) => (
-                <span key={i} className="ai-a-blink block h-4 rounded-[3px] bg-glow/20 ring-1 ring-glow/25" style={d(i * 0.3)} />
+                <div key={i} className="grid gap-1">
+                  <span className="ai-a-blink block h-4 rounded-[3px] bg-glow/20 ring-1 ring-glow/25" style={d(i * 0.3)} />
+                  {i % 2 === 0 && <span className="ai-a-seq block h-1 w-full rounded-[1px] bg-orange/60" style={d(i * 0.3 + 0.15)} />}
+                </div>
               ))}
             </div>
-            <div className="relative h-3">
-              <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-glow/40" />
+            <div className="relative h-4">
+              <span className="ai-a-bar absolute left-1/2 top-0 h-4 w-px -translate-x-1/2 bg-glow/50" style={{ transformOrigin: "top center", ...d(0.6) }} />
             </div>
-            <span className="ai-a-seq mx-auto flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(1.4)}>
-              CRM
+            <span className="ai-a-node mx-auto flex w-fit items-center gap-1 rounded-full bg-glow/15 px-2 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(1.4)}>
+              Заявка → CRM
             </span>
             {cta()}
           </>
@@ -210,36 +250,61 @@ function SiteThumb({ shape, image, animate = false }: { shape: Service["shape"];
 
         {shape === "chat" && (
           <>
-            {/* A visitor's question answered before a manager would even
-                open the chat — same conversational beat as /ai's own bot
-                diagram, themed cyan for /sites. */}
-            <div className="ai-a-seq flex items-start gap-1.5" style={d(0)}>
+            {/* A question answered before a manager would even open the
+                chat: an "online" status, then the exchange itself, then the
+                reply-time badge that's the whole point of the format. */}
+            <span className="ai-a-seq flex items-center gap-1.5" style={d(0)}>
+              <span className="ai-a-blink block h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              <span className="font-display text-[7px] uppercase tracking-[0.1em] text-paper/50">Онлайн</span>
+            </span>
+            <div className="ai-a-seq flex items-start gap-1.5" style={d(0.2)}>
               <span className="mt-0.5 block h-4 w-4 shrink-0 rounded-full bg-paper/15" />
               <span className="block w-[70%] rounded-lg rounded-bl-sm bg-paper/10 p-1.5">{line("85%")}</span>
             </div>
-            <span className="ai-a-seq ml-auto flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-1 ring-1 ring-glow/30" style={d(0.7)}>
+            <span className="ai-a-seq ml-auto flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-1 ring-1 ring-glow/30" style={d(0.9)}>
               <span className="ai-a-typing block h-1 w-1 rounded-full bg-glow" style={d(0)} />
               <span className="ai-a-typing block h-1 w-1 rounded-full bg-glow" style={d(0.18)} />
               <span className="ai-a-typing block h-1 w-1 rounded-full bg-glow" style={d(0.36)} />
             </span>
-            <span className="ai-a-seq ml-auto block w-[72%] rounded-lg rounded-br-sm bg-glow/20 p-1.5 ring-1 ring-glow/30" style={d(1.3)}>
+            <span className="ai-a-seq ml-auto block w-[72%] rounded-lg rounded-br-sm bg-glow/20 p-1.5 ring-1 ring-glow/30" style={d(1.5)}>
               {line("60%")}
             </span>
-            {cta()}
+            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(2.2)}>
+              Ответ за 3 сек
+            </span>
           </>
         )}
 
         {shape === "redesign" && (
           <>
             {/* A before/after wipe: the dim old layout gives way to the lit
-                new one as the divider travels across, then resets. */}
+                new one as the divider travels across, labelled either side,
+                then resets. */}
+            <div className="flex items-center justify-between px-0.5 font-display text-[6px] uppercase tracking-[0.1em]">
+              <span className="text-paper/35">Было</span>
+              <span className="ai-a-blink text-glow">Стало</span>
+            </div>
             <div className="relative grid grid-cols-2 gap-1.5 overflow-hidden">
-              <span className="block h-5 rounded-[3px] bg-paper/10" />
-              <span className="block h-5 rounded-[3px] bg-gradient-to-br from-glow/35 to-transparent ring-1 ring-glow/25" />
+              <div className="grid gap-1">
+                <span className="block h-3.5 rounded-[3px] bg-paper/10" />
+                {line("70%", true)}
+              </div>
+              <div className="grid gap-1">
+                <span className="block h-3.5 rounded-[3px] bg-gradient-to-br from-glow/35 to-transparent ring-1 ring-glow/25" />
+                {line("70%")}
+              </div>
               <span className="ai-a-travel pointer-events-none absolute top-0 h-full w-px bg-glow/70" />
             </div>
-            {line("65%", false, "ai-a-seq", d(0.4))}
+            <span className="ai-a-seq flex items-center gap-1.5" style={d(0.5)}>
+              <span className="block h-1.5 w-1.5 rounded-full bg-glow/70" />
+              {line("55%")}
+            </span>
             {cta("ai-a-seq")}
+            {/* Egor's ask: close on the actual value, not just a wipe —
+                структура и позиции сохранены, а не просто «стало красивее». */}
+            <span className="ai-a-node flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(2.4)}>
+              <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-glow" />Позиции в поиске сохранены
+            </span>
           </>
         )}
       </div>

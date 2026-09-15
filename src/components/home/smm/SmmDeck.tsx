@@ -32,6 +32,11 @@ type Format = {
   now: string;
   /** Which phone-screen mockup to draw inside the card — see FormatThumb. */
   shape: "reels" | "stories" | "carousel" | "ads" | "bloggers";
+  /** Themed backdrop photo, held at low exposure behind the mockup — same
+   *  treatment as AiThumb (/ai) and SiteThumb (/sites). Each is the same
+   *  image that format's own page (smm-*.tsx) already opens on, so the
+   *  card previews the page it links to. */
+  image: string;
 };
 
 // Wording taken from lib/service-content.ts (servicesByCategory.smm) rather
@@ -46,6 +51,7 @@ const FORMATS: Format[] = [
     audience: "Брендам, у которых охваты в ленте просели, а в Reels ещё нет.",
     now: "Площадка отдаёт органический охват бесплатно, пока в него не зашли все конкуренты.",
     shape: "reels",
+    image: "/images/stock/smm-phone-bokeh.webp",
   },
   {
     id: "stories",
@@ -55,6 +61,7 @@ const FORMATS: Format[] = [
     audience: "Аккаунтам, где подписчики есть, а вовлечённость между постами проседает.",
     now: "Без ежедневного присутствия алгоритм и аудитория забывают об аккаунте за неделю.",
     shape: "stories",
+    image: "/images/stock/night-lights.webp",
   },
   {
     id: "carousel",
@@ -64,6 +71,7 @@ const FORMATS: Format[] = [
     audience: "Экспертам и брендам, которым есть что объяснить, а не только показать.",
     now: "Формат, который сохраняют и пересылают, приносит охват без рекламного бюджета.",
     shape: "carousel",
+    image: "/images/stock/dj-neon.webp",
   },
   {
     id: "ads",
@@ -73,6 +81,7 @@ const FORMATS: Format[] = [
     audience: "Брендам, которым органики уже недостаточно и нужен управляемый приток лидов.",
     now: "Каждая неделя без тестов — упущенные данные о том, какой креатив реально продаёт.",
     shape: "ads",
+    image: "/images/stock/brain-circuit.webp",
   },
   {
     id: "bloggers",
@@ -82,121 +91,238 @@ const FORMATS: Format[] = [
     audience: "Брендам, которым нужно доверие чужой аудитории, а не ещё один свой пост.",
     now: "Своя аудитория уже видела бренд — блогер приносит тех, кто о нём ещё не слышал.",
     shape: "bloggers",
+    image: "/images/stock/vr-neon-triangle.webp",
   },
 ];
 
-// The phone screen. One frame, one status strip, and the block rhythm of the
-// format inside it — enough to tell five cards apart at 150px wide without a
-// single downloaded byte.
-function FormatThumb({ shape }: { shape: Format["shape"] }) {
-  const bar = (w: string, dim = false) => (
-    <span
-      className={`block h-1.5 rounded-[2px] ${dim ? "bg-paper/12" : "bg-paper/22"}`}
-      style={{ width: w }}
-    />
+// The phone screen: a themed stock photo at low exposure behind the format's
+// own live diagram — same trick as AiThumb (/ai) and SiteThumb (/sites).
+// `animate` gates the loop via `.ai-thumb-live`, the same animation hook
+// those two pages already define in globals.css, reused rather than
+// duplicated a third time so all three decks share one motion system.
+function FormatThumb({ shape, image, animate = false }: { shape: Format["shape"]; image: string; animate?: boolean }) {
+  const bar = (w: string, dim = false, cls = "", style?: React.CSSProperties) => (
+    <span className={`block h-1.5 rounded-[2px] ${dim ? "bg-paper/12" : "bg-paper/22"} ${cls}`} style={{ width: w, ...style }} />
   );
+  const d = (s: number): React.CSSProperties => ({ animationDelay: `${s}s` });
 
   return (
     <div className="absolute inset-0 bg-gradient-to-br from-[#1d1730] to-[#0c0b14]">
+      {/* Themed photo — same raised-brightness recipe as AiThumb/SiteThumb:
+          the image itself bright, the scrim behind it cut down rather than
+          left to eat the extra light. */}
+      <img
+        src={image}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover opacity-[0.85] [filter:grayscale(0.25)_contrast(1.05)_saturate(1.1)]"
+      />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "linear-gradient(170deg, rgba(23,16,38,0.5) 0%, rgba(12,11,20,0.6) 55%, rgba(12,11,20,0.72) 100%)",
+        }}
+      />
+
       {/* Stories-style progress strip along the top — the one cue every
-          vertical-video surface shares, so it reads as "phone" instantly. */}
-      <div className="flex gap-1 px-2.5 pt-2.5">
+          vertical-video surface shares, so it reads as "phone" instantly.
+          Kept static on Egor's call; each format's own motion lives below
+          it rather than competing with this cue for attention. */}
+      <div className="relative flex gap-1 px-2.5 pt-2.5">
         <span className="h-[3px] flex-1 rounded-full bg-paper/55" />
         <span className="h-[3px] flex-1 rounded-full bg-paper/18" />
         <span className="h-[3px] flex-1 rounded-full bg-paper/18" />
       </div>
 
-      {shape === "reels" && (
-        <div className="relative mt-2.5 h-[150px]">
-          <span className="absolute inset-x-2.5 inset-y-0 rounded-[6px] bg-gradient-to-br from-[#a855f7]/40 via-[#6d3ff0]/25 to-[#38bdf8]/30" />
-          <span className="absolute left-1/2 top-1/2 grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/40 bg-black/25">
-            <span
-              className="block h-0 w-0 translate-x-[1px] border-y-[6px] border-l-[10px] border-y-transparent border-l-white/85"
-              aria-hidden="true"
-            />
-          </span>
-          <span className="absolute inset-x-3.5 bottom-2.5 grid gap-1">
-            {bar("80%")}
-            {bar("50%", true)}
-          </span>
-        </div>
-      )}
-
-      {shape === "stories" && (
-        <div className="mt-2.5 grid gap-1.5 px-2.5">
-          <span className="block h-[86px] rounded-[6px] bg-gradient-to-b from-[#38bdf8]/35 to-[#a855f7]/25" />
-          <div className="flex gap-1.5">
-            <span className="block h-9 flex-1 rounded-[5px] bg-paper/10" />
-            <span className="block h-9 flex-1 rounded-[5px] bg-paper/[0.07]" />
-          </div>
-          {bar("60%")}
-        </div>
-      )}
-
-      {shape === "carousel" && (
-        <div className="mt-2.5 px-2.5">
-          {/* The next card peeking off the right edge is the whole tell of a
-              carousel — a single flat panel would read as an ordinary post. */}
-          <div className="flex gap-1.5 overflow-hidden">
-            <span className="block h-[96px] w-[78%] shrink-0 rounded-[6px] bg-gradient-to-br from-[#a855f7]/35 to-[#38bdf8]/20" />
-            <span className="block h-[96px] w-[78%] shrink-0 rounded-[6px] bg-paper/10" />
-          </div>
-          <div className="mt-2 flex justify-center gap-1">
-            <span className="h-1 w-1 rounded-full bg-paper/70" />
-            <span className="h-1 w-1 rounded-full bg-paper/25" />
-            <span className="h-1 w-1 rounded-full bg-paper/25" />
-          </div>
-          <div className="mt-2 grid gap-1">
-            {bar("70%")}
-            {bar("45%", true)}
-          </div>
-        </div>
-      )}
-
-      {shape === "ads" && (
-        <div className="mt-2.5 px-2.5">
-          <span className="block font-display text-[7px] uppercase tracking-[0.14em] text-[#7dd3fc]">
-            Реклама
-          </span>
-          <span className="mt-1 block h-[74px] rounded-[6px] bg-gradient-to-br from-[#38bdf8]/35 to-[#a855f7]/20" />
-          <div className="mt-2 grid gap-1">
-            {bar("65%")}
-            {bar("40%", true)}
-          </div>
-          <span className="mt-2 block h-3.5 w-2/3 rounded-[3px] bg-gradient-to-r from-[#a855f7] to-[#38bdf8]" />
-        </div>
-      )}
-
-      {shape === "bloggers" && (
-        <div className="mt-2.5 px-2.5">
-          <div className="flex items-center gap-1.5">
-            <span className="h-5 w-5 rounded-full bg-gradient-to-br from-[#a855f7] to-[#38bdf8]" />
-            <span className="grid flex-1 gap-1">
-              {bar("70%")}
-              {bar("40%", true)}
+      <div className={`relative ${animate ? "ai-thumb-live" : ""}`}>
+        {shape === "reels" && (
+          <div className="relative mt-2.5 h-[150px]">
+            {/* No solid panel over the frame any more — Egor: it was
+                blocking the photo underneath. Everything here is a small
+                floating badge instead, so the picture reads through and
+                each badge is its own piece of infographic: duration, play
+                state, reach, an audio waveform, then the caption + scrubber
+                at the very bottom. */}
+            <span className="ai-a-seq absolute left-2.5 top-2 rounded-[3px] bg-ink/55 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-paper/85 backdrop-blur-sm" style={d(0)}>
+              0:15
+            </span>
+            <span className="ai-a-blink absolute left-1/2 top-[36%] grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/40 bg-black/25 backdrop-blur-sm">
+              <span className="block h-0 w-0 translate-x-[1px] border-y-[6px] border-l-[10px] border-y-transparent border-l-white/85" aria-hidden="true" />
+            </span>
+            <span className="ai-a-node absolute right-3 top-3 flex flex-col items-center gap-0.5" style={d(0.8)}>
+              <span className="font-display text-[11px] text-[#ff6a9a]">♥</span>
+              <span className="font-display text-[6px] tracking-[0.06em] text-paper/85">2.4K</span>
+            </span>
+            <span className="ai-a-seq absolute right-3 top-[58%] flex flex-col items-center gap-0.5" style={d(1.3)}>
+              <span className="font-display text-[10px] text-[#7dd3fc]">◉</span>
+              <span className="font-display text-[6px] tracking-[0.06em] text-paper/85">148K</span>
+            </span>
+            {/* A little audio waveform — the format's own reach cue,
+                distinct from every other card's graphic language. */}
+            <div className="absolute bottom-9 left-3 flex h-3 items-end gap-[2px]">
+              {[0.4, 0.8, 0.55, 1, 0.65].map((h, i) => (
+                <span key={i} className="ai-a-wave block w-[2px] rounded-full bg-[#a855f7]/80" style={{ height: `${h * 100}%`, ...d(i * 0.12) }} />
+              ))}
+            </div>
+            <span className="absolute inset-x-3 bottom-2.5 grid gap-1">
+              {bar("70%", false, "ai-a-seq", d(0))}
+              <span className="relative mt-0.5 block h-[3px] w-full overflow-hidden rounded-full bg-paper/15">
+                <span className="ai-a-progress absolute inset-0 origin-left rounded-full bg-gradient-to-r from-[#a855f7] to-[#38bdf8]" />
+              </span>
             </span>
           </div>
-          <span className="mt-2 block h-[74px] rounded-[6px] bg-paper/10" />
-          <div className="mt-2 flex items-center gap-2">
-            <span className="font-display text-[8px] text-[#f0a8ff]">♥</span>
-            {bar("45%", true)}
+        )}
+
+        {shape === "stories" && (
+          <div className="relative mt-2.5 h-[150px] px-2.5">
+            {/* Same fix: the two big panels are gone, replaced with more
+                infographic pieces — a viewer count, next-story bubbles, a
+                poll that gets tapped, a reaction popping off it. */}
+            <span className="ai-a-seq absolute left-2.5 top-1 flex items-center gap-1 rounded-[3px] bg-ink/55 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-paper/85 backdrop-blur-sm" style={d(0)}>
+              <span aria-hidden="true">👁</span>128
+            </span>
+            <div className="absolute right-2.5 top-0 flex -space-x-1.5">
+              {[0, 1].map((i) => (
+                <span key={i} className="ai-a-seq block h-4 w-4 rounded-full bg-gradient-to-br from-[#a855f7] to-[#38bdf8] ring-2 ring-[#0c0b14]" style={d(1.7 + i * 0.2)} />
+              ))}
+            </div>
+            <div className="ai-a-seq absolute inset-x-2.5 top-[46%] flex -translate-y-1/2 gap-1.5" style={d(0.3)}>
+              {/* A poll that actually gets voted on, not two static pills
+                  with one blinking for no reason (Egor's catch) — a tap
+                  lands on "Да", then both options reveal a result fill and
+                  their share, the way an IG poll sticker resolves. */}
+              <span className="relative flex-1 overflow-hidden rounded-[4px] bg-white/10 py-1 text-center font-display text-[6px] uppercase tracking-[0.06em] text-white ring-1 ring-white/25 backdrop-blur-sm">
+                {/* A real, fixed-width fill (not .ai-a-progress — that class
+                    always sweeps 0→100%, wrong for a result capped at 73%)
+                    that Egor's own poll settles on, revealed by the plain
+                    fade/hold/fade .ai-a-seq beat instead. */}
+                <span className="ai-a-seq absolute inset-y-0 left-0 bg-[#a855f7]/60" style={{ width: "73%", ...d(1.6) }} />
+                <span className="relative">Да · 73%</span>
+              </span>
+              <span className="relative flex-1 overflow-hidden rounded-[4px] bg-white/10 py-1 text-center font-display text-[6px] uppercase tracking-[0.06em] text-white ring-1 ring-white/25 backdrop-blur-sm">
+                <span className="ai-a-seq absolute inset-y-0 left-0 bg-[#38bdf8]/45" style={{ width: "27%", ...d(1.6) }} />
+                <span className="relative">Нет · 27%</span>
+              </span>
+              {/* The tap that triggers the reveal above — a fingertip rings
+                  outward on "Да" (ai-a-node's own breathing pulse read as a
+                  tap ripple), timed to land just before the result fills
+                  sweep in beneath both options. */}
+              <span className="ai-a-node pointer-events-none absolute left-[18%] top-1/2 h-3.5 w-3.5 -translate-y-1/2 rounded-full border border-white/70 bg-white/20" style={d(0.9)} />
+            </div>
+            <span className="ai-a-node absolute right-6 top-[62%] font-display text-[10px] text-[#ffe08a]" style={d(1.6)}>
+              ✨
+            </span>
+            <span className="absolute inset-x-2.5 bottom-2.5">{bar("55%")}</span>
           </div>
-        </div>
-      )}
+        )}
+
+        {shape === "carousel" && (
+          <div className="relative mt-2.5 h-[150px] px-2.5">
+            {/* The two filled panels are gone — a thin frame around each
+                slide now, so the photo carries the picture instead of a
+                flat colour block. A save icon and a "explains" icon do the
+                extra infographic work the panels used to fake. */}
+            <div className="relative flex h-[104px] gap-1.5 overflow-hidden">
+              <span className="rounded-[6px] border border-white/30 bg-white/[0.04]" style={{ width: "78%", flexShrink: 0 }} />
+              <span className="rounded-[6px] border border-white/12 bg-white/[0.02]" style={{ width: "78%", flexShrink: 0 }} />
+              <span className="ai-a-travel pointer-events-none absolute top-[52px] h-3.5 w-3.5 -translate-y-1/2 rounded-full bg-white/85 shadow-[0_0_10px_rgba(255,255,255,0.7)]" />
+              <span className="ai-a-node absolute left-2.5 top-2 flex items-center gap-1 rounded-[3px] bg-ink/55 px-1.5 py-0.5 font-display text-[9px] text-[#ffd27a] backdrop-blur-sm" style={d(1.5)}>
+                🔖
+              </span>
+              <span className="ai-a-seq absolute left-2.5 bottom-2 flex items-center gap-1 rounded-[3px] bg-ink/55 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-paper/85 backdrop-blur-sm" style={d(0.9)}>
+                <span aria-hidden="true">≡</span>объясняет
+              </span>
+            </div>
+            <div className="mt-2 flex justify-center gap-1">
+              {[0, 1, 2].map((i) => (
+                <span key={i} className="ai-a-blink h-1 w-1 rounded-full bg-paper/70" style={d(i * 0.4)} />
+              ))}
+            </div>
+            <div className="mt-1.5 grid gap-1">
+              {bar("70%", false, "ai-a-seq", d(0.4))}
+              {bar("45%", true, "ai-a-seq", d(0.6))}
+            </div>
+          </div>
+        )}
+
+        {shape === "ads" && (
+          <div className="relative mt-2.5 h-[150px] px-2.5">
+            {/* The hero panel is gone. A crosshair does the "targeting" work
+                instead, an A/B badge alternates between two creatives, and
+                the bar chart + reach counter carry the performance read. */}
+            <div className="flex items-center justify-between">
+              <span className="block font-display text-[7px] uppercase tracking-[0.14em] text-[#7dd3fc]">Реклама</span>
+              <span className="ai-a-seq flex items-center gap-1 font-display text-[7px] text-[#8affc1]" style={d(1.2)}>
+                <span aria-hidden="true">↑</span>охват
+              </span>
+            </div>
+            <div className="relative mt-3 flex h-14 items-center justify-center">
+              <span className="ai-a-node grid h-10 w-10 place-items-center rounded-full border border-[#a855f7]/50 font-display text-[13px] text-[#a855f7]" style={d(0.4)}>
+                ⌖
+              </span>
+              <span className="ai-a-seq absolute left-1/2 top-0 -translate-x-1/2 rounded-[3px] bg-ink/55 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-paper/85 backdrop-blur-sm" style={d(0)}>
+                A/B
+              </span>
+            </div>
+            <div className="mt-1 flex h-6 items-end gap-1">
+              {[0.4, 0.7, 0.5, 0.9, 0.65].map((h, i) => (
+                <span
+                  key={i}
+                  className="ai-a-bar block flex-1 rounded-[2px] bg-gradient-to-t from-[#a855f7] to-[#38bdf8]"
+                  style={{ height: `${h * 100}%`, transformOrigin: "bottom center", ...d(i * 0.18) }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {shape === "bloggers" && (
+          <div className="relative mt-2.5 h-[150px] px-2.5">
+            {/* The photo panel is gone. The avatar's live ring, a verified
+                tick, a follower count climbing and the reach badge now do
+                all the telling — more distinct pieces, none of them a flat
+                colour block hiding the picture. */}
+            <div className="flex items-center gap-1.5">
+              <span className="ai-a-node relative block h-6 w-6 shrink-0 rounded-full bg-gradient-to-br from-[#a855f7] to-[#38bdf8]">
+                <span className="absolute -inset-0.5 rounded-full ring-1 ring-[#a855f7]/50" />
+              </span>
+              <span className="grid flex-1 gap-1">
+                {bar("62%")}
+                {bar("36%", true)}
+              </span>
+              <span className="ai-a-blink block h-1.5 w-1.5 shrink-0 rounded-full bg-[#38bdf8]" aria-hidden="true" />
+            </div>
+            <span className="ai-a-seq mt-3 flex w-fit items-center gap-1 rounded-full bg-ink/55 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-paper/85 backdrop-blur-sm" style={d(0.6)}>
+              Reels · интеграция
+            </span>
+            <div className="mt-8 flex items-center gap-2">
+              <span className="ai-a-node font-display text-[8px] text-[#f0a8ff]" style={d(0.5)}>♥</span>
+              {bar("40%", true)}
+              <span className="ai-a-seq ml-auto flex items-center gap-1 rounded-full bg-[#a855f7]/20 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-[#e4c8ff] ring-1 ring-[#a855f7]/35" style={d(2.2)}>
+                <span aria-hidden="true">↑</span>+2.4К охват
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 // One entry per signed distance from the centre card. Nothing beyond ±2 is
 // drawn — a sixth card would sit past the container's edge and only ever be a
-// sliver. The x-offsets are tighter than /sites' (105/185 against 122/214)
-// because these cards are 150px wide rather than 188.
+// sliver. Egor's call: the front card grows 30% (1 → 1.3), the immediate
+// neighbours shrink a bit further than before (0.85 → 0.74), and the outer
+// pair shrink further still (0.7 → 0.54) — one continuous depth step rather
+// than "big card, then two flat sizes".
 const FAN: Record<number, { x: number; y: number; scale: number; opacity: number; blur: number; z: number }> = {
-  [-2]: { x: -186, y: 26, scale: 0.7, opacity: 0.45, blur: 1.4, z: 10 },
-  [-1]: { x: -106, y: 10, scale: 0.85, opacity: 0.78, blur: 0.4, z: 20 },
-  [0]: { x: 0, y: -8, scale: 1, opacity: 1, blur: 0, z: 30 },
-  [1]: { x: 106, y: 10, scale: 0.85, opacity: 0.78, blur: 0.4, z: 20 },
-  [2]: { x: 186, y: 26, scale: 0.7, opacity: 0.45, blur: 1.4, z: 10 },
+  [-2]: { x: -204, y: 30, scale: 0.54, opacity: 0.42, blur: 1.4, z: 10 },
+  [-1]: { x: -118, y: 12, scale: 0.74, opacity: 0.76, blur: 0.4, z: 20 },
+  [0]: { x: 0, y: -10, scale: 1.3, opacity: 1, blur: 0, z: 30 },
+  [1]: { x: 118, y: 12, scale: 0.74, opacity: 0.76, blur: 0.4, z: 20 },
+  [2]: { x: 204, y: 30, scale: 0.54, opacity: 0.42, blur: 1.4, z: 10 },
 };
 
 const CARD_SHELL =
@@ -233,8 +359,9 @@ export default function SmmDeck() {
   return (
     <div className="w-full max-w-[560px]">
       {/* Fixed height so the chapter's layout doesn't shift as the description
-          under it changes length. */}
-      <div className="relative h-[300px]">
+          under it changes length — grown from 300 to fit the front card's
+          new +30% size (250px tall × 1.3 = 325px) plus its upward y-nudge. */}
+      <div className="relative h-[360px]">
         {FORMATS.map((format, i) => {
           // Signed, wrapped distance from the active card: -2..+2, so the last
           // card sits to the *left* of the first rather than looping the long
@@ -257,13 +384,22 @@ export default function SmmDeck() {
                   background: "linear-gradient(180deg, rgba(11,11,16,0) 0%, rgba(11,11,16,0.92) 70%)",
                 }}
               />
-              <span className="absolute inset-x-3.5 bottom-4 block">
+              <span className="absolute inset-x-3.5 bottom-4 flex flex-col items-start gap-2">
                 <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
                   {format.name}
                 </span>
-                <span className="mt-1.5 block font-display text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
+                <span className="block font-display text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
                   {format.meta}
                 </span>
+                {/* Same pattern as /ai and /sites: a small, pulsing pill
+                    living on the card itself instead of a separate button
+                    below the deck. */}
+                {hasPage && (
+                  <span className="smm-open-pulse inline-flex items-center gap-1.5 rounded-full bg-gradient-to-b from-[#c084fc] to-[#7e22ce] px-3 py-1.5 font-display text-[8px] font-semibold uppercase tracking-[0.14em] text-[#1a0a2a] motion-reduce:animate-none">
+                    Подробнее
+                    <span aria-hidden="true">→</span>
+                  </span>
+                )}
               </span>
               <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
                 {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
@@ -310,7 +446,7 @@ export default function SmmDeck() {
                   className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL}`}
                   style={CARD_GLOW_STYLE}
                 >
-                  <FormatThumb shape={format.shape} />
+                  <FormatThumb shape={format.shape} image={format.image} animate />
                   {caption}
                 </Link>
               ) : (
@@ -324,7 +460,7 @@ export default function SmmDeck() {
                     isFront ? "cursor-default" : "cursor-pointer"
                   }`}
                 >
-                  <FormatThumb shape={format.shape} />
+                  <FormatThumb shape={format.shape} image={format.image} animate={isFront} />
                   {isFront && caption}
                 </button>
               )}

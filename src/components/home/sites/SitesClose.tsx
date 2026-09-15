@@ -3,11 +3,13 @@
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT } from "@/lib/motion";
+import { BEAT, STAGGER } from "@/lib/motion";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import { pricingByCategory } from "@/lib/service-content";
 import TeamRow from "@/components/home/TeamRow";
 import { PAGE_TEAM } from "@/lib/team";
+import SeoAccordion from "@/components/ui/SeoAccordion";
+import { SITES_SEO_SECTIONS } from "@/components/home/sites/sitesSeoSections";
 
 // Chapter 06 of /sites — the closing chapter: three price tiers and the last
 // call to action.
@@ -16,8 +18,11 @@ import { PAGE_TEAM } from "@/lib/team";
 // carry its own style without moving /ai, /smm and /content with it. The
 // tiers are the same pricingByCategory.sites data.
 //
-// The search-facing long read that used to close this chapter now follows the
-// whole deck instead — see shared/SeoLongRead for why it left.
+// The search-facing long read used to follow the whole deck as its own flat
+// black section (see shared/SeoLongRead). Egor: that read as a slab
+// disconnected from the page — same call he already made for /smm. It's
+// back inside this chapter now, under "Начать проект", on the same pinned
+// frame as the tier cards.
 //
 // This chapter is the one exception to the page's two-column skeleton
 // (SitesChapterLayout). It was built that way first and Egor sent it back:
@@ -136,6 +141,12 @@ export default function SitesClose() {
               <path d="M7 17 17 7M9 7h8v8" />
             </svg>
           </Link>
+        </div>
+      </Appear>
+
+      <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
+        <div className="mx-auto mt-10 w-full max-w-3xl [@media(max-height:860px)]:hidden">
+          <SeoAccordion eyebrow="Подробнее о сайтах на AI" sections={SITES_SEO_SECTIONS} />
         </div>
       </Appear>
     </CinematicSection>

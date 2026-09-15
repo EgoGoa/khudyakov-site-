@@ -147,14 +147,12 @@ export default function Close({
                 transition={{ duration: 0.8, delay: BEAT.content + i * STAGGER.normal, ease: EASE }}
                 className={`c3-card !min-h-0 !rounded-3xl ${spacious ? "!p-5 c3-card-compact" : "!p-6"} ${
                   dense ? "c3-card-dense" : ""
-                } ${tier.pro ? "c3-card-pro" : ""} ${active === "content" ? `tier-glow-${i}` : ""}`}
+                } ${tier.pro ? "c3-card-pro" : ""} tier-glow-${i}`}
               >
                 <span className="c3-tier-small relative">{tier.tagline}</span>
                 <div className={`c3-tier-large relative ${dense ? "!text-lg" : "!text-2xl"}`}>{tier.name}</div>
                 <div
-                  className={`relative font-semibold text-paper ${
-                    active === "content" ? "tier-glow-price" : "mt-2"
-                  } ${dense ? "text-xs" : "text-base"}`}
+                  className={`relative font-semibold text-paper tier-glow-price ${dense ? "text-xs" : "text-base"}`}
                 >
                   {tier.price}
                 </div>
@@ -178,23 +176,22 @@ export default function Close({
                 )}
 
                 <div className="relative mt-auto flex flex-col items-center gap-2 self-stretch">
+                  {/* Every tier's button — pro included, on every page that
+                      renders through this shared component — reads as one
+                      family: same .btn-neon pill, same font, same glow
+                      mechanic, no separate plain "bg-paper" style. Egor's
+                      ask: this used to be /content-only (`active ===
+                      "content"`), so /ai's own closing chapter showed a flat
+                      white pill while its own tool sub-pages (PricingBlock)
+                      already used this exact neon treatment — same fix
+                      unifies both. btn-neon-breathe adds the inviting "мы на
+                      связи" pulse on top, scoped to pricing + closing
+                      buttons rather than the site-wide default. */}
                   <a
                     href="/brief"
-                    className={
-                      active === "content"
-                        ? // Every tier's button — pro included — reads as one
-                          // family now: same .btn-neon pill, same font, same
-                          // glow mechanic, no separate solid-fill "pro" style.
-                          // btn-neon-breathe adds the inviting "мы на связи"
-                          // pulse on top, scoped to this page's own pricing +
-                          // closing buttons rather than the site-wide default.
-                          `btn-neon btn-neon-breathe w-[70%] justify-center !font-bold tier-glow-btn-${i} ${
-                            dense ? "!py-1 !text-[8px]" : "!py-1.5 !text-[10px]"
-                          }`
-                        : `w-full rounded-full px-8 text-center font-semibold transition bg-paper text-ink hover:bg-white ${
-                            dense ? "py-2 text-xs" : "py-2.5 text-sm"
-                          }`
-                    }
+                    className={`btn-neon btn-neon-breathe w-[70%] justify-center !font-bold tier-glow-btn-${i} ${
+                      dense ? "!py-1 !text-[8px]" : "!py-1.5 !text-[10px]"
+                    }`}
                   >
                     Выбрать план
                   </a>
@@ -208,20 +205,6 @@ export default function Close({
             ))
           )}
         </div>
-        )}
-
-        {/* A closing line in the same type the chapter titles use. The line
-            itself is the next step now — no separate button underneath it —
-            so the cursor icon (when passed via `ctaIcon`) sits right beside
-            it, and clicking anywhere on the words goes to /brief. `inline-
-            flex` rather than an absolutely positioned icon: the icon has to
-            stay pinned to this exact piece of text at every viewport width,
-            and normal flow next to it is the only positioning that can't
-            drift off it as the text reflows or resizes. */}
-        {seoSections && seoSections.length > 0 && (
-          <Appear from="up" delay={BEAT.content}>
-            <SeoAccordion eyebrow={seoEyebrow ?? "Подробнее"} sections={seoSections} />
-          </Appear>
         )}
 
         {/* Real people instead of a faceless "оставьте заявку" — Egor's ask.
@@ -259,6 +242,21 @@ export default function Close({
             </Link>
           </div>
         </Appear>
+
+        {/* The search-facing long read, last — Egor's ask: same block, same
+            pinned frame as the tier cards and team row above it (this is
+            the shared component's own version of what SmmClose already
+            does), not a separate flat-black section further down the page.
+            Hidden on short viewports for the same reason TeamRow is: the
+            chapter is tuned to fit one screen, and a collapsed accordion
+            nobody has scrolled to yet is the safest thing to drop first. */}
+        {seoSections && seoSections.length > 0 && (
+          <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
+            <div className="mx-auto mt-10 w-full max-w-3xl [@media(max-height:860px)]:hidden">
+              <SeoAccordion eyebrow={seoEyebrow ?? "Подробнее"} sections={seoSections} />
+            </div>
+          </Appear>
+        )}
       </>
     </CinematicSection>
   );

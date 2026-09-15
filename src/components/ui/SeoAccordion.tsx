@@ -32,7 +32,16 @@ export default function SeoAccordion({
     // is the first thing asked to give room back, before any of the copy a
     // visitor is actually looking at. Nothing is dropped: the rows just sit
     // closer together.
-    <div className="mx-auto mt-5 w-full max-w-4xl rounded-2xl bg-ink/45 px-4 py-2.5 backdrop-blur-md sm:px-5 [@media(max-height:860px)]:mt-3 [@media(max-height:860px)]:py-1.5">
+    //
+    // Same glass recipe as .c3-card (the tier cards sitting right above this
+    // block) rather than a solid bg-ink/45 fill — Egor: the old flat dark
+    // panel read as its own separate section instead of the next few rows
+    // under the same pricing block. A light translucent gradient + hairline
+    // border keeps the footage visible through it, same as the cards do.
+    <div
+      className="mx-auto mt-5 w-full max-w-4xl rounded-2xl border border-white/[0.14] px-4 py-2.5 backdrop-blur-[5px] sm:px-5 [@media(max-height:860px)]:mt-3 [@media(max-height:860px)]:py-1.5"
+      style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015))" }}
+    >
       <span className="font-display text-[9px] uppercase tracking-[0.2em] text-paper/45">
         {eyebrow}
       </span>

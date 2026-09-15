@@ -131,16 +131,23 @@ function AiThumb({
         alt=""
         aria-hidden="true"
         loading="lazy"
-        // Raised twice on Егор's call: 0.34 → 0.41 (+20%) → 0.53 (+30%).
-        // The scrim below still carries the diagram's contrast.
-        className="absolute inset-0 h-full w-full object-cover opacity-[0.53] [filter:grayscale(0.35)_contrast(1.05)]"
+        // Raised four times on Egor's call: 0.34 → 0.41 (+20%) → 0.53
+        // (+30%) → 0.74 (+40%, didn't read as changed — the scrim below was
+        // still eating the extra light) → 0.9 with the scrim itself cut, see
+        // below.
+        className="absolute inset-0 h-full w-full object-cover opacity-[0.9] [filter:grayscale(0.3)_contrast(1.05)]"
       />
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
+          // Cut roughly a third off every stop — raising the photo's own
+          // opacity alone did nothing visible, because this scrim was still
+          // blocking the same amount of light on top of it. Still dark
+          // enough at the bottom for the caption text; noticeably lighter
+          // everywhere else.
           background:
-            "linear-gradient(165deg, rgba(12,22,19,0.72) 0%, rgba(10,13,16,0.86) 55%, rgba(10,13,16,0.94) 100%)",
+            "linear-gradient(165deg, rgba(12,22,19,0.48) 0%, rgba(10,13,16,0.58) 55%, rgba(10,13,16,0.68) 100%)",
         }}
       />
 
@@ -155,10 +162,23 @@ function AiThumb({
       <div className={`relative grid gap-2 p-3.5 pt-4 ${animate ? "ai-thumb-live" : ""}`}>
         {shape === "video" && (
           <>
-            {/* A clip playing: the ▶ blinks, the scrubber runs start to end
-                over the beat, and the keyframe strip flickers frame by frame
-                as the playhead passes it. */}
-            <span className="relative block aspect-[16/10] w-full overflow-hidden rounded-md bg-[linear-gradient(135deg,rgba(52,211,153,0.45),rgba(0,210,255,0.25))]">
+            {/* Egor's ask: more detail, clearer meaning. A format switcher
+                up top (video → photo → avatar — the three things the fact
+                panel names) says this isn't just "a clip", then the render
+                itself, and an export badge that lands once the scrubber
+                finishes — the "no shoot needed" payoff. */}
+            <div className="flex items-center gap-1">
+              {["Видео", "Фото", "Аватар"].map((label, i) => (
+                <span
+                  key={label}
+                  className="ai-a-blink rounded-[3px] bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] uppercase tracking-[0.08em] text-emerald-200 ring-1 ring-emerald-300/30"
+                  style={d(i * 0.6)}
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+            <span className="relative mt-1 block aspect-[16/10] w-full overflow-hidden rounded-md bg-[linear-gradient(135deg,rgba(52,211,153,0.45),rgba(0,210,255,0.25))]">
               <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-[3px] bg-ink/60 px-1.5 py-0.5 font-display text-[7px] tracking-[0.12em] text-emerald-100/90">
                 <span className="ai-a-blink block h-1 w-1 rounded-full bg-[#ff6a3d]" />
                 4K
@@ -187,57 +207,76 @@ function AiThumb({
                 />
               ))}
             </div>
-            {bar("62%", true)}
+            <div className="flex items-center gap-1.5">
+              {bar("48%", true)}
+              <span className="ai-a-node ml-auto flex w-fit items-center gap-1 rounded-full bg-emerald-400/20 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/35" style={d(2.4)}>
+                <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-emerald-300" />Экспорт
+              </span>
+            </div>
           </>
         )}
         {shape === "chat" && (
           <>
-            {/* A conversation happening: the client writes, the agent
-                answers, the client writes again, then the agent starts
-                typing — and the whole thread clears and replays. */}
-            <div className="ai-a-seq flex items-start gap-1.5" style={d(0)}>
+            {/* Egor's ask: more detail. A 24/7 tag says the bot never
+                sleeps, and the exchange now closes on a qualification
+                badge — "лид: тёплый" — the part that actually says "sales",
+                not just "a chat happened". */}
+            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-paper/[0.08] px-1.5 py-0.5 font-display text-[7px] tracking-[0.08em] text-paper/60" style={d(0)}>
+              <span className="h-1 w-1 rounded-full bg-emerald-300" />24/7
+            </span>
+            <div className="ai-a-seq flex items-start gap-1.5" style={d(0.15)}>
               <span className="mt-0.5 block h-4 w-4 shrink-0 rounded-full bg-paper/15" />
               <span className="block w-[72%] rounded-lg rounded-bl-sm bg-paper/10 p-2">{bar("90%")}</span>
             </div>
             <span
               className="ai-a-seq ml-auto block w-[74%] rounded-lg rounded-br-sm bg-emerald-400/20 p-2 ring-1 ring-emerald-300/30"
-              style={d(0.7)}
+              style={d(0.8)}
             >
               {bar("78%")}
               <span className="mt-1 block h-1.5 w-[52%] rounded-[2px] bg-paper/20" />
             </span>
-            <div className="ai-a-seq flex items-start gap-1.5" style={d(1.4)}>
+            <div className="ai-a-seq flex items-start gap-1.5" style={d(1.5)}>
               <span className="mt-0.5 block h-4 w-4 shrink-0 rounded-full bg-paper/15" />
               <span className="block w-[56%] rounded-lg rounded-bl-sm bg-paper/10 p-2">{bar("80%", true)}</span>
             </div>
-            <span
-              className="ai-a-seq ml-auto flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-1.5 ring-1 ring-emerald-300/25"
-              style={d(2.1)}
-            >
-              {dot("bg-emerald-300", "ai-a-typing", d(0))}
-              {dot("bg-emerald-300", "ai-a-typing", d(0.18))}
-              {dot("bg-emerald-300", "ai-a-typing", d(0.36))}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span
+                className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-1.5 ring-1 ring-emerald-300/25"
+                style={d(2.2)}
+              >
+                {dot("bg-emerald-300", "ai-a-typing", d(0))}
+                {dot("bg-emerald-300", "ai-a-typing", d(0.18))}
+                {dot("bg-emerald-300", "ai-a-typing", d(0.36))}
+              </span>
+              <span className="ai-a-node ml-auto flex w-fit items-center gap-1 rounded-full bg-[#ff6a3d]/20 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-[#ffb08a] ring-1 ring-[#ff6a3d]/35" style={d(2.6)}>
+                <span aria-hidden="true">🔥</span>Лид: тёплый
+              </span>
+            </div>
           </>
         )}
         {shape === "flow" && (
           <>
-            {/* The stream walks down the filter row by row: inbound, then
-                the split into passed / held, then only the passed branch
-                arriving at the bottom. */}
-            <span className="ai-a-seq flex items-center gap-1.5" style={d(0)}>
+            {/* Egor's ask: more detail. Same three-row filter cascade, now
+                labelled at every stage instead of reading as an abstract
+                dot-and-chip diagram — "входящее" → "спам-фильтр" splits it →
+                "горячий лид" is what reaches the manager — plus the reply
+                time that's the whole point of automating this. */}
+            <span className="ai-a-seq flex items-center gap-2" style={d(0)}>
               {dot("bg-paper/40", "ai-a-blink")}
-              {chip("100%", true)}
+              <span className="font-display text-[7px] tracking-[0.04em] text-paper/55">Входящее сообщение</span>
             </span>
             <span className="ai-a-seq mx-auto block h-3 w-px bg-emerald-300/40" style={d(0.5)} />
+            <span className="ai-a-seq mx-auto flex w-fit items-center gap-1 rounded-full bg-paper/[0.07] px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-paper/50" style={d(0.7)}>
+              Спам-фильтр
+            </span>
             <div className="ai-a-seq grid grid-cols-2 gap-2" style={d(0.9)}>
               <span className="flex items-center gap-1">
                 {dot("bg-emerald-300/90", "ai-a-blink")}
-                {chip("100%")}
+                <span className="font-display text-[6px] tracking-[0.04em] text-emerald-200">Горячий лид</span>
               </span>
               <span className="flex items-center gap-1 opacity-45">
                 {dot("bg-paper/30")}
-                {chip("100%", true)}
+                <span className="font-display text-[6px] tracking-[0.04em] text-paper/40">Спам</span>
               </span>
             </div>
             <div className="ai-a-seq grid grid-cols-2 gap-2" style={d(1.4)}>
@@ -246,35 +285,64 @@ function AiThumb({
             </div>
             <span className="ai-a-seq flex items-center gap-1.5" style={d(1.8)}>
               {dot("bg-emerald-300/90", "ai-a-blink")}
-              {chip("62%")}
+              <span className="font-display text-[6px] tracking-[0.04em] text-paper/55">→ менеджеру</span>
+              <span className="ai-a-node ml-auto flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(2.1)}>
+                Ответ за 0.8 сек
+              </span>
             </span>
           </>
         )}
         {shape === "text" && (
           <>
-            {/* A document being written line by line, caret blinking at the
-                end of the line currently being typed. */}
-            <span className="ai-a-seq block h-2.5 w-[58%] rounded-[3px] bg-paper/35" style={d(0)} />
-            <span className="mt-0.5" />
-            {bar("100%", false, "ai-a-seq", d(0.35))}
-            {bar("92%", false, "ai-a-seq", d(0.6))}
-            {bar("96%", true, "ai-a-seq", d(0.85))}
-            {bar("84%", false, "ai-a-seq", d(1.1))}
-            {bar("64%", true, "ai-a-seq", d(1.35))}
-            <span className="ai-a-seq flex items-center gap-1" style={d(1.6)}>
+            {/* Egor's catch: this read as generic lines-with-a-caret, not
+                specifically "AI writes content in several formats". Now a
+                format switcher runs across the top (post → email → script),
+                the document itself builds under whichever is lit, and the
+                loop closes on a word count + a done check — the two things
+                that actually say "content", not just "text". */}
+            <div className="flex items-center gap-1">
+              {["Пост", "Email", "Сценарий"].map((label, i) => (
+                <span
+                  key={label}
+                  className="ai-a-blink rounded-[3px] bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] uppercase tracking-[0.08em] text-emerald-200 ring-1 ring-emerald-300/30"
+                  style={d(i * 0.65)}
+                >
+                  {label}
+                </span>
+              ))}
+              <span className="ai-a-seq ml-auto flex items-center gap-1 font-display text-[7px] text-emerald-300/80" style={d(0.1)}>
+                <span aria-hidden="true">✨</span>AI
+              </span>
+            </div>
+
+            <span className="ai-a-seq mt-1 block h-2.5 w-[58%] rounded-[3px] bg-paper/35" style={d(0.3)} />
+            {bar("100%", false, "ai-a-seq", d(0.55))}
+            {bar("92%", false, "ai-a-seq", d(0.8))}
+            {bar("96%", true, "ai-a-seq", d(1.05))}
+            {bar("84%", false, "ai-a-seq", d(1.3))}
+            <span className="ai-a-seq flex items-center gap-1" style={d(1.55)}>
               {bar("38%")}
               <span className="ai-a-caret block h-3 w-[2px] rounded-[1px] bg-emerald-300" />
             </span>
-            <span className="ai-a-seq mt-1 flex items-center gap-1.5" style={d(1.9)}>
-              <span className="block h-3 w-1/3 rounded-[3px] bg-emerald-400/60" />
-              <span className="block h-3 w-[18%] rounded-[3px] bg-paper/10" />
-            </span>
+
+            <div className="ai-a-seq mt-1.5 flex items-center gap-1.5" style={d(2)}>
+              <span className="flex items-center gap-1 rounded-full bg-paper/[0.08] px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-paper/60">
+                842 слова
+              </span>
+              <span className="ai-a-node ml-auto flex items-center gap-1 rounded-full bg-emerald-400/20 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/35" style={d(2.3)}>
+                <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-emerald-300" />Готово
+              </span>
+            </div>
           </>
         )}
         {shape === "brain" && (
           <>
-            {/* The core breathes while its satellites circle the orbit —
-                the assistant working through the processes around it. */}
+            {/* Egor's catch: satellites circling a core read as "AI is
+                thinking", not specifically "processes". The three satellites
+                now stand for the three jobs the fact panel names —
+                meetings, questions, reports — each labelled, and a task
+                queue below shows them actually being cleared one by one,
+                closing on a processed-count badge. */}
             <span className="relative mx-auto block h-[74px] w-[74px]">
               <span className="absolute inset-0 rounded-full border border-emerald-300/30" />
               <span className="absolute inset-[13px] rounded-full border border-emerald-300/45 bg-emerald-400/10" />
@@ -282,36 +350,57 @@ function AiThumb({
                 <span className="ai-a-node block h-4 w-4 rounded-full bg-emerald-400/70 ring-1 ring-emerald-200/60" />
               </span>
               <span className="ai-a-orbit absolute inset-0">
-                <span className="absolute -top-0.5 left-[calc(50%-4px)] h-2 w-2 rounded-full bg-emerald-300" />
-                <span className="absolute -right-0.5 top-[calc(50%-4px)] h-2 w-2 rounded-full bg-emerald-300/70" />
-                <span className="absolute -bottom-0.5 left-[calc(50%-4px)] h-2 w-2 rounded-full bg-emerald-300/45" />
-                <span className="absolute -left-0.5 top-[calc(50%-4px)] h-2 w-2 rounded-full bg-emerald-300/70" />
+                <span className="absolute -top-1.5 left-[calc(50%-5px)] grid h-[10px] w-[10px] place-items-center rounded-full bg-emerald-300 font-display text-[6px] text-[#03120d]">
+                  🗓
+                </span>
+                <span className="absolute -right-1.5 top-[calc(50%-5px)] grid h-[10px] w-[10px] place-items-center rounded-full bg-emerald-300/75 font-display text-[6px] text-[#03120d]">
+                  💬
+                </span>
+                <span className="absolute -bottom-1.5 left-[calc(50%-5px)] grid h-[10px] w-[10px] place-items-center rounded-full bg-emerald-300/50 font-display text-[6px] text-[#03120d]">
+                  📊
+                </span>
               </span>
             </span>
-            <span className="mt-1" />
-            <span className="ai-a-seq flex items-center gap-1.5" style={d(0.4)}>
-              {dot("bg-emerald-300/80", "ai-a-blink")}
-              {bar("74%")}
-            </span>
-            <span className="ai-a-seq flex items-center gap-1.5" style={d(1)}>
-              {dot("bg-paper/25")}
-              {bar("52%", true)}
+
+            <div className="mt-1 grid gap-1">
+              {[
+                { icon: "🗓", label: "Встреча #14 → суммари" },
+                { icon: "💬", label: "График отпусков → ответ" },
+                { icon: "📊", label: "Отчёт за неделю → готово" },
+              ].map((task, i) => (
+                <span key={task.label} className="ai-a-seq flex items-center gap-1.5" style={d(0.5 + i * 0.55)}>
+                  <span className="shrink-0 font-display text-[8px]">{task.icon}</span>
+                  <span className="flex-1 truncate font-display text-[7px] tracking-[0.02em] text-paper/60">{task.label}</span>
+                  <span
+                    className="ai-a-node block h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300"
+                    style={d(0.5 + i * 0.55 + 0.35)}
+                  />
+                </span>
+              ))}
+            </div>
+
+            <span className="ai-a-seq mt-0.5 flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(2.5)}>
+              Обработано: 12 задач
             </span>
           </>
         )}
         {shape === "crm" && (
           <>
-            {/* The graded lead lifts out of its column and settles again,
-                while its score pulses on the row below. */}
+            {/* Egor's ask: more detail. Named columns instead of a bare
+                kanban — "новый → в работе → готов" — and the score chip now
+                reads as a real conversion prediction, with a reminder badge
+                popping at the end (the fact panel's third job). */}
             <div className="grid grid-cols-3 gap-1.5">
-              {[0, 1, 2].map((col) => (
+              {["Новый", "В работе", "Готов"].map((label, col) => (
                 <span
-                  key={col}
+                  key={label}
                   className={`block space-y-1 rounded-md p-1.5 ${
                     col === 1 ? "bg-emerald-400/15 ring-1 ring-emerald-300/35" : "bg-paper/[0.07]"
                   }`}
                 >
-                  <span className={`block h-1 rounded-[2px] ${col === 1 ? "bg-emerald-300/70" : "bg-paper/20"}`} />
+                  <span className={`block font-display text-[6px] uppercase tracking-[0.04em] ${col === 1 ? "text-emerald-200" : "text-paper/35"}`}>
+                    {label}
+                  </span>
                   <span className="block h-5 rounded-[3px] bg-paper/[0.09]" />
                   <span
                     className={`block h-5 rounded-[3px] ${col === 1 ? "ai-a-lift bg-emerald-400/30 ring-1 ring-emerald-300/40" : "bg-paper/[0.09]"}`}
@@ -320,20 +409,34 @@ function AiThumb({
                 </span>
               ))}
             </div>
-            <span className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5">
               <span className="ai-a-blink rounded-full bg-emerald-400/25 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-emerald-100 ring-1 ring-emerald-300/40">
                 92
               </span>
-              {bar("58%")}
-            </span>
-            {bar("40%", true)}
+              <span className="font-display text-[6px] tracking-[0.04em] text-paper/45">конверсия</span>
+              <span className="ai-a-node ml-auto flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(2.2)}>
+                <span aria-hidden="true">🔔</span>Напомнить менеджеру
+              </span>
+            </div>
           </>
         )}
         {shape === "voice" && (
           <>
-            {/* Live audio: every bar of the waveform pumps on its own offset
-                and the playhead sweeps across it. */}
-            <span className="relative block h-[70px] w-full">
+            {/* Egor's ask: more detail. A mode switcher (озвучка/колл-центр
+                — the fact panel's own two use cases) up top, and a running
+                timecode under the waveform instead of two anonymous bars. */}
+            <div className="flex items-center gap-1">
+              {["Озвучка", "Колл-центр"].map((label, i) => (
+                <span
+                  key={label}
+                  className="ai-a-blink rounded-[3px] bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] uppercase tracking-[0.08em] text-emerald-200 ring-1 ring-emerald-300/30"
+                  style={d(i * 0.7)}
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+            <span className="relative mt-1 block h-[64px] w-full">
               <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-emerald-300/20" />
               <span className="absolute inset-0 flex items-center justify-center gap-[3px]">
                 {[8, 16, 28, 20, 40, 52, 38, 58, 44, 30, 22, 34, 14, 10].map((h, i) => (
@@ -348,15 +451,16 @@ function AiThumb({
             </span>
             <span className="flex items-center gap-1.5">
               {dot("bg-emerald-300/80", "ai-a-blink")}
-              {bar("70%")}
+              <span className="font-display text-[7px] tracking-[0.06em] text-paper/60">00:42 / 01:10</span>
             </span>
-            {bar("46%", true)}
           </>
         )}
         {shape === "split" && (
           <>
-            {/* One message arrives, forks, and two tailored versions come out
-                of it — one after the other. */}
+            {/* Egor's ask: more detail. The one message forking into two is
+                the right idea — it just needed the two branches labelled as
+                actual audience segments, plus a count of how many versions
+                came out of the one source message. */}
             <span className="ai-a-seq mx-auto block h-7 w-[62%] rounded-md bg-paper/12 ring-1 ring-paper/15" style={d(0)} />
             <div className="ai-a-seq grid grid-cols-2 gap-1.5" style={d(0.5)}>
               <span className="mx-auto block h-3 w-px bg-emerald-300/40" />
@@ -367,23 +471,32 @@ function AiThumb({
                 className="ai-a-seq block space-y-1 rounded-md bg-emerald-400/20 p-1.5 ring-1 ring-emerald-300/30"
                 style={d(0.9)}
               >
+                <span className="block font-display text-[6px] uppercase tracking-[0.04em] text-emerald-200">Сегмент А</span>
                 <span className="block h-1 w-full rounded-[2px] bg-emerald-200/60" />
                 <span className="block h-1 w-[70%] rounded-[2px] bg-paper/20" />
               </span>
               <span className="ai-a-seq block space-y-1 rounded-md bg-glow/20 p-1.5 ring-1 ring-glow/30" style={d(1.3)}>
+                <span className="block font-display text-[6px] uppercase tracking-[0.04em] text-glow">Сегмент Б</span>
                 <span className="block h-1 w-[80%] rounded-[2px] bg-glow/60" />
                 <span className="block h-1 w-full rounded-[2px] bg-paper/20" />
               </span>
             </div>
-            {bar("86%", false, "ai-a-seq", d(1.7))}
-            {bar("58%", true, "ai-a-seq", d(2))}
+            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(1.9)}>
+              1 сообщение → 2 версии
+            </span>
           </>
         )}
         {shape === "chart" && (
           <>
-            {/* The bars rise and fall out of step with each other, and the
-                anomaly marker flashes over the one that broke the trend. */}
-            <span className="relative block h-[70px] w-full">
+            {/* Egor's ask: more detail. The metric is named now ("продажи"),
+                and the anomaly marker resolves into an actual insight line
+                instead of just a blinking dot — what "AI-аналитика" is
+                supposed to hand back, not just a chart moving. */}
+            <span className="flex items-center justify-between">
+              <span className="font-display text-[7px] uppercase tracking-[0.1em] text-paper/50">Продажи, нед.</span>
+              <span className="font-display text-[7px] text-[#ff6a3d]">−18%</span>
+            </span>
+            <span className="relative mt-1 block h-[62px] w-full">
               <span className="absolute inset-x-0 bottom-0 h-px bg-paper/15" />
               <span className="absolute inset-0 flex items-end gap-1.5">
                 {[34, 52, 28, 64, 46, 72].map((h, i) => (
@@ -400,32 +513,31 @@ function AiThumb({
               </span>
               <span className="ai-a-blink absolute left-[38%] top-[44%] h-2 w-2 -translate-x-1/2 rounded-full bg-[#ff6a3d] ring-2 ring-[#ff6a3d]/25" />
             </span>
-            <span className="flex items-center gap-1.5">
-              {dot("bg-[#ff6a3d]", "ai-a-blink")}
-              {bar("64%")}
+            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-[#ff6a3d]/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.04em] text-[#ffb08a] ring-1 ring-[#ff6a3d]/30" style={d(1.6)}>
+              <span aria-hidden="true">⚠</span>Аномалия во вторник
             </span>
-            {bar("42%", true)}
           </>
         )}
         {shape === "hub" && (
           <>
-            {/* Messages landing in each channel in turn — the four chips
-                light up one after another — while the single inbox node they
-                all feed keeps pulsing. */}
+            {/* Egor's ask: more detail. The four channel chips now name
+                themselves — Telegram, WhatsApp, Instagram, сайт, the exact
+                four the fact panel promises get sewn into "одну ленту" —
+                instead of reading as four anonymous rows lighting up. */}
             <div className="grid grid-cols-2 gap-1.5">
               {[
-                "bg-[#ff4fd8]/20 ring-[#ff4fd8]/35",
-                "bg-[#ff6a3d]/20 ring-[#ff6a3d]/35",
-                "bg-[#ff6a3d]/20 ring-[#ff6a3d]/35",
-                "bg-[#ff4fd8]/20 ring-[#ff4fd8]/35",
-              ].map((cls, i) => (
+                { label: "Telegram", cls: "bg-[#ff4fd8]/20 ring-[#ff4fd8]/35" },
+                { label: "WhatsApp", cls: "bg-[#ff6a3d]/20 ring-[#ff6a3d]/35" },
+                { label: "Instagram", cls: "bg-[#ff6a3d]/20 ring-[#ff6a3d]/35" },
+                { label: "Сайт", cls: "bg-[#ff4fd8]/20 ring-[#ff4fd8]/35" },
+              ].map((ch, i) => (
                 <span
-                  key={i}
-                  className={`ai-a-blink flex h-9 items-center gap-1.5 rounded-md px-1.5 ring-1 ${cls}`}
+                  key={ch.label}
+                  className={`ai-a-blink flex h-9 items-center gap-1.5 rounded-md px-1.5 ring-1 ${ch.cls}`}
                   style={d(i * 0.4)}
                 >
                   <span className="block h-2 w-2 shrink-0 rounded-full bg-white/70" />
-                  <span className="block h-1 flex-1 rounded-[2px] bg-white/25" />
+                  <span className="block flex-1 truncate font-display text-[7px] tracking-[0.02em] text-white/75">{ch.label}</span>
                 </span>
               ))}
             </div>
@@ -439,8 +551,9 @@ function AiThumb({
               <span className="absolute -inset-1.5 rounded-full bg-[#ff6a3d]/20 blur-[6px]" />
               <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#ff8a5c] to-[#ff4fd8]" />
             </span>
-            {bar("84%")}
-            {bar("52%", true)}
+            <span className="ai-a-seq mx-auto flex w-fit items-center gap-1 rounded-full bg-[#ff6a3d]/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-[#ffb08a] ring-1 ring-[#ff6a3d]/30" style={d(2.1)}>
+              Единая лента
+            </span>
           </>
         )}
         {shape === "learn" && (
@@ -467,18 +580,22 @@ function AiThumb({
                 style={{ transform: "scaleX(0.64)" }}
               />
             </span>
+            {/* Egor's ask: more detail. The three blank progress rows now
+                name the actual modules — prompts, automation, in-house
+                expertise — so the list reads as a real course, not three
+                generic lines of loading bar. */}
             <div className="mt-1 space-y-1.5">
               <span className="ai-a-seq flex items-center gap-1.5" style={d(1.2)}>
                 {dot("bg-emerald-300/80", "ai-a-blink")}
-                {bar("86%")}
+                <span className="font-display text-[7px] tracking-[0.02em] text-paper/70">Модуль 1 · Промпты</span>
               </span>
               <span className="ai-a-seq flex items-center gap-1.5" style={d(1.7)}>
                 {dot()}
-                {bar("68%", true)}
+                <span className="font-display text-[7px] tracking-[0.02em] text-paper/55">Модуль 2 · Автоматизация</span>
               </span>
               <span className="ai-a-seq flex items-center gap-1.5" style={d(2.2)}>
                 {dot("bg-paper/20")}
-                {bar("54%", true)}
+                <span className="font-display text-[7px] tracking-[0.02em] text-paper/40">Модуль 3 · Своя экспертиза</span>
               </span>
             </div>
           </>

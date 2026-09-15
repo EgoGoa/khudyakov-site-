@@ -2218,6 +2218,29 @@ body {
   }
 }
 
+/* Same pulse a third time, repainted violet for /smm's own "Подробнее" pill
+   (SmmDeck.tsx) — that page's accent. */
+@keyframes smm-open-pulse {
+  0%, 100% {
+    box-shadow: 0 10px 26px -6px rgba(168, 85, 247, 0.55), 0 0 0 0 rgba(192, 132, 252, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 12px 22px -4px rgba(168, 85, 247, 0.8), 0 0 0 4px rgba(192, 132, 252, 0);
+    transform: scale(1.02);
+  }
+}
+
+.smm-open-pulse {
+  animation: smm-open-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smm-open-pulse {
+    animation: none;
+  }
+}
+
 /* /content's consult card (DirectionsGrid's ConsultCard) — a slow breathing
    glow in the page's own rec→orange-bright red, on the whole card rather
    than just its pill. Both shadow layers carry blur and no spread, so this
