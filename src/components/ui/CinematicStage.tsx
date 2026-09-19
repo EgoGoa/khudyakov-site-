@@ -1007,7 +1007,11 @@ export default function CinematicStage({
     // reel plays there is no filter at all, and the blur is applied only to the
     // held (paused) frame, eased in by a CSS transition instead of per-frame JS.
     const lite = window.matchMedia("(max-width: 1023px)").matches;
-    if (lite && frameRef.current) frameRef.current.style.transition = "filter 600ms ease";
+    // The chapter-change blur is kept on phones, but as ONE CSS transition per
+    // reveal / settle (the GPU animates it) instead of a new filter value
+    // written on every frame.
+    let revealed = false;
+    let settling = false;
     let raf = 0;
     const tick = () => {
       const frame = frameRef.current;
@@ -1025,7 +1029,10 @@ export default function CinematicStage({
       // of the self-heal branch, and holds exactly like a normal phase end.
       if (remaining <= HOLD_BACK_SECONDS || video.ended) {
         if (!video.paused) video.pause();
-        if (frame) frame.style.filter = `${brightnessPrefix}blur(${maxBlurPx}px)`;
+        if (frame) {
+          if (lite) frame.style.transition = `filter ${blurSeconds}s ease`;
+          frame.style.filter = lite ? `blur(${maxBlurPx}px)` : `${brightnessPrefix}blur(${maxBlurPx}px)`;
+        }
         return;
       }
       // Self-heal an unexpected pause. play() is fire-and-forget above, and
@@ -1038,7 +1045,17 @@ export default function CinematicStage({
       if (video.paused) video.play().catch(() => {});
 
       if (lite) {
-        if (frame && frame.style.filter) frame.style.filter = "none";
+        if (frame && !revealed) {
+          revealed = true;
+          frame.style.transition = "none";
+          frame.style.filter = `blur(${maxBlurPx}px)`;
+          void frame.offsetHeight; // commit the blurred start before easing out of it
+          frame.style.transition = `filter ${blurSeconds}s ease`;
+          frame.style.filter = "none";
+        } else if (frame && !settling && remaining - HOLD_BACK_SECONDS <= blurSeconds) {
+          settling = true;
+          frame.style.filter = `blur(${maxBlurPx}px)`;
+        }
         raf = requestAnimationFrame(tick);
         return;
       }
