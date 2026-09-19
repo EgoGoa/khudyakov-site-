@@ -249,7 +249,7 @@ export default function Header() {
           : "bg-transparent"
       }`}
     >
-      <Container className="relative z-10 flex h-16 items-center justify-between sm:h-20 land:h-10 land:px-[max(1rem,env(safe-area-inset-left))] land:pr-[max(1rem,env(safe-area-inset-right))]">
+      <Container className="relative z-10 flex h-16 items-center justify-between sm:h-20 land:h-10">
         <Link
           href="/"
           onClick={navigateHome}

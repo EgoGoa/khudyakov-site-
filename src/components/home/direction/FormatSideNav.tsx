@@ -101,8 +101,10 @@ function SideArrow({
     <Link
       href={href}
       aria-label={`${isLeft ? "Предыдущий" : "Следующий"} формат: ${label}`}
-      className={`group fixed bottom-24 z-[63] flex h-9 w-9 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
-        isLeft ? "left-0 sm:left-3 xl:left-6" : "right-0 sm:right-3 xl:right-6"
+      className={`group fixed bottom-24 land:bottom-1 z-[63] flex h-9 w-9 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
+        isLeft
+          ? "left-0 sm:left-3 xl:left-6 land:left-[calc(50%-92px)]"
+          : "right-0 sm:right-3 xl:right-6 land:right-[calc(50%-92px)]"
       }`}
       // Цвет ховер-пульсации — те же две точки градиента, что красят
       // подпись; выставлены один раз здесь как CSS-переменные и наследуются
@@ -115,7 +117,7 @@ function SideArrow({
           название и стрелка ярко пульсировали». Никакой рамки или
           подложки вокруг неё нет: светится только сам глиф. */}
       <span className="page-nav-arrow-pulse format-nav-pulse relative transition-opacity duration-300">
-        <NeonChevron flip={isLeft} className="h-9 w-9 sm:h-11 sm:w-11" />
+        <NeonChevron flip={isLeft} className="h-9 w-9 sm:h-11 sm:w-11 land:h-6 land:w-6" />
       </span>
 
       {/* Название соседнего формата — сбоку от стрелки, а не под ней.
@@ -131,12 +133,12 @@ function SideArrow({
       <span
         className={`pointer-events-none absolute top-1/2 w-28 -translate-y-1/2 opacity-0 transition-all duration-300 ease-out group-hover:opacity-100 ${
           isLeft
-            ? "left-full ml-3 translate-x-1 text-left group-hover:translate-x-0"
-            : "right-full mr-3 -translate-x-1 text-right group-hover:translate-x-0"
+            ? "left-full ml-3 translate-x-1 text-left group-hover:translate-x-0 land:left-auto land:right-full land:ml-0 land:mr-1.5 land:w-auto land:translate-x-0 land:whitespace-nowrap land:text-right land:opacity-40 land:group-active:opacity-90"
+            : "right-full mr-3 -translate-x-1 text-right group-hover:translate-x-0 land:right-auto land:left-full land:mr-0 land:ml-1.5 land:w-auto land:translate-x-0 land:whitespace-nowrap land:text-left land:opacity-40 land:group-active:opacity-90"
         }`}
       >
         <span
-          className="format-nav-pulse font-display text-[10px] uppercase leading-[1.15] tracking-tight"
+          className="format-nav-pulse font-display text-[10px] uppercase leading-[1.15] tracking-tight land:whitespace-nowrap land:text-[9px]"
           style={gradientStyle}
         >
           {label}

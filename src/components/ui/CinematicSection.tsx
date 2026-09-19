@@ -280,7 +280,7 @@ export default function CinematicSection({
           // "буквы прыгают" jump. A pinned, full-screen chapter is never
           // meant to pan sideways, so the axis is closed outright and the
           // sticky stage's own overflow-hidden does the clipping.
-          ? `absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 pb-12 pt-[5.5rem] lg:px-10 lg:pb-12 lg:pt-[5.5rem] land:pb-10 land:pt-8 land:pl-[max(1rem,env(safe-area-inset-left))] land:pr-[max(1rem,env(safe-area-inset-right))] ${
+          ? `absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 pb-12 pt-[5.5rem] lg:px-10 lg:pb-12 lg:pt-[5.5rem] land:pb-10 land:pt-8 land:pl-[max(2rem,calc(env(safe-area-inset-left)+1rem))] land:pr-[max(2rem,calc(env(safe-area-inset-right)+1rem))] ${
               active ? "" : "pointer-events-none"
             }`
           : roomy

@@ -93,7 +93,7 @@ export default function ScrollTopButton() {
       // висит рельс той же формы чуть ниже — вторая круглая подложка рядом
       // читалась как повтор одного и того же элемента. Стрелка без рамки и
       // фона гораздо тише и не спорит с рельсом за внимание.
-      className={`fixed right-[18px] top-20 z-[64] grid h-9 w-9 place-items-center text-paper/70 transition-[opacity,transform,color] duration-500 hover:text-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange sm:top-24 ${
+      className={`fixed right-[18px] land:right-[max(18px,calc(env(safe-area-inset-right)+0.5rem))] top-20 z-[64] grid h-9 w-9 place-items-center text-paper/70 transition-[opacity,transform,color] duration-500 hover:text-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange sm:top-24 ${
         shown ? "pointer-events-auto opacity-100" : "pointer-events-none translate-y-2 opacity-0"
       }`}
     >
