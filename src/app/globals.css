@@ -4666,3 +4666,39 @@ body {
   margin-top: -100svh;
   margin-top: -100dvh;
 }
+
+/* ── Weak-GPU guard for phones and tablets ───────────────────────────────
+   iOS Safari reloads a tab ("a problem occurred repeatedly") when it runs out
+   of GPU memory. The two biggest consumers here are CSS filters on the big
+   video layers and backdrop-filter on the many glass panels laid over them, so
+   below 1024px the filters are dropped and the glass blur is capped. The
+   scrims and panel fills already carry the contrast. */
+@media (max-width: 1023px) {
+  .hero-media {
+    filter: none !important;
+  }
+  [class*="backdrop-blur"],
+  .glass-panel {
+    -webkit-backdrop-filter: blur(6px) !important;
+    backdrop-filter: blur(6px) !important;
+  }
+}
+
+/* ── "Lite" mode: weak phone / slow network (html[data-lite], lib/lite.ts) ──
+   Strong devices never see this. Here the expensive, purely decorative work is
+   dropped: no backdrop blur, no CSS blur/brightness filters, and endless
+   animations run once instead of forever. Video is handled by MediaGovernor. */
+html[data-lite] [class*="backdrop-blur"],
+html[data-lite] .glass-panel {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html[data-lite] [class*="blur-["],
+html[data-lite] .hero-media {
+  filter: none !important;
+}
+html[data-lite] *,
+html[data-lite] *::before,
+html[data-lite] *::after {
+  animation-iteration-count: 1 !important;
+}

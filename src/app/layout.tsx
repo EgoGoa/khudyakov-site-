@@ -7,6 +7,8 @@ import VibeRail from "@/components/layout/VibeRail";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import MobileScrollRail from "@/components/ui/MobileScrollRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
+import MediaGovernor from "@/components/layout/MediaGovernor";
+import { LITE_DETECT_SNIPPET } from "@/lib/lite";
 import OffscreenAnimationPause from "@/components/layout/OffscreenAnimationPause";
 import { FullpageProvider } from "@/lib/fullpage";
 import { HeaderMenuProvider } from "@/lib/header-menu";
@@ -97,8 +99,14 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${montserrat.variable} ${bebas.variable} ${azeretMono.variable}`}
     >
+      <head>
+        {/* Marks weak devices / slow connections before first paint so the
+            "lite" CSS (globals.css) applies with no flash — see lib/lite.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: LITE_DETECT_SNIPPET }} />
+      </head>
       <body className="relative bg-ink font-sans text-paper antialiased">
         <BackgroundFX />
+        <MediaGovernor />
         {/* Замораживает CSS-анимации в блоках за пределами экрана — см.
             сам компонент. Здесь, а не в шаблонах страниц: бесконечные
             анимации (неоновые пульсации кнопок, карточек, фото команды)

@@ -950,6 +950,13 @@ export default function CinematicStage({
       const travelled = Math.min(1, Math.max(0, video.currentTime / reelEnd));
       frame.style.transform = `scale(${(PUSH_BASE + PUSH_RANGE * travelled).toFixed(4)})`;
     };
+    // Phones/tablets: re-blurring a full-screen playing video on every frame
+    // (plus the glass panels above it re-blurring what is behind them) is what
+    // makes iOS Safari run out of GPU memory and reload the tab. So while the
+    // reel plays there is no filter at all, and the blur is applied only to the
+    // held (paused) frame, eased in by a CSS transition instead of per-frame JS.
+    const lite = window.matchMedia("(max-width: 1023px)").matches;
+    if (lite && frameRef.current) frameRef.current.style.transition = "filter 600ms ease";
     let raf = 0;
     const tick = () => {
       const frame = frameRef.current;
@@ -978,6 +985,12 @@ export default function CinematicStage({
       // chapter change. Checking every frame here means any such stall
       // corrects itself well before the visitor scrolls to see it.
       if (video.paused) video.play().catch(() => {});
+
+      if (lite) {
+        if (frame && frame.style.filter) frame.style.filter = "none";
+        raf = requestAnimationFrame(tick);
+        return;
+      }
 
       const elapsed = video.currentTime - phase.start;
       const revealT = Math.min(1, Math.max(0, elapsed / blurSeconds));
