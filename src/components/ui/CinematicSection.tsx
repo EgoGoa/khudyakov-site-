@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { useStageActive, useIsStaged, useHasSeenChapter } from "@/components/ui/CinematicStage";
+import { useStageActive, useIsStaged, useHasSeenChapter, useChapterReady } from "@/components/ui/CinematicStage";
 import { ChapterActiveProvider } from "@/components/ui/Appear";
 import { BEAT, DUR, EASE as MOTION_EASE } from "@/lib/motion";
 
@@ -235,6 +235,9 @@ export default function CinematicSection({
   // return to it (scrolling back up, then down again) renders instantly
   // instead of replaying its entrance — see CinematicStage's `seen` state.
   const alreadySeen = useHasSeenChapter(index);
+  // Заголовок глав рисуется сразу, а тяжёлое (тело, декор) — только когда
+  // глава открыта или догрета в простое: так страница открывается быстро.
+  const ready = useChapterReady(index);
   const instant = staged && alreadySeen;
   // `spacious` exists to give a chapter a full screen of room on a page that
   // has no deck — see the prop's own note. Inside a deck every pane already
@@ -314,7 +317,7 @@ export default function CinematicSection({
           roomy ? "flex flex-col justify-center min-h-[20svh]" : ""
         }`}
       >
-        {decor && (
+        {ready && decor && (
           <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR(instant)}>
             {decor}
           </motion.div>
@@ -393,14 +396,14 @@ export default function CinematicSection({
           // parked at the top.
           className={`relative mx-auto w-full max-w-7xl py-2 ${roomy && !headless ? "" : "my-auto"}`}
         >
-          {bodyDecor && (
+          {ready && bodyDecor && (
             <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR(instant)}>
               {bodyDecor}
             </motion.div>
           )}
           {/* Children use <Appear> to arrive on their own beat and from their
               own direction; this is what tells them the chapter is on stage. */}
-          <ChapterActiveProvider active={active} instant={instant}>{children}</ChapterActiveProvider>
+          <ChapterActiveProvider active={active} instant={instant}>{ready ? children : null}</ChapterActiveProvider>
         </div>
       )}
     </motion.div>

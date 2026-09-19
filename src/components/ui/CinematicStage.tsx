@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { useCinematicNavRegister } from "@/lib/cinematic-nav";
+import { reportActiveChapter, takePendingChapter } from "@/lib/page-hop";
 
 // One continuous film behind a deck of chapters.
 //
@@ -54,7 +55,14 @@ export type Phase = {
 };
 export type ChapterMeta = { id: string };
 
-type StageApi = { activeIndex: number; staged: boolean; started: boolean; seen: ReadonlySet<number> };
+// `warm` — главы, чьё тяжёлое содержимое уже смонтировано «впрок» (см. CinematicSection).
+type StageApi = {
+  activeIndex: number;
+  staged: boolean;
+  started: boolean;
+  seen: ReadonlySet<number>;
+  warm?: ReadonlySet<number>;
+};
 
 // `staged: false` on the default value (no Provider above) is what lets
 // CinematicSection tell "really inside a CinematicStage" apart from "the
@@ -236,6 +244,29 @@ export default function CinematicStage({
   // and Appear's own comment). Cleared only by a fresh mount of this
   // component, i.e. navigating away and back.
   const [seen, setSeen] = useState<ReadonlySet<number>>(() => new Set());
+  // Тяжёлое содержимое глав монтируется не всё сразу при заходе на страницу
+  // (на слабом устройстве это и был «затуп»), а только у открытой главы.
+  // Соседние догреваются в простое, по одной, уже после того как открытая
+  // глава отрисовалась. На слабых устройствах (data-lite) догрева нет вовсе:
+  // глава монтируется в момент открытия. Пустой набор на первом рендере —
+  // одинаковый на сервере и клиенте, гидрация не расходится.
+  const [warm, setWarm] = useState<ReadonlySet<number>>(() => new Set());
+  useEffect(() => {
+    if (document.documentElement.hasAttribute("data-lite")) return;
+    const targets = [activeIndex + 1, activeIndex - 1].filter((i) => i >= 0 && i < chapters.length);
+    const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 300));
+    const cic = window.cancelIdleCallback ?? window.clearTimeout;
+    const handles: number[] = [];
+    targets.forEach((i, n) => {
+      const start = window.setTimeout(() => {
+        handles.push(
+          ric(() => setWarm((prev) => (prev.has(i) ? prev : new Set(prev).add(i))), { timeout: 2500 }),
+        );
+      }, 900 + n * 700);
+      handles.push(-start);
+    });
+    return () => handles.forEach((h) => (h < 0 ? window.clearTimeout(-h) : cic(h)));
+  }, [activeIndex, chapters.length]);
   useEffect(() => {
     setSeen((prev) => (prev.has(activeIndex) ? prev : new Set(prev).add(activeIndex)));
   }, [activeIndex]);
@@ -247,6 +278,11 @@ export default function CinematicStage({
     activeIndexRef.current = activeIndex;
   });
   const registerGoTo = useCinematicNavRegister();
+  // Какая глава на экране — для стрелок между страницами (см. lib/page-hop).
+  const activeChapterId = chapters[activeIndex]?.id ?? null;
+  useEffect(() => {
+    reportActiveChapter(activeChapterId);
+  }, [activeChapterId]);
   // Строка, а не chapters[0] в зависимостях эффекта: массив глав приходит
   // новым объектом на каждый рендер страницы, и эффект пересобирал бы все
   // слушатели впустую. id первой главы меняется только вместе со страницей.
@@ -542,6 +578,21 @@ export default function CinematicStage({
       return true;
     };
     registerGoTo(goToId, firstChapterId);
+
+    // Пришли стрелкой с соседней страницы: сразу встаём на аналогичную главу,
+    // без прокрутки. Второй заход в rAF — на случай, если Next сбросил
+    // прокрутку в начало уже после нашего эффекта.
+    const hopIndex = takePendingChapter(chapters.map((c) => c.id));
+    if (hopIndex >= 0) {
+      const jump = () => {
+        const wrap = wrapRef.current;
+        if (wrap) window.scrollTo(0, wrap.offsetTop + hopIndex * window.innerHeight);
+      };
+      directionRef.current = 1;
+      setActiveIndex(hopIndex);
+      jump();
+      requestAnimationFrame(jump);
+    }
 
     const onWheel = (e: WheelEvent) => {
       if (scrollLocked()) return;
@@ -1015,8 +1066,8 @@ export default function CinematicStage({
   }, [activeIndex, phases, started, maxBlurPx, blurSeconds, push, brightness]);
 
   const api = useMemo<StageApi>(
-    () => ({ activeIndex, staged: true, started, seen }),
-    [activeIndex, started, seen],
+    () => ({ activeIndex, staged: true, started, seen, warm }),
+    [activeIndex, started, seen, warm],
   );
 
   return (
@@ -1176,6 +1227,14 @@ export function useStageStarted() {
 // to always-visible, normal-flow rendering outside a stage.
 export function useIsStaged() {
   return useContext(StageContext).staged;
+}
+
+/** Пора ли монтировать тяжёлое содержимое главы: она открыта, уже была
+ *  открыта или догрета в простое. Вне колоды — всегда да. */
+export function useChapterReady(index: number) {
+  const ctx = useContext(StageContext);
+  if (!ctx.staged) return true;
+  return ctx.activeIndex === index || ctx.seen.has(index) || (ctx.warm?.has(index) ?? true);
 }
 
 /** Has this chapter index already taken the stage once this page load? Used

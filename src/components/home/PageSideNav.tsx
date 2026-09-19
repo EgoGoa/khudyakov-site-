@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
+import { queueChapterHop } from "@/lib/page-hop";
 import { NeonChevron } from "@/components/home/ServicePicker";
 
 // Fixed side arrows for stepping between the four service pages, always on
@@ -47,6 +48,7 @@ export default function PageSideNav() {
 }
 
 function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: ServiceKey }) {
+  const pathname = useCleanPathname();
   const meta = serviceMeta[targetKey];
   const words = meta.label.split(" ");
   const isLeft = side === "left";
@@ -89,6 +91,7 @@ function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: Ser
     // edge and takes nothing away from the page.
     <Link
       href={`/${meta.slug}`}
+      onClick={() => queueChapterHop(pathname.slice(1), meta.slug)}
       aria-label={`${isLeft ? "Предыдущая" : "Следующая"} страница: ${meta.label}`}
       className={`group fixed bottom-24 z-30 land:bottom-1 flex h-10 w-10 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
         isLeft
