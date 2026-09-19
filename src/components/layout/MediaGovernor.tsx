@@ -56,7 +56,12 @@ export default function MediaGovernor() {
         }
         return;
       }
-      if (small && src && MOBILE_VIDEOS.has(src)) v.setAttribute("src", mobileOf(src));
+      if (small && src && MOBILE_VIDEOS.has(src)) {
+        v.setAttribute("src", mobileOf(src));
+        // Swapping the source restarts loading; make sure an autoplay
+        // background actually resumes on browsers that don't do it themselves.
+        if (v.autoplay) v.play().catch(() => {});
+      }
       if (!seen.has(v)) {
         seen.add(v);
         io.observe(v);
