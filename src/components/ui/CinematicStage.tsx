@@ -1009,7 +1009,7 @@ export default function CinematicStage({
   return (
     <StageContext.Provider value={api}>
       <div ref={wrapRef} className="relative">
-        <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
+        <div className="stage-frame sticky top-0 w-full overflow-hidden">
           <div ref={frameRef} className="absolute inset-0 h-full w-full">
             {/* The reel's own still, permanently underneath the <video> —
                 not the element's `poster` attribute, which a browser drops
@@ -1127,9 +1127,9 @@ export default function CinematicStage({
             layout. The ids are here (not on the chapters) because a header link
             has to land on a scroll position, and the chapters themselves never
             move. */}
-        <div className="-mt-[100svh]" aria-hidden="true">
+        <div className="stage-pull" aria-hidden="true">
           {chapters.map((chapter) => (
-            <div key={chapter.id} id={chapter.id} className="h-[100svh]" />
+            <div key={chapter.id} id={chapter.id} className="stage-anchor" />
           ))}
         </div>
       </div>

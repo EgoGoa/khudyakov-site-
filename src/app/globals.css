@@ -4648,3 +4648,21 @@ body {
     margin-top: 0.5rem !important;
   }
 }
+
+/* Pinned-stage height. Written as a fallback chain so every browser takes the
+   most accurate unit it understands: dvh follows the *visible* viewport as
+   mobile browser bars show and hide (and on rotation), so the frame never
+   ends short and leaves a bare strip under the chapter. The pull-up margin and
+   the scroll anchors use the same value, which keeps the chapter maths in
+   step. */
+.stage-frame,
+.stage-anchor {
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+}
+.stage-pull {
+  margin-top: -100vh;
+  margin-top: -100svh;
+  margin-top: -100dvh;
+}

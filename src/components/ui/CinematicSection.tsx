@@ -281,7 +281,7 @@ export default function CinematicSection({
               active ? "" : "pointer-events-none"
             }`
           : roomy
-          ? "relative flex min-h-[100svh] flex-col px-6 py-16 sm:py-20 lg:min-h-screen lg:px-10 lg:py-24 land:py-10"
+          ? "relative flex min-h-[100dvh] flex-col px-6 py-16 sm:py-20 lg:min-h-screen lg:px-10 lg:py-24 land:py-10"
           : "relative flex flex-col px-6 py-10 sm:py-14 lg:px-10"
       }
       // touch-action pan-y so the pane itself can be dragged on a phone; the

@@ -376,7 +376,7 @@ export default function PhotoStage({
   return (
     <StageContext.Provider value={api}>
       <div ref={wrapRef} className="relative">
-        <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
+        <div className="stage-frame sticky top-0 w-full overflow-hidden">
           {/* Static stand-in for the video reel other stages scrub. A slow
               Ken Burns drift (globals.css .photo-stage-bg) gives it some life
               without pretending to be footage; disabled under
@@ -423,9 +423,9 @@ export default function PhotoStage({
           </div>
         </div>
 
-        <div className="-mt-[100svh]" aria-hidden="true">
+        <div className="stage-pull" aria-hidden="true">
           {chapters.map((chapter) => (
-            <div key={chapter.id} id={chapter.id} className="h-[100svh]" />
+            <div key={chapter.id} id={chapter.id} className="stage-anchor" />
           ))}
         </div>
       </div>

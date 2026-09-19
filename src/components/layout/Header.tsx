@@ -249,17 +249,17 @@ export default function Header() {
           : "bg-transparent"
       }`}
     >
-      <Container className="relative z-10 flex h-16 items-center justify-between sm:h-20 land:h-10 land:justify-end land:px-[max(1rem,env(safe-area-inset-left))] land:pr-[max(1rem,env(safe-area-inset-right))]">
+      <Container className="relative z-10 flex h-16 items-center justify-between sm:h-20 land:h-10 land:px-[max(1rem,env(safe-area-inset-left))] land:pr-[max(1rem,env(safe-area-inset-right))]">
         <Link
           href="/"
           onClick={navigateHome}
-          className="flex shrink-0 items-center gap-2 py-2 land:hidden font-display uppercase leading-none tracking-[0.08em] text-paper transition active:scale-[0.97] sm:gap-2.5"
+          className="flex shrink-0 items-center gap-2 py-2 land:pointer-events-auto land:py-0 land:opacity-80 font-display uppercase leading-none tracking-[0.08em] text-paper transition active:scale-[0.97] sm:gap-2.5"
         >
           <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full bg-rec sm:h-2.5 sm:w-2.5" />
-          <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] uppercase tracking-tight">
+          <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] land:!text-[0.9rem] uppercase tracking-tight">
             HDKV<span className="text-rec">.AGENCY</span>
           </span>
-          <span className="ml-1 hidden h-6 w-px shrink-0 bg-paper/25 sm:block" aria-hidden="true" />
+          <span className="ml-1 hidden h-6 w-px shrink-0 bg-paper/25 sm:block land:!hidden" aria-hidden="true" />
           {/* The tagline now carries /sites' chapter-heading treatment: the
               display face, the near-white under a warm orange bloom
               (.chapter-neon-warm), and the keyword in the same
@@ -286,7 +286,7 @@ export default function Header() {
               against the wordmark on its own, from the parent Link's own
               `items-center`, instead of being a block whose two rows
               straddled the logo's centre. */}
-          <span className="chapter-neon-warm hidden shrink-0 whitespace-nowrap text-center font-sans text-[0.65rem] font-light uppercase leading-none tracking-[0.12em] sm:block">
+          <span className="chapter-neon-warm hidden land:!hidden shrink-0 whitespace-nowrap text-center font-sans text-[0.65rem] font-light uppercase leading-none tracking-[0.12em] sm:block">
             DIGITAL <span className="kw font-display font-normal">AI</span> CREATIVE
           </span>
         </Link>
