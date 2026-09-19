@@ -712,7 +712,7 @@ export default function AiDeck() {
             // by it.
             <div
               key={card.id}
-              className="absolute left-1/2 top-1/2 h-[348px] w-[265px] transition-[transform,opacity,filter] duration-[560ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              className="deck-pose absolute left-1/2 top-1/2 h-[348px] w-[265px] transition-[transform,opacity,filter] duration-[560ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
               style={{
                 zIndex: pose.zi,
                 opacity: pose.opacity,

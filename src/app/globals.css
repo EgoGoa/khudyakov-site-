@@ -4702,3 +4702,47 @@ html[data-lite] *::before,
 html[data-lite] *::after {
   animation-iteration-count: 1 !important;
 }
+
+/* ── Inactive chapters cost nothing ──────────────────────────────────────
+   The pinned stage stacks every chapter on top of the others and only fades
+   the current one in, so the rest kept animating and holding GPU layers
+   (backdrop blurs, glows, endless animations) while invisible — on /ai that
+   was ~90 running animations and ~130 filtered layers, enough to make iOS
+   Safari reload the tab. Once a chapter has finished fading out it is now
+   hidden (the 1.2s delay lets the exit animation play) and frozen; it becomes
+   visible again the instant it turns active (no delay on that side). */
+[data-chapter-pane][data-active="false"] {
+  visibility: hidden;
+  transition: visibility 0s linear 1.2s;
+}
+[data-chapter-pane][data-active="false"] *,
+[data-chapter-pane][data-active="false"] *::before,
+[data-chapter-pane][data-active="false"] *::after {
+  animation-play-state: paused !important;
+}
+
+/* Phones: the side cards of the carousels don't need a per-card blur filter,
+   and the ambient glow is already a soft radial gradient. */
+@media (max-width: 1023px) {
+  .deck-pose {
+    filter: none !important;
+  }
+  .ai-deck-ambient-glow {
+    filter: none !important;
+    animation: none !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  /* Five blurred glows (one behind each coverflow card) is a lot of GPU for a
+     phone; the radial gradients are already soft, so the blur goes and only
+     the flicker stays. The big info panels keep a still glow instead of a
+     repainting pulse; the front card still breathes. */
+  .ai-deck-glow {
+    filter: none !important;
+  }
+  .glass-panel.deck-neon-pulse {
+    animation: none;
+    box-shadow: 0 0 26px 2px rgba(var(--card-glow-rgb), 0.32), 0 28px 70px -34px rgba(0, 0, 0, 0.95);
+  }
+}

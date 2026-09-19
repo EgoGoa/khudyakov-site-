@@ -417,7 +417,7 @@ export default function SitesDeck() {
           return (
             <div
               key={service.id}
-              className="absolute left-1/2 top-1/2 h-[240px] w-[188px] transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              className="deck-pose absolute left-1/2 top-1/2 h-[240px] w-[188px] transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
               style={{
                 zIndex: pose.z,
                 opacity: pose.opacity,
