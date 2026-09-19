@@ -1,6 +1,8 @@
 "use client";
 
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
+import { useState } from "react";
+import { useLandscapePhone } from "@/lib/use-landscape-phone";
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import AiDeck, { AI_PILL, AI_ROUND } from "@/components/home/ai/AiDeck";
@@ -50,6 +52,8 @@ const STATS = [
 ];
 
 export default function AiPitch() {
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const land = useLandscapePhone();
   return (
     <CinematicSection
       index={0}
@@ -62,8 +66,8 @@ export default function AiPitch() {
       column
       headless
     >
-      <div className="flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:flex-row land:items-center land:gap-6">
-        <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-[46%] land:shrink-0">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:grid land:grid-cols-[40%_1fr] land:items-start land:gap-x-6 land:gap-y-2">
+        <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-auto land:shrink-0">
           <div className="order-1 lg:order-none land:order-none">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
@@ -91,7 +95,7 @@ export default function AiPitch() {
               for named pains before the pitch resumes) but trimmed to two
               sentences so the column still ends above the fold beside the
               carousel. */}
-          <Appear from="up" delay={BEAT.intro}>
+          <Appear from="up" delay={BEAT.intro} className="land:hidden">
             <p className="mt-4 max-w-[32em] text-sm leading-relaxed text-paper/55">
               Заявки теряются, пока менеджер занят. Конкурент отвечает клиенту через минуту, вы —
               через два часа.
@@ -111,7 +115,7 @@ export default function AiPitch() {
           </Appear>
 
           {/* One thin line instead of the old bordered four-cell block. */}
-          <Appear from="up" delay={BEAT.cta}>
+          <Appear from="up" delay={BEAT.cta} className="land:hidden">
             <div className="mt-9 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-t border-paper/12 pt-4">
               {STATS.map((stat) => (
                 <span key={stat.label} className="inline-flex items-baseline gap-1.5">
@@ -127,9 +131,10 @@ export default function AiPitch() {
         {/* Below lg the left column is `display: contents`, so `order` puts the
             coverflow straight under the title on a phone (FanFit inside AiDeck
             scales it to fit). */}
-        <Appear from="right" delay={BEAT.content} className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:flex-1">
-          <AiDeck />
+        <Appear from="right" delay={BEAT.content} className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:min-w-0">
+          <AiDeck panelTarget={land ? slot : null} />
         </Appear>
+        <div ref={setSlot} className="hidden land:col-span-2 land:block" />
       </div>
     </CinematicSection>
   );

@@ -88,8 +88,8 @@ export default function ChapterLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
-      <div className={`w-full shrink-0 ${columnClassName}`}>
+    <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14 land:flex land:items-start land:gap-6">
+      <div className={`w-full shrink-0 ${columnClassName} land:w-[40%]`}>
         <Appear from="up" delay={BEAT.eyebrow}>
           <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
             <span className={`${EYEBROW} ${accent.number}`}>
@@ -113,7 +113,7 @@ export default function ChapterLayout({
 
         <Appear from="up" delay={BEAT.cta}>
           {askCard ? (
-            <div className="mt-8">{askCard}</div>
+            <div className="mt-8 land:mt-3">{askCard}</div>
           ) : (
             <>
               {person && <PersonBadge person={person} />}
@@ -142,7 +142,7 @@ export default function ChapterLayout({
         </Appear>
       </div>
 
-      <div className="mt-10 lg:mt-0 lg:flex-1 lg:min-w-0">{children}</div>
+      <div className="mt-10 lg:mt-0 lg:flex-1 lg:min-w-0 land:mt-0 land:min-w-0 land:flex-1">{children}</div>
     </div>
   );
 }

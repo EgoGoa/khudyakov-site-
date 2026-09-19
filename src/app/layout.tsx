@@ -96,6 +96,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
+      suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${montserrat.variable} ${bebas.variable} ${azeretMono.variable}`}
     >

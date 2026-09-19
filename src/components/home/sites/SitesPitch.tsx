@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
+import { useState } from "react";
+import { useLandscapePhone } from "@/lib/use-landscape-phone";
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import SitesDeck, { PILL, ROUND } from "@/components/home/sites/SitesDeck";
@@ -54,6 +56,8 @@ import TeamAskCard from "@/components/home/TeamAskCard";
 // "Условия и гарантии").
 
 export default function SitesPitch() {
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const land = useLandscapePhone();
   return (
     <CinematicSection
       index={0}
@@ -66,10 +70,10 @@ export default function SitesPitch() {
       column
       headless
     >
-      <div className="flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:flex-row land:items-center land:gap-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:grid land:grid-cols-[40%_1fr] land:items-start land:gap-x-6 land:gap-y-2">
         {/* Left column: the chapter's whole stack, so it centres against the
             carousel rather than against itself. */}
-        <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-[46%] land:shrink-0">
+        <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-auto land:shrink-0">
           <div className="order-1 lg:order-none land:order-none">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
@@ -113,9 +117,10 @@ export default function SitesPitch() {
             puts the carousel straight under the title, copy after it. From lg
             up the column is a real block and the deck sits beside it. FanFit
             (inside SitesDeck) scales the fan to the phone. */}
-        <Appear from="right" delay={BEAT.content} className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:flex-1">
-          <SitesDeck />
+        <Appear from="right" delay={BEAT.content} className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:min-w-0">
+          <SitesDeck panelTarget={land ? slot : null} />
         </Appear>
+        <div ref={setSlot} className="hidden land:col-span-2 land:block" />
       </div>
     </CinematicSection>
   );

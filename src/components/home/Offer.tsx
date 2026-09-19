@@ -200,6 +200,18 @@ export default function Offer({
         >
           {interactive && selectedService ? (
             <>
+              {/* Which service this window is about, always visible at the top of
+                  it — on a phone the panel sits below the list and, scrolled
+                  past, nothing said what it described. */}
+              <div className="mb-4">
+                <p className="font-display text-[10px] font-bold uppercase tracking-[0.16em] text-glow/80">
+                  Выбранная услуга
+                </p>
+                <h3 className="mt-1 font-display text-base uppercase leading-tight tracking-tight text-white sm:text-lg">
+                  {selectedService.title}
+                </h3>
+              </div>
+
               {/* Same search bar as /content's chapter 03 (BlockAssistant),
                   scoped to whichever service is selected — Egor's ask: "любой
                   вопрос по данной услуге", answered by the same agent/producer

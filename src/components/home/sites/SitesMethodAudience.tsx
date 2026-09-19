@@ -92,11 +92,11 @@ export default function SitesMethodAudience() {
     >
       {/* relative z-10 for the same reason as chapter 01: keep the absolutely
           positioned bodyDecor behind the content it sits under. */}
-      <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
+      <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14 land:flex land:items-start land:gap-6">
         {/* Widened from 38% — Egor's ask: with the promo card stacked under
             Саша's card, the narrower column read cramped next to the
             comparison table. */}
-        <div className="w-full shrink-0 lg:w-[44%]">
+        <div className="w-full shrink-0 lg:w-[44%] land:w-[40%]">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
               <span className={`${EYEBROW} text-glow`}>02</span>
@@ -154,7 +154,7 @@ export default function SitesMethodAudience() {
           </Appear>
         </div>
 
-        <div className="mt-10 lg:mt-0 lg:flex-1">
+        <div className="mt-10 lg:mt-0 lg:flex-1 land:mt-0 land:min-w-0 land:flex-1">
           <Appear from="right" delay={BEAT.content}>
             <div className="overflow-x-auto rounded-2xl bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150">
               <table className="w-full min-w-[520px] border-collapse text-left text-xs">

@@ -1139,15 +1139,28 @@ export default function CinematicStage({
               // over it.
               className="relative h-full w-full object-cover"
             />
+            {/* Two-part grade. Lives INSIDE the frame that carries the video (not as a
+                  sibling above it) below lg: the frame is scaled, and on iOS Safari a
+                  separate overlay layer could end up narrower than the video under
+                  it, leaving an un-darkened strip down one edge. A flat wash across
+                  the whole frame drops the footage back a stop so the chapters read as the foreground, and a
+                second gradient adds weight at the top and bottom edges, where the
+                header and the copy actually sit. Kept as a wash rather than a
+                heavier blur so the picture is still legibly a picture. */}
+            <div className="pointer-events-none absolute inset-0 bg-ink/45 lg:hidden" />
+            <div
+              className="pointer-events-none absolute inset-0 lg:hidden"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(11,11,16,0.72) 0%, rgba(11,11,16,0.16) 26%, rgba(11,11,16,0.2) 54%, rgba(11,11,16,0.85) 100%)",
+              }}
+            />
           </div>
-          {/* Two-part grade. A flat wash across the whole frame drops the
-              footage back a stop so the chapters read as the foreground, and a
-              second gradient adds weight at the top and bottom edges, where the
-              header and the copy actually sit. Kept as a wash rather than a
-              heavier blur so the picture is still legibly a picture. */}
-          <div className="pointer-events-none absolute inset-0 bg-ink/45" />
+          {/* Desktop keeps the grade as a sibling above the frame — that is how the
+              per-page `brightness` calibration was tuned. */}
+          <div className="pointer-events-none absolute inset-0 bg-ink/45 max-lg:hidden" />
           <div
-            className="pointer-events-none absolute inset-0"
+            className="pointer-events-none absolute inset-0 max-lg:hidden"
             style={{
               background:
                 "linear-gradient(to bottom, rgba(11,11,16,0.72) 0%, rgba(11,11,16,0.16) 26%, rgba(11,11,16,0.2) 54%, rgba(11,11,16,0.85) 100%)",

@@ -67,7 +67,7 @@ function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: Ser
 
   const label = (
     <span
-      className={`font-display text-[8px] uppercase leading-[1.05] tracking-tight sm:text-[10px] ${
+      className={`font-display text-[8px] uppercase leading-[1.05] tracking-tight sm:text-[10px] land:flex land:gap-1 land:whitespace-nowrap land:text-[9px] ${
         isLeft ? "text-left" : "text-right"
       }`}
     >
@@ -115,8 +115,8 @@ function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: Ser
       {/* The destination's name — absolute, so it never grows the hit area,
           and `pointer-events-none` so the invisible text box cannot block
           the content it floats over either. */}
-      <span className={`pointer-events-none absolute top-full mt-1 opacity-0 land:hidden sm:left-1/2 sm:right-auto sm:-translate-x-1/2 ${
-          isLeft ? "left-0" : "right-0"
+      <span className={`pointer-events-none absolute top-full mt-1 opacity-0 land:top-1/2 land:mt-0 land:-translate-y-1/2 land:translate-x-0 land:opacity-40 land:group-active:opacity-90 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 ${
+          isLeft ? "left-0 land:left-auto land:right-full land:mr-1.5" : "right-0 land:right-auto land:left-full land:ml-1.5"
         } transition-opacity duration-300 group-hover:opacity-100`}>
         {label}
       </span>

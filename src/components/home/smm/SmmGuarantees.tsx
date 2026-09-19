@@ -103,8 +103,8 @@ export default function SmmGuarantees() {
         />
       }
     >
-      <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14">
-        <div className="w-full shrink-0 lg:w-[38%]">
+      <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14 land:flex land:items-start land:gap-6">
+        <div className="w-full shrink-0 lg:w-[38%] land:w-[40%]">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
               <span className={`${EYEBROW} text-[#c4a0ff]`}>05</span>
@@ -140,7 +140,7 @@ export default function SmmGuarantees() {
           </Appear>
         </div>
 
-        <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8">
+        <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8 land:mt-0 land:min-w-0 land:flex-1">
           <ul className="lg:max-w-md lg:flex-1">
             {TERMS.map((term, i) => (
               <Appear

@@ -2,6 +2,7 @@
 
 import { useCallback, useState, type CSSProperties } from "react";
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
 import { smmFormatPages } from "@/components/home/direction/smmFormatRegistry";
 
@@ -346,7 +347,8 @@ export const PILL =
 export const ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-colors duration-300 hover:border-orange/60 hover:text-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange";
 
-export default function SmmDeck() {
+export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | null } = {}) {
+  const wide = !!panelTarget;
   const [active, setActive] = useState(0);
   const count = FORMATS.length;
 
@@ -356,6 +358,25 @@ export default function SmmDeck() {
   );
 
   const front = FORMATS[active];
+
+  const panel = (
+      <div
+      className={`glass-panel deck-neon-pulse flex items-start overflow-hidden rounded-3xl px-6 py-6 ${wide ? "h-auto" : "mt-6 h-auto min-h-[300px] lg:h-[240px] lg:min-h-0"}`}
+        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), 0 28px 70px -34px rgba(0,0,0,0.95)", "--card-glow-rgb": "168, 85, 247" } as CSSProperties}
+      >
+        <div className={wide ? "w-full" : "max-w-[460px]"}>
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.name}</p>
+            <p className="font-display text-[11px] uppercase tracking-[0.1em] text-[#c9a4ff]">{front.meta}</p>
+          </div>
+          <dl className={`mt-3 grid gap-2.5 ${wide ? "grid-cols-3 gap-x-6" : ""}`}>
+            <SmmFact stacked={wide} label="Что даёт" text={front.blurb} />
+            <SmmFact stacked={wide} label="Кому" text={front.audience} />
+            <SmmFact stacked={wide} label="Почему сейчас" text={front.now} />
+          </dl>
+        </div>
+      </div>
+  );
 
   return (
     <div className="w-full max-w-[560px]">
@@ -536,32 +557,17 @@ export default function SmmDeck() {
           белым текстом вместо одной приглушённой строки. The "Подробнее"
           button lives on the card itself (see the isFront branch above),
           so this row stays text-only. */}
-      <div
-        className="glass-panel deck-neon-pulse mt-6 flex h-auto min-h-[300px] items-start lg:h-[240px] lg:min-h-0 overflow-hidden rounded-3xl px-6 py-6"
-        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), 0 28px 70px -34px rgba(0,0,0,0.95)", "--card-glow-rgb": "168, 85, 247" } as CSSProperties}
-      >
-        <div className="max-w-[460px]">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.name}</p>
-            <p className="font-display text-[11px] uppercase tracking-[0.1em] text-[#c9a4ff]">{front.meta}</p>
-          </div>
-          <dl className="mt-3 grid gap-2.5">
-            <SmmFact label="Что даёт" text={front.blurb} />
-            <SmmFact label="Кому" text={front.audience} />
-            <SmmFact label="Почему сейчас" text={front.now} />
-          </dl>
-        </div>
-      </div>
+      {panelTarget ? createPortal(panel, panelTarget) : panel}
     </div>
   );
 }
 
 // Одна строка факта — тот же рисунок, что у AiDeck's Fact / SitesDeck's
 // SitesFact, в акценте /smm.
-function SmmFact({ label, text }: { label: string; text: string }) {
+function SmmFact({ label, text, stacked }: { label: string; text: string; stacked?: boolean }) {
   return (
-    <div className="flex gap-3">
-      <dt className="w-[92px] shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-[#c9a4ff]/80">
+    <div className={stacked ? "flex flex-col gap-1" : "flex gap-3"}>
+      <dt className={`${stacked ? "" : "w-[92px]"} shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-[#c9a4ff]/80`}>
         {label}
       </dt>
       <dd className="text-[13px] leading-snug text-white">{text}</dd>

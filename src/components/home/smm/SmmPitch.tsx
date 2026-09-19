@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
+import { useState } from "react";
+import { useLandscapePhone } from "@/lib/use-landscape-phone";
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import SmmDeck, { PILL, ROUND } from "@/components/home/smm/SmmDeck";
@@ -46,6 +48,8 @@ import TeamAskCard from "@/components/home/TeamAskCard";
 // too many.
 
 export default function SmmPitch() {
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const land = useLandscapePhone();
   return (
     <CinematicSection
       index={0}
@@ -58,10 +62,10 @@ export default function SmmPitch() {
       column
       headless
     >
-      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:flex-row land:items-center land:gap-6">
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:grid land:grid-cols-[40%_1fr] land:items-start land:gap-x-6 land:gap-y-2">
         {/* Left column: the chapter's whole stack, so it centres against the
             carousel rather than against itself. */}
-        <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-[46%] land:shrink-0">
+        <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-auto land:shrink-0">
           <div className="order-1 lg:order-none land:order-none">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
@@ -122,12 +126,13 @@ export default function SmmPitch() {
             arriving with the chapter's own slide-in — the copy establishes
             what this is first, then the thing itself comes into focus a beat
             later, which is the "последовательно" part of the brief. */}
-        <div className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:flex-1">
+        <div className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:min-w-0">
           <Appear from="right" delay={BEAT.content} blurPx={18}>
-            <SmmDeck />
+            <SmmDeck panelTarget={land ? slot : null} />
           </Appear>
         </div>
-      </div>
+
+        <div ref={setSlot} className="hidden land:col-span-2 land:block" />      </div>
     </CinematicSection>
   );
 }

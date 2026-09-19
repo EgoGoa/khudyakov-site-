@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { servicesByCategory } from "@/lib/service-content";
@@ -636,7 +637,8 @@ export const AI_PILL =
 export const AI_ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-colors duration-300 hover:border-emerald-300/70 hover:text-emerald-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
 
-export default function AiDeck() {
+export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | null } = {}) {
+  const wide = !!panelTarget;
   const [active, setActive] = useState(0);
   const railRef = useRef<HTMLDivElement>(null);
   const count = CARDS.length;
@@ -660,6 +662,22 @@ export default function AiDeck() {
   }, [step]);
 
   const front = SERVICES[active];
+
+  const panel = (
+      <div
+      className={`glass-panel deck-neon-pulse flex items-start overflow-hidden rounded-3xl px-6 py-6 ${wide ? "h-auto" : "mt-6 h-auto min-h-[290px] lg:h-[226px] lg:min-h-0"}`}
+        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), 0 28px 70px -34px rgba(0,0,0,0.95)", "--card-glow-rgb": "52, 211, 153" } as React.CSSProperties}
+      >
+        <div className={wide ? "w-full" : "max-w-[460px]"}>
+          <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.title}</p>
+          <dl className={`mt-3 grid gap-2.5 ${wide ? "grid-cols-3 gap-x-6" : ""}`}>
+            <Fact stacked={wide} label="Что даёт" text={front.description} />
+            {front.audience && <Fact stacked={wide} label="Кому" text={front.audience} />}
+            {front.now && <Fact stacked={wide} label="Почему сейчас" text={front.now} />}
+          </dl>
+        </div>
+      </div>
+  );
 
   return (
     <div className="w-full max-w-[728px]">
@@ -961,19 +979,7 @@ export default function AiDeck() {
           ней) кайма в emerald дека. Раньше факты лежали прямо на фоне
           страницы и читались тише самого дека — теперь у них своя рамка и
           свой свет, а тезисы набраны белым, а не приглушённым paper/70. */}
-      <div
-        className="glass-panel deck-neon-pulse mt-6 flex h-auto min-h-[290px] items-start lg:h-[226px] lg:min-h-0 overflow-hidden rounded-3xl px-6 py-6"
-        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), 0 28px 70px -34px rgba(0,0,0,0.95)", "--card-glow-rgb": "52, 211, 153" } as React.CSSProperties}
-      >
-        <div className="max-w-[460px]">
-          <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.title}</p>
-          <dl className="mt-3 grid gap-2.5">
-            <Fact label="Что даёт" text={front.description} />
-            {front.audience && <Fact label="Кому" text={front.audience} />}
-            {front.now && <Fact label="Почему сейчас" text={front.now} />}
-          </dl>
-        </div>
-      </div>
+      {panelTarget ? createPortal(panel, panelTarget) : panel}
     </div>
   );
 }
@@ -983,10 +989,10 @@ export default function AiDeck() {
 // нужен ни индекс, ни точка перед подписью) и сам тезис справа, белым по
 // основному — Егор попросил убрать притушенный paper/70, факты должны
 // читаться так же чётко, как заголовок над ними, а не как подпись к нему.
-function Fact({ label, text }: { label: string; text: string }) {
+function Fact({ label, text, stacked }: { label: string; text: string; stacked?: boolean }) {
   return (
-    <div className="flex gap-3">
-      <dt className="w-[92px] shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300/80">
+    <div className={stacked ? "flex flex-col gap-1" : "flex gap-3"}>
+      <dt className={`${stacked ? "" : "w-[92px]"} shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300/80`}>
         {label}
       </dt>
       <dd className="text-[13px] leading-snug text-white">{text}</dd>
