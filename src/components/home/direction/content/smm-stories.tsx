@@ -299,7 +299,7 @@ export const smmStoriesContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Разберём аккаунт бесплатно</>,
     sub: (
       <>

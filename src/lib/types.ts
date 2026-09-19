@@ -42,5 +42,10 @@ export type PricingTier = {
   tagline: string;
   team: string;
   features: string[];
+  /** Struck-through "was" price shown above `price` (discount look). */
+  oldPrice?: string;
+  /** Client-benefit theses; when set, the /content tier card shows these
+   *  (with bright green dots) instead of the product list in `features`. */
+  benefits?: string[];
   pro: boolean;
 };

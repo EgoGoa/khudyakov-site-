@@ -228,7 +228,7 @@ export const aiAgentContent: DirectionContent = {
 
   pricing: {
     media: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
-    eyebrow: "Три сценария запуска",
+    eyebrow: "Три пути старта",
     align: "right",
     title: (
       <>
@@ -418,7 +418,7 @@ export const aiAgentContent: DirectionContent = {
 
   close: {
     media: { photo: "/images/stock/hologram-laptop.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full", position: "75% 45%" },
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     align: "center",
     title: (
       <>

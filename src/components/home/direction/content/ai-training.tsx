@@ -329,7 +329,7 @@ export const aiTrainingContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Проведём одну сессию бесплатно</>,
     sub: (
       <>

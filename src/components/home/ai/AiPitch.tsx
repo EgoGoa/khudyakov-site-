@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import AiDeck, { AI_PILL, AI_ROUND } from "@/components/home/ai/AiDeck";
 import { EYEBROW } from "@/lib/typography";
-import { aiToolLinks } from "@/components/home/direction/toolRegistry";
 import { TEAM } from "@/lib/team";
 import TeamAskCard from "@/components/home/TeamAskCard";
 
@@ -64,8 +62,9 @@ export default function AiPitch() {
       column
       headless
     >
-      <div className="lg:flex lg:items-center lg:gap-10 xl:gap-14">
-        <div className="w-full shrink-0 lg:w-[46%]">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:flex-row land:items-center land:gap-6">
+        <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-[46%] land:shrink-0">
+          <div className="order-1 lg:order-none land:order-none">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
               <span className={`${EYEBROW} text-emerald-300`}>01</span>
@@ -74,12 +73,14 @@ export default function AiPitch() {
           </Appear>
 
           <Appear from="up" delay={BEAT.title}>
-            <h2 className="chapter-neon-cool mt-3 max-w-[9.4em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] lg:text-[3.5rem] xl:text-[3.9rem]">
+            <h2 className="chapter-neon-cool mt-3 max-w-[9.4em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] land:text-[2.1rem] lg:text-[3.5rem] xl:text-[3.9rem]">
               <span className="whitespace-nowrap"><span className="kw">AI</span>-решения</span><br />
               быстрее рынка
             </h2>
           </Appear>
 
+          </div>
+          <div className="order-3 lg:order-none land:order-none">
           <Appear from="up" delay={BEAT.intro}>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
               Внедряем ИИ там, где это <span className="kw">ускоряет результат</span>, а не для галочки.
@@ -120,37 +121,14 @@ export default function AiPitch() {
               ))}
             </div>
           </Appear>
+          </div>
         </div>
 
-        {/* Hidden below lg: the coverflow needs the column beside it to make
-            sense, and there is no second column on a phone. Same call as
-            SitesDeck — a compact swipeable variant is a later pass. */}
-        <Appear from="right" delay={BEAT.content} className="mt-10 hidden lg:mt-0 lg:block lg:flex-1">
+        {/* Below lg the left column is `display: contents`, so `order` puts the
+            coverflow straight under the title on a phone (FanFit inside AiDeck
+            scales it to fit). */}
+        <Appear from="right" delay={BEAT.content} className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:flex-1">
           <AiDeck />
-        </Appear>
-
-        {/* Below lg the deck above is `hidden`, and with it the ONLY way to
-            reach the five tool pages disappears — no carousel, no "Открыть"
-            button, nothing stands in the space where the second column used
-            to be. On a viewport at or under lg's 1024px (most phones, most
-            tablets, and this project's own preview pane at its default
-            width) that reads as "не вижу кнопок для переходов" and an empty
-            right half of the screen, "верстка справа слетела" — which is
-            exactly what was reported. This is the fallback: the same five
-            tool links AiDeck's button surfaces one at a time, laid out
-            plainly instead of riding the 3D carousel that needs room a
-            narrow screen doesn't have. */}
-        <Appear from="up" delay={BEAT.content} className="mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:hidden">
-          {aiToolLinks.map((tool) => (
-            <Link
-              key={tool.slug}
-              href={`/ai/${tool.slug}`}
-              className="inline-flex items-center justify-between gap-2 rounded-xl bg-ink/45 px-3.5 py-3 font-display text-[11px] uppercase leading-tight tracking-[0.04em] text-paper/85 ring-1 ring-paper/10 transition-colors duration-300 hover:text-emerald-200 hover:ring-emerald-300/50"
-            >
-              {tool.label}
-              <span aria-hidden="true" className="text-emerald-300">→</span>
-            </Link>
-          ))}
         </Appear>
       </div>
     </CinematicSection>

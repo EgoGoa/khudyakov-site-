@@ -125,7 +125,7 @@ export default function Trust({
               Promo/Telegram row underneath it. 380px is that measured max
               plus a few px of headroom; overflow-hidden clips the rare
               case that isn't accounted for instead of growing past it. */}
-          <div className="rounded-2xl border border-paper/10 bg-ink/45 p-4 backdrop-blur-md sm:p-5 lg:h-[380px] lg:overflow-hidden">
+          <div className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md sm:p-5 lg:h-[380px] lg:overflow-hidden">
             <FaqAside />
           </div>
         </Appear>
@@ -234,11 +234,17 @@ export default function Trust({
           {active === "content" && (
             <PromoCard
               glow
-              image="/images/service-ai.jpg"
-              video="/video/ai-reel.mp4"
+              image="/images/works/aishowreel.jpg"
+              video="/video/works/aishowreel.mp4"
               badge="Акция только в сентябре"
               title="AI-видеоконтент"
-              subtitle="AI Reels на актуальных моделях генерации. Не просто красивый кадр: внутри сценарий и маркетинговая логика — зацеп в первую секунду, удержание до конца, понятное действие в финале. Десять секунд, которые работают на заявки."
+              subtitle="Что входит в акцию — 10 секунд, которые работают на заявки:"
+              details={[
+                { lead: "AI Reels", rest: "на актуальных моделях генерации" },
+                { lead: "Сценарий + маркетинг", rest: "внутри ролика, не просто красивый кадр" },
+                { lead: "Зацеп в 1-ю секунду", rest: "и удержание до конца" },
+                { lead: "Призыв в финале", rest: "— понятное действие" },
+              ]}
               price="9 500 ₽"
               oldPrice="17 500 ₽"
               href="/content/ai-video"

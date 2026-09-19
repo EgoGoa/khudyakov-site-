@@ -32,7 +32,7 @@ export default function TeamCard({ member, decor }: { member: TeamMember; decor?
         {decor}
         <span className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
           <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-2 ring-paper/20 transition group-hover:ring-glow">
-            <Image src={member.photo} alt={member.name} fill sizes="56px" className="object-cover" />
+            <Image unoptimized src={member.photo} alt={member.name} fill sizes="56px" className="object-cover" />
           </span>
         </span>
 

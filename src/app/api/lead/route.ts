@@ -10,7 +10,15 @@ import { BRIEF_EMAIL } from "@/lib/brief";
 // beyond name/phone, so adding a third lead form later never needs a new
 // route.
 type LeadPayload = {
-  type: "call" | "consult" | "brief" | "brief-ai" | "brief-smm" | "brief-sites" | "team";
+  type:
+    | "call"
+    | "consult"
+    | "brief"
+    | "brief-ai"
+    | "brief-smm"
+    | "brief-sites"
+    | "brief-hotel-video"
+    | "team";
   name: string;
   phone?: string;
   email?: string;
@@ -27,6 +35,7 @@ const TYPE_LABEL: Record<LeadPayload["type"], string> = {
   "brief-ai": "Бриф на AI-решение",
   "brief-smm": "Бриф на SMM",
   "brief-sites": "Бриф на сайт",
+  "brief-hotel-video": "Бриф на видеосъёмку базы отдыха",
   // Sent from a TeamCard/TeamConsultModal — `fields["Кому адресовано"]`
   // carries which team member the visitor actually clicked on.
   team: "Написали через карточку команды",

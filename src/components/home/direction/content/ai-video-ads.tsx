@@ -394,7 +394,7 @@ export const aiVideoAdsContent: DirectionContent = {
 
   close: {
     media: { photo: "/images/stock/books-vs-tech.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full" },
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     align: "center",
     title: (
       <>

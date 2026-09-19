@@ -297,7 +297,7 @@ export const sitesRedesignContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Проведём аудит бесплатно</>,
     sub: (
       <>

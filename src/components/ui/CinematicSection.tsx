@@ -277,11 +277,11 @@ export default function CinematicSection({
           // "буквы прыгают" jump. A pinned, full-screen chapter is never
           // meant to pan sideways, so the axis is closed outright and the
           // sticky stage's own overflow-hidden does the clipping.
-          ? `absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 pb-12 pt-[5.5rem] lg:px-10 lg:pb-12 lg:pt-[5.5rem] ${
+          ? `absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 pb-12 pt-[5.5rem] lg:px-10 lg:pb-12 lg:pt-[5.5rem] land:pb-10 land:pt-8 land:pl-[max(1rem,env(safe-area-inset-left))] land:pr-[max(1rem,env(safe-area-inset-right))] ${
               active ? "" : "pointer-events-none"
             }`
           : roomy
-          ? "relative flex min-h-[100svh] flex-col px-6 py-16 sm:py-20 lg:min-h-screen lg:px-10 lg:py-24"
+          ? "relative flex min-h-[100svh] flex-col px-6 py-16 sm:py-20 lg:min-h-screen lg:px-10 lg:py-24 land:py-10"
           : "relative flex flex-col px-6 py-10 sm:py-14 lg:px-10"
       }
       // touch-action pan-y so the pane itself can be dragged on a phone; the
@@ -359,7 +359,7 @@ export default function CinematicSection({
             // values rather than the next Tailwind step down so the cut is
             // the exact 30% he asked for, not whatever the nearest size
             // token happens to land on.
-            className={`chapter-neon font-display uppercase leading-[0.95] tracking-tight ${
+            className={`chapter-neon font-display uppercase leading-[0.95] tracking-tight land:!text-[1.6rem] ${
               titleClassName || "text-[1.575rem] sm:text-[2.625rem] lg:text-[2.625rem] xl:text-[3.15rem]"
             }`}
           >
@@ -374,7 +374,7 @@ export default function CinematicSection({
               // the weight it carries on /sites, on every page — at the old
               // size it read as a caption pinned under the title rather than
               // as the sentence that explains the chapter.
-              className={`relative z-10 mx-auto ${CHAPTER_INTRO} ${
+              className={`relative z-10 mx-auto ${CHAPTER_INTRO} land:!mt-1.5 land:!text-xs land:!leading-snug ${
                 column ? "mt-4 max-w-[34em]" : "mt-3 max-w-[42em]"
               }`}
             >

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
@@ -135,7 +135,7 @@ const pages = [
 const landingSlugs = ["content", "ai", "sites", "smm"];
 
 export default function Header() {
-  const pathname = usePathname();
+  const pathname = useCleanPathname();
   const isHome = pathname === "/";
   const isLanding = landingSlugs.includes(pathname.replace(/^\//, ""));
   const api = useFullpage();
@@ -241,7 +241,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 land:pointer-events-none land:!border-transparent land:!bg-transparent land:!backdrop-blur-none ${
         menuOpen
           ? "bg-transparent"
           : scrolled
@@ -249,11 +249,11 @@ export default function Header() {
           : "bg-transparent"
       }`}
     >
-      <Container className="relative z-10 flex h-16 items-center justify-between sm:h-20">
+      <Container className="relative z-10 flex h-16 items-center justify-between sm:h-20 land:h-10 land:justify-end land:px-[max(1rem,env(safe-area-inset-left))] land:pr-[max(1rem,env(safe-area-inset-right))]">
         <Link
           href="/"
           onClick={navigateHome}
-          className="flex shrink-0 items-center gap-2 py-2 font-display uppercase leading-none tracking-[0.08em] text-paper transition active:scale-[0.97] sm:gap-2.5"
+          className="flex shrink-0 items-center gap-2 py-2 land:hidden font-display uppercase leading-none tracking-[0.08em] text-paper transition active:scale-[0.97] sm:gap-2.5"
         >
           <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full bg-rec sm:h-2.5 sm:w-2.5" />
           <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] uppercase tracking-tight">
@@ -294,13 +294,13 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-3 sm:gap-4">
           <a
             href="tel:+79925111812"
-            className="hidden items-center gap-2 whitespace-nowrap text-sm font-medium text-paper/80 transition-colors hover:text-paper sm:inline-flex"
+            className="hidden items-center gap-2 whitespace-nowrap text-sm font-medium text-paper/80 transition-colors hover:text-paper sm:inline-flex land:!hidden"
           >
             <PhoneIcon className="icon-neon-pulse text-glow" />
             +7 992 511-18-12
           </a>
 
-          <div className="relative">
+          <div className="relative land:ml-auto land:pointer-events-auto">
             <motion.button
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
@@ -312,7 +312,7 @@ export default function Header() {
               // same 40/44px box so the tap target is unchanged; only the
               // decoration is gone, with hover moving from a filling disc to
               // the glyph itself brightening.
-              className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center text-paper/80 transition-colors duration-150 hover:text-paper sm:h-11 sm:w-11"
+              className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center text-paper/80 transition-colors duration-150 hover:text-paper sm:h-11 sm:w-11 land:text-paper/55"
             >
               {menuOpen ? <CloseIcon /> : <MenuIcon />}
             </motion.button>
@@ -330,7 +330,7 @@ export default function Header() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.98 }}
                   transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute right-0 top-full z-10 mt-3 hidden w-72 origin-top-right overflow-hidden rounded-2xl border border-paper/10 bg-ink/80 shadow-[0_24px_60px_-16px_rgba(0,0,0,0.85)] backdrop-blur-2xl lg:block"
+                  className="absolute right-0 top-full z-10 mt-3 hidden w-72 origin-top-right overflow-hidden rounded-2xl bg-ink/80 shadow-[0_24px_60px_-16px_rgba(0,0,0,0.85)] backdrop-blur-2xl lg:block"
                 >
                   <nav className="flex flex-col p-1.5">
                     {sections.map((s) => (
@@ -388,78 +388,90 @@ export default function Header() {
         </div>
       </Container>
 
-      {/* Mobile/tablet: the full-screen takeover — a compact popover would be
-          fiddly to tap accurately, so this stays a plain slide-in panel. */}
+      {/* Mobile/tablet: a compact glass panel on the right — about 84% of a
+          portrait phone (capped at 320px) and a third of a landscape one —
+          instead of a full-screen takeover. A scrim behind it closes the menu
+          on tap. */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
-            key="panel"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-0 flex flex-col bg-ink lg:hidden"
-          >
-            <nav className="flex flex-1 flex-col justify-center gap-0.5 overflow-y-auto px-6 pt-16 sm:gap-1 sm:px-10 sm:pt-20">
-              {sections.map((s, i) => (
-                <Link
-                  key={s.id}
-                  href={hrefFor(s.id)}
-                  onClick={(e) => {
-                    navigateTo(e, s.id);
-                    setMenuOpen(false);
-                  }}
-                  className={`group flex items-baseline gap-3 border-b border-paper/10 py-3 transition-all duration-150 active:translate-x-1 sm:gap-5 sm:py-4 ${
-                    active === s.id ? "text-glow" : "text-paper hover:text-glow"
-                  }`}
-                >
-                  <span className="w-5 shrink-0 font-display text-[clamp(0.6rem,1.5vw,0.8rem)] text-paper/40 group-hover:text-glow/60">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="font-display uppercase leading-none tracking-tight text-[clamp(1.5rem,7vw,3.25rem)] sm:hidden">
-                    {s.short}
-                  </span>
-                  <span className="hidden font-display uppercase leading-none tracking-tight text-[clamp(1.5rem,7vw,3.25rem)] sm:inline">
-                    {s.label}
-                  </span>
-                </Link>
-              ))}
+          <>
+            <motion.button
+              key="scrim"
+              type="button"
+              aria-label="Закрыть меню"
+              onClick={() => setMenuOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="pointer-events-auto fixed inset-0 z-0 cursor-default bg-ink/45 lg:hidden"
+            />
+            <motion.div
+              key="panel"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="pointer-events-auto fixed inset-y-0 right-0 z-0 flex w-[min(84vw,320px)] flex-col rounded-l-3xl bg-ink/85 shadow-[-24px_0_60px_-20px_rgba(0,0,0,0.85)] backdrop-blur-2xl lg:hidden land:w-[max(33vw,300px)] land:pr-[env(safe-area-inset-right)]"
+            >
+              <nav className="flex flex-1 flex-col justify-center gap-0 overflow-y-auto px-5 pt-16 land:pt-12">
+                {sections.map((s, i) => (
+                  <Link
+                    key={s.id}
+                    href={hrefFor(s.id)}
+                    onClick={(e) => {
+                      navigateTo(e, s.id);
+                      setMenuOpen(false);
+                    }}
+                    className={`group flex items-baseline gap-3 border-b border-paper/10 py-2.5 transition-all duration-150 active:translate-x-1 land:py-1.5 ${
+                      active === s.id ? "text-glow" : "text-paper hover:text-glow"
+                    }`}
+                  >
+                    <span className="w-5 shrink-0 font-display text-[0.6rem] text-paper/40 group-hover:text-glow/60">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display text-[1.05rem] uppercase leading-none tracking-tight">
+                      {s.label}
+                    </span>
+                  </Link>
+                ))}
 
-              {pages.map((p, i) => (
+                {pages.map((p, i) => (
+                  <Link
+                    key={p.href}
+                    href={p.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={`group flex items-baseline gap-3 border-b border-paper/10 py-2.5 transition-all duration-150 active:translate-x-1 land:py-1.5 ${
+                      pathname === p.href ? "text-glow" : "text-paper hover:text-glow"
+                    }`}
+                  >
+                    <span className="w-5 shrink-0 font-display text-[0.6rem] text-paper/40 group-hover:text-glow/60">
+                      {String(sections.length + i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display text-[1.05rem] uppercase leading-none tracking-tight">
+                      {p.label}
+                    </span>
+                  </Link>
+                ))}
+              </nav>
+
+              <div className="flex flex-col gap-2.5 px-5 pb-6 pt-3 land:pb-3">
+                <a
+                  href="tel:+79925111812"
+                  className="text-center text-xs font-medium text-paper/70 transition-colors hover:text-paper"
+                >
+                  +7 992 511-18-12
+                </a>
                 <Link
-                  key={p.href}
-                  href={p.href}
+                  href="/brief"
                   onClick={() => setMenuOpen(false)}
-                  className={`group flex items-baseline gap-3 border-b border-paper/10 py-3 transition-all duration-150 active:translate-x-1 sm:gap-5 sm:py-4 ${
-                    pathname === p.href ? "text-glow" : "text-paper hover:text-glow"
-                  }`}
+                  className="btn-neon btn-warm w-full !py-2.5 !text-[11px]"
                 >
-                  <span className="w-5 shrink-0 font-display text-[clamp(0.6rem,1.5vw,0.8rem)] text-paper/40 group-hover:text-glow/60">
-                    {String(sections.length + i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="font-display uppercase leading-none tracking-tight text-[clamp(1.5rem,7vw,3.25rem)]">
-                    {p.label}
-                  </span>
+                  Заполнить бриф
                 </Link>
-              ))}
-            </nav>
-
-            <div className="flex flex-col gap-3 px-6 pb-8 pt-4 sm:px-10">
-              <a
-                href="tel:+79925111812"
-                className="text-center text-sm font-medium text-paper/70 transition-colors hover:text-paper"
-              >
-                +7 992 511-18-12
-              </a>
-              <Link
-                href="/brief"
-                onClick={() => setMenuOpen(false)}
-                className="btn-neon btn-warm w-full"
-              >
-                Заполнить бриф
-              </Link>
-            </div>
-          </motion.div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>

@@ -296,7 +296,7 @@ export const smmBloggersContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Подберём блогера бесплатно</>,
     sub: (
       <>

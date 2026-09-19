@@ -174,7 +174,7 @@ export default function CalculatorPageContent() {
         <Container className="text-center">
           <SectionHead
             head={{
-              eyebrow: "Один следующий шаг",
+              eyebrow: "С чего начнём",
               align: "center",
               title: (
                 <>

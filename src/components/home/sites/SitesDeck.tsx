@@ -2,6 +2,7 @@
 
 import { useCallback, useState, type CSSProperties } from "react";
 import Link from "next/link";
+import FanFit from "@/components/ui/FanFit";
 import { sitesFormatPages } from "@/components/home/direction/sitesFormatRegistry";
 
 // Cyan — the site-wide `glow` accent /sites already uses for hover states
@@ -328,7 +329,7 @@ const FAN: Record<number, { x: number; y: number; scale: number; opacity: number
 };
 
 const CARD_SHELL =
-  "rounded-[20px] border border-white/[0.14] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-2xl backdrop-saturate-150";
+  "rounded-[20px] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-2xl backdrop-saturate-150";
 
 // The chapter's button language, matching the minimalism of the references
 // Egor picked: a flat gradient pill in the mono face, no bevel. Deliberately
@@ -358,7 +359,8 @@ export default function SitesDeck() {
           description under it changes length — grown from 290 to fit the
           front card's new +20% size (240px tall × 1.2 ≈ 288px) plus its
           upward y-nudge. */}
-      <div className="relative h-[320px]">
+      <FanFit designWidth={341} height={320} onSwipe={step}>
+      <div className="relative h-full">
         {SERVICES.map((service, i) => {
           // Signed, wrapped distance from the active card: -2..+2, so the
           // last card sits to the *left* of the first rather than looping
@@ -449,9 +451,7 @@ export default function SitesDeck() {
                 <Link
                   href={`/sites/${service.id}`}
                   aria-current="true"
-                  className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL} ${
-                    service.hit ? "ring-2 ring-[#ff8a5c]/50" : ""
-                  }`}
+                  className={`deck-card-glow deck-neon-pulse absolute inset-0 overflow-hidden text-left ${CARD_SHELL}`}
                   style={service.hit ? CARD_GLOW_STYLE_HIT : CARD_GLOW_STYLE}
                 >
                   <SiteThumb shape={service.shape} image={service.image} animate />
@@ -466,7 +466,7 @@ export default function SitesDeck() {
                   aria-current={isFront ? "true" : undefined}
                   className={`absolute inset-0 overflow-hidden text-left ${CARD_SHELL} ${
                     isFront ? "cursor-default" : "cursor-pointer"
-                  } ${service.hit ? "ring-2 ring-[#ff8a5c]/50" : ""}`}
+                  }`}
                 >
                   <SiteThumb shape={service.shape} image={service.image} animate={isFront} />
                   {isFront && caption}
@@ -500,6 +500,7 @@ export default function SitesDeck() {
           </svg>
         </button>
       </div>
+      </FanFit>
 
       {/* The lit track: one node per category, the active one flaring the
           same orange as the chapter rail down the left edge. The rail
@@ -547,8 +548,8 @@ export default function SitesDeck() {
           in the copy column beside the fan, and a second copy of it here
           read as the same offer made twice. */}
       <div
-        className="glass-panel mt-6 flex h-[240px] items-start overflow-hidden rounded-3xl px-6 py-6"
-        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), inset 0 0 0 1px rgba(255,255,255,0.045), 0 0 0 1px rgba(0,210,255,0.22), 0 0 32px -6px rgba(0,210,255,0.35), 0 28px 70px -34px rgba(0,0,0,0.95)" }}
+        className="glass-panel deck-neon-pulse mt-6 flex h-auto min-h-[300px] items-start lg:h-[240px] lg:min-h-0 overflow-hidden rounded-3xl px-6 py-6"
+        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), 0 28px 70px -34px rgba(0,0,0,0.95)", "--card-glow-rgb": "0, 210, 255" } as CSSProperties}
       >
         <div className="max-w-[460px]">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">

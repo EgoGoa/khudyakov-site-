@@ -3,8 +3,11 @@
   "configurations": [
     {
       "name": "khudyakov-site-start",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "pkill -f \"node_modules/.bin/next dev\"; pkill -f next-server; sleep 1; rm -f .next/dev/lock; exec npm run dev"
+      ],
       "port": 3000,
       "autoPort": true
     }

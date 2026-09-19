@@ -187,7 +187,7 @@ export function PersonBadge({ person }: { person: TeamMember }) {
     <span className="mb-2 flex items-center gap-2">
       <span className="relative h-6 w-6 shrink-0">
         <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-1 ring-paper/25">
-          <Image src={person.photo} alt={person.name} fill sizes="24px" className="object-cover" />
+          <Image unoptimized src={person.photo} alt={person.name} fill sizes="24px" className="object-cover" />
         </span>
         <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-ink">
           <span className="team-online-dot h-[7px] w-[7px] rounded-full bg-emerald-400" />

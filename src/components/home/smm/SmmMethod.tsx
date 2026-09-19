@@ -164,7 +164,7 @@ export default function SmmMethod() {
         }
       >
         <Appear from="right" delay={BEAT.content} blurPx={18}>
-          <div className="overflow-x-auto rounded-2xl border border-white/[0.12] bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150">
+          <div className="overflow-x-auto rounded-2xl bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150">
             <table className="w-full min-w-[520px] border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-paper/15">

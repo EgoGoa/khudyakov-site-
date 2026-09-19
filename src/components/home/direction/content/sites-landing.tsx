@@ -301,7 +301,7 @@ export const sitesLandingContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Обсудим оффер бесплатно</>,
     sub: (
       <>

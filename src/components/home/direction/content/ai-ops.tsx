@@ -400,7 +400,7 @@ export const aiOpsContent: DirectionContent = {
 
   close: {
     media: { photo: "/images/stock/statue-popart.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full" },
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     align: "center",
     title: (
       <>

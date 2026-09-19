@@ -296,7 +296,7 @@ export const smmAdsContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Разберём воронку бесплатно</>,
     sub: (
       <>

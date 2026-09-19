@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build:static": "./scripts/build-static.sh",
+    "deploy:ru": "./scripts/deploy-ru.sh"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

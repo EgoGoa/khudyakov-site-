@@ -8,6 +8,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        // A phone held sideways: wide, but only ~350-430px of height. Used to
+        // give the page back its vertical room (thin header, tight padding)
+        // and to lay the pitch chapters out in two columns.
+        land: { raw: "(orientation: landscape) and (max-height: 520px)" },
+      },
       colors: {
         paper: {
           DEFAULT: "#DCDDEF",

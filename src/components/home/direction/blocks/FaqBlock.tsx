@@ -91,7 +91,10 @@ export default function FaqBlock({ faq }: { faq: DirectionContent["faq"] }) {
             })}
           </div>
 
-          <div className="hidden lg:block">
+          {/* flex, чтобы панель растягивалась на всю высоту левого списка: верх
+              первой строки и низ шестой совпадают с границами панели, а не
+              зависят от длины ответа. */}
+          <div className="hidden lg:flex">
             <AnimatePresence mode="wait">
               {answer ? (
                 <motion.div
@@ -100,7 +103,7 @@ export default function FaqBlock({ faq }: { faq: DirectionContent["faq"] }) {
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -12, filter: "blur(6px)" }}
                   transition={{ duration: 0.45, ease: EASE }}
-                  className="glass-panel sticky top-28 rounded-3xl p-9"
+                  className="glass-panel flex w-full flex-col justify-center rounded-3xl p-9"
                 >
                   <span className={`${EYEBROW} text-orange`}>
                     Ответ / {String(active + 1).padStart(2, "0")}

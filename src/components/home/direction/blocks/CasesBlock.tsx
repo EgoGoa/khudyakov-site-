@@ -79,7 +79,7 @@ export default function CasesBlock({ cases }: { cases: NonNullable<DirectionCont
 
         <div className="mt-16 lg:grid lg:grid-cols-[1.45fr_1fr] lg:gap-12">
           <Appear from="left" delay={DIRECTION_BEAT.content}>
-            <div className="relative aspect-video overflow-hidden rounded-3xl bg-ink ring-1 ring-paper/10">
+            <div className="relative aspect-video overflow-hidden rounded-3xl bg-ink">
               <AnimatePresence mode="wait">
                 {current?.youtubeId ? (
                   <motion.iframe

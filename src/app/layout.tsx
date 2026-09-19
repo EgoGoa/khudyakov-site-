@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Unbounded, Manrope, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
+import MobileScrollRail from "@/components/ui/MobileScrollRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import OffscreenAnimationPause from "@/components/layout/OffscreenAnimationPause";
 import { FullpageProvider } from "@/lib/fullpage";
@@ -52,6 +53,15 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://khudyakov-site.ver
 const TITLE = "HDKV.AGENCY — AI-диджитал агентство полного цикла";
 const DESCRIPTION =
   "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HDKV.AGENCY соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 8 лет опыта, 450+ проектов, 350+ клиентов.";
+
+// viewport-fit=cover lets the page run under the notch in landscape so it can
+// use the full width of the phone; the safe-area insets are re-applied where
+// content needs them (see the `land:` paddings).
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   // Absolute base for every relative URL below (opengraph-image.tsx included)
@@ -106,6 +116,7 @@ export default function RootLayout({
                 <ConditionalFooter />
               </div>
               <VibeRail />
+              <MobileScrollRail />
               {/* Кнопка «наверх» — здесь, а не в шаблонах страниц: она
                   нужна на каждой странице сайта, и один экземпляр в layout
                   закрывает и разделы, и подстраницы, и служебные. */}

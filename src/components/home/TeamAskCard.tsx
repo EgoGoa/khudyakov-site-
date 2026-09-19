@@ -84,7 +84,7 @@ export default function TeamAskCard({
           <div className="flex items-start gap-3">
             <span className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
               <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-1 ring-paper/25">
-                <Image src={member.photo} alt={member.name} fill sizes="56px" className="object-cover" />
+                <Image unoptimized src={member.photo} alt={member.name} fill sizes="56px" className="object-cover" />
               </span>
             </span>
             <div className="min-w-0">
@@ -128,7 +128,7 @@ export default function TeamAskCard({
       <div className="flex items-start gap-3">
         <span className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
           <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-1 ring-paper/25">
-            <Image src={member.photo} alt={member.name} fill sizes="56px" className="object-cover" />
+            <Image unoptimized src={member.photo} alt={member.name} fill sizes="56px" className="object-cover" />
           </span>
         </span>
         <div className="min-w-0">
@@ -174,7 +174,7 @@ export default function TeamAskCard({
       <div className="relative z-10">
         <span className={`relative mx-auto block ${dense ? "h-14 w-14" : "h-24 w-24 sm:h-28 sm:w-28"}`}>
           <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-4 ring-paper/95">
-            <Image src={member.photo} alt={member.name} fill sizes="112px" className="object-cover" />
+            <Image unoptimized src={member.photo} alt={member.name} fill sizes="112px" className="object-cover" />
           </span>
         </span>
 

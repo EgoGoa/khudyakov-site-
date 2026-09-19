@@ -1635,6 +1635,9 @@ body {
    the footage. */
 .promo-card-video {
   opacity: 0.78;
+  /* Light blur (Egor's ask: "10%") so the footage reads as a backdrop and
+     the thesis text on top stays the focus. */
+  filter: saturate(1.15) blur(2px);
 }
 
 .promo-card:hover .promo-card-video {
@@ -3181,7 +3184,7 @@ body {
 .c3-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
   backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid transparent;
   border-radius: 32px;
   padding: 44px 28px;
   min-height: 520px;
@@ -3319,6 +3322,29 @@ body {
   animation: c3-check-pulse 1.8s ease-in-out infinite;
 }
 
+/* Brighter green pulsing dot for the client-benefit theses (tier.benefits).
+   Same pulse as .c3-check, just neon green and with a stronger glow. */
+.c3-check.c3-check-green {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.22);
+}
+.c3-check.c3-check-green::after {
+  box-shadow: 0 0 10px 2px #4ade80;
+}
+
+/* Discount price on tier cards: bigger, heavier, gradient "from" price. */
+.tier-new-price {
+  display: block;
+  font-size: 1.5em;
+  font-weight: 900;
+  line-height: 1.1;
+  background: linear-gradient(90deg, #ffb36b, #ff4fa3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 10px rgba(255, 120, 120, 0.35));
+}
+
 @keyframes c3-check-pulse {
   0%,
   100% {
@@ -3401,7 +3427,7 @@ body {
   --process-glow-border: rgba(0, 210, 255, 0.65);
   --process-glow-ring: rgba(0, 210, 255, 0.2);
   --process-glow-shadow: rgba(0, 210, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid transparent;
   transition: background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   /* Runs the page's own accent through the six cards one at a time —
@@ -4297,7 +4323,6 @@ body {
   backdrop-filter: blur(7px) saturate(125%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.13),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.045),
     0 28px 70px -34px rgba(0, 0, 0, 0.95);
   transition:
     background 0.4s ease,
@@ -4547,3 +4572,79 @@ body {
    default orange/cyan palette (that's already this page's own colour), so
    only the headline gradient and hero copy need the direction's own words;
    no utility-class repaint needed here. */
+
+
+/* Телефон: всё чуть мельче, чтобы страница дышала. rem-размеры (а это почти
+   весь Tailwind) уменьшаются разом, десктоп не затронут. */
+@media (max-width: 639px) {
+  html {
+    font-size: 90%;
+  }
+}
+
+/* Стрелки-подсказки для скролла пальцем справа (MobileScrollRail, телефон). */
+@keyframes rail-chev-fade {
+  0%, 100% { opacity: 0.18; }
+  50% { opacity: 0.85; }
+}
+.scroll-rail-chev {
+  opacity: 0.18;
+  animation: rail-chev-fade 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.55));
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-rail-chev { animation: none; opacity: 0.45; }
+}
+
+/* Slow neon breathing for the deck cards and their info panels. Replaces the
+   thin 1px outlines (border / ring / 0 0 0 1px shadows) that read as cheap:
+   the edge is now a soft light that swells and fades on a ~5s cycle, tinted by
+   --card-glow-rgb. Hover pauses it and hands over to the brighter
+   .deck-card-glow hover state. */
+@keyframes deck-neon-breathe {
+  0%, 100% {
+    box-shadow:
+      0 0 16px 0 rgba(var(--card-glow-rgb), 0.22),
+      0 0 40px -4px rgba(var(--card-glow-rgb), 0.16),
+      0 28px 70px -24px rgba(0, 0, 0, 0.85);
+  }
+  50% {
+    box-shadow:
+      0 0 26px 3px rgba(var(--card-glow-rgb), 0.5),
+      0 0 64px 4px rgba(var(--card-glow-rgb), 0.3),
+      0 28px 70px -24px rgba(0, 0, 0, 0.85);
+  }
+}
+
+.deck-neon-pulse {
+  animation: deck-neon-breathe 5s ease-in-out infinite;
+}
+
+.deck-neon-pulse:hover,
+.deck-neon-pulse:focus-visible {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-neon-pulse {
+    animation: none;
+    box-shadow: 0 0 22px 1px rgba(var(--card-glow-rgb), 0.35), 0 28px 70px -24px rgba(0, 0, 0, 0.85);
+  }
+}
+
+/* ── Phone held sideways ─────────────────────────────────────────────────
+   Wide but only ~350-430px tall: chapter headings and their lead lines were
+   sized for portrait and ate most of the height, pushing the real content
+   below the fold. Tighter type here gives that room back. */
+@media (orientation: landscape) and (max-height: 520px) {
+  [data-chapter-pane] h2 {
+    font-size: 1.6rem !important;
+    line-height: 1 !important;
+    margin-top: 0.25rem !important;
+  }
+  [data-chapter-pane] p.font-display.uppercase {
+    font-size: 0.75rem !important;
+    line-height: 1.25 !important;
+    margin-top: 0.5rem !important;
+  }
+}

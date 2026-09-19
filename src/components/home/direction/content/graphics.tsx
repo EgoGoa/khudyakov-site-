@@ -41,7 +41,7 @@ export const graphicsContent: DirectionContent = {
     ),
     video: "/video/works/showreel-2024-motion-hero.mp4",
     poster: "/images/works/showreel-2024-motion-hero.jpg",
-    typed: "Показать то, что не покажет камера",
+    typed: "Показать невидимое для камеры",
     teamAsk: {
       memberId: "egor",
       question: "Нужна графика под конкретный продукт?",
@@ -199,7 +199,7 @@ export const graphicsContent: DirectionContent = {
 
   pricing: {
     media: { photo: "/images/stock/team-ideas.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
-    eyebrow: "Три сценария запуска",
+    eyebrow: "Три пути старта",
     align: "right",
     title: (
       <>
@@ -245,7 +245,7 @@ export const graphicsContent: DirectionContent = {
         price: "от 450 000 ₽",
         tagline: "Изделие изнутри",
         features: [
-          "3D-моделирование по чертежам",
+          "3D-модели по вашим чертежам",
           "Взрыв-схемы и разрезы, фотореалистичный рендер",
           "Сведение с живой съёмкой, если она есть",
         ],
@@ -410,7 +410,7 @@ export const graphicsContent: DirectionContent = {
       blurPx: 11,
       intensity: "loud",
     },
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     align: "center",
     title: (
       <>

@@ -29,6 +29,15 @@ export default function Hero() {
   // headline/CTAs settle first: a static frame from the reel covers the
   // spot immediately, and the <video> fades in once it's ready.
   const [loadReel, setLoadReel] = useState(false);
+  // Phones (and anyone with Data Saver on) get a 640px, 1.9 MB cut of the same
+  // reel instead of the 9.4 MB full-HD one — the picture is blurred and
+  // scaled behind the headline anyway, so nothing visible is lost, and it
+  // starts far sooner on a mobile connection.
+  const [reelSrc, setReelSrc] = useState("/video/showreel-hero.mp4");
+  useEffect(() => {
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (window.innerWidth < 900 || saveData) setReelSrc("/video/showreel-hero-mobile.mp4");
+  }, []);
   useEffect(() => {
     if (typeof window.requestIdleCallback === "function") {
       const id = window.requestIdleCallback(() => setLoadReel(true), { timeout: 1500 });
@@ -51,7 +60,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="top" className="relative flex min-h-screen flex-col overflow-hidden pb-0 pt-16 text-paper sm:pt-20">
+    <section id="top" className="relative flex min-h-screen flex-col overflow-hidden pb-0 pt-16 text-paper sm:pt-20 land:pt-6">
       {/* showreel behind the headline, full width across the top of the
           site — playing on a loop, softly blurred at rest so the type stays
           readable and snapping sharp on hover */}
@@ -81,7 +90,7 @@ export default function Hero() {
           <video
             ref={videoRef}
             className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 object-cover blur-[3px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]"
-            src="https://dycovk4hzuqtba8u.public.blob.vercel-storage.com/showreel-hero-e6VCCW3hfd254NrnUvPykYZuPqjvFh.mp4"
+            src={reelSrc}
             poster="/images/showreel-frame.jpg"
             autoPlay
             muted
@@ -163,7 +172,7 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.25 }}
           className={`mt-2 max-w-[70%] text-left ${HERO_LEAD}`}
         >
-          В основе агентства — команда, а не технологии: продюсеры и монтажёры в продакшне, <span className="kw">AI-инженеры</span> в AI-решениях, разработчики на сайтах, SMM-специалисты в соцсетях. AI мы подключили как инструмент — и стали не просто быстрее, а <span className="kw">глубже и эффективнее</span> для каждого клиента.
+          <span className="kw">Команда</span>, а не технологии. AI мы подключили как инструмент — чтобы делать <span className="kw">глубже и эффективнее</span>.
         </motion.p>
 
         <motion.div

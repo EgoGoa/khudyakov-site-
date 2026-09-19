@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useHeaderMenu } from "@/lib/header-menu";
@@ -28,7 +28,7 @@ const PAGE_ACTIVE_ID: Record<string, string> = {
 // section's own `id=` for the latter — so the exact same technique
 // (same rootMargin) covers both without knowing which one it's on.
 function useActiveRailId(anchorIds: string[]): string {
-  const pathname = usePathname();
+  const pathname = useCleanPathname();
   const [activeId, setActiveId] = useState("");
   const anchorKey = anchorIds.join(",");
 
@@ -605,7 +605,7 @@ const CROSS_PAGE_ITEMS: RailItem[] = [
 // cross-page rows. A page not in PAGE_BLOCKS (e.g. /works itself) just gets
 // the cross-page rows, matching the previous single-list behaviour.
 function useRailItems(): { pageItems: RailItem[]; crossPageItems: RailItem[]; anchorIds: string[] } {
-  const pathname = usePathname();
+  const pathname = useCleanPathname();
   const blocks = PAGE_BLOCKS[pathname] ?? [];
   const pageItems = blocks.map((block) => ({ ...block, href: `${pathname}#${block.id}` }));
   return { pageItems, crossPageItems: CROSS_PAGE_ITEMS, anchorIds: blocks.map((b) => b.id) };
@@ -1164,7 +1164,7 @@ export default function VibeRail() {
       {/* Mobile entry point — the old floating "VIBE САЙТ" button's slot and
           role, same static round style as the desktop rail's trigger rather
           than the old button's constant animated glow. */}
-      <div className="fixed bottom-6 right-6 z-[65] lg:hidden">
+      <div className="fixed bottom-6 right-6 z-[65] hidden">
         <button
           type="button"
           onClick={() => setSheetOpen(true)}

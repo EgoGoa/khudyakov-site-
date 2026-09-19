@@ -330,7 +330,7 @@ export const aiPersonalizationContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Соберём 3 версии одного письма</>,
     sub: (
       <>

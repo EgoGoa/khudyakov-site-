@@ -83,7 +83,7 @@ export default function TeamConsultModal({
           <>
             <span className="relative mx-auto block h-16 w-16">
               <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-2 ring-glow/50">
-                <Image src={member.photo} alt={member.name} fill sizes="64px" className="object-cover" />
+                <Image unoptimized src={member.photo} alt={member.name} fill sizes="64px" className="object-cover" />
               </span>
             </span>
 

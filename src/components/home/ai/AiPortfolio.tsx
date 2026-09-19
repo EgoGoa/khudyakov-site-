@@ -47,7 +47,7 @@ function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"]
   const dot = (cls = "bg-emerald-300/80", extra = "") => <span className={`block h-1.5 w-1.5 shrink-0 rounded-full ${cls} ${extra}`} />;
 
   return (
-    <div className="ai-thumb-live relative flex h-full min-h-[132px] w-full flex-col justify-center gap-2 overflow-hidden rounded-xl border border-paper/10 bg-paper/[0.03] p-3">
+    <div className="ai-thumb-live relative flex h-full min-h-[132px] w-full flex-col justify-center gap-2 overflow-hidden rounded-xl bg-paper/[0.03] p-3">
       {format === "Чат-бот" && (
         <>
           {/* Директ и Telegram отвечают сами, пока менеджер занят — та же

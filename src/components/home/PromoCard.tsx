@@ -25,6 +25,12 @@ import LeadModal from "@/components/home/LeadModal";
 // obvious third option to add rather than inline styles creeping in here.
 export type PromoCardPalette = "warm" | "cyan";
 
+// A plain string renders as before (Process.tsx's dash list). The
+// `{ lead, rest }` form is the "thesis" look Egor asked for on the Trust
+// card: a bold accent-coloured lead phrase with a check mark, and a short
+// white tail — so the benefit is caught at a glance instead of read.
+export type PromoDetail = string | { lead: string; rest?: string };
+
 export default function PromoCard({
   glow = false,
   palette = "warm",
@@ -58,7 +64,7 @@ export default function PromoCard({
   /** Bullet list under the subtitle — what's actually included in the
    *  offer. Optional: the compact Trust.tsx instance skips it, the fuller
    *  Process.tsx one uses it to spell out the deal instead of a one-liner. */
-  details?: string[];
+  details?: PromoDetail[];
   price: string;
   oldPrice: string;
   href: string;
@@ -157,12 +163,29 @@ export default function PromoCard({
               </span>
               <span className="mt-0.5 block text-[10px] font-semibold leading-snug text-white">{subtitle}</span>
               {details && details.length > 0 && (
-                <ul className="mt-1.5 space-y-0.5">
-                  {details.map((line) => (
-                    <li key={line} className="text-[9px] font-medium leading-snug text-white">
-                      {line}
-                    </li>
-                  ))}
+                <ul className="mt-1.5 space-y-1">
+                  {details.map((item) =>
+                    typeof item === "string" ? (
+                      <li key={item} className="text-[9px] font-medium leading-snug text-white">
+                        {item}
+                      </li>
+                    ) : (
+                      <li key={item.lead} className="flex items-start gap-1.5 text-[10px] leading-snug text-white">
+                        <span
+                          className={`mt-px shrink-0 font-bold ${cyan ? "text-[#5ee7ff]" : "text-[#ffb36b]"}`}
+                          aria-hidden="true"
+                        >
+                          ✓
+                        </span>
+                        <span>
+                          <b className={`font-extrabold uppercase tracking-wide ${cyan ? "text-[#5ee7ff]" : "text-[#ffb36b]"}`}>
+                            {item.lead}
+                          </b>
+                          {item.rest && <span className="font-semibold"> {item.rest}</span>}
+                        </span>
+                      </li>
+                    ),
+                  )}
                 </ul>
               )}
             </span>

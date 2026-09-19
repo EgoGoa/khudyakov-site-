@@ -394,7 +394,7 @@ export const aiVoiceContent: DirectionContent = {
 
   close: {
     media: { photo: "/images/stock/ai-desk-ui.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full", position: "75% 45%" },
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     align: "center",
     title: (
       <>

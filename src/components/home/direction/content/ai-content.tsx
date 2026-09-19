@@ -407,7 +407,7 @@ export const aiContentContent: DirectionContent = {
 
   close: {
     media: { photo: "/images/stock/team-night-office.webp", gradient: ACCENT, intensity: "loud", sharp: true, scrim: "full", position: "25% 45%" },
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     align: "center",
     title: (
       <>

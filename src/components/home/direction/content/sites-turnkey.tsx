@@ -295,7 +295,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Разберём структуру бесплатно</>,
     sub: (
       <>

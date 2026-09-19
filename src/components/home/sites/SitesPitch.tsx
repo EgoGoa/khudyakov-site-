@@ -66,10 +66,11 @@ export default function SitesPitch() {
       column
       headless
     >
-      <div className="lg:flex lg:items-center lg:gap-10 xl:gap-14">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:flex-row land:items-center land:gap-6">
         {/* Left column: the chapter's whole stack, so it centres against the
             carousel rather than against itself. */}
-        <div className="w-full shrink-0 lg:w-[46%]">
+        <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-[46%] land:shrink-0">
+          <div className="order-1 lg:order-none land:order-none">
           <Appear from="up" delay={BEAT.eyebrow}>
             <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
               <span className={`${EYEBROW} text-glow`}>01</span>
@@ -78,12 +79,14 @@ export default function SitesPitch() {
           </Appear>
 
           <Appear from="up" delay={BEAT.title}>
-            <h2 className="chapter-neon-warm mt-3 max-w-[6.7em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] lg:text-[3.6rem] xl:text-[4rem]">
+            <h2 className="chapter-neon-warm mt-3 max-w-[6.7em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] land:text-[2.1rem] lg:text-[3.6rem] xl:text-[4rem]">
               Сайты на <span className="kw">AI</span> —<br />
               дни, не месяцы
             </h2>
           </Appear>
 
+          </div>
+          <div className="order-3 lg:order-none land:order-none">
           <Appear from="up" delay={BEAT.intro}>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
               Уникальный дизайн и вёрстка вместо шаблонов. Собираем AI-инструментами под контролем
@@ -102,13 +105,15 @@ export default function SitesPitch() {
               className="mt-4"
             />
           </Appear>
+          </div>
         </div>
 
-        {/* Hidden below lg: the fan needs the column's own width beside it to
-            make sense, and there isn't a second column on a phone. A future
-            pass can give it a compact swipeable variant there — for now the
-            chapter still reads as heading + copy + CTA alone. */}
-        <Appear from="right" delay={BEAT.content} className="mt-10 hidden lg:mt-0 lg:block lg:flex-1">
+        {/* Below lg the left column is `display: contents`, so its head, the
+            deck and its copy become siblings of one flex column and `order`
+            puts the carousel straight under the title, copy after it. From lg
+            up the column is a real block and the deck sits beside it. FanFit
+            (inside SitesDeck) scales the fan to the phone. */}
+        <Appear from="right" delay={BEAT.content} className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:flex-1">
           <SitesDeck />
         </Appear>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { useCleanPathname } from "@/lib/use-clean-pathname";
 import FluidSmoke from "@/components/layout/FluidSmoke";
 import Hero from "@/components/home/Hero";
 import PageSideNav from "@/components/home/PageSideNav";
@@ -30,7 +30,7 @@ import { WelcomeGateProvider } from "@/lib/welcome-gate";
 const TOP_LEVEL_ROUTES = new Set(["/content", "/ai", "/sites", "/smm"]);
 
 export default function LandingLayout({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+  const pathname = useCleanPathname();
   const showChrome = TOP_LEVEL_ROUTES.has(pathname);
 
   // Mirrors the checks FluidSmoke itself runs before touching WebGL (see

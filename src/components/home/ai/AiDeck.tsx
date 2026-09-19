@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import FanFit from "@/components/ui/FanFit";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { servicesByCategory } from "@/lib/service-content";
 
@@ -662,9 +663,10 @@ export default function AiDeck() {
 
   return (
     <div className="w-full max-w-[728px]">
+      <FanFit designWidth={396} height={416} onSwipe={step}>
       <div
         ref={railRef}
-        className="relative h-[416px]"
+        className="relative h-full"
         style={{ perspective: "1430px", perspectiveOrigin: "50% 50%" }}
       >
         {/* The pool of light the whole deck sits in — without it the rail
@@ -784,9 +786,7 @@ export default function AiDeck() {
                 <Link
                   href={card.href ?? "#"}
                   aria-current="true"
-                  className={`deck-card-glow absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] ring-1 ${
-                    card.hit ? "ring-[#ff8a5c]/45" : "ring-emerald-300/40"
-                  }`}
+                  className="deck-card-glow deck-neon-pulse absolute inset-0 overflow-hidden rounded-[26px] text-left"
                   style={{ "--card-glow-rgb": card.hit ? "255, 106, 61" : "16, 185, 129" } as React.CSSProperties}
                 >
                   <AiThumb shape={card.shape} image={card.image} animate />
@@ -853,7 +853,7 @@ export default function AiDeck() {
                   onMouseDown={(e) => e.preventDefault()}
                   tabIndex={0}
                   aria-label={`Показать: ${SERVICES[i].title}`}
-                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] ring-1 ring-white/10 cursor-pointer transition-[box-shadow] duration-[560ms] motion-reduce:transition-none"
+                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] cursor-pointer transition-[box-shadow] duration-[560ms] motion-reduce:transition-none"
                 >
                   <AiThumb shape={card.shape} image={card.image} />
                 </button>
@@ -894,6 +894,7 @@ export default function AiDeck() {
           </svg>
         </button>
       </div>
+      </FanFit>
 
       {/* The lit track. Ten nodes would crowd at 32px each, so these are bare
           dots with the active one stretched into a capsule — same idea as
@@ -961,8 +962,8 @@ export default function AiDeck() {
           страницы и читались тише самого дека — теперь у них своя рамка и
           свой свет, а тезисы набраны белым, а не приглушённым paper/70. */}
       <div
-        className="glass-panel mt-6 flex h-[226px] items-start overflow-hidden rounded-3xl px-6 py-6"
-        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), inset 0 0 0 1px rgba(255,255,255,0.045), 0 0 0 1px rgba(52,211,153,0.22), 0 0 32px -6px rgba(52,211,153,0.35), 0 28px 70px -34px rgba(0,0,0,0.95)" }}
+        className="glass-panel deck-neon-pulse mt-6 flex h-auto min-h-[290px] items-start lg:h-[226px] lg:min-h-0 overflow-hidden rounded-3xl px-6 py-6"
+        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), 0 28px 70px -34px rgba(0,0,0,0.95)", "--card-glow-rgb": "52, 211, 153" } as React.CSSProperties}
       >
         <div className="max-w-[460px]">
           <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.title}</p>

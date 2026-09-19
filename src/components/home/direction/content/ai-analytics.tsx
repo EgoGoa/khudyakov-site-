@@ -329,7 +329,7 @@ export const aiAnalyticsContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Соберём пробный дашборд бесплатно</>,
     sub: (
       <>

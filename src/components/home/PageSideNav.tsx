@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 import { NeonChevron } from "@/components/home/ServicePicker";
 
@@ -28,7 +28,7 @@ export const PAGE_GRADIENT: Record<ServiceKey, { from: string; via?: string; to:
 };
 
 export default function PageSideNav() {
-  const pathname = usePathname();
+  const pathname = useCleanPathname();
   if (!TOP_LEVEL_ROUTES.has(pathname)) return null;
 
   const count = serviceOrder.length;
@@ -64,7 +64,11 @@ function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: Ser
   } as const;
 
   const label = (
-    <span className="text-center font-display text-[10px] uppercase leading-[1.05] tracking-tight">
+    <span
+      className={`font-display text-[8px] uppercase leading-[1.05] tracking-tight sm:text-[10px] ${
+        isLeft ? "text-left" : "text-right"
+      }`}
+    >
       {words.map((word, i) => (
         <span key={i} className="block" style={gradientStyle}>
           {word}
@@ -86,27 +90,31 @@ function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: Ser
     <Link
       href={`/${meta.slug}`}
       aria-label={`${isLeft ? "Предыдущая" : "Следующая"} страница: ${meta.label}`}
-      className={`group fixed bottom-24 z-30 hidden h-11 w-11 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:flex ${
-        isLeft ? "left-3 xl:left-6" : "right-3 xl:right-6"
+      className={`group fixed bottom-24 z-30 land:bottom-1 flex h-10 w-10 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
+        isLeft
+          ? "left-1 sm:left-3 xl:left-6 land:left-[calc(50%-92px)]"
+          : "right-1 sm:right-3 xl:right-6 land:right-[calc(50%-92px)]"
       }`}
     >
       {/* The glass card, revealed only on hover. Stretched past the link's
           own box so it frames the chevron and the label under it. */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-x-4 -top-3 -bottom-9 rounded-2xl border border-paper/10 bg-ink/70 opacity-0 shadow-[0_0_20px_rgba(255,79,216,0.45),0_0_38px_rgba(255,106,61,0.32)] backdrop-blur-md transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-x-4 -top-3 -bottom-9 hidden rounded-2xl sm:block border border-paper/10 bg-ink/70 opacity-0 shadow-[0_0_20px_rgba(255,79,216,0.45),0_0_38px_rgba(255,106,61,0.32)] backdrop-blur-md transition-opacity duration-300 group-hover:opacity-100"
       />
 
       {/* Always on screen, breathing at rest (see .page-nav-arrow-pulse in
           globals.css) and pinned at full brightness on hover. */}
       <span className="page-nav-arrow-pulse relative transition-opacity duration-300">
-        <NeonChevron flip={isLeft} className="h-9 w-9 sm:h-11 sm:w-11" />
+        <NeonChevron flip={isLeft} className="h-8 w-8 sm:h-11 sm:w-11 land:h-6 land:w-6" />
       </span>
 
       {/* The destination's name — absolute, so it never grows the hit area,
           and `pointer-events-none` so the invisible text box cannot block
           the content it floats over either. */}
-      <span className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      <span className={`pointer-events-none absolute top-full mt-1 opacity-0 land:hidden sm:left-1/2 sm:right-auto sm:-translate-x-1/2 ${
+          isLeft ? "left-0" : "right-0"
+        } transition-opacity duration-300 group-hover:opacity-100`}>
         {label}
       </span>
     </Link>

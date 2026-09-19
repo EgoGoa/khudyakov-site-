@@ -340,7 +340,7 @@ export const aiChatHubContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Подключим первый канал бесплатно</>,
     sub: (
       <>

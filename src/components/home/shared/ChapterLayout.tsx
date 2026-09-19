@@ -151,4 +151,4 @@ export default function ChapterLayout({
  *  carousel cards, so the right-hand column reads as one material across
  *  every page that uses this skeleton. */
 export const CHAPTER_PANEL =
-  "rounded-2xl border border-white/[0.12] bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150";
+  "rounded-2xl bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150";

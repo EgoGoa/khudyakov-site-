@@ -2,7 +2,8 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useCleanPathname } from "@/lib/use-clean-pathname";
 import Container from "@/components/ui/Container";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 
@@ -193,7 +194,7 @@ function SlideVideo({ src, poster, active }: { src: string; poster: string; acti
 }
 
 export default function ServicePicker() {
-  const pathname = usePathname();
+  const pathname = useCleanPathname();
   const router = useRouter();
   const currentKey: ServiceKey =
     serviceOrder.find((key) => `/${serviceMeta[key].slug}` === pathname) ?? "content";

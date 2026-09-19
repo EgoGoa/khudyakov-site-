@@ -331,7 +331,7 @@ export const aiCommsContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: (
       <>
         Прогоним неделю бесплатно

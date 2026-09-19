@@ -162,7 +162,12 @@ export default function Close({
                 <div
                   className={`relative font-semibold text-paper tier-glow-price ${dense ? "text-xs" : "text-base"}`}
                 >
-                  {tier.price}
+                  {tier.oldPrice && (
+                    <span className="tier-old-price block text-[0.8em] font-bold text-paper/80 line-through decoration-2">
+                      {tier.oldPrice}
+                    </span>
+                  )}
+                  {tier.oldPrice ? <span className="tier-new-price">{tier.price}</span> : tier.price}
                 </div>
                 <div className={`c3-team relative ${dense ? "mb-3" : "mb-6"}`}>{tier.team}</div>
 
@@ -174,9 +179,9 @@ export default function Close({
                     stay, so the card still says what it is. */}
                 {!dense && (
                   <ul className="c3-list relative">
-                    {tier.features.map((feature) => (
+                    {(tier.benefits ?? tier.features).map((feature) => (
                       <li key={feature}>
-                        <span className="c3-check text-paper" />
+                        <span className={`c3-check ${tier.benefits ? "c3-check-green" : "text-paper"}`} />
                         {feature}
                       </li>
                     ))}

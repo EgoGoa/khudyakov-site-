@@ -328,7 +328,7 @@ export const aiCrmContent: CompactToolContent = {
   },
 
   close: {
-    eyebrow: "Один следующий шаг",
+    eyebrow: "С чего начнём",
     title: <>Покажем скоринг на вашей воронке</>,
     sub: (
       <>

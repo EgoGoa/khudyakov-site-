@@ -39,7 +39,7 @@ export default function SeoAccordion({
     // under the same pricing block. A light translucent gradient + hairline
     // border keeps the footage visible through it, same as the cards do.
     <div
-      className="mx-auto mt-5 w-full max-w-4xl rounded-2xl border border-white/[0.14] px-4 py-2.5 backdrop-blur-[5px] sm:px-5 [@media(max-height:860px)]:mt-3 [@media(max-height:860px)]:py-1.5"
+      className="mx-auto mt-5 w-full max-w-4xl rounded-2xl px-4 py-2.5 backdrop-blur-[5px] sm:px-5 [@media(max-height:860px)]:mt-3 [@media(max-height:860px)]:py-1.5"
       style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015))" }}
     >
       <span className="font-display text-[9px] uppercase tracking-[0.2em] text-paper/45">
