@@ -32,6 +32,23 @@ const TRANSITION_MS = 600;
 const TRANSITION_EASE = "ease-in-out";
 const WHEEL_THRESHOLD = 10; // px of accumulated deltaY that counts as "an intentional tick"
 const WHEEL_RESET_MS = 120; // trackpads fire many tiny wheel events per gesture — coalesce them
+// Касание, начавшееся внутри карусели, принадлежит карусели.
+//
+// Оба обработчика ниже вызывают preventDefault на touchmove, чтобы страница
+// не уезжала под ними. Побочный эффект этого вызова — браузер снимает с
+// касания указатель: карусель получает pointercancel на первом же движении
+// пальца, и перетаскивание колоды на телефоне не работает вообще. Поэтому
+// жест, начатый на рельсе колоды, здесь не трогают, пока он горизонтальный;
+// как только палец явно пошёл вверх или вниз, лист страницы забирает его
+// себе — иначе с карточки нельзя было бы уехать со страницы.
+const DECK_RAIL = "[data-deck-rail]";
+const VERTICAL_BIAS = 6; // px, на которые вертикаль должна обогнать горизонталь
+
+function startedInDeck(e: TouchEvent) {
+  const t = e.target;
+  return t instanceof Element && !!t.closest(DECK_RAIL);
+}
+
 const SWIPE_THRESHOLD = 40; // px of touch movement that counts as a swipe
 const EDGE_EPSILON = 1; // px tolerance for "fully scrolled" comparisons
 // Trackpads keep emitting small, decaying wheel events for a while after the
@@ -155,6 +172,11 @@ export function FullpageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (ids.length === 0) return; // not on a fullpage route — leave native scroll alone
 
+    // Живут в пределах одного жеста, поэтому обычные переменные эффекта, а не
+    // ref-ы: между касаниями их значение никому не нужно.
+    let touchStartX: number | null = null;
+    let deckGesture = false;
+
     const hash = window.location.hash.replace("#", "");
     if (hash) {
       const i = ids.indexOf(hash);
@@ -224,8 +246,17 @@ export function FullpageProvider({ children }: { children: ReactNode }) {
 
     const onTouchStart = (e: TouchEvent) => {
       touchStartY.current = e.touches[0]?.clientY ?? null;
+      touchStartX = e.touches[0]?.clientX ?? null;
+      deckGesture = startedInDeck(e);
     };
     const onTouchMove = (e: TouchEvent) => {
+      if (deckGesture) {
+        const dx = Math.abs((e.touches[0]?.clientX ?? 0) - (touchStartX ?? 0));
+        const dy = Math.abs((e.touches[0]?.clientY ?? 0) - (touchStartY.current ?? 0));
+        if (dy <= dx + VERTICAL_BIAS) return;
+        deckGesture = false;
+        touchStartY.current = e.touches[0]?.clientY ?? null;
+      }
       // an overflowing slide gets native horizontal panning (touch-action:
       // pan-x, set when it was discovered) — only non-overflowing slides
       // need the page's own vertical drag suppressed here
@@ -233,6 +264,11 @@ export function FullpageProvider({ children }: { children: ReactNode }) {
       e.preventDefault();
     };
     const onTouchEnd = (e: TouchEvent) => {
+      if (deckGesture) {
+        deckGesture = false;
+        touchStartY.current = null;
+        return;
+      }
       if (touchStartY.current === null || isLocked()) return;
       const endY = e.changedTouches[0]?.clientY ?? touchStartY.current;
       const dy = touchStartY.current - endY;

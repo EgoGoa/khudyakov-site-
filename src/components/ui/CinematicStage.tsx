@@ -128,6 +128,23 @@ const WHEEL_RESET_MS = 120; // trackpads fire many tiny events — coalesce them
 // re-arming on every scroll event, and only fire once the visitor has
 // actually stopped.
 const ACTIVE_INDEX_SETTLE_MS = 320;
+// Касание, начавшееся внутри карусели, принадлежит карусели.
+//
+// Оба обработчика ниже вызывают preventDefault на touchmove, чтобы страница
+// не уезжала под ними. Побочный эффект этого вызова — браузер снимает с
+// касания указатель: карусель получает pointercancel на первом же движении
+// пальца, и перетаскивание колоды на телефоне не работает вообще. Поэтому
+// жест, начатый на рельсе колоды, здесь не трогают, пока он горизонтальный;
+// как только палец явно пошёл вверх или вниз, лист страницы забирает его
+// себе — иначе с карточки нельзя было бы уехать со страницы.
+const DECK_RAIL = "[data-deck-rail]";
+const VERTICAL_BIAS = 6; // px, на которые вертикаль должна обогнать горизонталь
+
+function startedInDeck(e: TouchEvent) {
+  const t = e.target;
+  return t instanceof Element && !!t.closest(DECK_RAIL);
+}
+
 const SWIPE_THRESHOLD = 36; // px of touch travel that counts as a swipe
 const MOMENTUM_MS = 220;
 const STEP_MS = 420; // the glide from one chapter to the next
@@ -350,6 +367,9 @@ export default function CinematicStage({
     let wheelAccum = 0;
     let wheelReset: number | null = null;
     let touchStartY: number | null = null;
+    let touchStartX: number | null = null;
+    // «Жест колоды»: начался на рельсе и ещё не признан вертикальным.
+    let deckGesture = false;
     // Set when a gesture is spent scrolling the chapter itself. A gesture that
     // scrolled the chapter must never also step to the next one, even if it
     // reached the bottom on the way: hitting the end of a chapter and moving
@@ -664,10 +684,21 @@ export default function CinematicStage({
     const onTouchStart = (e: TouchEvent) => {
       if (scrollLocked()) return;
       touchStartY = e.touches[0]?.clientY ?? null;
+      touchStartX = e.touches[0]?.clientX ?? null;
+      deckGesture = startedInDeck(e);
       paneMoved = false;
     };
     const onTouchMove = (e: TouchEvent) => {
       if (scrollLocked()) return;
+      if (deckGesture) {
+        const dx = Math.abs((e.touches[0]?.clientX ?? 0) - (touchStartX ?? 0));
+        const dy = Math.abs((e.touches[0]?.clientY ?? 0) - (touchStartY ?? 0));
+        if (dy <= dx + VERTICAL_BIAS) return;
+        // Палец ушёл в вертикаль — жест больше не про колоду; дальше он
+        // обрабатывается как обычный свайп по главам, начиная отсюда.
+        deckGesture = false;
+        touchStartY = e.touches[0]?.clientY ?? null;
+      }
       const isEngagedNow = engaged();
       if (!isEngagedNow) {
         wasEngaged = false;
@@ -701,6 +732,11 @@ export default function CinematicStage({
       e.preventDefault();
     };
     const onTouchEnd = (e: TouchEvent) => {
+      if (deckGesture) {
+        deckGesture = false;
+        touchStartY = null;
+        return;
+      }
       if (scrollLocked() || touchStartY === null || !engaged() || isLocked()) return;
       const dy = touchStartY - (e.changedTouches[0]?.clientY ?? touchStartY);
       touchStartY = null;

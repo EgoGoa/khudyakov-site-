@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Drag-to-scrub for the service carousels (AiDeck, SitesDeck, SmmDeck).
 //
@@ -118,9 +118,40 @@ type DragArgs = {
   onSettle: (delta: number) => void;
 };
 
+// Насколько далеко должна уехать рука, чтобы это считалось перетаскиванием, а
+// не тычком. У мыши курсор стоит там, куда его поставили, поэтому хватает
+// четырёх пикселей; палец всегда немного ёрзает по стеклу, и на телефоне тот
+// же порог срабатывал от дрожания руки при обычном нажатии.
+const TAP_SLOP_MOUSE = 4;
+const TAP_SLOP_TOUCH = 7;
+
 export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
   const [drag, setDrag] = useState(0);
   const [dragging, setDragging] = useState(false);
+  // Палец шлёт события чаще, чем экран успевает рисовать (а браузер ещё и
+  // склеивает пропущенные), и каждый setState перерисовывал всю колоду с её
+  // размытиями и свечениями. На телефоне это и читалось как «тормозит и
+  // дёргается»: мы считали кадры, которые никто не увидит. Теперь позиция
+  // копится в ref, а в состояние уходит ровно один раз за кадр.
+  const pending = useRef<number | null>(null);
+  const frame = useRef(0);
+
+  const pushDrag = useCallback((value: number) => {
+    pending.current = value;
+    if (frame.current) return;
+    frame.current = requestAnimationFrame(() => {
+      frame.current = 0;
+      if (pending.current !== null) setDrag(pending.current);
+    });
+  }, []);
+
+  const cancelFrame = useCallback(() => {
+    if (frame.current) cancelAnimationFrame(frame.current);
+    frame.current = 0;
+    pending.current = null;
+  }, []);
+
+  useEffect(() => cancelFrame, [cancelFrame]);
   const live = useRef<{
     id: number;
     startX: number;
@@ -169,7 +200,8 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       const s = live.current;
       if (!s || s.id !== e.pointerId) return;
       const travelled = e.clientX - s.startX;
-      if (!s.moved && Math.abs(travelled) > 4) {
+      const slop = e.pointerType === "mouse" ? TAP_SLOP_MOUSE : TAP_SLOP_TOUCH;
+      if (!s.moved && Math.abs(travelled) > slop) {
         s.moved = true;
         e.currentTarget.setPointerCapture?.(e.pointerId);
         setDragging(true);
@@ -186,9 +218,9 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
         s.lastT = now;
       }
       s.lastX = e.clientX;
-      setDrag(travelled / s.scale / spacing);
+      pushDrag(travelled / s.scale / spacing);
     },
-    [spacing],
+    [pushDrag, spacing],
   );
 
   const finish = useCallback(
@@ -196,6 +228,7 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       const s = live.current;
       if (!s || s.id !== e.pointerId) return;
       live.current = null;
+      cancelFrame();
       if (!s.moved) {
         // A tap: nothing to settle, and the click underneath must go
         // through untouched.
@@ -237,7 +270,7 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       setDrag(0);
       if (delta) onSettle(((delta % count) + count) % count === 0 ? 0 : delta);
     },
-    [count, onSettle, spacing],
+    [cancelFrame, count, onSettle, spacing],
   );
 
   // If the browser takes the capture away mid-gesture (the tab loses focus,
@@ -249,12 +282,13 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
     const s = live.current;
     if (!s) return;
     live.current = null;
+    cancelFrame();
     const travelled = (s.lastX - s.startX) / s.scale / spacing;
     setDragging(false);
     setDrag(0);
     const delta = -Math.round(travelled);
     if (delta) onSettle(delta);
-  }, [onSettle, spacing]);
+  }, [cancelFrame, onSettle, spacing]);
 
   const onClickCapture = useCallback((e: React.MouseEvent) => {
     if (!swallowClick.current) return;
@@ -269,6 +303,10 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
     dragging,
     /** Spread onto the rail element that wraps the cards. */
     bind: {
+      // По этой метке полностраничная навигация (CinematicStage, fullpage)
+      // узнаёт, что касание началось внутри колоды, и не гасит его своим
+      // preventDefault — см. подробный разбор там же.
+      "data-deck-rail": "",
       onPointerDown,
       onPointerMove,
       onPointerUp: finish,
