@@ -95,7 +95,7 @@ export function VoiceWave({ energy }: { energy: WavePhaseEnergy }) {
   const active = energy === "typing";
   return (
     <div
-      className="relative mx-auto mb-6 flex w-full items-center justify-center sm:mb-8"
+      className="voice-wave-slot relative mx-auto mb-5 flex w-full items-center justify-center"
       style={{ height: WAVE_SLOT_H }}
     >
       {/* entrance-only reveal lives on this wrapper — framer-motion drives
@@ -304,7 +304,20 @@ export default function WelcomeOverlay() {
     if (isSnoozed()) setVisible(false);
   }, []);
 
-  useBodyScrollLock(visible);
+  // Блокировка прокрутки снимается не в момент закрытия, а после того, как
+  // окно доиграло исчезновение: иначе страница под ним возвращает себе
+  // прокрутку прямо посреди анимации, и уход окна выглядит рывком.
+  const [scrollLocked, setScrollLocked] = useState(visible);
+  useEffect(() => {
+    if (visible) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- собственный жизненный цикл диалога, внешнего источника для этого состояния нет
+      setScrollLocked(true);
+      return;
+    }
+    const id = window.setTimeout(() => setScrollLocked(false), 450);
+    return () => window.clearTimeout(id);
+  }, [visible]);
+  useBodyScrollLock(scrollLocked);
 
   const { setWelcomeOpen, setSkippedToSite } = useWelcomeGate();
   useEffect(() => {
@@ -341,7 +354,7 @@ export default function WelcomeOverlay() {
   };
 
   return (
-    <CenterModal open={visible} onClose={goToSite} ariaLabel="Приветствие HDKV AGENCY">
+    <CenterModal open={visible} onClose={goToSite} ariaLabel="Приветствие HDKV AGENCY" translucent>
       <WelcomeWidget onClose={selectService} onSkip={goToSite} />
     </CenterModal>
   );

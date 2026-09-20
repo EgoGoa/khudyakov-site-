@@ -70,3 +70,10 @@ export function siblingsOf(
     next: ring[(i + 1) % ring.length],
   };
 }
+
+/** Всё кольцо раздела целиком — для меню, которым выбирают формат, а не
+ *  шагают по соседям (см. welcome-menu.ts). Копия списка, не сам массив:
+ *  вызывающий код не должен уметь переставить порядок стрелок. */
+export function ringOf(section: string): Sibling[] {
+  return RINGS[section] ? [...RINGS[section]] : [];
+}

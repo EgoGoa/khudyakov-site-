@@ -70,7 +70,10 @@ export default function CompactToolPage({
 
         <AudienceBlock audience={content.audience} />
         <TechBlock tech={content.tech} />
-        <PricingBlock pricing={content.pricing} headingClass={resolvedHeadingClass} />
+        {/* "" is /sites' deliberate "no heading override" (see sites/[format]/
+            page.tsx). The pricing cards still need /sites' own theme though —
+            glow, tier price colours, team pair — so only this block gets it. */}
+        <PricingBlock pricing={content.pricing} headingClass={resolvedHeadingClass || "sites-warm-headings"} />
         <ProcessBlock process={content.process} />
         <FaqCloseBlock faq={content.faq} close={content.close} />
       </div>

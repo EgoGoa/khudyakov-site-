@@ -4758,17 +4758,23 @@ html[data-lite] .deck-pose-blur {
 }
 
 .deck-halo {
+  /* `ellipse farthest-side`, not `circle`. A circle sized to the farthest
+     CORNER of a tall, narrow box is still bright when it reaches the left
+     and right sides, so the element's own rectangle cut the light and the
+     glow read as a box with edges — Egor: «свечение должно быть без
+     границ». An ellipse measured to the nearest sides reaches zero on every
+     edge at once, so nothing is ever clipped. */
   background: radial-gradient(
-    circle,
-    /* The card itself covers the middle of this circle, so only the rim
-       ever shows — the stops that matter for how bright the glow READS are
-       the outer ones, not the centre. */
+    ellipse farthest-side at center,
+    /* The card covers the middle of this, so only the rim ever shows: the
+       stops that decide how bright the glow READS are the outer ones. */
     rgba(var(--card-glow-rgb), 1) 0%,
-    rgba(var(--card-glow-rgb), 0.85) 48%,
-    rgba(var(--card-glow-rgb), 0.42) 66%,
-    rgba(var(--card-glow-rgb), 0) 80%
+    rgba(var(--card-glow-rgb), 0.85) 42%,
+    rgba(var(--card-glow-rgb), 0.45) 64%,
+    rgba(var(--card-glow-rgb), 0.12) 84%,
+    rgba(var(--card-glow-rgb), 0) 100%
   );
-  filter: blur(20px);
+  filter: blur(22px);
   opacity: 0.92;
   animation: deck-halo-breathe 5.2s ease-in-out infinite;
 }

@@ -34,8 +34,8 @@ export default function WhyBlock({ why }: { why: NonNullable<DirectionContent["w
               from={i % 2 === 0 ? "left" : "right"}
               delay={DIRECTION_BEAT.content + Math.floor(i / 2) * STAGGER.normal}
             >
-              <div className="flex gap-6">
-                <span className="w-20 shrink-0 pt-1 text-right font-display text-2xl uppercase leading-none text-orange sm:text-3xl">
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
+                <span className="shrink-0 pt-1 font-display sm:min-w-20 sm:text-right text-2xl uppercase leading-none text-orange sm:text-3xl">
                   {item.anchor}
                 </span>
                 <div className="border-l border-paper/15 pl-6">

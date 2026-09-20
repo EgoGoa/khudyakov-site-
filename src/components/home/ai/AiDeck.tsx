@@ -820,7 +820,13 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                 ["--deck-blur" as string]: `${blurPx}px`,
                 zIndex: Math.round(pose.zi),
                 opacity,
-                visibility: opacity < 0.01 ? "hidden" : undefined,
+                // NOT `visibility: hidden` at zero opacity: that is applied
+                // from the TARGET value, so it hid the card on the first
+                // frame of the step and the fade never got to play — the
+                // outermost cards looked like they switched off. An
+                // opacity-0 layer costs nothing to leave in place; it only
+                // has to stop swallowing clicks.
+                pointerEvents: opacity < 0.05 ? "none" : undefined,
                 transform: `translate(-50%, -50%) translate3d(${pose.x}px, 0, ${pose.z}px) rotateY(${pose.ry}deg) scale(${pose.scale})`,
                 willChange: "transform, opacity",
               }}
@@ -854,8 +860,8 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                     {
                       filter: "blur(24px)",
                       background: card.hit
-                        ? `radial-gradient(circle, rgba(255,106,61,${dist <= 1 ? 0.45 : 0.24}) 0%, rgba(255,79,216,0) 70%)`
-                        : `radial-gradient(circle, rgba(52,211,153,${dist <= 1 ? 0.4 : 0.2}) 0%, rgba(52,211,153,0) 70%)`,
+                        ? `radial-gradient(ellipse farthest-side at center, rgba(255,106,61,${dist <= 1 ? 0.45 : 0.24}) 0%, rgba(255,106,61,${dist <= 1 ? 0.18 : 0.1}) 62%, rgba(255,79,216,0) 100%)`
+                        : `radial-gradient(ellipse farthest-side at center, rgba(52,211,153,${dist <= 1 ? 0.4 : 0.2}) 0%, rgba(52,211,153,${dist <= 1 ? 0.16 : 0.08}) 62%, rgba(52,211,153,0) 100%)`,
                       "--flicker-min": dist <= 1 ? 0.25 : 0.12,
                       "--flicker-max": dist <= 1 ? 0.5 : 0.3,
                       "--flicker-duration": "3.8s",
@@ -877,8 +883,8 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                     {
                       filter: "blur(24px)",
                       background: card.hit
-                        ? "radial-gradient(circle, rgba(255,79,216,0.95) 0%, rgba(255,106,61,0.6) 55%, rgba(255,106,61,0) 75%)"
-                        : "radial-gradient(circle, rgba(167,139,250,0.95) 0%, rgba(56,189,248,0.55) 55%, rgba(56,189,248,0) 75%)",
+                        ? "radial-gradient(ellipse farthest-side at center, rgba(255,79,216,0.95) 0%, rgba(255,106,61,0.6) 52%, rgba(255,106,61,0.2) 80%, rgba(255,106,61,0) 100%)"
+                        : "radial-gradient(ellipse farthest-side at center, rgba(167,139,250,0.95) 0%, rgba(56,189,248,0.55) 52%, rgba(56,189,248,0.2) 80%, rgba(56,189,248,0) 100%)",
                       "--flicker-min": 0.65,
                       "--flicker-max": 1,
                       "--flicker-duration": "3.2s",
@@ -965,16 +971,21 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                 >
                   <AiThumb shape={card.shape} image={card.image} />
                   {caption}
-                  {/* Dark veil rather than element transparency — keeps the
-                      card opaque so the cards it overlaps never show
-                      through it mid-swap. */}
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 transition-opacity duration-[760ms]"
-                    style={{ background: `rgba(8, 9, 14, ${pose.veil})` }}
-                  />
                 </button>
               )}
+              {/* Затемнение глубины — один слой на карточку, всегда на
+                  месте, меняется только прозрачность. Раньше он жил внутри
+                  боковой карточки и монтировался целиком в момент, когда
+                  карточка переставала быть передней: она будто выключалась.
+                  Держит карточки непрозрачными, чтобы они не просвечивали
+                  друг сквозь друга на перекрытии. */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 z-10 rounded-[26px] bg-[#08090e] ${
+                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                }`}
+                style={{ opacity: pose.veil }}
+              />
             </div>
           );
         })}

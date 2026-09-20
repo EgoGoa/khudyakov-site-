@@ -483,7 +483,13 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                 ["--deck-blur" as string]: `${blurPx}px`,
                 zIndex: Math.round(pose.z),
                 opacity,
-                visibility: opacity < 0.01 ? "hidden" : undefined,
+                // NOT `visibility: hidden` at zero opacity: that is applied
+                // from the TARGET value, so it hid the card on the first
+                // frame of the step and the fade never got to play — the
+                // outermost cards looked like they switched off. An
+                // opacity-0 layer costs nothing to leave in place; it only
+                // has to stop swallowing clicks.
+                pointerEvents: opacity < 0.05 ? "none" : undefined,
                 transform: `translate(-50%, -50%) translate(${pose.x}px, ${pose.y}px) scale(${pose.scale})`,
                 willChange: "transform, opacity",
               }}
@@ -541,19 +547,23 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                   }`}
                 >
                   <FormatThumb shape={format.shape} image={format.image} animate={isFront} />
-                  {/* Dark veil instead of element opacity, so the cards stay
-                      opaque and never show each other through. */}
-                  {pose.veil > 0 && (
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 transition-opacity duration-[760ms]"
-                      style={{ background: `rgba(8, 9, 14, ${pose.veil})` }}
-                    />
-                  )}
                   {caption}
                   {isFront && counter}
                 </button>
               )}
+              {/* Затемнение глубины — один слой на карточку, который
+                  ВСЕГДА на месте, а меняется только его прозрачность.
+                  Раньше он монтировался в момент, когда карточка переставала
+                  быть передней, сразу на полную силу — и это читалось как
+                  «первое окошко резко исчезает». Теперь он просто плавно
+                  набирает и отдаёт плотность вместе с движением. */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 z-10 rounded-[20px] bg-[#08090e] ${
+                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                }`}
+                style={{ opacity: pose.veil }}
+              />
             </div>
           );
         })}

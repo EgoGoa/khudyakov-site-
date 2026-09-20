@@ -8,7 +8,7 @@ import { UserIcon } from "@/components/ui/Icons";
 import { VoiceWave, VoiceMicButton, isSnoozed, snooze } from "@/components/home/WelcomeOverlay";
 import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
-import { useWelcomeGate } from "@/lib/welcome-gate";
+import { useWelcomeGate, vibeRouted } from "@/lib/welcome-gate";
 import CenterModal from "@/components/ui/CenterModal";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -117,7 +117,9 @@ export default function ServiceMenuOverlay({ service }: { service: ServiceKey })
     // guided flow once (from either screen) skips straight past this one
     // too, instead of it popping up the instant the first overlay's own
     // snooze effect closes that one.
-    if (isSnoozed()) setVisible(false);
+    // vibeRouted(): посетитель уже выбрал направление И формат в вайб-окне —
+    // спрашивать «с чего начнём?» сразу после этого значит переспрашивать.
+    if (isSnoozed() || vibeRouted()) setVisible(false);
   }, []);
 
   const { rendered, done: typed } = useTypeOnce(PHRASE, reduced, active);

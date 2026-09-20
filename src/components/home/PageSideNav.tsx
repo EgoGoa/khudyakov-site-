@@ -93,7 +93,7 @@ function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: Ser
       href={`/${meta.slug}`}
       onClick={() => queueChapterHop(pathname.slice(1), meta.slug)}
       aria-label={`${isLeft ? "Предыдущая" : "Следующая"} страница: ${meta.label}`}
-      className={`group fixed bottom-24 z-30 land:bottom-1 flex h-10 w-10 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
+      className={`touch-slop group fixed bottom-24 z-30 land:bottom-1 flex h-10 w-10 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
         isLeft
           ? "left-1 sm:left-3 xl:left-6 land:left-[calc(50%-92px)]"
           : "right-1 sm:right-3 xl:right-6 land:right-[calc(50%-92px)]"

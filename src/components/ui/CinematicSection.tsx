@@ -151,6 +151,7 @@ export default function CinematicSection({
   decor,
   bodyDecor,
   spacious = false,
+  distribute = false,
   column = false,
   headless = false,
 }: {
@@ -218,6 +219,12 @@ export default function CinematicSection({
    *  Offer, Process, Close inside /content's stage) and every plain-scroll
    *  page that hasn't opted in keep their current, tighter rhythm. */
   spacious?: boolean;
+  /** Phones/tablets in a deck only: instead of centring the body with
+   *  `my-auto` (which turns all the leftover screen into one big empty band
+   *  between the header and the body), the body grows to fill the pane and
+   *  the chapter spreads its own blocks through it (`justify-evenly` on its
+   *  root). Opt-in — only chapters whose root is built for it pass it. */
+  distribute?: boolean;
 }) {
   // Trust/Offer/Process/Close are authored for the pinned deck (see
   // CinematicStage) but Process is also reused directly on the plain-scroll
@@ -311,6 +318,12 @@ export default function CinematicSection({
         }}
       />
 
+      {/* Phones/tablets: the radial scrim above is centred on one side and
+          fades out before it reaches the opposite edge of a narrow screen,
+          leaving a bright strip of raw footage down that edge. A flat,
+          light veil over the whole pane closes it. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-ink/40 lg:hidden" />
+
       {!headless && (
       <header
         className={`relative mx-auto w-full max-w-7xl shrink-0 ${
@@ -394,7 +407,9 @@ export default function CinematicSection({
           // section's only flex child, so auto margins are what centre the
           // chapter's whole stack in the viewport instead of leaving it
           // parked at the top.
-          className={`relative mx-auto w-full max-w-7xl py-2 ${roomy && !headless ? "" : "my-auto"}`}
+          className={`relative mx-auto w-full max-w-7xl py-2 ${roomy && !headless ? "" : "my-auto"} ${
+            distribute && staged ? "max-lg:my-0 max-lg:flex max-lg:flex-1 max-lg:flex-col" : ""
+          }`}
         >
           {ready && bodyDecor && (
             <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR(instant)}>

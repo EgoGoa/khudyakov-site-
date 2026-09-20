@@ -48,7 +48,9 @@ export function poseAt<T extends Record<string, number>>(
   // Long, gentle ramp rather than a cliff: a card leaving the fan dims out
   // across most of a whole step instead of switching off at the edge, which
   // is what Egor saw as "самые дальние окошки резко вырубаются".
-  out.fade = Math.max(0, Math.min(1, (3 - Math.abs(offset)) / 0.8));
+  // Fade across a whole step, from |2| out to |3|: a card leaving the fan
+  // dims the entire way rather than dropping out near the edge.
+  out.fade = Math.max(0, Math.min(1, (3 - Math.abs(offset)) / 1));
   return out as T & { fade: number };
 }
 

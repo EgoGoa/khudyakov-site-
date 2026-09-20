@@ -71,6 +71,12 @@ export default function BlockAssistant({ context }: { context: string }) {
           edge as the reasons column" alignment Egor asked for. Right-
           aligning instead means the bar's right edge always matches the
           row's, which is what actually has to line up. */}
+      {/* Phones: the bar alone reads as a plain search field. A one-line tag
+          above it says what it really is — the site's smart assistant. */}
+      <p className="mb-2 flex items-center gap-2 font-display text-[10px] uppercase tracking-[0.18em] text-glow lg:hidden">
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-glow" />
+        Умный ассистент сайта
+      </p>
       <button
         type="button"
         onClick={() => setOpen(true)}

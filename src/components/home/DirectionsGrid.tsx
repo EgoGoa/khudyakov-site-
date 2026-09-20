@@ -95,7 +95,7 @@ function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolea
 function DirectionCard({ direction, work, active }: { direction: ContentDirection; work?: Work; active: boolean }) {
   return (
     <div
-      className="deck-card-glow relative flex h-full min-h-[190px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
+      className="deck-card-glow relative flex h-full min-h-0 max-sm:gap-4 sm:min-h-[190px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
       style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
     >
       <Link
@@ -109,7 +109,7 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
           <h3 className="direction-card-title font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] transition-[color] sm:text-lg">
             {direction.title}
           </h3>
-          <p className="mt-1.5 line-clamp-3 text-[0.6rem] leading-snug text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-[0.7rem]">
+          <p className="mt-1.5 line-clamp-4 text-xs leading-snug text-paper sm:line-clamp-3 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-[0.7rem]">
             {direction.description}
           </p>
         </div>
@@ -207,7 +207,7 @@ function SpecialFormatCard() {
       </span>
 
       <div
-        className="deck-card-glow relative flex h-full min-h-[190px] flex-col justify-between overflow-hidden rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
+        className="deck-card-glow relative flex h-full min-h-0 max-sm:gap-4 sm:min-h-[190px] flex-col justify-between overflow-hidden rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
         style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
       >
         <Link href="/brief" aria-label="Обсудить свой формат" className="absolute inset-0 z-0 rounded-2xl" />
@@ -315,7 +315,7 @@ export default function DirectionsGrid() {
   ];
 
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-8 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
       {cards.map((card, i) => (
         // `as="article"` so each card stays a direct child of the CSS grid:
         // a plain wrapping <div> would still be the grid cell, but article

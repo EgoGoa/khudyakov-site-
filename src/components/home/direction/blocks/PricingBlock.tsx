@@ -83,6 +83,7 @@ export default function PricingBlock({
   const budgetChoice = BUDGET_CHOICES.find((c) => c.id === budget);
 
   return (
+    <div className={headingClass}>
     <SectionStage className="relative py-24 sm:py-32">
       {pricing.media ? <BlockMedia media={pricing.media} /> : null}
 
@@ -111,7 +112,7 @@ export default function PricingBlock({
                 delay={DIRECTION_BEAT.content + i * STAGGER.normal}
                 className={`c3-card tier-glow-${i} relative !min-h-0 !rounded-3xl !p-7 transition-transform ${
                   tier.pro ? "c3-card-pro" : ""
-                } ${on ? "ring-2 ring-orange/60 lg:-translate-y-2" : ""}`}
+                } ${on ? "lg:-translate-y-2" : ""}`}
               >
                 <AnimatePresence>
                   {on && (active || budgetChoice) ? (
@@ -190,6 +191,7 @@ export default function PricingBlock({
         </Appear>
       </Container>
     </SectionStage>
+    </div>
   );
 }
 

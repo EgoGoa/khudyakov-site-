@@ -1263,8 +1263,8 @@ export default function VibeRail() {
 
       {/* Top "Vibe" row — the greeting / direction-picker widget, relocated
           verbatim from the old floating button. */}
-      <CenterModal open={pickerOpen} onClose={() => setPickerOpen(false)} ariaLabel="Выбор направления">
-        <WelcomeWidget onClose={() => setPickerOpen(false)} />
+      <CenterModal open={pickerOpen} onClose={() => setPickerOpen(false)} ariaLabel="Выбор направления" translucent>
+        <WelcomeWidget onClose={() => setPickerOpen(false)} skipGreeting />
       </CenterModal>
     </>
   );

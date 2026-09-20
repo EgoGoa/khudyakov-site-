@@ -13,10 +13,22 @@ export function useBodyScrollLock(active: boolean) {
   useEffect(() => {
     if (!active) return;
     lockCount += 1;
-    document.body.style.overflow = "hidden";
+    if (lockCount === 1) {
+      // Компенсация полосы прокрутки. `overflow: hidden` убирает её, страница
+      // на её ширину становится шире — и в момент открытия и закрытия окна
+      // весь сайт под ним дёргается вбок. Добавляем ровно эту ширину полем
+      // справа, чтобы ширина содержимого не менялась. Там, где полоса
+      // наложенная (macOS), зазор нулевой и ничего не происходит.
+      const gap = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      if (gap > 0) document.body.style.paddingRight = `${gap}px`;
+    }
     return () => {
       lockCount = Math.max(0, lockCount - 1);
-      if (lockCount === 0) document.body.style.overflow = "";
+      if (lockCount === 0) {
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+      }
     };
   }, [active]);
 }

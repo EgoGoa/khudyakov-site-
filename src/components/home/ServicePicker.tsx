@@ -238,7 +238,7 @@ export default function ServicePicker() {
       // into anything to look at.
       className="relative flex min-h-[60svh] items-center overflow-hidden"
     >
-      <div className="absolute inset-0 -z-10">
+            <div className="absolute inset-0 -z-10">
         {serviceOrder.map((key) =>
           serviceMeta[key].video ? (
             <SlideVideo
@@ -268,6 +268,8 @@ export default function ServicePicker() {
               "linear-gradient(to bottom, rgba(11,11,16,0.65), rgba(11,11,16,0.55) 40%, rgba(11,11,16,0.85))",
           }}
         />
+
+        <div className="service-picker-fade absolute inset-0" />
 
         {/* The smoke veil was mounted here — inside the -z-10 media wrapper,
             above the grade and below every bit of copy. Parked for now: it

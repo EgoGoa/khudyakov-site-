@@ -60,6 +60,7 @@ export default function Trust({
       side="right"
       // The argument continues here, so it rises rather than cutting in sideways.
       entrance="rise"
+      distribute
       intro={intro}
     >
       {/* Both rows below used to span the chapter's full width independently
@@ -77,7 +78,7 @@ export default function Trust({
           this wrapper's width is exactly their sum, and the search bar
           (`ml-auto` in BlockAssistant.tsx, was `mx-auto`) right-aligns
           inside the same width instead of centring short of it. */}
-      <div className="lg:mx-auto lg:w-[850px] xl:w-[890px]">
+      <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:mx-auto lg:w-[850px] xl:w-[890px]">
       <div className="mb-3 lg:flex lg:items-stretch lg:gap-3">
         <Appear from="left" delay={BEAT.content} className="hidden lg:flex lg:shrink-0">
           <span className="inline-flex h-full items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-4 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
@@ -102,7 +103,7 @@ export default function Trust({
           short of the search bar's right edge above. Fixed columns make
           this grid's own width exactly 850/890px, matching the wrapper
           above pixel for pixel. */}
-      <div className="lg:grid lg:grid-cols-[300px_470px] lg:gap-x-20 xl:grid-cols-[340px_470px]">
+      <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:grid lg:grid-cols-[300px_470px] lg:gap-x-20 xl:grid-cols-[340px_470px]">
         {/* Row 1 (FAQ, reasons) opts out of the grid's default stretch —
             row 2 (Promo, Telegram) needs it: with no lg:self-start, both
             of those cells stretch to match the row's own tallest cell, so
@@ -136,7 +137,7 @@ export default function Trust({
             more breathing room per row is what makes the block "dышать",
             and left-aligning keeps it flush with the Telegram/Promo pair
             underneath instead of centered off from them. */}
-        <div className="mt-10 lg:mt-8 lg:max-w-[470px] lg:self-start">
+        <div className="lg:mt-8 lg:max-w-[470px] lg:self-start">
           {/* Five separate cards, one shared accent (orange, the same one
               FaqAside's own pills and "+" use right next to this) instead
               of a rainbow per card — Egor's call after the multicolour pass

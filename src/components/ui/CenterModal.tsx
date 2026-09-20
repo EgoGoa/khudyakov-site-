@@ -34,12 +34,21 @@ export default function CenterModal({
   // that width on a normal laptop, so it opts into a narrower card with
   // tighter padding instead of every CenterModal getting smaller.
   compact = false,
+  // Вайб-окно (приветствие и выбор направления) — Егор попросил его
+  // «меньше и прозрачнее»: там внутри только несколько кнопок, и плотная
+  // подложка на такой площади читается как заслонка перед сайтом, а не как
+  // стекло над ним. Заливка становится легче, а блюр — сильнее: если просто
+  // убавить непрозрачность, текст поедет по контрастному видео под ним;
+  // блюр гасит этот рисунок и держит кнопки читаемыми при более прозрачной
+  // подложке. Остальные окна (бриф, вайб-режим блока) не трогаются.
+  translucent = false,
 }: {
   open: boolean;
   onClose: () => void;
   ariaLabel: string;
   children: ReactNode;
   compact?: boolean;
+  translucent?: boolean;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -143,18 +152,32 @@ export default function CenterModal({
             // class's own ::before is what painted the hairline gradient
             // border this is deliberately going without.
             style={{
-              background: "rgba(38,40,50,0.55)",
-              backdropFilter: "blur(40px) saturate(160%)",
-              WebkitBackdropFilter: "blur(40px) saturate(160%)",
+              background: translucent ? "rgba(30,32,42,0.34)" : "rgba(38,40,50,0.55)",
+              backdropFilter: translucent ? "blur(52px) saturate(150%)" : "blur(40px) saturate(160%)",
+              WebkitBackdropFilter: translucent ? "blur(52px) saturate(150%)" : "blur(40px) saturate(160%)",
               // The same pink→cyan family as the "VIBE САЙТ" pill's own
               // glow (see GLASS_BTN.vibe in WelcomeOverlay.tsx), just
               // softer and wider so the whole window reads as lit from
               // that button rather than carrying an unrelated glow of
               // its own.
-              boxShadow: "0 0 70px rgba(236,72,153,0.22), 0 0 100px rgba(56,189,248,0.19)",
+              boxShadow: translucent
+                ? "0 0 50px rgba(236,72,153,0.16), 0 0 80px rgba(56,189,248,0.14)"
+                : "0 0 70px rgba(236,72,153,0.22), 0 0 100px rgba(56,189,248,0.19)",
             }}
-            className={`relative max-h-[85vh] w-full overflow-y-auto rounded-[2rem] ${
-              compact ? "max-w-lg px-5 py-8 sm:px-8 sm:py-10" : "max-w-2xl px-6 py-10 sm:px-12 sm:py-14"
+            className={`relative w-full rounded-[2rem] ${
+              // Вайб-окно не прокручивается ни при каком размере экрана —
+              // прямое требование Егора. Оно для этого и худеет само (см.
+              // .vibe-window в globals.css): на низких экранах сжимаются волна
+              // и отступы, а не появляется полоса прокрутки. Остальные окна
+              // (бриф, вайб-режим блока) как были со скроллом, так и остаются:
+              // там внутри длинная форма, которую ужать нечем.
+              translucent ? "max-h-[94vh] overflow-hidden" : "max-h-[85vh] overflow-y-auto"
+            } ${
+              translucent
+                ? "max-w-md px-5 py-6 sm:px-8 sm:py-8"
+                : compact
+                  ? "max-w-lg px-5 py-8 sm:px-8 sm:py-10"
+                  : "max-w-2xl px-6 py-10 sm:px-12 sm:py-14"
             }`}
           >
             <button

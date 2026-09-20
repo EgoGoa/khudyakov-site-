@@ -101,7 +101,7 @@ function SideArrow({
     <Link
       href={href}
       aria-label={`${isLeft ? "Предыдущий" : "Следующий"} формат: ${label}`}
-      className={`group fixed bottom-24 land:bottom-1 z-[63] flex h-9 w-9 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
+      className={`touch-slop group fixed bottom-24 land:bottom-1 z-[63] flex h-9 w-9 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
         isLeft
           ? "left-0 sm:left-3 xl:left-6 land:left-[calc(50%-92px)]"
           : "right-0 sm:right-3 xl:right-6 land:right-[calc(50%-92px)]"
