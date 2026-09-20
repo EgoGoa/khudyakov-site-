@@ -153,6 +153,10 @@ const MOMENTUM_SECONDS = 0.3;
 const MOMENTUM_MAX = 4;
 const STALE_FLICK_MS = 130;
 
+// На сколько вертикаль должна обогнать горизонталь, чтобы колода отпустила
+// жест и он достался листу страницы.
+const VERTICAL_RELEASE = 6;
+
 // Сколько карточек отмотать при таком суммарном пути (путь + инерция).
 // Целая часть — это карточки, которые рука прошла полностью; дробная
 // доводится до следующей, если перевалила за SNAP_FRACTION.
@@ -202,13 +206,160 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
     moved: boolean;
     /** Где рука была в момент, когда жест признали перетаскиванием. */
     originX: number;
+    /** Куда палец коснулся по вертикали — по нему жест отдаётся странице. */
+    startY: number;
   } | null>(null);
+  // Рельса нужна как настоящий DOM-узел: свои touch-события мы вешаем на неё
+  // напрямую, а не через React (см. эффект ниже).
+  const railRef = useRef<HTMLDivElement | null>(null);
   // Set on release after a real drag, so the click that the browser fires
   // next can be swallowed — otherwise dragging the front card sideways would
   // also open its page on let-go.
   const swallowClick = useRef(false);
 
+  // Досчёт после отпускания — общий для мыши и пальца. Раньше эта арифметика
+  // жила прямо в обработчике отпускания указателя, и второй путь ввода
+  // (касания) неизбежно завёл бы её вторую, расходящуюся копию.
+  const applySettle = useCallback(
+    (s: NonNullable<typeof live.current>) => {
+      cancelFrame();
+      if (!s.moved) {
+        setDragging(false);
+        setDrag(0);
+        return;
+      }
+      const travelled = (s.lastX - s.originX) / s.scale / spacing;
+      const stale = performance.now() - s.lastT > STALE_FLICK_MS;
+      const momentum = stale
+        ? 0
+        : Math.max(-MOMENTUM_MAX, Math.min(MOMENTUM_MAX, s.velocity * MOMENTUM_SECONDS));
+      let raw = -stepsFrom(travelled + momentum);
+      // Короткий, но быстрый смах — жест, которым листают, почти не сдвигая
+      // руку. Пути на целый порог там нет, а намерение очевидно, поэтому
+      // скорость сама по себе даёт один шаг в сторону броска.
+      if (raw === 0 && !stale && Math.abs(s.velocity) > FLICK_VELOCITY) {
+        raw = s.velocity < 0 ? 1 : -1;
+      }
+      const delta = Math.max(-(count - 1), Math.min(count - 1, raw));
+      swallowClick.current = true;
+      window.setTimeout(() => {
+        swallowClick.current = false;
+      }, 80);
+      // Оба присваивания одним обновлением намеренно: карточки переходят из
+      // «держим там, где рука, без анимации» в «едем на новое место, анимация
+      // включена» за одну смену стилей — отпускание читается как доводка
+      // ровно оттуда, где колоду отпустили.
+      setDragging(false);
+      setDrag(0);
+      if (delta) onSettle(((delta % count) + count) % count === 0 ? 0 : delta);
+    },
+    [cancelFrame, count, onSettle, spacing],
+  );
+
+  // Скорость последнего отрезка жеста, в карточках за секунду. Считается не за
+  // весь жест, а за последний кадр: бросок — это скорость В КОНЦЕ движения, а
+  // не средняя по всему пути.
+  const sampleVelocity = useCallback(
+    (s: NonNullable<typeof live.current>, x: number) => {
+      const now = performance.now();
+      const dt = now - s.lastT;
+      if (dt > 8) {
+        s.velocity = (x - s.sampleX) / s.scale / spacing / (dt / 1000);
+        s.sampleX = x;
+        s.lastT = now;
+      }
+    },
+    [spacing],
+  );
+
+  // Палец ведёт колоду своими же, «родными» событиями.
+  //
+  // Раньше и мышь, и касание шли одним путём — через pointer-события. Это
+  // удобно ровно до тех пор, пока на странице не найдётся другой обработчик,
+  // который вызовет preventDefault на touchmove: браузер тогда снимает с
+  // касания указатель и присылает pointercancel, а жест колоды умирает на
+  // первом миллиметре движения. На сайте таких обработчиков три
+  // (CinematicStage, PhotoStage, fullpage), и каждый новый ломал бы карусель
+  // заново.
+  //
+  // Поэтому касания обрабатываются напрямую и первыми: слушатель висит на
+  // самой рельсе, срабатывает раньше оконных, и как только движение признано
+  // горизонтальным — сам зовёт preventDefault, объявляя жест своим. Ни одна
+  // страничная навигация после этого его уже не отнимет. Слушатель нативный,
+  // а не React-овский, потому что React вешает touchmove пассивно, а
+  // пассивному обработчику preventDefault запрещён.
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return; // двумя пальцами — это не наш жест
+      const t = e.touches[0];
+      const scale = rail.offsetWidth ? rail.getBoundingClientRect().width / rail.offsetWidth : 1;
+      live.current = {
+        id: -1,
+        startX: t.clientX,
+        lastX: t.clientX,
+        sampleX: t.clientX,
+        lastT: performance.now(),
+        velocity: 0,
+        scale: scale || 1,
+        moved: false,
+        originX: t.clientX,
+        startY: t.clientY,
+      };
+      swallowClick.current = false;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const s = live.current;
+      const t = e.touches[0];
+      if (!s || !t) return;
+      const dx = t.clientX - s.startX;
+      const dy = t.clientY - s.startY;
+
+      if (!s.moved) {
+        // Пока не решили, чей жест: ушёл вверх или вниз — отдаём странице и
+        // больше в него не вмешиваемся; ушёл вбок дальше порога — берём себе.
+        if (Math.abs(dy) > Math.abs(dx) + VERTICAL_RELEASE) {
+          live.current = null;
+          return;
+        }
+        if (Math.abs(dx) <= TAP_SLOP_TOUCH) return;
+        s.moved = true;
+        s.originX = t.clientX;
+        setDragging(true);
+      }
+
+      // Жест наш — забираем его у страницы, иначе она уедет под колодой.
+      e.preventDefault();
+      sampleVelocity(s, t.clientX);
+      s.lastX = t.clientX;
+      pushDrag((t.clientX - s.originX) / s.scale / spacing);
+    };
+
+    const onTouchEnd = () => {
+      const s = live.current;
+      if (!s) return;
+      live.current = null;
+      applySettle(s);
+    };
+
+    rail.addEventListener("touchstart", onTouchStart, { passive: true });
+    rail.addEventListener("touchmove", onTouchMove, { passive: false });
+    rail.addEventListener("touchend", onTouchEnd);
+    rail.addEventListener("touchcancel", onTouchEnd);
+    return () => {
+      rail.removeEventListener("touchstart", onTouchStart);
+      rail.removeEventListener("touchmove", onTouchMove);
+      rail.removeEventListener("touchend", onTouchEnd);
+      rail.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [applySettle, pushDrag, sampleVelocity, spacing]);
+
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLElement>) => {
+    // Касания ведёт эффект выше — здесь остаются мышь и перо.
+    if (e.pointerType === "touch") return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
     const rail = e.currentTarget;
     // FanFit draws the whole deck at its design width and scales it to the
@@ -226,6 +377,7 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       scale: scale || 1,
       moved: false,
       originX: e.clientX,
+      startY: e.clientY,
     };
     swallowClick.current = false;
     // Deliberately NO setPointerCapture and no `dragging` yet. Capturing on
@@ -279,75 +431,24 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       const s = live.current;
       if (!s || s.id !== e.pointerId) return;
       live.current = null;
-      cancelFrame();
-      if (!s.moved) {
-        // A tap: nothing to settle, and the click underneath must go
-        // through untouched.
-        setDragging(false);
-        setDrag(0);
-        return;
-      }
-      // Measured from the last position a MOVE reported, not from the
-      // release event. A phone browser ends a gesture with `pointercancel`
-      // the moment it decides to take over (a drift toward vertical is
-      // enough), and that event's clientX is 0 — reading it threw the deck
-      // several cards in a random direction.
-      const travelled = (s.lastX - s.originX) / s.scale / spacing;
-      // A throw carries on past where the hand stopped: 0.22s worth of the
-      // release speed, capped so even a violent flick lands somewhere the
-      // eye can follow. The staleness check is what separates a throw from a
-      // deliberate drag — if the hand held still for a moment before letting
-      // go, the last sampled speed is no longer what the hand is doing, and
-      // counting it would fling the deck past the card the visitor had
-      // carefully lined up.
-      const stale = performance.now() - s.lastT > STALE_FLICK_MS;
-      const momentum = stale
-        ? 0
-        : Math.max(-MOMENTUM_MAX, Math.min(MOMENTUM_MAX, s.velocity * MOMENTUM_SECONDS));
-      // Never a whole lap or more: on a five-card ring a flick worth five
-      // cards lands on the card it started from, which reads as «свайп не
-      // сработал». One card short of a lap is the longest useful throw.
-      let raw = -stepsFrom(travelled + momentum);
-      // Короткий, но быстрый смах — жест, которым листают, почти не сдвигая
-      // руку. Пути на целый порог там нет, а намерение очевидно, поэтому
-      // скорость сама по себе даёт один шаг в сторону броска.
-      if (raw === 0 && !stale && Math.abs(s.velocity) > FLICK_VELOCITY) {
-        raw = s.velocity < 0 ? 1 : -1;
-      }
-      const delta = Math.max(-(count - 1), Math.min(count - 1, raw));
-      swallowClick.current = s.moved;
-      // The click a browser fires right after a drag arrives within the same
-      // gesture; if none does (a touch that ended in `pointercancel`), the
-      // flag must not linger and eat a later, genuine tap.
-      if (s.moved) window.setTimeout(() => { swallowClick.current = false; }, 80);
-      // Both writes in one commit on purpose: the cards go from "held at the
-      // hand's position, no transition" to "at their new resting pose, with
-      // the transition back on" in a single style change, which is what
-      // makes the release read as the deck gliding home from exactly where
-      // it was let go rather than restarting from a snapped position.
-      setDragging(false);
-      setDrag(0);
-      if (delta) onSettle(((delta % count) + count) % count === 0 ? 0 : delta);
+      // Позиция берётся из последнего события ДВИЖЕНИЯ, а не из события
+      // отпускания: браузер заканчивает жест через pointercancel, как только
+      // решает забрать его себе, и у такого события clientX равен нулю —
+      // раньше колоду от этого отбрасывало в случайную сторону.
+      applySettle(s);
     },
-    [cancelFrame, count, onSettle, spacing],
+    [applySettle],
   );
 
-  // If the browser takes the capture away mid-gesture (the tab loses focus,
-  // another element grabs it, the OS interrupts), no pointerup ever arrives
-  // and the deck would stay frozen wherever the hand left it. Settling from
-  // the last sampled position is what keeps that from stranding the fan
-  // between two cards.
+  // Если браузер отобрал захват посреди жеста (вкладка потеряла фокус, другой
+  // элемент перехватил указатель, вмешалась система), отпускание уже не
+  // придёт, и колода осталась бы висеть там, где её бросила рука.
   const onLostPointerCapture = useCallback(() => {
     const s = live.current;
     if (!s) return;
     live.current = null;
-    cancelFrame();
-    const travelled = (s.lastX - s.originX) / s.scale / spacing;
-    setDragging(false);
-    setDrag(0);
-    const delta = -stepsFrom(travelled);
-    if (delta) onSettle(delta);
-  }, [cancelFrame, onSettle, spacing]);
+    applySettle(s);
+  }, [applySettle]);
 
   const onClickCapture = useCallback((e: React.MouseEvent) => {
     if (!swallowClick.current) return;
@@ -362,6 +463,7 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
     dragging,
     /** Spread onto the rail element that wraps the cards. */
     bind: {
+      ref: railRef,
       // По этой метке полностраничная навигация (CinematicStage, fullpage)
       // узнаёт, что касание началось внутри колоды, и не гасит его своим
       // preventDefault — см. подробный разбор там же.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { makeDeckGuard } from "@/lib/deck-gesture";
 import { useCinematicNavRegister } from "@/lib/cinematic-nav";
 import { StageContext, type ChapterMeta } from "@/components/ui/CinematicStage";
 
@@ -79,6 +80,7 @@ export default function PhotoStage({
     let wheelAccum = 0;
     let wheelReset: number | null = null;
     let touchStartY: number | null = null;
+    const deck = makeDeckGuard();
     let paneMoved = false;
     let tween = 0;
     const isLocked = () => performance.now() < lock;
@@ -230,9 +232,12 @@ export default function PhotoStage({
 
     const onTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0]?.clientY ?? null;
+      deck.start(e);
       paneMoved = false;
     };
     const onTouchMove = (e: TouchEvent) => {
+      // Касание на карусели принадлежит карусели — см. lib/deck-gesture.
+      if (deck.owns(e)) return;
       const isEngagedNow = engaged();
       if (!isEngagedNow) {
         wasEngaged = false;
@@ -254,6 +259,10 @@ export default function PhotoStage({
       e.preventDefault();
     };
     const onTouchEnd = (e: TouchEvent) => {
+      if (deck.end()) {
+        touchStartY = null;
+        return;
+      }
       if (touchStartY === null || !engaged() || isLocked()) return;
       const dy = touchStartY - (e.changedTouches[0]?.clientY ?? touchStartY);
       touchStartY = null;

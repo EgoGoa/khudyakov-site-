@@ -653,7 +653,9 @@ export const AI_ROUND =
 export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | null } = {}) {
   const wide = !!panelTarget;
   const [active, setActive] = useState(0);
-  const railRef = useRef<HTMLDivElement>(null);
+  // Рельса теперь живёт в самом жесте (useDeckDrag отдаёт её в bind.ref):
+  // два разных ref на одном узле при расстановке через spread затирали друг
+  // друга, и побеждал тот, что стоял позже.
   const count = CARDS.length;
 
   const step = useCallback(
@@ -669,10 +671,12 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
     [count],
   );
 
+  const { drag, dragging, bind } = useDeckDrag({ count, spacing: SPACING, onSettle: step });
+
   // Arrow keys, but only while the rail itself has focus inside it — the
   // page's own left/right gestures stay untouched everywhere else.
   useEffect(() => {
-    const el = railRef.current;
+    const el = bind.ref.current;
     if (!el) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
@@ -680,10 +684,9 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
     };
     el.addEventListener("keydown", onKey);
     return () => el.removeEventListener("keydown", onKey);
-  }, [step]);
+  }, [bind.ref, step]);
 
   const front = SERVICES[idx];
-  const { drag, dragging, bind } = useDeckDrag({ count, spacing: SPACING, onSettle: step });
 
   const panel = (
       <div
@@ -708,7 +711,6 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           rail twice. */}
       <FanFit designWidth={396} height={416}>
       <div
-        ref={railRef}
         className="deck-rail relative h-full"
         style={{
           perspective: "1430px",
