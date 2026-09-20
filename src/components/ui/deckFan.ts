@@ -125,6 +125,8 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
     id: number;
     startX: number;
     lastX: number;
+    /** Position at the last velocity sample (lastX moves on every event). */
+    sampleX: number;
     lastT: number;
     velocity: number;
     scale: number;
@@ -147,6 +149,7 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       id: e.pointerId,
       startX: e.clientX,
       lastX: e.clientX,
+      sampleX: e.clientX,
       lastT: performance.now(),
       velocity: 0,
       scale: scale || 1,
@@ -178,10 +181,11 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       // than over the whole gesture: a flick is the speed at the END of the
       // movement, not its average.
       if (dt > 8) {
-        s.velocity = (e.clientX - s.lastX) / s.scale / spacing / (dt / 1000);
-        s.lastX = e.clientX;
+        s.velocity = (e.clientX - s.sampleX) / s.scale / spacing / (dt / 1000);
+        s.sampleX = e.clientX;
         s.lastT = now;
       }
+      s.lastX = e.clientX;
       setDrag(travelled / s.scale / spacing);
     },
     [spacing],
@@ -199,7 +203,12 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
         setDrag(0);
         return;
       }
-      const travelled = (e.clientX - s.startX) / s.scale / spacing;
+      // Measured from the last position a MOVE reported, not from the
+      // release event. A phone browser ends a gesture with `pointercancel`
+      // the moment it decides to take over (a drift toward vertical is
+      // enough), and that event's clientX is 0 — reading it threw the deck
+      // several cards in a random direction.
+      const travelled = (s.lastX - s.startX) / s.scale / spacing;
       // A throw carries on past where the hand stopped: 0.22s worth of the
       // release speed, capped so even a violent flick lands somewhere the
       // eye can follow. The staleness check is what separates a throw from a
@@ -209,8 +218,16 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       // carefully lined up.
       const stale = performance.now() - s.lastT > 90;
       const momentum = stale ? 0 : Math.max(-4, Math.min(4, s.velocity * 0.22));
-      const delta = -Math.round(travelled + momentum);
+      // Never a whole lap or more: on a five-card ring a flick worth five
+      // cards lands on the card it started from, which reads as «свайп не
+      // сработал». One card short of a lap is the longest useful throw.
+      const raw = -Math.round(travelled + momentum);
+      const delta = Math.max(-(count - 1), Math.min(count - 1, raw));
       swallowClick.current = s.moved;
+      // The click a browser fires right after a drag arrives within the same
+      // gesture; if none does (a touch that ended in `pointercancel`), the
+      // flag must not linger and eat a later, genuine tap.
+      if (s.moved) window.setTimeout(() => { swallowClick.current = false; }, 80);
       // Both writes in one commit on purpose: the cards go from "held at the
       // hand's position, no transition" to "at their new resting pose, with
       // the transition back on" in a single style change, which is what
@@ -261,6 +278,10 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       // Safety net for browsers that ignore `-webkit-user-drag: none` on a
       // nested element: no native drag ever starts inside the rail.
       onDragStart: (e: React.DragEvent) => e.preventDefault(),
+      // A long press on the front card (it is a link) opens the phone's own
+      // link menu, which cancels the gesture mid-hold — the «зажатие»
+      // Egor could not do on a phone.
+      onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
     },
   };
 }
