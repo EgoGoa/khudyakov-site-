@@ -123,7 +123,45 @@ type DragArgs = {
 // четырёх пикселей; палец всегда немного ёрзает по стеклу, и на телефоне тот
 // же порог срабатывал от дрожания руки при обычном нажатии.
 const TAP_SLOP_MOUSE = 4;
-const TAP_SLOP_TOUCH = 7;
+const TAP_SLOP_TOUCH = 5;
+
+// Какую долю расстояния между карточками надо пройти, чтобы колода шагнула.
+//
+// Раньше здесь было обычное округление, то есть половина шага: при расстоянии
+// между карточками в 150 макетных пикселей палец должен был проехать больше 80
+// реальных — четверть ширины телефона ради одного шага. Колода честно ехала за
+// рукой и так же честно возвращалась назад, и это читалось как «свайп не
+// работает вообще».
+//
+// Пятая часть шага — это примерно 30 экранных пикселей, лёгкий смах. Обрати
+// внимание, что карточки при этом по-прежнему едут за пальцем один в один:
+// меняется не скорость движения, а только порог, на котором принимается
+// решение доводить до следующей карточки или возвращать назад. Разводить эти
+// две вещи — обычный приём в нативных листалках: рука ведёт содержимое точно,
+// а «защёлка» срабатывает гораздо раньше середины.
+// Замерено на телефоне: с этой долей колода шагает примерно с 30 экранных
+// пикселей пути — ровно тот «лёгкий смах», о котором просил Егор.
+const SNAP_FRACTION = 0.15;
+
+// Скорость броска (карточек в секунду), выше которой колода docrучивается
+// дальше даже при коротком пути — как маховик, которому придали ход.
+const FLICK_VELOCITY = 0.8;
+
+// Сколько ещё карточек «доносит» инерцией после отпускания и насколько давно
+// должна была замереть рука, чтобы бросок перестал считаться броском.
+const MOMENTUM_SECONDS = 0.3;
+const MOMENTUM_MAX = 4;
+const STALE_FLICK_MS = 130;
+
+// Сколько карточек отмотать при таком суммарном пути (путь + инерция).
+// Целая часть — это карточки, которые рука прошла полностью; дробная
+// доводится до следующей, если перевалила за SNAP_FRACTION.
+function stepsFrom(raw: number) {
+  const dir = raw < 0 ? -1 : 1;
+  const mag = Math.abs(raw);
+  const whole = Math.floor(mag);
+  return dir * (whole + (mag - whole > SNAP_FRACTION ? 1 : 0));
+}
 
 export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
   const [drag, setDrag] = useState(0);
@@ -162,6 +200,8 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
     velocity: number;
     scale: number;
     moved: boolean;
+    /** Где рука была в момент, когда жест признали перетаскиванием. */
+    originX: number;
   } | null>(null);
   // Set on release after a real drag, so the click that the browser fires
   // next can be swallowed — otherwise dragging the front card sideways would
@@ -185,6 +225,7 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       velocity: 0,
       scale: scale || 1,
       moved: false,
+      originX: e.clientX,
     };
     swallowClick.current = false;
     // Deliberately NO setPointerCapture and no `dragging` yet. Capturing on
@@ -203,7 +244,17 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       const slop = e.pointerType === "mouse" ? TAP_SLOP_MOUSE : TAP_SLOP_TOUCH;
       if (!s.moved && Math.abs(travelled) > slop) {
         s.moved = true;
-        e.currentTarget.setPointerCapture?.(e.pointerId);
+        // Считаем путь от этой точки, а не от первого касания: иначе в момент
+        // срабатывания порога колода прыгала бы сразу на его величину.
+        s.originX = e.clientX;
+        // Захват — это удобство, а не условие работы жеста: браузер вправе
+        // отказать (указателя уже нет, элемент перерисовался), и раньше такой
+        // отказ ронял обработчик вместе со всем перетаскиванием.
+        try {
+          e.currentTarget.setPointerCapture?.(e.pointerId);
+        } catch {
+          /* жест продолжает жить на обычных событиях рельсы */
+        }
         setDragging(true);
       }
       if (!s.moved) return;
@@ -218,7 +269,7 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
         s.lastT = now;
       }
       s.lastX = e.clientX;
-      pushDrag(travelled / s.scale / spacing);
+      pushDrag((e.clientX - s.originX) / s.scale / spacing);
     },
     [pushDrag, spacing],
   );
@@ -241,7 +292,7 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       // the moment it decides to take over (a drift toward vertical is
       // enough), and that event's clientX is 0 — reading it threw the deck
       // several cards in a random direction.
-      const travelled = (s.lastX - s.startX) / s.scale / spacing;
+      const travelled = (s.lastX - s.originX) / s.scale / spacing;
       // A throw carries on past where the hand stopped: 0.22s worth of the
       // release speed, capped so even a violent flick lands somewhere the
       // eye can follow. The staleness check is what separates a throw from a
@@ -249,12 +300,20 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       // go, the last sampled speed is no longer what the hand is doing, and
       // counting it would fling the deck past the card the visitor had
       // carefully lined up.
-      const stale = performance.now() - s.lastT > 90;
-      const momentum = stale ? 0 : Math.max(-4, Math.min(4, s.velocity * 0.22));
+      const stale = performance.now() - s.lastT > STALE_FLICK_MS;
+      const momentum = stale
+        ? 0
+        : Math.max(-MOMENTUM_MAX, Math.min(MOMENTUM_MAX, s.velocity * MOMENTUM_SECONDS));
       // Never a whole lap or more: on a five-card ring a flick worth five
       // cards lands on the card it started from, which reads as «свайп не
       // сработал». One card short of a lap is the longest useful throw.
-      const raw = -Math.round(travelled + momentum);
+      let raw = -stepsFrom(travelled + momentum);
+      // Короткий, но быстрый смах — жест, которым листают, почти не сдвигая
+      // руку. Пути на целый порог там нет, а намерение очевидно, поэтому
+      // скорость сама по себе даёт один шаг в сторону броска.
+      if (raw === 0 && !stale && Math.abs(s.velocity) > FLICK_VELOCITY) {
+        raw = s.velocity < 0 ? 1 : -1;
+      }
       const delta = Math.max(-(count - 1), Math.min(count - 1, raw));
       swallowClick.current = s.moved;
       // The click a browser fires right after a drag arrives within the same
@@ -283,10 +342,10 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
     if (!s) return;
     live.current = null;
     cancelFrame();
-    const travelled = (s.lastX - s.startX) / s.scale / spacing;
+    const travelled = (s.lastX - s.originX) / s.scale / spacing;
     setDragging(false);
     setDrag(0);
-    const delta = -Math.round(travelled);
+    const delta = -stepsFrom(travelled);
     if (delta) onSettle(delta);
   }, [cancelFrame, onSettle, spacing]);
 
