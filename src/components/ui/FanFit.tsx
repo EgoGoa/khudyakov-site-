@@ -11,7 +11,13 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 // keeps the front card large instead of shrinking everything to fit them.
 // Horizontal swipe pages the deck; vertical drags still scroll the page.
 const PAD = 110;
-const FADE = "linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)";
+// The fan is wider than the column it lives in, so its outer cards run into
+// the clip edge. Without a mask that edge is a straight vertical cut through
+// the artwork — Egor flagged it on the desktop layout, where the mask used
+// to be applied only on phones. Now every width dissolves its edges instead:
+// the outermost cards fade out rather than being sliced off.
+const FADE_NARROW = "linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)";
+const FADE_WIDE = "linear-gradient(to right, transparent 0%, #000 17%, #000 83%, transparent 100%)";
 
 export default function FanFit({
   designWidth,
@@ -21,7 +27,10 @@ export default function FanFit({
 }: {
   designWidth: number;
   height: number;
-  onSwipe: (delta: number) => void;
+  /** Optional: the decks now drive paging with a pointer drag of their own
+   *  (see useDeckDrag), so they pass nothing here. Kept for any caller that
+   *  only wants the old swipe-at-the-end gesture. */
+  onSwipe?: (delta: number) => void;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -67,19 +76,31 @@ export default function FanFit({
         // cards (and their fade) reach the very edge of the screen.
         ...(narrow && !size?.land ? { width: "100vw", marginLeft: "calc(50% - 50vw)" } : null),
         visibility: width ? undefined : "hidden",
-        // On a phone the side cards run to the screen edge and fade out
-        // instead of being cut off, so the row still reads as a carousel.
-        ...(narrow ? { WebkitMaskImage: FADE, maskImage: FADE } : null),
+        // Wider fade on desktop: there the column is narrow relative to the
+        // fan, so the cut fell across the middle of a card rather than near
+        // its edge, and the dissolve has to start earlier to hide it.
+        ...(() => {
+          const fade = narrow ? FADE_NARROW : FADE_WIDE;
+          return { WebkitMaskImage: fade, maskImage: fade };
+        })(),
       }}
-      onTouchStart={(e) => {
-        touchX.current = e.touches[0].clientX;
-      }}
-      onTouchEnd={(e) => {
-        if (touchX.current === null) return;
-        const dx = e.changedTouches[0].clientX - touchX.current;
-        touchX.current = null;
-        if (Math.abs(dx) > 40) onSwipe(dx < 0 ? 1 : -1);
-      }}
+      onTouchStart={
+        onSwipe
+          ? (e) => {
+              touchX.current = e.touches[0].clientX;
+            }
+          : undefined
+      }
+      onTouchEnd={
+        onSwipe
+          ? (e) => {
+              if (touchX.current === null) return;
+              const dx = e.changedTouches[0].clientX - touchX.current;
+              touchX.current = null;
+              if (Math.abs(dx) > 40) onSwipe(dx < 0 ? 1 : -1);
+            }
+          : undefined
+      }
     >
       <div
         className="pointer-events-auto absolute left-0 origin-top-left"

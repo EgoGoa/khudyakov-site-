@@ -4,6 +4,7 @@ import { useCallback, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
+import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset } from "@/components/ui/deckFan";
 import { smmFormatPages } from "@/components/home/direction/smmFormatRegistry";
 
 // Violet, this page's own accent — see .deck-card-glow in globals.css for
@@ -319,16 +320,26 @@ function FormatThumb({ shape, image, animate = false }: { shape: Format["shape"]
 // neighbours shrink a bit further than before (0.85 → 0.74), and the outer
 // pair shrink further still (0.7 → 0.54) — one continuous depth step rather
 // than "big card, then two flat sizes".
-const FAN: Record<number, { x: number; y: number; scale: number; opacity: number; blur: number; z: number }> = {
-  [-2]: { x: -204, y: 30, scale: 0.54, opacity: 0.42, blur: 1.4, z: 10 },
-  [-1]: { x: -118, y: 12, scale: 0.74, opacity: 0.76, blur: 0.4, z: 20 },
-  [0]: { x: 0, y: -10, scale: 1.3, opacity: 1, blur: 0, z: 30 },
-  [1]: { x: 118, y: 12, scale: 0.74, opacity: 0.76, blur: 0.4, z: 20 },
-  [2]: { x: 204, y: 30, scale: 0.54, opacity: 0.42, blur: 1.4, z: 10 },
+const FAN: Record<number, { x: number; y: number; scale: number; opacity: number; veil: number; z: number }> = {
+  [-2]: { x: -216, y: 34, scale: 0.54, opacity: 0.92, veil: 0.74, z: 10 },
+  [-1]: { x: -128, y: 14, scale: 0.72, opacity: 1, veil: 0.5, z: 20 },
+  [0]: { x: 0, y: -10, scale: 1.24, opacity: 1, veil: 0, z: 30 },
+  [1]: { x: 128, y: 14, scale: 0.72, opacity: 1, veil: 0.5, z: 20 },
+  [2]: { x: 216, y: 34, scale: 0.54, opacity: 0.92, veil: 0.74, z: 10 },
+  // Mid-drag only, and faded out by the time a card gets here — see the
+  // twin entries in SitesDeck.
+  [-3]: { x: -288, y: 50, scale: 0.42, opacity: 0.8, veil: 0.82, z: 5 },
+  [3]: { x: 288, y: 50, scale: 0.42, opacity: 0.8, veil: 0.82, z: 5 },
 };
 
+// Hand travel that moves the deck by exactly one card.
+const SPACING = 128;
+
+// Front card only keeps the backdrop blur — see the same split in
+// SitesDeck for why five animated backdrop-filters is what stuttered.
 const CARD_SHELL =
-  "rounded-[20px] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-2xl backdrop-saturate-150";
+  "rounded-[20px] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.16)]";
+const CARD_SHELL_FRONT = `${CARD_SHELL} backdrop-blur-2xl backdrop-saturate-150`;
 
 // The page's button language: the flat gradient pill plus a glass
 // circle-arrow, deliberately not the site-wide `.btn-neon.btn-3d` pressed key,
@@ -352,24 +363,30 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
   const [active, setActive] = useState(0);
   const count = FORMATS.length;
 
-  const step = useCallback(
-    (delta: number) => setActive((prev) => (prev + delta + count) % count),
+  // Unwrapped counter — fanSlots explains why the ring must stay
+  // continuous; `idx` is it folded back into 0..count-1.
+  const step = useCallback((delta: number) => setActive((prev) => prev + delta), []);
+  const idx = modIndex(active, count);
+  const goTo = useCallback(
+    (target: number) =>
+      setActive((prev) => prev + wrapOffset(target - modIndex(prev, count), count)),
     [count],
   );
 
-  const front = FORMATS[active];
+  const front = FORMATS[idx];
+  const { drag, dragging, bind } = useDeckDrag({ count, spacing: SPACING, onSettle: step });
 
   const panel = (
       <div
-      className={`glass-panel deck-neon-pulse flex items-start overflow-hidden rounded-3xl px-6 py-6 ${wide ? "h-auto" : "mt-6 h-auto min-h-[300px] lg:h-[240px] lg:min-h-0"}`}
-        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), 0 28px 70px -34px rgba(0,0,0,0.95)", "--card-glow-rgb": "168, 85, 247" } as CSSProperties}
+      className={`glass-panel deck-neon-pulse flex items-start overflow-hidden rounded-3xl px-6 py-7 lg:py-6 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[240px] lg:min-h-0"}`}
+        style={{ "--card-glow-rgb": "168, 85, 247" } as CSSProperties}
       >
-        <div className={wide ? "w-full" : "max-w-[460px]"}>
+        <div className={wide ? "w-full" : "w-full lg:max-w-[460px]"}>
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
             <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.name}</p>
             <p className="font-display text-[11px] uppercase tracking-[0.1em] text-[#c9a4ff]">{front.meta}</p>
           </div>
-          <dl className={`mt-3 grid gap-2.5 ${wide ? "grid-cols-3 gap-x-6" : ""}`}>
+          <dl className={`mt-3 grid gap-2.5 max-lg:mt-5 max-lg:gap-5 ${wide ? "grid-cols-3 gap-x-6" : ""}`}>
             <SmmFact stacked={wide} label="Что даёт" text={front.blurb} />
             <SmmFact stacked={wide} label="Кому" text={front.audience} />
             <SmmFact stacked={wide} label="Почему сейчас" text={front.now} />
@@ -383,20 +400,25 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
       {/* Fixed height so the chapter's layout doesn't shift as the description
           under it changes length — grown from 300 to fit the front card's
           new +30% size (250px tall × 1.3 = 325px) plus its upward y-nudge. */}
-      <FanFit designWidth={295} height={360} onSwipe={step}>
-      <div className="relative h-full">
-        {FORMATS.map((format, i) => {
-          // Signed, wrapped distance from the active card: -2..+2, so the last
-          // card sits to the *left* of the first rather than looping the long
-          // way round.
-          let offset = i - active;
-          if (offset > count / 2) offset -= count;
-          if (offset < -count / 2) offset += count;
+      {/* Paging by pointer drag (useDeckDrag) instead of FanFit's own
+          swipe, so a flick isn't counted twice. */}
+      <FanFit designWidth={295} height={360}>
+      <div
+        className="deck-rail relative h-full"
+        style={{ cursor: dragging ? "grabbing" : "grab", touchAction: "pan-y" }}
+        {...bind}
+      >
+        {fanSlots(count, active, drag).map(({ i, key, offset, settled }) => {
+          const format = FORMATS[i];
+          const pose = poseAt(FAN, offset);
+          const opacity = pose.opacity * pose.fade;
+          const blurPx = blurAt(offset);
+          // 1 в центре, 0 на соседней позиции — непрерывно, без ступеней.
+          const halo = Math.max(0, 1 - Math.abs(offset) / 1.1);
 
-          const pose = FAN[offset];
-          if (!pose) return null;
-
-          const isFront = offset === 0;
+          // Settled position, not the dragged one — caption and halo stay
+          // with the chosen card while the deck is pulled around.
+          const isFront = settled === 0;
           const hasPage = format.id in smmFormatPages;
 
           const caption = (
@@ -418,16 +440,27 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                     living on the card itself instead of a separate button
                     below the deck. */}
                 {hasPage && (
-                  <span className="smm-open-pulse inline-flex items-center gap-1.5 rounded-full bg-gradient-to-b from-[#c084fc] to-[#7e22ce] px-3 py-1.5 font-display text-[8px] font-semibold uppercase tracking-[0.14em] text-[#1a0a2a] motion-reduce:animate-none">
+                  <span
+                    className={`deck-open-pill inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[7px] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
+                      isFront ? "" : "deck-open-pill-still"
+                    }`}
+                    style={{ "--pill-rgb": "192, 132, 252" } as CSSProperties}
+                  >
                     Подробнее
                     <span aria-hidden="true">→</span>
                   </span>
                 )}
               </span>
-              <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
-                {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-              </span>
             </>
+          );
+
+          // Deck counter, front card only — it counts the deck, not the
+          // card. The caption above is on every card now (Egor: название и
+          // кнопка должны быть видны всегда, и во время перетаскивания).
+          const counter = (
+            <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+              {String(idx + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+            </span>
           );
 
           // The position/transition live on a stable outer <div> that never
@@ -442,15 +475,38 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           // fan animation stays smooth regardless of which control fills it.
           return (
             <div
-              key={format.id}
-              className="deck-pose absolute left-1/2 top-1/2 h-[250px] w-[150px] transition-all duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              key={key}
+              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[250px] w-[150px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
+                dragging ? "transition-[filter] duration-[760ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
+              }`}
               style={{
-                zIndex: pose.z,
-                opacity: pose.opacity,
-                filter: pose.blur ? `blur(${pose.blur}px)` : undefined,
+                ["--deck-blur" as string]: `${blurPx}px`,
+                zIndex: Math.round(pose.z),
+                opacity,
+                visibility: opacity < 0.01 ? "hidden" : undefined,
                 transform: `translate(-50%, -50%) translate(${pose.x}px, ${pose.y}px) scale(${pose.scale})`,
+                willChange: "transform, opacity",
               }}
             >
+              {/* Fixed-size breathing light behind the front card — see the
+                  twin in SitesDeck: it replaces the box-shadow that used to
+                  swell over the neighbouring cards. */}
+              {/* Свет карточки. Живёт на КАЖДОЙ карточке, а сила — от
+                  расстояния до центра, поэтому при перелистывании и при
+                  перетаскивании рукой он плавно перетекает с одной карточки
+                  на другую, а не включается и выключается рывком. */}
+              <span
+                aria-hidden="true"
+                className={`deck-halo-fade pointer-events-none absolute -inset-4 -z-10 ${
+                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                }`}
+                style={{ opacity: halo }}
+              >
+                <span
+                  className="deck-halo absolute inset-0 rounded-[28px]"
+                  style={{ "--card-glow-rgb": "168, 85, 247" } as CSSProperties}
+                />
+              </span>
               {/* Once a format is front AND has its own page, the whole
                   card becomes the link to it — Egor's ask: click anywhere
                   on the selected card (bar the dedicated buttons elsewhere
@@ -466,25 +522,36 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                 <Link
                   href={`/smm/${format.id}`}
                   aria-current="true"
-                  className={`deck-card-glow deck-neon-pulse absolute inset-0 overflow-hidden text-left ${CARD_SHELL}`}
+                  className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL_FRONT}`}
                   style={CARD_GLOW_STYLE}
                 >
                   <FormatThumb shape={format.shape} image={format.image} animate />
                   {caption}
+                  {counter}
                 </Link>
               ) : (
                 <button
                   type="button"
-                  onClick={() => setActive(i)}
+                  onClick={() => goTo(i)}
                   tabIndex={isFront ? -1 : 0}
                   aria-label={`Показать формат: ${format.name}`}
                   aria-current={isFront ? "true" : undefined}
-                  className={`absolute inset-0 overflow-hidden text-left ${CARD_SHELL} ${
-                    isFront ? "cursor-default" : "cursor-pointer"
+                  className={`absolute inset-0 overflow-hidden text-left ${
+                    isFront ? `${CARD_SHELL_FRONT} cursor-default` : `${CARD_SHELL} cursor-pointer`
                   }`}
                 >
                   <FormatThumb shape={format.shape} image={format.image} animate={isFront} />
-                  {isFront && caption}
+                  {/* Dark veil instead of element opacity, so the cards stay
+                      opaque and never show each other through. */}
+                  {pose.veil > 0 && (
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 transition-opacity duration-[760ms]"
+                      style={{ background: `rgba(8, 9, 14, ${pose.veil})` }}
+                    />
+                  )}
+                  {caption}
+                  {isFront && counter}
                 </button>
               )}
             </div>
@@ -527,12 +594,12 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           }}
         />
         {FORMATS.map((format, i) => {
-          const on = i === active;
+          const on = i === idx;
           return (
             <button
               key={format.id}
               type="button"
-              onClick={() => setActive(i)}
+              onClick={() => goTo(i)}
               aria-label={format.name}
               aria-current={on ? "true" : undefined}
               className="relative grid h-8 w-8 place-items-center rounded-full border bg-ink font-display text-[9px] transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a855f7] motion-reduce:transition-none"
@@ -566,11 +633,11 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
 // SitesFact, в акценте /smm.
 function SmmFact({ label, text, stacked }: { label: string; text: string; stacked?: boolean }) {
   return (
-    <div className={stacked ? "flex flex-col gap-1" : "flex gap-3"}>
-      <dt className={`${stacked ? "" : "w-[92px]"} shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-[#c9a4ff]/80`}>
+    <div className={stacked ? "flex flex-col gap-1" : "flex gap-3 max-lg:flex-col max-lg:gap-1.5"}>
+      <dt className={`${stacked ? "" : "w-[92px] max-lg:w-auto"} shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-[#c9a4ff]/80`}>
         {label}
       </dt>
-      <dd className="text-[13px] leading-snug text-white">{text}</dd>
+      <dd className="text-[13px] leading-snug text-white max-lg:text-sm max-lg:leading-relaxed">{text}</dd>
     </div>
   );
 }

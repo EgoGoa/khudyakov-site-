@@ -1271,6 +1271,106 @@ body {
     transform: translateY(1px) scale(0.985);
   }
 
+  /* Окно не прокручивается никогда — вместо полосы прокрутки оно само
+     ужимается на низких экранах (ноутбук с небольшой высотой, телефон в
+     альбомной ориентации). Ужимаются именно «воздух» и декоративная волна,
+     а не кегль кнопок: список должен остаться нажимаемым пальцем. */
+  /* Базовый вертикальный ритм окна задаётся здесь одним местом, чтобы два
+     правила ниже могли ужать его целиком, а не каждый отступ по отдельности. */
+  .vibe-window .vibe-window-gap {
+    margin-top: 1.25rem;
+  }
+
+  @media (max-height: 760px) {
+    .vibe-window .voice-wave-slot {
+      height: 44px;
+      margin-bottom: 0.75rem;
+    }
+    .vibe-window .vibe-window-gap {
+      margin-top: 1rem;
+    }
+  }
+
+  @media (max-height: 620px) {
+    .vibe-window .voice-wave-slot {
+      height: 30px;
+      margin-bottom: 0.4rem;
+    }
+    .vibe-window .vibe-window-gap {
+      margin-top: 0.6rem;
+    }
+    .vibe-window .vibe-window-lead {
+      font-size: 1rem;
+    }
+  }
+
+  /* Вайб-окно: весь набор кнопок внутри него мельче, чем на странице.
+     В окне они стоят вертикальным списком в узкой карточке, и «страничный»
+     размер там читается как четыре плашки во весь экран, а не как выбор.
+     Минус примерно треть по высоте и кеглю — правка Егора. Отдельного стиля
+     кнопки при этом не заводится: меняются только размеры у общей .btn-neon,
+     кольцо/фокус/нажатие остаются те же, что везде на сайте. */
+  .vibe-window .btn-neon {
+    padding: 7px 18px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+
+  /* Кнопки направлений. Спокойное тёмное стекло, белый заголовочный текст и
+     нейтральное кольцо — все четыре в покое выглядят одинаково, потому что
+     четыре разноцветные плашки подряд читались как детская палитра, а не как
+     меню агентства (правка Егора). Цвет направления никуда не делся, он
+     просто перестал кричать: слева остаётся тонкая градиентная черта его
+     цвета, а на наведении в этот же цвет загорается всё кольцо и свечение.
+     Цвета приходят инлайном из PAGE_GRADIENT — того же источника, что красит
+     заголовки самих страниц. */
+  .vibe-window .btn-neon.vibe-pick {
+    --btn-neon-c1: rgba(200, 214, 230, 0.55);
+    --btn-neon-c2: rgba(255, 255, 255, 0.75);
+    width: 100%;
+    padding: 11px 18px;
+    font-size: 12.5px;
+    color: #ffffff;
+    transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.45s ease,
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), --btn-neon-c1 0.4s ease, --btn-neon-c2 0.4s ease;
+  }
+
+  /* Метка направления: 2px вертикальная черта в его градиенте. Достаточно,
+     чтобы четыре пункта различались с одного взгляда, и мало, чтобы список
+     остался монохромным. */
+  .vibe-window .vibe-pick .vibe-pick-mark {
+    width: 2px;
+    height: 13px;
+    flex: none;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--pick-from), var(--pick-to));
+    box-shadow: 0 0 8px color-mix(in srgb, var(--pick-from) 70%, transparent);
+    transition: height 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+  }
+
+  .vibe-window .btn-neon.vibe-pick:hover,
+  .vibe-window .btn-neon.vibe-pick:focus-visible {
+    --btn-neon-c1: var(--pick-from);
+    --btn-neon-c2: var(--pick-to);
+    /* Подъём, а не рост: кнопка такого размера при scale заметно дрожит
+       краями на субпиксельной сетке, а сдвиг по Y читается так же «живо» и
+       остаётся чётким. */
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--pick-from) 55%, transparent),
+      0 0 26px 2px color-mix(in srgb, var(--pick-from) 40%, transparent),
+      0 0 52px 8px color-mix(in srgb, var(--pick-to) 26%, transparent);
+  }
+
+  .vibe-window .btn-neon.vibe-pick:hover .vibe-pick-mark,
+  .vibe-window .btn-neon.vibe-pick:focus-visible .vibe-pick-mark {
+    height: 17px;
+    box-shadow: 0 0 14px color-mix(in srgb, var(--pick-from) 85%, transparent);
+  }
+
+  .vibe-window .btn-neon.vibe-pick:active {
+    transform: translateY(0) scale(0.99);
+  }
+
   /* The one emphasised action per screen — solid orange instead of another
      outline, so it reads as the destination rather than one more option in
      a row of equals. */
@@ -2219,75 +2319,56 @@ body {
   }
 }
 
-/* Same pulse as .ai-open-pulse, repainted pink→orange for the "хит месяца"
-   card's own CTA pill — that pill's fill is already this gradient (see
-   AiDeck.tsx), and the plain emerald shadow above read as mismatched glow
-   glued onto a differently-coloured button. */
-@keyframes ai-open-pulse-hit {
+/* «Подробнее» / «Открыть инструмент» — the pill on the front card of every
+   service carousel (/ai, /sites, /smm). One class for all three; colour is
+   the only difference and it arrives through --pill-rgb, the same hand-off
+   --card-glow-rgb already uses for the cards' own glow.
+
+   Egor's call after seeing it on a phone: the solid colour plate outweighed
+   the card title above it and pulsed hard enough to read as a bug. It is the
+   opposite kind of control now — transparent glass with a glowing outline,
+   a fifth smaller, and the pulse is a slow breath of that outline alone.
+
+   No `transform: scale()` in the keyframes any more. The pill sits inside a
+   card that is itself sliding and scaling through the fan, and a scaling
+   child made the browser repaint the whole caption on every frame of a swap
+   — that was part of the stutter when paging. */
+.deck-open-pill {
+  --pill-rgb: 0, 210, 255;
+  border: 1px solid rgba(var(--pill-rgb), 0.5);
+  background: rgba(10, 14, 20, 0.34);
+  color: #fff;
+  text-shadow: 0 0 10px rgba(var(--pill-rgb), 0.8);
+  box-shadow:
+    0 0 10px -2px rgba(var(--pill-rgb), 0.4),
+    inset 0 0 10px -5px rgba(var(--pill-rgb), 0.55);
+  animation: deck-open-breathe 3.6s ease-in-out infinite;
+}
+
+@keyframes deck-open-breathe {
   0%, 100% {
-    box-shadow: 0 10px 26px -6px rgba(255, 106, 61, 0.7), 0 0 0 0 rgba(255, 79, 216, 0.55);
-    transform: scale(1);
+    border-color: rgba(var(--pill-rgb), 0.42);
+    box-shadow:
+      0 0 8px -2px rgba(var(--pill-rgb), 0.3),
+      inset 0 0 8px -5px rgba(var(--pill-rgb), 0.4);
   }
   50% {
-    box-shadow: 0 12px 22px -4px rgba(255, 106, 61, 0.9), 0 0 0 4px rgba(255, 79, 216, 0);
-    transform: scale(1.02);
+    border-color: rgba(var(--pill-rgb), 0.95);
+    box-shadow:
+      0 0 16px -1px rgba(var(--pill-rgb), 0.55),
+      inset 0 0 14px -5px rgba(var(--pill-rgb), 0.6);
   }
 }
 
-.ai-open-pulse-hit {
-  animation: ai-open-pulse-hit 2s ease-in-out infinite;
+/* Side cards show the same pill so the deck reads at a glance, but only the
+   chosen card's breathes — five pulsing buttons at once is noise, not a
+   signal. */
+.deck-open-pill-still {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ai-open-pulse-hit {
-    animation: none;
-  }
-}
-
-/* Same pulse again, repainted cyan for /sites' own "Подробнее" pill
-   (SitesDeck.tsx) — that page's accent is glow/cyan rather than /ai's
-   emerald, so it gets its own copy of the shadow colour instead of
-   reusing .ai-open-pulse and reading as a mismatched green flash. */
-@keyframes sites-open-pulse {
-  0%, 100% {
-    box-shadow: 0 10px 26px -6px rgba(0, 210, 255, 0.55), 0 0 0 0 rgba(79, 224, 255, 0.5);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 12px 22px -4px rgba(0, 210, 255, 0.8), 0 0 0 4px rgba(79, 224, 255, 0);
-    transform: scale(1.02);
-  }
-}
-
-.sites-open-pulse {
-  animation: sites-open-pulse 2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sites-open-pulse {
-    animation: none;
-  }
-}
-
-/* Same pulse a third time, repainted violet for /smm's own "Подробнее" pill
-   (SmmDeck.tsx) — that page's accent. */
-@keyframes smm-open-pulse {
-  0%, 100% {
-    box-shadow: 0 10px 26px -6px rgba(168, 85, 247, 0.55), 0 0 0 0 rgba(192, 132, 252, 0.5);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 12px 22px -4px rgba(168, 85, 247, 0.8), 0 0 0 4px rgba(192, 132, 252, 0);
-    transform: scale(1.02);
-  }
-}
-
-.smm-open-pulse {
-  animation: smm-open-pulse 2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .smm-open-pulse {
+  .deck-open-pill {
     animation: none;
   }
 }
@@ -4109,34 +4190,6 @@ body {
   text-shadow: 0 0 14px rgba(94, 231, 255, 0.45), 0 2px 20px rgba(11, 11, 16, 0.9);
 }
 
-/* "Подробнее" pill on the front card of the /smm carousel — the SMM
-   equivalent of .ai-open-pulse. Orange, not this page's own violet: per the
-   PILL comment in SmmDeck.tsx, violet is reserved for headings/decoration on
-   this page and orange is the only colour that reads as "press me" here.
-   Kept visually smaller than the chapter's own PILL (Обсудить формат) so the
-   two don't compete as equal offers — this one is a secondary "read more",
-   not another primary CTA. */
-@keyframes smm-open-pulse {
-  0%, 100% {
-    box-shadow: 0 10px 26px -6px rgba(240, 81, 42, 0.65), 0 0 0 0 rgba(255, 138, 95, 0.55);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 12px 32px -4px rgba(240, 81, 42, 0.9), 0 0 0 8px rgba(255, 138, 95, 0);
-    transform: scale(1.03);
-  }
-}
-
-.smm-open-pulse {
-  animation: smm-open-pulse 2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .smm-open-pulse {
-    animation: none;
-  }
-}
-
 /* Hover/focus glow for a whole clickable card — the service carousels'
    front card and /content's direction grid. One shared class rather than
    one per page: colour is the only thing that differs, and it comes in via
@@ -4596,39 +4649,134 @@ body {
   .scroll-rail-chev { animation: none; opacity: 0.45; }
 }
 
-/* Slow neon breathing for the deck cards and their info panels. Replaces the
-   thin 1px outlines (border / ring / 0 0 0 1px shadows) that read as cheap:
-   the edge is now a soft light that swells and fades on a ~5s cycle, tinted by
-   --card-glow-rgb. Hover pauses it and hands over to the brighter
-   .deck-card-glow hover state. */
-@keyframes deck-neon-breathe {
-  0%, 100% {
-    box-shadow:
-      0 0 16px 0 rgba(var(--card-glow-rgb), 0.22),
-      0 0 40px -4px rgba(var(--card-glow-rgb), 0.16),
-      0 28px 70px -24px rgba(0, 0, 0, 0.85);
-  }
-  50% {
-    box-shadow:
-      0 0 26px 3px rgba(var(--card-glow-rgb), 0.5),
-      0 0 64px 4px rgba(var(--card-glow-rgb), 0.3),
-      0 28px 70px -24px rgba(0, 0, 0, 0.85);
-  }
-}
+/* Soft neon edge for the deck cards and their info panels, tinted by
+   --card-glow-rgb. Replaces the thin 1px outlines (border / ring / 0 0 0 1px
+   shadows) that read as cheap.
 
+   It used to BREATHE here — an animated box-shadow whose spread grew from 0
+   to 4px on a 5s loop. Egor asked for that to go, and it had two real faults
+   behind the look: a growing spread means the lit area itself grows, so on
+   the front card of a carousel the light swelled over the neighbours beside
+   it; and an animated box-shadow is a full repaint of the element every
+   frame, on top of a backdrop-blurred glass panel, which is expensive enough
+   to show as stutter on a phone. The glow is static and contained now, and
+   the breathing moved to .deck-halo below, where it costs one opacity
+   channel on the compositor and nothing else. */
 .deck-neon-pulse {
-  animation: deck-neon-breathe 5s ease-in-out infinite;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    0 0 18px 0 rgba(var(--card-glow-rgb), 0.3),
+    0 0 44px -6px rgba(var(--card-glow-rgb), 0.18),
+    0 28px 70px -34px rgba(0, 0, 0, 0.95);
 }
 
-.deck-neon-pulse:hover,
-.deck-neon-pulse:focus-visible {
-  animation: none;
+/* The rail a deck is dragged by. Holding a card used to hand the gesture
+   to the browser's own drag-and-drop instead of to the carousel: the card's
+   photo tore off as a drag ghost, and the caption text highlighted blue as
+   the hand moved across it. Both are the native behaviours for an <img> and
+   for text, and both are simply switched off here — inside this rail a
+   press-and-move means "turn the deck" and nothing else. */
+.deck-rail {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.deck-rail img,
+.deck-rail a {
+  -webkit-user-drag: none;
+}
+
+/* A card that has just been re-created at the other end of the fan (see
+   useFanOffsets) fades in where it lands instead of popping. The 100% frame
+   is deliberately missing: without it the animation ends on the element's
+   own computed opacity, which is the pose's — one keyframe covers every
+   depth without repeating the pose values here. */
+@keyframes deck-card-enter {
+  from { opacity: 0; }
+}
+
+.deck-pose {
+  animation: deck-card-enter 520ms ease-out;
+  /* NOTE: no `transition` here. This rule sits outside Tailwind's layers, so
+     a shorthand `transition: filter …` here silently replaced the
+     `transition-[transform,opacity]` utility on the element — the cards
+     stopped gliding and snapped from pose to pose on every step. The
+     transition list lives on the element itself now, filter included. */
+}
+
+/* Depth blur, fed per card as a custom property (see blurAt). It sits on its
+   own class so the sharp card in front carries no `filter` at all — even
+   `blur(0px)` is a filter, and a filter on the one card that also has a
+   backdrop blur is the layer this deck can least afford. */
+.deck-pose-blur {
+  filter: blur(var(--deck-blur, 0px));
+}
+
+/* Phones get the same grading at a little over half strength: it still
+   reads, and heavy blur on several moving layers is what iOS Safari chokes
+   on. */
+@media (max-width: 1023px) {
+  .deck-pose-blur {
+    filter: blur(calc(var(--deck-blur, 0px) * 0.6));
+  }
+}
+
+/* Genuinely weak devices (lite mode) keep depth as dimming alone. */
+html[data-lite] .deck-pose-blur {
+  filter: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .deck-neon-pulse {
+  .deck-pose {
     animation: none;
-    box-shadow: 0 0 22px 1px rgba(var(--card-glow-rgb), 0.35), 0 28px 70px -24px rgba(0, 0, 0, 0.85);
+  }
+}
+
+/* The breathing light itself: a separate, blurred radial sitting BEHIND the
+   front card (see SitesDeck/SmmDeck), never a shadow on the card. Fixed size,
+   so it never expands into the cards beside it, and only `opacity` animates,
+   which the compositor handles without repainting anything. */
+/* Egor's follow-up: brighter. The range only ever moves opacity, so the lit
+   AREA still never grows — what got stronger is the light itself, not its
+   reach into the cards beside it. */
+@keyframes deck-halo-breathe {
+  0%, 100% { opacity: 0.78; }
+  50% { opacity: 1; }
+}
+
+/* Carrier for the halo's DISTANCE fade. The light itself breathes on
+   `.deck-halo` inside this, so the two never fight over one opacity channel:
+   this one says how close to the centre the card is, the inner one says how
+   the light pulses. Rendering the halo only on the chosen card is what made
+   it snap on and off as cards swapped — Egor: «свечение должно плавно
+   затухать и появляться при перемещении». Now every card carries one and
+   its strength follows the card's distance, continuously, including while
+   the deck is being dragged by hand. */
+.deck-halo-fade {
+  will-change: opacity;
+}
+
+.deck-halo {
+  background: radial-gradient(
+    circle,
+    /* The card itself covers the middle of this circle, so only the rim
+       ever shows — the stops that matter for how bright the glow READS are
+       the outer ones, not the centre. */
+    rgba(var(--card-glow-rgb), 1) 0%,
+    rgba(var(--card-glow-rgb), 0.85) 48%,
+    rgba(var(--card-glow-rgb), 0.42) 66%,
+    rgba(var(--card-glow-rgb), 0) 80%
+  );
+  filter: blur(20px);
+  opacity: 0.92;
+  animation: deck-halo-breathe 5.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-halo {
+    animation: none;
+    opacity: 0.95;
   }
 }
 
@@ -4724,9 +4872,6 @@ html[data-lite] *::after {
 /* Phones: the side cards of the carousels don't need a per-card blur filter,
    and the ambient glow is already a soft radial gradient. */
 @media (max-width: 1023px) {
-  .deck-pose {
-    filter: none !important;
-  }
   .ai-deck-ambient-glow {
     filter: none !important;
     animation: none !important;
@@ -4741,8 +4886,32 @@ html[data-lite] *::after {
   .ai-deck-glow {
     filter: none !important;
   }
-  .glass-panel.deck-neon-pulse {
-    animation: none;
-    box-shadow: 0 0 26px 2px rgba(var(--card-glow-rgb), 0.32), 0 28px 70px -34px rgba(0, 0, 0, 0.95);
+  .deck-halo {
+    filter: blur(16px);
+  }
+}
+
+/* Phones: the service-picker footage melts into the page colour (#0b0b10,
+   the body background) at its top and bottom edges instead of ending on a
+   hard line. Solid-to-clear gradients rather than a mask: a mask leaves the
+   edge see-through, and what shows behind is lighter than the neighbouring
+   blocks, so the seam stayed visible. */
+@media (max-width: 767px) {
+  .service-picker-fade {
+    background:
+      linear-gradient(to bottom, #0b0b10 0%, rgba(11, 11, 16, 0.55) 6%, rgba(11, 11, 16, 0) 17%),
+      linear-gradient(to top, #0b0b10 0%, rgba(11, 11, 16, 0.55) 6%, rgba(11, 11, 16, 0) 17%);
+  }
+}
+
+/* Touch screens: an invisible halo around small controls so a thumb does not
+   have to land on the glyph itself. The halo belongs to the element, so a tap
+   anywhere in it counts as a tap on the control. Needs the element to be
+   positioned (the page-arrows are `fixed`). */
+@media (pointer: coarse) {
+  .touch-slop::before {
+    content: "";
+    position: absolute;
+    inset: -16px;
   }
 }

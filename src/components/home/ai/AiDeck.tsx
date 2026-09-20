@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
+import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset } from "@/components/ui/deckFan";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { servicesByCategory } from "@/lib/service-content";
 
@@ -619,13 +620,25 @@ function AiThumb({
 // more, which is what a coverflow wants anyway. (CinematicSection now also
 // closes the x axis outright, so a narrow viewport clips rather than pans —
 // this keeps it from needing to.)
-const POSE: Record<number, { x: number; z: number; ry: number; scale: number; opacity: number; blur?: number; zi: number }> = {
-  [-2]: { x: -246, z: -390, ry: 40, scale: 0.74, opacity: 0.34, blur: 1.4, zi: 10 },
-  [-1]: { x: -148, z: -195, ry: 32, scale: 0.87, opacity: 0.72, zi: 20 },
-  [0]: { x: 0, z: 0, ry: 0, scale: 1, opacity: 1, zi: 30 },
-  [1]: { x: 148, z: -195, ry: -32, scale: 0.87, opacity: 0.72, zi: 20 },
-  [2]: { x: 246, z: -390, ry: -40, scale: 0.74, opacity: 0.34, blur: 1.4, zi: 10 },
+// Depth is now opacity + a dark veil painted inside the card, never a
+// `filter: blur()` and never real transparency. Blur re-rasterised every
+// card on every frame of a swap, and a see-through card let the one behind
+// it bleed through wherever they overlap — Egor saw both as the carousel
+// "дёргается" and "окошки залазят друг на друга".
+const POSE: Record<number, { x: number; z: number; ry: number; scale: number; opacity: number; veil: number; zi: number }> = {
+  [-2]: { x: -246, z: -390, ry: 40, scale: 0.74, opacity: 0.88, veil: 0.74, zi: 10 },
+  [-1]: { x: -148, z: -195, ry: 32, scale: 0.87, opacity: 1, veil: 0.5, zi: 20 },
+  [0]: { x: 0, z: 0, ry: 0, scale: 1, opacity: 1, veil: 0, zi: 30 },
+  [1]: { x: 148, z: -195, ry: -32, scale: 0.87, opacity: 1, veil: 0.5, zi: 20 },
+  [2]: { x: 246, z: -390, ry: -40, scale: 0.74, opacity: 0.88, veil: 0.74, zi: 10 },
+  // Mid-drag only: a card leaving the rail needs a pose to travel towards,
+  // and poseAt has already faded it out by the time it reaches here.
+  [-3]: { x: -318, z: -560, ry: 44, scale: 0.62, opacity: 0.8, veil: 0.84, zi: 5 },
+  [3]: { x: 318, z: -560, ry: -44, scale: 0.62, opacity: 0.8, veil: 0.84, zi: 5 },
 };
+
+// Hand travel that moves the rail by exactly one card.
+const SPACING = 148;
 
 // The chapter's button language, shared with the rest of /ai the way
 // SitesDeck's PILL/ROUND are shared across /sites. Emerald rather than the
@@ -644,7 +657,15 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
   const count = CARDS.length;
 
   const step = useCallback(
-    (delta: number) => setActive((prev) => (prev + delta + count) % count),
+    (delta: number) => setActive((prev) => prev + delta),
+    [],
+  );
+  // `active` is an unwrapped counter (fanSlots explains why); `idx` is the
+  // card actually chosen.
+  const idx = modIndex(active, count);
+  const goTo = useCallback(
+    (target: number) =>
+      setActive((prev) => prev + wrapOffset(target - modIndex(prev, count), count)),
     [count],
   );
 
@@ -661,16 +682,17 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
     return () => el.removeEventListener("keydown", onKey);
   }, [step]);
 
-  const front = SERVICES[active];
+  const front = SERVICES[idx];
+  const { drag, dragging, bind } = useDeckDrag({ count, spacing: SPACING, onSettle: step });
 
   const panel = (
       <div
-      className={`glass-panel deck-neon-pulse flex items-start overflow-hidden rounded-3xl px-6 py-6 ${wide ? "h-auto" : "mt-6 h-auto min-h-[290px] lg:h-[226px] lg:min-h-0"}`}
-        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.13), 0 28px 70px -34px rgba(0,0,0,0.95)", "--card-glow-rgb": "52, 211, 153" } as React.CSSProperties}
+      className={`glass-panel deck-neon-pulse flex items-start overflow-hidden rounded-3xl px-6 py-7 lg:py-6 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[226px] lg:min-h-0"}`}
+        style={{ "--card-glow-rgb": "52, 211, 153" } as React.CSSProperties}
       >
-        <div className={wide ? "w-full" : "max-w-[460px]"}>
+        <div className={wide ? "w-full" : "w-full lg:max-w-[460px]"}>
           <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.title}</p>
-          <dl className={`mt-3 grid gap-2.5 ${wide ? "grid-cols-3 gap-x-6" : ""}`}>
+          <dl className={`mt-3 grid gap-2.5 max-lg:mt-5 max-lg:gap-5 ${wide ? "grid-cols-3 gap-x-6" : ""}`}>
             <Fact stacked={wide} label="Что даёт" text={front.description} />
             {front.audience && <Fact stacked={wide} label="Кому" text={front.audience} />}
             {front.now && <Fact stacked={wide} label="Почему сейчас" text={front.now} />}
@@ -681,11 +703,20 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
 
   return (
     <div className="w-full max-w-[728px]">
-      <FanFit designWidth={396} height={416} onSwipe={step}>
+      {/* Paging runs off the pointer drag now (useDeckDrag), so FanFit's
+          own swipe handler is left unwired — otherwise one flick paged the
+          rail twice. */}
+      <FanFit designWidth={396} height={416}>
       <div
         ref={railRef}
-        className="relative h-full"
-        style={{ perspective: "1430px", perspectiveOrigin: "50% 50%" }}
+        className="deck-rail relative h-full"
+        style={{
+          perspective: "1430px",
+          perspectiveOrigin: "50% 50%",
+          cursor: dragging ? "grabbing" : "grab",
+          touchAction: "pan-y",
+        }}
+        {...bind}
       >
         {/* The pool of light the whole deck sits in — without it the rail
             reads as five boxes floating on flat black. One big, slow-breathing
@@ -700,18 +731,67 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           }}
         />
 
-        {CARDS.map((card, i) => {
+        {fanSlots(count, active, drag).map(({ i, key, offset, settled }) => {
+          const card = CARDS[i];
           // Signed, wrapped distance from the active card, so card 10 sits to
           // the *left* of card 01 instead of looping the long way round.
-          let offset = i - active;
-          if (offset > count / 2) offset -= count;
-          if (offset < -count / 2) offset += count;
+          const pose = poseAt(POSE, offset);
+          const opacity = pose.opacity * pose.fade;
+          const blurPx = blurAt(offset);
+          // 1 в центре, 0 на соседней позиции — непрерывная близость к центру.
+          const halo = Math.max(0, 1 - Math.abs(offset) / 1.1);
 
-          const pose = POSE[offset];
-          if (!pose) return null;
+          // Caption, glow colour and the link itself key off the SETTLED
+          // position, so they travel with the chosen card instead of
+          // switching cards halfway through a gesture.
+          const isFront = settled === 0;
+          const dist = Math.abs(settled);
 
-          const isFront = offset === 0;
-          const dist = Math.abs(offset);
+          const caption = (
+            <>
+              <span
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-40"
+                style={{ background: "linear-gradient(180deg, rgba(10,13,16,0) 0%, rgba(10,13,16,0.96) 62%)" }}
+              />
+              <span className="absolute inset-x-5 bottom-5 flex flex-col items-start gap-3">
+                <span className="block whitespace-pre-line font-display text-lg uppercase leading-[1.15] tracking-tight text-paper">
+                  {card.short}
+                </span>
+                    {/* Was a small pill on the info row below the deck —
+                        Егор: "кнопки перемести во внутрь карточек и сделай
+                        их заметнее и пусть они пульсируют". Living on the
+                        card itself, it reads as the card's own action
+                        instead of a footnote under it; the pulse is what
+                        makes it read as clickable rather than as more
+                        label text next to the title above it. */}
+                    {card.href && (
+                      <span
+                        // ~30% smaller than the first pass (px-4 py-2.5
+                        // text-[11px]) — Егор: the pill was outweighing the
+                        // card title above it.
+                        // Transparent glass with a lit outline, not a solid
+                        // colour plate, and a fifth smaller again — Егор:
+                        // кнопка забирала на себя слишком много внимания и
+                        // светилась слишком сильно.
+                        className={`deck-open-pill inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[7px] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
+                          isFront ? "" : "deck-open-pill-still"
+                        }`}
+                        style={{ "--pill-rgb": card.hit ? "255, 138, 92" : "92, 230, 176" } as React.CSSProperties}
+                      >
+                        Открыть инструмент
+                        <span aria-hidden="true">→</span>
+                      </span>
+                    )}
+                  </span>
+            </>
+          );
+
+          const counter = (
+            <span className="absolute right-3.5 top-3.5 rounded-full bg-ink/70 px-2.5 py-1 font-display text-[10px] tracking-[0.12em] text-paper/70">
+              {String(idx + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+            </span>
+          );
+
 
           return (
             // One posed element per card, carrying the 3D transform, the
@@ -729,14 +809,20 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
             // desync from a transform it does not own, it is simply carried
             // by it.
             <div
-              key={card.id}
-              className="deck-pose absolute left-1/2 top-1/2 h-[348px] w-[265px] transition-[transform,opacity,filter] duration-[560ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              key={key}
+              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[348px] w-[265px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
+                // No transition while the hand holds the rail: the cards
+                // have to sit exactly where the finger is, on the frame it
+                // is there.
+                dragging ? "transition-[filter] duration-[760ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
+              }`}
               style={{
-                zIndex: pose.zi,
-                opacity: pose.opacity,
-                filter: pose.blur ? `blur(${pose.blur}px)` : undefined,
+                ["--deck-blur" as string]: `${blurPx}px`,
+                zIndex: Math.round(pose.zi),
+                opacity,
+                visibility: opacity < 0.01 ? "hidden" : undefined,
                 transform: `translate(-50%, -50%) translate3d(${pose.x}px, 0, ${pose.z}px) rotateY(${pose.ry}deg) scale(${pose.scale})`,
-                willChange: "transform",
+                willChange: "transform, opacity",
               }}
             >
               {/* Back cards: a faint flickering rim in the page's own
@@ -747,30 +833,60 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   kind of light, not just a bigger version of the same one.
                   Only the colours change on a swap now; the position is the
                   parent's business. */}
+              {/* Свет карточки — двумя слоями, которые перетекают друг в
+                  друга по мере движения: «дальний» (изумруд/оранж) и
+                  «выбранный» (фиолет→синий, у хита — розово-оранжевый).
+                  Раньше цвет и яркость переключались скачком в момент
+                  смены карточки, и это читалось как рывок. Теперь оба слоя
+                  всегда на месте, а меняется только их прозрачность — по
+                  непрерывному расстоянию до центра, в том числе пока колоду
+                  тянут рукой. */}
               <span
                 aria-hidden="true"
-                className="ai-deck-glow pointer-events-none absolute -inset-3 -z-10 rounded-[30px]"
-                style={
-                  {
-                    filter: "blur(24px)",
-                    // The "хит месяца" card keeps this same pink→orange glow
-                    // at every distance from centre, not only when active —
-                    // Egor's ask was for the card itself to read as lit
-                    // while scrolling past it, not just once it's front.
-                    background: card.hit
-                      ? isFront
+                className={`pointer-events-none absolute -inset-3 -z-10 rounded-[30px] ${
+                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                }`}
+                style={{ opacity: 1 - halo }}
+              >
+                <span
+                  className="ai-deck-glow absolute inset-0 rounded-[30px]"
+                  style={
+                    {
+                      filter: "blur(24px)",
+                      background: card.hit
+                        ? `radial-gradient(circle, rgba(255,106,61,${dist <= 1 ? 0.45 : 0.24}) 0%, rgba(255,79,216,0) 70%)`
+                        : `radial-gradient(circle, rgba(52,211,153,${dist <= 1 ? 0.4 : 0.2}) 0%, rgba(52,211,153,0) 70%)`,
+                      "--flicker-min": dist <= 1 ? 0.25 : 0.12,
+                      "--flicker-max": dist <= 1 ? 0.5 : 0.3,
+                      "--flicker-duration": "3.8s",
+                      "--flicker-delay": `${i * 0.3}s`,
+                    } as React.CSSProperties
+                  }
+                />
+              </span>
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute -inset-3 -z-10 rounded-[30px] ${
+                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                }`}
+                style={{ opacity: halo }}
+              >
+                <span
+                  className="ai-deck-glow absolute inset-0 rounded-[30px]"
+                  style={
+                    {
+                      filter: "blur(24px)",
+                      background: card.hit
                         ? "radial-gradient(circle, rgba(255,79,216,0.95) 0%, rgba(255,106,61,0.6) 55%, rgba(255,106,61,0) 75%)"
-                        : `radial-gradient(circle, rgba(255,106,61,${dist === 1 ? 0.45 : 0.24}) 0%, rgba(255,79,216,0) 70%)`
-                      : isFront
-                        ? "radial-gradient(circle, rgba(167,139,250,0.95) 0%, rgba(56,189,248,0.55) 55%, rgba(56,189,248,0) 75%)"
-                        : `radial-gradient(circle, rgba(52,211,153,${dist === 1 ? 0.4 : 0.2}) 0%, rgba(52,211,153,0) 70%)`,
-                    "--flicker-min": isFront ? 0.65 : dist === 1 ? 0.25 : 0.12,
-                    "--flicker-max": isFront ? 1 : dist === 1 ? 0.5 : 0.3,
-                    "--flicker-duration": isFront ? "3.2s" : "3.8s",
-                    "--flicker-delay": `${i * 0.3}s`,
-                  } as React.CSSProperties
-                }
-              />
+                        : "radial-gradient(circle, rgba(167,139,250,0.95) 0%, rgba(56,189,248,0.55) 55%, rgba(56,189,248,0) 75%)",
+                      "--flicker-min": 0.65,
+                      "--flicker-max": 1,
+                      "--flicker-duration": "3.2s",
+                      "--flicker-delay": `${i * 0.3}s`,
+                    } as React.CSSProperties
+                  }
+                />
+              </span>
 
               {/* "Хит месяца" — same badge language as PromoCard's own
                   featured pill (.promo-card-badge-lift: pink→orange
@@ -787,6 +903,12 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   Хит месяца
                 </span>
               )}
+
+              {/* Название и кнопка — на КАЖДОЙ карточке, не только на
+                  передней (Егор: «когда я хватаю карточку, я не вижу ни
+                  названия, ни кнопки»). Колода читается сразу и не пустеет,
+                  пока её тянут рукой. Счётчик 01/11 остаётся только на
+                  выбранной: он считает колоду, а не карточку. */}
 
               {/* The front card is not a paging control — clicking it was
                   always a no-op (tabIndex -1, onClick re-selecting the
@@ -809,46 +931,14 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                 >
                   <AiThumb shape={card.shape} image={card.image} animate />
 
-                  <span
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-40"
-                    style={{ background: "linear-gradient(180deg, rgba(10,13,16,0) 0%, rgba(10,13,16,0.96) 62%)" }}
-                  />
-                  <span className="absolute inset-x-5 bottom-5 flex flex-col items-start gap-3">
-                    <span className="block whitespace-pre-line font-display text-lg uppercase leading-[1.15] tracking-tight text-paper">
-                      {card.short}
-                    </span>
-                    {/* Was a small pill on the info row below the deck —
-                        Егор: "кнопки перемести во внутрь карточек и сделай
-                        их заметнее и пусть они пульсируют". Living on the
-                        card itself, it reads as the card's own action
-                        instead of a footnote under it; the pulse is what
-                        makes it read as clickable rather than as more
-                        label text next to the title above it. */}
-                    {card.href && (
-                      <span
-                        // ~30% smaller than the first pass (px-4 py-2.5
-                        // text-[11px]) — Егор: the pill was outweighing the
-                        // card title above it.
-                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-display text-[8px] font-semibold uppercase tracking-[0.14em] motion-reduce:animate-none ${
-                          card.hit
-                            ? "ai-open-pulse-hit bg-gradient-to-b from-[#ff8a5c] to-[#ff4fd8] text-[#1a0a04]"
-                            : "ai-open-pulse bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] text-[#03120d]"
-                        }`}
-                      >
-                        Открыть инструмент
-                        <span aria-hidden="true">→</span>
-                      </span>
-                    )}
-                  </span>
-                  <span className="absolute right-3.5 top-3.5 rounded-full bg-ink/70 px-2.5 py-1 font-display text-[10px] tracking-[0.12em] text-paper/70">
-                    {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-                  </span>
+                  {caption}
+                  {counter}
                 </Link>
               ) : (
                 <button
                   type="button"
                   onClick={(e) => {
-                    setActive(i);
+                    goTo(i);
                     // Restore focus ourselves, without the scroll-into-view a
                     // plain click's native focus would trigger — see the
                     // onMouseDown comment below for why that scroll happens
@@ -871,9 +961,18 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   onMouseDown={(e) => e.preventDefault()}
                   tabIndex={0}
                   aria-label={`Показать: ${SERVICES[i].title}`}
-                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] cursor-pointer transition-[box-shadow] duration-[560ms] motion-reduce:transition-none"
+                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] cursor-pointer transition-[box-shadow] duration-[760ms] motion-reduce:transition-none"
                 >
                   <AiThumb shape={card.shape} image={card.image} />
+                  {caption}
+                  {/* Dark veil rather than element transparency — keeps the
+                      card opaque so the cards it overlaps never show
+                      through it mid-swap. */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 transition-opacity duration-[760ms]"
+                    style={{ background: `rgba(8, 9, 14, ${pose.veil})` }}
+                  />
                 </button>
               )}
             </div>
@@ -926,13 +1025,13 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           }}
         />
         {CARDS.map((card, i) => {
-          const on = i === active;
+          const on = i === idx;
           return (
             <button
               key={card.id}
               type="button"
               onClick={(e) => {
-                setActive(i);
+                goTo(i);
                 e.currentTarget.focus({ preventScroll: true });
               }}
               onMouseDown={(e) => e.preventDefault()}
@@ -991,11 +1090,11 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
 // читаться так же чётко, как заголовок над ними, а не как подпись к нему.
 function Fact({ label, text, stacked }: { label: string; text: string; stacked?: boolean }) {
   return (
-    <div className={stacked ? "flex flex-col gap-1" : "flex gap-3"}>
-      <dt className={`${stacked ? "" : "w-[92px]"} shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300/80`}>
+    <div className={stacked ? "flex flex-col gap-1" : "flex gap-3 max-lg:flex-col max-lg:gap-1.5"}>
+      <dt className={`${stacked ? "" : "w-[92px] max-lg:w-auto"} shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300/80`}>
         {label}
       </dt>
-      <dd className="text-[13px] leading-snug text-white">{text}</dd>
+      <dd className="text-[13px] leading-snug text-white max-lg:text-sm max-lg:leading-relaxed">{text}</dd>
     </div>
   );
 }
