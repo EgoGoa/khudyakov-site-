@@ -38,11 +38,15 @@ const REASON_ACCENT = { solid: "#ff6a3d", dim: "rgba(255,106,61,0.32)" };
 const REASON_EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function Trust({
+  footer,
   index = 2,
   chapter = "03",
   title = "Именно мы",
   intro = "Продюсерский центр полного цикла: от идеи до готового ролика. Около 60% заказов — клиенты, которые возвращаются.",
 }: {
+  /** Окошко услуги внизу главы — см. ToolSpotlight. Необязательно:
+   *  эту главу используют несколько страниц, и окошко есть не у всех. */
+  footer?: ReactNode;
   index?: number;
   chapter?: string;
   title?: ReactNode;
@@ -79,7 +83,7 @@ export default function Trust({
           (`ml-auto` in BlockAssistant.tsx, was `mx-auto`) right-aligns
           inside the same width instead of centring short of it. */}
       <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:mx-auto lg:w-[850px] xl:w-[890px]">
-      <div className="mb-3 lg:flex lg:items-stretch lg:gap-3">
+      <div className="mb-2 lg:flex lg:items-stretch lg:gap-3">
         <Appear from="left" delay={BEAT.content} className="hidden lg:flex lg:shrink-0">
           <span className="inline-flex h-full items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-4 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
@@ -145,7 +149,14 @@ export default function Trust({
           {/* Row gap +50% (was gap-3/12px, now 18px) and short-screen
               fallback scaled the same way (gap-1.5/6px -> 9px) — Egor's ask
               for more air between rows. */}
-          <div className="flex flex-col gap-[18px] [@media(max-height:760px)]:gap-[9px]">
+          <div
+            className={`flex flex-col [@media(max-height:760px)]:gap-[9px] ${
+              // Глава с кнопкой услуги отдаёт ей часть межстрочного воздуха
+              // этого списка: пять строк по 4px — ровно та высота, которую
+              // кнопка забрала, когда её увеличили.
+              footer ? "gap-[13px]" : "gap-[18px]"
+            }`}
+          >
             {why.reasons.map((reason, i) => {
               const isOpen = openReason === i;
               return (
@@ -202,6 +213,13 @@ export default function Trust({
               );
             })}
           </div>
+
+          {/* Окошко услуги стоит ЗДЕСЬ, а не отдельной полосой под главой:
+              Егор показал это место прямо — под списком из пяти причин, в
+              той же колонке 470px, над промо-карточкой. Так кнопка не
+              приставлена к блоку снизу, а живёт в его сетке как ещё один
+              её элемент. */}
+          {footer && <div className="hidden lg:block">{footer}</div>}
         </div>
 
         {/* Swapped with PromoCard below — Egor's ask. Now sits under FAQ in

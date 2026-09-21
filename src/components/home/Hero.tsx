@@ -96,7 +96,7 @@ export default function Hero() {
             muted
             loop
             playsInline
-            aria-label="Шоурил HDKV.AGENCY"
+            aria-label="Шоурил HUD.SERVICE"
           />
         )}
         <div

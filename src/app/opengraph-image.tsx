@@ -24,9 +24,9 @@ export default function OpengraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#F5310B", display: "flex" }} />
+          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#34D399", display: "flex" }} />
           <div style={{ display: "flex", fontSize: 44, fontWeight: 700, color: "#DCDDEF", letterSpacing: -1 }}>
-            HDKV<span style={{ color: "#F5310B" }}>.AGENCY</span>
+            HUD<span style={{ color: "#10B981" }}>.SERVICE</span>
           </div>
         </div>
         <div style={{ marginTop: 40, fontSize: 60, fontWeight: 700, color: "#DCDDEF", lineHeight: 1.15, maxWidth: 920 }}>

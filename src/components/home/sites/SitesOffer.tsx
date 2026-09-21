@@ -1,5 +1,7 @@
 "use client";
 
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
+import { SITES_ACCENT } from "@/components/home/ai/spotlightSites";
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
@@ -49,6 +51,7 @@ export default function SitesOffer() {
           </>
         }
         sub="От одностраничного лендинга до сайта под ключ с интеграциями — вёрстка на React/HTML, без привязки к конструктору."
+        leftFooter={<ToolSpotlight slug="site-turnkey" accent={SITES_ACCENT} place="left" />}
         primary={{ href: "/brief/sites", label: "Обсудить проект" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
         askCard={

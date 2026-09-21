@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteRule ^portfolio/?$ /#works [R=302,NE,L]
+ErrorDocument 404 /404.html

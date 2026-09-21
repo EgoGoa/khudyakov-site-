@@ -6,8 +6,8 @@ import Eyebrow from "@/components/ui/Eyebrow";
 import { EYEBROW } from "@/lib/typography";
 
 export const metadata: Metadata = {
-  title: "Кейсы SMM — HDKV.AGENCY",
-  description: "Кейсы ведения соцсетей HDKV.AGENCY появятся здесь по мере запуска проектов.",
+  title: "Кейсы SMM — HUD.SERVICE",
+  description: "Кейсы ведения соцсетей HUD.SERVICE появятся здесь по мере запуска проектов.",
 };
 
 // Placeholder cards, not an empty section — content/site-copy.md's rule for
@@ -38,7 +38,7 @@ export default function SmmCasesPage() {
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-paper/60 sm:text-lg">
               Реальные проекты появятся здесь по мере запуска. Пока показываем формат, в котором будем их
-              собирать — по нишам, с которыми обычно работает агентство.
+              собирать — по нишам, с которыми обычно работает сервис.
             </p>
           </Reveal>
         </Container>

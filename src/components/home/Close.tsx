@@ -41,6 +41,7 @@ export default function Close({
   interactiveTiers,
   seoSections,
   seoEyebrow,
+  footer,
 }: {
   index?: number;
   chapter?: string;
@@ -81,6 +82,8 @@ export default function Close({
   seoSections?: SeoSection[];
   /** Label above those rows, e.g. "Подробнее о сайтах на AI". */
   seoEyebrow?: string;
+  /** Окошко услуги внизу главы — см. ToolSpotlight. */
+  footer?: ReactNode;
 }) {
   const { active } = useService();
   const tiers = pricingByCategory[active];
@@ -100,6 +103,7 @@ export default function Close({
       entrance="zoom"
       intro={intro}
       spacious={spacious}
+      footer={footer}
       // Close is shared across /ai, /sites, /smm too — this orange-red icon
       // is content's own, gated the same way Trust/Offer/Process gate theirs.
       decor={

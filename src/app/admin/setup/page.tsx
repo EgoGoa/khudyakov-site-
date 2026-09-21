@@ -3,7 +3,7 @@ import Container from "@/components/ui/Container";
 import Eyebrow from "@/components/ui/Eyebrow";
 
 export const metadata: Metadata = {
-  title: "Панель не настроена — HDKV.AGENCY",
+  title: "Панель не настроена — HUD.SERVICE",
   robots: { index: false, follow: false },
 };
 

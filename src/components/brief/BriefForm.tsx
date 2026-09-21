@@ -113,7 +113,7 @@ export default function BriefForm({ variant = "video" }: { variant?: BriefVarian
   };
 
   const mailtoHref = () => {
-    const lines: string[] = [`${meta.docTitle} — HDKV.AGENCY`, ""];
+    const lines: string[] = [`${meta.docTitle} — HUD.SERVICE`, ""];
     const seen: number[] = [];
     STEPS.forEach((step) => {
       if (!seen.includes(step.scene)) {

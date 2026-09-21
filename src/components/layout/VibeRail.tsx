@@ -197,7 +197,7 @@ const WORKS_BLOCK: PageBlock = {
 const SERVICES_BLOCK: PageBlock = {
   id: "services",
   label: "Что делаем",
-  description: "Продакшн, AI, сайты и SMM — весь стек услуг агентства.",
+  description: "Продакшн, AI, сайты и SMM — весь стек услуг сервиса.",
   glyph: (
     <Glyph>
       <path d="M12 3l8.5 4.5L12 12 3.5 7.5 12 3z" />
@@ -233,7 +233,7 @@ const PROCESS_BLOCK: PageBlock = {
 const WHY_BLOCK: PageBlock = {
   id: "why",
   label: "Почему мы",
-  description: "Что отличает агентство: опыт, подход и что получает клиент.",
+  description: "Что отличает сервис: опыт, подход и что получает клиент.",
   glyph: (
     <Glyph>
       <path d="M12 3 4 6.5V12c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6.5L12 3z" />
@@ -465,7 +465,7 @@ const SMM_PITCH_BLOCK: PageBlock = {
 const SMM_METHOD_BLOCK: PageBlock = {
   id: "method",
   label: "Не подрядчик",
-  description: "Сравнение с фрилансером и агентством — и кому это подходит.",
+  description: "Сравнение с фрилансером и сервисом — и кому это подходит.",
   glyph: (
     <Glyph>
       <path d="M8.5 8L3.5 12.5 8.5 17M15.5 8l5 4.5-5 4.5" />
@@ -590,7 +590,7 @@ const CROSS_PAGE_ITEMS: RailItem[] = [
   {
     id: "brief",
     label: "Бриф",
-    description: "Формализуйте задачу — с этого агентство начинает работу.",
+    description: "Формализуйте задачу — с этого сервис начинает работу.",
     href: "/brief",
     glyph: (
       <Glyph>
@@ -639,7 +639,7 @@ const MODES: { key: ModeKey; label: string; pitch: string; glyph: ReactNode }[] 
   {
     key: "personalize",
     label: "Персонализировать",
-    pitch: "Настраиваете вид и содержание блока под свой бренд — сами, без правок агентства.",
+    pitch: "Настраиваете вид и содержание блока под свой бренд — сами, без правок сервиса.",
     glyph: (
       <Glyph>
         <path d="M4 7h9M4 12h5M4 17h9" />
@@ -1263,7 +1263,7 @@ export default function VibeRail() {
 
       {/* Top "Vibe" row — the greeting / direction-picker widget, relocated
           verbatim from the old floating button. */}
-      <CenterModal open={pickerOpen} onClose={() => setPickerOpen(false)} ariaLabel="Выбор направления" translucent>
+      <CenterModal open={pickerOpen} onClose={() => setPickerOpen(false)} ariaLabel="Выбор направления" bare>
         <WelcomeWidget onClose={() => setPickerOpen(false)} skipGreeting />
       </CenterModal>
     </>

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
+import { SITES_ACCENT } from "@/components/home/ai/spotlightSites";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
@@ -133,6 +135,7 @@ export default function SitesGuarantees() {
               className="mt-4"
             />
           </Appear>
+          <ToolSpotlight slug="site-card" accent={SITES_ACCENT} place="left" />
         </div>
 
       <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8 land:mt-0 land:min-w-0 land:flex-1">

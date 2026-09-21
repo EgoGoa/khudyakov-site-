@@ -74,7 +74,7 @@ export async function POST(request: Request) {
   const { error } = await resend.emails.send({
     // Resend's shared sending domain — swap for a verified hdkv.agency
     // address once that domain is added in the Resend dashboard.
-    from: "HDKV.AGENCY <onboarding@resend.dev>",
+    from: "HUD.SERVICE <onboarding@resend.dev>",
     to: BRIEF_EMAIL,
     replyTo: email || undefined,
     subject: `${TYPE_LABEL[body.type]} — ${name}`,

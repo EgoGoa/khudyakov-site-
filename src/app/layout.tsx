@@ -52,9 +52,9 @@ const azeretMono = JetBrains_Mono({
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://khudyakov-site.vercel.app";
-const TITLE = "HDKV.AGENCY — AI-диджитал агентство полного цикла";
+const TITLE = "HUD.SERVICE — AI-диджитал сервис полного цикла";
 const DESCRIPTION =
-  "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HDKV.AGENCY соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 8 лет опыта, 450+ проектов, 350+ клиентов.";
+  "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HUD.SERVICE соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 8 лет опыта, 450+ проектов, 350+ клиентов.";
 
 // viewport-fit=cover lets the page run under the notch in landscape so it can
 // use the full width of the phone; the safe-area insets are re-applied where
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: SITE_URL,
-    siteName: "HDKV.AGENCY",
+    siteName: "HUD.SERVICE",
     locale: "ru_RU",
     type: "website",
   },

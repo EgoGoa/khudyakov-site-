@@ -70,7 +70,7 @@ export default function CalculatorPageContent() {
           ),
           lead: (
             <>
-              HDKV.AGENCY — диджитал-агентство полного цикла: снимаем рекламу,
+              HUD.SERVICE — диджитал-сервис полного цикла: снимаем рекламу,
               имиджевые видео, контент для соцсетей и мероприятия, усиливаем
               результат AI-инструментами.{" "}
               <span className="font-medium text-orange">

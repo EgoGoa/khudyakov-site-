@@ -1,6 +1,7 @@
 "use client";
 
 import CinematicSection from "@/components/ui/CinematicSection";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import { EYEBROW } from "@/lib/typography";
@@ -185,6 +186,11 @@ export default function AiSegments() {
       entrance="rise"
       id="segments"
       intro={<>Не всем и не всегда — там, где AI <span className="kw">реально быстрее и дешевле</span> ручной работы.</>}
+      // Одна услуга на блок, порядок — по приоритету топ-5 (см.
+      // toolRegistry): 02 — единый AI-чат, здесь — агент по заявкам.
+      // Плитка у правого края, а не полосой во всю ширину: Егор просил,
+      // чтобы на каждом блоке кнопка стояла по-своему.
+      footer={<ToolSpotlight slug="agent" place="right" />}
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {SEGMENTS.map((s, i) => (
@@ -192,7 +198,7 @@ export default function AiSegments() {
             key={s.tag}
             from="up"
             delay={BEAT.content + i * STAGGER.tight}
-            className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md"
+            className="rounded-2xl bg-ink/45 p-3.5 backdrop-blur-md"
           >
             <span className="font-display text-[9px] uppercase tracking-[0.15em] text-emerald-300">{s.tag}</span>
             <h3 className="mt-2 font-display text-base uppercase leading-tight tracking-tight text-white">
@@ -207,14 +213,14 @@ export default function AiSegments() {
       {/* Cases start cascading right after the segments finish, not on the
           same beat — SEGMENTS.length steps of STAGGER.tight is roughly where
           the last segment card lands. */}
-      <div className="mt-6 border-t border-paper/15 pt-5">
+      <div className="mt-5 border-t border-paper/15 pt-4">
         <Appear from="up" delay={BEAT.content + SEGMENTS.length * STAGGER.tight}>
           <span className="inline-flex items-center gap-2">
             <span className={`${EYEBROW} text-emerald-300`}>Кейсы</span>
             <span className="h-px w-8 bg-emerald-300/40" />
           </span>
         </Appear>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        <div className="mt-2.5 grid gap-3 sm:grid-cols-3">
           {CASES.map((c, i) => (
             <Appear
               key={c.title}

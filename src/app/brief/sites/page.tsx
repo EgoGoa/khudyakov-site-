@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import BriefForm from "@/components/brief/BriefForm";
 
 export const metadata: Metadata = {
-  title: "Бриф на сайт — HDKV.AGENCY",
+  title: "Бриф на сайт — HUD.SERVICE",
   description:
     "Короткий бриф под разработку сайта: лендинг, интернет-магазин или сайт на AI. 12 вопросов, 5 минут, письмо уходит нам напрямую.",
 };

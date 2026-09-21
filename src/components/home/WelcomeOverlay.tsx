@@ -266,11 +266,20 @@ export function VoiceMicButton({ onTranscript }: { onTranscript: (transcript: st
   );
 }
 
-// How long a dismissal is remembered for. A returning visitor inside this
-// window skips straight to the site instead of seeing the greeting again —
-// picking a service still resets nothing (it's a real destination, not a
-// dismissal), only the "leave the flow" exits below write this.
-const SNOOZE_DAYS = 7;
+// Сколько помнится отказ от сцены. Пять минут, а не неделя — прямое
+// требование Егора: «после каждого обновления, если прошло более 5 минут,
+// опять появлялось вводное окно с выбором категорий».
+//
+// Почему это не назойливо. Пауза здесь защищает ровно один сценарий —
+// человек закрыл сцену и ходит по сайту, перезагружая страницы и переходя
+// по ссылкам; всё это время сцена молчит. Но если он отвлёкся и вернулся
+// к вкладке позже, он уже не «в середине просмотра», и вводный выбор снова
+// уместен: сцена — главный вход в разделы, а не всплывающее объявление.
+//
+// Выбор направления и блока по-прежнему ничего не пишет: это реальный
+// переход, а не отказ. Отметку ставят только выходы «мимо» — крестик,
+// Escape, клик по подложке и «Перейти на сайт».
+const SNOOZE_MINUTES = 5;
 const SNOOZE_KEY = "hdkv_welcome_snoozed_until";
 
 // Shared with ServiceMenuOverlay, the second guided screen that follows this
@@ -285,7 +294,7 @@ export function isSnoozed(): boolean {
 
 export function snooze() {
   try {
-    window.localStorage.setItem(SNOOZE_KEY, String(Date.now() + SNOOZE_DAYS * 86_400_000));
+    window.localStorage.setItem(SNOOZE_KEY, String(Date.now() + SNOOZE_MINUTES * 60_000));
   } catch {
     /* localStorage unavailable (private mode, quota) — the overlay just
        reappears next visit, no worse than before this change */
@@ -354,7 +363,7 @@ export default function WelcomeOverlay() {
   };
 
   return (
-    <CenterModal open={visible} onClose={goToSite} ariaLabel="Приветствие HDKV AGENCY" translucent>
+    <CenterModal open={visible} onClose={goToSite} ariaLabel="Приветствие HUD SERVICE" bare>
       <WelcomeWidget onClose={selectService} onSkip={goToSite} />
     </CenterModal>
   );

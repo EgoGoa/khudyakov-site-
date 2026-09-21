@@ -1,5 +1,6 @@
 "use client";
 
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import CinematicSection from "@/components/ui/CinematicSection";
 import AiDecoIcon from "@/components/home/ai/AiDecoIcon";
 import Appear from "@/components/ui/Appear";
@@ -258,6 +259,7 @@ function GuaranteeInfographic() {
 export default function AiGuarantees() {
   return (
     <CinematicSection
+      footer={<ToolSpotlight slug="voice" place="right" />}
       index={5}
       chapter="06"
       title={<>Условия и <span className="kw">гарантии</span></>}

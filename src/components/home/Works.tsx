@@ -208,9 +208,13 @@ function plural(count: number) {
 // The full catalogue lives on /works, which has no such constraint.
 export default function Works({
   bare = false,
+  // Глава отдаёт нижнюю полосу окошку услуги (footer): высота плиток
+  // считается от высоты экрана — на большом экране плитки крупнее, на
+  // 900px ровно столько, чтобы окошко осталось на экране.
+  tight = false,
   limit,
   filtersAside,
-}: { bare?: boolean; limit?: number; filtersAside?: ReactNode } = {}) {
+}: { bare?: boolean; limit?: number; filtersAside?: ReactNode; tight?: boolean } = {}) {
   const { active: activeService } = useService();
   const works = worksByCategory[activeService];
   // Основные рубрики идут в том порядке, в котором сгруппированы работы в
@@ -455,7 +459,7 @@ export default function Works({
                           // scroll internally on desktop). Wider/shorter on
                           // lg+ keeps both rows on screen without shrinking
                           // the grid itself.
-                          "aspect-[4/3] sm:aspect-video lg:aspect-[16/7]"
+                          `aspect-[4/3] sm:aspect-video ${tight ? "lg:aspect-auto lg:h-[max(200px,calc((100svh-490px)/2))]" : "lg:aspect-[16/7]"}`
                         : "aspect-[16/10] cursor-pointer"
                     }`}
                   >

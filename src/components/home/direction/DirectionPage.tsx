@@ -74,7 +74,7 @@ export default function DirectionPage({
       <div className={`${headingClass} relative [overflow-x:clip]`}>
         <DirectionBackdrop from={content.backdrop.from} to={content.backdrop.to} />
 
-        <DirectionHero hero={content.hero} />
+        <DirectionHero hero={content.hero} slug={content.slug} />
         <StatsBand stats={content.stats} media={content.statsMedia} />
         <TaskPicker
           prompt={content.taskPrompt}

@@ -6,6 +6,9 @@ import FanFit from "@/components/ui/FanFit";
 import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset } from "@/components/ui/deckFan";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { servicesByCategory } from "@/lib/service-content";
+import SpotlightScene from "@/components/home/ai/SpotlightScene";
+import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
+import { spotlightFor } from "@/components/home/ai/spotlightData";
 
 // The service carousel on /ai's chapter 01.
 //
@@ -37,7 +40,6 @@ type Card = {
    *  description below the rail still come from service-content.ts, so the
    *  carousel can't drift from what chapter 05 (Offer) lists. */
   short: string;
-  shape: Shape;
   /** Stock frame behind the card's artwork, held at very low exposure —
    *  Egor's ask: the cards read as flat panels, and a photo underneath gives
    *  each one its own subject without competing with the diagram on top.
@@ -65,544 +67,82 @@ type Card = {
   hit?: boolean;
 };
 
-type Shape = "video" | "chat" | "flow" | "text" | "brain" | "crm" | "voice" | "split" | "chart" | "learn" | "hub";
 
 // Index-aligned with servicesByCategory.ai — same order, now eleven items
 // (the "хит месяца" card added at the front, everything else unchanged).
 const CARDS: Card[] = [
-  { id: "chathub", short: "Единый AI-чат\nдля мессенджеров", shape: "hub", href: "/ai/chat-hub", hit: true, image: "/images/stock/devs-night.webp" },
-  { id: "gen", short: "Генерация\nвидео и фото", shape: "video", href: "/ai/video", image: "/images/stock/holi-face.webp" },
-  { id: "bots", short: "Чат-боты\nи AI-агенты", shape: "chat", href: "/ai/agent", image: "/images/stock/robot-hand-chip.webp" },
-  { id: "auto", short: "Автоматизация\nкоммуникации", shape: "flow", href: "/ai/comms", image: "/images/stock/man-laptop-dark.webp" },
-  { id: "text", short: "Текстовый\nконтент", shape: "text", href: "/ai/content", image: "/images/stock/ink-pink.webp" },
-  { id: "inner", short: "Ассистенты\nдля процессов", shape: "brain", href: "/ai/ops", image: "/images/stock/planner-desk.webp" },
-  { id: "crm", short: "AI внутри\nCRM", shape: "crm", href: "/ai/crm", image: "/images/stock/brain-circuit.webp" },
-  { id: "voice", short: "Голосовые\nрешения", shape: "voice", href: "/ai/voice", image: "/images/stock/hologram-laptop.webp" },
-  { id: "person", short: "Персонализация\nконтента", shape: "split", href: "/ai/personalization", image: "/images/stock/vr-neon-triangle.webp" },
-  { id: "analytics", short: "AI-аналитика", shape: "chart", href: "/ai/analytics", image: "/images/stock/platform-speed.webp" },
-  { id: "learn", short: "Обучение\nкоманды", shape: "learn", href: "/ai/training", image: "/images/stock/team-ideas.webp" },
+  { id: "chathub", short: "Единый AI-чат\nдля мессенджеров", href: "/ai/chat-hub", hit: true, image: "/images/stock/devs-night.webp" },
+  { id: "gen", short: "Генерация\nвидео и фото", href: "/ai/video", image: "/images/stock/holi-face.webp" },
+  { id: "bots", short: "Чат-боты\nи AI-агенты", href: "/ai/agent", image: "/images/stock/robot-hand-chip.webp" },
+  { id: "auto", short: "Автоматизация\nкоммуникации", href: "/ai/comms", image: "/images/stock/man-laptop-dark.webp" },
+  { id: "text", short: "Текстовый\nконтент", href: "/ai/content", image: "/images/stock/ink-pink.webp" },
+  { id: "inner", short: "Ассистенты\nдля процессов", href: "/ai/ops", image: "/images/stock/planner-desk.webp" },
+  { id: "crm", short: "AI внутри\nCRM", href: "/ai/crm", image: "/images/stock/brain-circuit.webp" },
+  { id: "voice", short: "Голосовые\nрешения", href: "/ai/voice", image: "/images/stock/hologram-laptop.webp" },
+  { id: "person", short: "Персонализация\nконтента", href: "/ai/personalization", image: "/images/stock/vr-neon-triangle.webp" },
+  { id: "analytics", short: "AI-аналитика", href: "/ai/analytics", image: "/images/stock/platform-speed.webp" },
+  { id: "learn", short: "Обучение\nкоманды", href: "/ai/training", image: "/images/stock/team-ideas.webp" },
 ];
 
 const SERVICES = servicesByCategory.ai;
 
-// Card artwork: a stock frame held at very low exposure underneath, and the
-// tool's own diagram drawn in CSS on top of it — zero extra bytes for the
-// diagram, always on palette, readable at card size. One primitive set,
-// re-arranged per shape — the same trick SiteThumb uses on /sites.
-function AiThumb({
-  shape,
-  image,
-  /** Only the card currently up front plays its diagram — every animation
-   *  in `.ai-thumb-live` (globals.css) is scoped under this flag, so the
-   *  off-centre cards hold their diagrams still. */
-  animate = false,
-}: {
-  shape: Shape;
-  image: string;
-  animate?: boolean;
-}) {
-  const bar = (w: string, dim = false, cls = "", style?: React.CSSProperties) => (
-    <span
-      className={`block h-1.5 rounded-[2px] ${dim ? "bg-paper/12" : "bg-paper/22"} ${cls}`}
-      style={{ width: w, ...style }}
-    />
-  );
-  const chip = (w: string, dim = false) => (
-    <span
-      className={`block h-3.5 rounded-full ring-1 ${
-        dim ? "bg-paper/[0.06] ring-paper/15" : "bg-emerald-400/25 ring-emerald-300/40"
-      }`}
-      style={{ width: w }}
-    />
-  );
-  /** Tiny status dot — the detail that turns a plain chip into something
-   *  that reads as a live row rather than a placeholder block. */
-  const dot = (cls = "bg-emerald-300/80", extra = "", style?: React.CSSProperties) => (
-    <span className={`block h-1.5 w-1.5 shrink-0 rounded-full ${cls} ${extra}`} style={style} />
-  );
-  /** Stagger inside the shared 5.6s beat. */
-  const d = (s: number): React.CSSProperties => ({ animationDelay: `${s}s` });
+/** Инструмент карточки — последний сегмент её ссылки (/ai/agent → agent). */
+const slugOf = (card: Card) => (card.href ?? "").replace("/ai/", "");
 
+// Лицо карточки карусели: фото-фон, скрим и живая сцена инструмента.
+//
+// Сцена — та же, что рисуется в выдвижных окошках под блоками страницы
+// (SpotlightScene), а не отдельная диаграмма: Егор попросил «просто скопировать
+// и вставить» графику оттуда. Прежние CSS-диаграммы (AiThumb, ~500 строк) на
+// этом месте больше не нужны и удалены.
+//
+// Сцену крутит только центральная карточка (`step` меняется вместе с текстом
+// под каруселью); боковые стоят на первой сцене — их не читают, а пятнадцать
+// одновременных анимаций тяжелы и шумны.
+function AiCardFace({
+  slug,
+  image,
+  hit,
+  step,
+}: {
+  slug: string;
+  image: string;
+  hit?: boolean;
+  /** Номер сцены; у боковых карточек всегда 0. */
+  step: number;
+}) {
   return (
-    <div className="absolute inset-0 bg-[linear-gradient(160deg,#16241f_0%,#0c1013_58%,#0a0d10_100%)]">
-      {/* The subject photo, at low exposure — Egor's ask. Two layers rather
-          than one low-opacity image: the frame itself is dimmed and
-          desaturated, then a dark scrim sits over it so the diagram above
-          keeps its contrast no matter how busy the picture underneath is. */}
+    <div
+      className="absolute inset-0 bg-[linear-gradient(160deg,#16241f_0%,#0c1013_58%,#0a0d10_100%)]"
+      style={{ "--sp-from": "#c8f169", "--sp-to": "#10b981" } as React.CSSProperties}
+    >
+      {/* Кадр-подложка. Оставлен по решению Егора: он связывает карточку со
+          страницей инструмента, куда она ведёт (см. поле `image`). */}
       <img
         src={image}
         alt=""
         aria-hidden="true"
         loading="lazy"
-        // Raised four times on Egor's call: 0.34 → 0.41 (+20%) → 0.53
-        // (+30%) → 0.74 (+40%, didn't read as changed — the scrim below was
-        // still eating the extra light) → 0.9 with the scrim itself cut, see
-        // below.
         className="absolute inset-0 h-full w-full object-cover opacity-[0.9] [filter:grayscale(0.3)_contrast(1.05)]"
       />
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          // Cut roughly a third off every stop — raising the photo's own
-          // opacity alone did nothing visible, because this scrim was still
-          // blocking the same amount of light on top of it. Still dark
-          // enough at the bottom for the caption text; noticeably lighter
-          // everywhere else.
           background:
-            "linear-gradient(165deg, rgba(12,22,19,0.48) 0%, rgba(10,13,16,0.58) 55%, rgba(10,13,16,0.68) 100%)",
+            "linear-gradient(165deg, rgba(12,22,19,0.62) 0%, rgba(10,13,16,0.72) 55%, rgba(10,13,16,0.8) 100%)",
         }}
       />
-
-      {/* A faint emerald aurora in the corner so every card reads as part of
-          the /ai icon set rather than as a grey box. */}
       <span
         className={`pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full blur-2xl ${
-          shape === "hub" ? "bg-[#ff6a3d]/25" : "bg-emerald-400/20"
+          hit ? "bg-[#ff6a3d]/25" : "bg-emerald-400/20"
         }`}
       />
-
-      <div className={`relative grid gap-2 p-3.5 pt-4 ${animate ? "ai-thumb-live" : ""}`}>
-        {shape === "video" && (
-          <>
-            {/* Egor's ask: more detail, clearer meaning. A format switcher
-                up top (video → photo → avatar — the three things the fact
-                panel names) says this isn't just "a clip", then the render
-                itself, and an export badge that lands once the scrubber
-                finishes — the "no shoot needed" payoff. */}
-            <div className="flex items-center gap-1">
-              {["Видео", "Фото", "Аватар"].map((label, i) => (
-                <span
-                  key={label}
-                  className="ai-a-blink rounded-[3px] bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] uppercase tracking-[0.08em] text-emerald-200 ring-1 ring-emerald-300/30"
-                  style={d(i * 0.6)}
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
-            <span className="relative mt-1 block aspect-[16/10] w-full overflow-hidden rounded-md bg-[linear-gradient(135deg,rgba(52,211,153,0.45),rgba(0,210,255,0.25))]">
-              <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-[3px] bg-ink/60 px-1.5 py-0.5 font-display text-[7px] tracking-[0.12em] text-emerald-100/90">
-                <span className="ai-a-blink block h-1 w-1 rounded-full bg-[#ff6a3d]" />
-                4K
-              </span>
-              <span className="absolute inset-0 grid place-items-center">
-                <span className="ai-a-blink grid h-8 w-8 place-items-center rounded-full bg-ink/70 text-[9px] text-emerald-200 ring-1 ring-emerald-300/40">
-                  ▶
-                </span>
-              </span>
-            </span>
-            <div className="mt-0.5 flex items-center gap-1">
-              <span className="relative block h-1 flex-1 overflow-hidden rounded-full bg-paper/10">
-                <span
-                  className="ai-a-progress absolute inset-0 origin-left rounded-full bg-emerald-300/80"
-                  style={{ transform: "scaleX(0.58)" }}
-                />
-              </span>
-              <span className="block h-2.5 w-0.5 rounded-full bg-emerald-200" />
-            </div>
-            <div className="flex gap-1">
-              {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-                <span
-                  key={i}
-                  className={`ai-a-blink block h-4 flex-1 rounded-[2px] ${i === 3 ? "bg-emerald-400/45" : "bg-paper/[0.08]"}`}
-                  style={d(i * 0.23)}
-                />
-              ))}
-            </div>
-            <div className="flex items-center gap-1.5">
-              {bar("48%", true)}
-              <span className="ai-a-node ml-auto flex w-fit items-center gap-1 rounded-full bg-emerald-400/20 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/35" style={d(2.4)}>
-                <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-emerald-300" />Экспорт
-              </span>
-            </div>
-          </>
-        )}
-        {shape === "chat" && (
-          <>
-            {/* Egor's ask: more detail. A 24/7 tag says the bot never
-                sleeps, and the exchange now closes on a qualification
-                badge — "лид: тёплый" — the part that actually says "sales",
-                not just "a chat happened". */}
-            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-paper/[0.08] px-1.5 py-0.5 font-display text-[7px] tracking-[0.08em] text-paper/60" style={d(0)}>
-              <span className="h-1 w-1 rounded-full bg-emerald-300" />24/7
-            </span>
-            <div className="ai-a-seq flex items-start gap-1.5" style={d(0.15)}>
-              <span className="mt-0.5 block h-4 w-4 shrink-0 rounded-full bg-paper/15" />
-              <span className="block w-[72%] rounded-lg rounded-bl-sm bg-paper/10 p-2">{bar("90%")}</span>
-            </div>
-            <span
-              className="ai-a-seq ml-auto block w-[74%] rounded-lg rounded-br-sm bg-emerald-400/20 p-2 ring-1 ring-emerald-300/30"
-              style={d(0.8)}
-            >
-              {bar("78%")}
-              <span className="mt-1 block h-1.5 w-[52%] rounded-[2px] bg-paper/20" />
-            </span>
-            <div className="ai-a-seq flex items-start gap-1.5" style={d(1.5)}>
-              <span className="mt-0.5 block h-4 w-4 shrink-0 rounded-full bg-paper/15" />
-              <span className="block w-[56%] rounded-lg rounded-bl-sm bg-paper/10 p-2">{bar("80%", true)}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span
-                className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-1.5 ring-1 ring-emerald-300/25"
-                style={d(2.2)}
-              >
-                {dot("bg-emerald-300", "ai-a-typing", d(0))}
-                {dot("bg-emerald-300", "ai-a-typing", d(0.18))}
-                {dot("bg-emerald-300", "ai-a-typing", d(0.36))}
-              </span>
-              <span className="ai-a-node ml-auto flex w-fit items-center gap-1 rounded-full bg-[#ff6a3d]/20 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-[#ffb08a] ring-1 ring-[#ff6a3d]/35" style={d(2.6)}>
-                <span aria-hidden="true">🔥</span>Лид: тёплый
-              </span>
-            </div>
-          </>
-        )}
-        {shape === "flow" && (
-          <>
-            {/* Egor's ask: more detail. Same three-row filter cascade, now
-                labelled at every stage instead of reading as an abstract
-                dot-and-chip diagram — "входящее" → "спам-фильтр" splits it →
-                "горячий лид" is what reaches the manager — plus the reply
-                time that's the whole point of automating this. */}
-            <span className="ai-a-seq flex items-center gap-2" style={d(0)}>
-              {dot("bg-paper/40", "ai-a-blink")}
-              <span className="font-display text-[7px] tracking-[0.04em] text-paper/55">Входящее сообщение</span>
-            </span>
-            <span className="ai-a-seq mx-auto block h-3 w-px bg-emerald-300/40" style={d(0.5)} />
-            <span className="ai-a-seq mx-auto flex w-fit items-center gap-1 rounded-full bg-paper/[0.07] px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-paper/50" style={d(0.7)}>
-              Спам-фильтр
-            </span>
-            <div className="ai-a-seq grid grid-cols-2 gap-2" style={d(0.9)}>
-              <span className="flex items-center gap-1">
-                {dot("bg-emerald-300/90", "ai-a-blink")}
-                <span className="font-display text-[6px] tracking-[0.04em] text-emerald-200">Горячий лид</span>
-              </span>
-              <span className="flex items-center gap-1 opacity-45">
-                {dot("bg-paper/30")}
-                <span className="font-display text-[6px] tracking-[0.04em] text-paper/40">Спам</span>
-              </span>
-            </div>
-            <div className="ai-a-seq grid grid-cols-2 gap-2" style={d(1.4)}>
-              <span className="mx-auto block h-3 w-px bg-emerald-300/40" />
-              <span className="mx-auto block h-3 w-px bg-paper/10" />
-            </div>
-            <span className="ai-a-seq flex items-center gap-1.5" style={d(1.8)}>
-              {dot("bg-emerald-300/90", "ai-a-blink")}
-              <span className="font-display text-[6px] tracking-[0.04em] text-paper/55">→ менеджеру</span>
-              <span className="ai-a-node ml-auto flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(2.1)}>
-                Ответ за 0.8 сек
-              </span>
-            </span>
-          </>
-        )}
-        {shape === "text" && (
-          <>
-            {/* Egor's catch: this read as generic lines-with-a-caret, not
-                specifically "AI writes content in several formats". Now a
-                format switcher runs across the top (post → email → script),
-                the document itself builds under whichever is lit, and the
-                loop closes on a word count + a done check — the two things
-                that actually say "content", not just "text". */}
-            <div className="flex items-center gap-1">
-              {["Пост", "Email", "Сценарий"].map((label, i) => (
-                <span
-                  key={label}
-                  className="ai-a-blink rounded-[3px] bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] uppercase tracking-[0.08em] text-emerald-200 ring-1 ring-emerald-300/30"
-                  style={d(i * 0.65)}
-                >
-                  {label}
-                </span>
-              ))}
-              <span className="ai-a-seq ml-auto flex items-center gap-1 font-display text-[7px] text-emerald-300/80" style={d(0.1)}>
-                <span aria-hidden="true">✨</span>AI
-              </span>
-            </div>
-
-            <span className="ai-a-seq mt-1 block h-2.5 w-[58%] rounded-[3px] bg-paper/35" style={d(0.3)} />
-            {bar("100%", false, "ai-a-seq", d(0.55))}
-            {bar("92%", false, "ai-a-seq", d(0.8))}
-            {bar("96%", true, "ai-a-seq", d(1.05))}
-            {bar("84%", false, "ai-a-seq", d(1.3))}
-            <span className="ai-a-seq flex items-center gap-1" style={d(1.55)}>
-              {bar("38%")}
-              <span className="ai-a-caret block h-3 w-[2px] rounded-[1px] bg-emerald-300" />
-            </span>
-
-            <div className="ai-a-seq mt-1.5 flex items-center gap-1.5" style={d(2)}>
-              <span className="flex items-center gap-1 rounded-full bg-paper/[0.08] px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-paper/60">
-                842 слова
-              </span>
-              <span className="ai-a-node ml-auto flex items-center gap-1 rounded-full bg-emerald-400/20 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/35" style={d(2.3)}>
-                <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-emerald-300" />Готово
-              </span>
-            </div>
-          </>
-        )}
-        {shape === "brain" && (
-          <>
-            {/* Egor's catch: satellites circling a core read as "AI is
-                thinking", not specifically "processes". The three satellites
-                now stand for the three jobs the fact panel names —
-                meetings, questions, reports — each labelled, and a task
-                queue below shows them actually being cleared one by one,
-                closing on a processed-count badge. */}
-            <span className="relative mx-auto block h-[74px] w-[74px]">
-              <span className="absolute inset-0 rounded-full border border-emerald-300/30" />
-              <span className="absolute inset-[13px] rounded-full border border-emerald-300/45 bg-emerald-400/10" />
-              <span className="absolute inset-0 grid place-items-center">
-                <span className="ai-a-node block h-4 w-4 rounded-full bg-emerald-400/70 ring-1 ring-emerald-200/60" />
-              </span>
-              <span className="ai-a-orbit absolute inset-0">
-                <span className="absolute -top-1.5 left-[calc(50%-5px)] grid h-[10px] w-[10px] place-items-center rounded-full bg-emerald-300 font-display text-[6px] text-[#03120d]">
-                  🗓
-                </span>
-                <span className="absolute -right-1.5 top-[calc(50%-5px)] grid h-[10px] w-[10px] place-items-center rounded-full bg-emerald-300/75 font-display text-[6px] text-[#03120d]">
-                  💬
-                </span>
-                <span className="absolute -bottom-1.5 left-[calc(50%-5px)] grid h-[10px] w-[10px] place-items-center rounded-full bg-emerald-300/50 font-display text-[6px] text-[#03120d]">
-                  📊
-                </span>
-              </span>
-            </span>
-
-            <div className="mt-1 grid gap-1">
-              {[
-                { icon: "🗓", label: "Встреча #14 → суммари" },
-                { icon: "💬", label: "График отпусков → ответ" },
-                { icon: "📊", label: "Отчёт за неделю → готово" },
-              ].map((task, i) => (
-                <span key={task.label} className="ai-a-seq flex items-center gap-1.5" style={d(0.5 + i * 0.55)}>
-                  <span className="shrink-0 font-display text-[8px]">{task.icon}</span>
-                  <span className="flex-1 truncate font-display text-[7px] tracking-[0.02em] text-paper/60">{task.label}</span>
-                  <span
-                    className="ai-a-node block h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300"
-                    style={d(0.5 + i * 0.55 + 0.35)}
-                  />
-                </span>
-              ))}
-            </div>
-
-            <span className="ai-a-seq mt-0.5 flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(2.5)}>
-              Обработано: 12 задач
-            </span>
-          </>
-        )}
-        {shape === "crm" && (
-          <>
-            {/* Egor's ask: more detail. Named columns instead of a bare
-                kanban — "новый → в работе → готов" — and the score chip now
-                reads as a real conversion prediction, with a reminder badge
-                popping at the end (the fact panel's third job). */}
-            <div className="grid grid-cols-3 gap-1.5">
-              {["Новый", "В работе", "Готов"].map((label, col) => (
-                <span
-                  key={label}
-                  className={`block space-y-1 rounded-md p-1.5 ${
-                    col === 1 ? "bg-emerald-400/15 ring-1 ring-emerald-300/35" : "bg-paper/[0.07]"
-                  }`}
-                >
-                  <span className={`block font-display text-[6px] uppercase tracking-[0.04em] ${col === 1 ? "text-emerald-200" : "text-paper/35"}`}>
-                    {label}
-                  </span>
-                  <span className="block h-5 rounded-[3px] bg-paper/[0.09]" />
-                  <span
-                    className={`block h-5 rounded-[3px] ${col === 1 ? "ai-a-lift bg-emerald-400/30 ring-1 ring-emerald-300/40" : "bg-paper/[0.09]"}`}
-                  />
-                  {col !== 2 && <span className="block h-5 rounded-[3px] bg-paper/[0.06]" />}
-                </span>
-              ))}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="ai-a-blink rounded-full bg-emerald-400/25 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-emerald-100 ring-1 ring-emerald-300/40">
-                92
-              </span>
-              <span className="font-display text-[6px] tracking-[0.04em] text-paper/45">конверсия</span>
-              <span className="ai-a-node ml-auto flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(2.2)}>
-                <span aria-hidden="true">🔔</span>Напомнить менеджеру
-              </span>
-            </div>
-          </>
-        )}
-        {shape === "voice" && (
-          <>
-            {/* Egor's ask: more detail. A mode switcher (озвучка/колл-центр
-                — the fact panel's own two use cases) up top, and a running
-                timecode under the waveform instead of two anonymous bars. */}
-            <div className="flex items-center gap-1">
-              {["Озвучка", "Колл-центр"].map((label, i) => (
-                <span
-                  key={label}
-                  className="ai-a-blink rounded-[3px] bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] uppercase tracking-[0.08em] text-emerald-200 ring-1 ring-emerald-300/30"
-                  style={d(i * 0.7)}
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
-            <span className="relative mt-1 block h-[64px] w-full">
-              <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-emerald-300/20" />
-              <span className="absolute inset-0 flex items-center justify-center gap-[3px]">
-                {[8, 16, 28, 20, 40, 52, 38, 58, 44, 30, 22, 34, 14, 10].map((h, i) => (
-                  <span
-                    key={i}
-                    className="ai-a-wave block w-[3px] rounded-full bg-emerald-300"
-                    style={{ height: `${h}%`, opacity: 0.35 + (h / 58) * 0.55, ...d((i % 5) * 0.14) }}
-                  />
-                ))}
-              </span>
-              <span className="ai-a-travel absolute left-[58%] top-0 h-full w-px bg-emerald-100/70" />
-            </span>
-            <span className="flex items-center gap-1.5">
-              {dot("bg-emerald-300/80", "ai-a-blink")}
-              <span className="font-display text-[7px] tracking-[0.06em] text-paper/60">00:42 / 01:10</span>
-            </span>
-          </>
-        )}
-        {shape === "split" && (
-          <>
-            {/* Egor's ask: more detail. The one message forking into two is
-                the right idea — it just needed the two branches labelled as
-                actual audience segments, plus a count of how many versions
-                came out of the one source message. */}
-            <span className="ai-a-seq mx-auto block h-7 w-[62%] rounded-md bg-paper/12 ring-1 ring-paper/15" style={d(0)} />
-            <div className="ai-a-seq grid grid-cols-2 gap-1.5" style={d(0.5)}>
-              <span className="mx-auto block h-3 w-px bg-emerald-300/40" />
-              <span className="mx-auto block h-3 w-px bg-glow/40" />
-            </div>
-            <div className="grid grid-cols-2 gap-1.5">
-              <span
-                className="ai-a-seq block space-y-1 rounded-md bg-emerald-400/20 p-1.5 ring-1 ring-emerald-300/30"
-                style={d(0.9)}
-              >
-                <span className="block font-display text-[6px] uppercase tracking-[0.04em] text-emerald-200">Сегмент А</span>
-                <span className="block h-1 w-full rounded-[2px] bg-emerald-200/60" />
-                <span className="block h-1 w-[70%] rounded-[2px] bg-paper/20" />
-              </span>
-              <span className="ai-a-seq block space-y-1 rounded-md bg-glow/20 p-1.5 ring-1 ring-glow/30" style={d(1.3)}>
-                <span className="block font-display text-[6px] uppercase tracking-[0.04em] text-glow">Сегмент Б</span>
-                <span className="block h-1 w-[80%] rounded-[2px] bg-glow/60" />
-                <span className="block h-1 w-full rounded-[2px] bg-paper/20" />
-              </span>
-            </div>
-            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(1.9)}>
-              1 сообщение → 2 версии
-            </span>
-          </>
-        )}
-        {shape === "chart" && (
-          <>
-            {/* Egor's ask: more detail. The metric is named now ("продажи"),
-                and the anomaly marker resolves into an actual insight line
-                instead of just a blinking dot — what "AI-аналитика" is
-                supposed to hand back, not just a chart moving. */}
-            <span className="flex items-center justify-between">
-              <span className="font-display text-[7px] uppercase tracking-[0.1em] text-paper/50">Продажи, нед.</span>
-              <span className="font-display text-[7px] text-[#ff6a3d]">−18%</span>
-            </span>
-            <span className="relative mt-1 block h-[62px] w-full">
-              <span className="absolute inset-x-0 bottom-0 h-px bg-paper/15" />
-              <span className="absolute inset-0 flex items-end gap-1.5">
-                {[34, 52, 28, 64, 46, 72].map((h, i) => (
-                  <span
-                    key={i}
-                    className={`ai-a-bar block flex-1 rounded-t-[3px] ${
-                      i === 2
-                        ? "bg-[linear-gradient(180deg,rgba(255,106,61,0.85),rgba(255,106,61,0.12))]"
-                        : "bg-[linear-gradient(180deg,rgba(52,211,153,0.85),rgba(52,211,153,0.15))]"
-                    }`}
-                    style={{ height: `${h}%`, ...d(i * 0.32) }}
-                  />
-                ))}
-              </span>
-              <span className="ai-a-blink absolute left-[38%] top-[44%] h-2 w-2 -translate-x-1/2 rounded-full bg-[#ff6a3d] ring-2 ring-[#ff6a3d]/25" />
-            </span>
-            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-[#ff6a3d]/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.04em] text-[#ffb08a] ring-1 ring-[#ff6a3d]/30" style={d(1.6)}>
-              <span aria-hidden="true">⚠</span>Аномалия во вторник
-            </span>
-          </>
-        )}
-        {shape === "hub" && (
-          <>
-            {/* Egor's ask: more detail. The four channel chips now name
-                themselves — Telegram, WhatsApp, Instagram, сайт, the exact
-                four the fact panel promises get sewn into "одну ленту" —
-                instead of reading as four anonymous rows lighting up. */}
-            <div className="grid grid-cols-2 gap-1.5">
-              {[
-                { label: "Telegram", cls: "bg-[#ff4fd8]/20 ring-[#ff4fd8]/35" },
-                { label: "WhatsApp", cls: "bg-[#ff6a3d]/20 ring-[#ff6a3d]/35" },
-                { label: "Instagram", cls: "bg-[#ff6a3d]/20 ring-[#ff6a3d]/35" },
-                { label: "Сайт", cls: "bg-[#ff4fd8]/20 ring-[#ff4fd8]/35" },
-              ].map((ch, i) => (
-                <span
-                  key={ch.label}
-                  className={`ai-a-blink flex h-9 items-center gap-1.5 rounded-md px-1.5 ring-1 ${ch.cls}`}
-                  style={d(i * 0.4)}
-                >
-                  <span className="block h-2 w-2 shrink-0 rounded-full bg-white/70" />
-                  <span className="block flex-1 truncate font-display text-[7px] tracking-[0.02em] text-white/75">{ch.label}</span>
-                </span>
-              ))}
-            </div>
-            <div className="relative h-4">
-              <span className="absolute left-1/4 top-0 h-2 w-px bg-[#ff8a5c]/40" />
-              <span className="absolute right-1/4 top-0 h-2 w-px bg-[#ff8a5c]/40" />
-              <span className="absolute left-1/4 right-1/4 top-2 h-px bg-[#ff8a5c]/40" />
-              <span className="absolute left-1/2 top-2 h-2 w-px bg-[#ff8a5c]/60" />
-            </div>
-            <span className="ai-a-node relative mx-auto block h-7 w-7">
-              <span className="absolute -inset-1.5 rounded-full bg-[#ff6a3d]/20 blur-[6px]" />
-              <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#ff8a5c] to-[#ff4fd8]" />
-            </span>
-            <span className="ai-a-seq mx-auto flex w-fit items-center gap-1 rounded-full bg-[#ff6a3d]/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-[#ffb08a] ring-1 ring-[#ff6a3d]/30" style={d(2.1)}>
-              Единая лента
-            </span>
-          </>
-        )}
-        {shape === "learn" && (
-          <>
-            {/* The team joins one by one, the course bar fills, and the
-                lessons tick in down the list. */}
-            <div className="flex items-center gap-1.5">
-              <span className="ai-a-seq block h-6 w-6 rounded-full bg-emerald-400/30 ring-1 ring-emerald-300/40" style={d(0)} />
-              <span
-                className="ai-a-seq -ml-3 block h-6 w-6 rounded-full bg-emerald-400/20 ring-1 ring-emerald-300/25"
-                style={d(0.3)}
-              />
-              <span className="ai-a-seq -ml-3 block h-6 w-6 rounded-full bg-paper/10 ring-1 ring-paper/15" style={d(0.6)} />
-              <span
-                className="ai-a-seq ml-1 rounded-full bg-paper/[0.08] px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-paper/60"
-                style={d(0.9)}
-              >
-                +6
-              </span>
-            </div>
-            <span className="relative mt-1 block h-1.5 w-full overflow-hidden rounded-full bg-paper/10">
-              <span
-                className="ai-a-progress absolute inset-0 origin-left rounded-full bg-[linear-gradient(90deg,rgba(52,211,153,0.9),rgba(52,211,153,0.5))]"
-                style={{ transform: "scaleX(0.64)" }}
-              />
-            </span>
-            {/* Egor's ask: more detail. The three blank progress rows now
-                name the actual modules — prompts, automation, in-house
-                expertise — so the list reads as a real course, not three
-                generic lines of loading bar. */}
-            <div className="mt-1 space-y-1.5">
-              <span className="ai-a-seq flex items-center gap-1.5" style={d(1.2)}>
-                {dot("bg-emerald-300/80", "ai-a-blink")}
-                <span className="font-display text-[7px] tracking-[0.02em] text-paper/70">Модуль 1 · Промпты</span>
-              </span>
-              <span className="ai-a-seq flex items-center gap-1.5" style={d(1.7)}>
-                {dot()}
-                <span className="font-display text-[7px] tracking-[0.02em] text-paper/55">Модуль 2 · Автоматизация</span>
-              </span>
-              <span className="ai-a-seq flex items-center gap-1.5" style={d(2.2)}>
-                {dot("bg-paper/20")}
-                <span className="font-display text-[7px] tracking-[0.02em] text-paper/40">Модуль 3 · Своя экспертиза</span>
-              </span>
-            </div>
-          </>
-        )}
+      {/* Сцена лежит над областью названия, не заходя в неё: подпись карточки
+          занимает нижние ~40% (правило Егора — графика не нависает над
+          названием формата снизу). */}
+      <div className="absolute inset-x-3 top-6 h-[46%]">
+        <SpotlightScene slug={slug} step={step} card />
       </div>
     </div>
   );
@@ -639,6 +179,9 @@ const POSE: Record<number, { x: number; z: number; ry: number; scale: number; op
 
 // Hand travel that moves the rail by exactly one card.
 const SPACING = 148;
+
+/** Как часто меняется тезис/сцена под каруселью, мс. */
+const DECK_BEAT_MS = 4200;
 
 // The chapter's button language, shared with the rest of /ai the way
 // SitesDeck's PILL/ROUND are shared across /sites. Emerald rather than the
@@ -686,22 +229,51 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
     return () => el.removeEventListener("keydown", onKey);
   }, [bind.ref, step]);
 
-  const front = SERVICES[idx];
+  // Номер сцены/тезиса центральной карточки. Он общий для карточки (графика)
+  // и окошка под каруселью (текст), поэтому живёт здесь, а не в каждом из
+  // них: так картинка и слова меняются строго вместе. Сбрасывается на первый
+  // кадр при каждой смене карточки — новый инструмент всегда начинается с
+  // начала, а не с середины чужого сюжета.
+  const [sceneStep, setSceneStep] = useState(0);
+  const [held, setHeld] = useState(false);
+  const data = spotlightFor(slugOf(CARDS[idx]));
+  const beats = data?.benefits.length ?? 0;
+
+  // Сброс при смене карточки — прямо во время рендера (документированный
+  // приём React для состояния, производного от пропса), а не в эффекте:
+  // эффект дал бы один лишний кадр со старым номером сцены на новой карточке.
+  const [stepFor, setStepFor] = useState(idx);
+  if (stepFor !== idx) {
+    setStepFor(idx);
+    setSceneStep(0);
+  }
+
+  // Чуть быстрее, чем в выдвижных окошках на блоках (5.2с): Егор просил, чтобы
+  // тут блоки и графика менялись живее. Пауза, пока курсор над окошком —
+  // прочитать тезис до смены.
+  useEffect(() => {
+    if (held || beats < 2) return;
+    const id = window.setInterval(() => setSceneStep((v) => (v + 1) % beats), DECK_BEAT_MS);
+    return () => window.clearInterval(id);
+  }, [held, beats, idx]);
 
   const panel = (
-      <div
-      className={`glass-panel deck-neon-pulse flex items-start overflow-hidden rounded-3xl px-6 py-7 lg:py-6 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[226px] lg:min-h-0"}`}
-        style={{ "--card-glow-rgb": "52, 211, 153" } as React.CSSProperties}
-      >
-        <div className={wide ? "w-full" : "w-full lg:max-w-[460px]"}>
-          <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.title}</p>
-          <dl className={`mt-3 grid gap-2.5 max-lg:mt-5 max-lg:gap-5 ${wide ? "grid-cols-3 gap-x-6" : ""}`}>
-            <Fact stacked={wide} label="Что даёт" text={front.description} />
-            {front.audience && <Fact stacked={wide} label="Кому" text={front.audience} />}
-            {front.now && <Fact stacked={wide} label="Почему сейчас" text={front.now} />}
-          </dl>
-        </div>
-      </div>
+    <div
+      onMouseEnter={() => setHeld(true)}
+      onMouseLeave={() => setHeld(false)}
+      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[330px]"}`}
+      style={
+        {
+          "--card-glow-rgb": "52, 211, 153",
+          "--sp-from": "#c8f169",
+          "--sp-to": "#10b981",
+        } as React.CSSProperties
+      }
+    >
+      {/* Тот же правый блок, что в выдвижных окошках на блоках страницы —
+          один компонент на оба места, чтобы текст и темп не расходились. */}
+      {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} compact />}
+    </div>
   );
 
   return (
@@ -937,7 +509,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   className="deck-card-glow deck-neon-pulse absolute inset-0 overflow-hidden rounded-[26px] text-left"
                   style={{ "--card-glow-rgb": card.hit ? "255, 106, 61" : "16, 185, 129" } as React.CSSProperties}
                 >
-                  <AiThumb shape={card.shape} image={card.image} animate />
+                  <AiCardFace slug={slugOf(card)} image={card.image} hit={card.hit} step={sceneStep} />
 
                   {caption}
                   {counter}
@@ -971,7 +543,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   aria-label={`Показать: ${SERVICES[i].title}`}
                   className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] cursor-pointer transition-[box-shadow] duration-[760ms] motion-reduce:transition-none"
                 >
-                  <AiThumb shape={card.shape} image={card.image} />
+                  <AiCardFace slug={slugOf(card)} image={card.image} hit={card.hit} step={0} />
                   {caption}
                 </button>
               )}
@@ -1092,22 +664,6 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           страницы и читались тише самого дека — теперь у них своя рамка и
           свой свет, а тезисы набраны белым, а не приглушённым paper/70. */}
       {panelTarget ? createPortal(panel, panelTarget) : panel}
-    </div>
-  );
-}
-
-// Одна строка факта: короткая emerald-подпись слева (та же гарнитура и
-// трекинг, что у EYEBROW по сайту, но не самим компонентом — здесь не
-// нужен ни индекс, ни точка перед подписью) и сам тезис справа, белым по
-// основному — Егор попросил убрать притушенный paper/70, факты должны
-// читаться так же чётко, как заголовок над ними, а не как подпись к нему.
-function Fact({ label, text, stacked }: { label: string; text: string; stacked?: boolean }) {
-  return (
-    <div className={stacked ? "flex flex-col gap-1" : "flex gap-3 max-lg:flex-col max-lg:gap-1.5"}>
-      <dt className={`${stacked ? "" : "w-[92px] max-lg:w-auto"} shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300/80`}>
-        {label}
-      </dt>
-      <dd className="text-[13px] leading-snug text-white max-lg:text-sm max-lg:leading-relaxed">{text}</dd>
     </div>
   );
 }

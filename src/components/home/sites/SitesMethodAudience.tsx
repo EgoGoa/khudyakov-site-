@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
+import { SITES_ACCENT } from "@/components/home/ai/spotlightSites";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
@@ -35,7 +37,7 @@ import PromoCard from "@/components/home/PromoCard";
 // chapter 01's brief — this chapter's argument is about price and speed
 // against the alternatives, so "рассчитать" is the question it just raised.
 
-const COMPARE_COLS = ["Конструктор (Tilda/Wix)", "Классическая студия", "HDKV.AGENCY (AI)"];
+const COMPARE_COLS = ["Конструктор (Tilda/Wix)", "Классическая студия", "HUD.SERVICE (AI)"];
 
 const COMPARE_ROWS = [
   {
@@ -218,6 +220,9 @@ export default function SitesMethodAudience() {
               </Appear>
             ))}
           </div>
+
+          {/* Окошко формата — под чипами, на всю ширину правой колонки. */}
+          <ToolSpotlight slug="site-landing" accent={SITES_ACCENT} shape="card" />
         </div>
       </div>
     </CinematicSection>

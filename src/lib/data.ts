@@ -106,17 +106,17 @@ export const services: Service[] = [
 // самих видео на YouTube.
 export const works: Work[] = [
   // ---------- Шоурилы ----------
-  { id: "HC5SMCQuoms", title: "AI-шоурил 2026", client: "HDKV.AGENCY", category: "Шоурилы", sphere: "Собственные проекты", duration: 65, date: "2026-02-08", youtubeId: "HC5SMCQuoms" },
-  { id: "nxKCmw16vbU", title: "Шоурил 2024", client: "HDKV.AGENCY", category: "Шоурилы", sphere: "Собственные проекты", duration: 152, date: "2024-11-08", youtubeId: "nxKCmw16vbU" },
-  { id: "WKuMmgTUoRA", title: "Шоурил 2021 · реклама", client: "HDKV.AGENCY", category: "Шоурилы", sphere: "Собственные проекты", duration: 97, date: "2021-11-02", youtubeId: "WKuMmgTUoRA" },
-  { id: "4yyRujtEtvA", title: "Шоурил 2018–2019", client: "HDKV.AGENCY", category: "Шоурилы", sphere: "Собственные проекты", duration: 102, date: "2019-04-20", youtubeId: "4yyRujtEtvA" },
+  { id: "HC5SMCQuoms", title: "AI-шоурил 2026", client: "HUD.SERVICE", category: "Шоурилы", sphere: "Собственные проекты", duration: 65, date: "2026-02-08", youtubeId: "HC5SMCQuoms" },
+  { id: "nxKCmw16vbU", title: "Шоурил 2024", client: "HUD.SERVICE", category: "Шоурилы", sphere: "Собственные проекты", duration: 152, date: "2024-11-08", youtubeId: "nxKCmw16vbU" },
+  { id: "WKuMmgTUoRA", title: "Шоурил 2021 · реклама", client: "HUD.SERVICE", category: "Шоурилы", sphere: "Собственные проекты", duration: 97, date: "2021-11-02", youtubeId: "WKuMmgTUoRA" },
+  { id: "4yyRujtEtvA", title: "Шоурил 2018–2019", client: "HUD.SERVICE", category: "Шоурилы", sphere: "Собственные проекты", duration: 102, date: "2019-04-20", youtubeId: "4yyRujtEtvA" },
 
   // ---------- FPV / Дрон ----------
-  { id: "LzA1eXlyqBI", title: "FPV-шоурил 4K", client: "HDKV.AGENCY", category: "FPV и дроны", sphere: "Туризм и отели", duration: 137, date: "2021-10-30", youtubeId: "LzA1eXlyqBI" },
+  { id: "LzA1eXlyqBI", title: "FPV-шоурил 4K", client: "HUD.SERVICE", category: "FPV и дроны", sphere: "Туризм и отели", duration: 137, date: "2021-10-30", youtubeId: "LzA1eXlyqBI" },
   { id: "8DnPZc-pESc", title: "FPV Cinematic · гольф-клуб", client: "Гольф-клуб", category: "FPV и дроны", sphere: "Спорт и фитнес", duration: 60, date: "2021-08-10", youtubeId: "8DnPZc-pESc" },
-  { id: "WODAxz34rE0", title: "FPV · зимний спорт", client: "HDKV.AGENCY", category: "FPV и дроны", sphere: "Спорт и фитнес", duration: 96, date: "2021-12-29", youtubeId: "WODAxz34rE0" },
-  { id: "HXr1krYhnW8", title: "FPV Racing · Сикиязтамак", client: "HDKV.AGENCY", category: "FPV и дроны", sphere: "Спорт и фитнес", duration: 98, date: "2021-07-02", youtubeId: "HXr1krYhnW8" },
-  { id: "UjHGlhAlyJc", title: "FPV Cinematic · Сикиязтамак, Урал", client: "HDKV.AGENCY", category: "FPV и дроны", sphere: "Туризм и отели", duration: 59, date: "2021-08-10", youtubeId: "UjHGlhAlyJc" },
+  { id: "WODAxz34rE0", title: "FPV · зимний спорт", client: "HUD.SERVICE", category: "FPV и дроны", sphere: "Спорт и фитнес", duration: 96, date: "2021-12-29", youtubeId: "WODAxz34rE0" },
+  { id: "HXr1krYhnW8", title: "FPV Racing · Сикиязтамак", client: "HUD.SERVICE", category: "FPV и дроны", sphere: "Спорт и фитнес", duration: 98, date: "2021-07-02", youtubeId: "HXr1krYhnW8" },
+  { id: "UjHGlhAlyJc", title: "FPV Cinematic · Сикиязтамак, Урал", client: "HUD.SERVICE", category: "FPV и дроны", sphere: "Туризм и отели", duration: 59, date: "2021-08-10", youtubeId: "UjHGlhAlyJc" },
 
   // ---------- Рекламные ----------
   { id: "iaHvMPD9xQs", title: "Имиджевое промо CARPOINT", client: "CARPOINT", category: "Рекламные", tags: ["Имиджевые и презентации"], sphere: "Авто", duration: 83, date: "2021-12-24", youtubeId: "iaHvMPD9xQs" },
@@ -162,7 +162,7 @@ export const works: Work[] = [
   { id: "1xsFpGPsFC8", title: "Travel video · Аркаим", client: "Цветок жизни", category: "Тревел", sphere: "Туризм и отели", duration: 189, date: "2024-10-23", youtubeId: "1xsFpGPsFC8" },
   { id: "Ts-ZnRUyIG8", title: "Тизер короткометражки FEELING IT", client: "Творческий проект", category: "Тревел", sphere: "Музыка и арт", duration: 175, date: "2026-02-28", youtubeId: "Ts-ZnRUyIG8" },
   { id: "VSvzGCTaKDg", title: "SURF · Треш-Фреш, 3 серия (тизер)", client: "Surf Coffee", category: "Тревел", sphere: "HoReCa и кофейни", duration: 60, date: "2021-07-16", youtubeId: "VSvzGCTaKDg" },
-  { id: "kgXhVT_xLyI", title: "Анонс влога · Красная Поляна", client: "HDKV.AGENCY", category: "Тревел", sphere: "Туризм и отели", duration: 60, date: "2020-05-30", youtubeId: "kgXhVT_xLyI" },
+  { id: "kgXhVT_xLyI", title: "Анонс влога · Красная Поляна", client: "HUD.SERVICE", category: "Тревел", sphere: "Туризм и отели", duration: 60, date: "2020-05-30", youtubeId: "kgXhVT_xLyI" },
   { id: "hx3lnMFxrI8", title: "Анонс события 28 августа", client: "Коммерческий проект", category: "Тревел", sphere: "События и шоу", duration: 119, date: "2019-08-02", youtubeId: "hx3lnMFxrI8" },
 
   // ---------- Имиджевые / Презентация ----------

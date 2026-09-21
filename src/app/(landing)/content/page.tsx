@@ -10,11 +10,12 @@ import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import CinematicStage, { type ChapterMeta } from "@/components/ui/CinematicStage";
 import ChapterRail from "@/components/ui/ChapterRail";
 import CinematicSection from "@/components/ui/CinematicSection";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
-  title: "Создание контента — HDKV.AGENCY",
+  title: "Создание контента — HUD.SERVICE",
   description: "Съёмка и монтаж роликов под ваш формат и площадку.",
 };
 
@@ -36,6 +37,9 @@ export const metadata: Metadata = {
 // A chapter holds on its closing frame and scrolling on resumes straight
 // through, so the picture runs continuously from 0 to 43.2s across a full
 // scroll and never carries a join of ours.
+// Акцент страницы /content — тот же, что у рельсы и заголовков глав.
+const CONTENT_ACCENT = { from: "#ff4fd8", to: "#ff6a3d" };
+
 const PHASES = [
   { start: 0, end: 9.6 }, // 09:15
   { start: 9.6, end: 18.36 }, // 18:09
@@ -85,6 +89,7 @@ export default function ContentServicePage() {
           chapter="02"
           title={<>Наши <span className="kw">работы</span></>}
           side="right"
+          footer={<ToolSpotlight slug="advertising" accent={CONTENT_ACCENT} />}
           intro={<><span className="kw">78 работ</span> в открытом доступе: реклама, шоурилы, 3D и моушн. Остальное — под NDA.</>}
           // A 2×2 grid of video tiles under the default text-8xl title was
           // tall enough to clip its own bottom row on short/wide viewports
@@ -111,6 +116,7 @@ export default function ContentServicePage() {
               width the card used to reserve. */}
           <Works
             bare
+            tight
             limit={4}
             filtersAside={
               <Link
@@ -126,6 +132,7 @@ export default function ContentServicePage() {
 
         <Trust
           title={<>Именно <span className="kw">мы</span></>}
+          footer={<ToolSpotlight slug="image" accent={CONTENT_ACCENT} shape="card" />}
           intro={<>Продюсерский центр полного цикла: от первого созвона до файлов в вашей папке. <span className="kw">Шесть из десяти заказов</span> — от клиентов, которые уже работали с нами.</>}
         />
         {/* Not "…под формат и площадку" any more: the ServicePicker above the
@@ -133,14 +140,23 @@ export default function ContentServicePage() {
             three times on the way down one page. This line says what the ten
             rows below it actually are instead. */}
         <Offer
+          footer={<ToolSpotlight slug="graphics" accent={CONTENT_ACCENT} />}
+          // Десять строк + виджет + окошко делят одну высоту экрана.
+          titleClassName="text-[1.575rem] sm:text-[2.1rem] lg:text-[2.625rem] xl:text-[2.625rem]"
           title={<>Лучшие в <span className="kw">этом</span></>}
           intro={<>Десять задач, которые закрываем своей командой — от рекламного ролика до 3D-графики и <span className="kw">AI-контента</span>.</>}
         />
         <Process
+          middleSlot={<ToolSpotlight slug="presentation" accent={CONTENT_ACCENT} shape="card" fill className="!pt-0 h-full" />}
           title={<>PRO <span className="kw">хронология</span></>}
           intro={<>Шесть шагов от брифа до сдачи. На каждом видно <span className="kw">прогресс</span> и есть точка, где можно вмешаться.</>}
         />
         <Close
+          footer={<ToolSpotlight slug="ai-video" accent={CONTENT_ACCENT} place="right" />}
+          // Окошко внизу делит высоту экрана с тарифами — плотная раскладка,
+          // как у /ai.
+          dense
+          titleClassName="text-[1.12rem] sm:text-[1.82rem] lg:text-[1.82rem] xl:text-[2.205rem]"
           title={<>Персональные <span className="kw">условия</span></>}
           intro={<>Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: <span className="kw">консультация, смета</span> и 2–3 концепции до договора.</>}
         />

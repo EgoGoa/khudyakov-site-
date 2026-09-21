@@ -251,7 +251,7 @@ export default function LeadModal({
   const canSend = name.trim() && phone.trim() && consent;
 
   return (
-    <CenterModal open={open} onClose={close} ariaLabel="Связаться с HDKV.AGENCY" compact>
+    <CenterModal open={open} onClose={close} ariaLabel="Связаться с HUD.SERVICE" compact>
       <div className="flex h-fit w-full flex-col text-center">
         {screen === "choice" && (
           <>

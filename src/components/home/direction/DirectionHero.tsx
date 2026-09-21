@@ -10,6 +10,8 @@ import { TelegramIcon } from "@/components/ui/Icons";
 import { TELEGRAM_URL } from "./contacts";
 import TeamAskCard from "@/components/home/TeamAskCard";
 import { TEAM } from "@/lib/team";
+import ServiceDeepDive from "./ServiceDeepDive";
+import { directionDeep } from "@/components/home/ai/spotlightDirections";
 import type { DirectionContent } from "./types";
 
 // Первый экран страницы направления.
@@ -21,8 +23,12 @@ import type { DirectionContent } from "./types";
 export default function DirectionHero({
   hero,
   stats,
+  slug,
 }: {
   hero: DirectionContent["hero"];
+  /** Slug направления: если для него есть расширенное окно услуги, под
+   *  карточкой команды встаёт кнопка, которая его открывает. */
+  slug?: string;
   /** Полоса цифр прямо в герое, вместо отдельной главы StatsBand ниже.
    *
    *  Существует ради компактных страниц AI-инструментов: Егор попросил
@@ -176,6 +182,11 @@ export default function DirectionHero({
               </a>
             </div>
           )}
+          {slug && directionDeep(slug) ? (
+            <div className="mt-5">
+              <ServiceDeepDive slug={slug} />
+            </div>
+          ) : null}
           {/* Телефон убран из этой строки: он уже стоит в шапке на каждой
               странице сайта, и здесь дублировал её. Егор — «убери номера
               из подобных мест, в шапке есть и достаточно». */}

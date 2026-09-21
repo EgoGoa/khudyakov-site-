@@ -32,7 +32,7 @@ export async function generateMetadata({
   const direction = contentDirections.find((d) => d.slug === slug);
   if (!direction) return {};
   return {
-    title: `${direction.title} — HDKV.AGENCY`,
+    title: `${direction.title} — HUD.SERVICE`,
     description: direction.description,
   };
 }

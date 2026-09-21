@@ -154,6 +154,8 @@ export default function CinematicSection({
   distribute = false,
   column = false,
   headless = false,
+  footer,
+  footerGap = 0,
 }: {
   /** Position in the deck — must match this chapter's entry in `chapters`. */
   index: number;
@@ -209,6 +211,27 @@ export default function CinematicSection({
    *  The chapter is then responsible for rendering its own <h2>; `title` and
    *  `intro` are ignored. Off by default. */
   headless?: boolean;
+  /** Слой поверх всей главы, прижатый к её низу — например, развёрнутая
+   *  табличка услуги (ToolSpotlight).
+   *
+   *  Отдельный проп, а не просто ещё один child: он рендерится СЕСТРОЙ
+   *  к телу главы и позиционируется по самой панели (`absolute inset-0`),
+   *  а не по колонке контента, которая центрируется по вертикали и имеет
+   *  высоту своего содержимого. Внутри children такой слой прилипал бы к
+   *  низу текста, а не к низу экрана.
+   *
+   *  Слой ничего не забирает у вёрстки: глава не становится ниже ни в
+   *  закрытом, ни в раскрытом виде — общее правило сайта для наложений. */
+  footer?: ReactNode;
+  /** Сколько места у низа главы освободить под `footer`, в пикселях.
+   *
+   *  Само окошко услуги лежит поверх главы и вёрстку не двигает, но
+   *  вплотную к содержимому блока оно садится на его карточки. Егор
+   *  попросил «чуть сдвинуть вёрстку, где нужно, чтобы кнопки органично
+   *  вписались в блок» — это и есть тот сдвиг: тело главы получает нижний
+   *  отступ и поднимается ровно настолько, чтобы под ним осталась полоса
+   *  воздуха. Ноль по умолчанию — главы без окошка не меняются. */
+  footerGap?: number;
   /** Outside a pinned deck only (`!staged`): stretches the section to at
    *  least one viewport tall and centers the body in the extra room, instead
    *  of the section hugging its content height. For plain-scroll pages
@@ -287,7 +310,13 @@ export default function CinematicSection({
           // "буквы прыгают" jump. A pinned, full-screen chapter is never
           // meant to pan sideways, so the axis is closed outright and the
           // sticky stage's own overflow-hidden does the clipping.
-          ? `absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 pb-12 pt-[5.5rem] lg:px-10 lg:pb-12 lg:pt-[5.5rem] land:pb-10 land:pt-8 land:pl-[max(2rem,calc(env(safe-area-inset-left)+1rem))] land:pr-[max(2rem,calc(env(safe-area-inset-right)+1rem))] ${
+          // Глава с окошком услуги отдаёт ему часть своего воздуха:
+          // кнопка стоит в потоке и забирает высоту, а нижнее поле главы
+          // при ней уже не нужно в прежнем размере — иначе плотные главы
+          // (04, 05) начинают прокручиваться внутри себя.
+          ? `absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 ${
+              footer ? "pb-3 pt-[4.5rem] lg:pb-3 lg:pt-[4.75rem]" : "pb-12 pt-[5.5rem] lg:pb-12 lg:pt-[5.5rem]"
+            } lg:px-10 land:pb-10 land:pt-8 land:pl-[max(2rem,calc(env(safe-area-inset-left)+1rem))] land:pr-[max(2rem,calc(env(safe-area-inset-right)+1rem))] ${
               active ? "" : "pointer-events-none"
             }`
           : roomy
@@ -410,6 +439,7 @@ export default function CinematicSection({
           className={`relative mx-auto w-full max-w-7xl py-2 ${roomy && !headless ? "" : "my-auto"} ${
             distribute && staged ? "max-lg:my-0 max-lg:flex max-lg:flex-1 max-lg:flex-col" : ""
           }`}
+          style={footerGap ? { paddingBottom: footerGap } : undefined}
         >
           {ready && bodyDecor && (
             <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR(instant)}>
@@ -419,6 +449,20 @@ export default function CinematicSection({
           {/* Children use <Appear> to arrive on their own beat and from their
               own direction; this is what tells them the chapter is on stage. */}
           <ChapterActiveProvider active={active} instant={instant}>{ready ? children : null}</ChapterActiveProvider>
+        </div>
+      )}
+
+      {ready && footer && (
+        // В ПОТОКЕ, а не поверх главы.
+        //
+        // Сначала окошко услуги было абсолютным слоем: так оно ничего не
+        // двигало, но и не принадлежало блоку — Егор сказал прямо, что
+        // кнопка должна быть элементом вёрстки, а не накладкой, которая
+        // перекрывает то карточки, то заголовок. Теперь кнопка — обычный
+        // последний блок главы и занимает своё место честно; поверх
+        // всплывает только развёрнутое окно.
+        <div className="relative z-20 mx-auto w-full max-w-7xl shrink-0">
+          <ChapterActiveProvider active={active} instant={instant}>{footer}</ChapterActiveProvider>
         </div>
       )}
     </motion.div>

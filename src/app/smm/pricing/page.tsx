@@ -7,7 +7,7 @@ import { pricingByCategory } from "@/lib/service-content";
 import { EYEBROW } from "@/lib/typography";
 
 export const metadata: Metadata = {
-  title: "Цены на SMM — HDKV.AGENCY",
+  title: "Цены на SMM — HUD.SERVICE",
   description: "Три пакета ведения соцсетей — от разового аудита до полного цикла с блогерами и таргетом.",
 };
 

@@ -14,9 +14,10 @@ import { AI_INTERACTIVE_TIERS } from "@/components/home/ai/aiPricingTiers";
 import Close from "@/components/home/Close";
 import { AI_SEO_SECTIONS } from "@/components/home/ai/aiSeoSections";
 import { ServiceProvider } from "@/lib/service-context";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 
 export const metadata: Metadata = {
-  title: "AI-решения — HDKV.AGENCY",
+  title: "AI-решения — HUD.SERVICE",
   description: "Внедряем ИИ-инструменты в продакшн и коммуникацию с клиентами.",
 };
 
@@ -140,13 +141,18 @@ export default function AiServicePage() {
           index={3}
           chapter="04"
           title={<>Продюсерский центр, <span className="kw">не коробка</span></>}
-          intro={<>AI-инструменты внедряем с 2024 года внутри агентства полного цикла. Около <span className="kw">60% заказов</span> — клиенты, которые возвращаются.</>}
+          intro={<>AI-инструменты внедряем с 2024 года внутри сервиса полного цикла. Около <span className="kw">60% заказов</span> — клиенты, которые возвращаются.</>}
+          // Кнопка живёт внутри правой колонки этой главы (см. Trust):
+          // под пятью причинами, над промо-карточкой, той же ширины и той
+          // же плашкой-формой, что окошки рядом.
+          footer={<ToolSpotlight slug="content" shape="card" />}
         />
         <Offer
           index={4}
           chapter="05"
           title={<>Лучшие в <span className="kw">AI</span></>}
           intro={<>Съёмка, монтаж, графика и <span className="kw">AI-продакшн</span> — под формат и площадку.</>}
+          footer={<ToolSpotlight slug="video" />}
         />
         <AiGuarantees />
         <Process
@@ -155,6 +161,7 @@ export default function AiServicePage() {
           title={<>Как проходит <span className="kw">внедрение</span></>}
           intro={<>Шесть шагов от аудита до сопровождения. На каждом — понятный результат и <span className="kw">точка согласования</span>.</>}
           steps={AI_PROCESS_STEPS}
+          footer={<ToolSpotlight slug="ops" place="left" />}
         />
         <Close
           index={7}

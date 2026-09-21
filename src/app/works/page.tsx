@@ -4,7 +4,7 @@ import DirectionBackdrop from "@/components/home/direction/DirectionBackdrop";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
-  title: "Все работы — HDKV.AGENCY",
+  title: "Все работы — HUD.SERVICE",
   description: "Полный каталог проектов: реклама, шоурилы, 3D и моушн, документальные и обучающие форматы.",
 };
 

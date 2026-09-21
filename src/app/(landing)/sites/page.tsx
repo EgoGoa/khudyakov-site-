@@ -11,7 +11,7 @@ import SitesClose from "@/components/home/sites/SitesClose";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
-  title: "Vibe сайты — HDKV.AGENCY",
+  title: "Vibe сайты — HUD.SERVICE",
   description: "Сайты под ключ с помощью AI-инструментов под контролем опытной команды.",
 };
 

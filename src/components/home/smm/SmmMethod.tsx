@@ -35,7 +35,7 @@ import PromoCard from "@/components/home/PromoCard";
 // The segment pills below the table, a plain flex row rather than table
 // markup, carry the cascade instead — see SEGMENTS below.
 
-const COMPARE_COLS = ["Фрилансер", "SMM-агентство", "HDKV.AGENCY"];
+const COMPARE_COLS = ["Фрилансер", "SMM-сервис", "HUD.SERVICE"];
 
 const COMPARE_ROWS = [
   {

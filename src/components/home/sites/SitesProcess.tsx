@@ -1,5 +1,7 @@
 "use client";
 
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
+import { SITES_ACCENT } from "@/components/home/ai/spotlightSites";
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
@@ -37,6 +39,7 @@ export default function SitesProcess() {
       <SitesChapterLayout
         number="04"
         columnClassName="lg:w-[44%]"
+        rightFooter={<ToolSpotlight slug="site-redesign" accent={SITES_ACCENT} shape="card" />}
         title={
           <>
             Как

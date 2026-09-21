@@ -11,7 +11,7 @@ import SmmClose from "@/components/home/smm/SmmClose";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
-  title: "SMM — HDKV.AGENCY",
+  title: "SMM — HUD.SERVICE",
   description:
     "SMM силами продакшена: съёмка, монтаж и ведение соцсетей одной командой, без подрядчиков со стороны.",
 };

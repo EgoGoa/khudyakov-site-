@@ -255,9 +255,9 @@ export default function Header() {
           onClick={navigateHome}
           className="flex shrink-0 items-center gap-2 py-2 land:pointer-events-auto land:py-0 land:opacity-80 font-display uppercase leading-none tracking-[0.08em] text-paper transition active:scale-[0.97] sm:gap-2.5"
         >
-          <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full bg-rec sm:h-2.5 sm:w-2.5" />
+          <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot sm:h-2.5 sm:w-2.5" />
           <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] land:!text-[0.9rem] uppercase tracking-tight">
-            HDKV<span className="text-rec">.AGENCY</span>
+            HUD<span className="brand-word">.SERVICE</span>
           </span>
           <span className="ml-1 hidden h-6 w-px shrink-0 bg-paper/25 sm:block land:!hidden" aria-hidden="true" />
           {/* The tagline now carries /sites' chapter-heading treatment: the

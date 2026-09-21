@@ -23,6 +23,7 @@ import TeamAskCard from "@/components/home/TeamAskCard";
 // copy yet, so there is nothing for the rich panel to show.
 
 export default function Offer({
+  footer,
   index = 3,
   chapter = "04",
   title = "Лучшие в этом",
@@ -30,7 +31,13 @@ export default function Offer({
   spacious = false,
   decor,
   bodyDecor,
+  titleClassName,
 }: {
+  /** Окошко услуги внизу главы — см. ToolSpotlight. Необязательно:
+   *  эту главу используют несколько страниц, и окошко есть не у всех. */
+  footer?: ReactNode;
+  /** Размер заголовка главы — для страниц, где глава делит высоту с окошком. */
+  titleClassName?: string;
   index?: number;
   chapter?: string;
   title?: ReactNode;
@@ -79,9 +86,11 @@ export default function Offer({
 
   return (
     <CinematicSection
+      footer={footer}
       index={index}
       chapter={chapter}
       title={title}
+      titleClassName={titleClassName}
       side="left"
       // New subject after the trust argument — it tips up into place.
       entrance="unfold"
@@ -113,7 +122,7 @@ export default function Offer({
           /smm, which was sized for the old `items-start` baseline. */}
       <div
         className={`relative z-10 lg:flex lg:gap-16 ${
-          interactive ? "lg:min-h-[68svh] lg:items-stretch" : "lg:items-start"
+          interactive ? `${footer && active === "content" ? "lg:min-h-[58svh]" : "lg:min-h-[68svh]"} lg:items-stretch` : "lg:items-start"
         }`}
       >
         {services.length === 0 ? (
@@ -159,7 +168,10 @@ export default function Offer({
                     aria-pressed={isSelected}
                     className={`group flex w-full items-baseline gap-3 text-left transition-colors ${
                       interactive
-                        ? "cursor-pointer py-3"
+                        ? // /content: 10 строк + окошко внизу не влезали в 900px
+                          // по высоте — строки чуть плотнее (только там, /ai
+                          // остаётся как было).
+                          `cursor-pointer ${footer && active === "content" ? "py-2" : "py-3"}`
                         : "cursor-default py-4 [@media(max-height:860px)]:py-2.5"
                     }`}
                   >
@@ -195,7 +207,7 @@ export default function Offer({
           from="right"
           delay={BEAT.content + STAGGER.normal}
           className={`mt-10 rounded-2xl bg-ink/45 backdrop-blur-md lg:mt-0 lg:shrink-0 ${
-            interactive ? "flex flex-col p-6 lg:h-full lg:w-1/2" : "p-6 lg:w-[300px] xl:w-[320px]"
+            interactive ? `flex flex-col p-6 lg:h-full lg:w-1/2 ${footer && active === "content" ? "lg:p-3" : ""}` : "p-6 lg:w-[300px] xl:w-[320px]"
           }`}
         >
           {interactive && selectedService ? (
@@ -203,7 +215,7 @@ export default function Offer({
               {/* Which service this window is about, always visible at the top of
                   it — on a phone the panel sits below the list and, scrolled
                   past, nothing said what it described. */}
-              <div className="mb-4">
+              <div className={footer && active === "content" ? "mb-2" : "mb-4"}>
                 <p className="font-display text-[10px] font-bold uppercase tracking-[0.16em] text-glow/80">
                   Выбранная услуга
                 </p>
@@ -229,7 +241,7 @@ export default function Offer({
                   throughout — the site's standing rule is white body text,
                   never dimmed grey (it "сливается"), and that applies here
                   too even though these values sit inside a quieter card. */}
-              <div className="mt-6 flex-1 space-y-6 overflow-y-auto border-t border-paper/15 pt-6">
+              <div className={`mt-6 flex-1 space-y-6 overflow-y-auto border-t border-paper/15 pt-6 ${footer ? (active === "content" ? "lg:mt-1 lg:space-y-1.5 lg:pt-2" : "lg:mt-2 lg:space-y-3 lg:pt-3") : ""}`}>
                 <div>
                   <div className="flex items-center gap-2.5 text-glow">
                     <DocumentIcon className="h-5 w-5 shrink-0" />
@@ -237,7 +249,7 @@ export default function Offer({
                       Что это
                     </span>
                   </div>
-                  <p className="mt-2 pl-[30px] text-sm leading-relaxed text-paper">{selectedService.description}</p>
+                  <p className={`pl-[30px] text-sm text-paper ${footer ? "mt-1" : "mt-2"} ${footer && active === "content" ? "lg:text-[13px] lg:leading-snug" : "leading-relaxed"}`}>{selectedService.description}</p>
                 </div>
 
                 <div>
@@ -247,7 +259,7 @@ export default function Offer({
                       Для кого
                     </span>
                   </div>
-                  <p className="mt-2 pl-[30px] text-sm leading-relaxed text-paper">{selectedService.audience}</p>
+                  <p className={`pl-[30px] text-sm text-paper ${footer ? "mt-1" : "mt-2"} ${footer && active === "content" ? "lg:text-[13px] lg:leading-snug" : "leading-relaxed"}`}>{selectedService.audience}</p>
                 </div>
 
                 <div>
@@ -257,7 +269,7 @@ export default function Offer({
                       Сроки
                     </span>
                   </div>
-                  <p className="mt-2 pl-[30px] text-sm font-medium text-paper">{selectedService.timeline}</p>
+                  <p className={`pl-[30px] text-sm font-medium text-paper ${footer ? "mt-1" : "mt-2"}`}>{selectedService.timeline}</p>
                 </div>
 
                 <div>
@@ -267,11 +279,11 @@ export default function Offer({
                       Бюджет
                     </span>
                   </div>
-                  <p className="mt-2 pl-[30px] text-sm font-medium text-paper">{selectedService.budget}</p>
+                  <p className={`pl-[30px] text-sm font-medium text-paper ${footer ? "mt-1" : "mt-2"}`}>{selectedService.budget}</p>
                 </div>
               </div>
 
-              <div className="mt-6 border-t border-paper/15 pt-6">
+              <div className={`mt-6 border-t border-paper/15 pt-6 ${footer ? (active === "content" ? "lg:mt-1.5 lg:pt-2" : "lg:mt-2 lg:pt-3") : ""}`}>
                 {/* One window instead of two buttons — Egor's ask: every ask
                     on the site should read as written to a specific person,
                     with a real question, not a form. Max (creative

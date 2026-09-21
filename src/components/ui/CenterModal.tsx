@@ -42,6 +42,13 @@ export default function CenterModal({
   // блюр гасит этот рисунок и держит кнопки читаемыми при более прозрачной
   // подложке. Остальные окна (бриф, вайб-режим блока) не трогаются.
   translucent = false,
+  // Вступительная сцена: рамки у окна нет совсем — ни стекла, ни тени, ни
+  // ширины. Остаётся только затемнение страницы и крестик, а всё остальное
+  // рисует содержимое. Так задумана новая сцена входа: логотип и заголовок
+  // стоят на прозрачном, а стеклом там работают сами карточки. Прежний
+  // `translucent` для этого не годился — он всё ещё карточка, просто более
+  // прозрачная, и её кромка оказывалась второй рамкой вокруг карточек.
+  bare = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -49,6 +56,7 @@ export default function CenterModal({
   children: ReactNode;
   compact?: boolean;
   translucent?: boolean;
+  bare?: boolean;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -129,7 +137,13 @@ export default function CenterModal({
           role="dialog"
           aria-modal="true"
           aria-label={ariaLabel}
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-ink/50 px-4 py-10 sm:px-6"
+          className={`fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto px-4 py-10 sm:px-6 ${
+            // Сцена входа гасит И размывает страницу под собой (см.
+            // .welcome-backdrop в globals.css). Остальные окна только
+            // затемняют: у них блюр живёт на собственном стекле карточки,
+            // а здесь карточки стоят прямо на странице.
+            bare ? "welcome-backdrop bg-ink/45" : "bg-ink/50"
+          }`}
           onClick={onClose}
         >
           <motion.div
@@ -151,7 +165,7 @@ export default function CenterModal({
             // rather than the .liquid-glass class specifically because that
             // class's own ::before is what painted the hairline gradient
             // border this is deliberately going without.
-            style={{
+            style={bare ? undefined : {
               background: translucent ? "rgba(30,32,42,0.34)" : "rgba(38,40,50,0.55)",
               backdropFilter: translucent ? "blur(52px) saturate(150%)" : "blur(40px) saturate(160%)",
               WebkitBackdropFilter: translucent ? "blur(52px) saturate(150%)" : "blur(40px) saturate(160%)",
@@ -164,7 +178,7 @@ export default function CenterModal({
                 ? "0 0 50px rgba(236,72,153,0.16), 0 0 80px rgba(56,189,248,0.14)"
                 : "0 0 70px rgba(236,72,153,0.22), 0 0 100px rgba(56,189,248,0.19)",
             }}
-            className={`relative w-full rounded-[2rem] ${
+            className={bare ? "relative w-full max-w-3xl px-2 py-4 sm:px-4" : `relative w-full rounded-[2rem] ${
               // Вайб-окно не прокручивается ни при каком размере экрана —
               // прямое требование Егора. Оно для этого и худеет само (см.
               // .vibe-window в globals.css): на низких экранах сжимаются волна
@@ -184,7 +198,7 @@ export default function CenterModal({
               type="button"
               onClick={onClose}
               aria-label="Закрыть"
-              className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-paper/10 text-paper/70 backdrop-blur-md transition hover:bg-paper/20 hover:text-paper sm:left-5 sm:top-5"
+              className={`${bare ? "fixed" : "absolute"} left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-paper/10 text-paper/70 backdrop-blur-md transition hover:bg-paper/20 hover:text-paper sm:left-5 sm:top-5`}
             >
               <CloseIcon />
             </button>

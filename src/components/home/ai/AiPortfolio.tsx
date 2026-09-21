@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 
@@ -157,6 +158,10 @@ export default function AiPortfolio() {
       entrance="rise"
       id="portfolio"
       intro={<>Первые кейсы — в работе, показываем их по мере запуска. Пока — <span className="kw">примеры пилотов</span>, которые запускаем чаще всего.</>}
+      // Узкая полоса внизу главы, разворачивающаяся в окно про инструмент.
+      // Пока одна, обкатываем логику — дальше такая же встанет под каждым
+      // блоком со своей услугой.
+      footer={<ToolSpotlight slug="chat-hub" />}
     >
       <div className="mx-auto grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 [@media(max-height:860px)]:sm:gap-4">
         {SCENARIOS.map((s, idx) => (

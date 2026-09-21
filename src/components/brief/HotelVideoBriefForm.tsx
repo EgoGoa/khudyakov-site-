@@ -63,7 +63,7 @@ export default function HotelVideoBriefForm() {
   const contactOk = Boolean(contact.email && contact.email.trim());
 
   const mailtoHref = () => {
-    const lines: string[] = ["БРИФ НА ВИДЕОСЪЁМКУ БАЗЫ ОТДЫХА — HDKV.AGENCY", ""];
+    const lines: string[] = ["БРИФ НА ВИДЕОСЪЁМКУ БАЗЫ ОТДЫХА — HUD.SERVICE", ""];
     HOTEL_VIDEO_STEPS.forEach((step) => {
       lines.push(step.title);
       lines.push(formatAnswer(step, answers) || "—");

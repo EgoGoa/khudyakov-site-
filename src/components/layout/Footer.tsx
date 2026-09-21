@@ -78,11 +78,11 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
       <Container className="grid gap-10 py-14 sm:grid-cols-3 sm:py-16 sm:gap-x-8 lg:grid-cols-[1.1fr_1fr_1fr] lg:gap-12">
         <div className="max-w-sm">
           <div className="flex items-center gap-2 font-display text-lg uppercase text-paper">
-            <span className="h-2 w-2 rounded-full bg-rec" />
-            HDKV<span className="text-rec">.AGENCY</span>
+            <span className="h-2 w-2 rounded-full brand-dot" />
+            HUD<span className="brand-word">.SERVICE</span>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-paper/50">
-            Диджитал-агентство полного цикла: продакшн, брендинг, SMM и
+            Диджитал-сервис полного цикла: продакшн, брендинг, SMM и
             AI-контент. 8 лет на рынке, 450+ проектов, 350+ клиентов.
           </p>
 
@@ -161,7 +161,7 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
 
       <Container className="border-t border-paper/10 py-6">
         <p className="font-display text-xs text-paper/30">
-          © {year} HDKV.AGENCY. Все права защищены.
+          © {year} HUD.SERVICE. Все права защищены.
         </p>
       </Container>
       </div>

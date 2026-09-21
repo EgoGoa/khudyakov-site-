@@ -127,7 +127,7 @@ export function getWorkStats(work: Work): WorkStats {
   const seedBudget = hash(`${work.id}:budget`);
   const seedResult = hash(`${work.id}:result`);
 
-  const isOwn = work.client === "HDKV.AGENCY";
+  const isOwn = work.client === "HUD.SERVICE";
   const isRender = work.category === "Моушн и 3D";
   const isFpv = work.category === "FPV и дроны";
   const isLong = (work.duration ?? 0) > 200; // документальные, полные фильмы

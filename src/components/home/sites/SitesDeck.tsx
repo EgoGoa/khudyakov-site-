@@ -1,11 +1,15 @@
 "use client";
 
-import { useCallback, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
 import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset } from "@/components/ui/deckFan";
 import { sitesFormatPages } from "@/components/home/direction/sitesFormatRegistry";
+import SpotlightScene from "@/components/home/ai/SpotlightScene";
+import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
+import { spotlightFor } from "@/components/home/ai/spotlightData";
+import { SITES_ACCENT, SITE_SPOTLIGHT_PREFIX } from "@/components/home/ai/spotlightSites";
 
 // Cyan — the site-wide `glow` accent /sites already uses for hover states
 // (ROUND below). See .deck-card-glow in globals.css for the hand-off.
@@ -30,286 +34,88 @@ const CARD_GLOW_STYLE_HIT = { "--card-glow-rgb": "255, 106, 61" } as CSSProperti
 // every swap; at these angles the flat version is indistinguishable and stays
 // cheap.
 //
-// Only the centre card carries the category name over its artwork, the way
-// the reference labels its middle card. Price, term and the description live
-// in the row underneath — the reference's pill toolbar — so the cards stay
-// pictures rather than turning into five competing spec sheets.
+// Every card carries its name and button over the artwork; the description
+// lives in the panel underneath (SpotlightCopy), the same block /ai's deck
+// uses, so the cards stay pictures rather than five competing spec sheets.
 
 type Service = {
   id: string;
   name: string;
-  blurb: string;
-  price: string;
-  term: string;
-  /** Кому подходит формат — второй факт в окошке под деком. */
-  audience: string;
-  /** Почему это актуально сейчас, а не «когда-нибудь» — третий факт там же. */
-  now: string;
-  /** Which mini-site mockup to draw inside the card — see SiteThumb. */
-  shape: "landing" | "pages" | "shop" | "chat" | "redesign";
   /** "Хит месяца" — Egor's flagship pick, same badge/glow language as
    *  AiDeck's own hit card. */
   hit?: boolean;
-  /** Themed backdrop photo, held at low exposure behind the mockup — same
-   *  trick as AiThumb on /ai. One distinct image per format, matched to
-   *  what that format's own page (sites-*.tsx) already uses as its hero
-   *  media, so the card previews the page it opens. */
+  /** Themed backdrop photo behind the card's scene. One distinct image per
+   *  format; the same frame the format's spotlight window wears
+   *  (spotlightSites.ts), so the card and its window read as one object. */
   image: string;
 };
 
-// Wording taken verbatim from lib/service-content.ts (the offer list and the
-// pricing tiers) rather than rewritten here, so the carousel can't drift from
-// what chapters 03 and 06 already say. "По запросу" for the two without a
-// published tier — no number gets invented.
+// Names match lib/service-content.ts (the offer list and pricing tiers); the
+// descriptions come from spotlightSites.ts.
 const SERVICES: Service[] = [
   {
     id: "landing",
     name: "Лендинг",
-    blurb: "Одна страница, которая доводит трафик до заявки. Тексты, дизайн и вёрстка с нуля.",
-    price: "от 60 000 ₽",
-    term: "5 рабочих дней",
-    audience: "Компаниям, которые запускают продукт, акцию или рекламную кампанию.",
-    now: "Трафик уже идёт или вот-вот пойдёт — страница нужна раньше первого клика.",
-    shape: "landing",
     hit: true,
     image: "/images/stock/desk-aerial.webp",
   },
   {
     id: "card",
     name: "Сайт-визитка",
-    blurb: "Несколько страниц: о компании, услуги, контакты — без раздутого бюджета.",
-    price: "от 120 000 ₽",
-    term: "8 рабочих дней",
-    audience: "Малому бизнесу и специалистам, которым до сих пор верят на слово в мессенджере.",
-    now: "Клиент проверяет компанию в поиске до звонка — без сайта проверка обрывается.",
-    shape: "pages",
     image: "/images/stock/design-tablet.webp",
   },
   {
     id: "turnkey",
     name: "Сайт под ключ",
-    blurb: "Многостраничный сайт с формами, интеграцией CRM и разделами каталога.",
-    price: "от 220 000 ₽",
-    term: "14 рабочих дней",
-    audience: "Компаниям с каталогом, несколькими направлениями или растущей воронкой заявок.",
-    now: "Заявки уже не помещаются в один лендинг — нужна структура, а не ещё одна страница.",
-    shape: "shop",
     image: "/images/stock/team-night-office.webp",
   },
   {
     id: "assistant",
     name: "AI-ассистент",
-    blurb: "Чат-бот на сайте, который отвечает на вопросы посетителей до подключения менеджера.",
-    price: "по запросу",
-    term: "от 5 дней",
-    audience: "Сайтам с потоком однотипных вопросов, на которые сейчас отвечает менеджер вручную.",
-    now: "Посетитель уходит, не дождавшись ответа в оффлайне — бот отвечает раньше, чем человек.",
-    shape: "chat",
     image: "/images/stock/holo-keyboard.webp",
   },
   {
     id: "redesign",
     name: "Редизайн",
-    blurb: "Переносим на актуальный стек, не теряя структуру и позиции в поиске.",
-    price: "по запросу",
-    term: "от 7 дней",
-    audience: "Владельцам сайта, который стыдно показать клиенту или неудобно редактировать самим.",
-    now: "Старый стек и вёрстка тормозят каждое обновление — держать его дальше дороже переезда.",
-    shape: "redesign",
     image: "/images/stock/paint-purple-macro.webp",
   },
 ];
 
-// Card artwork: a themed stock frame held at low exposure underneath, and
-// the format's own browser-chrome mockup drawn in CSS on top — same trick
-// AiThumb uses on /ai (image dimmed + scrim so the mockup keeps contrast,
-// zero extra bytes for the diagram itself). `animate` gates the per-format
-// loop below: only the front card gets it, via `.ai-thumb-live` — the exact
-// same animation hook /ai's own deck already defines in globals.css, reused
-// rather than duplicated so both pages share one motion system.
-function SiteThumb({ shape, image, animate = false }: { shape: Service["shape"]; image: string; animate?: boolean }) {
-  const line = (w: string, dim = false, cls = "", style?: React.CSSProperties) => (
-    <span className={`block h-1.5 rounded-[2px] ${dim ? "bg-paper/12" : "bg-paper/20"} ${cls}`} style={{ width: w, ...style }} />
-  );
-  const cta = (cls = "") => <span className={`block h-3 w-1/3 rounded-[3px] bg-orange/85 ${cls}`} />;
-  const d = (s: number): React.CSSProperties => ({ animationDelay: `${s}s` });
-
+// Лицо карточки: тот же приём, что у AiDeck (AiCardFace) — кадр-подложка,
+// скрим и живая сцена формата (SpotlightScene), а не отдельная CSS-схема.
+// Сцена — та же, что рисуется в окошках под блоками страницы, поэтому карточка,
+// панель под каруселью и окошка говорят одним языком.
+//
+// Сцену крутит только передняя карточка (`step` меняется вместе с текстом
+// панели под каруселью); боковые стоят на первой сцене — их не читают, а
+// пять одновременных анимаций тяжелы и шумны.
+function SitesCardFace({ id, image, step }: { id: string; image: string; step: number }) {
   return (
-    <div className="absolute inset-0 bg-[linear-gradient(160deg,#1b2030_0%,#0d0f16_58%,#0a0b10_100%)]">
-      {/* Themed photo — Egor's ask, raised twice now: 0.42 first pass, then
-          brighter still with the scrim behind it cut (raising the photo
-          alone didn't read as changed the first time on /ai either — the
-          scrim was still eating the extra light). Same values as AiThumb. */}
+    <div
+      className="absolute inset-0 bg-[linear-gradient(160deg,#1b2030_0%,#0d0f16_58%,#0a0b10_100%)]"
+      style={{ "--sp-from": SITES_ACCENT.from, "--sp-to": SITES_ACCENT.to } as CSSProperties}
+    >
       <img
         src={image}
         alt=""
         aria-hidden="true"
         loading="lazy"
-        className="absolute inset-0 h-full w-full object-cover opacity-[0.85] [filter:grayscale(0.3)_contrast(1.05)]"
+        className="absolute inset-0 h-full w-full object-cover opacity-[0.9] [filter:grayscale(0.3)_contrast(1.05)]"
       />
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          background: "linear-gradient(165deg, rgba(15,18,28,0.5) 0%, rgba(10,11,16,0.6) 55%, rgba(10,11,16,0.7) 100%)",
+          background:
+            "linear-gradient(165deg, rgba(16,18,30,0.62) 0%, rgba(10,11,16,0.72) 55%, rgba(10,11,16,0.8) 100%)",
         }}
       />
-
-      <div className="relative flex h-5 items-center gap-1 bg-paper/[0.07] px-2">
-        <span className="h-1 w-1 rounded-full bg-paper/30" />
-        <span className="h-1 w-1 rounded-full bg-paper/30" />
-        <span className="h-1 w-1 rounded-full bg-paper/30" />
-      </div>
-      {/* The static blue placeholder rectangle that used to sit above every
-          diagram is gone — Egor: it read the same on all five cards and
-          crowded out the part that's actually supposed to differ. Each
-          shape's own live graphic now fills that space too, so the whole
-          body of the card is the thing that tells formats apart. */}
-      <div className={`relative grid gap-2 p-3 pt-3.5 ${animate ? "ai-thumb-live" : ""}`}>
-        {shape === "landing" && (
-          <>
-            {/* A visit that ends in a lead: the page scrolls, a cursor
-                drifts down toward the button, the button blinks live, and
-                a lead card lands and holds. */}
-            <span className="block h-2.5 w-[62%] rounded-[3px] bg-paper/30 ai-a-seq" style={d(0)} />
-            {line("78%", false, "ai-a-seq", d(0.15))}
-            {line("50%", true, "ai-a-seq", d(0.3))}
-            <span className="relative block h-1 w-full overflow-hidden rounded-full bg-paper/10">
-              <span className="ai-a-progress absolute inset-0 origin-left rounded-full bg-glow/70" />
-            </span>
-            <span className="relative flex items-center gap-2">
-              {cta("ai-a-blink")}
-              <span className="ai-a-lift block h-2.5 w-2.5 rounded-full bg-paper/70 ring-2 ring-glow/40" style={d(0.4)} />
-            </span>
-            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(2.1)}>
-              <span className="ai-a-blink block h-1 w-1 rounded-full bg-glow" />
-              Заявка
-            </span>
-          </>
-        )}
-
-        {shape === "pages" && (
-          <>
-            {/* A visitor clicking between pages — the nav tabs light up one
-                at a time — while the "о компании" section and its contact
-                line build underneath. */}
-            <div className="flex items-center gap-1.5">
-              {["О нас", "Услуги", "Контакты"].map((label, i) => (
-                <span
-                  key={label}
-                  className="ai-a-blink rounded-[3px] bg-glow/15 px-1.5 py-0.5 font-display text-[6px] uppercase tracking-[0.08em] text-glow ring-1 ring-glow/25"
-                  style={d(i * 0.5)}
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
-            <div className="ai-a-seq flex items-center gap-1.5" style={d(0.2)}>
-              <span className="block h-5 w-5 shrink-0 rounded-full bg-gradient-to-br from-glow/40 to-[#e85fa0]/30" />
-              <div className="grid flex-1 gap-1">
-                {line("90%")}
-                {line("60%", true)}
-              </div>
-            </div>
-            <span className="ai-a-seq flex items-center gap-1.5" style={d(0.9)}>
-              <span className="block h-1.5 w-1.5 rounded-full bg-orange/70" />
-              {line("42%")}
-            </span>
-            {cta("ai-a-seq")}
-            {/* Egor's ask: same detail level as /ai's cards — a closing
-                status, not just a build-up with no payoff. */}
-            <span className="ai-a-node flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(2.3)}>
-              <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-glow" />Найден в поиске
-            </span>
-          </>
-        )}
-
-        {shape === "shop" && (
-          <>
-            {/* Catalogue tiles light up in turn with price tags underneath,
-                then one line feeds down into the CRM node — the structure a
-                single landing can't hold. Egor's ask: a catalogue count up
-                top instead of the grid speaking for itself alone. */}
-            <span className="ai-a-seq block font-display text-[7px] uppercase tracking-[0.08em] text-paper/45" style={d(0)}>
-              Каталог · 24 товара
-            </span>
-            <div className="grid grid-cols-4 gap-1.5">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="grid gap-1">
-                  <span className="ai-a-blink block h-4 rounded-[3px] bg-glow/20 ring-1 ring-glow/25" style={d(i * 0.3)} />
-                  {i % 2 === 0 && <span className="ai-a-seq block h-1 w-full rounded-[1px] bg-orange/60" style={d(i * 0.3 + 0.15)} />}
-                </div>
-              ))}
-            </div>
-            <div className="relative h-4">
-              <span className="ai-a-bar absolute left-1/2 top-0 h-4 w-px -translate-x-1/2 bg-glow/50" style={{ transformOrigin: "top center", ...d(0.6) }} />
-            </div>
-            <span className="ai-a-node mx-auto flex w-fit items-center gap-1 rounded-full bg-glow/15 px-2 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(1.4)}>
-              Заявка → CRM
-            </span>
-            {cta()}
-          </>
-        )}
-
-        {shape === "chat" && (
-          <>
-            {/* A question answered before a manager would even open the
-                chat: an "online" status, then the exchange itself, then the
-                reply-time badge that's the whole point of the format. */}
-            <span className="ai-a-seq flex items-center gap-1.5" style={d(0)}>
-              <span className="ai-a-blink block h-1.5 w-1.5 rounded-full bg-emerald-300" />
-              <span className="font-display text-[7px] uppercase tracking-[0.1em] text-paper/50">Онлайн</span>
-            </span>
-            <div className="ai-a-seq flex items-start gap-1.5" style={d(0.2)}>
-              <span className="mt-0.5 block h-4 w-4 shrink-0 rounded-full bg-paper/15" />
-              <span className="block w-[70%] rounded-lg rounded-bl-sm bg-paper/10 p-1.5">{line("85%")}</span>
-            </div>
-            <span className="ai-a-seq ml-auto flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-1 ring-1 ring-glow/30" style={d(0.9)}>
-              <span className="ai-a-typing block h-1 w-1 rounded-full bg-glow" style={d(0)} />
-              <span className="ai-a-typing block h-1 w-1 rounded-full bg-glow" style={d(0.18)} />
-              <span className="ai-a-typing block h-1 w-1 rounded-full bg-glow" style={d(0.36)} />
-            </span>
-            <span className="ai-a-seq ml-auto block w-[72%] rounded-lg rounded-br-sm bg-glow/20 p-1.5 ring-1 ring-glow/30" style={d(1.5)}>
-              {line("60%")}
-            </span>
-            <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(2.2)}>
-              Ответ за 3 сек
-            </span>
-          </>
-        )}
-
-        {shape === "redesign" && (
-          <>
-            {/* A before/after wipe: the dim old layout gives way to the lit
-                new one as the divider travels across, labelled either side,
-                then resets. */}
-            <div className="flex items-center justify-between px-0.5 font-display text-[6px] uppercase tracking-[0.1em]">
-              <span className="text-paper/35">Было</span>
-              <span className="ai-a-blink text-glow">Стало</span>
-            </div>
-            <div className="relative grid grid-cols-2 gap-1.5 overflow-hidden">
-              <div className="grid gap-1">
-                <span className="block h-3.5 rounded-[3px] bg-paper/10" />
-                {line("70%", true)}
-              </div>
-              <div className="grid gap-1">
-                <span className="block h-3.5 rounded-[3px] bg-gradient-to-br from-glow/35 to-transparent ring-1 ring-glow/25" />
-                {line("70%")}
-              </div>
-              <span className="ai-a-travel pointer-events-none absolute top-0 h-full w-px bg-glow/70" />
-            </div>
-            <span className="ai-a-seq flex items-center gap-1.5" style={d(0.5)}>
-              <span className="block h-1.5 w-1.5 rounded-full bg-glow/70" />
-              {line("55%")}
-            </span>
-            {cta("ai-a-seq")}
-            {/* Egor's ask: close on the actual value, not just a wipe —
-                структура и позиции сохранены, а не просто «стало красивее». */}
-            <span className="ai-a-node flex w-fit items-center gap-1 rounded-full bg-glow/15 px-1.5 py-0.5 font-display text-[7px] tracking-[0.1em] text-glow ring-1 ring-glow/30" style={d(2.4)}>
-              <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-glow" />Позиции в поиске сохранены
-            </span>
-          </>
-        )}
+      <span className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full bg-[#ff4fd8]/20 blur-2xl" />
+      {/* Сцена лежит над областью названия и не заходит в неё: подпись
+          занимает нижние ~40% карточки (правило Егора — графика не нависает
+          над названием формата). */}
+      <div className="absolute inset-x-2 top-5 h-[50%]">
+        <SpotlightScene slug={`${SITE_SPOTLIGHT_PREFIX}${id}`} step={step} card />
       </div>
     </div>
   );
@@ -323,21 +129,24 @@ function SiteThumb({ shape, image, animate = false }: { shape: Service["shape"];
 // put, and the outer pair shrink further still (0.7 → 0.56) — so depth
 // reads as one continuous step rather than "big card, then two flat sizes".
 const FAN: Record<number, { x: number; y: number; scale: number; opacity: number; veil: number; z: number }> = {
-  [-2]: { x: -252, y: 34, scale: 0.56, opacity: 0.92, veil: 0.74, z: 10 },
-  [-1]: { x: -152, y: 14, scale: 0.74, opacity: 1, veil: 0.5, z: 20 },
+  [-2]: { x: -280, y: 38, scale: 0.56, opacity: 0.92, veil: 0.74, z: 10 },
+  [-1]: { x: -170, y: 16, scale: 0.74, opacity: 1, veil: 0.5, z: 20 },
   [0]: { x: 0, y: -10, scale: 1.16, opacity: 1, veil: 0, z: 30 },
-  [1]: { x: 152, y: 14, scale: 0.74, opacity: 1, veil: 0.5, z: 20 },
-  [2]: { x: 252, y: 34, scale: 0.56, opacity: 0.92, veil: 0.74, z: 10 },
+  [1]: { x: 170, y: 16, scale: 0.74, opacity: 1, veil: 0.5, z: 20 },
+  [2]: { x: 280, y: 38, scale: 0.56, opacity: 0.92, veil: 0.74, z: 10 },
   // Only ever reached mid-drag, and already faded out by then (see poseAt's
   // `fade`): it exists so a card leaving the fan has a pose to travel
   // towards instead of stopping dead at ±2.
-  [-3]: { x: -330, y: 50, scale: 0.44, opacity: 0.8, veil: 0.82, z: 5 },
-  [3]: { x: 330, y: 50, scale: 0.44, opacity: 0.8, veil: 0.82, z: 5 },
+  [-3]: { x: -365, y: 56, scale: 0.44, opacity: 0.8, veil: 0.82, z: 5 },
+  [3]: { x: 365, y: 56, scale: 0.44, opacity: 0.8, veil: 0.82, z: 5 },
 };
 
 // Design-pixel distance between two neighbouring cards — how far the hand
 // travels to move the deck by one card.
-const SPACING = 152;
+const SPACING = 170;
+
+// Как часто сменяется тезис под каруселью — то же значение, что у AiDeck.
+const DECK_BEAT_MS = 4200;
 
 // Split in two on purpose. `backdrop-filter` is the single most expensive
 // thing a card can carry through a transform animation: the browser has to
@@ -377,28 +186,52 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
     [count],
   );
 
-  const front = SERVICES[idx];
   const { drag, dragging, bind } = useDeckDrag({ count, spacing: SPACING, onSettle: step });
 
+  // Номер сцены/тезиса передней карточки — общий для картинки на карточке и
+  // текста в панели под каруселью (тот же приём, что в AiDeck): графика и
+  // слова меняются строго вместе. На новой карточке всегда начинается с
+  // первой сцены.
+  const [sceneStep, setSceneStep] = useState(0);
+  const [held, setHeld] = useState(false);
+  const data = spotlightFor(`${SITE_SPOTLIGHT_PREFIX}${SERVICES[idx].id}`);
+  const beats = data?.benefits.length ?? 0;
+
+  // Сброс при смене карточки прямо во время рендера (приём React для
+  // состояния, производного от пропса): эффект дал бы один кадр со старым
+  // номером сцены на новой карточке.
+  const [stepFor, setStepFor] = useState(idx);
+  if (stepFor !== idx) {
+    setStepFor(idx);
+    setSceneStep(0);
+  }
+
+  // Темп как на /ai (4.2с) — Егор просил одну механику на всех страницах.
+  // Пауза, пока курсор над панелью: тезис можно дочитать до смены.
+  useEffect(() => {
+    if (held || beats < 2) return;
+    const id = window.setInterval(() => setSceneStep((v) => (v + 1) % beats), DECK_BEAT_MS);
+    return () => window.clearInterval(id);
+  }, [held, beats, idx]);
+
   const panel = (
-      <div
-      className={`glass-panel deck-neon-pulse flex items-start overflow-hidden rounded-3xl px-6 py-7 lg:py-6 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[240px] lg:min-h-0"}`}
-        style={{ "--card-glow-rgb": "0, 210, 255" } as CSSProperties}
-      >
-        <div className={wide ? "w-full" : "w-full lg:max-w-[460px]"}>
-          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <p className="font-display text-sm uppercase leading-snug tracking-tight text-white">{front.name}</p>
-            <p className="font-display text-[11px] uppercase tracking-[0.1em] text-glow">
-              {front.price} · {front.term}
-            </p>
-          </div>
-          <dl className={`mt-3 grid gap-2.5 max-lg:mt-5 max-lg:gap-5 ${wide ? "grid-cols-3 gap-x-6" : ""}`}>
-            <SitesFact stacked={wide} label="Что даёт" text={front.blurb} />
-            <SitesFact stacked={wide} label="Кому" text={front.audience} />
-            <SitesFact stacked={wide} label="Почему сейчас" text={front.now} />
-          </dl>
-        </div>
-      </div>
+    <div
+      onMouseEnter={() => setHeld(true)}
+      onMouseLeave={() => setHeld(false)}
+      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[276px] lg:min-h-0"}`}
+      style={
+        {
+          "--card-glow-rgb": "0, 210, 255",
+          "--sp-from": SITES_ACCENT.from,
+          "--sp-to": SITES_ACCENT.to,
+        } as CSSProperties
+      }
+    >
+      {/* Тот же правый блок, что в окошках под блоками страницы и под
+          каруселью /ai — один компонент на все места, чтобы тексты и темп
+          не расходились. */}
+      {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} showTitle={false} compact />}
+    </div>
   );
 
   return (
@@ -410,7 +243,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
       {/* No `onSwipe` any more: the pointer drag below replaces FanFit's
           own swipe-at-the-end gesture, and running both would page the deck
           twice for one flick. */}
-      <FanFit designWidth={341} height={320}>
+      <FanFit designWidth={380} height={350}>
       <div
         className="deck-rail relative h-full"
         style={{ cursor: dragging ? "grabbing" : "grab", touchAction: "pan-y" }}
@@ -487,7 +320,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
               // here, and a blur filter re-runs on every frame for every
               // card — the depth it bought is now carried by the dark veil
               // inside the card instead, which costs nothing to move.
-              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[240px] w-[188px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
+              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[272px] w-[212px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
                 // While the hand holds the deck the cards must track it on
                 // the same frame — a transition here would make them lag
                 // behind the finger by half a second.
@@ -558,7 +391,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                   className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL_FRONT}`}
                   style={service.hit ? CARD_GLOW_STYLE_HIT : CARD_GLOW_STYLE}
                 >
-                  <SiteThumb shape={service.shape} image={service.image} animate />
+                  <SitesCardFace id={service.id} image={service.image} step={sceneStep} />
                   {caption}
                   {counter}
                 </Link>
@@ -573,7 +406,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                     isFront ? `${CARD_SHELL_FRONT} cursor-default` : `${CARD_SHELL} cursor-pointer`
                   }`}
                 >
-                  <SiteThumb shape={service.shape} image={service.image} animate={isFront} />
+                  <SitesCardFace id={service.id} image={service.image} step={isFront ? sceneStep : 0} />
                   {caption}
                   {isFront && counter}
                 </button>
@@ -625,7 +458,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           same orange as the chapter rail down the left edge. The rail
           navigates chapters, this navigates services — they look alike on
           purpose but never share state. */}
-      <div className="relative mx-auto mt-7 flex max-w-[340px] items-center justify-between">
+      <div className="relative mx-auto mt-5 flex max-w-[340px] items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
           style={{
@@ -667,18 +500,6 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           in the copy column beside the fan, and a second copy of it here
           read as the same offer made twice. */}
       {panelTarget ? createPortal(panel, panelTarget) : panel}
-    </div>
-  );
-}
-
-// Одна строка факта — тот же рисунок, что у AiDeck's Fact, в акценте /sites.
-function SitesFact({ label, text, stacked }: { label: string; text: string; stacked?: boolean }) {
-  return (
-    <div className={stacked ? "flex flex-col gap-1" : "flex gap-3 max-lg:flex-col max-lg:gap-1.5"}>
-      <dt className={`${stacked ? "" : "w-[92px] max-lg:w-auto"} shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-glow/80`}>
-        {label}
-      </dt>
-      <dd className="text-[13px] leading-snug text-white max-lg:text-sm max-lg:leading-relaxed">{text}</dd>
     </div>
   );
 }

@@ -209,6 +209,8 @@ const STEPS = [
 ];
 
 export default function Process({
+  footer,
+  middleSlot,
   index = 4,
   chapter = "05",
   title = "PRO хронология",
@@ -216,6 +218,11 @@ export default function Process({
   steps = STEPS,
   spacious = false,
 }: {
+  /** Окошко услуги внизу главы — см. ToolSpotlight. Необязательно:
+   *  эту главу используют несколько страниц, и окошко есть не у всех. */
+  footer?: ReactNode;
+  /** /content: замена средней карточки нижнего ряда (вместо карточки Вадима). */
+  middleSlot?: ReactNode;
   index?: number;
   chapter?: string;
   /** ReactNode rather than string so a page can put a gradient keyword
@@ -234,6 +241,7 @@ export default function Process({
   const processPerson = active === "ai" ? TEAM.max : TEAM.dima;
   return (
     <CinematicSection
+      footer={footer}
       index={index}
       chapter={chapter}
       title={title}
@@ -322,7 +330,7 @@ export default function Process({
             />
           </Appear>
           <Appear from="up" delay={BEAT.cta} className="h-full">
-            <TeamAskCard
+            {middleSlot ?? <TeamAskCard
               member={processPerson}
               // Compact variant only shows `question`, not `pitch` — the
               // whole reply has to live in one string here.
@@ -333,7 +341,7 @@ export default function Process({
               compact
               glow={false}
               className="h-full"
-            />
+            />}
           </Appear>
           <Appear from="up" delay={BEAT.cta} className="h-full">
             <TeamAskCard

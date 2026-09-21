@@ -26,7 +26,7 @@ export async function generateMetadata({
   const meta = smmFormatMeta[format];
   if (!meta) return {};
   return {
-    title: `${meta.title} — HDKV.AGENCY`,
+    title: `${meta.title} — HUD.SERVICE`,
     description: meta.description,
   };
 }

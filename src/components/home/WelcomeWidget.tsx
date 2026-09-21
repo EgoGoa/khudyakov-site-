@@ -2,76 +2,63 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
-import { submenuFor, type MenuLink } from "@/lib/welcome-menu";
+import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { markVibeRouted } from "@/lib/welcome-gate";
-import { VoiceWave, type WavePhaseEnergy } from "./WelcomeOverlay";
+import WelcomeBlockGraphic, { WelcomeDirectionGraphic } from "@/components/home/WelcomeBlockGraphic";
+import { blockHref, blocksFor, directionCards, type BlockCard } from "@/lib/welcome-blocks";
 
-// Вайб-окно: приветствие → направления → форматы. Один диалог, три шага,
-// без перезагрузок между ними — внешняя рамка (затемнение, стекло, крестик)
-// живёт в CenterModal, поэтому одно и то же окно открывается и при входе
-// (WelcomeOverlay), и с боковой панели (VibeRail).
+// Вступительная сцена: логотип → «Привет, с чего начнём?» → четыре карточки
+// направлений → карточки блоков выбранного направления.
 //
-// Почему шага именно три. Раньше путь был длиннее: приветствие → выбор
-// «вайб-режим или обычный сайт» → четыре направления → переход → ВТОРОЕ окно
-// с пунктами. Четыре клика и два разных окна на одну задачу «покажи мне то,
-// что мне нужно». Теперь приветствие уходит само, направления появляются
-// сразу, а форматы раскрываются тут же — два клика до конкретной страницы.
+// Что изменилось по сравнению с прежним вайб-окном и почему.
+//
+//   · Не окно, а сцена. Раньше это был плотный стеклянный диалог со списком
+//     неоновых кнопок-пилюль. Кнопка называет раздел словом; карточка
+//     показывает его — за ней идёт полный ролик той самой страницы, куда
+//     ведёт клик. Человек выбирает по тому, что увидит, а не по названию.
+//     Поэтому подложка окна снята совсем (CenterModal bare): стекло здесь
+//     несут сами карточки, а логотип и заголовок стоят на прозрачном.
+//
+//   · Два шага вместо трёх. Приветствие больше не отдельный экран с
+//     посимвольной печатью, который нужно пересидеть: логотип и заголовок
+//     появляются вместе с карточками, одной сценой. Печать и голосовая
+//     волна убраны — они держали человека полторы секунды перед тем, что он
+//     и пришёл нажать.
+//
+//   · Второй шаг — блоки страницы, а не её подстраницы. Карточки те же по
+//     языку (кадр, стекло, свечение, стрелка), но показывают главы: их
+//     настоящие заголовки со страницы, номер главы и лёгкую схему справа.
+//     Переход — якорь на главу, его подхватывает CinematicStage при
+//     загрузке.
+//
+//   · Язык карточек взят у раскрывающихся табличек услуг (ToolSpotlight):
+//     тот же .glass-panel, то же свечение .deck-neon-pulse, тот же приём
+//     «кадр под 0.44 + косой скрим». Одна сцена — один язык со страницами.
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// Один набор переходов на всё окно.
-//
-// Раньше заголовок и список жили в двух независимых AnimatePresence с разными
-// длительностями: при смене шага они уезжали и приезжали вразнобой, а высота
-// карточки менялась мгновенно — это и читалось как рывок. Теперь шаг меняется
-// целиком, одним блоком, а высота окна доезжает до новой отдельной анимацией.
-//
-// Анимируются только opacity и transform: и то и другое живёт на композиторе.
-// Ни blur, ни height внутри шага не трогаются — фильтр поверх стекла с
-// backdrop-filter заставляет браузер перерисовывать всю карточку каждый кадр,
-// а это ровно те подёргивания, от которых уходим.
-const STEP_VARIANTS = {
-  hidden: { opacity: 0, y: 10 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.34, ease: EASE, staggerChildren: 0.05, delayChildren: 0.05 },
-  },
-  out: { opacity: 0, y: -8, transition: { duration: 0.18, ease: "easeIn" as const } },
-};
-const ITEM_VARIANTS = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.38, ease: EASE } },
-};
+/** Ритм входа. Логотип сверху, заголовок снизу, следом карточки — именно в
+ *  такой последовательности, а не всё разом: сцена должна собираться на
+ *  глазах, иначе это просто появившееся меню. */
+const T_LOGO = 0;
+const T_HEAD = 0.5;
+const T_CARDS = 0.9;
+const STAGGER = 0.11;
 
-// Сколько ждать перед переходом на страницу. Роутинг и анимация закрытия,
-// запущенные в один кадр, спорят за главный поток: рендер новой страницы
-// успевает съесть середину исчезновения, и окно закрывается рывком. Пауза
-// чуть короче самого исчезновения — глазу переход кажется мгновенным.
+/** Пауза перед роутингом. Переход и закрытие, запущенные в один кадр, спорят
+ *  за главный поток: рендер новой страницы съедает середину исчезновения, и
+ *  сцена уходит рывком. Пауза чуть короче самого исчезновения. */
 const EXIT_BEFORE_ROUTE_MS = 200;
 
-const GREETING_PHRASE = { text: "Привет, добро пожаловать в наш Digital дом — HDKV AGENCY", charDelay: 40 };
-const ASKING_PHRASE = { text: "Что тебя интересует?", charDelay: 70 };
-
-// Сколько приветствие держится дочитанным, прежде чем само уступит место
-// направлениям. Достаточно, чтобы фраза прочиталась, и мало, чтобы никто не
-// успел заскучать и потянуться к «перейти на сайт».
-const GREETING_HOLD_MS = 900;
-
-// Окно никогда не прокручивается (требование Егора). Ужать отступы под низкий
-// экран недостаточно: на ноутбуке 1000×600 и на телефоне в альбомной
-// ориентации список форматов физически выше свободной высоты. Поэтому здесь
-// не скролл и не обрезка, а подгон: содержимое целиком масштабируется до
-// доступной высоты одним transform — пропорции, отступы и попадание пальцем
-// сохраняются, просто окно становится меньше. При нормальной высоте экрана
-// множитель равен единице и не делает ничего.
-const CARD_CHROME_PX = 80; // поля карточки + запас до края экрана
-const MIN_FIT_SCALE = 0.55;
+/** Сцена не прокручивается ни на каком экране (требование Егора). На низком
+ *  экране она не обрезается и не заводит скролл, а целиком ужимается одним
+ *  transform: пропорции и попадание пальцем сохраняются. При нормальной
+ *  высоте множитель равен единице и не делает ничего. */
+const CHROME_PX = 72;
+const MIN_FIT_SCALE = 0.52;
 
 function useFitToHeight(deps: unknown[]) {
   const ref = useRef<HTMLDivElement>(null);
@@ -83,7 +70,7 @@ function useFitToHeight(deps: unknown[]) {
     const measure = () => {
       const natural = el.scrollHeight;
       if (!natural) return;
-      const available = window.innerHeight * 0.94 - CARD_CHROME_PX;
+      const available = window.innerHeight * 0.94 - CHROME_PX;
       const scale = natural > available ? Math.max(MIN_FIT_SCALE, available / natural) : 1;
       setFit((prev) =>
         Math.abs(prev.scale - scale) < 0.001 && prev.height === natural ? prev : { scale, height: natural }
@@ -105,95 +92,70 @@ function useFitToHeight(deps: unknown[]) {
   return [ref, fit.scale, fit.height] as const;
 }
 
-type Step = "greeting" | "services" | "formats";
-type TypePhase = "typing" | "done";
-
-function useTypedPhrase(phrase: { text: string; charDelay: number }, reduced: boolean, active: boolean) {
-  const [text, setText] = useState("");
-  const [phase, setPhase] = useState<TypePhase>("typing");
-
-  useEffect(() => {
-    if (!active) return;
-    if (reduced) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- reduced-motion skip, runs once per (phrase, reduced, active) change
-      setText(phrase.text);
-      setPhase("done");
-      return;
-    }
-
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout>;
-    let i = 0;
-    setText("");
-    setPhase("typing");
-
-    function tick() {
-      if (cancelled) return;
-      i += 1;
-      setText(phrase.text.slice(0, i));
-      if (i < phrase.text.length) {
-        timer = setTimeout(tick, phrase.charDelay);
-      } else {
-        setPhase("done");
-      }
-    }
-    tick();
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [phrase, reduced, active]);
-
-  return { text, phase };
+function hexToRgb(hex: string) {
+  const v = hex.replace("#", "");
+  const n = parseInt(v.length === 3 ? v.split("").map((c) => c + c).join("") : v, 16);
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
 }
 
-// Голосового ввода в окне больше нет: микрофон Егор попросил убрать — рядом с
-// логотипом, волной, списком и двумя нижними кнопками он перегружал окно, а
-// распознавание в любом случае работало только в Chrome. Сама волна осталась:
-// она не кнопка, а «лицо» агента, и держит окно живым, ничего не обещая.
-
-// Название направления набрано ровно как заголовок его страницы: тот же
-// градиент (PAGE_GRADIENT — единственный источник этих цветов на сайте),
-// тот же заголовочный шрифт в верхнем регистре. Человек видит в окне то же
-// слово тем же цветом, что встретит на самой странице, и потому узнаёт, куда
-// попал, ещё до того, как дочитает.
-function gradientTextStyle(key: ServiceKey): CSSProperties {
+function accentVars(key: ServiceKey): CSSProperties {
   const g = PAGE_GRADIENT[key];
   return {
-    backgroundImage: g.via
-      ? `linear-gradient(90deg, ${g.from} 0%, ${g.via} 55%, ${g.to} 100%)`
-      : `linear-gradient(90deg, ${g.from} 0%, ${g.to} 100%)`,
-    WebkitBackgroundClip: "text",
-    backgroundClip: "text",
-    color: "transparent",
-    WebkitTextFillColor: "transparent",
-    // text-shadow на прозрачном глифе печатается сплошной плашкой в его
-    // форме — поэтому свечение идёт drop-shadow'ом, он следует за уже
-    // закрашенным градиентом.
-    filter: `drop-shadow(0 0 10px ${g.from}80) drop-shadow(0 0 24px ${g.to}70)`,
-  };
+    "--sp-from": g.from,
+    "--sp-to": g.to,
+    "--card-glow-rgb": hexToRgb(g.to),
+  } as CSSProperties;
 }
 
-function ServiceButton({ serviceKey, onSelect }: { serviceKey: ServiceKey; onSelect: () => void }) {
-  const g = PAGE_GRADIENT[serviceKey];
+/** Стрелка «перейти» у правого края карточки — тот же кружок со стрелкой,
+ *  что у призыва в табличках услуг. */
+function GoArrow() {
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className="btn-neon vibe-pick"
-      style={
-        {
-          "--pick-from": g.from,
-          "--pick-to": g.to,
-          // Каждая кнопка ведёт своё кольцо со сдвигом — иначе четыре
-          // одинаковых блика идут строем, и ряд читается как один объект.
-          "--btn-neon-delay": `${serviceOrder.indexOf(serviceKey) * -1.7}s`,
-        } as CSSProperties
-      }
-    >
-      <span className="vibe-pick-mark" aria-hidden="true" />
-      <span>{serviceMeta[serviceKey].label}</span>
-    </button>
+    <span className="welcome-card-go" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <path d="M5 12h13M12 5l7 7-7 7" />
+      </svg>
+    </span>
+  );
+}
+
+/** Фон карточки направления: ролик страницы, куда она ведёт.
+ *
+ *  Играет всегда и на всех четырёх карточках, включая телефон — прямое
+ *  требование Егора. Воспроизведение запускается кодом, а не атрибутом
+ *  autoPlay: если браузер откажет в автозапуске (это возможно даже для
+ *  беззвучного видео при экономии энергии), у нас останется промах промиса,
+ *  который видно в отладке, а не молча застывший постер.
+ *
+ *  Цена решения названа честно: четыре ролика одновременно нагружают слабый
+ *  телефон и вместе с ним дымный след курсора, чей шаг считается по
+ *  реальному времени кадра. Облегчает это общесайтовый MediaGovernor: он же
+ *  подменяет ролик на лёгкий «-mobile» файл на экранах уже 1024px и в
+ *  режиме экономии трафика, он же снимает видео с паузы, когда вкладка
+ *  возвращается на передний план. Своей копии этой логики здесь нет
+ *  намеренно — два механизма на один <video> разошлись бы порогами. */
+function CardVideo({ src, poster }: { src: string; poster: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    void el.play().catch(() => {});
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      src={src}
+      poster={poster}
+      muted
+      loop
+      playsInline
+      autoPlay
+      preload="auto"
+      className="welcome-card-media"
+      aria-hidden="true"
+    />
   );
 }
 
@@ -202,49 +164,36 @@ export default function WelcomeWidget({
   onSkip,
   skipGreeting = false,
 }: {
-  /** Посетитель закончил с окном: выбрал формат или закрыл его. */
+  /** Посетитель закончил со сценой: выбрал блок или закрыл её. */
   onClose: () => void;
   /** Только «Перейти на сайт →» — когда вызывающему нечего делать отдельно,
    *  совпадает с onClose. */
   onSkip?: () => void;
-  /** Открыть сразу на выборе направления. Приветствие здороваются один раз —
-   *  при входе на сайт; когда то же окно открывают с боковой панели, чтобы
-   *  куда-то перейти, здороваться заново значит держать человека полторы
-   *  секунды перед тем, что он и пришёл нажать. */
+  /** Открыть без вступительной паузы. Сцена собирается по шагам один раз —
+   *  при входе на сайт; когда её же открывают с боковой панели, чтобы
+   *  куда-то перейти, ждать сборку заново незачем. */
   skipGreeting?: boolean;
 }) {
   const router = useRouter();
   const [reduced, setReduced] = useState(false);
-  const [step, setStep] = useState<Step>(skipGreeting ? "services" : "greeting");
   const [picked, setPicked] = useState<ServiceKey | null>(null);
   const skip = onSkip ?? onClose;
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, matchMedia only exists in the browser
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- разовая проверка, matchMedia существует только в браузере
     setReduced(mq.matches);
   }, []);
 
-  const greeting = useTypedPhrase(GREETING_PHRASE, reduced, step === "greeting");
-  const asking = useTypedPhrase(ASKING_PHRASE, reduced, step !== "greeting");
-  const greetingDone = greeting.phase === "done";
+  // Задержки входа обнуляются и при skipGreeting, и при reduced-motion: в
+  // обоих случаях сцена должна быть на месте сразу.
+  const lead = skipGreeting || reduced ? 0 : 1;
+  const d = (t: number) => t * lead;
 
-  // Приветствие само уступает место направлениям: отдельная кнопка «дальше»
-  // была лишним кликом ровно там, где выбора ещё нет.
-  useEffect(() => {
-    if (step !== "greeting" || !greetingDone) return;
-    const id = setTimeout(() => setStep("services"), GREETING_HOLD_MS);
-    return () => clearTimeout(id);
-  }, [step, greetingDone]);
-
-  const isTyping = step === "greeting" ? greeting.phase === "typing" : asking.phase === "typing";
-  const waveEnergy: WavePhaseEnergy = isTyping ? "typing" : "idle";
-
-  // Любой переход отсюда помечается как «навигация из вайб-окна», чтобы
-  // старое меню раздела не встретило посетителя вторым окном сразу после
-  // перехода — он только что выбрал то же самое здесь.
   const go = useCallback(
     (href: string) => {
+      // Метка «переход из вайб-окна»: страница раздела не встретит человека
+      // вторым меню сразу после того, как он выбрал здесь.
       markVibeRouted();
       onClose();
       setTimeout(() => router.push(href), EXIT_BEFORE_ROUTE_MS);
@@ -252,171 +201,200 @@ export default function WelcomeWidget({
     [onClose, router]
   );
 
-  const formats: MenuLink[] = picked ? submenuFor(picked) : [];
-
-  const [fitRef, fitScale, fitHeight] = useFitToHeight([step, picked]);
+  const blocks: BlockCard[] = picked ? blocksFor(picked) : [];
+  const [fitRef, fitScale, fitHeight] = useFitToHeight([picked]);
 
   return (
-    // Высота окна — отдельная плавная анимация: шаги разной высоты, и без
-    // неё карточка прыгала бы на новый размер в один кадр. initial={false},
-    // чтобы при открытии она не разворачивалась от нуля.
     <motion.div
       className="w-full"
       initial={false}
       animate={{ height: fitHeight ? fitHeight * fitScale : "auto" }}
-      transition={{ duration: 0.42, ease: EASE }}
+      transition={{ duration: 0.45, ease: EASE }}
     >
       <div
         ref={fitRef}
-        className="vibe-window flex h-fit w-full flex-col items-center text-center"
+        className="welcome-scene flex h-fit w-full flex-col items-center text-center"
         style={fitScale < 1 ? { transform: `scale(${fitScale})`, transformOrigin: "top center" } : undefined}
       >
-        {/* Логотип в шапке окна: окно открывается поверх сайта и часто ещё до
-            того, как человек рассмотрел страницу, — без подписи это просто
-            всплывшее меню. Тот же знак, что в шапке сайта (пульсирующая точка
-            + HDKV.AGENCY), набранный мельче. */}
-        <div className="mb-4 flex items-center gap-2" aria-hidden="true">
-          <span className="h-1.5 w-1.5 shrink-0 animate-pulse-rec rounded-full bg-rec" />
-          <span className="font-display text-sm uppercase leading-none tracking-tight text-paper">
-            HDKV<span className="text-rec">.AGENCY</span>
+        {/* Логотип — первым и сверху, на прозрачном фоне. Размытие в
+            появлении, а не просто сдвиг: знак «проявляется», как и всё
+            остальное на сцене. */}
+        <motion.div
+          className="mb-5 flex items-center gap-2"
+          initial={{ opacity: 0, y: -14, filter: "blur(10px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.7, ease: EASE, delay: d(T_LOGO) }}
+          aria-hidden="true"
+        >
+          <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot" />
+          <span className="font-display text-base uppercase leading-none tracking-tight text-paper sm:text-lg">
+            HUD<span className="brand-word">.SERVICE</span>
           </span>
-        </div>
+        </motion.div>
 
-        {/* Назад — круглая кнопка со стрелкой, зеркальная крестику CenterModal:
-            тот же диаметр и та же подложка, только у правого края. */}
-        <AnimatePresence>
-          {step === "formats" && (
-            <motion.button
-              key="back"
-              type="button"
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{ duration: 0.28, ease: EASE }}
-              onClick={() => {
-                setStep("services");
-                setPicked(null);
-              }}
-              aria-label="Назад к направлениям"
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-paper/10 text-lg leading-none text-paper/70 backdrop-blur-md transition-colors hover:bg-paper/20 hover:text-paper sm:right-5 sm:top-5"
-            >
-              <span aria-hidden="true">←</span>
-            </motion.button>
-          )}
+        {/* Заголовок — снизу и через размытие, ровно как просил Егор.
+            Фирменный заголовочный шрифт, а не текстовый: это реплика сцены,
+            а не подпись к меню. */}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.h2
+            key={picked ?? "root"}
+            initial={{ opacity: 0, y: 18, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
+            transition={{ duration: 0.75, ease: EASE, delay: picked ? 0 : d(T_HEAD) }}
+            className="welcome-head font-display text-[1.6rem] uppercase leading-[1.05] tracking-tight text-paper sm:text-[2.1rem]"
+          >
+            {picked ? (
+              <>
+                {/* Вопрос — главный заголовок того же размера, что и на
+                    первом шаге: Егор просил, чтобы он читался как заголовок,
+                    а не как подпись. Название направления ушло в строку
+                    над ним — оно уточняет вопрос, а не спорит с ним. */}
+                <span style={accentVars(picked)} className="welcome-head-eyebrow">
+                  {serviceMeta[picked].label}
+                </span>
+                С какого блока{" "}
+                <span style={accentVars(picked)} className="welcome-head-kw">
+                  начнём?
+                </span>
+              </>
+            ) : (
+              <>
+                Привет, с чего <span className="kw">начнём?</span>
+              </>
+            )}
+          </motion.h2>
         </AnimatePresence>
 
-        <VoiceWave energy={waveEnergy} />
-
-        {/* Один AnimatePresence на весь шаг: заголовок и кнопки уходят и
-            приходят как одно целое, а не двумя разными анимациями. */}
+        {/* Карточки. Колонка, одна под другой: все четыре читаются сразу и
+            выбор стоит одного клика — листаемая колода добавляла бы шаг
+            ровно там, где человек ещё ничего не выбрал. */}
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
-            key={step}
-            variants={STEP_VARIANTS}
-            initial="hidden"
-            animate="show"
-            exit="out"
-            className="w-full"
+            key={picked ?? "directions"}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            className="welcome-deck"
           >
-            {step === "greeting" && (
-              <p className="vibe-window-lead vibe-window-gap min-h-[3.6em] font-sans text-lg font-light leading-snug text-paper sm:text-xl">
-                {greeting.text}
-                {greeting.phase === "typing" && (
-                  <span
-                    className="ml-0.5 inline-block w-[2px] animate-pulse bg-glow align-middle"
-                    style={{ height: "1em" }}
-                    aria-hidden="true"
-                  />
-                )}
-              </p>
-            )}
-
-            {step === "services" && (
-              <>
-                <p className="vibe-window-lead vibe-window-gap min-h-[1.8em] font-sans text-lg font-light leading-snug text-paper sm:text-xl">
-                  {asking.text}
-                  {asking.phase === "typing" && (
-                    <span
-                      className="ml-0.5 inline-block w-[2px] animate-pulse bg-glow align-middle"
-                      style={{ height: "1em" }}
-                      aria-hidden="true"
-                    />
-                  )}
-                </p>
-
-                <div className="vibe-window-gap mx-auto flex w-full max-w-[300px] flex-col gap-2.5">
-                  {serviceOrder.map((key) => (
-                    <motion.div key={key} variants={ITEM_VARIANTS}>
-                      <ServiceButton
-                        serviceKey={key}
-                        onSelect={() => {
-                          setPicked(key);
-                          setStep("formats");
-                        }}
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {step === "formats" && picked && (
-              <>
-                <p className="vibe-window-lead vibe-window-gap min-h-[1.8em] font-sans text-lg font-light leading-snug text-paper sm:text-xl">
-                  <span style={gradientTextStyle(picked)} className="font-display uppercase tracking-tight">
-                    {serviceMeta[picked].label}
+            {!picked &&
+              directionCards.map((card, i) => (
+                <motion.button
+                  key={card.key}
+                  type="button"
+                  initial={{ opacity: 0, y: 34, filter: "blur(14px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.8, ease: EASE, delay: d(T_CARDS) + d(i * STAGGER) }}
+                  onClick={() => setPicked(card.key)}
+                  // Имя задано явно: название карточки набрано градиентом
+                  // во вложенных span'ах, и на них же висит кадр — читалке
+                  // проще получить одну внятную строку, чем собирать её.
+                  aria-label={`${card.label}. ${card.tagline}`}
+                  style={accentVars(card.key)}
+                  className="welcome-card glass-panel deck-neon-pulse"
+                >
+                  <span className="welcome-card-frame" aria-hidden="true">
+                    <CardVideo src={card.video} poster={card.poster} />
+                    <span className="welcome-card-scrim" />
                   </span>
-                </p>
-                <p className="mt-2 text-sm text-paper/70">Выбери формат — откроем сразу нужный блок</p>
 
-                <div className="vibe-window-gap mx-auto flex w-full max-w-[300px] flex-col gap-2.5">
-                  {formats.map((item) => (
-                    <motion.div key={item.href} variants={ITEM_VARIANTS}>
-                      <button type="button" onClick={() => go(item.href)} className="btn-neon w-full justify-center">
-                        {item.label}
-                      </button>
-                    </motion.div>
-                  ))}
+                  <span className="welcome-card-body">
+                    {/* Градиент живёт на вложенном span, а не на самом
+                        заголовке: `.welcome-card-title` задаёт белый цвет и
+                        объявлен в файле ниже `.spotlight-accent`, поэтому на
+                        одном элементе он просто затирал бы прозрачную
+                        заливку под градиентом. */}
+                    <span className="welcome-card-title">
+                      <span className="spotlight-accent">{card.label}</span>
+                    </span>
+                    <span className="welcome-card-sub">{card.tagline}</span>
+                  </span>
+                  <span className="welcome-card-graphic" aria-hidden="true">
+                    <WelcomeDirectionGraphic serviceKey={card.key} gid={`wdg-${card.key}`} />
+                  </span>
+                  <GoArrow />
+                </motion.button>
+              ))}
 
-                  <motion.div variants={ITEM_VARIANTS}>
-                    {/* Полноценная кнопка, а не тихая ссылка: «весь раздел» —
-                        такой же выбор, как любой формат над ним, и носит метку
-                        цвета своего раздела. Переход идёт через go(), как и у
-                        форматов: сначала окно закрывается, затем роутинг. */}
-                    <Link
-                      href={`/${serviceMeta[picked].slug}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        go(`/${serviceMeta[picked].slug}`);
-                      }}
-                      className="btn-neon vibe-pick"
-                      style={
-                        {
-                          "--pick-from": PAGE_GRADIENT[picked].from,
-                          "--pick-to": PAGE_GRADIENT[picked].to,
-                        } as CSSProperties
-                      }
-                    >
-                      <span className="vibe-pick-mark" aria-hidden="true" />
-                      <span>Весь раздел →</span>
-                    </Link>
-                  </motion.div>
-                </div>
-              </>
-            )}
+            {picked &&
+              blocks.map((block, i) => (
+                <motion.button
+                  key={block.id}
+                  type="button"
+                  initial={{ opacity: 0, y: 26, filter: "blur(12px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : i * 0.07 }}
+                  onClick={() => go(blockHref(picked, block))}
+                  aria-label={`Блок ${block.num}. ${block.title}. ${block.subtitle}`}
+                  style={accentVars(picked)}
+                  className="welcome-card welcome-card-block glass-panel deck-neon-pulse"
+                >
+                  <span className="welcome-card-frame" aria-hidden="true">
+                    <img src={block.image} alt="" loading="lazy" className="welcome-card-media" />
+                    <span className="welcome-card-scrim" />
+                  </span>
+
+                  <span className="welcome-card-num" aria-hidden="true">
+                    {block.num}
+                  </span>
+                  <span className="welcome-card-body">
+                    <span className="welcome-card-title">
+                      {renderTitle(block)}
+                    </span>
+                    <span className="welcome-card-sub">{block.subtitle}</span>
+                  </span>
+                  <span className="welcome-card-graphic" aria-hidden="true">
+                    <WelcomeBlockGraphic role={block.role} gid={`wbg-${picked}-${block.id}`} />
+                  </span>
+                  <GoArrow />
+                </motion.button>
+              ))}
           </motion.div>
         </AnimatePresence>
 
-        <div className="vibe-window-gap flex w-full flex-col items-center gap-3">
-          <button
-            type="button"
-            onClick={skip}
-            className="whitespace-nowrap rounded-full border border-paper/20 bg-ink/40 px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-paper/60 backdrop-blur-md transition-colors hover:border-glow/50 hover:text-paper"
-          >
+        {/* Нижний ряд: назад к направлениям и тихий выход на сайт. */}
+        <motion.div
+          className="mt-5 flex w-full items-center justify-center gap-3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, ease: EASE, delay: d(T_CARDS + 4 * STAGGER) }}
+        >
+          <AnimatePresence initial={false}>
+            {picked && (
+              <motion.button
+                key="back"
+                type="button"
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -8 }}
+                transition={{ duration: 0.25, ease: EASE }}
+                onClick={() => setPicked(null)}
+                className="welcome-quiet"
+              >
+                ← Направления
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          <button type="button" onClick={skip} className="welcome-quiet">
             Перейти на сайт →
           </button>
-        </div>
+        </motion.div>
       </div>
     </motion.div>
+  );
+}
+
+/** Заголовок главы с тем же словом-акцентом, каким он набран на самой
+ *  странице: человек встретит там ровно ту же строку тем же цветом. */
+function renderTitle(block: BlockCard) {
+  const at = block.title.indexOf(block.keyword);
+  if (at < 0) return block.title;
+  return (
+    <>
+      {block.title.slice(0, at)}
+      <span className="spotlight-accent">{block.keyword}</span>
+      {block.title.slice(at + block.keyword.length)}
+    </>
   );
 }

@@ -55,6 +55,8 @@ export default function ChapterLayout({
   columnClassName = "lg:w-[38%]",
   person,
   askCard,
+  leftFooter,
+  rightFooter,
   children,
 }: {
   accent: ChapterAccent;
@@ -84,6 +86,12 @@ export default function ChapterLayout({
    *  not a small badge bolted onto the old two-button row. `person` above
    *  is ignored when this is set (the card already carries its own face). */
   askCard?: ReactNode;
+  /** Optional last element of the left / right column, under the ask card or
+   *  the panel — where /sites hangs its spotlight windows. Rendered outside
+   *  any entrance wrapper: the window's dimmer is `position: fixed`, and a
+   *  transformed ancestor would turn it into a box the size of the column. */
+  leftFooter?: ReactNode;
+  rightFooter?: ReactNode;
   /** The right column. */
   children: ReactNode;
 }) {
@@ -140,9 +148,13 @@ export default function ChapterLayout({
             </>
           )}
         </Appear>
+        {leftFooter}
       </div>
 
-      <div className="mt-10 lg:mt-0 lg:flex-1 lg:min-w-0 land:mt-0 land:min-w-0 land:flex-1">{children}</div>
+      <div className="mt-10 lg:mt-0 lg:flex-1 lg:min-w-0 land:mt-0 land:min-w-0 land:flex-1">
+        {children}
+        {rightFooter}
+      </div>
     </div>
   );
 }

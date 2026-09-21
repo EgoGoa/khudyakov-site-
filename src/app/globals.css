@@ -4921,3 +4921,904 @@ html[data-lite] *::after {
     inset: -16px;
   }
 }
+
+/* ── Развёрнутая табличка услуги под блоком (ToolSpotlight) ──────────────
+   Закрытая полоса дышит, чтобы её было видно, но не мигает агрессивно:
+   пульсирует само свечение каймы, а не размер и не прозрачность текста —
+   прыгающая полоса внизу экрана читалась бы как ошибка вёрстки.
+   Раскрытое окно — примерно треть экрана, ровно как просил Егор, с полом и
+   потолком в пикселях, чтобы на ноутбуке оно не схлопывалось, а на большом
+   мониторе не забирало пол-экрана. */
+/* Закрытая полоса не мигает. По её контуру идёт та же световая комета,
+   что у кнопок сайта (.btn-neon): Егор попросил именно это — «свечение по
+   контуру, как в кнопке подробнее». Мигание опущено совсем: рядом уже
+   дышит свечение самого дека, а две пульсации на одном экране спорят.
+   Переиспользованы угол и кейфреймы .btn-neon, а не заведены свои: комета
+   на сайте должна быть одна и крутиться одинаково. */
+.spotlight-strip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  /* Перепад внутри кольца намеренно резкий: полоса широкая (до 1200px), и
+     на такой длине мягкий градиент читается как ровная подсветка, а не как
+     бегущий огонёк — Егор увидел именно это. Поэтому фон кольца почти
+     погашен, а пик — светлый лайм, уходящий в белый, и он узкий. */
+  background: conic-gradient(
+    from var(--btn-neon-angle),
+    color-mix(in srgb, var(--sp-to) 10%, transparent) 0deg,
+    color-mix(in srgb, var(--sp-to) 14%, transparent) 46deg,
+    color-mix(in srgb, var(--sp-from) 85%, transparent) 72deg,
+    #ffffff 84deg,
+    color-mix(in srgb, var(--sp-from) 85%, transparent) 96deg,
+    color-mix(in srgb, var(--sp-to) 22%, transparent) 130deg,
+    color-mix(in srgb, var(--sp-to) 10%, transparent) 220deg,
+    color-mix(in srgb, var(--sp-to) 10%, transparent) 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: btn-neon-spin 6s linear infinite;
+  pointer-events: none;
+  transition: filter 0.35s ease;
+  z-index: 1;
+}
+.spotlight-strip:hover::after {
+  filter: brightness(1.5) saturate(1.15);
+  animation-duration: 4.5s;
+}
+
+/* Высота обоих состояний живёт в самом компоненте (анимируется числом),
+   здесь остаётся только то, что от неё не зависит. */
+.spotlight-open {
+  overflow: visible;
+}
+
+/* Выгода внутри тезиса и цифры — акцентным градиентом инструмента. */
+.spotlight-accent {
+  background: linear-gradient(92deg, var(--sp-from), var(--sp-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Кнопки таблички.
+
+   Егор забраковал вариант с заливкой-пилюлей, а следом и матовую
+   стеклянную плашку: обе читались как наклеенный сверху элемент. Итоговый
+   вариант — кнопки нет как «плашки» вообще. Есть крупная надпись
+   фирменным шрифтом, волосяная градиентная линия над ней и стрелка,
+   которая уезжает вправо при наведении. Всё кликабельно во всю ширину
+   окна, но визуально это продолжение самого окна.
+
+   Шрифт — фирменный Bebas (тот же, которым набраны заголовки глав), а не
+   системный: отдельная просьба Егора. */
+.spotlight-cta {
+  /* Компактнее и изящнее прежнего: на закрытой полосе призыв не должен
+     спорить с названием услуги — он ведёт взгляд, а не кричит. Отсюда
+     мелкий кегль фирменным Bebas, волосяная градиентная линия под текстом
+     и шеврон в стеклянном кружке вместо голой стрелки. */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  white-space: nowrap;
+  font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.spotlight-cta > span:first-child {
+  position: relative;
+  padding-bottom: 3px;
+}
+.spotlight-cta > span:first-child::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sp-from), var(--sp-to), transparent);
+  opacity: 0.75;
+}
+.spotlight-cta svg {
+  box-sizing: content-box;
+  padding: 5px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.07);
+  transition: transform 0.35s ease, background 0.35s ease;
+}
+.spotlight-strip:hover .spotlight-cta svg {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.spotlight-open-cta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 1rem 1.5rem 1.1rem;
+  color: #fff;
+  background: transparent;
+}
+.spotlight-open-cta::before {
+  /* Единственная линия — волосяная, сверху, в акценте инструмента: она
+     отделяет призыв от содержимого, но рамкой не является. */
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sp-from), var(--sp-to), transparent);
+  opacity: 0.55;
+  transition: opacity 0.4s ease;
+}
+.spotlight-open-cta:hover::before {
+  opacity: 1;
+}
+.spotlight-open-cta svg {
+  transition: transform 0.4s ease;
+}
+.spotlight-open-cta:hover svg {
+  transform: translateX(6px);
+}
+.spotlight-open-cta-text {
+  font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
+  font-size: clamp(0.95rem, 1.35vw, 1.2rem);
+  font-weight: 400;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1;
+  animation: spotlight-text-pulse 3.4s ease-in-out infinite;
+}
+@keyframes spotlight-text-pulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    text-shadow: 0 0 0 rgba(var(--card-glow-rgb), 0);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 24px rgba(var(--card-glow-rgb), 0.9);
+  }
+}
+
+/* Язычок с кнопкой над окном. Он должен выглядеть выступом самой панели,
+   поэтому несёт ту же заливку и тот же блюр, скругляется только сверху и
+   гасит границу на стыке. Два «обратных» уголка по бокам — классический
+   приём вкладки: кружок той же заливки, вырезанный маской, делает переход
+   от язычка к рамке плавной кривой, а не ступенькой. */
+.spotlight-tab-wrap {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+}
+/* Окно в верхнем углу выпускает язычок вниз, а не вверх: наверху у него
+   уже нет места, там шапка страницы. */
+.spotlight-tab-wrap-bottom {
+  bottom: auto;
+  top: 100%;
+}
+.spotlight-tab-wrap-bottom .spotlight-tab {
+  border-radius: 0 0 20px 20px;
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.14),
+    0 14px 34px -16px rgba(var(--card-glow-rgb), 0.75);
+}
+.spotlight-tab-wrap-bottom .spotlight-tab::before,
+.spotlight-tab-wrap-bottom .spotlight-tab::after {
+  bottom: auto;
+  top: 0;
+}
+.spotlight-tab-wrap-bottom .spotlight-tab::before {
+  -webkit-mask: radial-gradient(circle 18px at 0 100%, transparent 0 18px, #000 18px);
+  mask: radial-gradient(circle 18px at 0 100%, transparent 0 18px, #000 18px);
+}
+.spotlight-tab-wrap-bottom .spotlight-tab::after {
+  -webkit-mask: radial-gradient(circle 18px at 100% 100%, transparent 0 18px, #000 18px);
+  mask: radial-gradient(circle 18px at 100% 100%, transparent 0 18px, #000 18px);
+}
+
+.spotlight-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  gap: 0.7rem;
+  padding: 0.6rem 1.9rem 0.7rem;
+  color: #fff;
+  border-radius: 26px 26px 0 0;
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015) 55%),
+    rgba(11, 11, 16, 0.7);
+  backdrop-filter: blur(16px) saturate(125%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 -14px 34px -16px rgba(var(--card-glow-rgb), 0.75);
+}
+.spotlight-tab::before,
+.spotlight-tab::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  background: rgba(11, 11, 16, 0.7);
+}
+.spotlight-tab::before {
+  right: 100%;
+  -webkit-mask: radial-gradient(circle 18px at 0 0, transparent 0 18px, #000 18px);
+  mask: radial-gradient(circle 18px at 0 0, transparent 0 18px, #000 18px);
+}
+.spotlight-tab::after {
+  left: 100%;
+  -webkit-mask: radial-gradient(circle 18px at 100% 0, transparent 0 18px, #000 18px);
+  mask: radial-gradient(circle 18px at 100% 0, transparent 0 18px, #000 18px);
+}
+.spotlight-tab svg {
+  transition: transform 0.4s ease;
+}
+.spotlight-tab:hover svg {
+  transform: translateX(6px);
+}
+
+/* Градиент по тексту не стоит на месте, а медленно проходит по нему из
+   края в край — Егор попросил «как в промо-ролике тизере»: взгляд держится
+   на строке дольше, потому что она продолжает жить. */
+.spotlight-sheen {
+  background-size: 230% 100%;
+  animation: spotlight-sheen 9s ease-in-out infinite;
+}
+@keyframes spotlight-sheen {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Анимации самой схемы. Всё — только opacity/transform/stroke-dashoffset:
+   composited-свойства, поэтому сцена не заставляет стадию перерисовывать
+   видео под собой. */
+.tool-scene .sp-flow {
+  stroke-dasharray: 5 9;
+  animation: sp-dash 2.6s linear infinite;
+}
+.tool-scene .sp-drop {
+  stroke-dasharray: 3 8;
+  animation: sp-dash 2s linear infinite;
+}
+.tool-scene .sp-spin {
+  animation: sp-spin 14s linear infinite;
+}
+.tool-scene .sp-pulse {
+  animation: sp-pulse 2.6s ease-in-out infinite;
+}
+.tool-scene .sp-stack {
+  animation: sp-stack 2.6s ease-in-out infinite;
+}
+.tool-scene text {
+  font-family: var(--font-montserrat), sans-serif;
+}
+/* Крупные цифры сцены — фирменным дисплейным, как заголовки сайта. */
+.tool-scene .sp-figure {
+  font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* Сцена собирается элемент за элементом, а не вспыхивает целиком. */
+.tool-scene .sp-in {
+  opacity: 0;
+  animation: sp-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes sp-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tool-scene .sp-glide {
+  animation: sp-glide 3.6s ease-in-out infinite;
+}
+.tool-scene .sp-rise {
+  animation: sp-rise 3.6s ease-in-out infinite;
+}
+@keyframes sp-glide {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.75;
+  }
+  45% {
+    transform: translateX(10px);
+    opacity: 1;
+  }
+}
+@keyframes sp-rise {
+  0%,
+  100% {
+    transform: translateY(3px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes sp-dash {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+@keyframes sp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sp-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    r: 3;
+  }
+  50% {
+    opacity: 1;
+    r: 4.4;
+  }
+}
+@keyframes sp-stack {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-strip::after,
+  .spotlight-cta,
+  .spotlight-open-cta-text,
+  .spotlight-sheen,
+  .tool-scene .sp-in,
+  .tool-scene .sp-glide,
+  .tool-scene .sp-rise,
+  .tool-scene .sp-flow,
+  .tool-scene .sp-drop,
+  .tool-scene .sp-spin,
+  .tool-scene .sp-pulse,
+  .tool-scene .sp-stack {
+    animation: none;
+  }
+  .tool-scene .sp-in {
+    opacity: 1;
+  }
+}
+
+/* Затемнение под вступительной сценой. Обычные окна сайта фон только
+   гасят, а блюр несёт само стекло карточки — здесь карточки стоят прямо на
+   странице, поэтому размытие уходит на подложку: сайт за сценой должен
+   уйти из фокуса целиком, чтобы не спорить с выбором.
+
+   Только неперфиксованное свойство — пара `backdrop-filter` +
+   `-webkit-backdrop-filter`, написанная руками, схлопывается минификатором
+   до вебкитной, и блюр молча перестаёт рисоваться в Chrome и Firefox.
+   Префикс дописывает сборка. */
+.welcome-backdrop {
+  /* 28px, а не «аккуратные» 14: страница под сценой — тёмное видео, и на
+     нём слабое размытие не видно вообще, сколько бы его ни объявляли в CSS.
+     Размытие обязано читаться глазом, иначе его для зрителя нет. */
+  backdrop-filter: blur(28px) saturate(115%);
+}
+
+/* ---------- Вступительная сцена (WelcomeWidget) ---------- */
+/* Сцена стоит на прозрачном: рамки окна у неё нет, стекло несут карточки.
+   Поэтому и логотип, и заголовок держат читаемость собственной тенью, а не
+   подложкой под ними. */
+
+.welcome-scene {
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+  /* Запас сверху: сцена открывается поверх сайта, а у сайта там своя шапка
+     с логотипом. Без отступа знак сцены встаёт ровно на него. */
+  padding-top: 2.5rem;
+}
+
+.welcome-head {
+  max-width: 14em;
+  margin-inline: auto;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
+}
+
+/* Название выбранного направления в заголовке второго шага — в градиенте
+   своей страницы, как и на самой странице. */
+.welcome-head-kw {
+  background-image: linear-gradient(90deg, var(--sp-from), var(--sp-to));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(var(--card-glow-rgb), 0.45));
+}
+
+.welcome-head-eyebrow {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.18em;
+  background-image: linear-gradient(90deg, var(--sp-from), var(--sp-to));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(var(--card-glow-rgb), 0.5));
+}
+
+.welcome-deck {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+}
+
+/* Карточка. Геометрия одна и та же на обоих шагах — сцена не должна
+   «переобуваться» между шагами, меняется только начинка. */
+.welcome-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  /* Выше прежнего (92px): карточка — окно в ролик страницы, и в низкую
+     полосу от кадра попадала одна перекладина. На этой высоте в кадр
+     помещается сцена целиком, а текст всё так же стоит в одной строке. */
+  min-height: 132px;
+  padding: 1rem 1.15rem;
+  border-radius: 22px;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s ease;
+}
+
+.welcome-card-block {
+  min-height: 98px;
+}
+
+/* Заголовки глав длиннее названий направлений («Продюсерский центр, не
+   коробка»), поэтому у блочных карточек пара 1.25 / 0.625 — то же
+   соотношение 2:1, но в две строки название не разъезжается. */
+.welcome-card-block .welcome-card-title {
+  font-size: 1.25rem;
+}
+.welcome-card-block .welcome-card-sub {
+  font-size: 0.625rem;
+}
+
+.welcome-card:hover,
+.welcome-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 26px 0 rgba(var(--card-glow-rgb), 0.5),
+    0 0 64px -6px rgba(var(--card-glow-rgb), 0.32),
+    0 28px 70px -34px rgba(0, 0, 0, 0.95);
+  outline: none;
+}
+
+/* Кадр живёт в собственном клипованном слое, а не на самой карточке:
+   свечение карточки должно выходить за её край, а кадр — нет. */
+.welcome-card-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.welcome-card-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 0.44 — та же экспозиция, что у раскрытых табличек услуг: кадр должен
+     читаться, а не угадываться, но текст поверх него остаётся главным. */
+  opacity: 0.44;
+  filter: grayscale(0.15) contrast(1.05);
+}
+
+.welcome-card-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(10, 12, 16, 0.86) 0%,
+    rgba(10, 12, 16, 0.58) 52%,
+    rgba(10, 12, 16, 0.34) 100%
+  );
+}
+
+.welcome-card-num {
+  position: relative;
+  flex-shrink: 0;
+  font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: rgba(var(--card-glow-rgb), 1);
+  text-shadow: 0 0 14px rgba(var(--card-glow-rgb), 0.55);
+}
+
+.welcome-card-body {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.welcome-card-title {
+  font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
+  /* Ровно вдвое крупнее подписи под ним (0.75rem): Егор показал, что при
+     прежних 1.02 / 0.86 название и подпись сливались в одну строку. Разница
+     в размер, а не в цвет — обе белые, как требует правило сайта. */
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+/* Подпись набрана тем же, чем набраны подзаголовки глав на всех страницах
+   сайта (см. CHAPTER_INTRO в lib/typography.ts): фирменный Bebas, капс,
+   плотный трекинг. Строчный Manrope здесь выпадал из языка сайта — на
+   странице эту же роль несёт дисплейный шрифт.
+
+   Белая, не приглушённо-серая: серый текст на кадре сливается с ним, и это
+   прямое правило Егора для всего сайта. Читаемость держит тень, а не
+   понижённая непрозрачность. */
+.welcome-card-sub {
+  font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
+}
+
+/* Схема справа: стоит перед стрелкой, в акценте страницы, тонкой линией.
+   На узком экране уходит — там место нужно названию. */
+.welcome-card-graphic {
+  position: relative;
+  display: none;
+  width: 62px;
+  height: 58px;
+  flex-shrink: 0;
+  /* Свечение даёт сама схема: обводка идёт градиентом страницы, а тень под
+     ней красится в её же дальний цвет — получается неон, а не серый
+     контур с цветной линией. */
+  filter: drop-shadow(0 0 9px rgba(var(--card-glow-rgb), 0.55));
+}
+
+.welcome-card-block .welcome-card-graphic {
+  width: 50px;
+  height: 46px;
+}
+
+@media (min-width: 640px) {
+  .welcome-card-graphic {
+    display: block;
+  }
+}
+
+.welcome-card-go {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  transition:
+    transform 0.35s ease,
+    background 0.35s ease;
+}
+
+.welcome-card:hover .welcome-card-go,
+.welcome-card:focus-visible .welcome-card-go {
+  transform: translateX(3px);
+  background: rgba(var(--card-glow-rgb), 0.35);
+}
+
+/* Тихие кнопки под сценой — выход и возврат. Обе одинаковы намеренно: ни
+   одна из них не выбор, ради которого сцена открылась. */
+.welcome-quiet {
+  white-space: nowrap;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(10, 12, 16, 0.45);
+  padding: 0.6rem 1.1rem;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+  backdrop-filter: blur(8px);
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+
+.welcome-quiet:hover {
+  border-color: rgba(0, 210, 255, 0.5);
+  background: rgba(10, 12, 16, 0.7);
+}
+
+@media (max-width: 639px) {
+  /* Телефон: лаконично, без давления. Карточки ниже настольных, поля и
+     зазоры уже, а схема возвращается маленькой — на телефоне она несёт
+     ту же «форму» блока, но не должна отнимать ширину у названия. */
+  .welcome-scene {
+    padding-top: 2.75rem;
+  }
+  .welcome-head {
+    font-size: 1.45rem;
+  }
+  .welcome-head-eyebrow {
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+  }
+  .welcome-deck {
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .welcome-card {
+    min-height: 92px;
+    gap: 0.65rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 18px;
+  }
+  .welcome-card-block {
+    min-height: 68px;
+    padding: 0.55rem 0.75rem;
+  }
+  .welcome-card-num {
+    font-size: 1.2rem;
+  }
+  .welcome-card-title {
+    font-size: 1.15rem;
+  }
+  .welcome-card-sub {
+    font-size: 0.575rem;
+    line-height: 1.2;
+  }
+  .welcome-card-block .welcome-card-title {
+    font-size: 1rem;
+  }
+  .welcome-card-block .welcome-card-sub {
+    font-size: 0.5rem;
+  }
+  .welcome-card-graphic {
+    display: block;
+    width: 32px;
+    height: 30px;
+  }
+  /* У блочных карточек на телефоне схемы нет: восемь строк с иконкой
+     справа съедают ширину, подписи уходят в три строки, и весь экран
+     ужимается. Номер главы слева и стрелка справа уже дают ритм. */
+  .welcome-card-block .welcome-card-graphic {
+    display: none;
+  }
+  .welcome-card-sub {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .welcome-card-go {
+    padding: 5px;
+  }
+  .welcome-card-go svg {
+    width: 14px;
+    height: 14px;
+  }
+  .welcome-quiet {
+    padding: 0.5rem 0.9rem;
+    font-size: 10px;
+  }
+}
+
+/* Тихая жизнь схем на карточках вступительной сцены. Минимум: медленный
+   дрейф на пару пикселей и еле заметное дыхание яркости. Анимируются
+   только transform и opacity — они живут на композиторе, а под сценой уже
+   играют четыре видео, и всё, что заставляет пересчитывать слои, отняло бы
+   у них кадры.
+
+   Каждой карточке — свой сдвиг по времени (через nth-child), иначе шесть
+   иконок в колонке качаются строем, и ряд читается как один механизм, а не
+   как живые элементы. */
+@keyframes welcome-icon-drift {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.88;
+  }
+  50% {
+    transform: translateY(-2.5px) scale(1.035);
+    opacity: 1;
+  }
+}
+
+@keyframes welcome-arrow-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+}
+
+.welcome-card-graphic svg {
+  animation: welcome-icon-drift 5.2s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.welcome-deck > :nth-child(2) .welcome-card-graphic svg { animation-delay: -1.3s; }
+.welcome-deck > :nth-child(3) .welcome-card-graphic svg { animation-delay: -2.6s; }
+.welcome-deck > :nth-child(4) .welcome-card-graphic svg { animation-delay: -3.9s; }
+.welcome-deck > :nth-child(5) .welcome-card-graphic svg { animation-delay: -0.7s; }
+.welcome-deck > :nth-child(6) .welcome-card-graphic svg { animation-delay: -2s; }
+.welcome-deck > :nth-child(7) .welcome-card-graphic svg { animation-delay: -3.3s; }
+.welcome-deck > :nth-child(8) .welcome-card-graphic svg { animation-delay: -4.6s; }
+
+/* Стрелка кивает реже и слабее иконки: она подсказка «сюда», а не
+   украшение. При наведении кивок уступает место обычному сдвигу. */
+.welcome-card-go svg {
+  animation: welcome-arrow-nudge 3.6s ease-in-out infinite;
+}
+.welcome-card:hover .welcome-card-go svg,
+.welcome-card:focus-visible .welcome-card-go svg {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-card-graphic svg,
+  .welcome-card-go svg {
+    animation: none;
+  }
+}
+
+/* Слабые устройства сайт и так разгружает (html[data-lite]): там схемы
+   стоят на месте. */
+html[data-lite] .welcome-card-graphic svg,
+html[data-lite] .welcome-card-go svg {
+  animation: none;
+}
+
+/* Сборка и жизнь внутри схемы.
+
+   Слой первый — сборка. Каждый штрих прорисовывается сам (stroke-dashoffset
+   от полной длины к нулю; длина нормализована атрибутом pathLength=1, см.
+   stroked() в WelcomeBlockGraphic), штрихи вступают по очереди: задержка
+   растёт с номером --k. Иконка не «включается», а складывается на глазах.
+   Начальное состояние прячет штрих только на время задержки
+   (fill-mode: backwards), поэтому после сборки штрих обычный, сплошной, и
+   при отключённой анимации схема просто стоит целой.
+
+   Слой второй — пульс. Узлы (circle) мягко «бьются» — чуть вырастают и
+   вспыхивают, — а линии и рамки мерцают яркостью обводки. Ритм у каждого
+   штриха свой (сдвиг через --k), поэтому внутри схемы всё время что-то
+   происходит, но никогда не в унисон. Анимируются stroke-opacity и
+   transform, а не opacity: у ряда штрихов opacity уже задана атрибутом
+   (тусклые «второстепенные» линии), и общая анимация её бы затёрла. */
+@keyframes welcome-draw {
+  from {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes welcome-line-shimmer {
+  0%,
+  100% {
+    stroke-opacity: 1;
+  }
+  50% {
+    stroke-opacity: 0.45;
+  }
+}
+
+@keyframes welcome-node-pulse {
+  0%,
+  100% {
+    stroke-opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    stroke-opacity: 0.6;
+    transform: scale(1.32);
+  }
+}
+
+.welcome-card-graphic svg g > * {
+  animation:
+    welcome-draw 1.05s cubic-bezier(0.22, 1, 0.36, 1) calc(1.3s + var(--k, 0) * 0.14s) backwards,
+    welcome-line-shimmer 3.4s ease-in-out calc(3.2s + var(--k, 0) * 0.45s) infinite;
+}
+
+.welcome-card-graphic svg circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    welcome-draw 1.05s cubic-bezier(0.22, 1, 0.36, 1) calc(1.3s + var(--k, 0) * 0.14s) backwards,
+    welcome-node-pulse 2.8s ease-in-out calc(3.2s + var(--k, 0) * 0.4s) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-card-graphic svg g > *,
+  .welcome-card-graphic svg circle {
+    animation: none;
+  }
+}
+
+html[data-lite] .welcome-card-graphic svg g > *,
+html[data-lite] .welcome-card-graphic svg circle {
+  animation: none;
+}
+
+/* Знак бренда HUD.SERVICE: слово «.SERVICE» и точка перед логотипом.
+
+   Один источник цвета на шапку, подвал и вступительную сцену — иначе три
+   копии логотипа разъехались бы по оттенку при первой же правке. Градиент
+   от мятного к изумрудному: светлый конец даёт слову блик на тёмном
+   фоне, тёмный держит насыщенность, чтобы на мелком кегле оно не
+   выцветало в бледно-зелёный.
+
+   Свечение — drop-shadow, а не text-shadow: на слове с прозрачной
+   заливкой под градиент text-shadow печатается сплошной плашкой в форме
+   глифа (то же правило, что у .kw). */
+.brand-word {
+  background-image: linear-gradient(90deg, #7cf2b0 0%, #10b981 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.45));
+}
+
+.brand-dot {
+  background: #34d399;
+  box-shadow: 0 0 10px 1px rgba(52, 211, 153, 0.7);
+}
