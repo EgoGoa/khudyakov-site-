@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import CinematicStage, { type ChapterMeta, type Phase } from "@/components/ui/CinematicStage";
-import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import SitesPitch from "@/components/home/sites/SitesPitch";
 import ChapterRail from "@/components/ui/ChapterRail";
 import SitesMethodAudience from "@/components/home/sites/SitesMethodAudience";
@@ -104,7 +103,6 @@ const CHAPTERS: ChapterMeta[] = [
 export default function SitesServicePage() {
   return (
     <ServiceProvider forcedValue="sites">
-      <ServiceMenuOverlay service="sites" />
 
       {/* .sites-warm-headings turns every chapter heading inside the stage
           from the site's cyan neon to the brand orange (see globals.css).

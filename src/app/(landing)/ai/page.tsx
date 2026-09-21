@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import CinematicStage, { type ChapterMeta, type Phase } from "@/components/ui/CinematicStage";
-import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import ChapterRail from "@/components/ui/ChapterRail";
 import AiPitch from "@/components/home/ai/AiPitch";
 import AiPortfolio from "@/components/home/ai/AiPortfolio";
@@ -87,7 +86,6 @@ const CHAPTERS: ChapterMeta[] = [
 export default function AiServicePage() {
   return (
     <ServiceProvider forcedValue="ai">
-      <ServiceMenuOverlay service="ai" />
 
       {/* `push` is the slow zoom across the whole film — chapters 04 and 06
           sit on footage that is nearly frozen, and without it those screens

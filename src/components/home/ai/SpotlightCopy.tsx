@@ -54,12 +54,12 @@ export default function SpotlightCopy({
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           {showTitle && (
-            <h3 className="font-display text-base uppercase leading-tight tracking-tight text-white sm:text-lg">
+            <h3 className="font-display text-[15px] uppercase leading-tight tracking-tight text-white sm:text-lg">
               {data.title}
             </h3>
           )}
           {data.tagline && (
-            <p className={`spotlight-accent spotlight-sheen ${showTitle ? "mt-1" : ""} font-display text-[13px] uppercase leading-snug tracking-[0.05em] sm:text-sm`}>
+            <p className={`spotlight-accent spotlight-sheen ${showTitle ? "mt-1" : ""} font-display text-[11px] uppercase leading-snug tracking-[0.05em] sm:text-sm`}>
               {data.tagline}
             </p>
           )}
@@ -107,12 +107,12 @@ export default function SpotlightCopy({
                 animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
                 exit={{ opacity: 0, filter: "blur(12px)", scale: 0.99 }}
                 transition={{ duration: reduced ? 0 : 1.1, ease: [0.4, 0, 0.2, 1] }}
-                className="spotlight-accent spotlight-sheen font-display text-[15px] font-bold uppercase leading-tight tracking-tight sm:text-[17px]"
+                className="spotlight-accent spotlight-sheen font-display text-[13px] font-bold uppercase leading-tight tracking-tight sm:text-[17px]"
               >
                 {benefit.punch}
               </motion.span>
             </div>
-            <p className="text-[13.5px] leading-relaxed text-white/90 sm:text-sm">
+            <p className="text-[12px] leading-snug text-white/90 sm:text-sm sm:leading-relaxed">
               {splitWords(benefit.text).map((word, i) => (
                 <motion.span
                   key={`${step}-${i}`}

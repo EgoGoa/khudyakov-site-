@@ -35,30 +35,3 @@ export function WelcomeGateProvider({ children }: { children: ReactNode }) {
 export function useWelcomeGate() {
   return useContext(WelcomeGateContext);
 }
-
-// Третий выход: посетитель выбрал направление и формат прямо в вайб-окне и
-// уехал на нужную страницу. Встречать его там ещё одним окном меню значит
-// спрашивать то, на что он только что ответил, — ServiceMenuOverlay читает
-// эту метку и молчит до конца вкладки.
-//
-// sessionStorage, а не контекст: метка должна пережить и полную перезагрузку
-// страницы, а не только клиентский переход внутри layout'а.
-const VIBE_ROUTED_KEY = "hdkv_vibe_routed";
-
-export function markVibeRouted() {
-  try {
-    window.sessionStorage.setItem(VIBE_ROUTED_KEY, "1");
-  } catch {
-    /* приватный режим / нет квоты — в худшем случае меню раздела всё-таки
-       появится один раз, это не ломает навигацию */
-  }
-}
-
-export function vibeRouted(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.sessionStorage.getItem(VIBE_ROUTED_KEY) === "1";
-  } catch {
-    return false;
-  }
-}

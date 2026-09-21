@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import CinematicStage, { type ChapterMeta, type Phase } from "@/components/ui/CinematicStage";
-import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import ChapterRail from "@/components/ui/ChapterRail";
 import SmmPitch from "@/components/home/smm/SmmPitch";
 import SmmMethod from "@/components/home/smm/SmmMethod";
@@ -95,7 +94,6 @@ const CHAPTERS: ChapterMeta[] = [
 export default function SmmServicePage() {
   return (
     <ServiceProvider forcedValue="smm">
-      <ServiceMenuOverlay service="smm" />
 
       {/* .smm-violet-headings repaints every chapter heading inside the stage
           from the site's cyan neon to this page's violet, and carries the

@@ -6,7 +6,6 @@ import Trust from "@/components/home/Trust";
 import Offer from "@/components/home/Offer";
 import Process from "@/components/home/Process";
 import Close from "@/components/home/Close";
-import ServiceMenuOverlay from "@/components/home/ServiceMenuOverlay";
 import CinematicStage, { type ChapterMeta } from "@/components/ui/CinematicStage";
 import ChapterRail from "@/components/ui/ChapterRail";
 import CinematicSection from "@/components/ui/CinematicSection";
@@ -65,7 +64,6 @@ const CHAPTERS: ChapterMeta[] = [
 export default function ContentServicePage() {
   return (
     <ServiceProvider forcedValue="content">
-      <ServiceMenuOverlay service="content" />
 
       {/* .content-warm-headings turns every `.kw` keyword span inside the
           stage from the site-wide magenta→cyan to /content's own

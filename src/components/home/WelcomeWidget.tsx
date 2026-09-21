@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
-import { markVibeRouted } from "@/lib/welcome-gate";
 import WelcomeBlockGraphic, { WelcomeDirectionGraphic } from "@/components/home/WelcomeBlockGraphic";
 import { blockHref, blocksFor, directionCards, type BlockCard } from "@/lib/welcome-blocks";
 
@@ -98,10 +97,22 @@ function hexToRgb(hex: string) {
   return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
 }
 
+/** Яркая середина градиента названия. Прямой переход между двумя цветами
+ *  страницы проходит через грязный серо-синий (розовый → голубой у /sites,
+ *  фиолетовый → голубой у /smm) — середина буквы темнеет. Промежуточный
+ *  цвет берётся из той же гаммы, но такой же яркости, как края. */
+const GRADIENT_MID: Record<ServiceKey, string> = {
+  content: "#ff5a90",
+  ai: "#6fe58a",
+  sites: "#a27bff",
+  smm: "#7d8cfb",
+};
+
 function accentVars(key: ServiceKey): CSSProperties {
   const g = PAGE_GRADIENT[key];
   return {
     "--sp-from": g.from,
+    "--sp-mid": GRADIENT_MID[key],
     "--sp-to": g.to,
     "--card-glow-rgb": hexToRgb(g.to),
   } as CSSProperties;
@@ -192,9 +203,6 @@ export default function WelcomeWidget({
 
   const go = useCallback(
     (href: string) => {
-      // Метка «переход из вайб-окна»: страница раздела не встретит человека
-      // вторым меню сразу после того, как он выбрал здесь.
-      markVibeRouted();
       onClose();
       setTimeout(() => router.push(href), EXIT_BEFORE_ROUTE_MS);
     },

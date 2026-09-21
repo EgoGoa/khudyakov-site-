@@ -5822,3 +5822,90 @@ html[data-lite] .welcome-card-graphic svg circle {
   background: #34d399;
   box-shadow: 0 0 10px 1px rgba(52, 211, 153, 0.7);
 }
+
+/* Названия на карточках вступительной сцены: яркий градиент без затемнения
+   к центру букв.
+
+   Причина затемнения была не в самом градиенте: `.welcome-card-title`
+   задаёт чёрный text-shadow для читаемости, а название внутри него набрано
+   прозрачной заливкой под градиент (background-clip: text). Тень
+   наследуется вложенным span'ом и печатается сквозь прозрачные буквы тёмным
+   пятном — отсюда «темнота к центру». Тень снята, читаемость держит
+   drop-shadow: он идёт по уже закрашенному глифу и лежит за ним, а не
+   сквозь него.
+
+   Плюс третья остановка --sp-mid: прямой переход между двумя цветами
+   страницы проходит через мутную середину, средний цвет её убирает. */
+.welcome-card-title .spotlight-accent {
+  background-image: linear-gradient(92deg, var(--sp-from) 0%, var(--sp-mid, var(--sp-from)) 50%, var(--sp-to) 100%);
+  text-shadow: none;
+  filter: drop-shadow(0 1px 5px rgba(0, 0, 0, 0.5)) saturate(1.15);
+}
+
+/* Наведение: карточка плавно подрастает и светится ярче, соседи чуть
+   притухают — как у карточек тарифов.
+
+   Через отдельное свойство `scale`, а не `transform`: framer-motion пишет
+   в inline-style собственный transform (у карточек он анимирует появление)
+   и перебивал бы любое CSS-значение transform на :hover, — карточка бы
+   просто не реагировала. `scale` и `translate` — независимые свойства, их
+   framer не трогает. */
+.welcome-card {
+  transition:
+    scale 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease,
+    box-shadow 0.5s ease;
+}
+
+.welcome-card:hover,
+.welcome-card:focus-visible {
+  transform: none;
+  scale: 1.035;
+  translate: 0 -2px;
+  z-index: 2;
+}
+
+.welcome-deck:hover .welcome-card:not(:hover),
+.welcome-deck:has(.welcome-card:focus-visible) .welcome-card:not(:focus-visible) {
+  opacity: 0.72;
+}
+
+.welcome-card:hover .welcome-card-media {
+  opacity: 0.6;
+}
+
+@media (hover: none) {
+  .welcome-deck:hover .welcome-card:not(:hover) {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-card:hover,
+  .welcome-card:focus-visible {
+    scale: 1;
+    translate: none;
+  }
+}
+
+/* Язычок «Открыть: …» над окном услуги — телефон.
+
+   На десктопе он несёт крупную подпись с ореолом, и на 375px «Открыть:
+   Видеореклама» вылезала шире самого окна и наезжала на его верхний край.
+   На узком экране подпись мельче, отступы уже, а ширина ограничена
+   экраном, так что длинное название обрезается многоточием, а не
+   выпирает. */
+@media (max-width: 639px) {
+  .spotlight-tab {
+    max-width: calc(100vw - 56px);
+    gap: 0.45rem;
+    padding: 0.45rem 1.1rem 0.55rem;
+  }
+  .spotlight-tab .spotlight-open-cta-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+  }
+}

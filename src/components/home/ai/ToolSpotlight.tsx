@@ -165,9 +165,19 @@ export default function ToolSpotlight({
   }, [measure, fill]);
 
   const stripH = fill && geom.height ? geom.height : STRIP_HEIGHT;
-  const openHeight = Math.min(420, Math.max(300, Math.round(geom.vh * 0.36)));
-  // Как у первого окна: ширина колонки контента (max-w-7xl минус поля).
-  const openWidth = Math.min(1200, geom.vw - 48);
+  // Телефон — отдельная раскладка, а не сжатая настольная. «Треть экрана»
+  // (300–420px) на десктопе несёт сцену слева и текст справа; на 375px
+  // те же 300px должны были вместить и заголовок, и слайд, и цифры — всё
+  // это лезло друг на друга и за нижний край. Поэтому на узком экране окно
+  // выше (почти весь экран за вычетом шапки и язычка), сцена ложится
+  // полосой сверху, а текст мельче.
+  const phone = geom.vw < 640;
+  const openHeight = phone
+    ? Math.max(380, Math.min(540, geom.vh - 170))
+    : Math.min(420, Math.max(300, Math.round(geom.vh * 0.36)));
+  // Как у первого окна: ширина колонки контента (max-w-7xl минус поля). На
+  // телефоне поля уже — 16px с каждой стороны, а не 24.
+  const openWidth = Math.min(1200, geom.vw - (phone ? 32 : 48));
   // Якорь панели — левый или правый край кнопки; сдвиг ведёт её так, чтобы
   // раскрытая панель встала по центру экрана, где и стоит вся глава.
   const target = (geom.vw - openWidth) / 2;
@@ -301,7 +311,7 @@ export default function ToolSpotlight({
                 className="absolute inset-0 flex flex-col"
               >
                 <div
-                  className={`flex min-h-0 flex-1 gap-5 p-5 pb-4 lg:gap-7 lg:p-6 lg:pb-5 ${
+                  className={`flex min-h-0 flex-1 gap-3 p-4 pb-3 sm:p-5 sm:pb-4 lg:gap-7 lg:p-6 lg:pb-5 ${
                     "max-lg:flex-col lg:items-stretch"
                   }`}
                 >
@@ -310,14 +320,12 @@ export default function ToolSpotlight({
                     полосе — слева колонкой: в обоих случаях она занимает
                     примерно треть окна, просто по разной оси. */}
                 <div
-                  className={`relative shrink-0 rounded-2xl bg-white/[0.03] ring-1 ring-white/10 ${
-                    "hidden w-[34%] lg:block"
-                  }`}
+                  className={`relative h-[92px] w-full shrink-0 rounded-2xl bg-white/[0.03] ring-1 ring-white/10 sm:h-[120px] lg:h-auto lg:w-[34%]`}
                 >
                   <SpotlightScene slug={data.slug} step={step} />
                 </div>
 
-                <SpotlightCopy data={data} step={step} setStep={setStep} onClose={close} />
+                <SpotlightCopy data={data} step={step} setStep={setStep} onClose={close} compact={phone} showSub={!phone} />
                 </div>
 
                 {/* Кнопка — язычок НАД окном: верхняя кромка плавно
