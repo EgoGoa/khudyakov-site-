@@ -40,7 +40,7 @@ export default function SpotlightScene({
   // превратились бы в грязь.
   return (
     <CardCtx.Provider value={card}>
-    <div className="tool-scene relative h-full w-full">
+    <div className={`tool-scene relative h-full w-full ${card ? "tool-scene-card" : ""}`}>
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={step}
@@ -63,6 +63,7 @@ import { CONTENT_SCENES } from "@/components/home/ai/SpotlightScenesContent";
 import { COMMS_SCENES } from "@/components/home/ai/SpotlightScenesComms";
 import { GROWTH_SCENES } from "@/components/home/ai/SpotlightScenesGrowth";
 import { SITES_SCENES } from "@/components/home/ai/SpotlightScenesSites";
+import { SMM_SCENES } from "@/components/home/ai/SpotlightScenesSmm";
 
 /* ── Сцены инструмента «Единый AI-чат» ──────────────────────────────── */
 
@@ -77,7 +78,7 @@ function SceneLearn({ mini }: SceneProps) {
         <In key={label} at={1 + i}>
           <rect x="16" y={72 + i * 32} width="76" height="24" rx="7" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.16)" />
           <rect x="24" y={80 + i * 32} width="8" height="8" rx="2" fill="var(--sp-from)" fillOpacity="0.9" />
-          <text x="38" y={87 + i * 32} fill="rgba(255,255,255,0.85)" fontSize="8.5" fontFamily="inherit">
+          <text x="38" y={87 + i * 32} fill="rgba(255,255,255,0.85)" fontSize="13.2" fontFamily="inherit">
             {label}
           </text>
         </In>
@@ -87,17 +88,17 @@ function SceneLearn({ mini }: SceneProps) {
       <circle cx="190" cy="116" r="40" fill="url(#sp-glow)" />
       <circle cx="190" cy="116" r="24" fill="rgba(10,13,16,0.92)" stroke="url(#sp-ramp)" strokeWidth="1.5" />
       <circle cx="190" cy="116" r="31" stroke="url(#sp-ramp)" strokeOpacity="0.8" strokeWidth="1" strokeDasharray="5 9" className="sp-spin" style={{ transformOrigin: "190px 116px" }} />
-      <text x="190" y="120" textAnchor="middle" fill="#fff" fontSize="10" letterSpacing="1.6" fontFamily="inherit">
+      <text x="190" y="120" textAnchor="middle" fill="#fff" fontSize="15.5" letterSpacing="1.6" fontFamily="inherit">
         AI
       </text>
       </In>
       <In at={5}>
         <rect x="232" y="92" width="96" height="34" rx="10" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.55" />
         <path d="M 236 122 L 232 132 L 246 124 Z" fill="rgba(255,255,255,0.08)" />
-        <text x="242" y="106" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="242" y="106" fill="#fff" fontSize="12.4" fontFamily="inherit">
           «Да, свободно
         </text>
-        <text x="242" y="117" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="242" y="117" fill="#fff" fontSize="12.4" fontFamily="inherit">
           завтра в 12:00»
         </text>
       </In>
@@ -118,7 +119,7 @@ function SceneChannels({ mini }: SceneProps) {
           <In key={name} at={1 + i}>
             <rect x="14" y={y - 11} width="86" height="22" rx="11" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)" />
             <circle cx="27" cy={y} r="3.4" fill="var(--sp-from)" className="sp-pulse" style={{ animationDelay: `${i * 0.24}s` }} />
-            <text x="37" y={y + 3.4} fill="rgba(255,255,255,0.85)" fontSize="8.5" fontFamily="inherit">
+            <text x="37" y={y + 3.4} fill="rgba(255,255,255,0.85)" fontSize="13.2" fontFamily="inherit">
               {name}
             </text>
             <path
@@ -135,14 +136,14 @@ function SceneChannels({ mini }: SceneProps) {
       <In at={5}>
       <circle cx="206" cy="115" r="38" fill="url(#sp-glow)" />
       <circle cx="206" cy="115" r="22" fill="rgba(10,13,16,0.92)" stroke="url(#sp-ramp)" strokeWidth="1.5" />
-      <text x="206" y="119" textAnchor="middle" fill="#fff" fontSize="9.5" letterSpacing="1.6" fontFamily="inherit">
+      <text x="206" y="119" textAnchor="middle" fill="#fff" fontSize="14.7" letterSpacing="1.6" fontFamily="inherit">
         AI
       </text>
       </In>
       <In at={6}>
       <path d="M 228 115 L 252 115" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
       <rect x="256" y="76" width="70" height="78" rx="12" fill="rgba(255,255,255,0.05)" stroke="var(--sp-to)" strokeOpacity="0.5" />
-      <text x="266" y="92" fill="rgba(255,255,255,0.5)" fontSize="7" letterSpacing="1.2" fontFamily="inherit">
+      <text x="266" y="92" fill="rgba(255,255,255,0.5)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
         ОДНО ОКНО
       </text>
       </In>
@@ -177,19 +178,19 @@ function SceneHandoff({ mini }: SceneProps) {
       <In at={6}>
         <rect x="184" y="72" width="142" height="30" rx="15" fill="rgba(255,255,255,0.06)" stroke="var(--sp-to)" strokeOpacity="0.5" />
         <circle cx="200" cy="87" r="8" fill="url(#sp-ramp)" fillOpacity="0.9" />
-        <text x="214" y="90" fill="#fff" fontSize="9" fontFamily="inherit">
+        <text x="214" y="90" fill="#fff" fontSize="14.0" fontFamily="inherit">
           Менеджер
         </text>
-        <text x="272" y="90" fill="var(--sp-to)" fontSize="7.5" fontFamily="inherit">
+        <text x="272" y="90" fill="var(--sp-to)" fontSize="11.6" fontFamily="inherit">
           + история
         </text>
       </In>
       <In at={7}>
         <rect x="184" y="112" width="142" height="48" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" />
-        <text x="196" y="130" fill="rgba(255,255,255,0.75)" fontSize="8" fontFamily="inherit">
+        <text x="196" y="130" fill="rgba(255,255,255,0.75)" fontSize="12.4" fontFamily="inherit">
           Горячий лид, вопрос
         </text>
-        <text x="196" y="144" fill="#fff" fontSize="8" fontWeight="600" fontFamily="inherit">
+        <text x="196" y="144" fill="#fff" fontSize="12.4" fontWeight="600" fontFamily="inherit">
           про монтаж и сроки
         </text>
       </In>
@@ -207,7 +208,7 @@ function SceneGrowth({ mini }: SceneProps) {
       {bars.map((h, i) => (
         <In key={i} at={1 + i}>
           <rect x={30 + i * 34} y={162 - h} width="18" height={h} rx="5" fill="url(#sp-ramp)" fillOpacity={0.25 + i * 0.13} />
-          <text x={39 + i * 34} y="174" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="6.5" fontFamily="inherit">
+          <text x={39 + i * 34} y="174" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10.1" fontFamily="inherit">
             {i + 1} мес
           </text>
         </In>
@@ -224,7 +225,7 @@ function SceneGrowth({ mini }: SceneProps) {
       </In>
       <In at={8}>
         <rect x="236" y="40" width="92" height="22" rx="11" fill="rgba(255,255,255,0.07)" stroke="var(--sp-from)" strokeOpacity="0.55" />
-        <text x="246" y="54.5" fill="#fff" fontSize="8" fontWeight="600" fontFamily="inherit">
+        <text x="246" y="54.5" fill="#fff" fontSize="12.4" fontWeight="600" fontFamily="inherit">
           разбор диалогов
         </text>
       </In>
@@ -249,7 +250,7 @@ function AgentChannels({ mini }: SceneProps) {
         return (
           <In key={name} at={1 + i}>
             <rect x="14" y={y - 14} width="112" height="30" rx="9" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" />
-            <text x="24" y={y - 2} fill="rgba(255,255,255,0.8)" fontSize="8" fontFamily="inherit">
+            <text x="24" y={y - 2} fill="rgba(255,255,255,0.8)" fontSize="12.4" fontFamily="inherit">
               {name}
             </text>
             <rect x="24" y={y + 3} width="62" height="5" rx="2.5" fill="rgba(255,255,255,0.25)" />
@@ -260,19 +261,19 @@ function AgentChannels({ mini }: SceneProps) {
       <In at={4}>
         <circle cx="200" cy="108" r="36" fill="url(#sp-glow)" />
         <circle cx="200" cy="108" r="22" fill="rgba(10,13,16,0.92)" stroke="url(#sp-ramp)" strokeWidth="1.5" />
-        <text x="200" y="112" textAnchor="middle" fill="#fff" fontSize="9.5" letterSpacing="1.6" fontFamily="inherit">
+        <text x="200" y="112" textAnchor="middle" fill="#fff" fontSize="14.7" letterSpacing="1.6" fontFamily="inherit">
           AI
         </text>
       </In>
       <In at={5}>
         <rect x="238" y="82" width="90" height="52" rx="12" fill="rgba(255,255,255,0.07)" stroke="var(--sp-to)" strokeOpacity="0.55" />
-        <text x="250" y="102" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="250" y="102" fill="#fff" fontSize="12.4" fontFamily="inherit">
           «Да, свободно.
         </text>
-        <text x="250" y="114" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="250" y="114" fill="#fff" fontSize="12.4" fontFamily="inherit">
           Уточню пару
         </text>
-        <text x="250" y="126" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="250" y="126" fill="#fff" fontSize="12.4" fontFamily="inherit">
           деталей»
         </text>
       </In>
@@ -293,17 +294,17 @@ function AgentKnowledge({ mini }: SceneProps) {
       <Headline value="0 выдумок" note="цены только из вашего прайса" mini={mini} />
       <In at={1}>
         <rect x="14" y="62" width="150" height="96" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)" />
-        <text x="26" y="78" fill="rgba(255,255,255,0.45)" fontSize="7" letterSpacing="1.2" fontFamily="inherit">
+        <text x="26" y="78" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
           ВАШ ПРАЙС
         </text>
       </In>
       {rows.map(([name, price], i) => (
         <In key={name} at={2 + i}>
           <rect x="24" y={86 + i * 22} width="130" height="18" rx="6" fill={i === 1 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.05)"} />
-          <text x="32" y={98 + i * 22} fill="rgba(255,255,255,0.8)" fontSize="7.5" fontFamily="inherit">
+          <text x="32" y={98 + i * 22} fill="rgba(255,255,255,0.8)" fontSize="11.6" fontFamily="inherit">
             {name}
           </text>
-          <text x="148" y={98 + i * 22} textAnchor="end" fill={i === 1 ? "var(--sp-from)" : "rgba(255,255,255,0.55)"} fontSize="7.5" fontFamily="inherit">
+          <text x="148" y={98 + i * 22} textAnchor="end" fill={i === 1 ? "var(--sp-from)" : "rgba(255,255,255,0.55)"} fontSize="11.6" fontFamily="inherit">
             {price}
           </text>
         </In>
@@ -311,13 +312,13 @@ function AgentKnowledge({ mini }: SceneProps) {
       <In at={5}>
         <path d="M 166 108 C 190 108 194 100 214 100" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
         <rect x="218" y="74" width="110" height="52" rx="12" fill="rgba(255,255,255,0.07)" stroke="var(--sp-to)" strokeOpacity="0.55" />
-        <text x="230" y="94" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="230" y="94" fill="#fff" fontSize="12.4" fontFamily="inherit">
           «Съёмочный день —
         </text>
-        <text x="230" y="106" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="230" y="106" fill="#fff" fontSize="12.4" fontFamily="inherit">
           от 90 000 ₽, в цену
         </text>
-        <text x="230" y="118" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="230" y="118" fill="#fff" fontSize="12.4" fontFamily="inherit">
           входит монтаж»
         </text>
       </In>
@@ -348,16 +349,16 @@ function AgentBrief({ mini }: SceneProps) {
       </In>
       <In at={5}>
         <rect x="182" y="56" width="146" height="106" rx="12" fill="rgba(255,255,255,0.06)" stroke="var(--sp-to)" strokeOpacity="0.55" />
-        <text x="194" y="72" fill="rgba(255,255,255,0.5)" fontSize="7" letterSpacing="1.2" fontFamily="inherit">
+        <text x="194" y="72" fill="rgba(255,255,255,0.5)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
           ЗАЯВКА
         </text>
       </In>
       {fields.map(([k, v], i) => (
         <In key={k} at={6 + i}>
-          <text x="194" y={90 + i * 18} fill="rgba(255,255,255,0.5)" fontSize="7.5" fontFamily="inherit">
+          <text x="194" y={90 + i * 18} fill="rgba(255,255,255,0.5)" fontSize="11.6" fontFamily="inherit">
             {k}
           </text>
-          <text x="316" y={90 + i * 18} textAnchor="end" fill="#fff" fontSize="7.5" fontFamily="inherit">
+          <text x="316" y={90 + i * 18} textAnchor="end" fill="#fff" fontSize="11.6" fontFamily="inherit">
             {v}
           </text>
         </In>
@@ -376,7 +377,7 @@ function AgentFunnel({ mini }: SceneProps) {
       {cols.map((name, i) => (
         <In key={name} at={1 + i}>
           <rect x={16 + i * 106} y="60" width="96" height="102" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.13)" />
-          <text x={28 + i * 106} y="76" fill="rgba(255,255,255,0.45)" fontSize="7" letterSpacing="1.1" fontFamily="inherit">
+          <text x={28 + i * 106} y="76" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
             {name.toUpperCase()}
           </text>
           {[0, 1].map((j) => (
@@ -386,7 +387,7 @@ function AgentFunnel({ mini }: SceneProps) {
       ))}
       <In at={5}>
         <rect x="26" y="128" width="76" height="16" rx="5" fill="url(#sp-ramp)" fillOpacity="0.75" />
-        <text x="34" y="139" fill="#06110c" fontSize="7" fontWeight="700" fontFamily="inherit">
+        <text x="34" y="139" fill="#06110c" fontSize="10.9" fontWeight="700" fontFamily="inherit">
           ИЗ ЧАТА
         </text>
       </In>
@@ -421,13 +422,13 @@ function VideoScript({ mini }: SceneProps) {
       {beats.map(([t, name, line], i) => (
         <In key={name} at={2 + i}>
           <rect x="14" y={82 + i * 34} width="312" height="28" rx="9" fill={i === 0 ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.045)"} stroke={i === 0 ? "var(--sp-from)" : "rgba(255,255,255,0.12)"} strokeOpacity={i === 0 ? 0.6 : 1} />
-          <text x="26" y={100 + i * 34} fill="rgba(255,255,255,0.45)" fontSize="7.5" fontFamily="inherit">
+          <text x="26" y={100 + i * 34} fill="rgba(255,255,255,0.45)" fontSize="11.6" fontFamily="inherit">
             {t}
           </text>
-          <text x="58" y={100 + i * 34} fill="#fff" fontSize="8.5" fontFamily="inherit">
+          <text x="58" y={100 + i * 34} fill="#fff" fontSize="13.2" fontFamily="inherit">
             {name}
           </text>
-          <text x="316" y={100 + i * 34} textAnchor="end" fill="rgba(255,255,255,0.6)" fontSize="7.5" fontFamily="inherit">
+          <text x="316" y={100 + i * 34} textAnchor="end" fill="rgba(255,255,255,0.6)" fontSize="11.6" fontFamily="inherit">
             {line}
           </text>
         </In>
@@ -448,7 +449,7 @@ function VideoLook({ mini }: SceneProps) {
         <In key={r} at={1 + i}>
           <rect x="14" y={62 + i * 26} width="88" height="20" rx="10" fill="rgba(255,255,255,0.05)" stroke="var(--sp-to)" strokeOpacity="0.4" />
           <circle cx="26" cy={72 + i * 26} r="3" fill="var(--sp-from)" />
-          <text x="36" y={75 + i * 26} fill="rgba(255,255,255,0.8)" fontSize="8" fontFamily="inherit">
+          <text x="36" y={75 + i * 26} fill="rgba(255,255,255,0.8)" fontSize="12.4" fontFamily="inherit">
             {r}
           </text>
         </In>
@@ -462,10 +463,10 @@ function VideoLook({ mini }: SceneProps) {
       ))}
       <In at={8}>
         <rect x="120" y="118" width="206" height="40" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)" />
-        <text x="132" y="134" fill="rgba(255,255,255,0.5)" fontSize="7" letterSpacing="1.2" fontFamily="inherit">
+        <text x="132" y="134" fill="rgba(255,255,255,0.5)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
           ОДИН СВЕТ · ОДНА ПАЛИТРА
         </text>
-        <text x="132" y="148" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="132" y="148" fill="#fff" fontSize="12.4" fontFamily="inherit">
           Кадры читаются как одна съёмка
         </text>
       </In>
@@ -484,7 +485,7 @@ function VideoAvatar({ mini }: SceneProps) {
         <rect x="14" y="60" width="104" height="98" rx="12" fill="rgba(255,255,255,0.05)" stroke="var(--sp-from)" strokeOpacity="0.5" />
         <circle cx="66" cy="94" r="17" fill="url(#sp-ramp)" fillOpacity="0.8" />
         <path d="M 44 134 C 46 116 86 116 88 134 Z" fill="rgba(255,255,255,0.2)" />
-        <text x="66" y="150" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="7" letterSpacing="1.1" fontFamily="inherit">
+        <text x="66" y="150" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
           СОБРАН ОДИН РАЗ
         </text>
       </In>
@@ -496,7 +497,7 @@ function VideoAvatar({ mini }: SceneProps) {
           <rect x={150 + (i % 2) * 92} y={64 + Math.floor(i / 2) * 50} width="82" height="42" rx="9" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.13)" />
           <circle cx={166 + (i % 2) * 92} cy={80 + Math.floor(i / 2) * 50} r="7" fill="url(#sp-ramp)" fillOpacity="0.7" />
           <rect x={178 + (i % 2) * 92} y={77 + Math.floor(i / 2) * 50} width="42" height="4" rx="2" fill="rgba(255,255,255,0.3)" />
-          <text x={158 + (i % 2) * 92} y={99 + Math.floor(i / 2) * 50} fill="rgba(255,255,255,0.5)" fontSize="7" fontFamily="inherit">
+          <text x={158 + (i % 2) * 92} y={99 + Math.floor(i / 2) * 50} fill="rgba(255,255,255,0.5)" fontSize="10.9" fontFamily="inherit">
             Выпуск {i + 1}
           </text>
         </In>
@@ -518,10 +519,10 @@ function VideoVersions({ mini }: SceneProps) {
       <Headline value="−50%" note="цена клика на такой подаче" mini={mini} />
       <In at={1}>
         <rect x="14" y="70" width="74" height="60" rx="10" fill="url(#sp-ramp)" fillOpacity="0.22" stroke="var(--sp-from)" strokeOpacity="0.5" />
-        <text x="51" y="96" textAnchor="middle" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="51" y="96" textAnchor="middle" fill="#fff" fontSize="12.4" fontFamily="inherit">
           Исходник
         </text>
-        <text x="51" y="110" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7" fontFamily="inherit">
+        <text x="51" y="110" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="10.9" fontFamily="inherit">
           одна съёмка
         </text>
       </In>
@@ -529,10 +530,10 @@ function VideoVersions({ mini }: SceneProps) {
         <In key={ratio as string} at={2 + i}>
           <path d={`M 92 100 C 116 100 120 ${64 + i * 40} 140 ${64 + i * 40}`} stroke="var(--sp-to)" strokeOpacity="0.6" strokeWidth="1.2" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
           <rect x="146" y={(64 + i * 40) - (h as number) / 2} width={w as number} height={h as number} rx="7" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.16)" />
-          <text x={150 + (w as number) + 10} y={(64 + i * 40) - 2} fill="#fff" fontSize="8" fontFamily="inherit">
+          <text x={150 + (w as number) + 10} y={(64 + i * 40) - 2} fill="#fff" fontSize="12.4" fontFamily="inherit">
             {ratio as string}
           </text>
-          <text x={150 + (w as number) + 10} y={(64 + i * 40) + 10} fill="rgba(255,255,255,0.5)" fontSize="7" fontFamily="inherit">
+          <text x={150 + (w as number) + 10} y={(64 + i * 40) + 10} fill="rgba(255,255,255,0.5)" fontSize="10.9" fontFamily="inherit">
             {label as string}
           </text>
         </In>
@@ -555,7 +556,7 @@ function ContentTemplate({ mini }: SceneProps) {
       <Headline value="−70…90%" note="себестоимость против съёмки" mini={mini} />
       <In at={1}>
         <rect x="14" y="62" width="96" height="96" rx="12" fill="rgba(255,255,255,0.06)" stroke="var(--sp-from)" strokeOpacity="0.55" strokeDasharray="5 5" />
-        <text x="62" y="80" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7" letterSpacing="1.2" fontFamily="inherit">
+        <text x="62" y="80" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
           ШАБЛОН
         </text>
         <rect x="28" y="88" width="68" height="34" rx="6" fill="rgba(255,255,255,0.1)" />
@@ -588,7 +589,7 @@ function ContentRules({ mini }: SceneProps) {
         <In key={r} at={1 + i}>
           <rect x="14" y={62 + i * 25} width="96" height="19" rx="9.5" fill="rgba(255,255,255,0.05)" stroke="var(--sp-to)" strokeOpacity="0.4" />
           <circle cx="27" cy={71.5 + i * 25} r="2.8" fill="var(--sp-from)" />
-          <text x="37" y={74.5 + i * 25} fill="rgba(255,255,255,0.8)" fontSize="8" fontFamily="inherit">
+          <text x="37" y={74.5 + i * 25} fill="rgba(255,255,255,0.8)" fontSize="12.4" fontFamily="inherit">
             {r}
           </text>
         </In>
@@ -617,16 +618,16 @@ function ContentTexts({ mini }: SceneProps) {
       <Headline value="×10" note="вариантов на том же бюджете" mini={mini} />
       <In at={1}>
         <rect x="14" y="60" width="130" height="100" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)" />
-        <text x="26" y="76" fill="rgba(255,255,255,0.45)" fontSize="7" letterSpacing="1.2" fontFamily="inherit">
+        <text x="26" y="76" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
           ТОВАРНАЯ БАЗА
         </text>
       </In>
       {fields.map(([k, v], i) => (
         <In key={k} at={2 + i}>
-          <text x="26" y={96 + i * 22} fill="rgba(255,255,255,0.5)" fontSize="7.5" fontFamily="inherit">
+          <text x="26" y={96 + i * 22} fill="rgba(255,255,255,0.5)" fontSize="11.6" fontFamily="inherit">
             {k}
           </text>
-          <text x="134" y={96 + i * 22} textAnchor="end" fill="#fff" fontSize="7.5" fontFamily="inherit">
+          <text x="134" y={96 + i * 22} textAnchor="end" fill="#fff" fontSize="11.6" fontFamily="inherit">
             {v}
           </text>
         </In>
@@ -634,7 +635,7 @@ function ContentTexts({ mini }: SceneProps) {
       <In at={5}>
         <path d="M 150 110 L 176 110" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
         <rect x="182" y="60" width="144" height="100" rx="12" fill="rgba(255,255,255,0.06)" stroke="var(--sp-to)" strokeOpacity="0.5" />
-        <text x="194" y="78" fill="var(--sp-to)" fontSize="7" letterSpacing="1.2" fontFamily="inherit">
+        <text x="194" y="78" fill="var(--sp-to)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
           ОПИСАНИЕ КАРТОЧКИ
         </text>
       </In>
@@ -703,17 +704,17 @@ function VoiceTranscript({ mini }: SceneProps) {
         {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
           <rect key={i} x={26 + i * 11} y={78 - (i % 3) * 6} width="4" height={16 + (i % 3) * 12} rx="2" fill="url(#sp-ramp)" fillOpacity="0.45" />
         ))}
-        <text x="26" y="150" fill="rgba(255,255,255,0.45)" fontSize="7" letterSpacing="1.2" fontFamily="inherit">
+        <text x="26" y="150" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
           ИСХОДНАЯ ДОРОЖКА
         </text>
       </In>
       {lines.map(([t, line], i) => (
         <In key={t} at={2 + i}>
           <rect x="178" y={62 + i * 32} width="148" height="26" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" />
-          <text x="188" y={79 + i * 32} fill="var(--sp-from)" fontSize="7" fontFamily="inherit">
+          <text x="188" y={79 + i * 32} fill="var(--sp-from)" fontSize="10.9" fontFamily="inherit">
             {t}
           </text>
-          <text x="218" y={79 + i * 32} fill="#fff" fontSize="7.5" fontFamily="inherit">
+          <text x="218" y={79 + i * 32} fill="#fff" fontSize="11.6" fontFamily="inherit">
             {line}
           </text>
         </In>
@@ -730,26 +731,26 @@ function VoiceTranslate({ mini }: SceneProps) {
       <Headline value="×10" note="разница в цене со студией" mini={mini} />
       <In at={1}>
         <rect x="14" y="66" width="140" height="42" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" />
-        <text x="26" y="82" fill="rgba(255,255,255,0.4)" fontSize="7" letterSpacing="1.1" fontFamily="inherit">
+        <text x="26" y="82" fill="rgba(255,255,255,0.4)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
           ПОДСТРОЧНИК
         </text>
-        <text x="26" y="98" fill="rgba(255,255,255,0.55)" fontSize="7.5" fontFamily="inherit">
+        <text x="26" y="98" fill="rgba(255,255,255,0.55)" fontSize="11.6" fontFamily="inherit">
           «Мы делают видео быстро»
         </text>
       </In>
       <In at={2}>
         <rect x="14" y="116" width="140" height="42" rx="10" fill="rgba(255,255,255,0.07)" stroke="var(--sp-from)" strokeOpacity="0.55" />
-        <text x="26" y="132" fill="var(--sp-from)" fontSize="7" letterSpacing="1.1" fontFamily="inherit">
+        <text x="26" y="132" fill="var(--sp-from)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
           ПЕРЕПИСАНО ПОД ЯЗЫК
         </text>
-        <text x="26" y="148" fill="#fff" fontSize="7.5" fontFamily="inherit">
+        <text x="26" y="148" fill="#fff" fontSize="11.6" fontFamily="inherit">
           «We ship video fast»
         </text>
       </In>
       {["EN", "DE", "ES", "AR"].map((lang, i) => (
         <In key={lang} at={3 + i}>
           <rect x={176 + (i % 2) * 76} y={66 + Math.floor(i / 2) * 50} width="66" height="40" rx="9" fill="rgba(255,255,255,0.05)" stroke="var(--sp-to)" strokeOpacity="0.4" />
-          <text x={209 + (i % 2) * 76} y={84 + Math.floor(i / 2) * 50} textAnchor="middle" fill="#fff" fontSize="10" fontFamily="inherit">
+          <text x={209 + (i % 2) * 76} y={84 + Math.floor(i / 2) * 50} textAnchor="middle" fill="#fff" fontSize="15.5" fontFamily="inherit">
             {lang}
           </text>
           <rect x={190 + (i % 2) * 76} y={92 + Math.floor(i / 2) * 50} width="38" height="4" rx="2" fill="rgba(255,255,255,0.25)" />
@@ -769,7 +770,7 @@ function VoiceTimbre({ mini }: SceneProps) {
         <circle cx="64" cy="106" r="30" fill="url(#sp-glow)" />
         <circle cx="64" cy="106" r="19" fill="rgba(10,13,16,0.9)" stroke="url(#sp-ramp)" strokeWidth="1.4" />
         <path d="M 58 98 q 6 -6 12 0 v 12 q -6 6 -12 0 z" fill="var(--sp-from)" fillOpacity="0.75" />
-        <text x="64" y="150" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7" letterSpacing="1.1" fontFamily="inherit">
+        <text x="64" y="150" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
           ВАШ СПИКЕР
         </text>
       </In>
@@ -777,7 +778,7 @@ function VoiceTimbre({ mini }: SceneProps) {
         <In key={lang} at={2 + i}>
           <path d={`M 94 106 C 122 106 126 ${72 + i * 34} 148 ${72 + i * 34}`} stroke="var(--sp-to)" strokeOpacity="0.6" strokeWidth="1.2" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
           <rect x="154" y={(72 + i * 34) - 14} width="172" height="28" rx="9" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.13)" />
-          <text x="166" y={(72 + i * 34) + 4} fill="var(--sp-from)" fontSize="8" fontFamily="inherit">
+          <text x="166" y={(72 + i * 34) + 4} fill="var(--sp-from)" fontSize="12.4" fontFamily="inherit">
             {lang}
           </text>
           {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((j) => (
@@ -796,7 +797,7 @@ function VoiceTiming({ mini }: SceneProps) {
     <Frame>
       <Headline value="в кадр" note="речь держит картинку" mini={mini} />
       <In at={1}>
-        <text x="16" y="66" fill="rgba(255,255,255,0.45)" fontSize="7" letterSpacing="1.1" fontFamily="inherit">
+        <text x="16" y="66" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
           ВИДЕО
         </text>
         {[0, 1, 2, 3, 4].map((i) => (
@@ -804,17 +805,17 @@ function VoiceTiming({ mini }: SceneProps) {
         ))}
       </In>
       <In at={2}>
-        <text x="16" y="122" fill="rgba(255,255,255,0.45)" fontSize="7" letterSpacing="1.1" fontFamily="inherit">
+        <text x="16" y="122" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
           БЕЗ ПОДГОНКИ
         </text>
         <rect x="16" y="128" width="250" height="10" rx="5" fill="rgba(255,255,255,0.12)" />
         <path d="M 266 133 l 14 0" stroke="rgba(255,255,255,0.3)" strokeWidth="1.2" strokeDasharray="3 3" />
-        <text x="284" y="136" fill="rgba(255,255,255,0.4)" fontSize="7" fontFamily="inherit">
+        <text x="284" y="136" fill="rgba(255,255,255,0.4)" fontSize="10.9" fontFamily="inherit">
           +3 сек
         </text>
       </In>
       <In at={3}>
-        <text x="16" y="156" fill="var(--sp-from)" fontSize="7" letterSpacing="1.1" fontFamily="inherit">
+        <text x="16" y="156" fill="var(--sp-from)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
           С ПОДГОНКОЙ
         </text>
         <rect x="16" y="162" width="309" height="10" rx="5" fill="url(#sp-ramp)" fillOpacity="0.55" />
@@ -844,7 +845,7 @@ function OpsInput({ mini }: SceneProps) {
         <In key={name} at={1 + i}>
           <rect x="14" y={62 + i * 26} width="104" height="20" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)" />
           <rect x="24" y={68 + i * 26} width="7" height="9" rx="1.5" fill="var(--sp-from)" fillOpacity="0.8" />
-          <text x="37" y={75.5 + i * 26} fill="rgba(255,255,255,0.8)" fontSize="8" fontFamily="inherit">
+          <text x="37" y={75.5 + i * 26} fill="rgba(255,255,255,0.8)" fontSize="12.4" fontFamily="inherit">
             {name}
           </text>
           <path d={`M 122 ${72 + i * 26} C 146 ${72 + i * 26} 150 110 172 110`} stroke="var(--sp-to)" strokeOpacity="0.55" strokeWidth="1.1" className="sp-flow" style={{ animationDelay: `${i * 0.28}s` }} />
@@ -853,16 +854,16 @@ function OpsInput({ mini }: SceneProps) {
       <In at={5}>
         <circle cx="196" cy="110" r="34" fill="url(#sp-glow)" />
         <circle cx="196" cy="110" r="21" fill="rgba(10,13,16,0.92)" stroke="url(#sp-ramp)" strokeWidth="1.4" />
-        <text x="196" y="114" textAnchor="middle" fill="#fff" fontSize="9" letterSpacing="1.4" fontFamily="inherit">
+        <text x="196" y="114" textAnchor="middle" fill="#fff" fontSize="14.0" letterSpacing="1.4" fontFamily="inherit">
           AI
         </text>
       </In>
       <In at={6}>
         <rect x="236" y="88" width="90" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="var(--sp-to)" strokeOpacity="0.5" />
-        <text x="248" y="106" fill="#fff" fontSize="7.5" fontFamily="inherit">
+        <text x="248" y="106" fill="#fff" fontSize="11.6" fontFamily="inherit">
           «Срок по этому
         </text>
-        <text x="248" y="120" fill="#fff" fontSize="7.5" fontFamily="inherit">
+        <text x="248" y="120" fill="#fff" fontSize="11.6" fontFamily="inherit">
           договору — 14 дней»
         </text>
       </In>
@@ -878,10 +879,10 @@ function OpsSource({ mini }: SceneProps) {
       <Headline value="со ссылкой" note="на конкретный документ" mini={mini} />
       <In at={1}>
         <rect x="14" y="62" width="180" height="50" rx="10" fill="rgba(255,255,255,0.07)" stroke="var(--sp-from)" strokeOpacity="0.5" />
-        <text x="26" y="80" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="26" y="80" fill="#fff" fontSize="12.4" fontFamily="inherit">
           «Оплата — 50% аванс,
         </text>
-        <text x="26" y="94" fill="#fff" fontSize="8" fontFamily="inherit">
+        <text x="26" y="94" fill="#fff" fontSize="12.4" fontFamily="inherit">
           остаток в 5 дней»
         </text>
       </In>
@@ -891,13 +892,13 @@ function OpsSource({ mini }: SceneProps) {
       <In at={3}>
         <rect x="14" y="138" width="180" height="26" rx="8" fill="rgba(255,255,255,0.05)" stroke="var(--sp-to)" strokeOpacity="0.45" />
         <rect x="26" y="146" width="7" height="9" rx="1.5" fill="var(--sp-to)" />
-        <text x="40" y="155" fill="var(--sp-to)" fontSize="7.5" fontFamily="inherit">
+        <text x="40" y="155" fill="var(--sp-to)" fontSize="11.6" fontFamily="inherit">
           Договор №14, пункт 4.2
         </text>
       </In>
       <In at={4}>
         <rect x="208" y="62" width="118" height="102" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.13)" />
-        <text x="220" y="80" fill="rgba(255,255,255,0.45)" fontSize="7" letterSpacing="1.1" fontFamily="inherit">
+        <text x="220" y="80" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
           ИСТОЧНИК
         </text>
       </In>
@@ -931,10 +932,10 @@ function OpsAccess({ mini }: SceneProps) {
         <In key={role as string} at={2 + i}>
           <path d={`M 80 110 C 104 110 108 ${72 + i * 38} 130 ${72 + i * 38}`} stroke={full ? "var(--sp-to)" : "rgba(255,255,255,0.25)"} strokeOpacity="0.6" strokeWidth="1.1" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
           <rect x="136" y={(72 + i * 38) - 15} width="190" height="30" rx="9" fill="rgba(255,255,255,0.05)" stroke={full ? "var(--sp-to)" : "rgba(255,255,255,0.12)"} strokeOpacity={full ? 0.45 : 1} />
-          <text x="148" y={(72 + i * 38) + 3} fill="#fff" fontSize="8" fontFamily="inherit">
+          <text x="148" y={(72 + i * 38) + 3} fill="#fff" fontSize="12.4" fontFamily="inherit">
             {role as string}
           </text>
-          <text x="316" y={(72 + i * 38) + 3} textAnchor="end" fill={full ? "var(--sp-from)" : "rgba(255,255,255,0.45)"} fontSize="7.5" fontFamily="inherit">
+          <text x="316" y={(72 + i * 38) + 3} textAnchor="end" fill={full ? "var(--sp-from)" : "rgba(255,255,255,0.45)"} fontSize="11.6" fontFamily="inherit">
             {scope as string}
           </text>
         </In>
@@ -952,7 +953,7 @@ function OpsOutput({ mini }: SceneProps) {
       <In at={1}>
         <circle cx="52" cy="108" r="30" fill="url(#sp-glow)" />
         <circle cx="52" cy="108" r="19" fill="rgba(10,13,16,0.92)" stroke="url(#sp-ramp)" strokeWidth="1.4" />
-        <text x="52" y="112" textAnchor="middle" fill="#fff" fontSize="9" letterSpacing="1.4" fontFamily="inherit">
+        <text x="52" y="112" textAnchor="middle" fill="#fff" fontSize="14.0" letterSpacing="1.4" fontFamily="inherit">
           AI
         </text>
       </In>
@@ -961,13 +962,13 @@ function OpsOutput({ mini }: SceneProps) {
           <path d={`M 82 108 C 106 108 110 ${70 + i * 38} 132 ${70 + i * 38}`} stroke="var(--sp-to)" strokeOpacity="0.6" strokeWidth="1.2" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
           <rect x="138" y={(70 + i * 38) - 15} width="188" height="30" rx="9" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.13)" />
           <circle cx="152" cy={70 + i * 38} r="4" fill="var(--sp-from)" />
-          <text x="164" y={(70 + i * 38) + 3} fill="#fff" fontSize="8" fontFamily="inherit">
+          <text x="164" y={(70 + i * 38) + 3} fill="#fff" fontSize="12.4" fontFamily="inherit">
             {place}
           </text>
         </In>
       ))}
       <In at={5}>
-        <text x="138" y="176" fill="rgba(255,255,255,0.45)" fontSize="7" fontFamily="inherit">
+        <text x="138" y="176" fill="rgba(255,255,255,0.45)" fontSize="10.9" fontFamily="inherit">
           Отдельного окна не появляется
         </text>
       </In>
@@ -994,6 +995,7 @@ const SCENES: Record<string, ((p: SceneProps) => React.ReactElement)[]> = {
   ...COMMS_SCENES,
   ...GROWTH_SCENES,
   ...SITES_SCENES,
+  ...SMM_SCENES,
 };
 
 /* ── Запасная сцена ─────────────────────────────────────────────────── */

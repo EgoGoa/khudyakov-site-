@@ -111,10 +111,12 @@ function SitesCardFace({ id, image, step }: { id: string; image: string; step: n
         }}
       />
       <span className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full bg-[#ff4fd8]/20 blur-2xl" />
-      {/* Сцена лежит над областью названия и не заходит в неё: подпись
-          занимает нижние ~40% карточки (правило Егора — графика не нависает
-          над названием формата). */}
-      <div className="absolute inset-x-2 top-5 h-[50%]">
+      {/* Сцена растянута почти до подписи — Егор: раньше графика занимала
+          половину карточки и читалась мелкой на фоне пустого затемнённого
+          низа. Теперь сцена доходит до самого имени формата; собственный
+          градиент подписи (bottom-0 h-24 ниже) сам гасит нижний край сцены,
+          так что имя остаётся читаемым без отдельной прослойки. */}
+      <div className="absolute inset-x-2 top-5 bottom-16">
         <SpotlightScene slug={`${SITE_SPOTLIGHT_PREFIX}${id}`} step={step} card />
       </div>
     </div>
@@ -164,10 +166,10 @@ const CARD_SHELL_FRONT = `${CARD_SHELL} backdrop-blur-2xl backdrop-saturate-150`
 // he flagged as unfinished here, since a pressed-key button fights the flat
 // glass everything else in this chapter is made of.
 export const PILL =
-  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
+  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
 
 export const ROUND =
-  "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-colors duration-300 hover:border-glow/60 hover:text-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
+  "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-[color,border-color,transform] duration-300 hover:scale-110 hover:border-glow/60 hover:text-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
 
 export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement | null } = {}) {
   const wide = !!panelTarget;
@@ -218,7 +220,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
     <div
       onMouseEnter={() => setHeld(true)}
       onMouseLeave={() => setHeld(false)}
-      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[276px] lg:min-h-0"}`}
+      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[210px] lg:min-h-0"}`}
       style={
         {
           "--card-glow-rgb": "0, 210, 255",

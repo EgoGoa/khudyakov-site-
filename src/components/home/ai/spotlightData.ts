@@ -1,6 +1,7 @@
 import { aiCompactToolPages, aiToolLinks, aiToolMeta, aiToolPages } from "@/components/home/direction/toolRegistry";
 import { directionSpotlight } from "@/components/home/ai/spotlightDirections";
 import { siteSpotlight } from "@/components/home/ai/spotlightSites";
+import { smmSpotlight } from "@/components/home/ai/spotlightSmm";
 import type { DirectionStat, DirectionTechItem } from "@/components/home/direction/types";
 
 // Данные для развёрнутой таблички под блоком (см. ToolSpotlight.tsx).
@@ -113,7 +114,7 @@ function fromTech(slug: string, items: DirectionTechItem[]): SpotlightBenefit[] 
 }
 
 export function spotlightFor(slug: string): Spotlight | null {
-  const dir = directionSpotlight(slug) ?? siteSpotlight(slug);
+  const dir = directionSpotlight(slug) ?? siteSpotlight(slug) ?? smmSpotlight(slug);
   if (dir) return dir;
   const full = aiToolPages[slug];
   const compact = aiCompactToolPages[slug];

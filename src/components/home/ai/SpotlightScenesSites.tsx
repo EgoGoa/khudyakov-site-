@@ -31,7 +31,7 @@ function Bar({ x, y, w, h = 5, o = 0.16 }: { x: number; y: number; w: number; h?
 }
 
 /** Кнопка-призыв в акцентном градиенте. */
-function Cta({ x, y, w, h = 22, label, size = 8 }: { x: number; y: number; w: number; h?: number; label?: string; size?: number }) {
+function Cta({ x, y, w, h = 22, label, size = 12.4 }: { x: number; y: number; w: number; h?: number; label?: string; size?: number }) {
   return (
     <g>
       <rect x={x} y={y} width={w} height={h} rx={h / 2} fill="url(#sp-ramp)" />
@@ -69,7 +69,7 @@ function Txt({
   x,
   y,
   children,
-  size = 8,
+  size = 12.4,
   fill = "#fff",
   weight,
   anchor,
@@ -108,16 +108,16 @@ function LandingFocus({ mini }: SceneProps) {
         <Bar x={30} y={118} w={130} h={4} o={0.1} />
       </In>
       <In at={3}>
-        <Cta x={30} y={134} w={100} h={24} label="Заказать" size={9} />
+        <Cta x={30} y={134} w={100} h={24} label="Заказать" size={14.0} />
         <rect x={26} y={130} width={108} height={32} rx={16} stroke="var(--sp-from)" strokeOpacity="0.7" className="sp-pulse" />
       </In>
       <In at={4}>
-        <Txt x={226} y={68} size={7} fill={W(0.5)} ls={1.2}>УБРАЛИ ЛИШНЕЕ</Txt>
+        <Txt x={226} y={68} size={10.9} fill={W(0.5)} ls={1.2}>УБРАЛИ ЛИШНЕЕ</Txt>
       </In>
       {ghosts.map((label, i) => (
         <In key={label} at={4 + i * 0.6}>
           <rect x={226} y={76 + i * 30} width={100} height={22} rx={11} stroke={W(0.2)} strokeDasharray="4 4" />
-          <Txt x={238} y={90 + i * 30} size={8} fill={W(0.4)}>{label}</Txt>
+          <Txt x={238} y={90 + i * 30} size={12.4} fill={W(0.4)}>{label}</Txt>
           <path d={`M 232 ${87 + i * 30} L 320 ${87 + i * 30}`} stroke="var(--sp-from)" strokeOpacity="0.8" strokeWidth="1.3" />
         </In>
       ))}
@@ -132,21 +132,21 @@ function LandingSpeed({ mini }: SceneProps) {
     <Frame>
       <Headline value="−7%" note="конверсии за каждую секунду" mini={mini} />
       <In at={1}>
-        <Txt x={14} y={84} size={8} fill={W(0.55)}>Было</Txt>
+        <Txt x={14} y={84} size={12.4} fill={W(0.55)}>Было</Txt>
         <rect x={56} y={73} width={252} height={16} rx={8} fill={W(0.12)} stroke={W(0.16)} />
-        <Txt x={64} y={84} size={7.5} fill={W(0.5)}>тяжёлые картинки и шрифты</Txt>
+        <Txt x={64} y={84} size={11.6} fill={W(0.5)}>тяжёлые картинки и шрифты</Txt>
       </In>
       <In at={2}>
-        <Txt x={14} y={112} size={8} fill="#fff" weight={600}>Стало</Txt>
+        <Txt x={14} y={112} size={12.4} fill="#fff" weight={600}>Стало</Txt>
         <rect x={56} y={101} width={78} height={16} rx={8} fill="url(#sp-ramp)" />
-        <Txt x={144} y={112} size={8} fill="var(--sp-from)" weight={600}>меньше секунды</Txt>
+        <Txt x={144} y={112} size={12.4} fill="var(--sp-from)" weight={600}>меньше секунды</Txt>
       </In>
       <In at={3}>
         <path d="M 56 134 L 308 134" stroke={W(0.2)} />
         {[0, 1, 2, 3].map((s) => (
           <g key={s}>
             <path d={`M ${56 + s * 84} 130 L ${56 + s * 84} 138`} stroke={W(0.3)} />
-            <Txt x={56 + s * 84} y={150} size={7.5} fill={W(0.5)} anchor="middle">{s === 0 ? "0" : `${s} с`}</Txt>
+            <Txt x={56 + s * 84} y={150} size={11.6} fill={W(0.5)} anchor="middle">{s === 0 ? "0" : `${s} с`}</Txt>
           </g>
         ))}
         <path d="M 140 66 L 140 134" stroke="var(--sp-from)" strokeOpacity="0.7" strokeDasharray="3 4" className="sp-flow" />
@@ -178,7 +178,7 @@ function LandingMobile({ mini }: SceneProps) {
         <rect x={244} y={72} width={50} height={22} rx={5} fill={W(0.1)} />
         <rect x={244} y={100} width={50} height={22} rx={5} fill={W(0.1)} />
         <Bar x={244} y={128} w={38} h={4} />
-        <Cta x={244} y={140} w={50} h={16} label="Заказать" size={6.5} />
+        <Cta x={244} y={140} w={50} h={16} label="Заказать" size={10.1} />
       </In>
       <BeforeAfter before="Уменьшенный десктоп" after="Мобильная вёрстка отдельно" mini={mini} />
     </Frame>
@@ -202,10 +202,10 @@ function LandingForm({ mini }: SceneProps) {
       <In at={4}>
         <rect x={170} y={62} width={156} height={104} rx={12} fill={W(0.07)} stroke="var(--sp-from)" strokeOpacity="0.55" />
         <rect x={184} y={78} width={128} height={17} rx={8} fill={W(0.1)} />
-        <Txt x={194} y={89.5} size={7.5} fill={W(0.6)}>Имя</Txt>
+        <Txt x={194} y={89.5} size={11.6} fill={W(0.6)}>Имя</Txt>
         <rect x={184} y={102} width={128} height={17} rx={8} fill={W(0.1)} />
-        <Txt x={194} y={113.5} size={7.5} fill={W(0.6)}>Телефон</Txt>
-        <Cta x={184} y={130} w={128} h={22} label="Оставить заявку" size={8.5} />
+        <Txt x={194} y={113.5} size={11.6} fill={W(0.6)}>Телефон</Txt>
+        <Cta x={184} y={130} w={128} h={22} label="Оставить заявку" size={13.2} />
         <Tick cx={320} cy={64} r={8} />
       </In>
       <BeforeAfter before="Длинная анкета" after="Имя, телефон, кнопка" mini={mini} />
@@ -231,7 +231,7 @@ function CardFirst({ mini }: SceneProps) {
         <Bar x={30} y={136} w={120} h={4} o={0.1} />
       </In>
       <In at={3}>
-        <Cta x={30} y={146} w={70} h={16} label="Связаться" size={7.5} />
+        <Cta x={30} y={146} w={70} h={16} label="Связаться" size={11.6} />
       </In>
       <In at={4}>
         <circle cx={272} cy={104} r={32} fill="url(#sp-glow)" />
@@ -247,8 +247,8 @@ function CardFirst({ mini }: SceneProps) {
           strokeDasharray="78 100"
           transform="rotate(-90 272 104)"
         />
-        <Txt x={272} y={108} size={11} weight={700} anchor="middle">0,05</Txt>
-        <Txt x={272} y={150} size={6.5} fill={W(0.55)} anchor="middle" ls={0.8}>ПЕРВЫЙ ВЗГЛЯД</Txt>
+        <Txt x={272} y={108} size={17.1} weight={700} anchor="middle">0,05</Txt>
+        <Txt x={272} y={150} size={10.1} fill={W(0.55)} anchor="middle" ls={0.8}>ПЕРВЫЙ ВЗГЛЯД</Txt>
       </In>
       <BeforeAfter before="Непонятно, кто вы" after="Суть видна с первого экрана" mini={mini} />
     </Frame>
@@ -276,7 +276,7 @@ function CardTrust({ mini }: SceneProps) {
         <In key={label} at={3 + i * 0.8}>
           <rect x={226} y={66 + i * 32} width={100} height={24} rx={12} fill={W(0.06)} stroke="var(--sp-to)" strokeOpacity="0.5" />
           <Tick cx={240} cy={78 + i * 32} r={6} />
-          <Txt x={252} y={81 + i * 32} size={8.5}>{label}</Txt>
+          <Txt x={252} y={81 + i * 32} size={13.2}>{label}</Txt>
         </In>
       ))}
       <BeforeAfter before="Общие слова о качестве" after="Люди, кейсы и подробности" mini={mini} />
@@ -295,7 +295,7 @@ function CardServices({ mini }: SceneProps) {
         {menu.map((m, i) => (
           <g key={m}>
             <rect x={24 + i * 44} y={82} width={40} height={14} rx={7} fill={i === 0 ? "url(#sp-ramp)" : W(0.07)} fillOpacity={i === 0 ? 0.9 : 1} />
-            <Txt x={44 + i * 44} y={91.5} size={6.5} anchor="middle" fill={i === 0 ? "#fff" : W(0.6)}>{m}</Txt>
+            <Txt x={44 + i * 44} y={91.5} size={10.1} anchor="middle" fill={i === 0 ? "#fff" : W(0.6)}>{m}</Txt>
           </g>
         ))}
       </In>
@@ -315,11 +315,11 @@ function CardServices({ mini }: SceneProps) {
       </In>
       <In at={4}>
         <rect x={200} y={62} width={126} height={100} rx={10} fill={W(0.07)} stroke="var(--sp-from)" strokeOpacity="0.55" />
-        <Txt x={212} y={82} size={9} weight={700}>Услуга</Txt>
+        <Txt x={212} y={82} size={14.0} weight={700}>Услуга</Txt>
         <Bar x={212} y={92} w={96} h={4} o={0.26} />
         <Bar x={212} y={102} w={80} h={4} o={0.14} />
         <Bar x={212} y={112} w={88} h={4} o={0.14} />
-        <Cta x={212} y={130} w={72} h={18} label="Заказать" size={7.5} />
+        <Cta x={212} y={130} w={72} h={18} label="Заказать" size={11.6} />
       </In>
       <BeforeAfter before="Искать по всему сайту" after="Нужное — прямо с главной" mini={mini} />
     </Frame>
@@ -345,7 +345,7 @@ function CardContacts({ mini }: SceneProps) {
             fillOpacity={i === 4 ? 0.9 : 1}
             stroke={i === 4 ? "none" : W(0.14)}
           />
-          <Txt x={43 + i * 64} y={73.5} size={7.5} anchor="middle" fill={i === 4 ? "#fff" : W(0.65)}>{t}</Txt>
+          <Txt x={43 + i * 64} y={73.5} size={11.6} anchor="middle" fill={i === 4 ? "#fff" : W(0.65)}>{t}</Txt>
         </In>
       ))}
       <In at={3.4}>
@@ -355,13 +355,13 @@ function CardContacts({ mini }: SceneProps) {
         <In key={label} at={4 + i * 0.5}>
           <rect x={x} y={y} width={96} height={22} rx={11} fill={W(0.07)} stroke={W(0.16)} />
           <circle cx={x + 12} cy={y + 11} r={3.6} fill="var(--sp-from)" className="sp-pulse" style={{ animationDelay: `${i * 0.3}s` }} />
-          <Txt x={x + 22} y={y + 14.4} size={8.5}>{label}</Txt>
+          <Txt x={x + 22} y={y + 14.4} size={13.2}>{label}</Txt>
         </In>
       ))}
       <In at={6}>
         <rect x={238} y={102} width={76} height={12} rx={6} fill={W(0.1)} />
         <rect x={238} y={120} width={76} height={12} rx={6} fill={W(0.1)} />
-        <Cta x={238} y={140} w={76} h={16} label="Отправить" size={7} />
+        <Cta x={238} y={140} w={76} h={16} label="Отправить" size={10.9} />
       </In>
       <BeforeAfter before="Контакты не найти" after="Связь там, где её ждут" mini={mini} />
     </Frame>
@@ -382,7 +382,7 @@ function TurnkeyCatalog({ mini }: SceneProps) {
         {filters.map((f, i) => (
           <g key={f}>
             <rect x={24} y={74 + i * 26} width={10} height={10} rx={3} fill={i < 2 ? "url(#sp-ramp)" : "none"} stroke={i < 2 ? "none" : W(0.3)} />
-            <Txt x={40} y={83 + i * 26} size={8}>{f}</Txt>
+            <Txt x={40} y={83 + i * 26} size={12.4}>{f}</Txt>
           </g>
         ))}
       </In>
@@ -418,7 +418,7 @@ function TurnkeyCrm({ mini }: SceneProps) {
         <rect x={14} y={70} width={84} height={88} rx={10} fill={W(0.06)} stroke={W(0.16)} />
         <rect x={24} y={82} width={64} height={12} rx={6} fill={W(0.1)} />
         <rect x={24} y={100} width={64} height={12} rx={6} fill={W(0.1)} />
-        <Cta x={24} y={122} w={64} h={16} label="Отправить" size={7} />
+        <Cta x={24} y={122} w={64} h={16} label="Отправить" size={10.9} />
       </In>
       <In at={3}>
         <path d="M 100 114 L 148 114" stroke="var(--sp-from)" strokeWidth="1.5" className="sp-flow" />
@@ -427,7 +427,7 @@ function TurnkeyCrm({ mini }: SceneProps) {
         <rect x={152} y={60} width={174} height={108} rx={12} fill={W(0.05)} stroke="var(--sp-to)" strokeOpacity="0.5" />
         {cols.map((c, i) => (
           <g key={c}>
-            <Txt x={160 + i * 56} y={76} size={6.5} fill={W(0.55)} ls={0.6}>{c.toUpperCase()}</Txt>
+            <Txt x={160 + i * 56} y={76} size={10.1} fill={W(0.55)} ls={0.6}>{c.toUpperCase()}</Txt>
             <rect x={160 + i * 56} y={84} width={50} height={20} rx={5} fill={W(0.08)} stroke={i === 0 ? "var(--sp-from)" : "none"} className={i === 0 ? "sp-pulse" : undefined} />
             {i < 2 && <rect x={160 + i * 56} y={110} width={50} height={20} rx={5} fill={W(0.06)} />}
           </g>
@@ -453,22 +453,22 @@ function TurnkeyAssistant({ mini }: SceneProps) {
       <In at={2}>
         <rect x={94} y={78} width={106} height={82} rx={10} fill="rgba(10,13,16,0.9)" stroke="url(#sp-ramp)" strokeWidth="1.2" />
         <rect x={94} y={78} width={106} height={16} rx={10} fill="url(#sp-ramp)" fillOpacity="0.4" />
-        <Txt x={104} y={89} size={7} weight={700} ls={1}>AI · НА САЙТЕ</Txt>
+        <Txt x={104} y={89} size={10.9} weight={700} ls={1}>AI · НА САЙТЕ</Txt>
       </In>
       <In at={3}>
         <rect x={102} y={102} width={62} height={14} rx={7} fill={W(0.12)} />
-        <Txt x={109} y={112} size={6.5} fill={W(0.85)}>Есть в наличии?</Txt>
+        <Txt x={109} y={112} size={10.1} fill={W(0.85)}>Есть в наличии?</Txt>
       </In>
       <In at={4}>
         <rect x={120} y={124} width={72} height={14} rx={7} fill="url(#sp-ramp)" fillOpacity="0.42" stroke="var(--sp-from)" strokeOpacity="0.5" />
-        <Txt x={127} y={134} size={6.5}>Да, отправим</Txt>
+        <Txt x={127} y={134} size={10.1}>Да, отправим</Txt>
       </In>
       <In at={5}>
         <circle cx={272} cy={108} r={32} fill="url(#sp-glow)" />
         <circle cx={272} cy={108} r={26} stroke="url(#sp-ramp)" strokeWidth="1.4" fill="rgba(10,13,16,0.9)" />
         <circle cx={272} cy={108} r={32} stroke="url(#sp-ramp)" strokeOpacity="0.7" strokeDasharray="4 8" className="sp-spin" style={{ transformOrigin: "272px 108px" }} />
-        <Txt x={272} y={112} size={11} weight={700} anchor="middle">24/7</Txt>
-        <Txt x={272} y={156} size={6.5} fill={W(0.55)} anchor="middle" ls={0.8}>БЕЗ ВЫХОДНЫХ</Txt>
+        <Txt x={272} y={112} size={17.1} weight={700} anchor="middle">24/7</Txt>
+        <Txt x={272} y={156} size={10.1} fill={W(0.55)} anchor="middle" ls={0.8}>БЕЗ ВЫХОДНЫХ</Txt>
       </In>
       <BeforeAfter before="Ждёт менеджера" after="Отвечает сразу" mini={mini} />
     </Frame>
@@ -482,7 +482,7 @@ function TurnkeyAdmin({ mini }: SceneProps) {
       <Headline value="Сами" note="правите каталог без разработчика" mini={mini} />
       <In at={1}>
         <rect x={14} y={58} width={178} height={110} rx={10} fill={W(0.05)} stroke={W(0.16)} />
-        <Txt x={26} y={75} size={7} fill={W(0.5)} ls={1.2}>АДМИНКА · ТОВАРЫ</Txt>
+        <Txt x={26} y={75} size={10.9} fill={W(0.5)} ls={1.2}>АДМИНКА · ТОВАРЫ</Txt>
         <path d="M 14 82 L 192 82" stroke={W(0.1)} />
       </In>
       {[0, 1, 2].map((i) => (
@@ -499,7 +499,7 @@ function TurnkeyAdmin({ mini }: SceneProps) {
             strokeOpacity="0.7"
           />
           <Bar x={30} y={97 + i * 24} w={70} h={4} o={0.3} />
-          <Txt x={176} y={102.5 + i * 24} size={8} anchor="end" weight={i === 1 ? 700 : 400} fill={i === 1 ? "#fff" : W(0.6)}>
+          <Txt x={176} y={102.5 + i * 24} size={12.4} anchor="end" weight={i === 1 ? 700 : 400} fill={i === 1 ? "#fff" : W(0.6)}>
             {i === 1 ? "990 ₽" : i === 0 ? "1 200 ₽" : "2 450 ₽"}
           </Txt>
         </In>
@@ -514,7 +514,7 @@ function TurnkeyAdmin({ mini }: SceneProps) {
         <rect x={226} y={66} width={100} height={92} rx={10} fill={W(0.07)} stroke="var(--sp-from)" strokeOpacity="0.55" />
         <rect x={236} y={76} width={80} height={38} rx={6} fill="url(#sp-ramp)" fillOpacity="0.3" />
         <Bar x={236} y={122} w={56} h={4} o={0.3} />
-        <Txt x={236} y={144} size={11} weight={700}>990 ₽</Txt>
+        <Txt x={236} y={144} size={17.1} weight={700}>990 ₽</Txt>
         <rect x={232} y={130} width={88} height={20} rx={8} stroke="var(--sp-from)" strokeOpacity="0.7" className="sp-pulse" />
       </In>
       <BeforeAfter before="Задача разработчику" after="Правка за минуту" mini={mini} />
@@ -534,7 +534,7 @@ function AssistantSource({ mini }: SceneProps) {
         <In key={label} at={1 + i}>
           <rect x={14} y={72 + i * 32} width={76} height={24} rx={7} fill={W(0.06)} stroke={W(0.16)} />
           <rect x={22} y={80 + i * 32} width={8} height={8} rx={2} fill="var(--sp-from)" fillOpacity="0.9" />
-          <Txt x={36} y={87 + i * 32} size={8.5} fill={W(0.85)}>{label}</Txt>
+          <Txt x={36} y={87 + i * 32} size={13.2} fill={W(0.85)}>{label}</Txt>
         </In>
       ))}
       <In at={4}>
@@ -542,12 +542,12 @@ function AssistantSource({ mini }: SceneProps) {
         <circle cx={188} cy={116} r={38} fill="url(#sp-glow)" />
         <circle cx={188} cy={116} r={23} fill="rgba(10,13,16,0.92)" stroke="url(#sp-ramp)" strokeWidth="1.5" />
         <circle cx={188} cy={116} r={30} stroke="url(#sp-ramp)" strokeOpacity="0.8" strokeDasharray="5 9" className="sp-spin" style={{ transformOrigin: "188px 116px" }} />
-        <Txt x={188} y={120} size={10} anchor="middle" ls={1.6}>AI</Txt>
+        <Txt x={188} y={120} size={15.5} anchor="middle" ls={1.6}>AI</Txt>
       </In>
       <In at={5}>
         <rect x={230} y={90} width={98} height={36} rx={10} fill={W(0.08)} stroke="var(--sp-from)" strokeOpacity="0.55" />
-        <Txt x={240} y={104} size={8}>«В наличии,</Txt>
-        <Txt x={240} y={116} size={8}>доставим завтра»</Txt>
+        <Txt x={240} y={104} size={12.4}>«В наличии,</Txt>
+        <Txt x={240} y={116} size={12.4}>доставим завтра»</Txt>
       </In>
       <BeforeAfter before="Общие формулировки" after="Ответ вашими словами" mini={mini} />
     </Frame>
@@ -561,15 +561,15 @@ function AssistantHandoff({ mini }: SceneProps) {
       <Headline value="×21" note="шанс квалифицировать за 5 минут" mini={mini} />
       <In at={1}>
         <rect x={14} y={62} width={104} height={22} rx={11} fill={W(0.1)} />
-        <Txt x={24} y={76} size={8} fill={W(0.85)}>Нужен договор</Txt>
+        <Txt x={24} y={76} size={12.4} fill={W(0.85)}>Нужен договор</Txt>
       </In>
       <In at={2}>
         <rect x={40} y={92} width={104} height={22} rx={11} fill="url(#sp-ramp)" fillOpacity="0.36" stroke="var(--sp-from)" strokeOpacity="0.5" />
-        <Txt x={50} y={106} size={8}>Уточняю детали</Txt>
+        <Txt x={50} y={106} size={12.4}>Уточняю детали</Txt>
       </In>
       <In at={3}>
         <rect x={14} y={122} width={118} height={22} rx={11} stroke={W(0.25)} strokeDasharray="4 4" />
-        <Txt x={24} y={136} size={8} fill={W(0.7)}>Передаю менеджеру</Txt>
+        <Txt x={24} y={136} size={12.4} fill={W(0.7)}>Передаю менеджеру</Txt>
       </In>
       <In at={4}>
         <path d="M 148 108 C 166 108 172 112 192 112" stroke="var(--sp-to)" strokeWidth="1.4" className="sp-flow" />
@@ -577,8 +577,8 @@ function AssistantHandoff({ mini }: SceneProps) {
       <In at={5}>
         <rect x={196} y={62} width={130} height={104} rx={12} fill={W(0.07)} stroke="var(--sp-to)" strokeOpacity="0.55" />
         <circle cx={214} cy={82} r={8} fill="url(#sp-ramp)" />
-        <Txt x={228} y={85} size={8.5} weight={600}>Менеджер</Txt>
-        <Txt x={208} y={108} size={6.5} fill={W(0.5)} ls={1}>КОНТЕКСТ ДИАЛОГА</Txt>
+        <Txt x={228} y={85} size={13.2} weight={600}>Менеджер</Txt>
+        <Txt x={208} y={108} size={10.1} fill={W(0.5)} ls={1}>КОНТЕКСТ ДИАЛОГА</Txt>
         <Bar x={208} y={116} w={100} h={4} o={0.3} />
         <Bar x={208} y={126} w={82} h={4} o={0.2} />
         <Bar x={208} y={136} w={92} h={4} o={0.2} />
@@ -623,8 +623,8 @@ function AssistantRules({ mini }: SceneProps) {
                 <path d={`M 26.4 ${y + 9} L 26.4 ${y + 6.8} A 1.6 1.6 0 0 1 29.6 ${y + 6.8} L 29.6 ${y + 9}`} />
               </g>
             )}
-            <Txt x={42} y={y + 13.6} size={8.5} fill={ok ? "#fff" : W(0.5)}>{label}</Txt>
-            <Txt x={316} y={y + 13.2} size={6.5} anchor="end" ls={1} fill={ok ? "var(--sp-from)" : W(0.4)}>{ok ? "ОТВЕЧАЕТ" : "ПЕРЕДАЁТ"}</Txt>
+            <Txt x={42} y={y + 13.6} size={13.2} fill={ok ? "#fff" : W(0.5)}>{label}</Txt>
+            <Txt x={316} y={y + 13.2} size={10.1} anchor="end" ls={1} fill={ok ? "var(--sp-from)" : W(0.4)}>{ok ? "ОТВЕЧАЕТ" : "ПЕРЕДАЁТ"}</Txt>
           </In>
         );
       })}
@@ -641,18 +641,18 @@ function AssistantCrm({ mini }: SceneProps) {
       <Headline value="24/7" note="принимает заявки без выходных" mini={mini} />
       <In at={1}>
         <rect x={14} y={80} width={88} height={28} rx={12} fill={W(0.1)} />
-        <Txt x={24} y={92} size={7.5} fill={W(0.85)}>«Хочу заказать</Txt>
-        <Txt x={24} y={102} size={7.5} fill={W(0.85)}>сайт»</Txt>
+        <Txt x={24} y={92} size={11.6} fill={W(0.85)}>«Хочу заказать</Txt>
+        <Txt x={24} y={102} size={11.6} fill={W(0.85)}>сайт»</Txt>
       </In>
       <In at={2}>
         <path d="M 106 96 L 128 96" stroke="var(--sp-to)" strokeWidth="1.4" className="sp-flow" />
       </In>
       <In at={3}>
         <rect x={132} y={60} width={100} height={106} rx={12} fill={W(0.07)} stroke="var(--sp-from)" strokeOpacity="0.55" />
-        <Txt x={144} y={76} size={7} fill="var(--sp-from)" ls={1.2} weight={600}>ЗАЯВКА</Txt>
+        <Txt x={144} y={76} size={10.9} fill="var(--sp-from)" ls={1.2} weight={600}>ЗАЯВКА</Txt>
         {fields.map((f, i) => (
           <g key={f}>
-            <Txt x={144} y={94 + i * 24} size={6.5} fill={W(0.5)}>{f}</Txt>
+            <Txt x={144} y={94 + i * 24} size={10.1} fill={W(0.5)}>{f}</Txt>
             <Bar x={144} y={98 + i * 24} w={76 - i * 8} h={5} o={0.3} />
           </g>
         ))}
@@ -663,7 +663,7 @@ function AssistantCrm({ mini }: SceneProps) {
       <In at={5}>
         <circle cx={290} cy={112} r={34} fill="url(#sp-glow)" />
         <rect x={262} y={92} width={56} height={40} rx={10} fill="rgba(10,13,16,0.92)" stroke="url(#sp-ramp)" strokeWidth="1.4" />
-        <Txt x={290} y={116} size={10} anchor="middle" weight={700} ls={1}>CRM</Txt>
+        <Txt x={290} y={116} size={15.5} anchor="middle" weight={700} ls={1}>CRM</Txt>
         <Tick cx={316} cy={92} r={7} />
       </In>
       <BeforeAfter before="Контакты в переписке" after="Готовая карточка в CRM" mini={mini} />
@@ -693,7 +693,7 @@ function RedesignAudit({ mini }: SceneProps) {
       {steps.map(([label, w], i) => (
         <In key={label} at={3 + i * 0.6}>
           <rect x={170} y={64 + i * 26} width={w} height={18} rx={9} fill="url(#sp-ramp)" fillOpacity={0.36 - i * 0.07} stroke="var(--sp-from)" strokeOpacity={0.6 - i * 0.1} />
-          <Txt x={w > 100 ? 178 : 170 + w + 8} y={76 + i * 26} size={7} fill={w > 100 ? "#fff" : W(0.85)}>{label}</Txt>
+          <Txt x={w > 100 ? 178 : 170 + w + 8} y={76 + i * 26} size={10.9} fill={w > 100 ? "#fff" : W(0.85)}>{label}</Txt>
         </In>
       ))}
       <BeforeAfter before="Правим на глаз" after="Правим по данным" mini={mini} />
@@ -708,16 +708,16 @@ function RedesignSeo({ mini }: SceneProps) {
     <Frame>
       <Headline value="301" note="редирект на каждую страницу" mini={mini} />
       <In at={1}>
-        <Txt x={14} y={68} size={6.5} fill={W(0.45)} ls={1.2}>БЫЛО</Txt>
-        <Txt x={210} y={68} size={6.5} fill="var(--sp-from)" ls={1.2}>СТАЛО</Txt>
+        <Txt x={14} y={68} size={10.1} fill={W(0.45)} ls={1.2}>БЫЛО</Txt>
+        <Txt x={210} y={68} size={10.1} fill="var(--sp-from)" ls={1.2}>СТАЛО</Txt>
       </In>
       {rows.map(([from, to], i) => (
         <In key={from} at={2 + i * 0.9}>
           <rect x={14} y={76 + i * 30} width={104} height={22} rx={11} fill={W(0.04)} stroke={W(0.16)} />
-          <Txt x={24} y={90 + i * 30} size={7.5} fill={W(0.6)}>{from}</Txt>
+          <Txt x={24} y={90 + i * 30} size={11.6} fill={W(0.6)}>{from}</Txt>
           <path d={`M 122 ${87 + i * 30} L 204 ${87 + i * 30}`} stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
           <rect x={208} y={76 + i * 30} width={118} height={22} rx={11} fill={W(0.08)} stroke="var(--sp-from)" strokeOpacity="0.55" />
-          <Txt x={218} y={90 + i * 30} size={7.5}>{to}</Txt>
+          <Txt x={218} y={90 + i * 30} size={11.6}>{to}</Txt>
           <Tick cx={312} cy={87 + i * 30} r={6} />
         </In>
       ))}
@@ -747,11 +747,11 @@ function RedesignContent({ mini }: SceneProps) {
       <In at={3}>
         <rect x={170} y={60} width={156} height={106} rx={10} fill={W(0.07)} stroke="var(--sp-from)" strokeOpacity="0.55" />
         <rect x={180} y={70} width={136} height={34} rx={6} fill="url(#sp-ramp)" fillOpacity="0.3" />
-        <Txt x={190} y={84} size={6.5} ls={1} weight={700}>ПЕРЕПИСАЛИ</Txt>
+        <Txt x={190} y={84} size={10.1} ls={1} weight={700}>ПЕРЕПИСАЛИ</Txt>
         <Bar x={190} y={91} w={88} h={5} o={0.4} />
         <rect x={180} y={110} width={136} height={24} rx={6} fill={W(0.08)} stroke={W(0.16)} />
-        <Txt x={190} y={124} size={6.5} ls={1} fill={W(0.75)}>ОСТАВИЛИ — АКТУАЛЕН</Txt>
-        <Cta x={180} y={142} w={72} h={16} label="Связаться" size={7} />
+        <Txt x={190} y={124} size={10.1} ls={1} fill={W(0.75)}>ОСТАВИЛИ — АКТУАЛЕН</Txt>
+        <Cta x={180} y={142} w={72} h={16} label="Связаться" size={10.9} />
       </In>
       <BeforeAfter before="Устаревший вид" after="Новый вид, живые тексты" mini={mini} />
     </Frame>
@@ -765,8 +765,8 @@ function RedesignSpeed({ mini }: SceneProps) {
       <Headline value="<1 с" note="целевая загрузка страницы" mini={mini} />
       <In at={1}>
         <path d="M 110 152 A 60 60 0 0 1 230 152" stroke={W(0.12)} strokeWidth="10" strokeLinecap="round" />
-        <Txt x={100} y={168} size={7.5} fill={W(0.5)} anchor="middle">3 с</Txt>
-        <Txt x={240} y={168} size={7.5} fill={W(0.5)} anchor="middle">0</Txt>
+        <Txt x={100} y={168} size={11.6} fill={W(0.5)} anchor="middle">3 с</Txt>
+        <Txt x={240} y={168} size={11.6} fill={W(0.5)} anchor="middle">0</Txt>
       </In>
       <In at={2}>
         <path d="M 110 152 A 60 60 0 0 1 230 152" stroke="url(#sp-ramp)" strokeWidth="10" strokeLinecap="round" pathLength="100" strokeDasharray="80 100" />
@@ -779,7 +779,7 @@ function RedesignSpeed({ mini }: SceneProps) {
       </In>
       <In at={5}>
         <rect x={252} y={100} width={74} height={22} rx={11} fill={W(0.07)} stroke="var(--sp-from)" strokeOpacity="0.55" />
-        <Txt x={289} y={114} size={7.5} anchor="middle">−7% за секунду</Txt>
+        <Txt x={289} y={114} size={11.6} anchor="middle">−7% за секунду</Txt>
       </In>
       <BeforeAfter before="Сайт тормозит" after="Загрузка меньше секунды" mini={mini} />
     </Frame>

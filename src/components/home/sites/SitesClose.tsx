@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
-import { SITES_ACCENT } from "@/components/home/ai/spotlightSites";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
@@ -123,13 +121,11 @@ export default function SitesClose() {
         </div>
       </Appear>
 
-      {/* Окошко — плитка справа от кнопки «Начать проект», поверх вёрстки
-          (`absolute`): ряд не растёт, а раскрытое окно всё равно вырастает
-          из неё. На телефоне абсолютное позиционирование снято — плитка
-          встаёт в поток под кнопкой. */}
-      <div className="relative mt-8">
+      {/* Окошко AI-ассистента переехало на главу 05 (Guarantees), вторым
+          под «Сайт-визиткой» — Егор попросил, чтобы обе плитки этого формата
+          стояли рядом в одном месте, а не по одной на разных главах. */}
       <Appear from="up" delay={BEAT.cta}>
-        <div className="flex items-center justify-center gap-4">
+        <div className="mt-8 flex items-center justify-center gap-4">
           <Link href="/brief/sites" className={PILL}>
             Начать проект
           </Link>
@@ -150,10 +146,6 @@ export default function SitesClose() {
           </Link>
         </div>
       </Appear>
-      <div className="mt-4 lg:absolute lg:bottom-0 lg:right-0 lg:mt-0 lg:w-[330px]">
-        <ToolSpotlight slug="site-assistant" accent={SITES_ACCENT} place="right" className="!pt-0" />
-      </div>
-      </div>
 
       <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
         <div className="mx-auto mt-10 w-full max-w-3xl [@media(max-height:860px)]:hidden">

@@ -57,16 +57,21 @@ export function Frame({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Крупная цифра сцены — то, ради чего на неё смотрят. */
+/** Крупная цифра сцены — то, ради чего на неё смотрят, — и подзаголовок под
+ *  ней. Тезис (`value`, градиент страницы) прижат к самому верху сцены, а
+ *  подпись под ним теперь набрана как настоящий подзаголовок сайта: белым,
+ *  жирным и крупно — раньше это была блёклая серая капслок-строка 8px,
+ *  которая физически не читалась рядом с крупной цифрой (правило сайта:
+ *  основной текст белый с акцентами, никогда приглушённо-серый). */
 export function Headline({ value, note, mini }: { value: string; note: string; mini?: boolean }) {
   if (mini) return null;
   return (
     <In at={0}>
-      <text x="16" y="36" className="sp-figure" fill="url(#sp-ramp)" fontSize="34">
+      <text x="16" y="34" className="sp-figure" fill="url(#sp-ramp)" fontSize="34">
         {value}
       </text>
-      <text x="16" y="48" fill="rgba(255,255,255,0.55)" fontSize="8" letterSpacing="1.4" fontFamily="inherit">
-        {note.toUpperCase()}
+      <text x="16" y="54" fill="rgba(255,255,255,0.94)" fontSize="14" fontWeight="700" letterSpacing="0.3" fontFamily="inherit">
+        {note}
       </text>
     </In>
   );

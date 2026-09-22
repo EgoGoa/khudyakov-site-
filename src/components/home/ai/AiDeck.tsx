@@ -138,10 +138,11 @@ function AiCardFace({
           hit ? "bg-[#ff6a3d]/25" : "bg-emerald-400/20"
         }`}
       />
-      {/* Сцена лежит над областью названия, не заходя в неё: подпись карточки
-          занимает нижние ~40% (правило Егора — графика не нависает над
-          названием формата снизу). */}
-      <div className="absolute inset-x-3 top-6 h-[46%]">
+      {/* Сцена растянута почти до подписи — тот же фикс, что на
+          SitesCardFace/SmmCardFace: раньше графика занимала меньше
+          половины карточки и читалась мелкой на пустом затемнённом низе.
+          Градиент подписи ниже сам гасит нижний край сцены. */}
+      <div className="absolute inset-x-3 top-6 bottom-16">
         <SpotlightScene slug={slug} step={step} card />
       </div>
     </div>
@@ -188,10 +189,10 @@ const DECK_BEAT_MS = 4200;
 // site's orange: /ai's whole icon set and accent is emerald, and an orange
 // key here read as borrowed from the neighbouring page.
 export const AI_PILL =
-  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#03120d] shadow-[0_12px_30px_-8px_rgba(16,185,129,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
+  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#03120d] shadow-[0_12px_30px_-8px_rgba(16,185,129,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
 
 export const AI_ROUND =
-  "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-colors duration-300 hover:border-emerald-300/70 hover:text-emerald-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
+  "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-[color,border-color,transform] duration-300 hover:scale-110 hover:border-emerald-300/70 hover:text-emerald-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
 
 export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | null } = {}) {
   const wide = !!panelTarget;
@@ -261,7 +262,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
     <div
       onMouseEnter={() => setHeld(true)}
       onMouseLeave={() => setHeld(false)}
-      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[330px]"}`}
+      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[250px]"}`}
       style={
         {
           "--card-glow-rgb": "52, 211, 153",

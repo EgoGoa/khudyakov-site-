@@ -1187,7 +1187,12 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    border-radius: 999px;
+    /* Прямоугольная, не капсула — прямая просьба Егора, образец: закрытая
+       табличка услуги (ToolSpotlight, shape="card", те же 14–22px). Раньше
+       здесь было 999px (полная пилюля) на каждой кнопке сайта; жёсткого
+       прямого угла Егор тоже не просил — небольшое скругление держит
+       кнопку мягкой на тёмном стекле, просто перестаёт читаться как овал. */
+    border-radius: 14px;
     cursor: pointer;
     transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
       transform 0.15s ease, --btn-neon-c1 0.35s ease, --btn-neon-c2 0.35s ease;
@@ -1197,6 +1202,20 @@ body {
     justify-content: center;
     gap: 8px;
     white-space: nowrap;
+    /* Пульс/мигание — вторая половина той же просьбы Егора. Раньше это
+       дыхание жило отдельным классом `.btn-neon-breathe`, который подключали
+       только к одной акцентной кнопке на экране (комментарий ниже объяснял
+       почему — «иначе каждая кнопка сайта будет выпрашивать клик»). Егор
+       посмотрел и прямо попросил обратное: пусть мигают все короткие
+       кнопки-капсулы. Он услышал компромисс и подтвердил решение, так что
+       дыхание теперь идёт по умолчанию на каждой .btn-neon, а не по подписке. */
+    animation: btn-neon-breathe 3.2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-neon {
+      animation: none;
+    }
   }
 
   .btn-neon::before {
@@ -1265,6 +1284,18 @@ body {
     color: #ffffff;
     --btn-neon-c1: #ff5fa2;
     --btn-neon-c2: #ff8a5c;
+    /* Егор: все кнопки должны плавно расти при наведении и плавно
+       возвращаться обратно. transform уже в transition выше (0.15s) —
+       казалось бы, остаётся только задать конечный размер. Но у каждой
+       .btn-neon уже бежит бесконечная анимация дыхания (btn-neon-breathe,
+       см. её @keyframes ниже) — CSS-анимация переопределяет transform на
+       каждом кадре и просто затирала статичный hover-scale, поэтому рост
+       не был заметен. На наведении дыхание останавливается (`animation:
+       none`), transform освобождается, и transition выше плавно доводит
+       кнопку до увеличенного размера; при уходе курсора дыхание запустится
+       заново. */
+    animation: none;
+    transform: scale(1.045);
   }
 
   .btn-neon:active {
@@ -1418,11 +1449,13 @@ body {
   }
 }
 
-/* An inviting "мы на связи" breathe on top of the base running-light border
-   — /content's pricing + closing CTA buttons only, not the whole site's
-   .btn-neon (that would read as every button on every page nagging for a
-   click). Small scale + a soft glow pulse, slow enough to read as calm
-   rather than urgent. */
+/* Дыхание кнопки: небольшой scale и мягкий отблеск поверх уже бегущего по
+   рамке кольца. Раньше подключалось только к паре акцентных кнопок отдельным
+   классом — теперь это анимация самой `.btn-neon` (см. её базовое правило
+   выше): Егор прямо попросил пульс на каждой короткой кнопке сайта. Класс
+   `.btn-neon-breathe` остался как явная пометка на кнопках тарифов
+   («Выбрать план» и подобные) — они и так наследуют дыхание от базового
+   класса, вторым классом здесь ничего не меняется. */
 @keyframes btn-neon-breathe {
   0%, 100% {
     transform: scale(1);
@@ -5142,6 +5175,11 @@ html[data-lite] *::after {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.14),
     0 -14px 34px -16px rgba(var(--card-glow-rgb), 0.75);
+  transition: transform 0.2s ease;
+}
+.spotlight-tab:hover,
+.spotlight-tab:focus-visible {
+  transform: scale(1.045);
 }
 .spotlight-tab::before,
 .spotlight-tab::after {
@@ -5206,8 +5244,25 @@ html[data-lite] *::after {
 .tool-scene .sp-stack {
   animation: sp-stack 2.6s ease-in-out infinite;
 }
+/* Егор: текст внутри схем (и в открытых окошках, и особенно в маленьких
+   карточках карусели) читался тонким и мелким — почти незаметным на глаз.
+   font-weight поднят с обычных 400 до 600 базово; там, где сцена уже сама
+   просила 700 (крупные значения), CSS-атрибутный селектор возвращает жирность
+   обратно. `.tool-scene-card` (сцена внутри карточки, где вьюбокс сжат в разы
+   сильнее, чем в открытом окне) получает ещё +100 и лёгкий буст яркости —
+   тонкая линия SVG-текста на таком масштабе размывается сильнее всего. */
 .tool-scene text {
   font-family: var(--font-montserrat), sans-serif;
+  font-weight: 600;
+}
+.tool-scene text[font-weight="700"] {
+  font-weight: 700;
+}
+.tool-scene-card text {
+  font-weight: 700;
+}
+.tool-scene-card svg {
+  filter: brightness(1.12) contrast(1.08);
 }
 /* Крупные цифры сцены — фирменным дисплейным, как заголовки сайта. */
 .tool-scene .sp-figure {
@@ -5417,7 +5472,11 @@ html[data-lite] *::after {
 
 .welcome-card:hover,
 .welcome-card:focus-visible {
-  transform: translateY(-2px);
+  /* Егор: кнопки стартового меню должны плавно расти при наведении и так
+     же плавно возвращаться — тот же язык, что теперь несут все кнопки
+     сайта (.btn-neon). Лёгкий подъём (translateY) остаётся, рост добавлен
+     поверх него в тот же transform, на той же кривой (0.45s выше). */
+  transform: translateY(-2px) scale(1.025);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     0 0 26px 0 rgba(var(--card-glow-rgb), 0.5),

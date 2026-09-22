@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
+import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
@@ -140,28 +142,35 @@ export default function SmmClose() {
         </div>
       </Appear>
 
-      <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
-        <div className="mt-7 flex items-center justify-center gap-4 [@media(max-height:860px)]:mt-4">
-          <Link href="/brief/smm" className={PILL}>
-            Начать вести соцсети
-          </Link>
-          <Link href="/smm/pricing" aria-label="Смотреть цены" className={ROUND}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M7 17 17 7M9 7h8v8" />
-            </svg>
-          </Link>
+      {/* Окошко — плитка справа от кнопки «Начать вести соцсети», поверх
+          вёрстки, тот же приём, что на /sites (SitesClose). */}
+      <div className="relative mt-7 [@media(max-height:860px)]:mt-4">
+        <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
+          <div className="flex items-center justify-center gap-4">
+            <Link href="/brief/smm" className={PILL}>
+              Начать вести соцсети
+            </Link>
+            <Link href="/smm/pricing" aria-label="Смотреть цены" className={ROUND}>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M7 17 17 7M9 7h8v8" />
+              </svg>
+            </Link>
+          </div>
+        </Appear>
+        <div className="mt-4 lg:absolute lg:bottom-0 lg:right-0 lg:mt-0 lg:w-[330px]">
+          <ToolSpotlight slug="smm-bloggers" accent={SMM_ACCENT} place="right" className="!pt-0" />
         </div>
-      </Appear>
+      </div>
 
       <Appear from="up" delay={BEAT.cta + 2 * STAGGER.normal}>
         <div className="mx-auto mt-10 w-full max-w-3xl [@media(max-height:860px)]:hidden">

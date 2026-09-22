@@ -3,6 +3,8 @@
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
+import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
@@ -63,6 +65,7 @@ export default function SmmOffer() {
         }
         primary={{ href: "/brief/smm", label: "Обсудить формат" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
+        leftFooter={<ToolSpotlight slug="smm-stories" accent={SMM_ACCENT} place="left" />}
         askCard={
           <>
             <TeamAskCard

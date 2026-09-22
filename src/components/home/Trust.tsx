@@ -225,8 +225,17 @@ export default function Trust({
         {/* Swapped with PromoCard below — Egor's ask. Now sits under FAQ in
             column 1, so the 300/340px width it already had (see the note
             it carried before the swap) is exactly right for its new spot
-            without changing. */}
-        <Appear from="up" delay={BEAT.cta} className="mt-2 lg:h-full lg:max-w-[300px] xl:max-w-[340px]">
+            without changing.
+
+            `lg:self-start`, not `lg:h-full` — this cell used to stretch to
+            match row 2's tallest cell (Promo, with its image/details/price),
+            same as Promo does below. Промо-карточка длиннее, а у Макса
+            внутри всего фото + вопрос + кнопка, так что стретч оставлял
+            под кнопкой пустую плашку почти в половину карточки. Егор
+            посмотрел и попросил именно уменьшить это окно, а не растягивать
+            его содержимое — self-start отпускает карточку на её собственную
+            высоту, Promo рядом по-прежнему тянется на всю строку сам. */}
+        <Appear from="up" delay={BEAT.cta} className="mt-2 lg:self-start lg:max-w-[300px] xl:max-w-[340px]">
           {(() => {
             const ask = TRUST_ASK[active === "ai" ? "ai" : "content"];
             return (
@@ -236,7 +245,7 @@ export default function Trust({
                 pitch={ask.pitch}
                 actionLabel={ask.actionLabel}
                 compact
-                className="h-full"
+                dense
               />
             );
           })()}

@@ -5,6 +5,8 @@ import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
+import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 import { EYEBROW } from "@/lib/typography";
@@ -138,6 +140,7 @@ export default function SmmGuarantees() {
               className="mt-4"
             />
           </Appear>
+          <ToolSpotlight slug="smm-ads" accent={SMM_ACCENT} place="left" />
         </div>
 
         <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8 land:mt-0 land:min-w-0 land:flex-1">

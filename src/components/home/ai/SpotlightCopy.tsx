@@ -50,7 +50,14 @@ export default function SpotlightCopy({
   const reduced = useReducedMotion();
   const benefit = data.benefits[step] ?? data.benefits[0];
   return (
-    <div className="flex min-w-0 flex-1 flex-col">
+    // justify-center на ВСЕХ ширинах, не только ниже 1024px: раньше на
+    // десктопе средний блок растягивался на всю оставшуюся высоту
+    // (`lg:flex-1`), и короткий тезис проваливался большим пустым
+    // промежутком между абзацем и нижней строкой цифр — Егор отдельно на
+    // это указал («много пустого места под основным текстом»). Теперь
+    // заголовок, тезис и цифры держатся одной компактной группой и вместе
+    // центрируются в высоте окна, а не растягиваются как резина.
+    <div className="flex min-w-0 flex-1 flex-col justify-center">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           {showTitle && (
@@ -84,7 +91,11 @@ export default function SpotlightCopy({
           просил Егор — каждый шаг приходит как кадр тизера:
           сначала обещание крупно, потом экспертная расшифровка,
           и всё в такт сцене слева. */}
-      <div className="relative mt-2.5 min-h-[72px] flex-1">
+      {/* Больше не растягивается (`flex-1` убран): блок занимает ровно свой
+          контент, а лишнее место в окне забирает `justify-center` на
+          корневом элементе — единой центрированной группой, а не пустым
+          зазором внутри неё. */}
+      <div className="relative mt-2.5">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={step} className="flex flex-col gap-2.5">
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">

@@ -3,6 +3,8 @@
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
+import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
+import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import SmmChapterLayout from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { TEAM } from "@/lib/team";
@@ -233,6 +235,10 @@ export default function SmmMethod() {
             </Appear>
           ))}
         </div>
+
+        {/* Окошко формата — под сегментами, на всю ширину правой колонки,
+            тот же приём, что на /sites (SitesMethodAudience). */}
+        <ToolSpotlight slug="smm-reels" accent={SMM_ACCENT} shape="card" />
       </SmmChapterLayout>
     </CinematicSection>
   );

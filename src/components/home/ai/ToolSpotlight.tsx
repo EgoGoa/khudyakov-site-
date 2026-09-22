@@ -46,9 +46,6 @@ const BEAT_MS = 5200;
  *  собственный вертикальный ритм двух самых плотных глав (04 и 05). */
 const STRIP_HEIGHT = 80;
 
-/** Ширина закрытой плитки в углу (варианты `right` / `left`). */
-const TILE_WIDTH = 330;
-
 
 /** Акцент страницы /ai — лайм→изумруд, тот же, что у заголовков глав и
  *  рельсы. Егор попросил, чтобы окно было в цвет страницы, а не в цвет
@@ -146,10 +143,10 @@ export default function ToolSpotlight({
   // в момент клика (тем же батчем, что и `open`), а не в эффекте после него
   // — иначе первый кадр раскрытия шёл бы по устаревшим числам.
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [geom, setGeom] = useState({ left: 0, width: 0, height: 0, vw: 1200, vh: 900 });
+  const [geom, setGeom] = useState({ left: 0, width: 0, height: 0, y0: 0, y1: 0, vw: 1200, vh: 900 });
   const measure = useCallback(() => {
     const r = wrapRef.current?.getBoundingClientRect();
-    if (r) setGeom({ left: r.left, width: r.width, height: r.height, vw: window.innerWidth, vh: window.innerHeight });
+    if (r) setGeom({ left: r.left, width: r.width, height: r.height, y0: r.top, y1: r.bottom, vw: window.innerWidth, vh: window.innerHeight });
   }, []);
   useEffect(() => {
     measure();
@@ -173,7 +170,7 @@ export default function ToolSpotlight({
   // полосой сверху, а текст мельче.
   const phone = geom.vw < 640;
   const openHeight = phone
-    ? Math.max(380, Math.min(540, geom.vh - 170))
+    ? Math.max(380, Math.min(460, geom.vh - 150))
     : Math.min(420, Math.max(300, Math.round(geom.vh * 0.36)));
   // Как у первого окна: ширина колонки контента (max-w-7xl минус поля). На
   // телефоне поля уже — 16px с каждой стороны, а не 24.
@@ -182,6 +179,24 @@ export default function ToolSpotlight({
   // раскрытая панель встала по центру экрана, где и стоит вся глава.
   const target = (geom.vw - openWidth) / 2;
   const openShift = right ? target - (geom.left + geom.width - openWidth) : target - geom.left;
+
+  // Окно растёт из кнопки вверх (или вниз у верхних плиток), а кнопка стоит
+  // где угодно по высоте главы. На десктопе места хватает, на телефоне —
+  // нет: высокое окно, выросшее вверх от кнопки в середине экрана, уходило
+  // под шапку сайта и обрезалось. Поэтому на телефоне окно сдвигается
+  // по вертикали ровно настолько, чтобы целиком встать между шапкой и
+  // нижним краем экрана. Запас в 40px — на язычок «Открыть: …», который
+  // торчит за рамку окна с той стороны, откуда оно растёт.
+  let openShiftY = 0;
+  if (phone) {
+    const TAB = 40;
+    const minTop = 68 + (top ? 0 : TAB);
+    const maxBottom = geom.vh - 12 - (top ? TAB : 0);
+    const panelTop = top ? geom.y0 : geom.y1 - openHeight;
+    if (panelTop < minTop) openShiftY = minTop - panelTop;
+    const panelBottom = panelTop + openShiftY + openHeight;
+    if (panelBottom > maxBottom) openShiftY -= panelBottom - maxBottom;
+  }
 
   if (!data) return null;
 
@@ -225,10 +240,16 @@ export default function ToolSpotlight({
           растёт из неё поверх блока — вверх (обычно) или вниз (для окошек в
           верхней части главы). Так блок отдаёт место элементу, но при
           раскрытии ничего не разъезжается. */}
+      {/* Плитка занимает всю ширину своей колонки — то же место, что и
+          соседние кнопки блока (askCard, ряд CTA), а не фиксированные 330px
+          в углу. Раньше узкая плитка плавала мелким островком на фоне
+          пустой колонки; теперь она встаёт в тот же ряд размеров, что и
+          остальная вёрстка блока (просьба Егора после первого прохода по
+          /smm). */}
       <div
         ref={wrapRef}
-        className={`relative z-50 ${side ? "" : "w-full"}`}
-        style={{ height: fill ? "100%" : STRIP_HEIGHT, minHeight: fill ? STRIP_HEIGHT : undefined, width: side ? TILE_WIDTH : undefined }}
+        className="relative z-50 w-full"
+        style={{ height: fill ? "100%" : STRIP_HEIGHT, minHeight: fill ? STRIP_HEIGHT : undefined }}
       >
         <motion.div
           initial={false}
@@ -236,10 +257,19 @@ export default function ToolSpotlight({
             height: open ? openHeight : stripH,
             width: open ? openWidth : geom.width || undefined,
             x: open ? openShift : 0,
+            y: open ? openShiftY : 0,
             // Радиус едет вместе с размерами, а не переключается классом:
             // иначе в первом же кадре раскрытия пилюля превращалась в
             // прямоугольник, и дальше «росло» уже другое тело.
-            borderRadius: open ? 34 : shape === "card" ? 22 : 999,
+            // Полностью скруглённые торцы (999 — форма таблетки) остаются
+            // только у полосы во всю ширину главы (`place="bottom"`,
+            // `shape="pill"` — единственная кнопка «на всю страницу»).
+            // Плитки под левый/правый блок (`side`) и плашки-карточки
+            // (`shape="card"`) теперь прямоугольные, как таблички команды
+            // (TeamAskCard, rounded-2xl): полный овал на кнопке, выровненной
+            // по ширине соседнего блока, читался чужеродно рядом с его
+            // прямыми углами (просьба Егора).
+            borderRadius: open ? 34 : side || shape === "card" ? 20 : 999,
           }}
           // Разворот бодрый, схлопывание — мягче, дольше и с задержкой: к
           // моменту, когда едет рамка, содержимое уже растворилось в
@@ -311,18 +341,39 @@ export default function ToolSpotlight({
                 className="absolute inset-0 flex flex-col"
               >
                 <div
-                  className={`flex min-h-0 flex-1 gap-3 p-4 pb-3 sm:p-5 sm:pb-4 lg:gap-7 lg:p-6 lg:pb-5 ${
-                    "max-lg:flex-col lg:items-stretch"
-                  }`}
+                  className="flex min-h-0 flex-1 flex-col gap-3 p-4 pb-3 sm:p-5 sm:pb-4 lg:flex-row lg:items-stretch lg:gap-7 lg:p-6 lg:pb-5"
                 >
+                {/* Телефон: над графикой всегда стоит акцентный офер —
+                    прямая просьба Егора. На узкой сцене подписи самой схемы
+                    выключены (mini, см. ниже — при littlebox текст внутри
+                    свёл бы иллюстрацию в кашу), поэтому графика без единого
+                    слова читалась бы как декорация без смысла. Эта строка —
+                    название услуги фирменным Bebas в градиенте страницы —
+                    возвращает графике заголовок, не залезая внутрь неё. */}
+                {phone && (
+                  <p className="spotlight-accent shrink-0 text-center font-display text-[13px] uppercase leading-tight tracking-[0.08em] sm:text-sm">
+                    {data.title}
+                  </p>
+                )}
+
                 {/* Схема слева — ведёт за тезисом справа. */}
                 {/* В квадратном окне сцена лежит сверху во всю ширину, в
                     полосе — слева колонкой: в обоих случаях она занимает
                     примерно треть окна, просто по разной оси. */}
                 <div
-                  className={`relative h-[92px] w-full shrink-0 rounded-2xl bg-white/[0.03] ring-1 ring-white/10 sm:h-[120px] lg:h-auto lg:w-[34%]`}
+                  // Телефон: сцена — ровно половина окна, а не узкая полоса сверху.
+                  // Раньше высота была фиксированной (110px) при том, что окно на
+                  // телефоне выросло почти на весь экран — картинка терялась в
+                  // маленьком прямоугольнике, а под текстом снизу оставалась
+                  // пустая дыра (см. ниже). `flex-1` без базовой высоты делит
+                  // свободное место 50/50 с текстовой колонкой (у неё тоже
+                  // flex-1) — тот же приём, каким flex обычно делит колонки.
+                  className="relative w-full flex-1 rounded-2xl bg-white/[0.03] ring-1 ring-white/10 lg:h-auto lg:w-[34%] lg:flex-none"
                 >
-                  <SpotlightScene slug={data.slug} step={step} />
+                  {/* На телефоне сцена стоит полосой ~110px: в таком масштабе подписи и
+                      цифры внутри неё нечитаемы, поэтому только фигуры (mini), а
+                      слова несёт текст ниже. */}
+                  <SpotlightScene slug={data.slug} step={step} mini={phone} />
                 </div>
 
                 <SpotlightCopy data={data} step={step} setStep={setStep} onClose={close} compact={phone} showSub={!phone} />
@@ -365,10 +416,26 @@ export default function ToolSpotlight({
                   side ? "gap-3.5 px-4 py-3" : "gap-5 px-5 py-3 sm:px-6"
                 }`}
               >
-                {/* Мини-превью карточки — та же графика, что развернётся. */}
+                {/* Мини-превью карточки — та же графика, что развернётся.
+                    Раньше квадрат ~64px тонул в пустом тёмном поле плитки;
+                    Егор попросил растянуть его минимум на треть кнопки — на
+                    боковых плитках теперь под превью почти вся высота полосы
+                    и больше трети её ширины.
+
+                    На широкой нижней полосе (place="bottom") 30% от почти
+                    полной ширины главы всё равно оставляли саму картинку
+                    маленькой: сцена рисуется в холсте 340×210 (соотношение
+                    ~1.6:1), а коробка получалась в разы шире, и браузер
+                    вписывает SVG по короткой стороне (высоте) — рисунок
+                    занимал только середину коробки, а остальное оставалось
+                    пустым тёмным полем вокруг него. Именно это Егор и
+                    показал: «окошко растянула, а саму графику — нет».
+                    `aspect-[340/210]` держит коробку в пропорциях самого
+                    холста, поэтому вписанная картинка заполняет её
+                    целиком, без полей, на любой ширине строки. */}
                 <span
                   className={`relative shrink-0 overflow-hidden rounded-xl ring-1 ring-white/15 ${
-                    side ? "h-14 w-16" : "hidden h-14 w-20 sm:block"
+                    side ? "h-16 w-[38%]" : "hidden h-[70px] aspect-[340/210] sm:block"
                   }`}
                 >
                   <SpotlightScene slug={data.slug} step={step} mini />

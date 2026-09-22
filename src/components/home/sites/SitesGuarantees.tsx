@@ -136,6 +136,9 @@ export default function SitesGuarantees() {
             />
           </Appear>
           <ToolSpotlight slug="site-card" accent={SITES_ACCENT} place="left" />
+          {/* AI-ассистент переехал сюда с главы 06 (Close) — Егор попросил
+              вторым окошком под «Сайт-визиткой», тем же приёмом (place=left). */}
+          <ToolSpotlight slug="site-assistant" accent={SITES_ACCENT} place="left" />
         </div>
 
       <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8 land:mt-0 land:min-w-0 land:flex-1">
