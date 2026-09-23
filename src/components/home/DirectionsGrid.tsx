@@ -278,7 +278,8 @@ function ConsultCard() {
       member={TEAM.egor}
       question="Подскажу, какой формат нужен!"
       pitch="Помогу понять задачу и проработать концепцию — в формате видеосессии или аудиоконференции."
-      actionLabel="Пообщаемся"
+      actionLabel="Обсудить проект"
+      subtle
       className="h-full"
       backgroundImage="/images/blocks/stock-brainstorm.jpg"
     />

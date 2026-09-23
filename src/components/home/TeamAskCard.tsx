@@ -53,6 +53,13 @@ export default function TeamAskCard({
    *  (e.g. AiGuarantees' Egor card, pinned to half a fixed-height column).
    *  Default sizes stay untouched everywhere else. */
   dense = false,
+  /** Drops the solid-orange `btn-warm` treatment for the plain glass
+   *  `.btn-neon` look every other button on the site uses — for cards where
+   *  the ask shouldn't outshine the rest of the screen (e.g. DirectionsGrid's
+   *  ConsultCard, sitting right next to a row of equally-weighted "Узнать
+   *  больше" buttons). Off by default: every other caller keeps the single
+   *  emphasised action the comment on `.btn-neon.btn-warm` describes. */
+  subtle = false,
 }: {
   member: TeamMember;
   question: ReactNode;
@@ -66,6 +73,7 @@ export default function TeamAskCard({
   secondaryHref?: string;
   secondaryIcon?: ReactNode;
   dense?: boolean;
+  subtle?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -74,8 +82,7 @@ export default function TeamAskCard({
   // действиями оборачивать нечего: каждое само по себе Link/button, а
   // карточка — просто контейнер.
   if (compact && secondaryHref && secondaryIcon) {
-    const primaryClass =
-      "btn-neon btn-warm mt-1 inline-flex w-fit !px-3.5 !py-1.5 !text-[9px] transition group-hover:brightness-110";
+    const primaryClass = `btn-neon ${subtle ? "" : "btn-warm"} mt-1 inline-flex w-fit !px-3.5 !py-1.5 !text-[9px] transition group-hover:brightness-110`;
     return (
       <>
         <div
@@ -140,7 +147,7 @@ export default function TeamAskCard({
           </span>
         </div>
       </div>
-      <span className="btn-neon btn-warm mt-1 inline-flex w-fit !px-3.5 !py-1.5 !text-[9px] transition group-hover:brightness-110">
+      <span className={`btn-neon ${subtle ? "" : "btn-warm"} mt-1 inline-flex w-fit !px-3.5 !py-1.5 !text-[9px] transition group-hover:brightness-110`}>
         {actionLabel} →
       </span>
     </div>
@@ -198,7 +205,7 @@ export default function TeamAskCard({
         </p>
 
         <span
-          className={`btn-neon btn-warm inline-flex transition group-hover:brightness-110 ${
+          className={`btn-neon ${subtle ? "" : "btn-warm"} inline-flex transition group-hover:brightness-110 ${
             dense ? "mt-3 !px-4 !py-2 !text-[10px]" : "mt-5"
           }`}
         >
