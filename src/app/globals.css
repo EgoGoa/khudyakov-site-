@@ -2005,12 +2005,19 @@ body {
 }
 
 .btn-3d:hover {
-  transform: translateY(-1px);
+  /* Настоящая причина, почему кнопки на блоках услуг не откликались на
+     наведение: .btn-3d идёт ВТОРЫМ классом почти на каждой такой кнопке
+     (`btn-neon btn-warm btn-3d`), а при равной специфичности с
+     `.btn-neon:hover` побеждает то правило, что ниже по файлу — то есть
+     это. transform: translateY(-1px) тут был один, без scale, и он же
+     затирал рост, добавленный в .btn-neon:hover. Теперь рост задан прямо
+     здесь. */
+  transform: translateY(-1px) scale(1.045);
   filter: brightness(1.08);
 }
 
 .btn-3d:active {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(0.985);
   filter: brightness(0.96);
 }
 
