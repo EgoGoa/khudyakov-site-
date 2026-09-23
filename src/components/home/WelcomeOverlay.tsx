@@ -8,6 +8,7 @@ import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useWelcomeGate } from "@/lib/welcome-gate";
 import CenterModal from "@/components/ui/CenterModal";
 import WelcomeWidget from "./WelcomeWidget";
+import IntroSplash from "./IntroSplash";
 
 // shared easing across every motion in this overlay, so entrances/exits read
 // as one authored sequence instead of mismatched curves
@@ -302,6 +303,9 @@ export function snooze() {
 }
 
 export default function WelcomeOverlay() {
+  // Заставка: пока створки стекла не пошли врозь, окна на экране нет.
+  const [revealed, setRevealed] = useState(false);
+
   // Starts true on the server (and for the very first client render, to
   // match it and avoid a hydration mismatch) so a first-time visitor still
   // sees the overlay; the snooze check runs one effect tick later and
@@ -363,8 +367,21 @@ export default function WelcomeOverlay() {
   };
 
   return (
-    <CenterModal open={visible} onClose={goToSite} ariaLabel="Приветствие HUD SERVICE" bare>
-      <WelcomeWidget onClose={selectService} onSkip={goToSite} />
-    </CenterModal>
+    <>
+      {/* Заставка стоит ПЕРЕД окном, а не внутри него: её стекло должно
+          накрывать всю страницу целиком, включая затемнение оверлея, иначе
+          створки разъезжаются внутри уже открытого окна и эффект теряется.
+          Меню монтируется в момент, когда створки пошли врозь (onReveal), —
+          оно собирается в открывающемся проёме, а не появляется после. */}
+      {visible && <IntroSplash onReveal={() => setRevealed(true)} />}
+      <CenterModal
+        open={visible && revealed}
+        onClose={goToSite}
+        ariaLabel="Приветствие HUD SERVICE"
+        bare
+      >
+        <WelcomeWidget onClose={selectService} onSkip={goToSite} />
+      </CenterModal>
+    </>
   );
 }

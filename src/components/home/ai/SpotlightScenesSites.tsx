@@ -456,8 +456,8 @@ function TurnkeyAssistant({ mini }: SceneProps) {
         <Txt x={104} y={89} size={10.9} weight={700} ls={1}>AI · НА САЙТЕ</Txt>
       </In>
       <In at={3}>
-        <rect x={102} y={102} width={62} height={14} rx={7} fill={W(0.12)} />
-        <Txt x={109} y={112} size={10.1} fill={W(0.85)}>Есть в наличии?</Txt>
+        <rect x={100} y={102} width={96} height={14} rx={7} fill={W(0.12)} />
+        <Txt x={107} y={112} size={10.1} fill={W(0.85)}>Есть в наличии?</Txt>
       </In>
       <In at={4}>
         <rect x={120} y={124} width={72} height={14} rx={7} fill="url(#sp-ramp)" fillOpacity="0.42" stroke="var(--sp-from)" strokeOpacity="0.5" />
@@ -545,9 +545,10 @@ function AssistantSource({ mini }: SceneProps) {
         <Txt x={188} y={120} size={15.5} anchor="middle" ls={1.6}>AI</Txt>
       </In>
       <In at={5}>
-        <rect x={230} y={90} width={98} height={36} rx={10} fill={W(0.08)} stroke="var(--sp-from)" strokeOpacity="0.55" />
+        <rect x={230} y={90} width={106} height={48} rx={10} fill={W(0.08)} stroke="var(--sp-from)" strokeOpacity="0.55" />
         <Txt x={240} y={104} size={12.4}>«В наличии,</Txt>
-        <Txt x={240} y={116} size={12.4}>доставим завтра»</Txt>
+        <Txt x={240} y={116} size={12.4}>доставим</Txt>
+        <Txt x={240} y={128} size={12.4}>завтра»</Txt>
       </In>
       <BeforeAfter before="Общие формулировки" after="Ответ вашими словами" mini={mini} />
     </Frame>
@@ -568,7 +569,7 @@ function AssistantHandoff({ mini }: SceneProps) {
         <Txt x={50} y={106} size={12.4}>Уточняю детали</Txt>
       </In>
       <In at={3}>
-        <rect x={14} y={122} width={118} height={22} rx={11} stroke={W(0.25)} strokeDasharray="4 4" />
+        <rect x={14} y={122} width={138} height={22} rx={11} stroke={W(0.25)} strokeDasharray="4 4" />
         <Txt x={24} y={136} size={12.4} fill={W(0.7)}>Передаю менеджеру</Txt>
       </In>
       <In at={4}>
@@ -640,12 +641,12 @@ function AssistantCrm({ mini }: SceneProps) {
     <Frame>
       <Headline value="24/7" note="принимает заявки без выходных" mini={mini} />
       <In at={1}>
-        <rect x={14} y={80} width={88} height={28} rx={12} fill={W(0.1)} />
+        <rect x={14} y={80} width={110} height={28} rx={12} fill={W(0.1)} />
         <Txt x={24} y={92} size={11.6} fill={W(0.85)}>«Хочу заказать</Txt>
         <Txt x={24} y={102} size={11.6} fill={W(0.85)}>сайт»</Txt>
       </In>
       <In at={2}>
-        <path d="M 106 96 L 128 96" stroke="var(--sp-to)" strokeWidth="1.4" className="sp-flow" />
+        <path d="M 124 96 L 128 96" stroke="var(--sp-to)" strokeWidth="1.4" className="sp-flow" />
       </In>
       <In at={3}>
         <rect x={132} y={60} width={100} height={106} rx={12} fill={W(0.07)} stroke="var(--sp-from)" strokeOpacity="0.55" />
@@ -713,9 +714,9 @@ function RedesignSeo({ mini }: SceneProps) {
       </In>
       {rows.map(([from, to], i) => (
         <In key={from} at={2 + i * 0.9}>
-          <rect x={14} y={76 + i * 30} width={104} height={22} rx={11} fill={W(0.04)} stroke={W(0.16)} />
+          <rect x={14} y={76 + i * 30} width={130} height={22} rx={11} fill={W(0.04)} stroke={W(0.16)} />
           <Txt x={24} y={90 + i * 30} size={11.6} fill={W(0.6)}>{from}</Txt>
-          <path d={`M 122 ${87 + i * 30} L 204 ${87 + i * 30}`} stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
+          <path d={`M 148 ${87 + i * 30} L 204 ${87 + i * 30}`} stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
           <rect x={208} y={76 + i * 30} width={118} height={22} rx={11} fill={W(0.08)} stroke="var(--sp-from)" strokeOpacity="0.55" />
           <Txt x={218} y={90 + i * 30} size={11.6}>{to}</Txt>
           <Tick cx={312} cy={87 + i * 30} r={6} />
@@ -750,7 +751,7 @@ function RedesignContent({ mini }: SceneProps) {
         <Txt x={190} y={84} size={10.1} ls={1} weight={700}>ПЕРЕПИСАЛИ</Txt>
         <Bar x={190} y={91} w={88} h={5} o={0.4} />
         <rect x={180} y={110} width={136} height={24} rx={6} fill={W(0.08)} stroke={W(0.16)} />
-        <Txt x={190} y={124} size={10.1} ls={1} fill={W(0.75)}>ОСТАВИЛИ — АКТУАЛЕН</Txt>
+        <Txt x={190} y={124} size={9.4} ls={0.6} fill={W(0.75)}>ОСТАВИЛИ — АКТУАЛЕН</Txt>
         <Cta x={180} y={142} w={72} h={16} label="Связаться" size={10.9} />
       </In>
       <BeforeAfter before="Устаревший вид" after="Новый вид, живые тексты" mini={mini} />
@@ -778,7 +779,7 @@ function RedesignSpeed({ mini }: SceneProps) {
         <circle cx={170} cy={152} r={5} fill="#fff" />
       </In>
       <In at={5}>
-        <rect x={252} y={100} width={74} height={22} rx={11} fill={W(0.07)} stroke="var(--sp-from)" strokeOpacity="0.55" />
+        <rect x={241} y={100} width={96} height={22} rx={11} fill={W(0.07)} stroke="var(--sp-from)" strokeOpacity="0.55" />
         <Txt x={289} y={114} size={11.6} anchor="middle">−7% за секунду</Txt>
       </In>
       <BeforeAfter before="Сайт тормозит" after="Загрузка меньше секунды" mini={mini} />

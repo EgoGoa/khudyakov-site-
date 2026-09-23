@@ -171,7 +171,7 @@ export default function ToolSpotlight({
   const phone = geom.vw < 640;
   const openHeight = phone
     ? Math.max(380, Math.min(460, geom.vh - 150))
-    : Math.min(420, Math.max(300, Math.round(geom.vh * 0.36)));
+    : Math.min(460, Math.max(330, Math.round(geom.vh * 0.38)));
   // Как у первого окна: ширина колонки контента (max-w-7xl минус поля). На
   // телефоне поля уже — 16px с каждой стороны, а не 24.
   const openWidth = Math.min(1200, geom.vw - (phone ? 32 : 48));

@@ -109,7 +109,11 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
           <h3 className="direction-card-title font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] transition-[color] sm:text-lg">
             {direction.title}
           </h3>
-          <p className="mt-1.5 line-clamp-4 text-xs leading-snug text-paper sm:line-clamp-3 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-[0.7rem]">
+          {/* Тот же стиль, что у «Формата не из списка» рядом (Егор
+              отметил его как образец): фирменный дисплейный шрифт крупнее
+              обычного тела, а не мелкий текст на общих основаниях —
+              читается сразу, а не угадывается. */}
+          <p className="mt-1.5 line-clamp-4 font-display text-[8.5px] leading-snug tracking-tight text-paper/65 sm:line-clamp-3 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-[10px]">
             {direction.description}
           </p>
         </div>

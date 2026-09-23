@@ -253,8 +253,15 @@ export default function CinematicStage({
   // одинаковый на сервере и клиенте, гидрация не расходится.
   const [warm, setWarm] = useState<ReadonlySet<number>>(() => new Set());
   useEffect(() => {
-    if (document.documentElement.hasAttribute("data-lite")) return;
-    const targets = [activeIndex + 1, activeIndex - 1].filter((i) => i >= 0 && i < chapters.length);
+    const root = document.documentElement;
+    if (root.hasAttribute("data-lite")) return;
+    // Среднее устройство (data-mid) тоже не подогревает соседей: только
+    // следующую главу и только одну — вполовину меньше работы, чем на
+    // сильных устройствах, но экран не монтируется вхолостую, как на lite.
+    const mid = root.hasAttribute("data-mid");
+    const targets = (mid ? [activeIndex + 1] : [activeIndex + 1, activeIndex - 1]).filter(
+      (i) => i >= 0 && i < chapters.length,
+    );
     const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 300));
     const cic = window.cancelIdleCallback ?? window.clearTimeout;
     const handles: number[] = [];

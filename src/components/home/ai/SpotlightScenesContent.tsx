@@ -164,12 +164,12 @@ function AdHook({ mini }: SceneProps) {
       </In>
       <In at={2}>
         <path d="M 24 74 C 50 90 66 140 96 150 C 150 160 240 160 316 162" stroke={`${W}0.35)`} strokeWidth="1.6" strokeDasharray="4 5" />
-        <text x="250" y="152" fill={`${W}0.45)`} fontSize="11.6" fontFamily="inherit">без идеи — листают</text>
+        <text x="316" y="152" textAnchor="end" fill={`${W}0.45)`} fontSize="11.6" fontFamily="inherit">без идеи — листают</text>
       </In>
       <In at={3}>
         <path d="M 24 74 C 60 80 80 84 120 88 C 180 96 250 104 316 112" stroke="url(#sp-ramp)" strokeWidth="2.4" className="sp-flow" />
         <circle cx="86" cy="82" r="4.5" fill="var(--sp-from)" className="sp-pulse" />
-        <text x="196" y="86" fill="#fff" fontSize="12.4" fontWeight="600" fontFamily="inherit">с сильной идеей — досматривают</text>
+        <text x="316" y="86" textAnchor="end" fill="#fff" fontSize="12.4" fontWeight="600" fontFamily="inherit">с сильной идеей — досматривают</text>
       </In>
       <BeforeAfter before="Перечень преимуществ" after="Одна идея в 3 секунды" mini={mini} />
     </Frame>
@@ -473,7 +473,7 @@ function AiHybrid({ mini }: SceneProps) {
         <rect x="14" y="152" width="10" height="6" rx="3" fill={`${W}0.3)`} />
         <text x="30" y="158" fill={`${W}0.6)`} fontSize="11.6" fontFamily="inherit">живая съёмка</text>
         <rect x="120" y="152" width="10" height="6" rx="3" fill="var(--sp-from)" fillOpacity="0.6" />
-        <text x="136" y="158" fill={`${W}0.6)`} fontSize="11.6" fontFamily="inherit">AI-кадр — там, где камера бессильна</text>
+        <text x="136" y="158" fill={`${W}0.6)`} fontSize="11.6" fontFamily="inherit">AI-кадр — где не снять</text>
       </In>
       <BeforeAfter before="Съёмка или ничего" after="Камера + AI в одном" mini={mini} />
     </Frame>
@@ -738,9 +738,9 @@ function AdQuote({ mini }: SceneProps) {
         <text x="196" y="140" textAnchor="middle" fill="#fff" fontSize="14.0" fontWeight="600" fontFamily="inherit">Смета</text>
       </In>
       <In at={5}>
-        <rect x="250" y="70" width="76" height="84" rx="12" fill={`${W}0.04)`} stroke="var(--sp-to)" strokeOpacity="0.5" />
-        <text x="288" y="106" textAnchor="middle" fill="var(--sp-to)" fontSize="31.0" fontWeight="700" fontFamily="inherit">1 день</text>
-        <text x="288" y="122" textAnchor="middle" fill={`${W}0.55)`} fontSize="10.9" fontFamily="inherit">на ответ</text>
+        <rect x="246" y="70" width="88" height="84" rx="12" fill={`${W}0.04)`} stroke="var(--sp-to)" strokeOpacity="0.5" />
+        <text x="290" y="104" textAnchor="middle" fill="var(--sp-to)" fontSize="21" fontWeight="700" fontFamily="inherit">1 день</text>
+        <text x="290" y="122" textAnchor="middle" fill={`${W}0.55)`} fontSize="10.9" fontFamily="inherit">на ответ</text>
       </In>
       <BeforeAfter before="Ждать неделю" after="Идея и смета в течение дня" mini={mini} />
     </Frame>

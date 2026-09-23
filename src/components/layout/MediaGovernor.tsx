@@ -8,6 +8,12 @@ import { MOBILE_VIDEOS } from "@/lib/mobile-videos";
 //    (swapped before it starts downloading);
 //  * weak devices (html[data-lite], see lib/lite.ts) never load video at all —
 //    the poster / still under it stays;
+//  * mid-range devices (html[data-mid]) keep video, but only ONE looping clip
+//    decodes at a time — several autoplay backgrounds decoding together (the
+//    welcome cards play four at once) is what pushed mid-range phones into
+//    the crash-and-reload loop lite mode exists to catch. The most recently
+//    revealed clip wins; the rest sit on their poster frame, paused, and
+//    resume the moment they become the newest one on screen again;
 //  * looping videos pause when they leave the screen or sit in a chapter that
 //    is not on stage, and resume (if they autoplay) when they come back.
 // Reel videos owned by CinematicStage (no `loop`) are only swapped/skipped, never
@@ -19,7 +25,9 @@ export default function MediaGovernor() {
   useEffect(() => {
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     const small = window.matchMedia("(max-width: 1023px)").matches || conn?.saveData === true;
-    const lite = document.documentElement.hasAttribute("data-lite");
+    const root = document.documentElement;
+    const lite = root.hasAttribute("data-lite");
+    const mid = !lite && root.hasAttribute("data-mid");
 
     const visible = new WeakMap<HTMLVideoElement, boolean>();
     const io = new IntersectionObserver(
@@ -37,11 +45,25 @@ export default function MediaGovernor() {
       return !pane || pane.getAttribute("data-active") === "true";
     };
 
+    // Один играющий looping-ролик за раз на data-mid: список — очередь
+    // недавно проигранных, самый свежий остаётся жить, остальные ставятся на
+    // паузу без выгрузки src (чтобы мгновенно возобновились, когда снова
+    // станут самыми свежими).
+    let nowPlaying: HTMLVideoElement | null = null;
+
     function settle(v: HTMLVideoElement) {
       if (!v.loop || lite) return;
       const shouldPlay = visible.get(v) !== false && onStage(v) && !document.hidden;
-      if (!shouldPlay && !v.paused) v.pause();
-      else if (shouldPlay && v.paused && v.autoplay) v.play().catch(() => {});
+      if (!shouldPlay) {
+        if (!v.paused) v.pause();
+        if (nowPlaying === v) nowPlaying = null;
+        return;
+      }
+      if (mid && nowPlaying && nowPlaying !== v) {
+        if (!nowPlaying.paused) nowPlaying.pause();
+      }
+      if (v.paused && v.autoplay) v.play().catch(() => {});
+      if (mid) nowPlaying = v;
     }
 
     const seen = new WeakSet<HTMLVideoElement>();

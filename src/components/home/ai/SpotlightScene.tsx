@@ -93,12 +93,12 @@ function SceneLearn({ mini }: SceneProps) {
       </text>
       </In>
       <In at={5}>
-        <rect x="232" y="92" width="96" height="34" rx="10" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.55" />
+        <rect x="228" y="92" width="100" height="34" rx="10" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.55" />
         <path d="M 236 122 L 232 132 L 246 124 Z" fill="rgba(255,255,255,0.08)" />
-        <text x="242" y="106" fill="#fff" fontSize="12.4" fontFamily="inherit">
+        <text x="238" y="106" fill="#fff" fontSize="11" fontFamily="inherit">
           «Да, свободно
         </text>
-        <text x="242" y="117" fill="#fff" fontSize="12.4" fontFamily="inherit">
+        <text x="238" y="117" fill="#fff" fontSize="11" fontFamily="inherit">
           завтра в 12:00»
         </text>
       </In>
@@ -176,12 +176,12 @@ function SceneHandoff({ mini }: SceneProps) {
       <path d="M 136 114 C 158 114 160 100 180 100" stroke="var(--sp-to)" strokeWidth="1.4" className="sp-flow" />
       </In>
       <In at={6}>
-        <rect x="184" y="72" width="142" height="30" rx="15" fill="rgba(255,255,255,0.06)" stroke="var(--sp-to)" strokeOpacity="0.5" />
+        <rect x="184" y="72" width="152" height="30" rx="15" fill="rgba(255,255,255,0.06)" stroke="var(--sp-to)" strokeOpacity="0.5" />
         <circle cx="200" cy="87" r="8" fill="url(#sp-ramp)" fillOpacity="0.9" />
-        <text x="214" y="90" fill="#fff" fontSize="14.0" fontFamily="inherit">
+        <text x="214" y="90" fill="#fff" fontSize="12.4" fontFamily="inherit">
           Менеджер
         </text>
-        <text x="272" y="90" fill="var(--sp-to)" fontSize="11.6" fontFamily="inherit">
+        <text x="278" y="90" fill="var(--sp-to)" fontSize="10.9" fontFamily="inherit">
           + история
         </text>
       </In>
@@ -224,8 +224,8 @@ function SceneGrowth({ mini }: SceneProps) {
       <circle cx="243" cy="68" r="4" fill="var(--sp-from)" className="sp-pulse" />
       </In>
       <In at={8}>
-        <rect x="236" y="40" width="92" height="22" rx="11" fill="rgba(255,255,255,0.07)" stroke="var(--sp-from)" strokeOpacity="0.55" />
-        <text x="246" y="54.5" fill="#fff" fontSize="12.4" fontWeight="600" fontFamily="inherit">
+        <rect x="212" y="40" width="116" height="22" rx="11" fill="rgba(255,255,255,0.07)" stroke="var(--sp-from)" strokeOpacity="0.55" />
+        <text x="222" y="54.5" fill="#fff" fontSize="11" fontWeight="600" fontFamily="inherit">
           разбор диалогов
         </text>
       </In>
@@ -266,14 +266,14 @@ function AgentChannels({ mini }: SceneProps) {
         </text>
       </In>
       <In at={5}>
-        <rect x="238" y="82" width="90" height="52" rx="12" fill="rgba(255,255,255,0.07)" stroke="var(--sp-to)" strokeOpacity="0.55" />
-        <text x="250" y="102" fill="#fff" fontSize="12.4" fontFamily="inherit">
+        <rect x="232" y="82" width="96" height="52" rx="12" fill="rgba(255,255,255,0.07)" stroke="var(--sp-to)" strokeOpacity="0.55" />
+        <text x="242" y="102" fill="#fff" fontSize="11.2" fontFamily="inherit">
           «Да, свободно.
         </text>
-        <text x="250" y="114" fill="#fff" fontSize="12.4" fontFamily="inherit">
+        <text x="242" y="114" fill="#fff" fontSize="11.2" fontFamily="inherit">
           Уточню пару
         </text>
-        <text x="250" y="126" fill="#fff" fontSize="12.4" fontFamily="inherit">
+        <text x="242" y="126" fill="#fff" fontSize="11.2" fontFamily="inherit">
           деталей»
         </text>
       </In>
@@ -310,16 +310,19 @@ function AgentKnowledge({ mini }: SceneProps) {
         </In>
       ))}
       <In at={5}>
-        <path d="M 166 108 C 190 108 194 100 214 100" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
-        <rect x="218" y="74" width="110" height="52" rx="12" fill="rgba(255,255,255,0.07)" stroke="var(--sp-to)" strokeOpacity="0.55" />
-        <text x="230" y="94" fill="#fff" fontSize="12.4" fontFamily="inherit">
-          «Съёмочный день —
+        <path d="M 166 108 C 190 108 194 96 214 96" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
+        <rect x="214" y="70" width="126" height="64" rx="12" fill="rgba(255,255,255,0.07)" stroke="var(--sp-to)" strokeOpacity="0.55" />
+        <text x="224" y="90" fill="#fff" fontSize="11.6" fontFamily="inherit">
+          «Съёмочный день
         </text>
-        <text x="230" y="106" fill="#fff" fontSize="12.4" fontFamily="inherit">
-          от 90 000 ₽, в цену
+        <text x="224" y="102" fill="#fff" fontSize="11.6" fontFamily="inherit">
+          — от 90 000 ₽,
         </text>
-        <text x="230" y="118" fill="#fff" fontSize="12.4" fontFamily="inherit">
-          входит монтаж»
+        <text x="224" y="114" fill="#fff" fontSize="11.6" fontFamily="inherit">
+          в цену входит
+        </text>
+        <text x="224" y="126" fill="#fff" fontSize="11.6" fontFamily="inherit">
+          монтаж»
         </text>
       </In>
       <BeforeAfter before="Модель фантазирует" after="Ответ строкой из вашего прайса" mini={mini} />
@@ -462,11 +465,11 @@ function VideoLook({ mini }: SceneProps) {
         </In>
       ))}
       <In at={8}>
-        <rect x="120" y="118" width="206" height="40" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)" />
+        <rect x="120" y="118" width="212" height="40" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)" />
         <text x="132" y="134" fill="rgba(255,255,255,0.5)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
           ОДИН СВЕТ · ОДНА ПАЛИТРА
         </text>
-        <text x="132" y="148" fill="#fff" fontSize="12.4" fontFamily="inherit">
+        <text x="132" y="148" fill="#fff" fontSize="11.4" fontFamily="inherit">
           Кадры читаются как одна съёмка
         </text>
       </In>
@@ -735,7 +738,7 @@ function VoiceTranslate({ mini }: SceneProps) {
           ПОДСТРОЧНИК
         </text>
         <text x="26" y="98" fill="rgba(255,255,255,0.55)" fontSize="11.6" fontFamily="inherit">
-          «Мы делают видео быстро»
+          «Мы делают видео»
         </text>
       </In>
       <In at={2}>
@@ -859,12 +862,15 @@ function OpsInput({ mini }: SceneProps) {
         </text>
       </In>
       <In at={6}>
-        <rect x="236" y="88" width="90" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="var(--sp-to)" strokeOpacity="0.5" />
-        <text x="248" y="106" fill="#fff" fontSize="11.6" fontFamily="inherit">
-          «Срок по этому
+        <rect x="232" y="82" width="104" height="56" rx="10" fill="rgba(255,255,255,0.06)" stroke="var(--sp-to)" strokeOpacity="0.5" />
+        <text x="242" y="100" fill="#fff" fontSize="11" fontFamily="inherit">
+          «Срок по
         </text>
-        <text x="248" y="120" fill="#fff" fontSize="11.6" fontFamily="inherit">
-          договору — 14 дней»
+        <text x="242" y="112" fill="#fff" fontSize="11" fontFamily="inherit">
+          этому договору
+        </text>
+        <text x="242" y="124" fill="#fff" fontSize="11" fontFamily="inherit">
+          — 14 дней»
         </text>
       </In>
       <BeforeAfter before="Заводить базу с нуля" after="Работает с тем, что уже есть" mini={mini} />

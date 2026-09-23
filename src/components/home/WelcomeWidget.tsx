@@ -222,11 +222,18 @@ export default function WelcomeWidget({
       <div
         ref={fitRef}
         className="welcome-scene flex h-fit w-full flex-col items-center text-center"
-        style={fitScale < 1 ? { transform: `scale(${fitScale})`, transformOrigin: "top center" } : undefined}
+        style={{
+          ...(fitScale < 1 ? { transform: `scale(${fitScale})`, transformOrigin: "top center" } : undefined),
+          // Второй шаг (выбрано направление) поднимает лого к самому верху
+          // страницы — там уже не нужен запас под шапку сайта, экран занят
+          // списком блоков, и Егор попросил не терять на этом высоту.
+          ...(picked ? { paddingTop: "0.75rem" } : undefined),
+        }}
       >
         {/* Логотип — первым и сверху, на прозрачном фоне. Размытие в
             появлении, а не просто сдвиг: знак «проявляется», как и всё
-            остальное на сцене. */}
+            остальное на сцене. На втором шаге уже на месте — тут не
+            перезаходит, а просто стоит выше (см. paddingTop выше). */}
         <motion.div
           className="mb-4 flex items-center gap-2.5"
           initial={{ opacity: 0, y: -14, filter: "blur(10px)" }}
@@ -240,15 +247,19 @@ export default function WelcomeWidget({
           </span>
         </motion.div>
 
-        {/* Заголовок — снизу и через размытие, ровно как просил Егор.
-            Фирменный заголовочный шрифт, а не текстовый: это реплика сцены,
-            а не подпись к меню. */}
-        <AnimatePresence mode="wait" initial={false}>
+        {/* Заголовок — снизу и через размытие на первом шаге, ровно как
+            просил Егор. На втором шаге (выбрано направление) заголовок и
+            вопрос встают сразу, без своего плавного появления: раньше
+            AnimatePresence в режиме "wait" держал экран пустым, пока
+            дожидался исчезновения прежнего заголовка, и список блоков
+            приезжал позже и отдельно от него — теперь заголовок блока
+            появляется в тот же кадр, что и карточки, одной сценой. */}
+        <AnimatePresence mode={picked ? "sync" : "wait"} initial={false}>
           <motion.h2
             key={picked ?? "root"}
-            initial={{ opacity: 0, y: 18, filter: "blur(12px)" }}
+            initial={picked ? false : { opacity: 0, y: 18, filter: "blur(12px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
+            exit={{ opacity: 0, y: -10, filter: "blur(8px)", transition: { duration: 0.2, ease: EASE } }}
             transition={{ duration: 0.75, ease: EASE, delay: picked ? 0 : d(T_HEAD) }}
             className="welcome-head font-display text-[1.6rem] uppercase leading-[1.05] tracking-tight text-paper sm:text-[2.1rem]"
           >
@@ -294,8 +305,8 @@ export default function WelcomeWidget({
                 <motion.button
                   key={card.key}
                   type="button"
-                  initial={{ opacity: 0, y: 34, filter: "blur(14px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  initial={{ opacity: 0, y: 34, scale: 0.97, filter: "blur(14px)" }}
+                  animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                   transition={{ duration: 0.8, ease: EASE, delay: d(T_CARDS) + d(i * STAGGER) }}
                   onClick={() => setPicked(card.key)}
                   // Имя задано явно: название карточки набрано градиентом
@@ -333,9 +344,9 @@ export default function WelcomeWidget({
                 <motion.button
                   key={block.id}
                   type="button"
-                  initial={{ opacity: 0, y: 26, filter: "blur(12px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : i * 0.07 }}
+                  initial={{ opacity: 0, y: 26, scale: 0.97, filter: "blur(12px)" }}
+                  animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                  transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : i * 0.08 }}
                   onClick={() => go(blockHref(picked, block))}
                   aria-label={`Блок ${block.num}. ${block.title}. ${block.subtitle}`}
                   style={accentVars(picked)}

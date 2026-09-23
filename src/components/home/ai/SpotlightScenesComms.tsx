@@ -32,7 +32,7 @@ function CommsRules({ mini }: SceneProps) {
       </In>
       <In at={8}>
         <path d="M 164 140 L 164 158" stroke="rgba(255,255,255,0.3)" strokeWidth="1.2" strokeDasharray="3 3" />
-        <text x="172" y="160" fill="rgba(255,255,255,0.45)" fontSize="11.6" fontFamily="inherit">спам и дубли — в отдельный список</text>
+        <text x="164" y="160" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="11.6" fontFamily="inherit">спам и дубли — в отдельный список</text>
       </In>
       <BeforeAfter before="Общий чёрный список" after="Правила под ваш поток" mini={mini} />
     </Frame>
@@ -98,21 +98,22 @@ function CommsAuto({ mini }: SceneProps) {
       <Headline value="5 дней" note="до первого рабочего фильтра" mini={mini} />
       <In at={1}>
         <rect x="14" y="64" width="150" height="34" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)" />
-        <text x="26" y="84" fill="rgba(255,255,255,0.8)" fontSize="12.4" fontFamily="inherit">«Сколько стоит съёмка?»</text>
+        <text x="26" y="84" fill="rgba(255,255,255,0.8)" fontSize="10" fontFamily="inherit">«Сколько стоит съёмка?»</text>
       </In>
       <In at={2}>
         <path d="M 168 82 C 190 82 190 118 210 118" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
       </In>
       <In at={3}>
-        <rect x="176" y="104" width="150" height="50" rx="12" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
-        <text x="188" y="122" fill="#fff" fontSize="12.4" fontFamily="inherit">«Считаем по ТЗ. Ориентир —</text>
-        <text x="188" y="134" fill="#fff" fontSize="12.4" fontFamily="inherit">калькулятор на сайте»</text>
-        <text x="188" y="147" fill="var(--sp-from)" fontSize="10.9" fontFamily="inherit">ответ команды · за секунду</text>
+        <rect x="176" y="104" width="150" height="62" rx="12" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
+        <text x="188" y="120" fill="#fff" fontSize="10.6" fontFamily="inherit">«Считаем</text>
+        <text x="188" y="132" fill="#fff" fontSize="10.6" fontFamily="inherit">по ТЗ. Ориентир —</text>
+        <text x="188" y="144" fill="#fff" fontSize="10.6" fontFamily="inherit">калькулятор на сайте»</text>
+        <text x="188" y="158" fill="var(--sp-from)" fontSize="9" fontFamily="inherit">ответ команды · за секунду</text>
       </In>
       <In at={4}>
         <circle cx="34" cy="138" r="14" fill="url(#sp-glow)" />
         <circle cx="34" cy="138" r="8" fill="rgba(10,13,16,0.92)" stroke="url(#sp-ramp)" />
-        <text x="50" y="141" fill="rgba(255,255,255,0.5)" fontSize="11.6" fontFamily="inherit">человек не отвлекался</text>
+        <text x="50" y="141" fill="rgba(255,255,255,0.5)" fontSize="9.8" fontFamily="inherit">человек не отвлекался</text>
       </In>
       <BeforeAfter before="Общие фразы" after="Ответ вашей командой, сразу" mini={mini} />
     </Frame>

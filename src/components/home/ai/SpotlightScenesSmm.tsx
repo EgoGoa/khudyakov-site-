@@ -315,7 +315,7 @@ function CarouselStyle({ mini }: SceneProps) {
       ))}
       <In at={6}>
         <rect x="14" y="150" width="312" height="4" rx="2" fill="url(#sp-ramp)" fillOpacity="0.6" />
-        <text x="14" y="166" fill="rgba(255,255,255,0.5)" fontSize="11.6" fontFamily="inherit">
+        <text x="14" y="166" fill="rgba(255,255,255,0.5)" fontSize="10.2" fontFamily="inherit">
           Один шрифт, одна палитра, одна сетка на всех слайдах
         </text>
       </In>

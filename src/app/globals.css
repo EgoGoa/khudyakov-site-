@@ -4897,6 +4897,24 @@ html[data-lite] *::after {
   animation-iteration-count: 1 !important;
 }
 
+/* ── "Mid" mode: mid-range phone / 3G (html[data-mid], lib/lite.ts) ──────
+   A real but softer step down from lite: the glass look stays (blur is
+   lighter, not gone) and video keeps playing, but the GPU-heaviest,
+   purely-decorative bits — the endless glows/gradients that never carry
+   meaning — stop running so a mid-range phone isn't asked to composite them
+   forever. Never applies together with data-lite (lite always wins). */
+html:not([data-lite])[data-mid] [class*="backdrop-blur"],
+html:not([data-lite])[data-mid] .glass-panel {
+  -webkit-backdrop-filter: blur(7px) !important;
+  backdrop-filter: blur(7px) !important;
+}
+html:not([data-lite])[data-mid] .deck-halo,
+html:not([data-lite])[data-mid] .animate-pulse-rec,
+html:not([data-lite])[data-mid] .sp-spin,
+html:not([data-lite])[data-mid] .sp-pulse {
+  animation: none !important;
+}
+
 /* ── Inactive chapters cost nothing ──────────────────────────────────────
    The pinned stage stacks every chapter on top of the others and only fades
    the current one in, so the rest kept animating and holding GPU layers
@@ -5412,8 +5430,15 @@ html[data-lite] *::after {
   max-width: 720px;
   margin-inline: auto;
   /* Запас сверху: сцена открывается поверх сайта, а у сайта там своя шапка
-     с логотипом. Без отступа знак сцены встаёт ровно на него. */
-  padding-top: 2.5rem;
+     с логотипом. Без отступа знак сцены встаёт ровно на него. Егор попросил
+     опустить сцену ниже — прижатая к верху колонка «поджимала» страницу под
+     собой; теперь она стоит в своей рамке, с воздухом над логотипом. */
+  padding-top: 5rem;
+  /* Масштаб (см. WelcomeWidget: `transform: scale(fitScale)`) меняется как
+     обычный inline-style, а не через framer-motion, — без перехода он бы
+     щёлкал мгновенно при каждом пересчёте высоты (смена шага, resize).
+     Та же кривая, что у анимации высоты рядом. */
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .welcome-head {
@@ -5450,6 +5475,11 @@ html[data-lite] *::after {
 .welcome-deck {
   display: flex;
   width: 100%;
+  /* Колонка карточек уже самой сцены (Егор очертил рамку): логотип и вопрос
+     остаются на полной ширине как реплика сцены, а выбор собран в более
+     узкий столбец — так меню читается как блок, а не как во всю страницу. */
+  max-width: 610px;
+  margin-inline: auto;
   flex-direction: column;
   gap: 0.6rem;
   margin-top: 1.4rem;
@@ -5670,6 +5700,14 @@ html[data-lite] *::after {
   }
   .welcome-head {
     font-size: 1.45rem;
+    /* Телефон: вопрос уходит вниз и встаёт вплотную к меню, а логотип
+       остаётся один наверху (Егор). Отступ висит на вопросе, а не на
+       колоде: так эти двое читаются как одна группа «вопрос + ответы»,
+       между которыми ничего не рвётся, а знак стоит отдельной шапкой.
+       Сам отступ скромный: высота карточек важнее воздуха над ними, а
+       свободной высоты на телефоне ровно столько, сколько есть — забрав
+       её отступом, мы бы заставили сцену ужать саму себя. */
+    margin-top: 2rem;
   }
   .welcome-head-eyebrow {
     font-size: 0.85rem;
@@ -5677,12 +5715,19 @@ html[data-lite] *::after {
   }
   .welcome-deck {
     gap: 0.5rem;
-    margin-top: 1rem;
+    /* Вопрос уже опустил себя сам (см. .welcome-head выше) — колоде
+       остаётся только встать под него вплотную. */
+    margin-top: 0.85rem;
+    gap: 0.55rem;
   }
   .welcome-card {
-    min-height: 92px;
+    /* Высота — главное на телефоне (Егор): в карточке живёт кадр из
+       ролика, и на низкой полоске от него остаётся горизонт, а не кадр.
+       Значение подобрано под экран 812px: четыре такие карточки плюс знак,
+       вопрос и нижний ряд ещё умещаются в высоту без автосжатия сцены. */
+    min-height: 118px;
     gap: 0.65rem;
-    padding: 0.7rem 0.8rem;
+    padding: 0.8rem 1rem;
     border-radius: 18px;
   }
   .welcome-card-block {

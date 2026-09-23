@@ -173,8 +173,8 @@ function AnAnomaly({ mini }: SceneProps) {
       <In at={4}>
         <circle cx="220" cy="82" r="9" fill="var(--sp-from)" fillOpacity="0.25" className="sp-pulse" />
         <circle cx="220" cy="82" r="3.8" fill="var(--sp-from)" />
-        <rect x="150" y="62" width="70" height="14" rx="7" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
-        <text x="185" y="72" textAnchor="middle" fill="#fff" fontSize="10.9" fontFamily="inherit">выбилось из нормы</text>
+        <rect x="133" y="62" width="104" height="14" rx="7" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
+        <text x="185" y="72" textAnchor="middle" fill="#fff" fontSize="9.2" fontFamily="inherit">выбилось из нормы</text>
       </In>
       <BeforeAfter before="Заметили через неделю" after="Система сообщает сама" mini={mini} />
     </Frame>
@@ -260,16 +260,18 @@ function TrPractice({ mini }: SceneProps) {
     <Frame>
       <Headline value="ваши кейсы" note="а не абстрактные примеры" mini={mini} />
       <In at={1}>
-        <rect x="14" y="62" width="150" height="46" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.13)" />
-        <text x="26" y="80" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">ЗАДАЧА ИЗ РАБОТЫ</text>
-        <text x="26" y="96" fill="#fff" fontSize="12.4" fontFamily="inherit">Ответить на заявку по смете</text>
+        <rect x="14" y="62" width="150" height="50" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.13)" />
+        <text x="26" y="78" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">ЗАДАЧА ИЗ РАБОТЫ</text>
+        <text x="26" y="92" fill="#fff" fontSize="12.4" fontFamily="inherit">Ответить на</text>
+        <text x="26" y="104" fill="#fff" fontSize="12.4" fontFamily="inherit">заявку по смете</text>
       </In>
       <In at={2}>
-        <path d="M 90 110 L 90 124" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
+        <path d="M 90 114 L 90 128" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
       </In>
       <In at={3}>
-        <rect x="14" y="126" width="150" height="34" rx="12" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
-        <text x="26" y="147" fill="#fff" fontSize="12.4" fontFamily="inherit">Сотрудник делает с помощью AI</text>
+        <rect x="14" y="130" width="150" height="42" rx="12" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
+        <text x="26" y="148" fill="#fff" fontSize="12.4" fontFamily="inherit">Сотрудник делает</text>
+        <text x="26" y="160" fill="#fff" fontSize="12.4" fontFamily="inherit">с помощью AI</text>
       </In>
       <In at={4}>
         <rect x="180" y="62" width="146" height="98" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" />
@@ -300,8 +302,9 @@ function TrControl({ mini }: SceneProps) {
       ))}
       <In at={6}>
         <path d="M 50 130 C 100 122 160 100 218 80" stroke="var(--sp-from)" strokeWidth="1.5" fill="none" className="sp-flow" />
-        <rect x="238" y="66" width="88" height="26" rx="13" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
-        <text x="282" y="82" textAnchor="middle" fill="#fff" fontSize="11.6" fontFamily="inherit">пользуются каждый день</text>
+        <rect x="232" y="64" width="100" height="34" rx="12" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
+        <text x="282" y="79" textAnchor="middle" fill="#fff" fontSize="11.6" fontFamily="inherit">пользуются</text>
+        <text x="282" y="91" textAnchor="middle" fill="#fff" fontSize="11.6" fontFamily="inherit">каждый день</text>
       </In>
       <BeforeAfter before="Обучили и разошлись" after="Проверяем, что поведение изменилось" mini={mini} />
     </Frame>

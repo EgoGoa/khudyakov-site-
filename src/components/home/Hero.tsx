@@ -172,7 +172,7 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.25 }}
           className={`mt-2 max-w-[70%] text-left ${HERO_LEAD}`}
         >
-          <span className="kw">Команда</span>, а не технологии. AI мы подключили как инструмент — чтобы делать <span className="kw">глубже и эффективнее</span>.
+          <span className="kw">Команда</span>, а AI-технологии мы подключили как инструмент — чтобы делать <span className="kw">глубже и эффективнее</span>.
         </motion.p>
 
         <motion.div

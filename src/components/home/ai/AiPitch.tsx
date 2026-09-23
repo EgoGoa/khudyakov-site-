@@ -96,9 +96,9 @@ export default function AiPitch() {
               sentences so the column still ends above the fold beside the
               carousel. */}
           <Appear from="up" delay={BEAT.intro} className="land:hidden">
-            <p className="mt-4 max-w-[32em] text-sm leading-relaxed text-paper/55">
-              Заявки теряются, пока менеджер занят. Конкурент отвечает клиенту через минуту, вы —
-              через два часа.
+            <p className="mt-4 max-w-[32em] text-sm leading-relaxed text-white">
+              Заявки теряются, пока менеджер занят. Конкурент отвечает клиенту{" "}
+              <span className="kw">через минуту</span>, вы — через два часа.
             </p>
           </Appear>
 
