@@ -188,13 +188,22 @@ function AdPlatform({ mini }: SceneProps) {
       <Headline value="15·30·60" note="хронометраж под площадку" mini={mini} />
       {rows.map((r, i) => {
         const y = 66 + i * 34;
-        const step = 236 / r.cuts;
+        // Полоса кадров начинается правее подписи, а не сразу после неё:
+        // «Соцсети» — самое длинное имя в столбце, и на боевом шрифте (не
+        // Bebas — здесь fontFamily="inherit", берётся системный) его 7
+        // кириллических букв на 13.2px шире, чем те же 52px, что хватало
+        // «Digital» на латинице. Кадры наезжали на последнюю букву. 96,
+        // а не впритык под самое длинное имя — так у подписи ещё остаётся
+        // воздух, а не край в край.
+        const barX0 = 96;
+        const barX1 = 311;
+        const step = (barX1 - barX0) / r.cuts;
         return (
           <In key={r.name} at={1 + i}>
             <rect x="14" y={y} width="312" height="26" rx="13" {...SOFT} />
             <text x="26" y={y + 16} fill="#fff" fontSize="13.2" fontWeight="600" fontFamily="inherit">{r.name}</text>
             {Array.from({ length: r.cuts }).map((_, k) => (
-              <rect key={k} x={78 + k * step} y={y + 6} width={step - 3} height="14" rx="3" fill="url(#sp-ramp)" fillOpacity={0.25 + (k % 3) * 0.15} />
+              <rect key={k} x={barX0 + k * step} y={y + 6} width={step - 3} height="14" rx="3" fill="url(#sp-ramp)" fillOpacity={0.25 + (k % 3) * 0.15} />
             ))}
             <text x="318" y={y + 16} textAnchor="end" fill={`${W}0.55)`} fontSize="11.6" fontFamily="inherit">{r.len}</text>
           </In>
