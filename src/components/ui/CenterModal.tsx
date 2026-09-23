@@ -137,12 +137,16 @@ export default function CenterModal({
           role="dialog"
           aria-modal="true"
           aria-label={ariaLabel}
-          className={`fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto px-4 py-10 sm:px-6 ${
+          className={`fixed inset-0 z-[100] flex justify-center overflow-y-auto px-4 ${bare ? "pt-6 pb-10 sm:pt-8" : "py-10"} sm:px-6 ${
             // Сцена входа гасит И размывает страницу под собой (см.
             // .welcome-backdrop в globals.css). Остальные окна только
             // затемняют: у них блюр живёт на собственном стекле карточки,
             // а здесь карточки стоят прямо на странице.
-            bare ? "welcome-backdrop bg-ink/45" : "bg-ink/50"
+            //
+            // items-start вместо items-center только у вступительной сцены
+            // (bare) — Егор попросил поднять лого выше; остальные окна
+            // (бриф, вайб-режим блока) остаются вертикально по центру.
+            bare ? "welcome-backdrop bg-ink/45 items-start" : "bg-ink/50 items-center"
           }`}
           onClick={onClose}
         >

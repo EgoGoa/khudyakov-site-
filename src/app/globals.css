@@ -5009,6 +5009,20 @@ html[data-lite] *::after {
   animation-duration: 4.5s;
 }
 
+/* Егор: сама полоска-кнопка (не только её кольцо) должна плавно чуть
+   расти при наведении, как остальные кнопки сайта. `transform` тут не
+   подходит — этим же свойством framer-motion управляет анимацией открытия
+   окна (x/y/borderRadius пишутся прямо в inline transform и перебили бы
+   любой CSS-transform на hover, та же ловушка, что была у .welcome-card).
+   `scale` — независимое CSS-свойство, framer его не трогает. */
+.spotlight-strip {
+  transition: scale 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.spotlight-strip:hover,
+.spotlight-strip:focus-visible {
+  scale: 1.015;
+}
+
 /* Высота обоих состояний живёт в самом компоненте (анимируется числом),
    здесь остаётся только то, что от неё не зависит. */
 .spotlight-open {
