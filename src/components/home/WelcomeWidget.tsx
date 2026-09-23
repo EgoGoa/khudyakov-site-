@@ -228,14 +228,14 @@ export default function WelcomeWidget({
             появлении, а не просто сдвиг: знак «проявляется», как и всё
             остальное на сцене. */}
         <motion.div
-          className="mb-5 flex items-center gap-2"
+          className="mb-4 flex items-center gap-2.5"
           initial={{ opacity: 0, y: -14, filter: "blur(10px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.7, ease: EASE, delay: d(T_LOGO) }}
           aria-hidden="true"
         >
-          <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot" />
-          <span className="font-display text-base uppercase leading-none tracking-tight text-paper sm:text-lg">
+          <span className="h-3 w-3 shrink-0 animate-pulse-rec rounded-full brand-dot sm:h-3.5 sm:w-3.5" />
+          <span className="font-display text-2xl uppercase leading-none tracking-tight text-paper sm:text-3xl">
             HUD<span className="brand-word">.SERVICE</span>
           </span>
         </motion.div>
@@ -267,9 +267,13 @@ export default function WelcomeWidget({
                 </span>
               </>
             ) : (
-              <>
+              // Егор попросил вопрос в одну строку. На узком экране
+              // 1.6rem-заголовок в верхнем регистре не помещался в ширину
+              // окна одной строкой — отдельный, чуть меньший размер только
+              // для этой фразы (на sm+ она и так уже помещалась в 2.1rem).
+              <span className="whitespace-nowrap text-[0.73rem] sm:text-[1.26rem]">
                 Привет, с чего <span className="kw">начнём?</span>
-              </>
+              </span>
             )}
           </motion.h2>
         </AnimatePresence>

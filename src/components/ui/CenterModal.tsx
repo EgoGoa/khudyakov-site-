@@ -137,7 +137,7 @@ export default function CenterModal({
           role="dialog"
           aria-modal="true"
           aria-label={ariaLabel}
-          className={`fixed inset-0 z-[100] flex justify-center overflow-y-auto px-4 ${bare ? "pt-6 pb-10 sm:pt-8" : "py-10"} sm:px-6 ${
+          className={`fixed inset-0 z-[100] flex justify-center overflow-y-auto px-4 ${bare ? "pt-2 pb-10 sm:pt-3" : "py-10"} sm:px-6 ${
             // Сцена входа гасит И размывает страницу под собой (см.
             // .welcome-backdrop в globals.css). Остальные окна только
             // затемняют: у них блюр живёт на собственном стекле карточки,
@@ -182,7 +182,7 @@ export default function CenterModal({
                 ? "0 0 50px rgba(236,72,153,0.16), 0 0 80px rgba(56,189,248,0.14)"
                 : "0 0 70px rgba(236,72,153,0.22), 0 0 100px rgba(56,189,248,0.19)",
             }}
-            className={bare ? "relative w-full max-w-3xl px-2 py-4 sm:px-4" : `relative w-full rounded-[2rem] ${
+            className={bare ? "relative w-full max-w-3xl px-2 pt-1 pb-4 sm:px-4" : `relative w-full rounded-[2rem] ${
               // Вайб-окно не прокручивается ни при каком размере экрана —
               // прямое требование Егора. Оно для этого и худеет само (см.
               // .vibe-window в globals.css): на низких экранах сжимаются волна
