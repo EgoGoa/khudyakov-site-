@@ -8,6 +8,8 @@ import { SendIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { TELEGRAM_URL } from "@/components/home/direction/contacts";
 import type { TeamPulseChatVisual, TeamPulseData } from "./types";
+import { addOrderFromChat } from "@/components/cabinet/store";
+import { openCabinet } from "@/components/cabinet/CabinetWindow";
 
 // Бриф по сценарию, а не живой ИИ — решение Егора: на hdkv-ai.ru (reg.ru,
 // статическая сборка) серверной части нет, /api/ask там вырезается, и
@@ -138,6 +140,9 @@ export default function TeamPulseChat({
         }),
       });
       if (!res.ok) throw new Error("send_failed");
+      // Заявка сразу становится заказом в личном кабинете, а рекомендации
+      // там строятся по этим же ответам.
+      addOrderFromChat({ title: data.orderTitle, memberId: data.member.id, source: data.source, answers, name, phone });
       setPhase("done");
       onProgress?.({ phase: "done", answers: Object.values(answers) });
       say(data.doneText);
@@ -240,6 +245,11 @@ export default function TeamPulseChat({
 
         {(phase === "done" || phase === "error") && !typing && (
           <div className="flex flex-wrap gap-1.5">
+            {phase === "done" && (
+              <button type="button" onClick={openCabinet} className="team-pulse-send !px-4 !py-2 !text-[12.5px]">
+                Заявка в кабинете → открыть
+              </button>
+            )}
             <a href={TELEGRAM_URL} target="_blank" rel="noreferrer" className="team-pulse-messenger !py-2 !text-[12.5px]">
               <TelegramIcon className="h-4 w-4" /> Продолжить в Telegram
             </a>

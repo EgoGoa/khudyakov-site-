@@ -11,10 +11,10 @@ import type { TeamMember } from "@/lib/team";
 // следующий участник команды добавлялся файлом с текстами, а не правкой
 // вёрстки.
 
-export type TeamPulseScene = "concepts" | "lead" | "catalog" | "rebrand";
+export type TeamPulseScene = "concepts" | "lead" | "catalog" | "rebrand" | "timeline" | "calendar" | "contact" | "team";
 
 /** Сцена чата — по одной на вопрос, показывает варианты ответа. */
-export type TeamPulseChatVisual = "what" | "ref" | "mood" | "goal" | "speed";
+export type TeamPulseChatVisual = "what" | "ref" | "mood" | "goal" | "speed" | "stage" | "deadline" | "approver" | "channel";
 
 export type TeamPulseThesis = {
   title: string;
@@ -63,6 +63,8 @@ export type TeamPulseData = {
   callOptions: string[];
   contactAsk: string;
   doneText: string;
+  /** Название заказа, под которым заявка встанет в личном кабинете. */
+  orderTitle: string;
   /** Подпись в заявке: откуда пришёл человек. */
   source: string;
 };

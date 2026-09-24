@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import CabinetButton from "@/components/cabinet/CabinetButton";
+import CabinetWindow from "@/components/cabinet/CabinetWindow";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -299,6 +301,12 @@ export default function Header() {
             <PhoneIcon className="icon-neon-pulse text-glow" />
             +7 992 511-18-12
           </a>
+
+          {/* Личный кабинет: иконка с цифрой новых рекомендаций команды;
+              само окно кабинета смонтировано здесь же, чтобы открываться
+              с любой страницы. */}
+          <CabinetButton />
+          <CabinetWindow />
 
           <div className="relative land:ml-auto land:pointer-events-auto">
             <motion.button

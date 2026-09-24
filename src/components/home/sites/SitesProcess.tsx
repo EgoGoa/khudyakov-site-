@@ -7,8 +7,8 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import SitesChapterLayout, { SITES_PANEL } from "@/components/home/sites/SitesChapterLayout";
 import { SITES_PROCESS_STEPS } from "@/components/home/sites/sitesProcessSteps";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { EGOR_SITES } from "@/components/home/team-pulse/content/egor-sites";
 import PromoCard from "@/components/home/PromoCard";
 
 // Chapter 04 of /sites — the five steps from brief to launch.
@@ -62,14 +62,9 @@ export default function SitesProcess() {
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
         askCard={
           <>
-            <TeamAskCard
-              member={TEAM.egor}
-              question="Отвечу по этапам быстрее, чем вы заполните бриф"
-              pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
-              actionLabel="Заполнить бриф"
-              href="/brief/sites"
-              compact
-            />
+            {/* Егор как сервис — окно линейного продюсера (TeamPulse) на
+                месте прежней компактной карточки; тексты согласованы Егором. */}
+            <TeamPulse data={EGOR_SITES} />
             {/* /sites' second September offer — sits under Егор's card
                 (Egor's ask, same fix as /smm's chapter 02). Gap bumped to
                 mt-8 and the photo swapped for the site's own stock library

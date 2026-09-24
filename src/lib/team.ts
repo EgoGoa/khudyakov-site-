@@ -23,7 +23,7 @@ export const TEAM: Record<string, TeamMember> = {
     id: "egor",
     name: "Егор",
     nameDative: "Егору",
-    role: "генеральный продюсер",
+    role: "линейный продюсер",
     helpsWith: "сроками, бюджетом и любыми вопросами по проекту",
     photo: "/team/egor.jpg",
   },

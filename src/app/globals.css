@@ -6535,3 +6535,105 @@ html[data-lite] .welcome-card-graphic svg circle {
     rgba(14, 14, 22, 0.42);
   backdrop-filter: blur(40px) saturate(190%);
 }
+
+/* ── Демо-кабинет клиента ────────────────────────────────────────────────
+   Строго и минималистично (решение Егора): нейтральное стекло с сильным
+   блюром, белый текст, градиенты страницы только в главном. Цвета —
+   фирменная пара логотипа, кабинет общий для всех страниц. */
+.cab-scope {
+  --sp-from: #ff4fd8;
+  --sp-to: #00d2ff;
+  --tp-from-rgb: 255, 79, 216;
+  --tp-to-rgb: 0, 210, 255;
+}
+.cab-glass {
+  background: rgba(24, 24, 32, 0.55);
+  backdrop-filter: blur(40px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 40px 120px rgba(0, 0, 0, 0.6);
+}
+.cab-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--sp-from), var(--sp-to));
+}
+.cab-bar {
+  background: linear-gradient(90deg, var(--sp-from), var(--sp-to));
+}
+.cab-chip {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+.cab-chip:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+.cab-chip:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.cab-chip-primary {
+  background: linear-gradient(90deg, var(--sp-from), var(--sp-to));
+  color: #0b0b10;
+}
+.cab-chip-primary:hover:not(:disabled) {
+  background: linear-gradient(90deg, var(--sp-from), var(--sp-to));
+  filter: brightness(1.08);
+}
+.cab-cta {
+  border-radius: 999px;
+  padding: 13px 22px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #0b0b10;
+  background: linear-gradient(90deg, var(--sp-from), var(--sp-to));
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+.cab-cta:disabled {
+  opacity: 0.45;
+}
+.cab-cta:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+.cab-input {
+  width: 100%;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 13px 15px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+.cab-input:focus {
+  box-shadow: inset 0 0 0 1px rgba(var(--tp-to-rgb), 0.8);
+}
+.cab-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+.cab-bonus-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: #0b0b10;
+  background: linear-gradient(90deg, #ff6a3d, #ffc53d);
+}
+.cab-send {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--sp-from), var(--sp-to));
+}

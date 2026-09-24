@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { TeamPulseChatVisual, TeamPulseScene } from "./types";
 import { marks } from "./marks";
+import { TEAM } from "@/lib/team";
+import { TelegramIcon } from "@/components/ui/Icons";
 
 // Графика человека команды — «живая вёрстка»: мини-сайты, телефон с
 // формой, карточка товара, которые двигаются как интерфейс, а не схема.
@@ -32,6 +34,10 @@ export const SCENE_MS: Record<TeamPulseScene, number> = {
   lead: 5200,
   catalog: 4600,
   rebrand: 5000,
+  timeline: 5600,
+  calendar: 5200,
+  contact: 5200,
+  team: 5200,
 };
 
 function Stage({ children }: { children: ReactNode }) {
@@ -394,6 +400,205 @@ function Rebrand() {
   );
 }
 
+
+/* ── Сцены Егора: этапы, сроки, связь, команда ─────────────────────────── */
+
+const STAGES = ["Бриф", "Концепция", "Сборка", "Правки", "Запуск"];
+
+function Timeline() {
+  const tick = useTick(950);
+  const done = Math.min(tick, STAGES.length);
+  return (
+    <Stage>
+      <Head title="*Каждый этап* ^с твоего «ок»^" sub="Дальше идём ^только после согласования^" />
+      <Body>
+        <div className="absolute left-[36px] right-[36px] top-[118px] h-[6px] rounded-full bg-white/10">
+          <motion.div className="h-full rounded-full" style={{ background: ACC }} animate={{ width: `${(Math.max(0, done - 1) / (STAGES.length - 1)) * 100}%` }} transition={SPRING} />
+        </div>
+        {STAGES.map((st, i) => {
+          const on = i < done;
+          const x = 36 + (i * (480 - 72)) / (STAGES.length - 1);
+          return (
+            <div key={st} className="absolute top-[92px] flex -translate-x-1/2 flex-col items-center" style={{ left: x }}>
+              <motion.span
+                className="grid h-[58px] w-[58px] place-items-center rounded-full font-display text-[18px] font-bold"
+                animate={{
+                  scale: on ? 1 : 0.82,
+                  background: on ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.08)",
+                  color: on ? "#0b0b10" : "#fff",
+                  boxShadow: on ? "0 0 26px rgba(var(--tp-from-rgb),.6)" : "inset 0 0 0 1px rgba(255,255,255,.2)",
+                }}
+                transition={SPRING}
+              >
+                {on ? "✓" : i + 1}
+              </motion.span>
+              <span className="mt-3 font-display text-[11px] font-bold uppercase text-white">{st}</span>
+              <motion.span
+                className="mt-2 rounded-full px-2.5 py-1 font-display text-[10px] font-bold uppercase text-[#0b0b10]"
+                style={{ background: "linear-gradient(90deg,#ff6a3d,#ffc53d)" }}
+                initial={false}
+                animate={{ opacity: on ? 1 : 0, y: on ? 0 : -6 }}
+                transition={SPRING}
+              >
+                ок
+              </motion.span>
+            </div>
+          );
+        })}
+        <motion.div
+          className="absolute bottom-[40px] left-1/2 -translate-x-1/2 rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ background: ACC }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: done >= STAGES.length ? 1 : 0, scale: done >= STAGES.length ? 1 : 0.8 }}
+          transition={SPRING}
+        >
+          Сайт запущен 🚀
+        </motion.div>
+      </Body>
+    </Stage>
+  );
+}
+
+function Calendar() {
+  const bars = [
+    { label: "Бриф", from: 0, len: 2, c: "linear-gradient(90deg,#ff6a3d,#ffc53d)" },
+    { label: "Концепция", from: 2, len: 3, c: ACC },
+    { label: "Сборка", from: 7, len: 5, c: ACC },
+    { label: "Правки", from: 14, len: 3, c: "linear-gradient(90deg,#ff6a3d,#ffc53d)" },
+  ];
+  const cell = 56;
+  return (
+    <Stage>
+      <Head title="Срок, ^который не плывёт^" sub="Этапы встают *по датам заранее*" />
+      <Body>
+        <div className="absolute left-[44px] top-[4px] grid grid-cols-7 gap-[4px]">
+          {Array.from({ length: 21 }, (_, d) => (
+            <div key={d} className="grid h-[52px] w-[52px] place-items-start rounded-[10px] bg-white/[0.05] p-1.5 font-display text-[11px] font-bold text-white ring-1 ring-white/10">
+              {d + 1}
+            </div>
+          ))}
+        </div>
+        {bars.map((b, i) => {
+          const row = Math.floor(b.from / 7);
+          const col = b.from % 7;
+          return (
+            <motion.div
+              key={b.label}
+              className="absolute flex h-[22px] items-center rounded-full px-2.5 font-display text-[10px] font-bold uppercase text-[#0b0b10]"
+              style={{ left: 44 + col * cell + 4, top: 4 + row * cell + 26, background: b.c, transformOrigin: "left center" }}
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: b.len * cell - 12, opacity: 1 }}
+              transition={{ ...SPRING, delay: 0.3 + i * 0.6 }}
+            >
+              <span className="whitespace-nowrap">{b.label}</span>
+            </motion.div>
+          );
+        })}
+        <motion.div
+          className="absolute flex items-center gap-2 rounded-full px-3.5 py-2 font-display text-[12px] font-bold uppercase text-[#0b0b10]"
+          style={{ left: 44 + 3 * cell - 10, top: 4 + 2 * cell + 60, background: ACC, boxShadow: "0 0 26px rgba(var(--tp-from-rgb),.6)" }}
+          initial={{ opacity: 0, y: 10, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ ...SPRING, delay: 3 }}
+        >
+          🚩 Запуск · 18-е · день в день
+        </motion.div>
+      </Body>
+    </Stage>
+  );
+}
+
+function Contact() {
+  const msgs = [
+    { me: true, t: "Когда будет готово?" },
+    { me: false, t: "В пятницу, как договорились ✓" },
+    { me: true, t: "А можно ещё блок с отзывами?" },
+    { me: false, t: "Да, передал Саше — покажу завтра" },
+  ];
+  return (
+    <Stage>
+      <Head title="*Один человек* ^на связи^" sub="Не нужно искать, ^кому написать^" />
+      <Body>
+        <div className="absolute left-[60px] top-[4px] w-[360px] rounded-[22px] bg-white/[0.05] p-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14),0_30px_60px_rgba(0,0,0,.45)]">
+          <div className="mb-3 flex items-center gap-3">
+            <img src={TEAM.egor.photo} alt="" className="h-10 w-10 rounded-full object-cover" style={{ boxShadow: "0 0 0 2px #0b0b10, 0 0 0 3.5px var(--sp-from)" }} />
+            <span className="font-display text-[14px] font-bold uppercase text-white">
+              Егор <span className="team-pulse-warm">· на связи</span>
+            </span>
+          </div>
+          <div className="flex flex-col gap-2">
+            {msgs.map((m, i) => (
+              <motion.div
+                key={m.t}
+                className={`max-w-[80%] rounded-[16px] px-3.5 py-2.5 text-[14px] font-bold leading-snug text-white ${m.me ? "self-end rounded-br-md" : "self-start rounded-bl-md bg-white/[0.1]"}`}
+                style={m.me ? { background: "linear-gradient(90deg, rgba(var(--tp-from-rgb),.45), rgba(var(--tp-to-rgb),.35))" } : undefined}
+                initial={{ opacity: 0, y: 12, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ ...SPRING, delay: 0.3 + i * 0.9 }}
+              >
+                {m.t}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </Body>
+    </Stage>
+  );
+}
+
+function TeamAssemble() {
+  const crew = [
+    { m: TEAM.sasha, role: "Дизайн", x: 90, y: 30 },
+    { m: TEAM.dima, role: "Моушн · AI", x: 410, y: 30 },
+    { m: TEAM.max, role: "Идея · тексты", x: 240, y: 220 },
+  ];
+  return (
+    <Stage>
+      <Head title="^Команда^ *под задачу*" sub="Дизайн, моушн и тексты — ^в одном проекте^" />
+      <Body>
+        <svg className="absolute inset-0" width="480" height="360" fill="none">
+          {[
+            [90, 80],
+            [410, 80],
+            [240, 270],
+          ].map(([x, y], i) => (
+            <motion.path key={i} d={`M 240 150 L ${x} ${y}`} stroke="url(#tp-line)" strokeWidth="2" strokeDasharray="6 6" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 1 + i * 0.4 }} />
+          ))}
+          <defs>
+            <linearGradient id="tp-line" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="var(--sp-from)" />
+              <stop offset="100%" stopColor="var(--sp-to)" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <motion.div
+          className="absolute left-[160px] top-[112px] grid h-[76px] w-[160px] place-items-center rounded-[18px] font-display text-[14px] font-bold uppercase text-[#0b0b10]"
+          style={{ background: ACC, boxShadow: "0 0 40px rgba(var(--tp-from-rgb),.55)" }}
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={SPRING}
+        >
+          Твой сайт
+        </motion.div>
+        {crew.map((c, i) => (
+          <motion.div
+            key={c.m.id}
+            className="absolute flex w-[120px] -translate-x-1/2 flex-col items-center"
+            style={{ left: c.x, top: c.y }}
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ ...SPRING, delay: 0.4 + i * 0.4 }}
+          >
+            <img src={c.m.photo} alt="" className="h-[64px] w-[64px] rounded-full object-cover" style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 24px rgba(var(--tp-from-rgb),.5)" }} />
+            <span className="mt-2 font-display text-[12px] font-bold uppercase text-white">{c.m.name}</span>
+            <span className="team-pulse-warm font-display text-[10px] font-bold uppercase">{c.role}</span>
+          </motion.div>
+        ))}
+      </Body>
+    </Stage>
+  );
+}
+
 export default function TeamPulseScenes({ scene }: { scene: TeamPulseScene }) {
   const reduced = useReducedMotion();
   return (
@@ -408,6 +613,10 @@ export default function TeamPulseScenes({ scene }: { scene: TeamPulseScene }) {
       {scene === "lead" && <Lead />}
       {scene === "catalog" && <Catalog />}
       {scene === "rebrand" && <Rebrand />}
+      {scene === "timeline" && <Timeline />}
+      {scene === "calendar" && <Calendar />}
+      {scene === "contact" && <Contact />}
+      {scene === "team" && <TeamAssemble />}
     </motion.div>
   );
 }
@@ -637,17 +846,26 @@ function ChatGoal({ chosen }: { chosen?: number }) {
   );
 }
 
-function ChatSpeed({ chosen }: { chosen?: number }) {
-  const lit = useLit(3, chosen);
-  const picked = chosen !== undefined && chosen >= 0;
-  const rows = [
+function ChatSpeed({
+  chosen,
+  rows = [
     { label: "Нужно вчера", fill: 0.95, time: "Рывок" },
     { label: "За пару недель", fill: 0.62, time: "Ровно" },
     { label: "Не горит", fill: 0.35, time: "Спокойно" },
-  ];
+  ],
+  title = "^Скорость^ запуска",
+  sub = "Подстроим план под *твой срок*",
+}: {
+  chosen?: number;
+  rows?: { label: string; fill: number; time: string }[];
+  title?: string;
+  sub?: string;
+}) {
+  const lit = useLit(rows.length, chosen);
+  const picked = chosen !== undefined && chosen >= 0;
   return (
     <Stage>
-      <Head title="^Скорость^ запуска" sub="Подстроим план под *твой срок*" />
+      <Head title={title} sub={sub} />
       <Body>
         <div className="absolute inset-x-8 top-[20px] flex flex-col gap-5">
           {rows.map((r, i) => (
@@ -675,6 +893,103 @@ function ChatSpeed({ chosen }: { chosen?: number }) {
         </div>
       </Body>
     </Stage>
+  );
+}
+
+
+function ChatTiles({ chosen, title, sub, tiles, w = 128 }: { chosen?: number; title: string; sub: string; tiles: { label: string; art: ReactNode }[]; w?: number }) {
+  const lit = useLit(tiles.length, chosen);
+  const picked = chosen !== undefined && chosen >= 0;
+  return (
+    <Stage>
+      <Head title={title} sub={sub} />
+      <Body>
+        <div className="absolute inset-x-6 top-[10px] flex flex-wrap justify-center gap-x-4 gap-y-5">
+          {tiles.map((t, i) => (
+            <Tile key={t.label} label={t.label} lit={i === lit} dim={picked && i !== lit} w={w}>
+              {t.art}
+            </Tile>
+          ))}
+        </div>
+      </Body>
+    </Stage>
+  );
+}
+
+const Glyph = ({ children }: { children: ReactNode }) => (
+  <span className="grid h-14 w-14 place-items-center rounded-[16px] font-display text-[24px] font-bold text-[#0b0b10]" style={{ background: ACC }}>
+    {children}
+  </span>
+);
+
+function ChatStage({ chosen }: { chosen?: number }) {
+  return (
+    <ChatTiles
+      chosen={chosen}
+      w={180}
+      title="~На каком~ *ты этапе*^?^"
+      sub="От этого зависит, ^с какого шага начнём^"
+      tiles={[
+        { label: "Только идея", art: <Glyph>✦</Glyph> },
+        {
+          label: "Есть ТЗ",
+          art: (
+            <div className="flex w-[70px] flex-col gap-1.5 rounded-[10px] bg-[#f5f2ec] p-2.5">
+              {[90, 70, 80, 50].map((w, k) => (
+                <i key={k} className="h-[6px] rounded-full bg-black/25" style={{ width: `${w}%` }} />
+              ))}
+            </div>
+          ),
+        },
+        {
+          label: "Есть сайт, нужно лучше",
+          art: (
+            <Browser>
+              <div className="h-[34px] rounded-[6px]" style={{ background: ACC }} />
+            </Browser>
+          ),
+        },
+        { label: "Горит запуск", art: <Glyph>🔥</Glyph> },
+      ]}
+    />
+  );
+}
+
+function ChatApprover({ chosen }: { chosen?: number }) {
+  const dot = (k: number) => <i key={k} className="h-9 w-9 rounded-full ring-2 ring-[#0b0b10]" style={{ background: k % 2 ? "var(--sp-to)" : "var(--sp-from)" }} />;
+  return (
+    <ChatTiles
+      chosen={chosen}
+      title="*Кто* ^согласует^^?^"
+      sub="Подстрою этапы под того, *кто решает*"
+      tiles={[
+        { label: "Я сам", art: <span className="flex">{dot(0)}</span> },
+        { label: "Команда", art: <span className="flex -space-x-3">{[0, 1, 2].map(dot)}</span> },
+        { label: "Пока не знаю", art: <span className="team-pulse-acc font-display text-[44px] font-bold leading-none">?</span> },
+      ]}
+    />
+  );
+}
+
+function ChatChannel({ chosen }: { chosen?: number }) {
+  return (
+    <ChatTiles
+      chosen={chosen}
+      title="*Как держим* ^связь^^?^"
+      sub="Где тебе удобнее — ^там и на связи^"
+      tiles={[
+        {
+          label: "Telegram",
+          art: (
+            <span className="grid h-14 w-14 place-items-center rounded-full text-[#0b0b10]" style={{ background: ACC }}>
+              <TelegramIcon className="h-6 w-6" />
+            </span>
+          ),
+        },
+        { label: "Созвоны", art: <Glyph>☎</Glyph> },
+        { label: "Почта", art: <Glyph>@</Glyph> },
+      ]}
+    />
   );
 }
 
@@ -733,6 +1048,21 @@ export function TeamPulseChatScene({
           {visual === "mood" && <ChatMood chosen={chosen} />}
           {visual === "goal" && <ChatGoal chosen={chosen} />}
           {visual === "speed" && <ChatSpeed chosen={chosen} />}
+          {visual === "stage" && <ChatStage chosen={chosen} />}
+          {visual === "deadline" && (
+            <ChatSpeed
+              chosen={chosen}
+              title="*Сколько* ^до запуска^^?^"
+              sub="Под твой срок ^распишу этапы по датам^"
+              rows={[
+                { label: "Неделя", fill: 0.95, time: "Рывок" },
+                { label: "Месяц", fill: 0.62, time: "Ровно" },
+                { label: "Не спешу", fill: 0.35, time: "Спокойно" },
+              ]}
+            />
+          )}
+          {visual === "approver" && <ChatApprover chosen={chosen} />}
+          {visual === "channel" && <ChatChannel chosen={chosen} />}
         </>
       ) : (
         <ChatBrief answers={answers} done={phase === "done"} />
