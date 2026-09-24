@@ -15,7 +15,8 @@ import WhyBlock from "./blocks/WhyBlock";
 import ProcessBlock from "./blocks/ProcessBlock";
 import FaqBlock from "./blocks/FaqBlock";
 import CloseBlock from "./blocks/CloseBlock";
-import type { DirectionContent } from "./types";
+import SceneBreak from "./blocks/SceneBreak";
+import type { DirectionContent, SceneBreakSlot } from "./types";
 
 // Страница направления внутри /content — одна на все направления.
 //
@@ -61,6 +62,12 @@ export default function DirectionPage({
   content: DirectionContent;
   headingClass?: string;
 }) {
+  const breaks = content.sceneBreaks ?? [];
+  const after = (slot: SceneBreakSlot) => {
+    const i = breaks.findIndex((b) => b.after === slot);
+    return i === -1 ? null : <SceneBreak slug={content.slug} index={i} spec={breaks[i]} />;
+  };
+
   return (
     <DirectionTaskProvider tasks={content.tasks} title={content.hero.eyebrow}>
       {/* overflow-x: clip, а не hidden.
@@ -84,19 +91,28 @@ export default function DirectionPage({
           assistantContext={content.hero.eyebrow}
           pageLabel={content.hero.eyebrow}
         />
+        {after("task")}
         <AudienceBlock audience={content.audience} />
+        {after("audience")}
         {/* Кейсы или технический разбор — одно место в странице, два
             разных наполнения. У направлений /content есть снятые работы, у
             AI-инструментов их пока нет, и вместо заглушек там стоит
             спецификация инструмента. */}
         {content.cases ? <CasesBlock cases={content.cases} /> : null}
         {content.tech ? <TechBlock tech={content.tech} /> : null}
+        {after("cases")}
         <PersonaBudget media={content.budgetMedia} />
+        {after("budget")}
         <PricingBlock pricing={content.pricing} headingClass={headingClass} />
+        {after("pricing")}
         {content.why ? <WhyBlock why={content.why} /> : null}
+        {after("why")}
         <ProcessBlock process={content.process} />
+        {after("process")}
         <FaqBlock faq={content.faq} />
+        {after("faq")}
         <PersonaAssets media={content.assetsMedia} />
+        {after("assets")}
         <CloseBlock close={content.close} />
       </div>
     </DirectionTaskProvider>

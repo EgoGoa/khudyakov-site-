@@ -8,6 +8,11 @@ import { createContext, useContext } from "react";
  *  названием), а вьюбокс обрезается по высоте до области над ним. */
 export const CardCtx = createContext(false);
 
+/** Сцена стоит в блоке-перебивке на странице направления (SceneBreak):
+ *  цифра и «было → стало» вынесены в текст справа крупно, поэтому в самой
+ *  сцене их нет, а вьюбокс обрезан до полосы с графикой (y = 58…176). */
+export const BareCtx = createContext(false);
+
 export type SceneProps = { mini?: boolean };
 
 /** Элемент сцены, который приходит в свой черёд.
@@ -40,8 +45,9 @@ export function In({
 
 export function Frame({ children }: { children: React.ReactNode }) {
   const card = useContext(CardCtx);
+  const bare = useContext(BareCtx);
   return (
-    <svg viewBox={card ? "0 0 340 176" : "0 0 340 210"} className="h-full w-full" fill="none" aria-hidden="true">
+    <svg viewBox={bare ? "0 58 340 118" : card ? "0 0 340 176" : "0 0 340 210"} className="h-full w-full" fill="none" aria-hidden="true">
       <defs>
         <linearGradient id="sp-ramp" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="var(--sp-from)" />
@@ -64,7 +70,8 @@ export function Frame({ children }: { children: React.ReactNode }) {
  *  которая физически не читалась рядом с крупной цифрой (правило сайта:
  *  основной текст белый с акцентами, никогда приглушённо-серый). */
 export function Headline({ value, note, mini }: { value: string; note: string; mini?: boolean }) {
-  if (mini) return null;
+  const bare = useContext(BareCtx);
+  if (mini || bare) return null;
   return (
     <In at={0}>
       <text x="16" y="34" className="sp-figure" fill="url(#sp-ramp)" fontSize="34">
@@ -81,7 +88,8 @@ export function Headline({ value, note, mini }: { value: string; note: string; m
  *  бывает — два состояния рядом, разница видна без объяснений. */
 export function BeforeAfter({ before, after, mini }: { before: string; after: string; mini?: boolean }) {
   const card = useContext(CardCtx);
-  if (mini || card) return null;
+  const bare = useContext(BareCtx);
+  if (mini || card || bare) return null;
   return (
     <In at={6}>
       <rect x="14" y="180" width="118" height="20" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" />

@@ -249,12 +249,12 @@ function AgentChannels({ mini }: SceneProps) {
         const y = 68 + i * 40;
         return (
           <In key={name} at={1 + i}>
-            <rect x="14" y={y - 14} width="112" height="30" rx="9" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" />
-            <text x="24" y={y - 2} fill="rgba(255,255,255,0.8)" fontSize="12.4" fontFamily="inherit">
+            <rect x="14" y={y - 14} width="132" height="30" rx="9" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" />
+            <text x="24" y={y - 2} fill="rgba(255,255,255,0.8)" fontSize="11.6" fontFamily="inherit">
               {name}
             </text>
             <rect x="24" y={y + 3} width="62" height="5" rx="2.5" fill="rgba(255,255,255,0.25)" />
-            <path d={`M 128 ${y} C 152 ${y} 156 108 176 108`} stroke="var(--sp-from)" strokeOpacity="0.65" strokeWidth="1.2" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
+            <path d={`M 146 ${y} C 158 ${y} 162 108 176 108`} stroke="var(--sp-from)" strokeOpacity="0.65" strokeWidth="1.2" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
           </In>
         );
       })}

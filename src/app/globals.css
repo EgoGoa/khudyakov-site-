@@ -1157,6 +1157,14 @@ body {
 }
 
 @layer components {
+  /* Мелкий основной текст — один стиль на весь сайт. Образец Егор выбрал
+     сам: подпись под названием на карточках «Основные направления»
+     (DirectionsGrid). Дисплейный шрифт, плотный трекинг, тень для
+     читаемости поверх видео-фона. Правится здесь — меняется везде. */
+  .body-small {
+    @apply font-display text-[8.5px] leading-snug tracking-tight text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-[10px];
+  }
+
   /* Every button on the site, one shared look: a transparent pill with a
      thin light comet running around its own border, blue at rest, that
      cross-fades to a pink→orange gradient on hover/focus. The comet lives
@@ -4911,6 +4919,11 @@ html:not([data-lite])[data-mid] .glass-panel {
 html:not([data-lite])[data-mid] .deck-halo,
 html:not([data-lite])[data-mid] .animate-pulse-rec,
 html:not([data-lite])[data-mid] .sp-spin,
+html:not([data-lite])[data-mid] .sp-scan,
+html:not([data-lite])[data-mid] .sp-blink,
+html:not([data-lite])[data-mid] .sb-rows,
+html:not([data-lite])[data-mid] .sb-steps3,
+html:not([data-lite])[data-mid] .sb-steps5,
 html:not([data-lite])[data-mid] .sp-pulse {
   animation: none !important;
 }
@@ -5280,6 +5293,12 @@ html:not([data-lite])[data-mid] .sp-pulse {
 .tool-scene .sp-pulse {
   animation: sp-pulse 2.6s ease-in-out infinite;
 }
+/* Моргающий акцент — те же кейфреймы, что у play-иконки на видео и флага
+   аномалии на /ai (ai-blink), переиспользованы здесь для меток «сейчас
+   важно» на развёрнутых сценах SceneBreak. */
+.tool-scene .sp-blink {
+  animation: ai-blink 1.6s ease-in-out infinite;
+}
 .tool-scene .sp-stack {
   animation: sp-stack 2.6s ease-in-out infinite;
 }
@@ -5396,11 +5415,94 @@ html:not([data-lite])[data-mid] .sp-pulse {
   .tool-scene .sp-drop,
   .tool-scene .sp-spin,
   .tool-scene .sp-pulse,
-  .tool-scene .sp-stack {
+  .tool-scene .sp-blink,
+  .tool-scene .sp-stack,
+  .tool-scene .sp-scan,
+  .tool-scene .sb-rows,
+  .tool-scene .sb-steps3,
+  .tool-scene .sb-steps5,
+  .tool-scene .sp-draw {
     animation: none;
   }
   .tool-scene .sp-in {
     opacity: 1;
+  }
+  .tool-scene .sp-draw {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Сцены блоков-перебивок (SceneBreak): кривая рисуется линией (путь с
+   pathLength="1"), курсор времени бежит по хронометражу. */
+.tool-scene .sp-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: sp-draw 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes sp-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.tool-scene .sp-scan {
+  animation: sp-scan 9s linear infinite;
+}
+@keyframes sp-scan {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--scan, 376px));
+  }
+}
+/* Подсветка, которая по очереди перебегает по строкам списка сцены.
+   Шаг строки задаёт сама сцена через --step (в единицах вьюбокса). */
+.tool-scene .sb-steps3 {
+  animation: sb-steps3 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.tool-scene .sb-steps5 {
+  animation: sb-steps5 10s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes sb-steps3 {
+  0%, 30% { transform: translateY(0); }
+  33.3%, 63.3% { transform: translateY(var(--step)); }
+  66.6%, 96.6% { transform: translateY(calc(var(--step) * 2)); }
+  100% { transform: translateY(0); }
+}
+@keyframes sb-steps5 {
+  0%, 18% { transform: translateY(0); }
+  20%, 38% { transform: translateY(var(--step)); }
+  40%, 58% { transform: translateY(calc(var(--step) * 2)); }
+  60%, 78% { transform: translateY(calc(var(--step) * 3)); }
+  80%, 98% { transform: translateY(calc(var(--step) * 4)); }
+  100% { transform: translateY(0); }
+}
+
+/* Подсветка текущей главы сценария — в такт курсору sp-scan (те же 9с).
+   Границы — доли хронометража глав: 15/45/95/155 из 180 секунд. */
+.tool-scene .sb-rows {
+  animation: sb-rows 9s linear infinite;
+}
+@keyframes sb-rows {
+  0%,
+  7.3% {
+    transform: translateY(0);
+  }
+  8.3%,
+  24% {
+    transform: translateY(34px);
+  }
+  25%,
+  51.8% {
+    transform: translateY(68px);
+  }
+  52.8%,
+  85.1% {
+    transform: translateY(102px);
+  }
+  86.1%,
+  100% {
+    transform: translateY(136px);
   }
 }
 

@@ -362,6 +362,49 @@ export const presentationContent: DirectionContent = {
   assetsMedia:
   { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
+  // Сцены окошка по смыслу: сценарий — после «зачем вам фильм», масштаб —
+  // после кейсов, версии — после сметы, доверие — перед финалом.
+  // Цифры — только уже опубликованные на сайте (процесс, FAQ, финал,
+  // статистика, Trust на /content).
+  sceneBreaks: [
+    {
+      after: "task",
+      memberId: "max",
+      facts: [
+        { value: "2–3", label: "идеи сюжета — бесплатно, до договора" },
+        { value: "24 ч", label: "на структуру фильма и смету" },
+        { value: "1", label: "главная мысль для зрителя" },
+      ],
+    },
+    {
+      after: "cases",
+      memberId: "max",
+      facts: [
+        { value: "8 лет", label: "видео для бизнеса" },
+        { value: "14", label: "фильмов уже в портфолио" },
+        { value: "0", label: "остановок цеха на съёмке" },
+      ],
+    },
+    {
+      after: "pricing",
+      memberId: "max",
+      facts: [
+        { value: "16:9 · 9:16", label: "горизонталь и вертикаль" },
+        { value: "Loop", label: "без звука, для стенда" },
+        { value: "Файлы", label: "исходники — вместе с фильмом" },
+      ],
+    },
+    {
+      after: "assets",
+      memberId: "max",
+      facts: [
+        { value: "6 из 10", label: "заказов — от вернувшихся клиентов" },
+        { value: "5 стран", label: "проектов за рубежом" },
+        { value: "1", label: "ссылка вместо сорока слайдов" },
+      ],
+    },
+  ],
+
   close: {
     media: {
       video: "/video/works/ivella.mp4",

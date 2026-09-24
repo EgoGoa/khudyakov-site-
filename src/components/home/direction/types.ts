@@ -301,7 +301,22 @@ export type DirectionContent = {
   faq: DirectionSectionHead & { items: DirectionFaqItem[] };
 
   close: DirectionSectionHead;
+
+  /** Блоки-перебивки со сценами окошка услуги (SceneBreak): i-я сцена
+   *  встаёт после раздела `sceneBreaks[i].after`. Разделы подбираются по
+   *  смыслу сцены, а не подряд. */
+  sceneBreaks?: DirectionSceneBreak[];
 };
+
+export type DirectionSceneBreak = {
+  after: SceneBreakSlot;
+  /** Три факта-цифры под тезисом. */
+  facts: DirectionStat[];
+  /** Кто отвечает в форме «Проконсультироваться». */
+  memberId: string;
+};
+
+export type SceneBreakSlot = "task" | "audience" | "cases" | "budget" | "pricing" | "why" | "process" | "faq" | "assets";
 
 
 // ---------------------------------------------------------------------

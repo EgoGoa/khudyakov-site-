@@ -13,14 +13,26 @@ import { In, Frame, Headline, BeforeAfter, type SceneProps } from "@/components/
 const W = "rgba(255,255,255,";
 const SOFT = { fill: `${W}0.05)`, stroke: `${W}0.15)` } as const;
 
+/** Цифра, подпись и «было → стало» сцены. Живут отдельно от графики, потому
+ *  что те же строки крупно стоят в тексте блока-перебивки (SceneBreak) —
+ *  один источник, чтобы окошко и страница не разошлись. */
+export type SceneFigure = { value: string; note: string; before: string; after: string };
+
 /* ═══ Презентационные фильмы ════════════════════════════════════════ */
+
+const PRES_FIG: SceneFigure[] = [
+  { value: "3 мин", note: "вместо получаса объяснений", before: "Папка слайдов", after: "Один фильм под встречу" },
+  { value: "450+", note: "проектов за 8 лет", before: "Экскурсия по цеху", after: "Цех за 3 минуты" },
+  { value: "3 версии", note: "из одной съёмки", before: "Один формат на всё", after: "Версия под каждый показ" },
+  { value: "до встречи", note: "клиент уже знает, кто вы", before: "Объяснять с нуля", after: "Сразу к делу" },
+];
 
 /** 01 · Сценарий. Три задачи → один сценарий → готовый фильм. */
 function PresBrief({ mini }: SceneProps) {
   const goals = ["Тендер", "Инвестор", "Выставка"];
   return (
     <Frame>
-      <Headline value="3 мин" note="вместо получаса объяснений" mini={mini} />
+      <Headline value={PRES_FIG[0].value} note={PRES_FIG[0].note} mini={mini} />
       {goals.map((g, i) => (
         <In key={g} at={1 + i}>
           <rect x="14" y={66 + i * 32} width="80" height="24" rx="12" {...SOFT} />
@@ -43,7 +55,7 @@ function PresBrief({ mini }: SceneProps) {
         <path d="M 282 106 L 293 112 L 282 118 Z" fill="#fff" />
         <circle cx="286" cy="112" r="19" stroke="var(--sp-from)" strokeOpacity="0.5" strokeDasharray="4 8" className="sp-spin" style={{ transformOrigin: "286px 112px" }} />
       </In>
-      <BeforeAfter before="Папка слайдов" after="Один фильм под встречу" mini={mini} />
+      <BeforeAfter before={PRES_FIG[0].before} after={PRES_FIG[0].after} mini={mini} />
     </Frame>
   );
 }
@@ -52,7 +64,7 @@ function PresBrief({ mini }: SceneProps) {
 function PresScale({ mini }: SceneProps) {
   return (
     <Frame>
-      <Headline value="450+" note="проектов за 8 лет" mini={mini} />
+      <Headline value={PRES_FIG[1].value} note={PRES_FIG[1].note} mini={mini} />
       <In at={1}>
         <rect x="14" y="62" width="222" height="108" rx="12" fill={`${W}0.04)`} stroke={`${W}0.16)`} />
         {[0, 1, 2, 3, 4].map((i) => (
@@ -79,7 +91,7 @@ function PresScale({ mini }: SceneProps) {
         <text x="258" y="141" fill={`${W}0.8)`} fontSize="12.4" fontFamily="inherit">дорисовка</text>
         <text x="258" y="156" fill={`${W}0.5)`} fontSize="10.9" fontFamily="inherit">где не снять</text>
       </In>
-      <BeforeAfter before="Экскурсия по цеху" after="Цех за 3 минуты" mini={mini} />
+      <BeforeAfter before={PRES_FIG[1].before} after={PRES_FIG[1].after} mini={mini} />
     </Frame>
   );
 }
@@ -93,7 +105,7 @@ function PresVersions({ mini }: SceneProps) {
   ];
   return (
     <Frame>
-      <Headline value="3 версии" note="из одной съёмки" mini={mini} />
+      <Headline value={PRES_FIG[2].value} note={PRES_FIG[2].note} mini={mini} />
       <In at={1}>
         <rect x="14" y="88" width="76" height="52" rx="10" fill="url(#sp-ramp)" fillOpacity="0.16" stroke="var(--sp-from)" strokeOpacity="0.65" />
         <path d="M 46 104 L 62 114 L 46 124 Z" fill="#fff" />
@@ -108,7 +120,7 @@ function PresVersions({ mini }: SceneProps) {
           <text x="318" y={83.5 + i * 34} textAnchor="end" fill={`${W}0.5)`} fontSize="10.9" fontFamily="inherit">{o.len}</text>
         </In>
       ))}
-      <BeforeAfter before="Один формат на всё" after="Версия под каждый показ" mini={mini} />
+      <BeforeAfter before={PRES_FIG[2].before} after={PRES_FIG[2].after} mini={mini} />
     </Frame>
   );
 }
@@ -117,7 +129,7 @@ function PresVersions({ mini }: SceneProps) {
 function PresTrust({ mini }: SceneProps) {
   return (
     <Frame>
-      <Headline value="до встречи" note="клиент уже знает, кто вы" mini={mini} />
+      <Headline value={PRES_FIG[3].value} note={PRES_FIG[3].note} mini={mini} />
       <In at={1}>
         <path d="M 22 138 L 318 138" stroke={`${W}0.18)`} strokeWidth="1.2" />
         {["ссылка", "просмотр", "встреча"].map((t, i) => (
@@ -143,7 +155,7 @@ function PresTrust({ mini }: SceneProps) {
         <path d="M 274 100 C 276 90 304 90 306 100" fill={`${W}0.12)`} stroke="var(--sp-to)" strokeOpacity="0.7" />
         <path d="M 285 80 L 289 84 L 296 76" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
       </In>
-      <BeforeAfter before="Объяснять с нуля" after="Сразу к делу" mini={mini} />
+      <BeforeAfter before={PRES_FIG[3].before} after={PRES_FIG[3].after} mini={mini} />
     </Frame>
   );
 }
@@ -894,6 +906,11 @@ function GfxForty({ mini }: SceneProps) {
     </Frame>
   );
 }
+
+/** Цифры сцен по направлениям — пока только там, где стоят блоки-перебивки. */
+export const SCENE_FIGURES: Record<string, SceneFigure[]> = {
+  presentation: PRES_FIG,
+};
 
 export const CONTENT_SCENES: Record<string, ((p: SceneProps) => React.ReactElement)[]> = {
   presentation: PRESENTATION,
