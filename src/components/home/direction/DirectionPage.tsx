@@ -86,24 +86,51 @@ export default function DirectionPage({
           pageLabel={content.hero.eyebrow}
         />
         {/* Четыре развёрнутых окошка с живой инфографикой, вручную
-            расставленные между главами — см. InfoWindow.tsx. Не рендерятся
-            вовсе, если для направления нет записи в spotlightDirections.ts
-            (directionSpotlight вернёт null). */}
-        <InfoWindow slug={content.slug} index={0} accent={content.backdrop} side="left" />
+            расставленные между главами — см. InfoWindow.tsx. Каждое
+            стартует со своего тезиса из шести (directionDeep) и дальше само
+            переключается на следующий. Не рендерятся вовсе, если для
+            направления нет записи в spotlightDirections.ts (directionDeep
+            вернёт null). */}
+        <InfoWindow
+          slug={content.slug}
+          start={0}
+          accent={content.backdrop}
+          side="left"
+          ctaHref={content.hero.teamAsk?.href ?? "/brief"}
+        />
         <AudienceBlock audience={content.audience} />
-        <InfoWindow slug={content.slug} index={1} accent={content.backdrop} side="right" />
+        <InfoWindow
+          slug={content.slug}
+          start={1}
+          accent={content.backdrop}
+          side="right"
+          ctaHref={content.audience.teamAsk?.href ?? "/brief"}
+        />
         {/* Кейсы или технический разбор — одно место в странице, два
             разных наполнения. У направлений /content есть снятые работы, у
             AI-инструментов их пока нет, и вместо заглушек там стоит
             спецификация инструмента. */}
         {content.cases ? <CasesBlock cases={content.cases} /> : null}
         {content.tech ? <TechBlock tech={content.tech} /> : null}
-        <InfoWindow slug={content.slug} index={2} accent={content.backdrop} side="left" />
+        <InfoWindow
+          slug={content.slug}
+          start={2}
+          accent={content.backdrop}
+          side="left"
+          ctaHref={content.cases?.teamAsk?.href ?? "/brief"}
+        />
         <PersonaBudget media={content.budgetMedia} />
         <PricingBlock pricing={content.pricing} headingClass={headingClass} />
         {content.why ? <WhyBlock why={content.why} /> : null}
         <ProcessBlock process={content.process} />
-        <InfoWindow slug={content.slug} index={3} accent={content.backdrop} side="right" />
+        <InfoWindow
+          slug={content.slug}
+          start={3}
+          accent={content.backdrop}
+          side="right"
+          ctaHref={content.process.teamAsk?.href ?? "/brief"}
+          ctaLabel="Получить смету"
+        />
         <FaqBlock faq={content.faq} />
         <PersonaAssets media={content.assetsMedia} />
         <CloseBlock close={content.close} />
