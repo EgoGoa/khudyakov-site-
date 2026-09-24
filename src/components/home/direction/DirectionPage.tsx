@@ -15,6 +15,7 @@ import WhyBlock from "./blocks/WhyBlock";
 import ProcessBlock from "./blocks/ProcessBlock";
 import FaqBlock from "./blocks/FaqBlock";
 import CloseBlock from "./blocks/CloseBlock";
+import InfoWindow from "./blocks/InfoWindow";
 import type { DirectionContent } from "./types";
 
 // Страница направления внутри /content — одна на все направления.
@@ -84,17 +85,25 @@ export default function DirectionPage({
           assistantContext={content.hero.eyebrow}
           pageLabel={content.hero.eyebrow}
         />
+        {/* Четыре развёрнутых окошка с живой инфографикой, вручную
+            расставленные между главами — см. InfoWindow.tsx. Не рендерятся
+            вовсе, если для направления нет записи в spotlightDirections.ts
+            (directionSpotlight вернёт null). */}
+        <InfoWindow slug={content.slug} index={0} accent={content.backdrop} side="left" />
         <AudienceBlock audience={content.audience} />
+        <InfoWindow slug={content.slug} index={1} accent={content.backdrop} side="right" />
         {/* Кейсы или технический разбор — одно место в странице, два
             разных наполнения. У направлений /content есть снятые работы, у
             AI-инструментов их пока нет, и вместо заглушек там стоит
             спецификация инструмента. */}
         {content.cases ? <CasesBlock cases={content.cases} /> : null}
         {content.tech ? <TechBlock tech={content.tech} /> : null}
+        <InfoWindow slug={content.slug} index={2} accent={content.backdrop} side="left" />
         <PersonaBudget media={content.budgetMedia} />
         <PricingBlock pricing={content.pricing} headingClass={headingClass} />
         {content.why ? <WhyBlock why={content.why} /> : null}
         <ProcessBlock process={content.process} />
+        <InfoWindow slug={content.slug} index={3} accent={content.backdrop} side="right" />
         <FaqBlock faq={content.faq} />
         <PersonaAssets media={content.assetsMedia} />
         <CloseBlock close={content.close} />
