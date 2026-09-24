@@ -75,7 +75,7 @@ export default function AiConsult() {
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
           <Reveal>
             <Eyebrow index="04" label="Скоро" tone="glow" />
-            <h2 className="font-sans text-3xl font-light uppercase tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
+            <h2 className="font-sans text-[1.688rem] font-light uppercase tracking-[0.01em] text-paper sm:text-[2.025rem] md:text-[2.7rem]">
               AI-агент под рукой, а не где-то в разработке
             </h2>
             <p className="mt-4 max-w-md text-base leading-relaxed text-paper/60 sm:text-lg">

@@ -109,7 +109,7 @@ export default function ChapterLayout({
 
         <Appear from="up" delay={BEAT.title}>
           <h2
-            className={`${accent.heading} mt-3 max-w-[6.7em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] lg:text-[3.6rem] xl:text-[4rem]`}
+            className={`${accent.heading} mt-3 max-w-[6.7em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] lg:text-[3.24rem] xl:text-[3.6rem]`}
           >
             {title}
           </h2>

@@ -69,7 +69,7 @@ export default async function DirectionPage({ params }: { params: Promise<{ dire
           </Link>
 
           <Eyebrow label="Направление" />
-          <h1 className="font-sans text-3xl font-light uppercase tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
+          <h1 className="font-sans text-[1.688rem] font-light uppercase tracking-[0.01em] text-paper sm:text-[2.025rem] md:text-[2.7rem]">
             {direction.title}
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-paper/70">

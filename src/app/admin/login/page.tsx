@@ -19,7 +19,7 @@ export default async function AdminLoginPage({
     <section className="py-24 sm:py-32">
       <Container className="max-w-md">
         <Eyebrow label="Панель управления" />
-        <h1 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl">
+        <h1 className="font-display text-[1.688rem] uppercase tracking-tight text-paper sm:text-[2.025rem]">
           Вход для студии
         </h1>
         <p className="mt-3 text-sm text-paper/55">

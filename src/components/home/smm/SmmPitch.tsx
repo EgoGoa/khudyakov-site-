@@ -86,7 +86,7 @@ export default function SmmPitch() {
                 word itself ("ПРОДАКШ"/"ЕНА"). Scaling just this word down
                 keeps it on one line there without touching "SMM силами" or
                 any other heading's size. */}
-            <h2 className="chapter-neon-violet mt-3 max-w-[6.7em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] land:text-[2.1rem] lg:text-[3.6rem] xl:text-[4rem]">
+            <h2 className="chapter-neon-violet mt-3 max-w-[7.3em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.24rem] xl:text-[3.6rem]">
               SMM силами
               <br />
               <span className="kw" style={{ fontSize: "0.72em" }}>

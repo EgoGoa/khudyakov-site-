@@ -255,7 +255,7 @@ export default function LeadModal({
       <div className="flex h-fit w-full flex-col text-center">
         {screen === "choice" && (
           <>
-            <h3 className="font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">
+            <h3 className="font-display text-[1.35rem] uppercase tracking-tight text-paper sm:text-[1.688rem]">
               Как удобнее обсудить проект?
             </h3>
             <p className="mt-3 text-sm text-paper/60">
@@ -276,7 +276,7 @@ export default function LeadModal({
 
         {fieldsFor && formType && (
           <>
-            <h3 className="font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">
+            <h3 className="font-display text-[1.35rem] uppercase tracking-tight text-paper sm:text-[1.688rem]">
               {screen === "call" ? "Заказать звонок" : "Консультация с продюсером"}
             </h3>
             <p className="mt-3 text-sm text-paper/60">
@@ -342,7 +342,7 @@ export default function LeadModal({
               <span className="h-2 w-2 rounded-full bg-glow" />
               Заявка отправлена
             </div>
-            <h3 className="mt-5 font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">
+            <h3 className="mt-5 font-display text-[1.35rem] uppercase tracking-tight text-paper sm:text-[1.688rem]">
               Спасибо, {name || "мы получили заявку"}!
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-paper/60">
@@ -360,7 +360,7 @@ export default function LeadModal({
 
         {screen === "error" && (
           <>
-            <h3 className="font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">
+            <h3 className="font-display text-[1.35rem] uppercase tracking-tight text-paper sm:text-[1.688rem]">
               Не получилось отправить
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-paper/60">

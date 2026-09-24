@@ -115,7 +115,7 @@ export default function Contact() {
       <Container className="max-w-4xl">
         <Reveal>
           <Eyebrow index="07" label="Контакты" />
-          <h2 className="font-sans text-3xl font-light uppercase tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
+          <h2 className="font-sans text-[1.688rem] font-light uppercase tracking-[0.01em] text-paper sm:text-[2.025rem] md:text-[2.7rem]">
             Расскажите о проекте
           </h2>
           <p className="mt-4 max-w-2xl text-sm text-paper/60 sm:text-base">
@@ -135,7 +135,7 @@ export default function Contact() {
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rec/15 text-2xl text-rec">
                 ✓
               </div>
-              <h3 className="mt-6 font-display text-2xl uppercase text-paper sm:text-3xl">
+              <h3 className="mt-6 font-display text-[1.35rem] uppercase text-paper sm:text-[1.688rem]">
                 Открываем почтовый клиент
               </h3>
               <p className="mt-3 text-paper/60">

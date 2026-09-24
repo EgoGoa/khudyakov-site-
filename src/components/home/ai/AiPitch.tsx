@@ -77,7 +77,7 @@ export default function AiPitch() {
           </Appear>
 
           <Appear from="up" delay={BEAT.title}>
-            <h2 className="chapter-neon-cool mt-3 max-w-[9.4em] font-display text-[2.5rem] uppercase leading-[0.95] tracking-tight sm:text-[3.25rem] land:text-[2.1rem] lg:text-[3.5rem] xl:text-[3.9rem]">
+            <h2 className="chapter-neon-cool mt-3 max-w-[9.4em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.15rem] xl:text-[3.51rem]">
               <span className="whitespace-nowrap"><span className="kw">AI</span>-решения</span><br />
               быстрее рынка
             </h2>

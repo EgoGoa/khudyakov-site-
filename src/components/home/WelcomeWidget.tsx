@@ -323,7 +323,7 @@ export default function WelcomeWidget({
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, filter: "blur(8px)", transition: { duration: 0.2, ease: EASE } }}
             transition={{ duration: REVEAL_DURATION, ease: GENTLE_EASE }}
-            className={`welcome-head font-display text-[1.6rem] uppercase leading-[1.05] tracking-tight text-paper sm:text-[2.1rem] ${
+            className={`welcome-head font-display text-[1.44rem] uppercase leading-[1.21] tracking-tight text-paper sm:text-[1.89rem] ${
               picked ? "welcome-head--flat" : ""
             }`}
           >

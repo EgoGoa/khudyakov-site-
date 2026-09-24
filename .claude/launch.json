@@ -6,10 +6,9 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "-c",
-        "pkill -f \"node_modules/.bin/next dev\"; pkill -f next-server; sleep 1; rm -f .next/dev/lock; exec npm run dev"
+        "if lsof -nP -iTCP:3000 -sTCP:LISTEN >/dev/null 2>&1; then echo 'Reusing the next dev server already running on :3000 (another session started it)'; exec tail -f /dev/null; else rm -f .next/dev/lock; exec npm run dev -- -p 3000; fi"
       ],
-      "port": 3000,
-      "autoPort": true
+      "port": 3000
     }
   ]
 }

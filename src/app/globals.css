@@ -239,9 +239,9 @@ body {
   /* -30% off the mockup's original clamp — Egor's site-wide ask: chapter
      and hero titles were eating more vertical room than the copy under
      them needed. */
-  font-size: clamp(1.47rem, 3.64vw, 2.52rem);
-  line-height: 0.98;
-  letter-spacing: 0.005em;
+  font-size: clamp(1.32rem, 3.28vw, 2.27rem);
+  line-height: 1.04;
+  letter-spacing: 0.02em;
 }
 
 /* "Монолит" (headline mockup option 03), reproduced exactly: both the
@@ -3278,7 +3278,7 @@ body {
 .c3-watermark-main {
   font-size: 7rem;
   font-weight: 700;
-  line-height: 0.9;
+  line-height: 1.04;
   letter-spacing: -0.03em;
   text-transform: uppercase;
   filter: url(#khud-noise-watermark);
@@ -3396,7 +3396,7 @@ body {
   min-height: 3.2em;
   margin-top: 16px;
   margin-bottom: 32px;
-  line-height: 1.5;
+  line-height: 1.38;
 }
 
 /* Bold, near-white body text — Egor's ask: these lines are the actual
@@ -3413,7 +3413,7 @@ body {
   font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
   margin-bottom: 16px;
-  line-height: 1.4;
+  line-height: 1.29;
 }
 
 .c3-check {
@@ -4310,7 +4310,7 @@ body {
   }
 
   [data-chapter-pane] h2[class*="chapter-neon"] {
-    font-size: clamp(1.9rem, 3.6vw, 3.25rem);
+    font-size: clamp(1.71rem, 3.24vw, 2.93rem);
   }
 }
 
@@ -4323,7 +4323,7 @@ body {
   }
 
   [data-chapter-pane] h2[class*="chapter-neon"] {
-    font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+    font-size: clamp(1.58rem, 2.88vw, 2.48rem);
   }
 }
 
@@ -4848,13 +4848,13 @@ html[data-lite] .deck-pose-blur {
    below the fold. Tighter type here gives that room back. */
 @media (orientation: landscape) and (max-height: 520px) {
   [data-chapter-pane] h2 {
-    font-size: 1.6rem !important;
-    line-height: 1 !important;
+    font-size: 1.44rem !important;
+    line-height: 1.04 !important;
     margin-top: 0.25rem !important;
   }
   [data-chapter-pane] p.font-display.uppercase {
     font-size: 0.75rem !important;
-    line-height: 1.25 !important;
+    line-height: 1.15 !important;
     margin-top: 0.5rem !important;
   }
 }
@@ -5751,7 +5751,7 @@ html:not([data-lite])[data-mid] .sp-pulse {
   font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
   font-size: 0.75rem;
   font-weight: 400;
-  line-height: 1.25;
+  line-height: 1.15;
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: #fff;
@@ -5878,7 +5878,7 @@ html:not([data-lite])[data-mid] .sp-pulse {
   }
   .welcome-card-sub {
     font-size: 0.575rem;
-    line-height: 1.2;
+    line-height: 1.15;
   }
   .welcome-card-block .welcome-card-title {
     font-size: 1rem;
@@ -6169,4 +6169,19 @@ html[data-lite] .welcome-card-graphic svg circle {
     font-size: 0.82rem;
     letter-spacing: 0.05em;
   }
+}
+
+/* ── Заголовки: воздух между строк и букв ────────────────────────────────
+   Плотный leading (0.9–1.0) и tracking-tight на узком Bebas склеивали
+   строки и буквы крупных заголовков. Правило стоит выше по специфичности,
+   чем leading-/tracking- утилиты, поэтому перебивает их везде разом;
+   text-wrap: balance делит длинный заголовок на ровные строки, а не
+   оставляет одно слово висеть внизу. */
+:is(h1, h2, h3)[class] {
+  line-height: 1.04;
+  letter-spacing: 0.015em;
+  text-wrap: balance;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
 }

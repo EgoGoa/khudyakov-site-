@@ -47,7 +47,7 @@ export default function PrivacyPage() {
   return (
     <section className="py-24 sm:py-32">
       <Container className="max-w-3xl">
-        <h1 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl">
+        <h1 className="font-display text-[1.688rem] uppercase tracking-tight text-paper sm:text-[2.025rem]">
           Политика обработки персональных данных
         </h1>
         <p className="mt-4 text-sm text-paper/50">Действует с 13 сентября 2026 года</p>

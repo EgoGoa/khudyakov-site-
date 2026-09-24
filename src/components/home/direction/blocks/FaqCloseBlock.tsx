@@ -110,7 +110,7 @@ export default function FaqCloseBlock({
           <Appear from="right" delay={DIRECTION_BEAT.content} className="mt-14 lg:mt-0">
             <div className="glass-panel rounded-3xl p-8 sm:p-10">
               <span className={`${EYEBROW} text-orange`}>{close.eyebrow}</span>
-              <h3 className="mt-4 font-display text-2xl uppercase leading-[0.98] tracking-tight text-white sm:text-3xl">
+              <h3 className="mt-4 font-display text-[1.35rem] uppercase leading-[1.13] tracking-tight text-white sm:text-[1.688rem]">
                 {close.title}
               </h3>
               <p className="mt-5 text-[15px] leading-relaxed text-white">{close.sub}</p>

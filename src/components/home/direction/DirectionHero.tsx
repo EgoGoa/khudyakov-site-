@@ -134,7 +134,7 @@ export default function DirectionHero({
             {hero.eyebrow}
           </span>
 
-          <h1 className="chapter-neon-warm mt-5 break-words font-display text-[2.1rem] uppercase leading-[0.95] tracking-tight sm:text-[3.6rem] lg:text-[4.4rem]">
+          <h1 className="chapter-neon-warm mt-5 break-words font-display text-[1.89rem] uppercase leading-[1.09] tracking-tight sm:text-[3.24rem] lg:text-[3.96rem]">
             {/* Если направление отдало `typed`, заголовок печатается. Ровно
                 одна такая точка на страницу — либо здесь, либо в блоке
                 процесса, никогда в обоих. */}

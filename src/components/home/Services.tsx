@@ -15,7 +15,7 @@ export default function Services() {
       <Container>
         <Reveal>
           <Eyebrow index="03" label="Наше предложение" />
-          <h2 className="font-sans text-3xl font-light uppercase tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
+          <h2 className="font-sans text-[1.688rem] font-light uppercase tracking-[0.01em] text-paper sm:text-[2.025rem] md:text-[2.7rem]">
             Что мы делаем
           </h2>
         </Reveal>
@@ -34,7 +34,7 @@ export default function Services() {
                   <span className="font-display text-sm text-paper/40">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="font-display text-xl uppercase tracking-tight text-paper transition-colors group-hover:text-glow sm:text-2xl">
+                  <h3 className="font-display text-xl uppercase tracking-tight text-paper transition-colors group-hover:text-glow sm:text-[1.35rem]">
                     {service.title}
                   </h3>
                   <p className="body-small col-span-2 sm:col-span-1">

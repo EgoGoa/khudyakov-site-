@@ -675,7 +675,7 @@ function VibeModeWindow({ item, onClose }: { item: RailItem; onClose: () => void
         Vibe режим
       </span>
 
-      <h2 className="mt-4 font-display text-2xl uppercase leading-[1.05] tracking-tight text-paper sm:text-3xl">
+      <h2 className="mt-4 font-display text-[1.35rem] uppercase leading-[1.21] tracking-tight text-paper sm:text-[1.688rem]">
         {item.label}
       </h2>
       <p className="mt-2 max-w-md text-sm leading-relaxed text-paper/60 sm:text-base">

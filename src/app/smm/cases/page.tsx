@@ -31,7 +31,7 @@ export default function SmmCasesPage() {
         <Container>
           <Reveal>
             <Eyebrow label="Кейсы SMM" tone="glow" />
-            <h1 className="font-display text-4xl uppercase leading-[1.02] tracking-tight text-paper sm:text-5xl md:text-6xl">
+            <h1 className="font-display text-[2.025rem] uppercase leading-[1.17] tracking-tight text-paper sm:text-[2.7rem] md:text-[3.375rem]">
               Кейсы ведения
               <br />
               соцсетей
@@ -67,7 +67,7 @@ export default function SmmCasesPage() {
       <section className="py-16 sm:py-20">
         <Container className="max-w-2xl text-center">
           <Reveal>
-            <h2 className="font-display text-2xl uppercase leading-tight tracking-tight text-paper sm:text-3xl">
+            <h2 className="font-display text-[1.35rem] uppercase leading-tight tracking-tight text-paper sm:text-[1.688rem]">
               Хотите стать первым кейсом?
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-paper/60 sm:text-base">

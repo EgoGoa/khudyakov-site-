@@ -17,7 +17,7 @@ export default function Why() {
         <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
           <Reveal>
             <Eyebrow index="02" label="Почему мы" />
-            <h2 className="mt-2 font-sans text-3xl font-light uppercase leading-[1.02] tracking-[0.01em] text-paper sm:text-4xl md:text-5xl">
+            <h2 className="mt-2 font-sans text-[1.688rem] font-light uppercase leading-[1.17] tracking-[0.01em] text-paper sm:text-[2.025rem] md:text-[2.7rem]">
               Почему именно мы?
             </h2>
             <p className="mt-6 max-w-md text-base leading-relaxed text-paper/60">

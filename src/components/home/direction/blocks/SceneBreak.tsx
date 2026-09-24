@@ -123,7 +123,7 @@ export default function SceneBreak({ slug, index, spec }: { slug: string; index:
                     строкой (его же более ранняя правка — тут это не
                     отменяется, а сосуществует). */}
                 <div
-                  className={`spotlight-accent spotlight-sheen mt-3 whitespace-nowrap font-display uppercase leading-[0.9] tracking-tight ${
+                  className={`spotlight-accent spotlight-sheen mt-3 whitespace-nowrap font-display uppercase leading-[1.04] tracking-tight ${
                     figure.value.length > 6
                       ? "text-[1.7rem] sm:text-[2.05rem] xl:text-[2.4rem]"
                       : "text-[2.7rem] sm:text-[3.4rem] xl:text-[3.9rem]"
@@ -131,7 +131,7 @@ export default function SceneBreak({ slug, index, spec }: { slug: string; index:
                 >
                   {figure.value}
                 </div>
-                <h3 className="mt-2 font-display text-xl font-bold uppercase leading-tight tracking-tight text-white sm:text-2xl">
+                <h3 className="mt-2 font-display text-xl font-bold uppercase leading-tight tracking-tight text-white sm:text-[1.35rem]">
                   {figure.note}
                 </h3>
               </Appear>
@@ -142,7 +142,7 @@ export default function SceneBreak({ slug, index, spec }: { slug: string; index:
                 </p>
               </Appear>
 
-              <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/12 pt-4">
+              <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/12 pt-4 sm:grid-cols-3">
                 {spec.facts.map((f, i) => (
                   <Appear key={f.label} from="up" delay={DIRECTION_BEAT.content + 0.15 + i * STAGGER.normal}>
                     <div className="relative pl-3">

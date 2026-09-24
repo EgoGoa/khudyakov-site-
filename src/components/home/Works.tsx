@@ -148,7 +148,7 @@ function FilterAxis({
   return (
     <div>
       <div className="font-sans text-sm text-paper/45">{label}</div>
-      <div className="mt-3 font-display text-[11px] uppercase leading-[1.9] tracking-[0.1em] sm:text-xs">
+      <div className="mt-3 font-display text-[11px] uppercase leading-[1.75] tracking-[0.1em] sm:text-xs">
         {options.map((option, i) => (
           <span key={option}>
             {i > 0 && <span className="mx-1.5 text-paper/20">/</span>}
@@ -334,7 +334,7 @@ export default function Works({
           <>
             <Reveal>
               <Eyebrow index="01" label="Работы" />
-              <h2 className="chapter-neon-warm break-words font-display text-3xl uppercase leading-[0.95] tracking-tight text-paper sm:text-4xl md:text-5xl">
+              <h2 className="chapter-neon-warm break-words font-display text-[1.688rem] uppercase leading-[1.09] tracking-tight text-paper sm:text-[2.025rem] md:text-[2.7rem]">
                 Всё, что мы <span className="kw">уже сняли</span>
               </h2>
               <p className={`mt-5 max-w-2xl ${CHAPTER_INTRO}`}>
@@ -659,7 +659,7 @@ export default function Works({
                       <span className="text-paper/40"> · {active.sphere}</span>
                     )}
                   </div>
-                  <h3 className="mt-2 font-sans text-2xl font-light uppercase tracking-[0.01em] sm:text-3xl">
+                  <h3 className="mt-2 font-sans text-[1.35rem] font-light uppercase tracking-[0.01em] sm:text-[1.688rem]">
                     {active.title}
                   </h3>
                   {formatDuration(active.duration) && (

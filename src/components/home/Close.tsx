@@ -240,7 +240,7 @@ export default function Close({
           <div className="relative flex justify-center">
             <Link
               href={briefHrefFor(active)}
-              className={`chapter-neon group relative inline-block text-center font-display uppercase leading-[0.95] tracking-tight transition-opacity hover:opacity-80 ${
+              className={`chapter-neon group relative inline-block text-center font-display uppercase leading-[1.09] tracking-tight transition-opacity hover:opacity-80 ${
                 active === "content"
                   ? "mt-10 text-[clamp(0.9rem,3vw,1.9rem)]"
                   : dense

@@ -65,11 +65,22 @@ export default function SpotlightCopy({
               {data.title}
             </h3>
           )}
-          {data.tagline && (
-            <p className={`spotlight-accent spotlight-sheen ${showTitle ? "mt-1" : ""} font-display text-[11px] uppercase leading-snug tracking-[0.05em] sm:text-sm`}>
-              {data.tagline}
-            </p>
-          )}
+          {/* Смена услуги (другая карточка колоды) — мягкий кросс-фейд, а не
+              мгновенная подмена строки. */}
+          <AnimatePresence mode="wait" initial={false}>
+            {data.tagline && (
+              <motion.p
+                key={data.title}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: reduced ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className={`spotlight-accent spotlight-sheen ${showTitle ? "mt-1" : ""} font-display text-[11px] uppercase leading-snug tracking-[0.05em] sm:text-sm`}
+              >
+                {data.tagline}
+              </motion.p>
+            )}
+          </AnimatePresence>
           {showSub && <p className="mt-1 max-w-[46em] text-[12.5px] leading-snug text-white/80">{data.sub}</p>}
         </div>
         {onClose && (
@@ -97,13 +108,15 @@ export default function SpotlightCopy({
           зазором внутри неё. */}
       <div className="relative mt-2.5">
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={step} className="flex flex-col gap-2.5">
+          {/* Ключ — услуга + шаг: при выборе другой карточки номер шага часто
+              тот же (0), и со старым ключом текст подменялся рывком. */}
+          <motion.div key={`${data.title}-${step}`} className="flex flex-col gap-2.5">
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
               <motion.span
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: reduced ? 0 : 0.7 }}
+                transition={{ duration: reduced ? 0 : 0.35 }}
                 className="h-fit shrink-0 whitespace-nowrap rounded-full border border-white/20 bg-white/[0.06] px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-[0.14em] text-white"
               >
                 {benefit.label}
@@ -114,10 +127,12 @@ export default function SpotlightCopy({
                   котором просил Егор: смена смысла читается как
                   смена кадра, а не как перелистывание. */}
               <motion.span
-                initial={{ opacity: 0, filter: "blur(12px)", scale: 1.04 }}
-                animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-                exit={{ opacity: 0, filter: "blur(12px)", scale: 0.99 }}
-                transition={{ duration: reduced ? 0 : 1.1, ease: [0.4, 0, 0.2, 1] }}
+                // Спокойнее и короче: без масштаба и долгого расфокуса —
+                // старый текст уходил больше секунды, и блок прыгал по высоте.
+                initial={{ opacity: 0, filter: "blur(4px)" }}
+                animate={{ opacity: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: reduced ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
                 className="spotlight-accent spotlight-sheen font-display text-[13px] font-bold uppercase leading-tight tracking-tight sm:text-[17px]"
               >
                 {benefit.punch}
@@ -127,11 +142,11 @@ export default function SpotlightCopy({
               {splitWords(benefit.text).map((word, i) => (
                 <motion.span
                   key={`${step}-${i}`}
-                  initial={{ opacity: 0, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, filter: "blur(0px)" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{
-                    duration: reduced ? 0 : 0.7,
-                    delay: reduced ? 0 : 0.26 + i * 0.04,
+                    duration: reduced ? 0 : 0.45,
+                    delay: reduced ? 0 : 0.12 + i * 0.015,
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   className="inline-block"
@@ -197,7 +212,7 @@ export default function SpotlightCopy({
                 <span // Слова не рвутся посередине (overflowWrap: normal): «автоматизаци-и»
                 // на границе колонки Егор назвал неприемлемым. Колонка
                 // достаточно широка, чтобы длинное слово целиком поместилось.
-                className="min-w-0 font-display text-[9px] uppercase leading-[1.25] tracking-[0.1em] text-white/55"
+                className="min-w-0 font-display text-[9px] uppercase leading-[1.15] tracking-[0.1em] text-white/55"
                 style={{ overflowWrap: "normal", wordBreak: "normal", hyphens: "none" }}>
                   {stat.label}
                 </span>

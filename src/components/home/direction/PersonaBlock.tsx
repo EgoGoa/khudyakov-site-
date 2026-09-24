@@ -107,7 +107,7 @@ export function PersonaShell({
         </Appear>
 
         <Appear from="up" delay={DIRECTION_BEAT.title}>
-          <h2 className="chapter-neon-warm mx-auto mt-4 max-w-4xl break-words font-display text-[1.7rem] uppercase leading-[0.98] tracking-tight sm:text-[2.8rem] lg:text-[3.2rem]">
+          <h2 className="chapter-neon-warm mx-auto mt-4 max-w-4xl break-words font-display text-[1.53rem] uppercase leading-[1.13] tracking-tight sm:text-[2.52rem] lg:text-[2.88rem]">
             {prompt}
           </h2>
         </Appear>

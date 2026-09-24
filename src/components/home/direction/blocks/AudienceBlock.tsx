@@ -73,7 +73,7 @@ export default function AudienceBlock({
                     </span>
                   </div>
 
-                  <h3 className="mt-5 font-display text-xl uppercase leading-tight tracking-tight text-white sm:text-2xl">
+                  <h3 className="mt-5 font-display text-xl uppercase leading-tight tracking-tight text-white sm:text-[1.35rem]">
                     {item.title}
                   </h3>
                   <p className="mt-4 max-w-[38em] text-[15px] leading-relaxed text-white">

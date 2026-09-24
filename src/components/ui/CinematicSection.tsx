@@ -404,8 +404,8 @@ export default function CinematicSection({
             // values rather than the next Tailwind step down so the cut is
             // the exact 30% he asked for, not whatever the nearest size
             // token happens to land on.
-            className={`chapter-neon font-display uppercase leading-[0.95] tracking-tight land:!text-[1.6rem] ${
-              titleClassName || "text-[1.575rem] sm:text-[2.625rem] lg:text-[2.625rem] xl:text-[3.15rem]"
+            className={`chapter-neon font-display uppercase leading-[1.09] tracking-tight land:!text-[1.44rem] ${
+              titleClassName || "text-[1.417rem] sm:text-[2.363rem] lg:text-[2.363rem] xl:text-[2.835rem]"
             }`}
           >
             {title}

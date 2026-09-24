@@ -183,8 +183,8 @@ export default function TeamAskCard({
         </p>
 
         <h3
-          className={`mx-auto font-display uppercase leading-[1.1] tracking-tight text-white ${
-            dense ? "mt-1.5 max-w-[22em] text-sm" : "mt-3 max-w-sm text-xl sm:text-2xl"
+          className={`mx-auto font-display uppercase leading-[1.15] tracking-tight text-white ${
+            dense ? "mt-1.5 max-w-[22em] text-sm" : "mt-3 max-w-sm text-xl sm:text-[1.35rem]"
           }`}
         >
           {question}

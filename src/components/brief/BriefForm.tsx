@@ -196,7 +196,7 @@ export default function BriefForm({ variant = "video" }: { variant?: BriefVarian
           >
             {screen === "intro" && (
               <div>
-                <h1 className="font-display text-4xl uppercase leading-[1.02] tracking-tight text-white sm:text-6xl">
+                <h1 className="font-display text-[2.025rem] uppercase leading-[1.17] tracking-tight text-white sm:text-[3.375rem]">
                   {meta.heroWord} начинается
                   <br />
                   <span className="kw">с брифа</span>
@@ -235,7 +235,7 @@ export default function BriefForm({ variant = "video" }: { variant?: BriefVarian
 
             {(screen === "page1" || screen === "page2") && (
               <div>
-                <h2 className="font-display text-3xl uppercase tracking-tight text-white sm:text-4xl">
+                <h2 className="font-display text-[1.688rem] uppercase tracking-tight text-white sm:text-[2.025rem]">
                   {screen === "page1" ? "О вас и о задаче" : "Формат, бюджет и сроки"}
                 </h2>
                 <p className="mt-3 text-sm text-white/70">
@@ -283,7 +283,7 @@ export default function BriefForm({ variant = "video" }: { variant?: BriefVarian
 
             {screen === "review" && (
               <div>
-                <h2 className="font-display text-3xl uppercase tracking-tight text-white sm:text-4xl">
+                <h2 className="font-display text-[1.688rem] uppercase tracking-tight text-white sm:text-[2.025rem]">
                   Монтажный лист
                 </h2>
                 <p className="mt-3 text-sm text-white/70">
@@ -390,7 +390,7 @@ export default function BriefForm({ variant = "video" }: { variant?: BriefVarian
                   <span className="h-2 w-2 rounded-full bg-glow" />
                   Запись завершена
                 </div>
-                <h2 className="mt-6 font-display text-3xl uppercase tracking-tight text-white sm:text-5xl">
+                <h2 className="mt-6 font-display text-[1.688rem] uppercase tracking-tight text-white sm:text-[2.7rem]">
                   Бриф отправлен
                 </h2>
                 <p className="mt-4 max-w-xl text-base leading-relaxed text-white">

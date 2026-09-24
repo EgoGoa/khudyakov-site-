@@ -28,7 +28,7 @@ export default function FinalCTA() {
             }}
           />
           <div className="relative">
-            <h2 className="font-sans text-4xl font-light uppercase leading-[1.02] tracking-[0.01em] text-paper sm:text-6xl">
+            <h2 className="font-sans text-[2.025rem] font-light uppercase leading-[1.17] tracking-[0.01em] text-paper sm:text-[3.375rem]">
               {cta.title}
             </h2>
             <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-paper/60 sm:text-base">

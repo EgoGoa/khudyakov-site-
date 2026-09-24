@@ -308,7 +308,7 @@ export default function ServicePicker() {
             chapter heading on the service pages uses. The light sans read as
             a subtitle rather than as the title of the thing being chosen. */}
         <h3
-          className={`font-display text-[clamp(1.8rem,4.5vw,2.8rem)] uppercase leading-[0.95] tracking-tight ${
+          className={`font-display text-[clamp(1.62rem,4.05vw,2.52rem)] uppercase leading-[1.09] tracking-tight ${
             LABEL_TREATMENT[previewKey] ?? "service-label-glow text-paper"
           }`}
         >

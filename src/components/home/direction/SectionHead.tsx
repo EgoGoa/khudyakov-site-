@@ -75,8 +75,8 @@ export default function SectionHead({
 
       <Appear from={from} delay={DIRECTION_BEAT.title}>
         <h2
-          className={`chapter-neon-warm mt-4 break-words font-display uppercase leading-[0.98] tracking-tight ${
-            titleClassName || "text-[1.8rem] sm:text-[3rem] lg:text-[3.4rem]"
+          className={`chapter-neon-warm mt-4 break-words font-display uppercase leading-[1.13] tracking-tight ${
+            titleClassName || "text-[1.62rem] sm:text-[2.7rem] lg:text-[3.06rem]"
           }`}
         >
           {typed ? (

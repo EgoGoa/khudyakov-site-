@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
-import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset } from "@/components/ui/deckFan";
+import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset, useDeckSpring, zFor } from "@/components/ui/deckFan";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { servicesByCategory } from "@/lib/service-content";
 import SpotlightScene from "@/components/home/ai/SpotlightScene";
@@ -167,19 +167,22 @@ function AiCardFace({
 // it bleed through wherever they overlap — Egor saw both as the carousel
 // "дёргается" and "окошки залазят друг на друга".
 const POSE: Record<number, { x: number; z: number; ry: number; scale: number; opacity: number; veil: number; zi: number }> = {
-  [-2]: { x: -246, z: -390, ry: 40, scale: 0.74, opacity: 0.88, veil: 0.74, zi: 10 },
-  [-1]: { x: -148, z: -195, ry: 32, scale: 0.87, opacity: 1, veil: 0.5, zi: 20 },
+  // Apple-style cover flow: соседи ближе и прячутся за передней, так что
+  // даже с поворотом ни одна карточка не выходит за половину designWidth
+  // (198px) — раньше крайние срезались краем экрана вместе с подписями.
+  [-2]: { x: -128, z: -300, ry: 38, scale: 0.74, opacity: 0.5, veil: 0.8, zi: 10 },
+  [-1]: { x: -96, z: -160, ry: 30, scale: 0.87, opacity: 1, veil: 0.6, zi: 20 },
   [0]: { x: 0, z: 0, ry: 0, scale: 1, opacity: 1, veil: 0, zi: 30 },
-  [1]: { x: 148, z: -195, ry: -32, scale: 0.87, opacity: 1, veil: 0.5, zi: 20 },
-  [2]: { x: 246, z: -390, ry: -40, scale: 0.74, opacity: 0.88, veil: 0.74, zi: 10 },
+  [1]: { x: 96, z: -160, ry: -30, scale: 0.87, opacity: 1, veil: 0.6, zi: 20 },
+  [2]: { x: 128, z: -300, ry: -38, scale: 0.74, opacity: 0.5, veil: 0.8, zi: 10 },
   // Mid-drag only: a card leaving the rail needs a pose to travel towards,
   // and poseAt has already faded it out by the time it reaches here.
-  [-3]: { x: -318, z: -560, ry: 44, scale: 0.62, opacity: 0.8, veil: 0.84, zi: 5 },
-  [3]: { x: 318, z: -560, ry: -44, scale: 0.62, opacity: 0.8, veil: 0.84, zi: 5 },
+  [-3]: { x: -150, z: -420, ry: 42, scale: 0.62, opacity: 0, veil: 0.9, zi: 5 },
+  [3]: { x: 150, z: -420, ry: -42, scale: 0.62, opacity: 0, veil: 0.9, zi: 5 },
 };
 
 // Hand travel that moves the rail by exactly one card.
-const SPACING = 148;
+const SPACING = 96;
 
 /** Как часто меняется тезис/сцена под каруселью, мс. */
 const DECK_BEAT_MS = 4200;
@@ -216,6 +219,9 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
   );
 
   const { drag, dragging, bind } = useDeckDrag({ count, spacing: SPACING, onSettle: step });
+  // Пружина вместо CSS-перехода: см. useDeckSpring в deckFan.
+  const { lag, moving } = useDeckSpring(active, drag, dragging);
+  const live = dragging || moving;
 
   // Arrow keys, but only while the rail itself has focus inside it — the
   // page's own left/right gestures stay untouched everywhere else.
@@ -306,7 +312,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           }}
         />
 
-        {fanSlots(count, active, drag).map(({ i, key, offset, settled }) => {
+        {fanSlots(count, active, drag + lag).map(({ i, key, offset, settled }) => {
           const card = CARDS[i];
           // Signed, wrapped distance from the active card, so card 10 sits to
           // the *left* of card 01 instead of looping the long way round.
@@ -322,8 +328,18 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           const isFront = settled === 0;
           const dist = Math.abs(settled);
 
+          // Apple-style: подпись у передней карточки и проявляется у той, что
+          // едет к центру (и под пальцем); у выглядывающих соседей её нет —
+          // иначе из-за передней торчат обрубки слов.
+          const captionOpacity = Math.max(0, 1 - Math.abs(offset) / 0.7);
+
           const caption = (
-            <>
+            <span
+              className={`pointer-events-none absolute inset-0 ${
+                live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+              }`}
+              style={{ opacity: captionOpacity }}
+            >
               <span
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-40"
                 style={{ background: "linear-gradient(180deg, rgba(10,13,16,0) 0%, rgba(10,13,16,0.96) 62%)" }}
@@ -358,11 +374,11 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                       </span>
                     )}
                   </span>
-            </>
+            </span>
           );
 
           const counter = (
-            <span className="absolute right-3.5 top-3.5 rounded-full bg-ink/70 px-2.5 py-1 font-display text-[10px] tracking-[0.12em] text-paper/70">
+            <span style={{ opacity: captionOpacity }} className="absolute right-3.5 top-3.5 rounded-full bg-ink/70 px-2.5 py-1 font-display text-[10px] tracking-[0.12em] text-paper/70">
               {String(idx + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
           );
@@ -389,11 +405,11 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                 // No transition while the hand holds the rail: the cards
                 // have to sit exactly where the finger is, on the frame it
                 // is there.
-                dragging ? "transition-[filter] duration-[760ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
+                live ? "transition-[filter] duration-[420ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
               }`}
               style={{
                 ["--deck-blur" as string]: `${blurPx}px`,
-                zIndex: Math.round(pose.zi),
+                zIndex: zFor(offset),
                 opacity,
                 // NOT `visibility: hidden` at zero opacity: that is applied
                 // from the TARGET value, so it hid the card on the first
@@ -425,7 +441,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
               <span
                 aria-hidden="true"
                 className={`pointer-events-none absolute -inset-3 -z-10 rounded-[30px] ${
-                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                  live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: 1 - halo }}
               >
@@ -448,7 +464,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
               <span
                 aria-hidden="true"
                 className={`pointer-events-none absolute -inset-3 -z-10 rounded-[30px] ${
-                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                  live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: halo }}
               >
@@ -479,6 +495,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                 <span
                   className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3.5 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
                   aria-hidden="true"
+                  style={{ opacity: captionOpacity }}
                 >
                   <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
                   Хит месяца
@@ -557,7 +574,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
               <span
                 aria-hidden="true"
                 className={`pointer-events-none absolute inset-0 z-10 rounded-[26px] bg-[#08090e] ${
-                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                  live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: pose.veil }}
               />
@@ -565,6 +582,15 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           );
         })}
 
+      </div>
+      </FanFit>
+
+      {/* The lit track. Ten nodes would crowd at 32px each, so these are bare
+          dots with the active one stretched into a capsule — same idea as
+          /sites' numbered rail, sized for twice as many items. */}
+      <div className="mx-auto mt-6 flex max-w-[460px] items-center gap-3">
+        {/* Стрелки под колодой, по краям дорожки, как у каруселей Apple —
+            поверх карточек они закрывали боковые подписи. */}
         <button
           type="button"
           onClick={(e) => {
@@ -576,33 +602,13 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           // rail's own `perspective` context too.
           onMouseDown={(e) => e.preventDefault()}
           aria-label="Предыдущая услуга"
-          className={`absolute left-0 top-1/2 z-40 -translate-y-1/2 ${AI_ROUND}`}
+          className={`relative z-10 shrink-0 ${AI_ROUND}`}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M15 5l-7 7 7 7" />
           </svg>
         </button>
-        <button
-          type="button"
-          onClick={(e) => {
-            step(1);
-            e.currentTarget.focus({ preventScroll: true });
-          }}
-          onMouseDown={(e) => e.preventDefault()}
-          aria-label="Следующая услуга"
-          className={`absolute right-0 top-1/2 z-40 -translate-y-1/2 ${AI_ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-      </FanFit>
-
-      {/* The lit track. Ten nodes would crowd at 32px each, so these are bare
-          dots with the active one stretched into a capsule — same idea as
-          /sites' numbered rail, sized for twice as many items. */}
-      <div className="relative mx-auto mt-6 flex max-w-[420px] items-center justify-between">
+        <div className="relative flex flex-1 items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
           style={{
@@ -636,6 +642,21 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
             </button>
           );
         })}
+      </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            step(1);
+            e.currentTarget.focus({ preventScroll: true });
+          }}
+          onMouseDown={(e) => e.preventDefault()}
+          aria-label="Следующая услуга"
+          className={`relative z-10 shrink-0 ${AI_ROUND}`}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       {/* The reference's pill toolbar: the full name and, below it, three

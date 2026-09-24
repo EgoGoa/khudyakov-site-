@@ -54,7 +54,7 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
           the reference, but pointed at our own real channels */}
       <div className="border-b border-paper/10">
         <Container className="pb-14 pt-8 text-center sm:pb-20 sm:pt-10">
-          <h2 className="font-display text-2xl uppercase leading-tight tracking-tight text-paper sm:text-3xl">
+          <h2 className="font-display text-[1.35rem] uppercase leading-tight tracking-tight text-paper sm:text-[1.688rem]">
             Готовы обсудить ваш проект
             <br className="hidden sm:block" /> в любое время
           </h2>

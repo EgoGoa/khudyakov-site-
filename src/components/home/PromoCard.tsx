@@ -155,7 +155,7 @@ export default function PromoCard({
                   picks up /content's own ramp) — "cyan" gets its own gradient
                   class since `.kw` is fixed to the page's warm ramp. */}
               <span
-                className={`promo-card-title mt-1 block font-display text-base uppercase leading-[0.95] tracking-tight ${
+                className={`promo-card-title mt-1 block font-display text-base uppercase leading-[1.09] tracking-tight ${
                   cyan ? "promo-card-title-cyan" : "kw"
                 }`}
               >

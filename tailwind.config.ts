@@ -8,6 +8,25 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // −20%, затем +15% межстрочного интервала по всему сайту (просьба Егора): и
+      // именованные leading-*, и высота строки, зашитая в сами text-* размеры.
+      lineHeight: {
+        tight: "1.15",
+        snug: "1.27",
+        normal: "1.38",
+        relaxed: "1.5",
+        loose: "1.84",
+      },
+      fontSize: {
+        xs: ["0.75rem", { lineHeight: "0.92rem" }],
+        sm: ["0.875rem", { lineHeight: "1.15rem" }],
+        base: ["1rem", { lineHeight: "1.38rem" }],
+        lg: ["1.125rem", { lineHeight: "1.61rem" }],
+        xl: ["1.25rem", { lineHeight: "1.61rem" }],
+        "2xl": ["1.5rem", { lineHeight: "1.84rem" }],
+        "3xl": ["1.875rem", { lineHeight: "2.07rem" }],
+        "4xl": ["2.25rem", { lineHeight: "2.3rem" }],
+      },
       screens: {
         // A phone held sideways: wide, but only ~350-430px of height. Used to
         // give the page back its vertical room (thin header, tight padding)

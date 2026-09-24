@@ -233,7 +233,7 @@ function GuaranteeInfographic() {
         >
           <div className="flex items-center gap-2.5">
             <span className="text-[28px] leading-none">{TERM_SCENES[i].icon}</span>
-            <h3 className="kw max-w-[11em] text-left font-display text-base uppercase leading-[1.1] tracking-tight">
+            <h3 className="kw max-w-[11em] text-left font-display text-base uppercase leading-[1.15] tracking-tight">
               {term.title}
             </h3>
           </div>

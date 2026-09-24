@@ -121,7 +121,7 @@ export default function HotelVideoBriefForm() {
             <span className="h-2 w-2 rounded-full bg-glow" />
             Отправлено
           </div>
-          <h1 className="mt-6 font-display text-3xl uppercase tracking-tight text-white sm:text-5xl">
+          <h1 className="mt-6 font-display text-[1.688rem] uppercase tracking-tight text-white sm:text-[2.7rem]">
             Бриф отправлен
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-white">
@@ -144,7 +144,7 @@ export default function HotelVideoBriefForm() {
           Бриф · 10 вопросов
         </div>
 
-        <h1 className="font-display text-4xl uppercase leading-[1.02] tracking-tight text-white sm:text-5xl">
+        <h1 className="font-display text-[2.025rem] uppercase leading-[1.17] tracking-tight text-white sm:text-[2.7rem]">
           Съёмка базы отдыха
           <br />
           <span className="kw">земля + воздух</span>

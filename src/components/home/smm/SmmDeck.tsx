@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
-import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset } from "@/components/ui/deckFan";
+import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset, useDeckSpring, zFor } from "@/components/ui/deckFan";
 import { smmFormatPages } from "@/components/home/direction/smmFormatRegistry";
 import SpotlightScene from "@/components/home/ai/SpotlightScene";
 import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
@@ -159,19 +159,22 @@ function SmmCardFace({ id, image, step }: { id: string; image: string; step: num
 // pair shrink further still (0.7 → 0.54) — one continuous depth step rather
 // than "big card, then two flat sizes".
 const FAN: Record<number, { x: number; y: number; scale: number; opacity: number; veil: number; z: number }> = {
-  [-2]: { x: -216, y: 34, scale: 0.54, opacity: 0.92, veil: 0.74, z: 10 },
-  [-1]: { x: -128, y: 14, scale: 0.72, opacity: 1, veil: 0.5, z: 20 },
-  [0]: { x: 0, y: -10, scale: 1.24, opacity: 1, veil: 0, z: 30 },
-  [1]: { x: 128, y: 14, scale: 0.72, opacity: 1, veil: 0.5, z: 20 },
-  [2]: { x: 216, y: 34, scale: 0.54, opacity: 0.92, veil: 0.74, z: 10 },
-  // Mid-drag only, and faded out by the time a card gets here — see the
-  // twin entries in SitesDeck.
-  [-3]: { x: -288, y: 50, scale: 0.42, opacity: 0.8, veil: 0.82, z: 5 },
-  [3]: { x: 288, y: 50, scale: 0.42, opacity: 0.8, veil: 0.82, z: 5 },
+  // Apple-style (обложки Apple Music): соседи прячутся ЗА передней карточкой
+  // и выглядывают узкой полосой, все на одной линии, без лесенки. Крайняя
+  // точка любой карточки ≤ половины designWidth (147px), поэтому ни одна не
+  // срезается краем экрана — раньше ±2 уезжали за край и рвали подписи.
+  [-2]: { x: -104, y: 0, scale: 0.6, opacity: 0.45, veil: 0.8, z: 10 },
+  [-1]: { x: -84, y: 0, scale: 0.78, opacity: 1, veil: 0.6, z: 20 },
+  [0]: { x: 0, y: 0, scale: 1.12, opacity: 1, veil: 0, z: 30 },
+  [1]: { x: 84, y: 0, scale: 0.78, opacity: 1, veil: 0.6, z: 20 },
+  [2]: { x: 104, y: 0, scale: 0.6, opacity: 0.45, veil: 0.8, z: 10 },
+  // Mid-drag only, and faded out by the time a card gets here.
+  [-3]: { x: -116, y: 0, scale: 0.5, opacity: 0, veil: 0.9, z: 5 },
+  [3]: { x: 116, y: 0, scale: 0.5, opacity: 0, veil: 0.9, z: 5 },
 };
 
 // Hand travel that moves the deck by exactly one card.
-const SPACING = 128;
+const SPACING = 84;
 
 // Темп смены тезиса под каруселью — тот же, что на /ai и /sites (Егор
 // попросил одну механику на всех страницах).
@@ -216,6 +219,9 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
   );
 
   const { drag, dragging, bind } = useDeckDrag({ count, spacing: SPACING, onSettle: step });
+  // Пружина вместо CSS-перехода: см. useDeckSpring в deckFan.
+  const { lag, moving } = useDeckSpring(active, drag, dragging);
+  const live = dragging || moving;
 
   // Номер сцены/тезиса передней карточки — общий для картинки на карточке и
   // текста в панели под каруселью (тот же приём, что в AiDeck/SitesDeck):
@@ -270,13 +276,13 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           new +30% size (250px tall × 1.3 = 325px) plus its upward y-nudge. */}
       {/* Paging by pointer drag (useDeckDrag) instead of FanFit's own
           swipe, so a flick isn't counted twice. */}
-      <FanFit designWidth={295} height={360}>
+      <FanFit designWidth={295} height={310}>
       <div
         className="deck-rail relative h-full"
         style={{ cursor: dragging ? "grabbing" : "grab", touchAction: "pan-y" }}
         {...bind}
       >
-        {fanSlots(count, active, drag).map(({ i, key, offset, settled }) => {
+        {fanSlots(count, active, drag + lag).map(({ i, key, offset, settled }) => {
           const format = FORMATS[i];
           const pose = poseAt(FAN, offset);
           const opacity = pose.opacity * pose.fade;
@@ -289,8 +295,18 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           const isFront = settled === 0;
           const hasPage = format.id in smmFormatPages;
 
+          // Подпись видна у передней карточки и проявляется у той, что едет
+          // к центру (в том числе под пальцем) — у выглядывающих соседей её
+          // нет, иначе из-за передней торчат обрубки слов («БЛОГЕ», «ИС»).
+          const captionOpacity = Math.max(0, 1 - Math.abs(offset) / 0.7);
+
           const caption = (
-            <>
+            <span
+              className={`pointer-events-none absolute inset-0 ${
+                live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+              }`}
+              style={{ opacity: captionOpacity }}
+            >
               <span
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
                 style={{
@@ -319,14 +335,14 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                   </span>
                 )}
               </span>
-            </>
+            </span>
           );
 
           // Deck counter, front card only — it counts the deck, not the
           // card. The caption above is on every card now (Egor: название и
           // кнопка должны быть видны всегда, и во время перетаскивания).
           const counter = (
-            <span className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+            <span style={{ opacity: captionOpacity }} className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
               {String(idx + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
           );
@@ -345,11 +361,11 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
             <div
               key={key}
               className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[250px] w-[150px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
-                dragging ? "transition-[filter] duration-[760ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
+                live ? "transition-[filter] duration-[420ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
               }`}
               style={{
                 ["--deck-blur" as string]: `${blurPx}px`,
-                zIndex: Math.round(pose.z),
+                zIndex: zFor(offset),
                 opacity,
                 // NOT `visibility: hidden` at zero opacity: that is applied
                 // from the TARGET value, so it hid the card on the first
@@ -372,7 +388,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
               <span
                 aria-hidden="true"
                 className={`deck-halo-fade pointer-events-none absolute -inset-4 -z-10 ${
-                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                  live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: halo }}
               >
@@ -428,7 +444,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
               <span
                 aria-hidden="true"
                 className={`pointer-events-none absolute inset-0 z-10 rounded-[20px] bg-[#08090e] ${
-                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                  live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: pose.veil }}
               />
@@ -436,26 +452,6 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           );
         })}
 
-        <button
-          type="button"
-          onClick={() => step(-1)}
-          aria-label="Предыдущий формат"
-          className={`absolute left-0 top-1/2 z-40 -translate-y-1/2 ${ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={() => step(1)}
-          aria-label="Следующий формат"
-          className={`absolute right-0 top-1/2 z-40 -translate-y-1/2 ${ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
       </FanFit>
 
@@ -463,7 +459,20 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           violet. It looks like the chapter rail down the left edge on purpose,
           but the two never share state — that one walks chapters, this one
           walks formats. */}
-      <div className="relative mx-auto mt-7 flex max-w-[340px] items-center justify-between">
+      {/* Стрелки — под колодой, по краям дорожки, как у каруселей Apple:
+          поверх карточек они закрывали боковые подписи. */}
+      <div className="mx-auto mt-6 flex max-w-[420px] items-center gap-3">
+        <button
+          type="button"
+          onClick={() => step(-1)}
+          aria-label="Предыдущий формат"
+          className={`relative z-10 shrink-0 ${ROUND}`}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
+        </button>
+      <div className="relative flex flex-1 items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
           style={{
@@ -493,6 +502,17 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
             </button>
           );
         })}
+      </div>
+        <button
+          type="button"
+          onClick={() => step(1)}
+          aria-label="Следующий формат"
+          className={`relative z-10 shrink-0 ${ROUND}`}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       {/* Окошко под деком — тот же приём, что и на /ai (AiDeck.tsx) и /sites

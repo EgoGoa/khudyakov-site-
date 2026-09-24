@@ -94,7 +94,7 @@ export default function BlockAssistant({ context }: { context: string }) {
         <div className="flex h-fit w-full flex-col text-left">
           {screen === "ask" && (
             <>
-              <h3 className="font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">
+              <h3 className="font-display text-[1.35rem] uppercase tracking-tight text-paper sm:text-[1.688rem]">
                 О чём спросить?
               </h3>
               <p className="mt-2 text-sm text-paper/60">

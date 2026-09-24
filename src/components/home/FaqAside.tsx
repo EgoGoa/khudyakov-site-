@@ -104,7 +104,7 @@ export default function FaqAside() {
           saying anything the title didn't already). Removing both is most
           of what makes this card short enough to sit level with the five
           reasons opposite it. */}
-      <h3 className="font-display text-lg uppercase leading-[0.95] tracking-tight text-paper">
+      <h3 className="font-display text-lg uppercase leading-[1.09] tracking-tight text-paper">
         Отвечаем на вопросы до старта
       </h3>
 

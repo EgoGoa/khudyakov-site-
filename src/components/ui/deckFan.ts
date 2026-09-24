@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 // Drag-to-scrub for the service carousels (AiDeck, SitesDeck, SmmDeck).
 //
@@ -483,4 +483,86 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
       onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
     },
   };
+}
+
+// ── Пружина колоды ──────────────────────────────────────────────────────────
+// Раньше смену карточки анимировал CSS-transition, а z-index (какая карточка
+// сверху) переключался мгновенно, в первый же кадр шага. Входящая карточка
+// выпрыгивала поверх ещё большой уходящей — это и был «рывок» и «перескок
+// карточек сквозь друг друга», который видел Егор.
+//
+// Теперь позиция колоды — одно дробное число, которое каждый кадр догоняет
+// выбранную карточку по критически задемпфированной пружине (как листалки
+// iOS: без перелёта и без отскока). Все позы, прозрачность подписей и
+// порядок слоёв считаются из этой позиции, поэтому карточки меняются местами
+// ровно в середине пути, когда они одного размера.
+const SPRING_OMEGA = 11; // жёсткость: ≈0.45 с на шаг
+
+export function useDeckSpring(active: number, drag: number, dragging: boolean) {
+  const [pos, setPos] = useState(active);
+  const posRef = useRef(active);
+  const vel = useRef(0);
+  const lastDrag = useRef(0);
+  const prevActive = useRef(active);
+  const wasDragging = useRef(false);
+
+  // Путь руки, пока колоду держат.
+  useEffect(() => {
+    if (dragging) lastDrag.current = drag;
+  }, [drag, dragging]);
+
+  // Отпустили колоду: позиция становится ровно той, где карточки бросили
+  // (старая карточка минус путь руки), и доводка идёт оттуда. Layout-эффект —
+  // чтобы поправка успела до первой отрисовки кадра отпускания.
+  useLayoutEffect(() => {
+    if (wasDragging.current && !dragging) {
+      posRef.current = prevActive.current - lastDrag.current;
+      vel.current = 0;
+      lastDrag.current = 0;
+      setPos(posRef.current);
+    } else if (dragging) {
+      posRef.current = active;
+      vel.current = 0;
+      setPos(active);
+    }
+    wasDragging.current = dragging;
+    prevActive.current = active;
+  }, [active, dragging]);
+
+  useEffect(() => {
+    if (dragging) return;
+    let raf = 0;
+    let prev = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(0.05, (now - prev) / 1000);
+      prev = now;
+      const x = posRef.current - active;
+      const a = -SPRING_OMEGA * SPRING_OMEGA * x - 2 * SPRING_OMEGA * vel.current;
+      vel.current += a * dt;
+      posRef.current += vel.current * dt;
+      if (Math.abs(posRef.current - active) < 0.001 && Math.abs(vel.current) < 0.01) {
+        posRef.current = active;
+        vel.current = 0;
+        setPos(active);
+        return;
+      }
+      setPos(posRef.current);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [active, dragging]);
+
+  const shown = dragging ? active : pos;
+  return {
+    /** Добавка к drag для fanSlots: насколько колода ещё не доехала. */
+    lag: active - shown,
+    /** Колода в движении — CSS-переходы поз на это время выключены. */
+    moving: !dragging && Math.abs(pos - active) > 0.001,
+  };
+}
+
+/** Порядок слоёв из непрерывного расстояния до центра. */
+export function zFor(offset: number) {
+  return 100 - Math.round(Math.abs(offset) * 20);
 }

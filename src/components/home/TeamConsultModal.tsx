@@ -87,7 +87,7 @@ export default function TeamConsultModal({
               </span>
             </span>
 
-            <h3 className="mt-4 font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">
+            <h3 className="mt-4 font-display text-[1.35rem] uppercase tracking-tight text-paper sm:text-[1.688rem]">
               Написать {member.nameDative}
             </h3>
             <p className="mt-2 text-sm text-paper/60">
@@ -154,7 +154,7 @@ export default function TeamConsultModal({
               <span className="h-2 w-2 rounded-full bg-glow" />
               Сообщение отправлено
             </div>
-            <h3 className="mt-5 font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">
+            <h3 className="mt-5 font-display text-[1.35rem] uppercase tracking-tight text-paper sm:text-[1.688rem]">
               Спасибо, {name || "мы получили сообщение"}!
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-paper/60">
@@ -172,7 +172,7 @@ export default function TeamConsultModal({
 
         {screen === "error" && (
           <>
-            <h3 className="font-display text-2xl uppercase tracking-tight text-paper sm:text-3xl">
+            <h3 className="font-display text-[1.35rem] uppercase tracking-tight text-paper sm:text-[1.688rem]">
               Не получилось отправить
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-paper/60">

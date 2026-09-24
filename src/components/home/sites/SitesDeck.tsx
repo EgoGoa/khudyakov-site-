@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
-import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset } from "@/components/ui/deckFan";
+import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset, useDeckSpring, zFor } from "@/components/ui/deckFan";
 import { sitesFormatPages } from "@/components/home/direction/sitesFormatRegistry";
 import SpotlightScene from "@/components/home/ai/SpotlightScene";
 import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
@@ -131,21 +131,23 @@ function SitesCardFace({ id, image, step }: { id: string; image: string; step: n
 // put, and the outer pair shrink further still (0.7 → 0.56) — so depth
 // reads as one continuous step rather than "big card, then two flat sizes".
 const FAN: Record<number, { x: number; y: number; scale: number; opacity: number; veil: number; z: number }> = {
-  [-2]: { x: -280, y: 38, scale: 0.56, opacity: 0.92, veil: 0.74, z: 10 },
-  [-1]: { x: -170, y: 16, scale: 0.74, opacity: 1, veil: 0.5, z: 20 },
-  [0]: { x: 0, y: -10, scale: 1.16, opacity: 1, veil: 0, z: 30 },
-  [1]: { x: 170, y: 16, scale: 0.74, opacity: 1, veil: 0.5, z: 20 },
-  [2]: { x: 280, y: 38, scale: 0.56, opacity: 0.92, veil: 0.74, z: 10 },
-  // Only ever reached mid-drag, and already faded out by then (see poseAt's
-  // `fade`): it exists so a card leaving the fan has a pose to travel
-  // towards instead of stopping dead at ±2.
-  [-3]: { x: -365, y: 56, scale: 0.44, opacity: 0.8, veil: 0.82, z: 5 },
-  [3]: { x: 365, y: 56, scale: 0.44, opacity: 0.8, veil: 0.82, z: 5 },
+  // Apple-style (обложки Apple Music) — та же раскладка, что в SmmDeck:
+  // соседи прячутся за передней и выглядывают полосой, все на одной линии.
+  // Крайняя точка любой карточки ≤ половины designWidth (190px), поэтому
+  // ничего не срезается краем экрана.
+  [-2]: { x: -120, y: 0, scale: 0.6, opacity: 0.45, veil: 0.8, z: 10 },
+  [-1]: { x: -100, y: 0, scale: 0.78, opacity: 1, veil: 0.6, z: 20 },
+  [0]: { x: 0, y: 0, scale: 1.08, opacity: 1, veil: 0, z: 30 },
+  [1]: { x: 100, y: 0, scale: 0.78, opacity: 1, veil: 0.6, z: 20 },
+  [2]: { x: 120, y: 0, scale: 0.6, opacity: 0.45, veil: 0.8, z: 10 },
+  // Mid-drag only, and faded out by the time a card gets here.
+  [-3]: { x: -134, y: 0, scale: 0.5, opacity: 0, veil: 0.9, z: 5 },
+  [3]: { x: 134, y: 0, scale: 0.5, opacity: 0, veil: 0.9, z: 5 },
 };
 
 // Design-pixel distance between two neighbouring cards — how far the hand
 // travels to move the deck by one card.
-const SPACING = 170;
+const SPACING = 100;
 
 // Как часто сменяется тезис под каруселью — то же значение, что у AiDeck.
 const DECK_BEAT_MS = 4200;
@@ -189,6 +191,9 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
   );
 
   const { drag, dragging, bind } = useDeckDrag({ count, spacing: SPACING, onSettle: step });
+  // Пружина вместо CSS-перехода: см. useDeckSpring в deckFan.
+  const { lag, moving } = useDeckSpring(active, drag, dragging);
+  const live = dragging || moving;
 
   // Номер сцены/тезиса передней карточки — общий для картинки на карточке и
   // текста в панели под каруселью (тот же приём, что в AiDeck): графика и
@@ -245,13 +250,13 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
       {/* No `onSwipe` any more: the pointer drag below replaces FanFit's
           own swipe-at-the-end gesture, and running both would page the deck
           twice for one flick. */}
-      <FanFit designWidth={380} height={350}>
+      <FanFit designWidth={380} height={320}>
       <div
         className="deck-rail relative h-full"
         style={{ cursor: dragging ? "grabbing" : "grab", touchAction: "pan-y" }}
         {...bind}
       >
-        {fanSlots(count, active, drag).map(({ i, key, offset, settled }) => {
+        {fanSlots(count, active, drag + lag).map(({ i, key, offset, settled }) => {
           const service = SERVICES[i];
           const pose = poseAt(FAN, offset);
           const opacity = pose.opacity * pose.fade;
@@ -271,8 +276,18 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           // только на передней, чтобы колода читалась сразу и не пустела
           // во время перетаскивания. Счётчик 01/05 остался только на
           // передней: он про колоду, а не про карточку.
+          // Apple-style: подпись у передней карточки и проявляется у той, что
+          // едет к центру (и под пальцем); у выглядывающих соседей её нет —
+          // иначе из-за передней торчат обрубки слов.
+          const captionOpacity = Math.max(0, 1 - Math.abs(offset) / 0.7);
+
           const caption = (
-            <>
+            <span
+              className={`pointer-events-none absolute inset-0 ${
+                live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+              }`}
+              style={{ opacity: captionOpacity }}
+            >
               <span
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
                 style={{
@@ -300,11 +315,11 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                   </span>
                 )}
               </span>
-            </>
+            </span>
           );
 
           const counter = (
-            <span className="absolute right-3 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+            <span style={{ opacity: captionOpacity }} className="absolute right-3 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
               {String(idx + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
           );
@@ -326,11 +341,11 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                 // While the hand holds the deck the cards must track it on
                 // the same frame — a transition here would make them lag
                 // behind the finger by half a second.
-                dragging ? "transition-[filter] duration-[760ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
+                live ? "transition-[filter] duration-[420ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
               }`}
               style={{
                 ["--deck-blur" as string]: `${blurPx}px`,
-                zIndex: Math.round(pose.z),
+                zIndex: zFor(offset),
                 opacity,
                 // NOT `visibility: hidden` at zero opacity: that is applied
                 // from the TARGET value, so it hid the card on the first
@@ -355,7 +370,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
               <span
                 aria-hidden="true"
                 className={`deck-halo-fade pointer-events-none absolute -inset-4 -z-10 ${
-                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                  live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: halo }}
               >
@@ -373,6 +388,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                 <span
                   className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
                   aria-hidden="true"
+                  style={{ opacity: captionOpacity }}
                 >
                   <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
                   Хит месяца
@@ -422,7 +438,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
               <span
                 aria-hidden="true"
                 className={`pointer-events-none absolute inset-0 z-10 rounded-[20px] bg-[#08090e] ${
-                  dragging ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
+                  live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: pose.veil }}
               />
@@ -433,26 +449,6 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
         {/* Paging, both directions — the thing Egor asked for. Sits over the
             outermost cards at the container's edges, the way the reference
             puts its own back-arrow over the rail. */}
-        <button
-          type="button"
-          onClick={() => step(-1)}
-          aria-label="Предыдущая услуга"
-          className={`absolute left-0 top-1/2 z-40 -translate-y-1/2 ${ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={() => step(1)}
-          aria-label="Следующая услуга"
-          className={`absolute right-0 top-1/2 z-40 -translate-y-1/2 ${ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
       </FanFit>
 
@@ -460,7 +456,20 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           same orange as the chapter rail down the left edge. The rail
           navigates chapters, this navigates services — they look alike on
           purpose but never share state. */}
-      <div className="relative mx-auto mt-5 flex max-w-[340px] items-center justify-between">
+      <div className="mx-auto mt-6 flex max-w-[460px] items-center gap-3">
+        {/* Стрелки под колодой, по краям дорожки, как у каруселей Apple —
+            поверх карточек они закрывали боковые подписи. */}
+        <button
+          type="button"
+          onClick={() => step(-1)}
+          aria-label="Предыдущая услуга"
+          className={`relative z-10 shrink-0 ${ROUND}`}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
+        </button>
+        <div className="relative flex flex-1 items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
           style={{
@@ -490,6 +499,17 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
             </button>
           );
         })}
+      </div>
+        <button
+          type="button"
+          onClick={() => step(1)}
+          aria-label="Следующая услуга"
+          className={`relative z-10 shrink-0 ${ROUND}`}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       {/* Окошко под деком — тот же приём, что и на /ai (AiDeck.tsx): стекло

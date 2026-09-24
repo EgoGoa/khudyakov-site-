@@ -12,7 +12,7 @@ export default function AdminSetupPage() {
     <section className="py-24 sm:py-32">
       <Container className="max-w-2xl">
         <Eyebrow label="Требуется настройка" />
-        <h1 className="font-display text-3xl uppercase tracking-tight text-paper sm:text-4xl">
+        <h1 className="font-display text-[1.688rem] uppercase tracking-tight text-paper sm:text-[2.025rem]">
           Задайте пароль панели
         </h1>
         <p className="mt-4 text-base leading-relaxed text-paper/60">
