@@ -235,6 +235,19 @@ export default function CinematicStage({
   // its start when the visitor arrives and the built-in blur-in plays for
   // real instead of having already finished off-screen.
   const [started, setStarted] = useState(false);
+  // Same swap Hero.tsx does for the showreel: phones (and Data Saver) get the
+  // pre-cut `-mobile` reel instead of the 5-8 MB desktop one. The mobile file
+  // already existed on disk for all four reels but nothing here was picking
+  // it — every visitor, phone or not, downloaded the full desktop cut.
+  const [resolvedSrc, setResolvedSrc] = useState(src);
+  useEffect(() => {
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (window.innerWidth < 900 || saveData) {
+      setResolvedSrc(src.replace(/\.mp4$/, "-mobile.mp4"));
+    } else {
+      setResolvedSrc(src);
+    }
+  }, [src]);
   // Chapters visited at least once this page load. Egor's ask: a chapter's
   // entrance (the whole choreography — its own slide-in plus every <Appear>
   // inside it) should play once per visit to the page, not every time the
@@ -1131,7 +1144,7 @@ export default function CinematicStage({
             />
             <video
               ref={videoRef}
-              src={src}
+              src={resolvedSrc}
               poster={poster}
               muted
               playsInline
