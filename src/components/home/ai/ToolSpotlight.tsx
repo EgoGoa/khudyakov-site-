@@ -341,7 +341,7 @@ export default function ToolSpotlight({
                 className="absolute inset-0 flex flex-col"
               >
                 <div
-                  className="flex min-h-0 flex-1 flex-col gap-3 p-4 pb-3 sm:p-5 sm:pb-4 lg:flex-row lg:items-stretch lg:gap-7 lg:p-6 lg:pb-5"
+                  className="flex min-h-0 flex-1 flex-col gap-3 p-4 pb-3 sm:flex-row sm:items-stretch sm:gap-5 sm:p-5 sm:pb-4 lg:gap-7 lg:p-6 lg:pb-5"
                 >
                 {/* Телефон: над графикой всегда стоит акцентный офер —
                     прямая просьба Егора. На узкой сцене подписи самой схемы
@@ -368,7 +368,7 @@ export default function ToolSpotlight({
                   // пустая дыра (см. ниже). `flex-1` без базовой высоты делит
                   // свободное место 50/50 с текстовой колонкой (у неё тоже
                   // flex-1) — тот же приём, каким flex обычно делит колонки.
-                  className="relative w-full flex-1 rounded-2xl bg-white/[0.03] ring-1 ring-white/10 lg:h-auto lg:w-[34%] lg:flex-none"
+                  className="relative w-full flex-1 rounded-2xl bg-white/[0.03] ring-1 ring-white/10 sm:h-auto sm:w-[36%] sm:flex-none lg:w-[34%]"
                 >
                   {/* На телефоне сцена стоит полосой ~110px: в таком масштабе подписи и
                       цифры внутри неё нечитаемы, поэтому только фигуры (mini), а
