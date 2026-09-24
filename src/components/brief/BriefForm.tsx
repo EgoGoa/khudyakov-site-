@@ -142,6 +142,22 @@ export default function BriefForm({ variant = "video" }: { variant?: BriefVarian
       fields[step.title] = formatAnswer(step, answers) || "—";
     });
 
+    // Человек пришёл из чата с участником команды (TeamPulse, кнопка «хочу
+    // детальнее») — его короткие ответы оттуда едут в это же письмо, чтобы
+    // команда не спрашивала второй раз.
+    try {
+      const raw = sessionStorage.getItem("team-pulse-prefill");
+      if (raw) {
+        const pre = JSON.parse(raw) as { who?: string; source?: string; answers?: Record<string, string> };
+        fields["Из чата"] = `${pre.who ?? ""} · ${pre.source ?? ""}`;
+        Object.entries(pre.answers ?? {}).forEach(([k, v]) => {
+          fields[`Чат · ${k}`] = v;
+        });
+      }
+    } catch {
+      /* sessionStorage недоступен — отправляем бриф как есть */
+    }
+
     try {
       const res = await fetch("/api/lead", {
         method: "POST",
@@ -155,6 +171,11 @@ export default function BriefForm({ variant = "video" }: { variant?: BriefVarian
         }),
       });
       if (!res.ok) throw new Error("send_failed");
+      try {
+        sessionStorage.removeItem("team-pulse-prefill");
+      } catch {
+        /* нечего чистить */
+      }
       setSendState("idle");
       setScreen("sent");
     } catch {

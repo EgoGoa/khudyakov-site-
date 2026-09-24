@@ -6185,3 +6185,338 @@ html[data-lite] .welcome-card-graphic svg circle {
   word-break: normal;
   hyphens: manual;
 }
+
+/* ── Человек команды как сервис (TeamPulse) ─────────────────────────────
+   Мини-окошко в вёрстке блока → стеклянное уведомление в духе iOS →
+   большое окно в стиле окошек услуг → чат-бриф. Все цвета — из акцента
+   страницы (--sp-from/--sp-to и rgb-пары --tp-from-rgb/--tp-to-rgb, их
+   задаёт accentVars): у Саши на /sites это розовый → голубой, как у
+   окошек услуг этой страницы. Зелёный остался только у точки «на связи».
+
+   Свечение «дышит» — просьба Егора: плавно и красиво, но без сильного
+   мигания. Пульсирует не box-shadow (его анимация перерисовывает всё под
+   элементом, а под блоками идёт видео), а прозрачность отдельного слоя с
+   готовой тенью — это чистая работа композитора.
+
+   backdrop-filter — без -webkit- пары: одинаковые объявления схлопываются
+   минификатором до префиксной версии, и блюр пропадает в Chrome. */
+@keyframes team-pulse-breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+@keyframes team-pulse-breathe-soft {
+  0%, 100% { opacity: 0.18; }
+  50% { opacity: 0.45; }
+}
+.team-pulse-card,
+.team-pulse-note {
+  isolation: isolate;
+}
+.team-pulse-card {
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015) 55%),
+    rgba(11, 11, 16, 0.78);
+  backdrop-filter: blur(18px) saturate(125%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 0 1px rgba(var(--tp-from-rgb), 0.35);
+}
+.team-pulse-card::after,
+.team-pulse-note::after,
+.team-pulse-halo {
+  box-shadow:
+    0 0 22px 1px rgba(var(--tp-from-rgb), 0.6),
+    0 0 60px -4px rgba(var(--tp-to-rgb), 0.5),
+    inset 0 0 0 1px rgba(var(--tp-to-rgb), 0.35);
+  animation: team-pulse-breathe 4.2s ease-in-out infinite;
+}
+.team-pulse-card::after,
+.team-pulse-note::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.team-pulse-card:hover::after {
+  animation-duration: 2.4s;
+}
+/* Свёрнутое состояние — уведомление в духе iOS: светлое матовое стекло,
+   тонкая градиентная кромка страницы, маленькая аватарка. Свечение у него
+   вдвое тише, чем у раскрытого окошка: это приглашение, а не сирена. */
+.team-pulse-note {
+  position: relative;
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04) 60%),
+    rgba(22, 22, 30, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 18px 40px -18px rgba(0, 0, 0, 0.8);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.team-pulse-note::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(100deg, rgba(var(--tp-from-rgb), 0.75), rgba(var(--tp-to-rgb), 0.75));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.team-pulse-note::after {
+  animation-name: team-pulse-breathe-soft;
+  animation-duration: 5s;
+}
+.team-pulse-note:hover {
+  transform: translateY(-2px);
+}
+.team-pulse-photo {
+  box-shadow:
+    0 0 0 3px #0b0b10,
+    0 0 0 4.5px rgba(var(--tp-from-rgb), 1),
+    0 0 22px rgba(var(--tp-from-rgb), 0.5),
+    0 0 40px rgba(var(--tp-to-rgb), 0.35);
+}
+.team-pulse-avatar {
+  box-shadow: 0 0 0 2px #0b0b10, 0 0 0 3.5px rgba(var(--tp-from-rgb), 0.9);
+}
+.team-pulse-avatar.is-pulsing::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(var(--tp-to-rgb), 0.8);
+  animation: team-pulse-ring 3.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  pointer-events: none;
+}
+@keyframes team-pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  70%, 100% { transform: scale(1.4); opacity: 0; }
+}
+.team-pulse-online,
+.team-pulse-dot {
+  background: #30d158;
+  box-shadow: 0 0 10px #30d158;
+}
+.team-pulse-online {
+  border: 2.5px solid #0b0b10;
+}
+.team-pulse-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  flex: none;
+}
+.team-pulse-acc {
+  background: linear-gradient(92deg, var(--sp-from), var(--sp-to));
+  background-size: 230% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: spotlight-sheen 9s ease-in-out infinite;
+}
+.team-pulse-em {
+  font-style: normal;
+  color: var(--sp-to);
+  text-shadow: 0 0 16px rgba(var(--tp-to-rgb), 0.5);
+}
+.team-pulse-bar {
+  background: linear-gradient(90deg, var(--sp-from), var(--sp-to));
+  box-shadow: 0 0 10px rgba(var(--tp-from-rgb), 0.7);
+}
+.team-pulse-caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 2px;
+  vertical-align: -0.12em;
+  border-radius: 1px;
+  background: linear-gradient(180deg, var(--sp-from), var(--sp-to));
+  animation: team-pulse-caret 1s steps(1) infinite;
+}
+@keyframes team-pulse-caret {
+  50% { opacity: 0; }
+}
+.team-pulse-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  white-space: nowrap;
+  font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.team-pulse-cta u {
+  text-decoration: none;
+  padding-bottom: 3px;
+  background: linear-gradient(90deg, var(--sp-from), transparent) bottom / 100% 1px no-repeat;
+}
+.team-pulse-cta i {
+  font-style: normal;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--sp-from), var(--sp-to));
+  color: #0b0b10;
+  font-size: 13px;
+  box-shadow: 0 0 14px rgba(var(--tp-from-rgb), 0.55);
+  transition: transform 0.25s ease;
+}
+.team-pulse-card:hover .team-pulse-cta i {
+  transform: translateX(4px);
+}
+.team-pulse-arrow {
+  font-size: 44px;
+  line-height: 1;
+  color: var(--sp-to);
+  text-shadow: 0 0 14px rgba(var(--tp-to-rgb), 0.7);
+  transition: transform 0.2s ease;
+}
+.team-pulse-arrow:hover {
+  transform: translateY(-50%) scale(1.15);
+}
+.team-pulse-me {
+  background: linear-gradient(90deg, rgba(var(--tp-from-rgb), 0.42), rgba(var(--tp-to-rgb), 0.32));
+}
+.team-pulse-typing {
+  animation: team-pulse-typing 1s ease-in-out infinite;
+}
+@keyframes team-pulse-typing {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-3px); }
+}
+.team-pulse-option {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  padding: 7px 13px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(var(--tp-to-rgb), 0.6), 0 0 12px rgba(var(--tp-to-rgb), 0.18);
+  transition: background 0.2s ease;
+}
+.team-pulse-option:hover {
+  background: rgba(var(--tp-to-rgb), 0.16);
+}
+.team-pulse-input {
+  width: 100%;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.team-pulse-input:focus {
+  box-shadow: inset 0 0 0 1px rgba(var(--tp-from-rgb), 0.8);
+}
+.team-pulse-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+.team-pulse-send {
+  border-radius: 999px;
+  padding: 11px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #0b0b10;
+  background: linear-gradient(90deg, var(--sp-from), var(--sp-to));
+  box-shadow: 0 0 20px rgba(var(--tp-from-rgb), 0.5);
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+.team-pulse-send:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+}
+.team-pulse-send:not(:disabled):hover {
+  filter: brightness(1.1);
+}
+.team-pulse-send-round {
+  display: grid;
+  place-items: center;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex: none;
+  border-radius: 999px;
+  color: #0b0b10;
+  background: linear-gradient(135deg, var(--sp-from), var(--sp-to));
+}
+.team-pulse-messenger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(var(--tp-to-rgb), 0.14);
+  color: var(--sp-to);
+  transition: background 0.2s ease;
+}
+.team-pulse-messenger:hover {
+  background: rgba(var(--tp-to-rgb), 0.24);
+}
+@media (prefers-reduced-motion: reduce) {
+  .team-pulse-card::after,
+  .team-pulse-note::after,
+  .team-pulse-halo,
+  .team-pulse-acc,
+  .team-pulse-caret,
+  .team-pulse-avatar.is-pulsing::before {
+    animation: none;
+  }
+}
+/* Второй градиент и серые слова в текстах человека команды (marks.tsx):
+   Егор попросил меньше белого в заголовках. Тёплый — фирменный
+   оранжево-жёлтый сайта; серый — только для отдельных слов в заголовках,
+   основной текст остаётся белым. */
+.team-pulse-warm {
+  background: linear-gradient(92deg, #ff6a3d, #ffc53d);
+  background-size: 230% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: spotlight-sheen 9s ease-in-out infinite;
+}
+.team-pulse-muted {
+  color: rgba(255, 255, 255, 0.52);
+}
+/* Рамка мини-окошка и уведомления пульсирует, как у пришедшего
+   уведомления (просьба Егора): градиентная кромка страницы то вспыхивает,
+   то гаснет. Кромка — маска на ::before (только контур, без заливки), а
+   пульс — её прозрачность, без перерисовки box-shadow. */
+@keyframes team-pulse-border {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+.team-pulse-card::before,
+.team-pulse-note::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(100deg, rgba(var(--tp-from-rgb), 1), rgba(var(--tp-to-rgb), 1));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: team-pulse-border 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .team-pulse-card::before,
+  .team-pulse-note::before {
+    animation: none;
+    opacity: 0.7;
+  }
+}

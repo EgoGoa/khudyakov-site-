@@ -9,8 +9,8 @@ import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import { EYEBROW } from "@/lib/typography";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { SASHA_SITES } from "@/components/home/team-pulse/content/sasha-sites";
 import PromoCard from "@/components/home/PromoCard";
 
 // Chapter 02 — merges the former SitesMethod and SitesAudience chapters into
@@ -122,15 +122,9 @@ export default function SitesMethodAudience() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <TeamAskCard
-              member={TEAM.sasha}
-              question="Покажу, как будет выглядеть сайт под вашу нишу — на реальных примерах"
-              pitch="Покажу, как будет выглядеть сайт под вашу нишу, и посчитаю бюджет."
-              actionLabel="Рассчитать бюджет"
-              href="/calculator"
-              compact
-              className="mt-4"
-            />
+            {/* Саша как сервис — пилот механики TeamPulse на месте прежней
+                компактной карточки (решение Егора, 2026-09-24). */}
+            <TeamPulse data={SASHA_SITES} className="mt-4" />
           </Appear>
 
           {/* /sites' own September offer — sits under Саша's card (Egor's
