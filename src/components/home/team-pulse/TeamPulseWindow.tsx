@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CloseIcon } from "@/components/ui/Icons";
 import { accentVars, type TeamPulseChatVisual, type TeamPulseData } from "./types";
-import TeamPulseScenes, { TeamPulseChatScene } from "./TeamPulseScenes";
+import TeamPulseScenes, { SCENE_MS, TeamPulseChatScene } from "./TeamPulseScenes";
 import TeamPulseChat, { type Phase } from "./TeamPulseChat";
 import { marks } from "./marks";
 
@@ -19,7 +19,6 @@ import { marks } from "./marks";
 // Графика слева, текст справа — вариант Б, который Егор выбрал по
 // скриншотам. «Начать чат» меняет только правую половину: графика
 // остаётся, чтобы было видно, о чём разговор.
-const THESIS_MS = 5000;
 const EASE = [0.32, 0.72, 0, 1] as const;
 
 export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPulseData; open: boolean; onClose: () => void }) {
@@ -39,9 +38,9 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
 
   useEffect(() => {
     if (!open || chat || hold || reduced) return;
-    const t = setInterval(() => setStep((s) => (s + 1) % data.theses.length), THESIS_MS);
-    return () => clearInterval(t);
-  }, [open, chat, hold, reduced, data.theses.length]);
+    const t = setTimeout(() => setStep((s) => (s + 1) % data.theses.length), SCENE_MS[data.theses[step].scene]);
+    return () => clearTimeout(t);
+  }, [open, chat, hold, reduced, step, data.theses]);
 
   useEffect(() => {
     if (!open) return;

@@ -24,6 +24,16 @@ const H = 440;
 const SPRING = { type: "spring", stiffness: 180, damping: 22 } as const;
 const ACC = "linear-gradient(135deg, var(--sp-from), var(--sp-to))";
 
+/** Длина одного цикла каждой сцены рассказа. Окно переключает тезис ровно
+ *  тогда, когда сцена доиграла, — один цикл и сразу следующая (ритм,
+ *  который Егор попросил держать везде в окнах команды). */
+export const SCENE_MS: Record<TeamPulseScene, number> = {
+  concepts: 6000,
+  lead: 5200,
+  catalog: 4600,
+  rebrand: 5000,
+};
+
 function Stage({ children }: { children: ReactNode }) {
   const box = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -126,9 +136,10 @@ function MiniSite({ s, active }: { s: (typeof SITES)[number]; active: boolean })
   );
 }
 
-function ConceptsFan({ variant }: { variant?: number }) {
-  const tick = useTick(1900, variant === undefined || variant < 0);
-  const front = variant !== undefined && variant >= 0 ? variant : tick % 3;
+function ConceptsFan({ variant, once = false }: { variant?: number; once?: boolean }) {
+  const tick = useTick(1900, (variant === undefined || variant < 0));
+  const auto = once ? Math.min(tick, 2) : tick % 3;
+  const front = variant !== undefined && variant >= 0 ? variant : auto;
   const place = (i: number) => {
     const d = (i - front + 3) % 3;
     if (d === 0) return { x: 130, y: 0, scale: 1, rotateY: 0, zIndex: 3, opacity: 1 };
@@ -161,7 +172,7 @@ function Concepts() {
     <Stage>
       <Head title="Три лица ^твоего^ *сайта*" sub="Листаю варианты — выбираешь ^один^" />
       <Body>
-        <ConceptsFan />
+        <ConceptsFan once />
       </Body>
     </Stage>
   );
@@ -191,12 +202,11 @@ function Typed({ text, delay }: { text: string; delay: number }) {
 }
 
 function Lead() {
-  const tick = useTick(5200);
   return (
     <Stage>
       <Head title="Заявка ^в два^ *касания*" sub="Клиент оставил телефон — ^тебе пришло уведомление^" />
       <Body>
-        <div key={tick} className="absolute inset-0">
+        <div className="absolute inset-0">
           <motion.div className="absolute left-[36px] top-[4px]" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING}>
             <Phone>
               <div className="mb-3 h-[64px] rounded-[12px] p-2.5" style={{ background: ACC }}>
@@ -271,12 +281,11 @@ function Mug({ glaze = true }: { glaze?: boolean }) {
 }
 
 function Catalog() {
-  const tick = useTick(5200);
   return (
     <Stage>
       <Head title="^Одна фотка^ → *карточка*" sub="Снимок с телефона превращается в *витрину*" />
       <Body>
-        <div key={tick} className="absolute inset-0">
+        <div className="absolute inset-0">
           <motion.div className="absolute left-[22px] top-[44px]" initial={{ rotate: -10, opacity: 0, y: 20 }} animate={{ rotate: -5, opacity: 1, y: 0 }} transition={SPRING}>
             <div className="relative h-[220px] w-[150px] overflow-hidden rounded-2xl bg-[#3b3530] shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
               <div className="absolute inset-0 bg-[radial-gradient(80%_60%_at_40%_30%,#6b5f55,#2a2522)]" />
@@ -324,8 +333,8 @@ function Catalog() {
 }
 
 function Rebrand() {
-  const tick = useTick(2600);
-  const after = tick % 2 === 1;
+  const tick = useTick(2200);
+  const after = tick >= 1;
   return (
     <Stage>
       <Head title="Было ^→^ *стало*" sub="Новый стиль ^сразу на сайте^, а не в презентации" />

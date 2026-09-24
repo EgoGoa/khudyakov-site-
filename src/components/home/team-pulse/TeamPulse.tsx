@@ -64,12 +64,28 @@ function TypedOffer({ text, count }: { text: string; count: number }) {
   );
 }
 
-export default function TeamPulse({ data, className = "" }: { data: TeamPulseData; className?: string }) {
+export default function TeamPulse({
+  data: base,
+  className = "",
+  compact = false,
+  source,
+}: {
+  data: TeamPulseData;
+  className?: string;
+  /** Для узких слотов (карточки команды в финальных блоках, блок цен):
+   *  в вёрстке стоит только уведомление, а окошко с оффером раскрывается
+   *  поверх, вверх, не сдвигая ничего вокруг — главы там подогнаны под
+   *  один экран. */
+  compact?: boolean;
+  /** Подпись «откуда» в заявке, если этот человек стоит в другом блоке. */
+  source?: string;
+}) {
+  const data = source ? { ...base, source } : base;
   const ref = useRef<HTMLDivElement>(null);
   const hovering = useRef(false);
   const reduced = useReducedMotion();
   const [inView, setInView] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(compact);
   const [peek, setPeek] = useState(false);
   const [offer, setOffer] = useState(0);
   const [count, setCount] = useState(0);
@@ -155,7 +171,7 @@ export default function TeamPulse({ data, className = "" }: { data: TeamPulseDat
   return (
     <div
       ref={ref}
-      className={`relative h-[9.5rem] sm:h-[8.75rem] ${className}`}
+      className={`relative ${compact ? "h-[4.9rem]" : "h-[9.5rem] sm:h-[8.75rem]"} ${className}`}
       style={accentVars(data.accent)}
       onMouseEnter={() => {
         hovering.current = true;
@@ -172,7 +188,9 @@ export default function TeamPulse({ data, className = "" }: { data: TeamPulseDat
             key="card"
             type="button"
             onClick={openWindow}
-            className="team-pulse-card group absolute inset-0 flex items-center gap-4 rounded-[24px] px-4 text-left sm:gap-5 sm:px-5"
+            className={`team-pulse-card group absolute flex items-center gap-4 rounded-[24px] px-4 text-left sm:gap-5 sm:px-5 ${
+              compact ? "inset-x-0 bottom-0 z-30 min-h-[9.5rem] py-4" : "inset-0"
+            }`}
             initial={reduced ? false : { opacity: 0, scale: 0.92, y: 8, filter: "blur(10px)" }}
             animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
             exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.9, filter: "blur(10px)", transition: { duration: 0.28 } }}
@@ -191,7 +209,7 @@ export default function TeamPulse({ data, className = "" }: { data: TeamPulseDat
                 </span>
                 <span className="text-[#30d158]">● пишет…</span>
               </span>
-              <span className="mt-1.5 block h-[4.15em] font-display text-[13px] uppercase leading-[1.38] tracking-tight text-white sm:text-[15px]">
+              <span className={`mt-1.5 block font-display uppercase leading-[1.38] tracking-tight text-white ${compact ? "h-[5.6em] text-[12px] sm:text-[13px]" : "h-[4.15em] text-[13px] sm:text-[15px]"}`}>
                 <TypedOffer text={text} count={count} />
               </span>
               <span className="mt-1.5 flex items-center gap-3">
@@ -237,7 +255,7 @@ export default function TeamPulse({ data, className = "" }: { data: TeamPulseDat
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
                     key={note}
-                    className="mt-1 line-clamp-2 block font-display text-[12px] uppercase leading-snug tracking-tight text-white sm:text-[13px]"
+                    className="mt-1 line-clamp-2 font-display text-[12px] uppercase leading-snug tracking-tight text-white sm:text-[13px]"
                     initial={reduced ? false : { opacity: 0, y: -10, filter: "blur(4px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: 8, filter: "blur(4px)" }}
@@ -257,7 +275,7 @@ export default function TeamPulse({ data, className = "" }: { data: TeamPulseDat
                 }}
                 className="team-pulse-cta shrink-0"
               >
-                <u className="hidden sm:inline">Пообщаться</u>
+                <u className={compact ? "hidden" : "hidden sm:inline"}>Пообщаться</u>
                 <i aria-hidden="true">→</i>
               </button>
             </div>

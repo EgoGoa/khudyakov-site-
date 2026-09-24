@@ -11,6 +11,8 @@ import BlockMedia, { MEDIA_TEXT } from "../BlockMedia";
 import { BUDGET_CHOICES, SPEED_CHOICES, useDirectionTask } from "../TaskContext";
 import TeamAskCard from "@/components/home/TeamAskCard";
 import { PAGE_TEAM } from "@/lib/team";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { TEAM_PULSE } from "@/components/home/team-pulse/registry";
 import type { DirectionContent } from "../types";
 import { CHAPTER_INTRO, EYEBROW } from "@/lib/typography";
 
@@ -170,13 +172,19 @@ export default function PricingBlock({
               actionLabel={`Написать ${primaryMember.nameDative}`}
               href="/brief"
             />
-            <TeamAskCard
-              compact
-              member={secondaryMember}
-              question="Какой тариф вам подойдёт?"
-              pitch={`Помогу с ${secondaryMember.helpsWith}.`}
-              actionLabel={`Написать ${secondaryMember.nameDative}`}
-            />
+            {/* Участник «как сервис» стоит своим уведомлением (TeamPulse) —
+                Егор: «Сашу меняем везде». */}
+            {TEAM_PULSE[secondaryMember.id] ? (
+              <TeamPulse data={TEAM_PULSE[secondaryMember.id]} compact source="блок цен на странице формата" />
+            ) : (
+              <TeamAskCard
+                compact
+                member={secondaryMember}
+                question="Какой тариф вам подойдёт?"
+                pitch={`Помогу с ${secondaryMember.helpsWith}.`}
+                actionLabel={`Написать ${secondaryMember.nameDative}`}
+              />
+            )}
           </div>
         </Appear>
 

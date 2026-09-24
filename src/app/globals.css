@@ -6520,3 +6520,18 @@ html[data-lite] .welcome-card-graphic svg circle {
     opacity: 0.7;
   }
 }
+/* Стекло в духе Apple — Егор: «более прозрачный и более размытый фон».
+   Заливка почти ушла, работу делает сильный блюр с насыщением: фон блока
+   просвечивает цветом, но текст на нём остаётся читаемым. */
+.team-pulse-note {
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03) 60%),
+    rgba(24, 24, 34, 0.28);
+  backdrop-filter: blur(40px) saturate(200%);
+}
+.team-pulse-card {
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02) 55%),
+    rgba(14, 14, 22, 0.42);
+  backdrop-filter: blur(40px) saturate(190%);
+}

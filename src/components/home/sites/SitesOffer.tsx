@@ -8,8 +8,8 @@ import { BEAT, STAGGER } from "@/lib/motion";
 import SitesChapterLayout, { SITES_PANEL } from "@/components/home/sites/SitesChapterLayout";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { SASHA_SITES } from "@/components/home/team-pulse/content/sasha-sites";
 
 // Chapter 03 of /sites — "what we actually build".
 //
@@ -55,14 +55,7 @@ export default function SitesOffer() {
         primary={{ href: "/brief/sites", label: "Обсудить проект" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
         askCard={
-          <TeamAskCard
-            member={TEAM.sasha}
-            question="Подберу формат — лендинг или сайт под ключ — под вашу задачу"
-            pitch="Покажу примеры под вашу нишу и подберу формат — лендинг или сайт под ключ."
-            actionLabel="Обсудить проект"
-            href="/brief/sites"
-            compact
-          />
+          <TeamPulse data={SASHA_SITES} compact source="/sites · глава «Что мы делаем»" />
         }
       >
         {/* The glass panel (SITES_PANEL) used to render statically and pop in
