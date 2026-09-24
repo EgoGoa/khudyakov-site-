@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -145,6 +146,22 @@ export default function Header() {
   const { menuOpen, setMenuOpen } = useHeaderMenu();
   const [active, setActive] = useState<string>("");
 
+  // Мобильная панель меню уходит в портал на document.body (см. её рендер
+  // ниже) — иначе `position: fixed inset-y-0` внутри неё считается не от
+  // вьюпорта, а от <header>: у него бывает свой backdrop-filter (обычный
+  // .backdrop-blur-xl при скролле, а на «средних» устройствах ещё и
+  // принудительный blur(7px) из html[data-mid] — тот срабатывает даже когда
+  // активного backdrop-blur у шапки нет, потому что CSS-правило ищет саму
+  // подстроку "backdrop-blur" в атрибуте class, а она есть и в неактивном
+  // варианте `land:!backdrop-blur-none`). Любой backdrop-filter на предке —
+  // это тоже contaning block для fixed-потомков, и панель схлопывалась до
+  // высоты шапки (~58px) вместо всего экрана, а её содержимое просто
+  // переполняло эту коробку без подложки под собой. Портал убирает панель
+  // из-под шапки совсем, так что от её фильтров она больше не зависит.
+  const [menuPortalMounted, setMenuPortalMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount flag, same pattern as CenterModal.tsx
+  useEffect(() => setMenuPortalMounted(true), []);
+
   // On the homepage, navigation is a fullpage slide deck (see
   // src/lib/fullpage.tsx) — there is no real document scroll to watch, so
   // both "has the visitor moved past the first slide" and "which section is
@@ -240,6 +257,7 @@ export default function Header() {
   };
 
   return (
+    <>
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 land:pointer-events-none land:!border-transparent land:!bg-transparent land:!backdrop-blur-none land:before:pointer-events-none land:before:absolute land:before:inset-x-0 land:before:top-0 land:before:h-16 land:before:content-[''] land:before:bg-[linear-gradient(to_bottom,rgba(11,11,16,0.78),rgba(11,11,16,0.6)_30%,rgba(11,11,16,0.28)_65%,rgba(11,11,16,0))] ${
         menuOpen
@@ -388,11 +406,15 @@ export default function Header() {
         </div>
       </Container>
 
-      {/* Mobile/tablet: a compact glass panel on the right — about 84% of a
-          portrait phone (capped at 320px) and a third of a landscape one —
-          instead of a full-screen takeover. A scrim behind it closes the menu
-          on tap. */}
-      <AnimatePresence>
+    </header>
+      {/* Мобильная панель — в портале на document.body (см. комментарий у
+          menuPortalMounted): компактное стеклянное окно справа, ~84% ширины
+          портретного телефона (не шире 320px) и треть альбомного —
+          вместо полноэкранного разворота. Затемнение позади закрывает меню
+          по тапу. */}
+      {menuPortalMounted &&
+        createPortal(
+          <AnimatePresence>
         {menuOpen && (
           <>
             <motion.button
@@ -404,7 +426,7 @@ export default function Header() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="pointer-events-auto fixed inset-0 z-0 cursor-default bg-ink/45 lg:hidden"
+              className="pointer-events-auto fixed inset-0 z-[60] cursor-default bg-ink/45 lg:hidden"
             />
             <motion.div
               key="panel"
@@ -412,8 +434,24 @@ export default function Header() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-auto fixed inset-y-0 right-0 z-0 flex w-[min(84vw,320px)] flex-col rounded-l-3xl bg-ink/85 shadow-[-24px_0_60px_-20px_rgba(0,0,0,0.85)] backdrop-blur-2xl lg:hidden land:w-[max(33vw,300px)] land:pr-[env(safe-area-inset-right)]"
+              className="pointer-events-auto fixed inset-y-0 right-0 z-[60] flex w-[min(84vw,320px)] flex-col rounded-l-3xl bg-ink/85 shadow-[-24px_0_60px_-20px_rgba(0,0,0,0.85)] backdrop-blur-2xl lg:hidden land:w-[max(33vw,300px)] land:pr-[env(safe-area-inset-right)]"
             >
+              {/* Собственная кнопка закрытия панели: та, что в шапке, сейчас
+                  под этой панелью и не видна — <Header>'s <header> заперт
+                  внутри `.relative.z-10`-обёртки layout.tsx (см. комментарий
+                  у menuPortalMounted), и её локальный z-index никогда не
+                  выйдет за пределы этой обёртки, как бы высоко его ни задать.
+                  Панель уже закрывается тапом по затемнению или по ссылке, но
+                  без явного крестика на самой панели это не считывается. */}
+              <button
+                type="button"
+                aria-label="Закрыть меню"
+                onClick={() => setMenuOpen(false)}
+                className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-paper/10 text-paper/70 transition-colors hover:bg-paper/20 hover:text-paper land:right-3 land:top-3"
+              >
+                <CloseIcon />
+              </button>
+
               <nav className="flex flex-1 flex-col justify-center gap-0 overflow-y-auto px-5 pt-16 land:pt-12">
                 {sections.map((s, i) => (
                   <Link
@@ -473,7 +511,9 @@ export default function Header() {
             </motion.div>
           </>
         )}
-      </AnimatePresence>
-    </header>
+          </AnimatePresence>,
+          document.body
+        )}
+    </>
   );
 }
