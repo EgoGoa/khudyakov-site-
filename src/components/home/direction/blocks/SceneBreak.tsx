@@ -110,17 +110,28 @@ export default function SceneBreak({ slug, index, spec }: { slug: string; index:
 
             <div className="flex min-w-0 flex-col justify-center py-1">
               <Appear from="right" delay={DIRECTION_BEAT.title}>
-                <span className={`${EYEBROW} flex items-center gap-2 text-rec`}>
-                  <span className="h-1.5 w-1.5 shrink-0 animate-pulse-rec rounded-full bg-rec" />
+                <span className={`${EYEBROW} flex items-center gap-2 text-sm text-rec sm:text-base`}>
+                  <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full bg-rec" />
                   {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")} · {benefit.label}
                 </span>
               </Appear>
 
               <Appear from="right" delay={DIRECTION_BEAT.intro}>
-                <div className="spotlight-accent spotlight-sheen mt-3 whitespace-nowrap font-display text-[1.6rem] uppercase leading-[0.95] tracking-tight sm:text-[1.95rem] xl:text-[2.3rem]">
+                {/* Короткие цифры («60%», «450+») получают крупный кегль —
+                    акцент, которого Егор попросил больше; длинные («до
+                    встречи») остаются на уменьшенном, чтобы держаться одной
+                    строкой (его же более ранняя правка — тут это не
+                    отменяется, а сосуществует). */}
+                <div
+                  className={`spotlight-accent spotlight-sheen mt-3 whitespace-nowrap font-display uppercase leading-[0.9] tracking-tight ${
+                    figure.value.length > 6
+                      ? "text-[1.7rem] sm:text-[2.05rem] xl:text-[2.4rem]"
+                      : "text-[2.7rem] sm:text-[3.4rem] xl:text-[3.9rem]"
+                  }`}
+                >
                   {figure.value}
                 </div>
-                <h3 className="mt-1.5 font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl">
+                <h3 className="mt-2 font-display text-xl font-bold uppercase leading-tight tracking-tight text-white sm:text-2xl">
                   {figure.note}
                 </h3>
               </Appear>
@@ -135,7 +146,7 @@ export default function SceneBreak({ slug, index, spec }: { slug: string; index:
                 {spec.facts.map((f, i) => (
                   <Appear key={f.label} from="up" delay={DIRECTION_BEAT.content + 0.15 + i * STAGGER.normal}>
                     <div className="relative pl-3">
-                      <span className="absolute left-0 top-0.5 h-[calc(100%-0.25rem)] w-px bg-gradient-to-b from-[var(--sp-from)] via-[var(--sp-to)] to-transparent" />
+                      <span className="absolute left-0 top-0.5 h-[calc(100%-0.25rem)] w-[3px] animate-pulse rounded-full bg-gradient-to-b from-[var(--sp-from)] via-[var(--sp-to)] to-transparent shadow-[0_0_10px_-1px_var(--sp-from)]" />
                       {/* Слова не рвутся посередине — то же правило, что у
                           цифр в SpotlightCopy: капслок на узкой колонке
                           обязан переноситься только между словами. Значение
@@ -162,7 +173,11 @@ export default function SceneBreak({ slug, index, spec }: { slug: string; index:
 
               <Appear from="up" delay={DIRECTION_BEAT.cta}>
                 <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <button type="button" onClick={() => setConsult(true)} className="btn-neon btn-warm !py-3">
+                  {/* Без .btn-warm: на /content он превращается в сплошную
+                      заливку розовый→оранж (content-warm-headings в
+                      globals.css) — Егор попросил прозрачную минималистичную
+                      кнопку здесь, обычное неоновое кольцо .btn-neon. */}
+                  <button type="button" onClick={() => setConsult(true)} className="btn-neon !py-3">
                     Проконсультироваться
                   </button>
                 </div>

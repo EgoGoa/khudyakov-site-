@@ -340,6 +340,47 @@ export const imageContent: DirectionContent = {
   assetsMedia:
   { photo: "/images/stock/ink-black.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
+  // Те же четыре сцены окошка ToolSpotlight (slug "image"), развёрнутые в
+  // постоянные блоки — по аналогии с /content/presentation и /advertising.
+  sceneBreaks: [
+    {
+      after: "task",
+      memberId: "max",
+      facts: [
+        { value: "60%", label: "заказов — возвратные клиенты" },
+        { value: "24 ч", label: "на идею и смету" },
+        { value: "1", label: "ощущение вместо перечня фактов" },
+      ],
+    },
+    {
+      after: "cases",
+      memberId: "max",
+      facts: [
+        { value: "8 лет", label: "видео для бизнеса" },
+        { value: "350+", label: "клиентов сняли ролик" },
+        { value: "5 стран", label: "проектов за рубежом" },
+      ],
+    },
+    {
+      after: "pricing",
+      memberId: "max",
+      facts: [
+        { value: "1 тон", label: "музыка и цвет заодно" },
+        { value: "1 язык", label: "бренда — узнают без лого" },
+        { value: "1 смена", label: "на весь визуальный язык" },
+      ],
+    },
+    {
+      after: "assets",
+      memberId: "max",
+      facts: [
+        { value: "1 ролик", label: "везде, где о вас судят" },
+        { value: "3", label: "площадки — сайт, соцсети, встреча" },
+        { value: "24 ч", label: "идея и смета — быстро" },
+      ],
+    },
+  ],
+
   close: {
     media: {
       video: "/video/works/art99.mp4",

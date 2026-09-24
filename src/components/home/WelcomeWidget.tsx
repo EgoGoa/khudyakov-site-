@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import WelcomeBlockGraphic, { WelcomeDirectionGraphic } from "@/components/home/WelcomeBlockGraphic";
@@ -38,14 +38,51 @@ import { blockHref, blocksFor, directionCards, type BlockCard } from "@/lib/welc
 //     «кадр под 0.44 + косой скрим». Одна сцена — один язык со страницами.
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+/** Кривая входа для сцены (вопрос, карточки, логотип) — не EASE выше. EASE
+ *  выбрасывает почти всё движение в первые доли секунды (y1=1 в кривой —
+ *  резкий разгон), это было специально подобрано под чёткий «щелчок» букв
+ *  в заставке. Здесь же нужна обратная задача — «нежно» — поэтому расфокус
+ *  и прозрачность идут по симметричной кривой без рывка ни в начале, ни
+ *  перед самым концом: даже длинная длительность на резком EASE читается
+ *  как внезапный скачок, потому что вся видимая часть движения сжата в
+ *  первые 30% времени — само число секунд тут ни при чём. */
+const GENTLE_EASE = [0.45, 0, 0.15, 1] as const;
 
-/** Ритм входа. Логотип сверху, заголовок снизу, следом карточки — именно в
- *  такой последовательности, а не всё разом: сцена должна собираться на
- *  глазах, иначе это просто появившееся меню. */
-const T_LOGO = 0;
-const T_HEAD = 0.5;
-const T_CARDS = 0.9;
-const STAGGER = 0.11;
+/** Ритм входа — переписан на variants/staggerChildren вместо ручных
+ *  задержек d(T_X + i*STAGGER). Прежняя схема считала момент появления
+ *  каждого элемента заранее угаданным числом — при любой правке длительности
+ *  где-то один множитель приходилось искать и синхронизировать вручную, и
+ *  разъезжалось (жалобы Егора: то пауза, то рывок, то нет плавности).
+ *  Теперь порядок задаёт декларативная оркестровка Framer (родитель со
+ *  staggerChildren сам расставляет детей по очереди), а логотип — самый
+ *  зависимый по времени элемент — стартует не по таймеру, а по факту
+ *  onAnimationComplete последней карточки. Так последовательность верна
+ *  всегда, независимо от того, как позже поменяют длительности ниже.
+ *
+ *  Порядок остаётся тем же, что просил Егор: вопрос «Привет, с чего
+ *  начнём?» проступает первым (в момент, когда гаснет знак в заставке
+ *  IntroSplash), следом сверху вниз одна за другой — четыре карточки, и
+ *  только когда они осели на местах — над вопросом проявляется логотип. */
+const REVEAL_DURATION = 0.9;
+const CARD_STAGGER = 0.14;
+
+/** Единый стиль растворения — то же самое, чем на входе и выходе играет
+ *  знак в заставке (блюр + прозрачность, минимум сдвига). Используется и
+ *  вопросом, и карточками, и логотипом — поэтому вся сцена читается одним
+ *  языком, а не тремя разными анимациями. */
+const dissolveIn: Variants = {
+  hidden: { opacity: 0, y: -14, filter: "blur(16px)" },
+  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: REVEAL_DURATION, ease: GENTLE_EASE } },
+};
+
+/** Колода карточек — сама себе оркестратор: получив "show" через `animate`,
+ *  тут же по цепочке раскрывает своих детей с собственным шагом. Так
+ *  «сверху вниз одна за другой» задаётся одним числом (CARD_STAGGER), а не
+ *  пересчитывается вручную на каждую карточку. */
+const deckVariants: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: CARD_STAGGER, delayChildren: 0.05 } },
+};
 
 /** Пауза перед роутингом. Переход и закрытие, запущенные в один кадр, спорят
  *  за главный поток: рендер новой страницы съедает середину исчезновения, и
@@ -151,7 +188,21 @@ function CardVideo({ src, poster }: { src: string; poster: string }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    void el.play().catch(() => {});
+    // Небольшая пауза перед play(), а не сразу на монтировании. Разница
+    // Егора между «откатом на направления — анимация верная» и «первым
+    // появлением после заставки — её нет» была не в разметке (код карточек
+    // один и тот же в обоих случаях), а в нагрузке: при первом заходе
+    // декодирование четырёх видео стартует в тот же момент, что и
+    // гидратация всей страницы, и ещё не погасший дымовой фильтр заставки —
+    // три тяжёлые вещи одновременно съедают кадры ровно во время
+    // расфокуса карточек. При возврате кнопкой видео уже в кэше браузера, и
+    // вокруг всё уже простаивает — отсюда и разница. Здесь видео не
+    // отменяются, а просто не встают в очередь на декодирование в первые
+    // ~250мс, пока идёт критичная часть входной анимации.
+    const id = window.setTimeout(() => {
+      void el.play().catch(() => {});
+    }, 250);
+    return () => window.clearTimeout(id);
   }, []);
 
   return (
@@ -162,7 +213,6 @@ function CardVideo({ src, poster }: { src: string; poster: string }) {
       muted
       loop
       playsInline
-      autoPlay
       preload="auto"
       className="welcome-card-media"
       aria-hidden="true"
@@ -196,10 +246,16 @@ export default function WelcomeWidget({
     setReduced(mq.matches);
   }, []);
 
-  // Задержки входа обнуляются и при skipGreeting, и при reduced-motion: в
-  // обоих случаях сцена должна быть на месте сразу.
-  const lead = skipGreeting || reduced ? 0 : 1;
-  const d = (t: number) => t * lead;
+  // Логотип — самый зависимый по времени элемент сцены: он должен появиться
+  // не по угаданной задержке, а по факту, что последняя карточка уже отыграла
+  // свой вход (см. onAnimationComplete на ней ниже). skipGreeting и
+  // reduced-motion пропускают всю сборку — сцена в этих случаях должна
+  // стоять на месте сразу, без повторной анимации при каждом ре-рендере.
+  const instant = skipGreeting || reduced;
+  const [logoReady, setLogoReady] = useState(instant);
+  useEffect(() => {
+    if (instant) setLogoReady(true);
+  }, [instant]);
 
   const go = useCallback(
     (href: string) => {
@@ -230,15 +286,19 @@ export default function WelcomeWidget({
           ...(picked ? { paddingTop: "0.75rem" } : undefined),
         }}
       >
-        {/* Логотип — первым и сверху, на прозрачном фоне. Размытие в
-            появлении, а не просто сдвиг: знак «проявляется», как и всё
-            остальное на сцене. На втором шаге уже на месте — тут не
-            перезаходит, а просто стоит выше (см. paddingTop выше). */}
+        {/* Логотип стоит первым в разметке (визуально сверху), но по времени
+            появляется последним: проявляется только когда
+            onAnimationComplete последней карточки переключит logoReady. Не
+            завязан на угаданную задержку — если длительность карточек ниже
+            когда-нибудь поменяется, логотип сам подстроится, ничего вручную
+            пересчитывать не нужно. На втором шаге (выбрано направление) он
+            уже готов — не перезаходит, а просто стоит выше (см. paddingTop
+            ниже). */}
         <motion.div
           className="mb-4 flex items-center gap-2.5"
-          initial={{ opacity: 0, y: -14, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.7, ease: EASE, delay: d(T_LOGO) }}
+          initial={{ opacity: 0, filter: "blur(14px)" }}
+          animate={logoReady ? { opacity: 1, filter: "blur(0px)" } : { opacity: 0, filter: "blur(14px)" }}
+          transition={{ duration: REVEAL_DURATION * 0.85, ease: GENTLE_EASE }}
           aria-hidden="true"
         >
           <span className="h-3 w-3 shrink-0 animate-pulse-rec rounded-full brand-dot sm:h-3.5 sm:w-3.5" />
@@ -247,21 +307,25 @@ export default function WelcomeWidget({
           </span>
         </motion.div>
 
-        {/* Заголовок — снизу и через размытие на первом шаге, ровно как
-            просил Егор. На втором шаге (выбрано направление) заголовок и
-            вопрос встают сразу, без своего плавного появления: раньше
-            AnimatePresence в режиме "wait" держал экран пустым, пока
-            дожидался исчезновения прежнего заголовка, и список блоков
-            приезжал позже и отдельно от него — теперь заголовок блока
-            появляется в тот же кадр, что и карточки, одной сценой. */}
+        {/* Заголовок — растворяется первым, в тот же момент, когда сцена
+            монтируется (без задержки: заставка IntroSplash сама решает,
+            когда её открыть — см. T_REVEAL там). На втором шаге (выбрано
+            направление) заголовок и вопрос встают сразу, без своего
+            плавного появления: раньше AnimatePresence в режиме "wait"
+            держал экран пустым, пока дожидался исчезновения прежнего
+            заголовка, и список блоков приезжал позже и отдельно от него —
+            теперь заголовок блока появляется в тот же кадр, что и
+            карточки, одной сценой. */}
         <AnimatePresence mode={picked ? "sync" : "wait"} initial={false}>
           <motion.h2
             key={picked ?? "root"}
-            initial={picked ? false : { opacity: 0, y: 18, filter: "blur(12px)" }}
+            initial={picked ? false : { opacity: 0, y: -14, filter: "blur(16px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -10, filter: "blur(8px)", transition: { duration: 0.2, ease: EASE } }}
-            transition={{ duration: 0.75, ease: EASE, delay: picked ? 0 : d(T_HEAD) }}
-            className="welcome-head font-display text-[1.6rem] uppercase leading-[1.05] tracking-tight text-paper sm:text-[2.1rem]"
+            exit={{ opacity: 0, filter: "blur(8px)", transition: { duration: 0.2, ease: EASE } }}
+            transition={{ duration: REVEAL_DURATION, ease: GENTLE_EASE }}
+            className={`welcome-head font-display text-[1.6rem] uppercase leading-[1.05] tracking-tight text-paper sm:text-[2.1rem] ${
+              picked ? "welcome-head--flat" : ""
+            }`}
           >
             {picked ? (
               <>
@@ -272,9 +336,14 @@ export default function WelcomeWidget({
                 <span style={accentVars(picked)} className="welcome-head-eyebrow">
                   {serviceMeta[picked].label}
                 </span>
-                С какого блока{" "}
-                <span style={accentVars(picked)} className="welcome-head-kw">
-                  начнём?
+                {/* Меньше базового кегля и в одну строку (Егор) — «С какого
+                    блока начнём?» на базовом 1.6/2.1rem переносилось на
+                    два слова второй строкой. */}
+                <span className="whitespace-nowrap text-[1.05rem] sm:text-[1.6rem]">
+                  С какого блока{" "}
+                  <span style={accentVars(picked)} className="welcome-head-kw">
+                    начнём?
+                  </span>
                 </span>
               </>
             ) : (
@@ -295,8 +364,9 @@ export default function WelcomeWidget({
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={picked ?? "directions"}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            variants={picked ? undefined : deckVariants}
+            initial={picked ? { opacity: 0 } : "hidden"}
+            animate={picked ? { opacity: 1 } : "show"}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             className="welcome-deck"
           >
@@ -305,10 +375,19 @@ export default function WelcomeWidget({
                 <motion.button
                   key={card.key}
                   type="button"
-                  initial={{ opacity: 0, y: 34, scale: 0.97, filter: "blur(14px)" }}
-                  animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 0.8, ease: EASE, delay: d(T_CARDS) + d(i * STAGGER) }}
-                  onClick={() => setPicked(card.key)}
+                  // Правка Егора: карточки растворяются сверху вниз, одна за
+                  // другой — та же природа, что и у логотипа в заставке: не
+                  // прилетает, а проступает из блюра, слегка опускаясь на
+                  // место, а не всплывая. Порядок и шаг задаёт родительский
+                  // deckVariants (staggerChildren) — не руками на каждой
+                  // карточке. Последняя карточка сигналит: как только она
+                  // сама доиграла вход, можно проявлять логотип.
+                  variants={dissolveIn}
+                  onAnimationComplete={i === directionCards.length - 1 ? () => setLogoReady(true) : undefined}
+                  onClick={() => {
+                    setLogoReady(true);
+                    setPicked(card.key);
+                  }}
                   // Имя задано явно: название карточки набрано градиентом
                   // во вложенных span'ах, и на них же висит кадр — читалке
                   // проще получить одну внятную строку, чем собирать её.
@@ -344,9 +423,9 @@ export default function WelcomeWidget({
                 <motion.button
                   key={block.id}
                   type="button"
-                  initial={{ opacity: 0, y: 26, scale: 0.97, filter: "blur(12px)" }}
+                  initial={{ opacity: 0, y: 16, scale: 0.98, filter: "blur(9px)" }}
                   animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : i * 0.08 }}
+                  transition={{ duration: 0.62, ease: EASE, delay: reduced ? 0 : i * 0.06 }}
                   onClick={() => go(blockHref(picked, block))}
                   aria-label={`Блок ${block.num}. ${block.title}. ${block.subtitle}`}
                   style={accentVars(picked)}
@@ -375,12 +454,14 @@ export default function WelcomeWidget({
           </motion.div>
         </AnimatePresence>
 
-        {/* Нижний ряд: назад к направлениям и тихий выход на сайт. */}
+        {/* Нижний ряд: назад к направлениям и тихий выход на сайт. Появляется
+            вместе с логотипом (тот же logoReady) — оба идут последними в
+            сцене, никакой отдельной задержки под них считать не нужно. */}
         <motion.div
           className="mt-5 flex w-full items-center justify-center gap-3"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, ease: EASE, delay: d(T_CARDS + 4 * STAGGER) }}
+          animate={{ opacity: picked || logoReady ? 1 : 0 }}
+          transition={{ duration: 0.5, ease: EASE }}
         >
           <AnimatePresence initial={false}>
             {picked && (

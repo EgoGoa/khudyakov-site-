@@ -202,7 +202,7 @@ export default function Trust({
                           transition={{ duration: 0.35, ease: REASON_EASE }}
                           className="max-w-lg overflow-hidden"
                         >
-                          <p className="px-3.5 pb-2.5 pl-[3rem] text-xs leading-relaxed text-paper/70 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
+                          <p className="body-small px-3.5 pb-2.5 pl-[3rem]">
                             {reason.description}
                           </p>
                         </motion.div>

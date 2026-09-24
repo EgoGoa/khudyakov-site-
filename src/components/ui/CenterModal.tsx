@@ -133,7 +133,7 @@ export default function CenterModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.35, ease: EASE }}
+          transition={{ duration: bare ? 0.32 : 0.35, ease: EASE }}
           role="dialog"
           aria-modal="true"
           aria-label={ariaLabel}
@@ -151,10 +151,22 @@ export default function CenterModal({
           onClick={onClose}
         >
           <motion.div
-            initial={{ opacity: 0, y: 22, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 14, scale: 0.97 }}
-            transition={{ duration: 0.4, ease: EASE }}
+            // Вступительная сцена (bare) на входе не анимируется как единый
+            // блок — заголовок, карточки и логотип внутри уже растворяются
+            // каждый сам по себе (WelcomeWidget), и если бы контейнер тоже
+            // проявлялся через тот же блюр/opacity, два затухания
+            // перемножались бы и картинка читалась мутно и как будто с
+            // задержкой — та самая жалоба «нет плавности». Поэтому вход у
+            // bare-контейнера мгновенный (initial === animate), а вот уход
+            // остаётся общим растворением, тем же приёмом, что и у
+            // логотипа в заставке перед ней (IntroSplash): сцена не влетает
+            // сюда, но уходит туда же, в туман. Обычные окна (бриф,
+            // вайб-режим блока) — на прежней механике сдвиг+масштаб, они не
+            // связаны с заставкой.
+            initial={bare ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 22, scale: 0.96 }}
+            animate={bare ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 1, y: 0, scale: 1 }}
+            exit={bare ? { opacity: 0, y: -8, filter: "blur(14px)" } : { opacity: 0, y: 14, scale: 0.97 }}
+            transition={{ duration: bare ? 0.4 : 0.4, ease: EASE }}
             onClick={(e) => e.stopPropagation()}
             // Sized wide enough that the voice-wave graphic, the four service
             // buttons and the mic all sit comfortably — the previous unbounded

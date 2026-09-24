@@ -412,10 +412,41 @@ export default function ToolSpotlight({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.14 } }}
                 transition={{ duration: reduced ? 0 : 0.28, delay: reduced ? 0 : 0.14 }}
-                className={`absolute inset-0 flex min-w-0 items-center overflow-hidden ${
-                  side ? "gap-3.5 px-4 py-3" : "gap-5 px-5 py-3 sm:px-6"
+                className={`absolute inset-0 flex min-w-0 overflow-hidden ${
+                  // `fill` — единственный узкий вызов (плитка в ячейке сетки
+                  // "05 хронология"): там название в общей строке с картинкой
+                  // упиралось в узкую колонку и переносилось по буквам
+                  // (`.font-display`'s `overflow-wrap: break-word` как
+                  // последний рубеж). Названию отдана своя строка на всю
+                  // ширину плитки — там ему хватает места на одну строку —
+                  // а картинка с тезисом и стрелкой встали ниже. Egor's ask.
+                  fill ? "flex-col justify-center gap-1.5 px-5 py-3" : "items-center " + (side ? "gap-3.5 px-4 py-3" : "gap-5 px-5 py-3 sm:px-6")
                 }`}
               >
+                {fill && (
+                  <span className="block w-full shrink-0">
+                    <span className="block font-display text-[12px] font-bold uppercase leading-tight tracking-[0.16em] text-white">
+                      {data.title}
+                    </span>
+                    {/* Тезис поднят сюда же — в узкой колонке рядом с
+                        картинкой ему точно так же не хватало ширины и
+                        слово ломалось на буквы ("МАСШТ"/"АБ"). На всю
+                        ширину плитки он тоже умещается в одну строку. */}
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.span
+                        key={step}
+                        initial={{ opacity: 0, filter: "blur(5px)" }}
+                        animate={{ opacity: 1, filter: "blur(0px)" }}
+                        exit={{ opacity: 0, filter: "blur(5px)" }}
+                        transition={{ duration: reduced ? 0 : 0.7 }}
+                        className="spotlight-accent spotlight-sheen mt-0.5 block font-display text-[15px] uppercase leading-snug tracking-[0.06em]"
+                      >
+                        {benefit.punch}
+                      </motion.span>
+                    </AnimatePresence>
+                  </span>
+                )}
+                <span className={fill ? "flex min-w-0 flex-1 items-center gap-5" : "contents"}>
                 {/* Мини-превью карточки — та же графика, что развернётся.
                     Раньше квадрат ~64px тонул в пустом тёмном поле плитки;
                     Егор попросил растянуть его минимум на треть кнопки — на
@@ -440,31 +471,37 @@ export default function ToolSpotlight({
                 >
                   <SpotlightScene slug={data.slug} step={step} mini />
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span
-                    // Название переносится на вторую строку, а не режется
-                    // многоточием: обрезанное на полуслове название
-                    // Егор назвал неприемлемым.
-                    className="block font-display text-[12px] font-bold uppercase leading-tight tracking-[0.16em] text-white"
-                  >
-                    {data.title}
-                  </span>
-                  {/* Подзаголовок меняется вместе с графикой: это не
-                      статичная цифра, а тезис текущей сцены — до клика
-                      видно, о чём внутри будут говорить. */}
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.span
-                      key={step}
-                      initial={{ opacity: 0, filter: "blur(5px)" }}
-                      animate={{ opacity: 1, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, filter: "blur(5px)" }}
-                      transition={{ duration: reduced ? 0 : 0.7 }}
-                      className="spotlight-accent spotlight-sheen mt-1 block font-display text-[15px] uppercase leading-snug tracking-[0.06em]"
+                {/* В `fill`-режиме название и тезис уже стоят своей строкой
+                    над этим рядом (см. выше) — здесь остаётся только
+                    картинка и стрелка, эта колонка целиком лишняя. */}
+                {!fill && (
+                  <span className="min-w-0 flex-1">
+                    <span
+                      // Название переносится на вторую строку, а не режется
+                      // многоточием: обрезанное на полуслове название
+                      // Егор назвал неприемлемым.
+                      className="block font-display text-[12px] font-bold uppercase leading-tight tracking-[0.16em] text-white"
                     >
-                      {benefit.punch}
-                    </motion.span>
-                  </AnimatePresence>
-                </span>
+                      {data.title}
+                    </span>
+                    {/* Подзаголовок меняется вместе с графикой: это не
+                        статичная цифра, а тезис текущей сцены — до клика
+                        видно, о чём внутри будут говорить. */}
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.span
+                        key={step}
+                        initial={{ opacity: 0, filter: "blur(5px)" }}
+                        animate={{ opacity: 1, filter: "blur(0px)" }}
+                        exit={{ opacity: 0, filter: "blur(5px)" }}
+                        transition={{ duration: reduced ? 0 : 0.7 }}
+                        className="spotlight-accent spotlight-sheen mt-1 block font-display text-[15px] uppercase leading-snug tracking-[0.06em]"
+                      >
+                        {benefit.punch}
+                      </motion.span>
+                    </AnimatePresence>
+                  </span>
+                )}
+                {fill && <span className="flex-1" />}
                 <span className="spotlight-cta shrink-0">
                   {/* В плашке-форме (глава 04) подписи-кнопки нет: место
                       нужно названию и слову-выгоде, а плашка и так целиком
@@ -478,6 +515,7 @@ export default function ToolSpotlight({
                   <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" aria-hidden="true">
                     <path d="M18 15l-6-6-6 6" />
                   </svg>
+                </span>
                 </span>
               </motion.div>
             )}

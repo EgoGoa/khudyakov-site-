@@ -157,7 +157,7 @@ export default function SitesGuarantees() {
                   <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
                     {reason.title}
                   </h3>
-                  <p className="mt-1 text-xs leading-relaxed text-paper/60">{reason.description}</p>
+                  <p className="body-small mt-1">{reason.description}</p>
                 </div>
               </div>
             </Appear>
@@ -190,7 +190,7 @@ export default function SitesGuarantees() {
                     </span>
                   </button>
                   {isOpen && (
-                    <p className="max-w-sm pb-3.5 text-xs leading-relaxed text-paper/55">{item.a}</p>
+                    <p className="body-small max-w-sm pb-3.5">{item.a}</p>
                   )}
                 </div>
               );

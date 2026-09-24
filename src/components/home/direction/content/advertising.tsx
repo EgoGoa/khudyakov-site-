@@ -405,6 +405,47 @@ export const advertisingContent: DirectionContent = {
   assetsMedia:
   { photo: "/images/stock/wave-abstract.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full" },
 
+  // Те же четыре сцены окошка ToolSpotlight (slug "advertising"), развёрнутые
+  // в постоянные блоки — по аналогии с /content/presentation.
+  sceneBreaks: [
+    {
+      after: "task",
+      memberId: "max",
+      facts: [
+        { value: "3 сек", label: "на решение — досмотрит или нет" },
+        { value: "24 ч", label: "на идею ролика и смету" },
+        { value: "1", label: "идея вместо списка преимуществ" },
+      ],
+    },
+    {
+      after: "cases",
+      memberId: "max",
+      facts: [
+        { value: "8 лет", label: "видео для бизнеса" },
+        { value: "12", label: "роликов уже в портфолио" },
+        { value: "350+", label: "клиентов сняли ролик" },
+      ],
+    },
+    {
+      after: "pricing",
+      memberId: "max",
+      facts: [
+        { value: "9:16 · 1:1", label: "вертикаль и квадрат" },
+        { value: "16:9", label: "широкий формат для ТВ" },
+        { value: "1 смена", label: "на все форматы сразу" },
+      ],
+    },
+    {
+      after: "assets",
+      memberId: "max",
+      facts: [
+        { value: "1 команда", label: "от идеи до цвета" },
+        { value: "1 смета", label: "без пяти подрядчиков" },
+        { value: "24 ч", label: "идея и смета — быстро" },
+      ],
+    },
+  ],
+
   close: {
     media: { photo: "/images/stock/night-lights.webp", intensity: "loud" },
     eyebrow: "С чего начнём",

@@ -113,7 +113,7 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
               отметил его как образец): фирменный дисплейный шрифт крупнее
               обычного тела, а не мелкий текст на общих основаниях —
               читается сразу, а не угадывается. */}
-          <p className="mt-1.5 line-clamp-4 font-display text-[8.5px] leading-snug tracking-tight text-paper/65 sm:line-clamp-3 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-[10px]">
+          <p className="body-small mt-1.5 line-clamp-4 sm:line-clamp-3">
             {direction.description}
           </p>
         </div>

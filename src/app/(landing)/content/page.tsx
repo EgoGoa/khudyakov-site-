@@ -138,7 +138,16 @@ export default function ContentServicePage() {
             three times on the way down one page. This line says what the ten
             rows below it actually are instead. */}
         <Offer
-          footer={<ToolSpotlight slug="graphics" accent={CONTENT_ACCENT} />}
+          // Два окошка услуг в одной строке — graphics слева, ai-video
+          // (перенесено сюда с блока тарифов) справа. Каждое ToolSpotlight
+          // само себя выравнивает по своему `place`, поэтому пара безопасно
+          // делит одну полосу шириной в главу.
+          footer={
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+              <ToolSpotlight slug="graphics" accent={CONTENT_ACCENT} place="left" className="sm:w-1/2" />
+              <ToolSpotlight slug="ai-video" accent={CONTENT_ACCENT} place="right" className="sm:w-1/2" />
+            </div>
+          }
           // Десять строк + виджет + окошко делят одну высоту экрана.
           titleClassName="text-[1.575rem] sm:text-[2.1rem] lg:text-[2.625rem] xl:text-[2.625rem]"
           title={<>Лучшие в <span className="kw">этом</span></>}
@@ -149,10 +158,14 @@ export default function ContentServicePage() {
           title={<>PRO <span className="kw">хронология</span></>}
           intro={<>Шесть шагов от брифа до сдачи. На каждом видно <span className="kw">прогресс</span> и есть точка, где можно вмешаться.</>}
         />
+        {/* Блок тарифов: без окошка услуги (перенесено в блок 04) и с
+            полным списком тезисов-преимуществ на каждой карточке — Егор
+            попросил вернуть как было и больше не трогать этот блок без
+            отдельного разрешения. */}
         <Close
-          footer={<ToolSpotlight slug="ai-video" accent={CONTENT_ACCENT} place="right" />}
-          // Окошко внизу делит высоту экрана с тарифами — плотная раскладка,
-          // как у /ai.
+          // Карточки тарифов ниже — Егор попросил уменьшить элементы и
+          // текст на 30%, сохранив список тезисов на месте (см. правку в
+          // Close.tsx и .c3-card-dense в globals.css).
           dense
           titleClassName="text-[1.12rem] sm:text-[1.82rem] lg:text-[1.82rem] xl:text-[2.205rem]"
           title={<>Персональные <span className="kw">условия</span></>}

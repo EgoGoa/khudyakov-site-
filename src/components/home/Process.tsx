@@ -280,7 +280,7 @@ export default function Process({
                 <span className="mr-1.5 text-orange">{String(i + 1).padStart(2, "0")}</span>
                 {step.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/85">{step.description}</p>
+              <p className="body-small mt-2">{step.description}</p>
             </div>
           </Appear>
         ))}

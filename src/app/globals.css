@@ -3518,25 +3518,33 @@ body {
    as an oversized empty box once the text inside it shrinks. */
 .c3-card-dense {
   min-height: 0;
+  /* 44px/28px → ~30% меньше — Егор попросил уменьшить окошки тарифов
+     по высоте, не только шрифт внутри них. */
+  padding: 31px 20px;
 }
 
 .c3-card-dense .c3-tier-small {
   font-size: 0.62rem;
 }
 
+.c3-card-dense .c3-team {
+  margin-top: 3px;
+}
+
 .c3-card-dense .c3-list li {
   font-size: 0.7rem;
   margin-bottom: 10px;
+  gap: 9px;
 }
 
 .c3-card-dense .c3-check {
-  width: 13px;
-  height: 13px;
+  width: 11px;
+  height: 11px;
 }
 
 .c3-card-dense .c3-check::after {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 
 /* Process's six step cards (chapter 05, "PRO хронология"/"процесс" — shared
@@ -4923,6 +4931,7 @@ html:not([data-lite])[data-mid] .sp-scan,
 html:not([data-lite])[data-mid] .sp-blink,
 html:not([data-lite])[data-mid] .sb-rows,
 html:not([data-lite])[data-mid] .sb-steps3,
+html:not([data-lite])[data-mid] .sb-steps4,
 html:not([data-lite])[data-mid] .sb-steps5,
 html:not([data-lite])[data-mid] .sp-pulse {
   animation: none !important;
@@ -5420,6 +5429,7 @@ html:not([data-lite])[data-mid] .sp-pulse {
   .tool-scene .sp-scan,
   .tool-scene .sb-rows,
   .tool-scene .sb-steps3,
+  .tool-scene .sb-steps4,
   .tool-scene .sb-steps5,
   .tool-scene .sp-draw {
     animation: none;
@@ -5460,6 +5470,9 @@ html:not([data-lite])[data-mid] .sp-pulse {
 .tool-scene .sb-steps3 {
   animation: sb-steps3 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
+.tool-scene .sb-steps4 {
+  animation: sb-steps4 9.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
 .tool-scene .sb-steps5 {
   animation: sb-steps5 10s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
@@ -5467,6 +5480,13 @@ html:not([data-lite])[data-mid] .sp-pulse {
   0%, 30% { transform: translateY(0); }
   33.3%, 63.3% { transform: translateY(var(--step)); }
   66.6%, 96.6% { transform: translateY(calc(var(--step) * 2)); }
+  100% { transform: translateY(0); }
+}
+@keyframes sb-steps4 {
+  0%, 22.5% { transform: translateY(0); }
+  25%, 47.5% { transform: translateY(var(--step)); }
+  50%, 72.5% { transform: translateY(calc(var(--step) * 2)); }
+  75%, 97.5% { transform: translateY(calc(var(--step) * 3)); }
   100% { transform: translateY(0); }
 }
 @keyframes sb-steps5 {
@@ -5547,6 +5567,18 @@ html:not([data-lite])[data-mid] .sp-pulse {
   max-width: 14em;
   margin-inline: auto;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
+  /* Отодвигает вопрос от знака чуть сильнее, чем даёт mb-4 у лого (Егор:
+     «опускаем окошки меню» — знак остаётся на месте, а вопрос и колода под
+     ним опускаются одной группой, потому что колода стоит вплотную под
+     вопросом, см. .welcome-deck ниже). */
+  margin-top: 0.9rem;
+}
+
+/* Второй шаг (выбрано направление): тёмный text-shadow, нужный на первом
+   шаге поверх кадров карточек за спиной, здесь только гасил белый вопрос —
+   Егор попросил убрать затемнение под ним. */
+.welcome-head--flat {
+  text-shadow: none;
 }
 
 /* Название выбранного направления в заголовке второго шага — в градиенте
@@ -5584,7 +5616,9 @@ html:not([data-lite])[data-mid] .sp-pulse {
   margin-inline: auto;
   flex-direction: column;
   gap: 0.6rem;
-  margin-top: 1.4rem;
+  /* Вопрос стоит прямо над меню — почти вплотную (Егор), а не с прежним
+     просторным зазором. */
+  margin-top: 0.6rem;
 }
 
 /* Карточка. Геометрия одна и та же на обоих шагах — сцена не должна

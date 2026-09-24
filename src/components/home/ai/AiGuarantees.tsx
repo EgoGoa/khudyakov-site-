@@ -298,7 +298,7 @@ export default function AiGuarantees() {
                   <h3 className="kw font-display text-sm uppercase leading-tight tracking-tight">
                     {term.title}
                   </h3>
-                  <p className="mt-1 text-xs leading-relaxed text-paper/60">{term.description}</p>
+                  <p className="body-small mt-1">{term.description}</p>
                 </div>
               </div>
             </Appear>

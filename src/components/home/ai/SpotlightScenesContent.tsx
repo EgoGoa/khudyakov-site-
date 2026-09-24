@@ -164,11 +164,18 @@ const PRESENTATION = [PresBrief, PresScale, PresVersions, PresTrust];
 
 /* ═══ Рекламные ролики ═════════════════════════════════════════════ */
 
+const AD_FIG: SceneFigure[] = [
+  { value: "3 сек", note: "решают, досмотрят ли", before: "Перечень преимуществ", after: "Одна идея в 3 секунды" },
+  { value: "15·30·60", note: "хронометраж под площадку", before: "Один монтаж на всё", after: "Ритм под площадку" },
+  { value: "1 → 4", note: "формата из одной съёмки", before: "Съёмка под каждую", after: "Одна смена — все форматы" },
+  { value: "1 команда", note: "от идеи до цветокоррекции", before: "Пять подрядчиков", after: "Одна команда и смета" },
+];
+
 /** 01 · Крючок. Кривая удержания: без идеи зритель уходит в первые секунды. */
 function AdHook({ mini }: SceneProps) {
   return (
     <Frame>
-      <Headline value="3 сек" note="решают, досмотрят ли" mini={mini} />
+      <Headline value={AD_FIG[0].value} note={AD_FIG[0].note} mini={mini} />
       <In at={1}>
         <path d="M 24 164 L 316 164 M 24 164 L 24 66" stroke={`${W}0.2)`} />
         <rect x="24" y="66" width="62" height="98" fill="var(--sp-from)" fillOpacity="0.1" />
@@ -183,7 +190,7 @@ function AdHook({ mini }: SceneProps) {
         <circle cx="86" cy="82" r="4.5" fill="var(--sp-from)" className="sp-pulse" />
         <text x="316" y="86" textAnchor="end" fill="#fff" fontSize="12.4" fontWeight="600" fontFamily="inherit">с сильной идеей — досматривают</text>
       </In>
-      <BeforeAfter before="Перечень преимуществ" after="Одна идея в 3 секунды" mini={mini} />
+      <BeforeAfter before={AD_FIG[0].before} after={AD_FIG[0].after} mini={mini} />
     </Frame>
   );
 }
@@ -197,7 +204,7 @@ function AdPlatform({ mini }: SceneProps) {
   ];
   return (
     <Frame>
-      <Headline value="15·30·60" note="хронометраж под площадку" mini={mini} />
+      <Headline value={AD_FIG[1].value} note={AD_FIG[1].note} mini={mini} />
       {rows.map((r, i) => {
         const y = 66 + i * 34;
         const step = 236 / r.cuts;
@@ -212,7 +219,7 @@ function AdPlatform({ mini }: SceneProps) {
           </In>
         );
       })}
-      <BeforeAfter before="Один монтаж на всё" after="Ритм под площадку" mini={mini} />
+      <BeforeAfter before={AD_FIG[1].before} after={AD_FIG[1].after} mini={mini} />
     </Frame>
   );
 }
@@ -228,7 +235,7 @@ function AdFormats({ mini }: SceneProps) {
   let x = 132;
   return (
     <Frame>
-      <Headline value="1 → 4" note="формата из одной съёмки" mini={mini} />
+      <Headline value={AD_FIG[2].value} note={AD_FIG[2].note} mini={mini} />
       <In at={1}>
         <rect x="14" y="84" width="76" height="52" rx="10" fill="url(#sp-ramp)" fillOpacity="0.16" stroke="var(--sp-from)" strokeOpacity="0.65" />
         <circle cx="52" cy="110" r="12" fill="rgba(10,13,16,0.85)" stroke="url(#sp-ramp)" strokeWidth="1.3" />
@@ -245,7 +252,7 @@ function AdFormats({ mini }: SceneProps) {
           </In>
         );
       })}
-      <BeforeAfter before="Съёмка под каждую" after="Одна смена — все форматы" mini={mini} />
+      <BeforeAfter before={AD_FIG[2].before} after={AD_FIG[2].after} mini={mini} />
     </Frame>
   );
 }
@@ -255,7 +262,7 @@ function AdPipeline({ mini }: SceneProps) {
   const nodes = ["Идея", "Кастинг", "Съёмка", "Монтаж", "Цвет"];
   return (
     <Frame>
-      <Headline value="1 команда" note="от идеи до цветокоррекции" mini={mini} />
+      <Headline value={AD_FIG[3].value} note={AD_FIG[3].note} mini={mini} />
       <In at={1}>
         <path d="M 40 114 L 300 114" stroke={`${W}0.16)`} strokeWidth="1.4" />
         <path d="M 40 114 L 300 114" stroke="url(#sp-ramp)" strokeWidth="2.2" className="sp-flow" />
@@ -270,7 +277,7 @@ function AdPipeline({ mini }: SceneProps) {
       <In at={7}>
         <circle cx="300" cy="114" r="21" stroke="var(--sp-from)" strokeOpacity="0.6" strokeDasharray="3 6" className="sp-spin" style={{ transformOrigin: "300px 114px" }} />
       </In>
-      <BeforeAfter before="Пять подрядчиков" after="Одна команда и смета" mini={mini} />
+      <BeforeAfter before={AD_FIG[3].before} after={AD_FIG[3].after} mini={mini} />
     </Frame>
   );
 }
@@ -279,11 +286,18 @@ const ADVERTISING = [AdHook, AdPlatform, AdFormats, AdPipeline];
 
 /* ═══ Имиджевые видео ═════════════════════════════════════════════ */
 
+const IMG_FIG: SceneFigure[] = [
+  { value: "60%", note: "заказов — возвратные клиенты", before: "Характеристики", after: "Ощущение вместо фактов" },
+  { value: "без лого", note: "узнают по кадру", before: "Ролик как у всех", after: "Свой визуальный язык" },
+  { value: "1 тон", note: "на весь ролик", before: "Звук и цвет врозь", after: "Один тон на всё" },
+  { value: "1 ролик", note: "везде, где о вас судят", before: "Слова о себе", after: "Ощущение доверия" },
+];
+
 /** 01 · Чувство. Факты не остаются в памяти — настроение остаётся. */
 function ImgMood({ mini }: SceneProps) {
   return (
     <Frame>
-      <Headline value="60%" note="заказов — возвратные клиенты" mini={mini} />
+      <Headline value={IMG_FIG[0].value} note={IMG_FIG[0].note} mini={mini} />
       <In at={1}>
         <rect x="14" y="66" width="112" height="98" rx="12" {...SOFT} />
         {[0, 1, 2, 3].map((i) => (
@@ -304,7 +318,7 @@ function ImgMood({ mini }: SceneProps) {
         <path d="M 240 128 C 224 116 222 102 232 100 C 237 99 240 103 240 106 C 240 103 243 99 248 100 C 258 102 256 116 240 128 Z" fill="var(--sp-from)" className="sp-pulse" style={{ transformOrigin: "240px 112px" }} />
         <text x="240" y="176" textAnchor="middle" fill={`${W}0.75)`} fontSize="10.9" fontFamily="inherit">настроение</text>
       </In>
-      <BeforeAfter before="Характеристики" after="Ощущение вместо фактов" mini={mini} />
+      <BeforeAfter before={IMG_FIG[0].before} after={IMG_FIG[0].after} mini={mini} />
     </Frame>
   );
 }
@@ -313,7 +327,7 @@ function ImgMood({ mini }: SceneProps) {
 function ImgLanguage({ mini }: SceneProps) {
   return (
     <Frame>
-      <Headline value="без лого" note="узнают по кадру" mini={mini} />
+      <Headline value={IMG_FIG[1].value} note={IMG_FIG[1].note} mini={mini} />
       {[0, 1, 2, 3].map((i) => (
         <In key={i} at={1 + i}>
           <circle cx={34 + i * 34} cy="86" r="14" fill="url(#sp-ramp)" fillOpacity={0.9 - i * 0.2} stroke={`${W}0.25)`} />
@@ -335,7 +349,7 @@ function ImgLanguage({ mini }: SceneProps) {
         <rect x="212" y="138" width="60" height="5" rx="2.5" fill={`${W}0.4)`} />
         <rect x="212" y="148" width="40" height="5" rx="2.5" fill={`${W}0.22)`} />
       </In>
-      <BeforeAfter before="Ролик как у всех" after="Свой визуальный язык" mini={mini} />
+      <BeforeAfter before={IMG_FIG[1].before} after={IMG_FIG[1].after} mini={mini} />
     </Frame>
   );
 }
@@ -349,7 +363,7 @@ function ImgTone({ mini }: SceneProps) {
   ];
   return (
     <Frame>
-      <Headline value="1 тон" note="на весь ролик" mini={mini} />
+      <Headline value={IMG_FIG[2].value} note={IMG_FIG[2].note} mini={mini} />
       {sliders.map((s, i) => (
         <In key={s.l} at={1 + i}>
           <text x="16" y={78 + i * 30} fill={`${W}0.7)`} fontSize="12.4" fontFamily="inherit">{s.l}</text>
@@ -371,7 +385,7 @@ function ImgTone({ mini }: SceneProps) {
       <In at={7}>
         <text x="170" y="126" fill={`${W}0.55)`} fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">МУЗЫКА ПОД ТОН БРЕНДА</text>
       </In>
-      <BeforeAfter before="Звук и цвет врозь" after="Один тон на всё" mini={mini} />
+      <BeforeAfter before={IMG_FIG[2].before} after={IMG_FIG[2].after} mini={mini} />
     </Frame>
   );
 }
@@ -381,7 +395,7 @@ function ImgTrust({ mini }: SceneProps) {
   const dest = ["Сайт", "Соцсети", "Первая встреча"];
   return (
     <Frame>
-      <Headline value="1 ролик" note="везде, где о вас судят" mini={mini} />
+      <Headline value={IMG_FIG[3].value} note={IMG_FIG[3].note} mini={mini} />
       <In at={1}>
         <circle cx="70" cy="114" r="34" fill="url(#sp-glow)" />
         <rect x="30" y="92" width="80" height="46" rx="10" fill="url(#sp-ramp)" fillOpacity="0.18" stroke="var(--sp-from)" strokeOpacity="0.7" />
@@ -395,7 +409,7 @@ function ImgTrust({ mini }: SceneProps) {
           <text x="224" y={85.5 + i * 32} fill="#fff" fontSize="13.2" fontFamily="inherit">{d}</text>
         </In>
       ))}
-      <BeforeAfter before="Слова о себе" after="Ощущение доверия" mini={mini} />
+      <BeforeAfter before={IMG_FIG[3].before} after={IMG_FIG[3].after} mini={mini} />
     </Frame>
   );
 }
@@ -910,6 +924,8 @@ function GfxForty({ mini }: SceneProps) {
 /** Цифры сцен по направлениям — пока только там, где стоят блоки-перебивки. */
 export const SCENE_FIGURES: Record<string, SceneFigure[]> = {
   presentation: PRES_FIG,
+  advertising: AD_FIG,
+  image: IMG_FIG,
 };
 
 export const CONTENT_SCENES: Record<string, ((p: SceneProps) => React.ReactElement)[]> = {

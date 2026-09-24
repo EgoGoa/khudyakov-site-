@@ -164,7 +164,7 @@ export default function SmmGuarantees() {
                     <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
                       {term.title}
                     </h3>
-                    <p className="mt-1 text-xs leading-relaxed text-paper/60">{term.description}</p>
+                    <p className="body-small mt-1">{term.description}</p>
                   </div>
                 </div>
               </Appear>
@@ -203,7 +203,7 @@ export default function SmmGuarantees() {
                       </span>
                     </button>
                     {isOpen && (
-                      <p className="max-w-sm pb-3.5 text-xs leading-relaxed text-paper/55">{item.a}</p>
+                      <p className="body-small max-w-sm pb-3.5">{item.a}</p>
                     )}
                   </Appear>
                 );

@@ -162,7 +162,9 @@ export default function Close({
                     !text-xl is also what SitesClose/SmmClose already use for
                     this same line, so this brings /content in line with the
                     rest of the site rather than sizing it uniquely. */}
-                <div className={`c3-tier-large relative ${dense ? "!text-lg" : "!text-xl"}`}>{tier.name}</div>
+                {/* !text-sm in dense (was !text-lg) — 20px → 14px is the
+                    ~30% shrink Egor asked for on /content's tariff cards. */}
+                <div className={`c3-tier-large relative ${dense ? "!text-sm" : "!text-xl"}`}>{tier.name}</div>
                 <div
                   className={`relative font-semibold text-paper tier-glow-price ${dense ? "text-xs" : "text-base"}`}
                 >
@@ -175,22 +177,21 @@ export default function Close({
                 </div>
                 <div className={`c3-team relative ${dense ? "mb-3" : "mb-6"}`}>{tier.team}</div>
 
-                {/* Dropped in `dense` mode: that's the setting used where the
-                    chapter also has to carry the SEO rows below (see
-                    seoSections), and three feature bullets per card is the
-                    one block long enough to push the whole thing off a single
-                    screen. Tagline, name, price, term and the button all
-                    stay, so the card still says what it is. */}
-                {!dense && (
-                  <ul className="c3-list relative">
-                    {(tier.benefits ?? tier.features).map((feature) => (
-                      <li key={feature}>
-                        <span className={`c3-check ${tier.benefits ? "c3-check-green" : "text-paper"}`} />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                {/* Used to be dropped entirely in `dense` mode (see git
+                    history) — /content's own tariff cards need their
+                    thesis list on screen regardless, so `dense` now only
+                    shrinks it (via .c3-card-dense .c3-list in globals.css)
+                    instead of hiding it. Only /content's static-tiers
+                    branch ever renders this: /ai passes `interactiveTiers`
+                    and never reaches here, so this change doesn't touch it. */}
+                <ul className="c3-list relative">
+                  {(tier.benefits ?? tier.features).map((feature) => (
+                    <li key={feature}>
+                      <span className={`c3-check ${tier.benefits ? "c3-check-green" : "text-paper"}`} />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
 
                 <div className="relative mt-auto flex flex-col items-center gap-2 self-stretch">
                   {/* Every tier's button — pro included, on every page that

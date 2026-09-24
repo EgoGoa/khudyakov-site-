@@ -37,7 +37,7 @@ export default function Services() {
                   <h3 className="font-display text-xl uppercase tracking-tight text-paper transition-colors group-hover:text-glow sm:text-2xl">
                     {service.title}
                   </h3>
-                  <p className="col-span-2 text-sm leading-relaxed text-paper/60 sm:col-span-1">
+                  <p className="body-small col-span-2 sm:col-span-1">
                     {service.description}
                   </p>
                 </div>
