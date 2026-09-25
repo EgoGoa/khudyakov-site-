@@ -5,6 +5,7 @@ import CabinetButton from "@/components/cabinet/CabinetButton";
 import CabinetWindow from "@/components/cabinet/CabinetWindow";
 import LiveBrandWord from "@/components/layout/LiveBrandWord";
 import SoundStation from "@/components/layout/SoundStation";
+import PageBar from "@/components/layout/PageBar";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -247,11 +248,7 @@ export default function Header() {
     <header
       data-site-header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 land:pointer-events-none land:!border-transparent land:!bg-transparent land:!backdrop-blur-none land:before:pointer-events-none land:before:absolute land:before:inset-x-0 land:before:top-0 land:before:h-16 land:before:content-[''] land:before:bg-[linear-gradient(to_bottom,rgba(11,11,16,0.78),rgba(11,11,16,0.6)_30%,rgba(11,11,16,0.28)_65%,rgba(11,11,16,0))] ${
-        menuOpen
-          ? "bg-transparent"
-          : scrolled
-          ? "border-b border-paper/10 bg-ink/70 backdrop-blur-xl"
-          : "bg-transparent"
+        menuOpen ? "bg-transparent" : "header-glass"
       }`}
     >
       <Container className="relative z-10 flex h-16 items-center justify-between sm:h-20 land:h-10">
@@ -264,7 +261,7 @@ export default function Header() {
           <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] land:!text-[0.9rem] uppercase tracking-tight">
             HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
           </span>
-          <span className="ml-1 hidden h-6 w-px shrink-0 bg-paper/25 sm:block land:!hidden" aria-hidden="true" />
+          <span className={`ml-1 hidden h-6 w-px shrink-0 bg-paper/25 land:!hidden ${isLanding ? "xl:block" : "sm:block"}`} aria-hidden="true" />
           {/* The tagline now carries /sites' chapter-heading treatment: the
               display face, the near-white under a warm orange bloom
               (.chapter-neon-warm), and the keyword in the same
@@ -291,7 +288,7 @@ export default function Header() {
               against the wordmark on its own, from the parent Link's own
               `items-center`, instead of being a block whose two rows
               straddled the logo's centre. */}
-          <span className="chapter-neon-warm hidden land:!hidden shrink-0 whitespace-nowrap text-center font-sans text-[0.65rem] font-light uppercase leading-none tracking-[0.12em] sm:block">
+          <span className={`chapter-neon-warm hidden land:!hidden shrink-0 whitespace-nowrap text-center font-sans text-[0.65rem] font-light uppercase leading-none tracking-[0.12em] ${isLanding ? "xl:block" : "sm:block"}`}>
             DIGITAL <span className="kw font-display font-normal">AI</span> CREATIVE
           </span>
         </Link>
@@ -299,7 +296,7 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-3 sm:gap-4">
           <a
             href="tel:+79925111812"
-            className="hidden items-center gap-2 whitespace-nowrap text-sm font-medium text-paper/80 transition-colors hover:text-paper sm:inline-flex land:!hidden"
+            className={`hidden items-center gap-2 whitespace-nowrap text-sm font-medium text-paper/80 transition-colors hover:text-paper land:!hidden ${isLanding ? "sm:max-lg:inline-flex xl:inline-flex" : "sm:inline-flex"}`}
           >
             <PhoneIcon className="icon-neon-pulse text-glow" />
             +7 992 511-18-12
@@ -401,6 +398,12 @@ export default function Header() {
           </div>
         </div>
       </Container>
+
+      {/* Бар страниц: на телефоне и планшете — второй строкой под логотипом,
+          на десктопе и у телефона боком — по центру шапки. Логотип и иконки
+          на это время уходят по углам: подпись у логотипа и телефон
+          показываются только там, где им хватает места рядом с баром. */}
+      {isLanding && <PageBar hidden={menuOpen} />}
 
       {/* Mobile/tablet: a compact glass panel on the right — about 84% of a
           portrait phone (capped at 320px) and a third of a landscape one —
