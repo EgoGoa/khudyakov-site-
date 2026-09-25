@@ -4924,6 +4924,13 @@ html:not([data-lite])[data-mid] .glass-panel {
   -webkit-backdrop-filter: blur(7px) !important;
   backdrop-filter: blur(7px) !important;
 }
+/* Egor, 2026-09-25: on mid devices graphics stop moving everywhere except
+   the header — every endless animation plays once and settles, like lite. */
+html[data-mid] *:not([data-site-header], [data-site-header] *),
+html[data-mid] *:not([data-site-header], [data-site-header] *)::before,
+html[data-mid] *:not([data-site-header], [data-site-header] *)::after {
+  animation-iteration-count: 1 !important;
+}
 html:not([data-lite])[data-mid] .deck-halo,
 html:not([data-lite])[data-mid] .animate-pulse-rec,
 html:not([data-lite])[data-mid] .sp-spin,

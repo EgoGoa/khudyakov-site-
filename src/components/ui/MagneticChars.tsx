@@ -1,5 +1,6 @@
 "use client";
 
+import { getTier } from "@/lib/perf-tier";
 import { Fragment, useEffect, useRef, type CSSProperties } from "react";
 
 // Splits `text` into one <span> per character and nudges each one a few px
@@ -48,7 +49,9 @@ export default function MagneticChars({
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const fine = window.matchMedia("(pointer: fine)").matches;
-    if (reduced || !fine) return;
+    // Reads every letter's box on each mouse frame — skipped on mid/low
+    // devices, where that layout work is what makes the page stutter.
+    if (reduced || !fine || getTier() !== "high") return;
 
     const handleMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;

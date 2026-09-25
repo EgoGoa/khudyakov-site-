@@ -27,24 +27,32 @@ import { getTier, isSlowNet, onTierChange } from "@/lib/perf-tier";
 // a slow browser (Safari) gets the same smooth trail as a fast one instead
 // of piling everything into one blob at the few frames it manages to draw.
 //
-// Composited with mix-blend-mode: screen over an OPAQUE black canvas — screen
-// against black is a no-op, so the page shows through everywhere else.
+// Composited as a premultiplied-alpha canvas (alpha = brightest channel),
+// which looks close to the old screen blend on this dark site. Not
+// mix-blend-mode: a full-screen blended layer makes the browser re-blend the
+// whole page under it on every frame — that was the single biggest cost of
+// the smoke on weaker machines.
 //
 // Desktop only, by design: touch devices have no persistent pointer.
 //
 // Follows the performance tier (lib/perf-tier): on a weak device (low) or a
 // thin connection it never starts — the ordinary cursor stays, no smoke. On a
-// mid device the solver runs on a coarser grid at 1x pixels with fewer
-// pressure passes: the same look, roughly a quarter of the GPU work. A live
-// downgrade (PerfGovernor) is picked up without a reload.
+// mid device the solver runs on a coarser grid with fewer pressure passes, the
+// canvas is drawn at half size (the smoke is soft, CSS stretches it) and the
+// loop steps at 30fps: the same look for ~a tenth of the work. On every tier
+// the canvas is 1x — the dye texture is coarser than a retina screen anyway,
+// so 2x pixels only cost fill without adding detail. A live downgrade
+// (PerfGovernor) is picked up without a reload.
 
 // ── Fluid ────────────────────────────────────────────────────────────────
 const SIM_RESOLUTION = 256;
 const DYE_RESOLUTION = 900;
-// Mid tier: coarser grid, 1x canvas, fewer pressure passes.
-const SIM_RESOLUTION_MID = 128;
-const DYE_RESOLUTION_MID = 512;
-const PRESSURE_ITERATIONS_MID = 10;
+// Mid tier: coarser grid, half-size canvas, fewer pressure passes, 30fps.
+const SIM_RESOLUTION_MID = 96;
+const DYE_RESOLUTION_MID = 384;
+const PRESSURE_ITERATIONS_MID = 8;
+const CANVAS_SCALE_MID = 0.5;
+const FRAME_MS_MID = 1000 / 30;
 // How fast momentum dies. Low enough that eddies keep turning ~1.5s after
 // the cursor leaves them, high enough that they don't drift off on their own.
 const VELOCITY_DISSIPATION = 2.2;
@@ -331,8 +339,6 @@ void main () {
   outColor = vec4(uColor * g * vStrength, 1.0);
 }`;
 
-// Output is opaque: the canvas is screen-blended over the page, and screen
-// against black leaves the page untouched.
 // Buoyancy + curl-noise air currents, applied to the velocity field only
 // where smoke actually is (so fresh smoke still leaves the cursor cleanly).
 const AIR_SHADER = `
@@ -393,8 +399,7 @@ void main () {
   gl_FragColor = mix(c, avg, amount);
 }`;
 
-// Output is opaque: the canvas is screen-blended over the page, and screen
-// against black leaves the page untouched.
+// Output is premultiplied alpha, so empty areas leave the page untouched.
 //
 // Volume without hard edges: the density's own gradient (sampled wide, so
 // it is smooth) acts as a surface normal lit softly from above-left. Thin
@@ -421,7 +426,9 @@ void main () {
   vec3 thin = vec3(0.12, 0.78, 1.0);
   vec3 dense = vec3(0.55, 0.9, 1.0);
   vec3 c = mix(thin, dense, smoothstep(0.35, 1.0, thick)) * thick * max(light, 0.0);
-  gl_FragColor = vec4(c, 1.0);
+  // Premultiplied: the brightest channel is the coverage, so black stays
+  // fully transparent and dense smoke covers the page the most.
+  gl_FragColor = vec4(c, max(c.r, max(c.g, c.b)));
 }`;
 
 type FBO = {
@@ -463,18 +470,21 @@ export default function FluidSmoke() {
     let simTarget = SIM_RESOLUTION;
     let dyeTarget = DYE_RESOLUTION;
     let pressureIterations = PRESSURE_ITERATIONS;
-    let dprCap = 2;
+    let canvasScale = 1;
+    let frameMs = 0;
     const applyTier = () => {
       const mid = getTier() === "mid";
       simTarget = mid ? SIM_RESOLUTION_MID : SIM_RESOLUTION;
       dyeTarget = mid ? DYE_RESOLUTION_MID : DYE_RESOLUTION;
       pressureIterations = mid ? PRESSURE_ITERATIONS_MID : PRESSURE_ITERATIONS;
-      dprCap = mid ? 1 : 2;
+      canvasScale = mid ? CANVAS_SCALE_MID : 1;
+      frameMs = mid ? FRAME_MS_MID : 0;
     };
     applyTier();
 
     const gl = canvas.getContext("webgl2", {
-      alpha: false,
+      alpha: true,
+      premultipliedAlpha: true,
       depth: false,
       stencil: false,
       antialias: false,
@@ -638,9 +648,8 @@ export default function FluidSmoke() {
     }
 
     function resizeCanvas() {
-      const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
-      const w = Math.floor(window.innerWidth * dpr);
-      const h = Math.floor(window.innerHeight * dpr);
+      const w = Math.floor(window.innerWidth * canvasScale);
+      const h = Math.floor(window.innerHeight * canvasScale);
       if (canvas!.width !== w || canvas!.height !== h) {
         canvas!.width = w;
         canvas!.height = h;
@@ -944,6 +953,11 @@ export default function FluidSmoke() {
 
     function frame() {
       const now = performance.now();
+      // Mid tier: step at 30fps. Skipped vsyncs cost nothing — no GL work.
+      if (frameMs && now - lastTime < frameMs - 2) {
+        raf = requestAnimationFrame(frame);
+        return;
+      }
       const dt = Math.min((now - lastTime) / 1000, 1 / 30);
       lastTime = now;
 
@@ -1042,7 +1056,7 @@ export default function FluidSmoke() {
       // (z-100) included — the smoke follows the cursor over any element.
       // pointer-events-none + screen blend keep it purely visual.
       className="pointer-events-none fixed inset-0 z-[130] hidden h-full w-full sm:block"
-      style={{ mixBlendMode: "screen", visibility: "hidden" }}
+      style={{ visibility: "hidden" }}
     />
   );
 }
