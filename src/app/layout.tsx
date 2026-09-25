@@ -10,6 +10,7 @@ import BackgroundFX from "@/components/layout/BackgroundFX";
 import MediaGovernor from "@/components/layout/MediaGovernor";
 import { LITE_DETECT_SNIPPET } from "@/lib/lite";
 import OffscreenAnimationPause from "@/components/layout/OffscreenAnimationPause";
+import FluidSmoke from "@/components/layout/FluidSmoke";
 import { FullpageProvider } from "@/lib/fullpage";
 import { HeaderMenuProvider } from "@/lib/header-menu";
 import { CinematicNavProvider } from "@/lib/cinematic-nav";
@@ -133,6 +134,10 @@ export default function RootLayout({
             </HeaderMenuProvider>
           </CinematicNavProvider>
         </FullpageProvider>
+        {/* Дым за курсором — на всех страницах, от заставки до модалок:
+            он сам решает, запускаться ли (только мышь, без reduced-motion),
+            и паркует свой цикл, пока курсор стоит. */}
+        <FluidSmoke />
         <Analytics />
       </body>
     </html>

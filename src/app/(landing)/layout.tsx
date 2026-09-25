@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
-import FluidSmoke from "@/components/layout/FluidSmoke";
 import Hero from "@/components/home/Hero";
 import PageSideNav from "@/components/home/PageSideNav";
 import ServicePicker from "@/components/home/ServicePicker";
@@ -33,28 +32,9 @@ export default function LandingLayout({ children }: { children: ReactNode }) {
   const pathname = useCleanPathname();
   const showChrome = TOP_LEVEL_ROUTES.has(pathname);
 
-  // Mirrors the checks FluidSmoke itself runs before touching WebGL (see
-  // that component) — done here too, one level up, so a touch device or a
-  // `prefers-reduced-motion` visitor never even fetches its chunk. Checked
-  // once on mount rather than derived at render time: matchMedia only
-  // exists in the browser, so this has to live in an effect regardless.
-  const [enableSmoke, setEnableSmoke] = useState(false);
-  useEffect(() => {
-    const finePointer = window.matchMedia("(pointer: fine)").matches;
-    const motionOk = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, matchMedia only exists in the browser
-    setEnableSmoke(finePointer && motionOk);
-  }, []);
-
   return (
     <WelcomeGateProvider>
       <WelcomeOverlay />
-      {/* Pointer-driven fluid smoke, screen-blended over the whole page.
-          Scoped to the four landings (same gate as Hero) so the lightweight
-          /content/[direction] reads don't carry a GPU simulation. Mounted
-          before the chrome so it survives nav between the four routes
-          without losing its dye field. */}
-      {showChrome && enableSmoke && <FluidSmoke />}
       {showChrome && <Hero />}
       {showChrome && <ServicePicker />}
       {showChrome && <PageSideNav />}
