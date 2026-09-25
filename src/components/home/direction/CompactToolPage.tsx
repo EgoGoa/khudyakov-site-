@@ -9,7 +9,8 @@ import TechBlock from "./blocks/TechBlock";
 import PricingBlock from "./blocks/PricingBlock";
 import ProcessBlock from "./blocks/ProcessBlock";
 import FaqCloseBlock from "./blocks/FaqCloseBlock";
-import type { CompactToolContent } from "./types";
+import SceneBreak from "./blocks/SceneBreak";
+import type { CompactToolContent, SceneBreakSlot } from "./types";
 
 // Компактная страница AI-инструмента — 7 экранов вместо 12 у DirectionPage.
 //
@@ -50,6 +51,11 @@ export default function CompactToolPage({
   // its pink→orange accent into its `.kw` headings instead of every /ai
   // tool's shared emerald default.
   const resolvedHeadingClass = content.headingClass ?? headingClass;
+  const breaks = content.sceneBreaks ?? [];
+  const after = (slot: SceneBreakSlot) => {
+    const i = breaks.findIndex((b) => b.after === slot);
+    return i === -1 ? null : <SceneBreak slug={content.slug} index={i} total={breaks.length} spec={breaks[i]} backdrop={content.backdrop} />;
+  };
   return (
     <DirectionTaskProvider tasks={content.tasks} title={content.hero.eyebrow}>
       <div className={`${resolvedHeadingClass} relative [overflow-x:clip]`}>
@@ -67,14 +73,17 @@ export default function CompactToolPage({
           assistantContext={content.hero.eyebrow}
           pageLabel={content.hero.eyebrow}
         />
+        {after("task")}
 
         <AudienceBlock audience={content.audience} />
         <TechBlock tech={content.tech} />
+        {after("cases")}
         {/* "" is /sites' deliberate "no heading override" (see sites/[format]/
             page.tsx). The pricing cards still need /sites' own theme though —
             glow, tier price colours, team pair — so only this block gets it. */}
         <PricingBlock pricing={content.pricing} headingClass={resolvedHeadingClass || "sites-warm-headings"} />
         <ProcessBlock process={content.process} />
+        {after("process")}
         <FaqCloseBlock faq={content.faq} close={content.close} />
       </div>
     </DirectionTaskProvider>

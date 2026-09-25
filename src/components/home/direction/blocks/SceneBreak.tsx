@@ -15,6 +15,7 @@ import SectionStage from "../SectionStage";
 import BlockMedia from "../BlockMedia";
 import { withAccent } from "../Accent";
 import { BIG_SCENES } from "./sceneBreakScenes";
+import { AI_BREAK_SCENES } from "./aiBreakScenes";
 import type { DirectionSceneBreak } from "../types";
 
 // Блок-перебивка между разделами страницы направления: одна сцена из окошка
@@ -40,7 +41,7 @@ function Scene({ slug, index }: { slug: string; index: number }) {
   const visible = useInView(ref, { margin: "0px 0px -10% 0px" });
   const reduced = useReducedMotion();
   const [cycle, setCycle] = useState(0);
-  const Big = BIG_SCENES[slug]?.[index];
+  const Big = (BIG_SCENES[slug] ?? AI_BREAK_SCENES[slug])?.[index];
   const Small = CONTENT_SCENES[slug]?.[index];
 
   // Сцена живёт по кругу, пока её видно: собралась → пожила → растворилась
@@ -64,7 +65,7 @@ function Scene({ slug, index }: { slug: string; index: number }) {
             className="absolute inset-0"
           >
             {Big ? (
-              <div className="tool-scene absolute inset-0 p-3 sm:p-4">
+              <div className={`tool-scene absolute inset-0 ${AI_BREAK_SCENES[slug] ? "p-0 sm:p-4" : "p-3 sm:p-4"}`}>
                 <Big />
               </div>
             ) : Small ? (
@@ -83,28 +84,50 @@ function Scene({ slug, index }: { slug: string; index: number }) {
   );
 }
 
-export default function SceneBreak({ slug, index, spec }: { slug: string; index: number; spec: DirectionSceneBreak }) {
+export default function SceneBreak({
+  slug,
+  index,
+  total: totalProp,
+  spec,
+  backdrop,
+}: {
+  slug: string;
+  index: number;
+  total: number;
+  spec: DirectionSceneBreak;
+  backdrop: { from: string; to: string };
+}) {
   const [consult, setConsult] = useState(false);
   const data = directionSpotlight(slug);
-  const figure = SCENE_FIGURES[slug]?.[index];
-  const benefit = data?.benefits[index];
   const member = TEAM[spec.memberId];
-  if (!data || !figure || !benefit) return null;
-  const total = data.benefits.length;
+  // Страницы AI-инструментов несут текст окна в самих данных (spec.own):
+  // окошка услуги на /content у них нет.
+  const own = spec.own;
+  const figure = own ? { value: own.value, note: own.note } : SCENE_FIGURES[slug]?.[index];
+  const benefit = own ? { label: own.label, text: own.text, accent: own.accent } : data?.benefits[index];
+  if (!figure || !benefit) return null;
+  const accent = data?.accent ?? backdrop;
+  const total = own ? totalProp : data?.benefits.length ?? totalProp;
 
   return (
     <SectionStage className="relative py-20 sm:py-28">
-      <BlockMedia media={{ gradient: data.accent, intensity: "medium" }} />
+      <BlockMedia media={{ gradient: accent, intensity: "medium" }} />
 
       <Container>
         <Appear from="up" delay={DIRECTION_BEAT.eyebrow}>
           <div
-            style={{ "--sp-from": data.accent.from, "--sp-to": data.accent.to } as React.CSSProperties}
+            style={{ "--sp-from": accent.from, "--sp-to": accent.to } as React.CSSProperties}
             className="glass-panel grid gap-6 rounded-3xl p-4 shadow-[0_0_90px_-30px_var(--sp-from)] sm:p-6 lg:grid-cols-[1.2fr_1fr] lg:gap-10 lg:p-8"
           >
             {/* Графика тянется на всю высоту текстовой колонки (lg), а на
                 телефоне держит пропорцию сцены 400×380. */}
-            <div className="relative aspect-[400/380] w-full overflow-hidden rounded-2xl bg-white/[0.025] ring-1 ring-white/10 lg:aspect-auto lg:min-h-[28rem]">
+            {/* У AI-сцен на телефоне графика без внутренних полей и чуть
+                шире колонки: вьюбокс сжимается меньше, подписи крупнее. */}
+            <div
+              className={`relative aspect-[400/380] overflow-hidden rounded-2xl bg-white/[0.025] ring-1 ring-white/10 lg:aspect-auto lg:min-h-[28rem] ${
+                spec.own ? "-mx-2 w-[calc(100%+1rem)] sm:mx-0 sm:w-full" : "w-full"
+              }`}
+            >
               <Scene slug={slug} index={index} />
             </div>
 

@@ -65,7 +65,7 @@ export default function DirectionPage({
   const breaks = content.sceneBreaks ?? [];
   const after = (slot: SceneBreakSlot) => {
     const i = breaks.findIndex((b) => b.after === slot);
-    return i === -1 ? null : <SceneBreak slug={content.slug} index={i} spec={breaks[i]} />;
+    return i === -1 ? null : <SceneBreak slug={content.slug} index={i} total={breaks.length} spec={breaks[i]} backdrop={content.backdrop} />;
   };
 
   return (

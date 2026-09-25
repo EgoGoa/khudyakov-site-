@@ -314,6 +314,16 @@ export type DirectionSceneBreak = {
   facts: DirectionStat[];
   /** Кто отвечает в форме «Проконсультироваться». */
   memberId: string;
+  /** Свой текст окна — у страниц AI-инструментов, у которых нет окошка
+   *  услуги на /content (SpotlightScenesContent), откуда берут текст
+   *  направления. Если задан, заменяет цифру, подпись и тезис оттуда. */
+  own?: {
+    label: string;
+    value: string;
+    note: string;
+    text: string;
+    accent?: string;
+  };
 };
 
 export type SceneBreakSlot = "task" | "audience" | "cases" | "budget" | "pricing" | "why" | "process" | "faq" | "assets";
@@ -379,6 +389,9 @@ export type CompactToolContent = {
   pricing: DirectionSectionHead & { tiers: DirectionTier[]; note: string };
 
   process: DirectionSectionHead & { steps: DirectionStep[]; typed?: string; teamAsk?: DirectionTeamAsk };
+  /** Окна-перебивки (SceneBreak), как у DirectionPage. Места в компактном
+   *  шаблоне: "task", "cases" (после техблока), "process". */
+  sceneBreaks?: DirectionSceneBreak[];
 
   /** Общий экран для FAQ и финального призыва — см. CompactFaqCloseBlock.
    *  `faq` несёт собственную шапку (эйбрау/заголовок/подзаголовок) и
