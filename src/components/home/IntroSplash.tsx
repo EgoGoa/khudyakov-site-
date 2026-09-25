@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { sound } from "@/lib/sound";
 import { createPortal } from "react-dom";
-import { motion } from "framer-motion";
+import { MotionConfig, motion } from "framer-motion";
 
 // Заставка входа: логотип проявляется на запотевшем стекле, которым накрыта
 // вся страница, а потом стекло растворяется — и за ним уже собрано меню
@@ -155,6 +155,11 @@ export default function IntroSplash({
   if (!mounted || !playing) return null;
 
   return createPortal(
+    // Заставка всегда играет полностью, на любом уровне устройства: в режиме
+    // reducedMotion (MotionTier, mid/low) framer прыгает сразу в последний
+    // кадр ключей — знак оказывался сдвинутым вверх, буквы — не на месте.
+    // Она идёт 1.5с, это дёшево даже для слабого железа.
+    <MotionConfig reducedMotion="never">
     <div
       // По центру экрана — финальное ТЗ Егора. Меню теперь начинает
       // открываться только в момент, когда знак уже начал таять (T_REVEAL =
@@ -330,7 +335,8 @@ export default function IntroSplash({
         </div>
         </motion.div>
       </div>
-    </div>,
+    </div>
+    </MotionConfig>,
     document.body
   );
 }
