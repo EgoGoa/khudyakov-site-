@@ -38,41 +38,41 @@ const DYE_RESOLUTION = 900;
 // the cursor leaves them, high enough that they don't drift off on their own.
 const VELOCITY_DISSIPATION = 2.2;
 // How fast the smoke itself fades.
-const DENSITY_DISSIPATION = 9;
+const DENSITY_DISSIPATION = 4.5;
 const PRESSURE = 0.8;
 const PRESSURE_ITERATIONS = 20;
 // Vorticity confinement: keeps small curls from being smeared by the grid.
 const CURL = 14;
 // Gaussian radius of the push along the path (UV², before aspect fix).
-const SPLAT_RADIUS = 0.0001;
+const SPLAT_RADIUS = 0.0004;
 // The cursor is a hand moving through smoke: it shoves the air in front of
 // it at close to its own speed, so the fresh smoke is driven AHEAD of the
 // cursor and rolls up at the front instead of being left behind as a tail.
 const FOLLOW = 0.9;
 // Smoke appears this far ahead of the cursor along its direction of travel
 // (css px), further on a fast move.
-const LEAD = 5;
-const LEAD_FAST = 14;
+const LEAD = 10;
+const LEAD_FAST = 28;
 // Cursor speed (css px/s) beyond which a flick stops getting stronger.
 const MAX_SPEED = 3000;
 const SPLAT_SPACING = 8;
 // Eddies: one every VORTEX_SPACING px of travel, just off the path,
 // alternating side and spin. Radius in css px grows with speed.
-const VORTEX_SPACING = 27;
+const VORTEX_SPACING = 54;
 const VORTEX_GAIN = 0.8;
-const VORTEX_RADIUS = 8;
-const VORTEX_RADIUS_FAST = 14;
+const VORTEX_RADIUS = 16;
+const VORTEX_RADIUS_FAST = 28;
 const VORTEX_OFFSET = 0.85;
 
 // ── Smoke emission ───────────────────────────────────────────────────────
 // Parallel thin streams, css px apart, each with its own slow weave.
 const STREAMS = 3;
-const STREAM_GAP = 2;
-const STREAM_WOBBLE = 1.25;
+const STREAM_GAP = 4;
+const STREAM_WOBBLE = 2.5;
 const EMIT_SPACING = 2;
 // Gaussian sigma of one dye sprite, css px — slow and fast.
-const EMIT_SIGMA = 2.2;
-const EMIT_SIGMA_FAST = 2.9;
+const EMIT_SIGMA = 4.4;
+const EMIT_SIGMA_FAST = 5.8;
 const EMIT_STRENGTH = 0.068;
 // Display: overall exposure, and how strongly the soft top light shapes
 // the smoke into volume (0 = flat).
@@ -99,7 +99,7 @@ const STROKE_BREAK_MS = 220;
 const DIFFUSION = 6;
 // After the pointer goes quiet the field still needs time to fade; once it
 // has, the rAF loop parks itself instead of burning GPU on a black frame.
-const IDLE_GRACE_MS = 1400;
+const IDLE_GRACE_MS = 2400;
 
 const BASE_VERTEX = `
 precision highp float;
