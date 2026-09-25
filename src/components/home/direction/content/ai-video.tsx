@@ -393,6 +393,50 @@ export const aiVideoContent: DirectionContent = {
   assetsMedia:
   { photo: "/images/stock/collage-laptop-head.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
 
+  // Окошки услуги как постоянные блоки — та же механика, что на
+  // presentation.tsx. Порядок массива обязан совпадать с порядком тезисов
+  // «ai-video» в spotlightDirections.ts (Кадр → Голос → Гибрид → Варианты):
+  // SceneBreak берёт тезис и цифру по индексу внутри этого массива, а не по
+  // названию. Цифры — только уже опубликованные на этой странице.
+  sceneBreaks: [
+    {
+      after: "task",
+      memberId: "max",
+      facts: [
+        { value: "5–7 дней", label: "до первой версии генерации" },
+        { value: "2024", label: "старт работы с AI" },
+        { value: "1", label: "честный ответ, если дешевле снять" },
+      ],
+    },
+    {
+      after: "cases",
+      memberId: "max",
+      facts: [
+        { value: "1:05", label: "наш AI-шоурил без камеры" },
+        { value: "6", label: "работ в подборке AI-видео" },
+        { value: "×3", label: "втрое больше готовых идей" },
+      ],
+    },
+    {
+      after: "pricing",
+      memberId: "max",
+      facts: [
+        { value: "8 сцен", label: "лимит на один ролик" },
+        { value: "Языки", label: "голос и субтитры под язык" },
+        { value: "5", label: "этапов от идеи до сдачи" },
+      ],
+    },
+    {
+      after: "assets",
+      memberId: "max",
+      facts: [
+        { value: "NDA", label: "данные под NDA не уходят в модель" },
+        { value: "8 лет", label: "в живых съёмках до AI" },
+        { value: "дни", label: "вместо недель на первую версию" },
+      ],
+    },
+  ],
+
   close: {
     media: {
       video: "/video/works/showreel24.mp4",

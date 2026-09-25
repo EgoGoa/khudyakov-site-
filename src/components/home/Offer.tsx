@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { MAX_AI, MAX_CONTENT } from "@/components/home/team-pulse/content/max-content";
 import Link from "next/link";
 import CinematicSection from "@/components/ui/CinematicSection";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
@@ -288,6 +290,10 @@ export default function Offer({
                     on the site should read as written to a specific person,
                     with a real question, not a form. Max (creative
                     scriptwriter) fits directly — concepts are his own work. */}
+                {active === "content" || active === "ai" ? (
+                  // Макс как сервис (TeamPulse) вместо карточки.
+                  <TeamPulse data={active === "ai" ? MAX_AI : MAX_CONTENT} compact source={`/${active} · глава «Лучшие в …»`} />
+                ) : (
                 <TeamAskCard
                   member={TEAM.max}
                   // Compact variant only shows `question`, not `pitch` — the
@@ -297,6 +303,7 @@ export default function Offer({
                   actionLabel={teamAskCopy.actionLabel}
                   compact
                 />
+                )}
               </div>
             </>
           ) : (

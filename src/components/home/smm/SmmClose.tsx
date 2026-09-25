@@ -138,7 +138,7 @@ export default function SmmClose() {
           follows the deck — see shared/SeoLongRead. */}
       <Appear from="up" delay={BEAT.cta}>
         <div className="mt-6 [@media(max-height:820px)]:hidden">
-          <TeamRow members={PAGE_TEAM.smm} />
+          <TeamRow members={PAGE_TEAM.smm} page="smm" />
         </div>
       </Appear>
 

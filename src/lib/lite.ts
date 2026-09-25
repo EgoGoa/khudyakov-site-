@@ -45,4 +45,4 @@ if(fm==="0")return;
 if(d.hasAttribute("data-mid"))return;
 var mid=ss.getItem("midAuto")==="1"||/^3g$/.test(c.effectiveType||"")||(n.deviceMemory&&n.deviceMemory<=4)||(n.hardwareConcurrency&&n.hardwareConcurrency<=4);
 if(mid)d.setAttribute("data-mid","1")
-}catch(e){}})();`;
+}catch(e){}})();(function(){var d=document.documentElement;d.setAttribute("data-tier",d.hasAttribute("data-lite")?"low":d.hasAttribute("data-mid")?"mid":"high")})();`;

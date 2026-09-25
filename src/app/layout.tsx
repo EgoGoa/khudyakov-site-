@@ -1,13 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Unbounded, Manrope, JetBrains_Mono } from "next/font/google";
+import { Unbounded, Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
+import SoundSystem from "@/components/layout/SoundSystem";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import MobileScrollRail from "@/components/ui/MobileScrollRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import MediaGovernor from "@/components/layout/MediaGovernor";
+import PerfGovernor from "@/components/layout/PerfGovernor";
+import MotionTier from "@/components/layout/MotionTier";
 import { LITE_DETECT_SNIPPET } from "@/lib/lite";
 import OffscreenAnimationPause from "@/components/layout/OffscreenAnimationPause";
 import FluidSmoke from "@/components/layout/FluidSmoke";
@@ -33,24 +36,10 @@ const bebas = Unbounded({
   weight: ["500", "600", "700", "800", "900"],
 });
 
-// Моноширинный тоже обязан иметь кириллицу.
-//
-// Здесь стоял Azeret Mono с subsets: ["latin"] — и это была настоящая
-// ошибка, а не стилистический выбор. Кириллицы у него нет вовсе, поэтому
-// каждая русская подпись на сайте (а их 145) рисовалась подменным
-// системным шрифтом, тогда как цифры в той же строке — самим Azeret.
-// Два шрифта в одной строке: разная высота, разная ширина знака, разный
-// вес. Егор увидел это на «ШАГ 1 ИЗ 3» и назвал «скачет размер шрифтов».
-//
-// JetBrains Mono несёт кириллицу нативно, поэтому буквы и цифры снова
-// приходят из одной гарнитуры. Имя переменной оставлено прежним, чтобы не
-// трогать tailwind.config и полторы сотни мест разом.
-const azeretMono = JetBrains_Mono({
-  subsets: ["latin", "cyrillic"],
-  variable: "--font-azeret-mono",
-  display: "swap",
-  weight: ["400", "500", "600"],
-});
+// Моноширинного шрифта больше нет: после запрета тонкого моно (JetBrains
+// Mono мелким капсом) его не использовал ни один элемент, а файлы всё равно
+// предзагружались на каждой странице. `font-mono` / --font-azeret-mono
+// откатываются на системный ui-monospace.
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://khudyakov-site.vercel.app";
 const TITLE = "HUD.SERVICE — AI-диджитал сервис полного цикла";
@@ -99,7 +88,7 @@ export default function RootLayout({
       lang="ru"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${montserrat.variable} ${bebas.variable} ${azeretMono.variable}`}
+      className={`${montserrat.variable} ${bebas.variable}`}
     >
       <head>
         {/* Marks weak devices / slow connections before first paint so the
@@ -108,12 +97,20 @@ export default function RootLayout({
       </head>
       <body className="relative bg-ink font-sans text-paper antialiased">
         <BackgroundFX />
+        {/* Уточняет уровень устройства (слабое/среднее/сильное) по видеокарте
+            и реальным кадрам и при тормозах снижает его — см. компонент. */}
+        <PerfGovernor />
         <MediaGovernor />
         {/* Замораживает CSS-анимации в блоках за пределами экрана — см.
             сам компонент. Здесь, а не в шаблонах страниц: бесконечные
             анимации (неоновые пульсации кнопок, карточек, фото команды)
             живут на каждой странице сайта. */}
         <OffscreenAnimationPause />
+        {/* Звуки интерфейса и смены страниц — см. lib/sound. */}
+        <SoundSystem />
+        {/* На слабых устройствах анимации появления — без полётов и
+            масштабов, только проявление (см. компонент). */}
+        <MotionTier>
         <FullpageProvider>
           <CinematicNavProvider>
             <HeaderMenuProvider>
@@ -134,6 +131,7 @@ export default function RootLayout({
             </HeaderMenuProvider>
           </CinematicNavProvider>
         </FullpageProvider>
+        </MotionTier>
         {/* Дым за курсором — на всех страницах, от заставки до модалок:
             он сам решает, запускаться ли (только мышь, без reduced-motion),
             и паркует свой цикл, пока курсор стоит. */}

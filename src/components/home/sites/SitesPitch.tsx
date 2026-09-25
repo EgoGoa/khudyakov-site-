@@ -9,8 +9,8 @@ import { BEAT } from "@/lib/motion";
 import SitesDeck, { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { EYEBROW } from "@/lib/typography";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { EGOR_SITES } from "@/components/home/team-pulse/content/egor-sites";
 
 // Chapter 01 of /sites — the opening pitch, one level in from the site's own
 // universal Hero (see (landing)/layout.tsx, and the same reasoning in
@@ -99,15 +99,10 @@ export default function SitesPitch() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <TeamAskCard
-              member={TEAM.egor}
-              question="Скажу сроки и бюджет сайта сразу, без долгого КП"
-              pitch="Расскажу, что войдёт в сайт, сроки и бюджет — до брифа, бесплатно."
-              actionLabel="Обсудить проект"
-              href="/brief/sites"
-              compact
-              className="mt-4"
-            />
+{/* Егор как сервис — уведомление на месте прежней карточки. */}
+            <div className="mt-4">
+              <TeamPulse data={EGOR_SITES} compact source="/sites · глава «Сайты на AI»" />
+            </div>
           </Appear>
           </div>
         </div>

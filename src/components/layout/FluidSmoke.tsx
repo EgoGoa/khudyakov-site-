@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { getTier, isSlowNet, onTierChange } from "@/lib/perf-tier";
 
 // Pointer-driven smoke: soft like the real thing, but with every curl
 // readable.
@@ -30,10 +31,20 @@ import { useEffect, useRef } from "react";
 // against black is a no-op, so the page shows through everywhere else.
 //
 // Desktop only, by design: touch devices have no persistent pointer.
+//
+// Follows the performance tier (lib/perf-tier): on a weak device (low) or a
+// thin connection it never starts — the ordinary cursor stays, no smoke. On a
+// mid device the solver runs on a coarser grid at 1x pixels with fewer
+// pressure passes: the same look, roughly a quarter of the GPU work. A live
+// downgrade (PerfGovernor) is picked up without a reload.
 
 // ── Fluid ────────────────────────────────────────────────────────────────
 const SIM_RESOLUTION = 256;
 const DYE_RESOLUTION = 900;
+// Mid tier: coarser grid, 1x canvas, fewer pressure passes.
+const SIM_RESOLUTION_MID = 128;
+const DYE_RESOLUTION_MID = 512;
+const PRESSURE_ITERATIONS_MID = 10;
 // How fast momentum dies. Low enough that eddies keep turning ~1.5s after
 // the cursor leaves them, high enough that they don't drift off on their own.
 const VELOCITY_DISSIPATION = 2.2;
@@ -73,7 +84,7 @@ const EMIT_SPACING = 2;
 // Gaussian sigma of one dye sprite, css px — slow and fast.
 const EMIT_SIGMA = 4.4;
 const EMIT_SIGMA_FAST = 5.8;
-const EMIT_STRENGTH = 0.068;
+const EMIT_STRENGTH = 0.034;
 // Display: overall exposure, and how strongly the soft top light shapes
 // the smoke into volume (0 = flat).
 const EXPOSURE = 1.5;
@@ -446,6 +457,21 @@ export default function FluidSmoke() {
     if (!canvas) return;
     if (window.matchMedia("(pointer: coarse)").matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (getTier() === "low" || isSlowNet()) return;
+
+    // Tier-dependent quality; reassigned on a live downgrade.
+    let simTarget = SIM_RESOLUTION;
+    let dyeTarget = DYE_RESOLUTION;
+    let pressureIterations = PRESSURE_ITERATIONS;
+    let dprCap = 2;
+    const applyTier = () => {
+      const mid = getTier() === "mid";
+      simTarget = mid ? SIM_RESOLUTION_MID : SIM_RESOLUTION;
+      dyeTarget = mid ? DYE_RESOLUTION_MID : DYE_RESOLUTION;
+      pressureIterations = mid ? PRESSURE_ITERATIONS_MID : PRESSURE_ITERATIONS;
+      dprCap = mid ? 1 : 2;
+    };
+    applyTier();
 
     const gl = canvas.getContext("webgl2", {
       alpha: false,
@@ -602,8 +628,8 @@ export default function FluidSmoke() {
     function initFramebuffers() {
       // A resize restarts the field — a moment of calm, never a visible jump
       // worth the complexity of resampling smoke that fades in seconds anyway.
-      const simRes = resolution(SIM_RESOLUTION);
-      const dyeRes = resolution(DYE_RESOLUTION);
+      const simRes = resolution(simTarget);
+      const dyeRes = resolution(dyeTarget);
       dye = createDoubleFBO(dyeRes.width, dyeRes.height, gl!.RGBA16F, gl!.RGBA, HALF_FLOAT, gl!.LINEAR);
       velocity = createDoubleFBO(simRes.width, simRes.height, gl!.RG16F, gl!.RG, HALF_FLOAT, gl!.LINEAR);
       divergence = createFBO(simRes.width, simRes.height, gl!.R16F, gl!.RED, HALF_FLOAT, gl!.NEAREST);
@@ -612,7 +638,7 @@ export default function FluidSmoke() {
     }
 
     function resizeCanvas() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
       const w = Math.floor(window.innerWidth * dpr);
       const h = Math.floor(window.innerHeight * dpr);
       if (canvas!.width !== w || canvas!.height !== h) {
@@ -669,7 +695,7 @@ export default function FluidSmoke() {
       gl!.useProgram(pressureProgram.program);
       gl!.uniform2f(pressureProgram.uniforms.texelSize!, velocity.texelSizeX, velocity.texelSizeY);
       gl!.uniform1i(pressureProgram.uniforms.uDivergence!, divergence.attach(0));
-      for (let i = 0; i < PRESSURE_ITERATIONS; i += 1) {
+      for (let i = 0; i < pressureIterations; i += 1) {
         gl!.uniform1i(pressureProgram.uniforms.uPressure!, pressure.read.attach(1));
         blit(pressure.write);
         pressure.swap();
@@ -932,6 +958,10 @@ export default function FluidSmoke() {
       if (now - lastActivity > IDLE_GRACE_MS) {
         running = false;
         raf = 0;
+        // The field has faded to black by now; hiding the canvas drops the
+        // full-screen screen-blend layer, which otherwise costs a blend of
+        // the whole page on every scroll frame even while nothing moves.
+        canvas!.style.visibility = "hidden";
         return;
       }
       raf = requestAnimationFrame(frame);
@@ -941,6 +971,7 @@ export default function FluidSmoke() {
       lastActivity = performance.now();
       if (running || document.hidden) return;
       running = true;
+      canvas!.style.visibility = "visible";
       lastTime = performance.now();
       raf = requestAnimationFrame(frame);
     }
@@ -969,6 +1000,21 @@ export default function FluidSmoke() {
 
     const onResize = () => wake();
 
+    const stopTierWatch = onTierChange((tier) => {
+      if (tier === "low") {
+        // Weak after all: stand down for the rest of the visit.
+        window.removeEventListener("pointermove", onMove);
+        if (raf) cancelAnimationFrame(raf);
+        raf = 0;
+        running = false;
+        canvas!.style.visibility = "hidden";
+        return;
+      }
+      applyTier();
+      resizeCanvas();
+      initFramebuffers();
+    });
+
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("resize", onResize, { passive: true });
@@ -977,6 +1023,7 @@ export default function FluidSmoke() {
       window.removeEventListener("pointermove", onMove);
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("resize", onResize);
+      stopTierWatch();
       if (raf) cancelAnimationFrame(raf);
       // Deliberately NOT calling WEBGL_lose_context here. If the canvas node
       // outlives the effect — React's dev double-invoke, or an HMR update —
@@ -995,7 +1042,7 @@ export default function FluidSmoke() {
       // (z-100) included — the smoke follows the cursor over any element.
       // pointer-events-none + screen blend keep it purely visual.
       className="pointer-events-none fixed inset-0 z-[130] hidden h-full w-full sm:block"
-      style={{ mixBlendMode: "screen" }}
+      style={{ mixBlendMode: "screen", visibility: "hidden" }}
     />
   );
 }

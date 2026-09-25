@@ -534,6 +534,16 @@ function AiVariants({ mini }: SceneProps) {
 
 const AI_VIDEO = [AiShot, AiVoice, AiHybrid, AiVariants];
 
+// Те же цифры и before/after, что зашиты в самих сценах выше (Headline и
+// BeforeAfter) — вынесены в массив только для SceneBreak на странице
+// направления, который рендерит их отдельно от самой сцены.
+const AI_VIDEO_FIG: SceneFigure[] = [
+  { value: "дни", note: "вместо недель на первую версию", before: "Нет локации — нет кадра", after: "Кадр из описания" },
+  { value: "1 голос", note: "на любом языке", before: "Дубляж: недели работы", after: "Тот же голос, любой язык" },
+  { value: "живое + AI", note: "в одном ролике", before: "Съёмка или ничего", after: "Камера + AI в одном" },
+  { value: "×3", note: "вариантов на том же бюджете", before: "Одна дорогая ставка", after: "Выбор из готовых идей" },
+];
+
 /* ═══ Графика и анимация ════════════════════════════════════════════ */
 
 /** 01 · Невидимое. Разрез изделия — то, что не снять объективом. */
@@ -663,6 +673,15 @@ function GfxLogo({ mini }: SceneProps) {
 }
 
 const GRAPHICS = [GfxCutaway, Gfx3d, GfxData, GfxLogo];
+
+// Те же цифры и before/after, что зашиты в самих сценах выше — вынесены в
+// массив для SceneBreak на странице направления (см. AI_VIDEO_FIG выше).
+const GRAPHICS_FIG: SceneFigure[] = [
+  { value: "разрез", note: "показываем то, что не снять", before: "«Там сложный механизм»", after: "Механизм виден и понятен" },
+  { value: "360°", note: "продукт без съёмочной смены", before: "Прототипа ещё нет", after: "Изделие со всех сторон" },
+  { value: "1 мин", note: "вместо страницы текста", before: "Таблица на 10 экранов", after: "Понятно за одну минуту" },
+  { value: "7 сек", note: "и логотип оживает", before: "Статичный логотип", after: "Анимация на всех видео" },
+];
 
 /* ═══ Расширенные окна страниц направлений: сцены 5 и 6 ═════════════ */
 
@@ -926,6 +945,8 @@ export const SCENE_FIGURES: Record<string, SceneFigure[]> = {
   presentation: PRES_FIG,
   advertising: AD_FIG,
   image: IMG_FIG,
+  "ai-video": AI_VIDEO_FIG,
+  graphics: GRAPHICS_FIG,
 };
 
 export const CONTENT_SCENES: Record<string, ((p: SceneProps) => React.ReactElement)[]> = {

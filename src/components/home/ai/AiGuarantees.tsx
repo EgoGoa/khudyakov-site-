@@ -4,9 +4,9 @@ import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import CinematicSection from "@/components/ui/CinematicSection";
 import AiDecoIcon from "@/components/home/ai/AiDecoIcon";
 import Appear from "@/components/ui/Appear";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { EGOR_AI } from "@/components/home/team-pulse/content/egor-ai";
 import { BEAT, STAGGER } from "@/lib/motion";
-import { TEAM } from "@/lib/team";
 
 // Chapter 06 — "you're buying a system, not a post" thesis, terms (rights/
 // SLA/timelines), contractual guarantees, and a compact FAQ, all folded into
@@ -316,15 +316,9 @@ export default function AiGuarantees() {
             as the list beside it. */}
         <div className="mt-8 flex flex-col gap-4 lg:mt-0 lg:h-[560px] lg:w-[360px] lg:shrink-0 xl:w-[400px]">
           <Appear from="right" delay={BEAT.content + TERMS.length * STAGGER.tight} className="lg:h-[calc(50%-8px)]">
-            <TeamAskCard
-              member={TEAM.egor}
-              question="Обсудим условия сотрудничества и детали проекта"
-              pitch="Голосом или в переписке — как удобнее. Отвечу по цене, срокам и что войдёт в пилот."
-              actionLabel="Обсудить детали"
-              className="h-full"
-              backgroundImage="/images/blocks/stock-brainstorm.jpg"
-              dense
-            />
+{/* Егор как сервис (TeamPulse) — на месте прежней карточки
+                TeamAskCard, в своём оранжево-жёлтом (см. egor-ai.tsx). */}
+            <TeamPulse data={EGOR_AI} />
           </Appear>
           <Appear
             from="right"

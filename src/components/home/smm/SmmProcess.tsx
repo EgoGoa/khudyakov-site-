@@ -9,8 +9,8 @@ import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { SMM_PROCESS_STEPS } from "@/components/home/smm/smmProcessSteps";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { EGOR_SMM } from "@/components/home/team-pulse/content/egor-smm";
 
 // Chapter 04 of /smm — the five steps from audit to report.
 //
@@ -86,13 +86,7 @@ export default function SmmProcess() {
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
         rightFooter={<ToolSpotlight slug="smm-carousel" accent={SMM_ACCENT} shape="card" />}
         askCard={
-          <TeamAskCard
-            member={TEAM.egor}
-            question="Отвечу по этапам быстрее, чем вы заполните бриф"
-            pitch="Отвечу быстрее, чем вы заполните бриф."
-            actionLabel="Спросить Егора"
-            compact
-          />
+          <TeamPulse data={EGOR_SMM} source="/smm · глава «Как проходит работа»" />
         }
       >
         {/* Same fix as SmmOffer's list: the panel now arrives on the same

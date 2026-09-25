@@ -31,9 +31,12 @@ export type CabinetState = {
   name?: string;
   phone?: string;
   email?: string;
-  /** Приветственный бонус на лицевом счёте — на выбор определённых услуг. */
-  bonus: number;
-  /** Когда приняты соглашение, правила бонуса и согласие на ПДн — след
+  /** Подарок за регистрацию — сколько генераций изображения осталось.
+   *  Денег и бонусных рублей в кабинете нет (решение Егора). */
+  gifts: number;
+  /** Что клиент уже заказал в счёт подарка. */
+  giftRequests: { at: number; prompt: string }[];
+  /** Когда приняты соглашение, правила подарка и согласие на ПДн — след
    *  согласия, который уходит команде вместе с регистрацией. */
   agreedAt?: number;
   /** Отдельное необязательное согласие на рассылки (закон о рекламе). */
@@ -52,17 +55,22 @@ export type CabinetState = {
 
 const KEY = "hdkv-cabinet";
 const EVENT = "hdkv-cabinet-change";
-const EMPTY: CabinetState = { registered: false, bonus: 0, profile: { goals: [], want: [] }, orders: [], history: [], favorites: [], cart: [], dismissed: [], interests: [] };
+const EMPTY: CabinetState = { registered: false, gifts: 0, giftRequests: [], profile: { goals: [], want: [] }, orders: [], history: [], favorites: [], cart: [], dismissed: [], interests: [] };
 
-/** Бонус при регистрации — 5 000 ₽ на услуги из списка BONUS_SERVICES. */
-export const WELCOME_BONUS = 5000;
+/** Подарок при регистрации — 3 генерации изображения на свежих нейросетях. */
+export const WELCOME_GIFTS = 3;
 
 export const ORDER_STAGES = ["Бриф получен", "Концепции", "Выбор", "Работа", "Готово"];
 
 export function readCabinet(): CabinetState {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? { ...EMPTY, ...(JSON.parse(raw) as Partial<CabinetState>) } : EMPTY;
+    if (!raw) return EMPTY;
+    const saved = JSON.parse(raw) as Partial<CabinetState> & { bonus?: number };
+    // Кабинеты, созданные при старом бонусе 5 000 ₽, получают подарок.
+    if (saved.registered && saved.gifts === undefined) saved.gifts = WELCOME_GIFTS;
+    delete saved.bonus;
+    return { ...EMPTY, ...saved };
   } catch {
     return EMPTY;
   }
@@ -136,7 +144,7 @@ export function answerQuestion(answer: string) {
   writeCabinet((s) => ({ ...s, answeredQuestion: answer, history: log(s, `Ответ команде: ${answer}`) }));
 }
 
-/** Регистрация: сохраняем контакт, начисляем бонус и сообщаем команде
+/** Регистрация: сохраняем контакт, дарим генерации и сообщаем команде
  *  обычной заявкой (тот же `fetch("/api/lead"`, что у всех форм — на
  *  статической сборке он подменяется на lead.php). */
 export async function register(r: { name: string; phone: string; email?: string; marketing: boolean }) {
@@ -148,8 +156,8 @@ export async function register(r: { name: string; phone: string; email?: string;
     email: r.email,
     marketing: r.marketing,
     agreedAt: Date.now(),
-    bonus: s.registered ? s.bonus : WELCOME_BONUS,
-    history: log(s, `Регистрация · бонус ${WELCOME_BONUS.toLocaleString("ru-RU")} ₽ на счёте`),
+    gifts: s.registered ? s.gifts : WELCOME_GIFTS,
+    history: log(s, `Регистрация · в подарок ${WELCOME_GIFTS} генерации изображения`),
   }));
   try {
     await fetch("/api/lead", {
@@ -163,8 +171,8 @@ export async function register(r: { name: string; phone: string; email?: string;
         fields: {
           "Кому адресовано": "Команда (личный кабинет)",
           "Событие": "Регистрация в кабинете",
-          "Бонус": `${WELCOME_BONUS} ₽`,
-          "Согласия": `Соглашение, правила бонуса, обработка ПДн — ${new Date().toLocaleString("ru-RU")}`,
+          "Подарок": `${WELCOME_GIFTS} генерации изображения`,
+          "Согласия": `Соглашение, правила подарка, обработка ПДн — ${new Date().toLocaleString("ru-RU")}`,
           "Рассылки": r.marketing ? "согласен(на)" : "нет",
         },
       }),
@@ -172,6 +180,36 @@ export async function register(r: { name: string; phone: string; email?: string;
   } catch {
     /* кабинет всё равно открывается — контакт сохранён локально */
   }
+}
+
+/** Генерация в счёт подарка: клиент описывает картинку, заявка уходит
+ *  команде (генерируем мы, на свежих моделях), счётчик уменьшается.
+ *  Автоматической генерации на сайте пока нет — нужен сервер и ключ API. */
+export async function requestGift(prompt: string) {
+  const s = readCabinet();
+  if (s.gifts <= 0) throw new Error("no_gifts");
+  writeCabinet((st) => ({
+    ...st,
+    gifts: st.gifts - 1,
+    giftRequests: [{ at: Date.now(), prompt }, ...st.giftRequests],
+    history: log(st, `Подарочная генерация заказана: «${prompt}»`),
+  }));
+  const res = await fetch("/api/lead", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "team",
+      name: s.name || "Клиент из кабинета",
+      phone: s.phone,
+      email: s.email || undefined,
+      fields: {
+        "Кому адресовано": "Команда (личный кабинет)",
+        "Событие": `Подарочная генерация изображения (${WELCOME_GIFTS - s.gifts + 1} из ${WELCOME_GIFTS})`,
+        "Что сгенерировать": prompt,
+      },
+    }),
+  });
+  if (!res.ok) throw new Error("send_failed");
 }
 
 /** Сообщение команде из кабинета — настоящая заявка. */

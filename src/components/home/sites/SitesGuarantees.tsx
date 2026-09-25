@@ -10,8 +10,8 @@ import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import { EYEBROW } from "@/lib/typography";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { EGOR_SITES } from "@/components/home/team-pulse/content/egor-sites";
 
 // Chapter 05 — "why us" (brief §9) plus the FAQ (brief §10), folded into one
 // screen the same way AiGuarantees.tsx pairs its terms list with an FAQ
@@ -125,15 +125,10 @@ export default function SitesGuarantees() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <TeamAskCard
-              member={TEAM.egor}
-              question="Фиксирую сроки и оплату в договоре — без сюрпризов"
-              pitch="Отвечу по договору, срокам и оплате — фиксируем всё на берегу."
-              actionLabel="Обсудить проект"
-              href="/brief/sites"
-              compact
-              className="mt-4"
-            />
+{/* Егор как сервис — уведомление на месте прежней карточки. */}
+            <div className="mt-4">
+              <TeamPulse data={EGOR_SITES} compact source="/sites · глава «Почему мы»" />
+            </div>
           </Appear>
           <ToolSpotlight slug="site-card" accent={SITES_ACCENT} place="left" />
           {/* AI-ассистент переехал сюда с главы 06 (Close) — Егор попросил

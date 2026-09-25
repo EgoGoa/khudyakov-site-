@@ -110,7 +110,7 @@ export default function SceneBreak({
   const total = own ? totalProp : data?.benefits.length ?? totalProp;
 
   return (
-    <SectionStage className="relative py-20 sm:py-28">
+    <SectionStage className="relative py-10 sm:py-14">
       <BlockMedia media={{ gradient: accent, intensity: "medium" }} />
 
       <Container>

@@ -2,9 +2,11 @@
 
 import { useEffect } from "react";
 import { MOBILE_VIDEOS } from "@/lib/mobile-videos";
+import { getTier, isSlowNet, onTierChange } from "@/lib/perf-tier";
 
 // Keeps video cheap without touching every component that renders one:
-//  * small screens / Data Saver get the pre-encoded "-mobile" cut of a reel
+//  * small screens, Data Saver and 2G connections get the
+//    pre-encoded "-mobile" cut of a reel
 //    (swapped before it starts downloading);
 //  * weak devices (html[data-lite], see lib/lite.ts) never load video at all —
 //    the poster / still under it stays;
@@ -23,11 +25,10 @@ const mobileOf = (src: string) => src.replace(/\.mp4$/, "-mobile.mp4");
 
 export default function MediaGovernor() {
   useEffect(() => {
-    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-    const small = window.matchMedia("(max-width: 1023px)").matches || conn?.saveData === true;
-    const root = document.documentElement;
-    const lite = root.hasAttribute("data-lite");
-    const mid = !lite && root.hasAttribute("data-mid");
+    const small = window.matchMedia("(max-width: 1023px)").matches || isSlowNet();
+    // Read live, not once: PerfGovernor can step the tier down mid-visit.
+    let lite = getTier() === "low";
+    let mid = getTier() === "mid";
 
     const visible = new WeakMap<HTMLVideoElement, boolean>();
     const io = new IntersectionObserver(
@@ -52,7 +53,11 @@ export default function MediaGovernor() {
     let nowPlaying: HTMLVideoElement | null = null;
 
     function settle(v: HTMLVideoElement) {
-      if (!v.loop || lite) return;
+      if (!v.loop) return;
+      if (lite) {
+        if (!v.paused) v.pause();
+        return;
+      }
       const shouldPlay = visible.get(v) !== false && onStage(v) && !document.hidden;
       if (!shouldPlay) {
         if (!v.paused) v.pause();
@@ -115,10 +120,20 @@ export default function MediaGovernor() {
     const onVis = () => document.querySelectorAll("video").forEach((v) => settle(v));
     document.addEventListener("visibilitychange", onVis);
 
+    // A live downgrade: already-loaded clips are paused (lite) or thinned to
+    // one at a time (mid) rather than unloaded — their bytes are spent.
+    const stopTierWatch = onTierChange((tier) => {
+      lite = tier === "low";
+      mid = tier === "mid";
+      nowPlaying = null;
+      onVis();
+    });
+
     return () => {
       io.disconnect();
       mo.disconnect();
       document.removeEventListener("visibilitychange", onVis);
+      stopTierWatch();
     };
   }, []);
 

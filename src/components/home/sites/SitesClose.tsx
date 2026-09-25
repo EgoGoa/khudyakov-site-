@@ -117,7 +117,7 @@ export default function SitesClose() {
 
       <Appear from="up" delay={BEAT.content + 0.1}>
         <div className="mt-6 [@media(max-height:820px)]:hidden">
-          <TeamRow members={PAGE_TEAM.sites} />
+          <TeamRow members={PAGE_TEAM.sites} page="sites" />
         </div>
       </Appear>
 

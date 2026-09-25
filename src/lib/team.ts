@@ -5,6 +5,8 @@ export type TeamMember = {
    *  reads as broken where "Написать Максу" doesn't. Used anywhere the name
    *  follows "написать"/"позвонить"/etc. */
   nameDative: string;
+  /** «Заявка у Егора» — родительный падеж для подписей окна команды. */
+  nameGenitive: string;
   role: string;
   /** What this person can help with, in the instrumental case — this always
    *  follows "помогу с:" ("помогу с чем?" asks for the instrumental), shown
@@ -23,6 +25,7 @@ export const TEAM: Record<string, TeamMember> = {
     id: "egor",
     name: "Егор",
     nameDative: "Егору",
+    nameGenitive: "Егора",
     role: "линейный продюсер",
     helpsWith: "сроками, бюджетом и любыми вопросами по проекту",
     photo: "/team/egor.jpg",
@@ -31,6 +34,7 @@ export const TEAM: Record<string, TeamMember> = {
     id: "dima",
     name: "Вадим",
     nameDative: "Вадиму",
+    nameGenitive: "Вадима",
     role: "моушн и монтаж",
     helpsWith: "AI-генерациями, монтажом и моушн-графикой",
     photo: "/team/dima.jpg",
@@ -39,6 +43,7 @@ export const TEAM: Record<string, TeamMember> = {
     id: "max",
     name: "Макс",
     nameDative: "Максу",
+    nameGenitive: "Макса",
     role: "креативный продюсер",
     helpsWith: "сценарием и концепцией ролика",
     photo: "/team/max.jpg",
@@ -47,6 +52,7 @@ export const TEAM: Record<string, TeamMember> = {
     id: "sasha",
     name: "Саша",
     nameDative: "Саше",
+    nameGenitive: "Саши",
     role: "визуальный дизайнер",
     helpsWith: "стилем, вёрсткой и дизайном сайта",
     photo: "/team/sasha.jpg",
@@ -55,6 +61,7 @@ export const TEAM: Record<string, TeamMember> = {
     id: "tanya",
     name: "Таня",
     nameDative: "Тане",
+    nameGenitive: "Тани",
     role: "SMM-специалист",
     helpsWith: "продвижением и рекламой в соцсетях",
     photo: "/team/tanya.jpg",

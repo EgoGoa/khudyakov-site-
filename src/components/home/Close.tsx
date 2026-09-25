@@ -232,7 +232,7 @@ export default function Close({
             resize, when height is tight. */}
         <Appear from="up" delay={BEAT.controls}>
           <div className="mt-6 [@media(max-height:820px)]:hidden">
-            <TeamRow members={PAGE_TEAM[active]} />
+            <TeamRow members={PAGE_TEAM[active]} page={active} />
           </div>
         </Appear>
 

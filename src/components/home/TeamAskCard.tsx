@@ -1,6 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useService } from "@/lib/service-context";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { findPulse, type PulsePage } from "@/components/home/team-pulse/registry";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import type { TeamMember } from "@/lib/team";
@@ -53,6 +57,10 @@ export default function TeamAskCard({
    *  (e.g. AiGuarantees' Egor card, pinned to half a fixed-height column).
    *  Default sizes stay untouched everywhere else. */
   dense = false,
+  /** Оставить прежнюю карточку, а не окно «человек как сервис» — только для
+   *  окошка Егора в первом блоке /content (выбор категории): Егор попросил
+   *  его не менять. */
+  classic = false,
 }: {
   member: TeamMember;
   question: ReactNode;
@@ -66,8 +74,24 @@ export default function TeamAskCard({
   secondaryHref?: string;
   secondaryIcon?: ReactNode;
   dense?: boolean;
+  classic?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  // Весь сайт переведён на окна «человек как сервис» (TeamPulse): если для
+  // этого человека они есть, карточка встаёт его уведомлением — с текстами
+  // страницы, на которой стоит (раздел берём из адреса).
+  const pathname = usePathname() ?? "";
+  const { active } = useService();
+  const seg = pathname.split("/")[1];
+  const page: PulsePage = seg === "ai" || seg === "sites" || seg === "smm" || seg === "content" ? seg : active === "ai" || active === "sites" || active === "smm" ? active : "content";
+  const pulse = classic ? null : findPulse(member.id, page);
+  if (pulse) {
+    return (
+      <div className={className}>
+        <TeamPulse data={pulse} compact source={pathname || "/"} />
+      </div>
+    );
+  }
 
   // Второе действие ломает обычное предположение раскладки — там всей
   // карточкой можно кликнуть (Link/button снаружи). С двумя независимыми

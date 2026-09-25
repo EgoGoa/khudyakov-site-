@@ -8,8 +8,8 @@ import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { TANYA_SMM } from "@/components/home/team-pulse/content/tanya-smm";
 import PromoCard from "@/components/home/PromoCard";
 
 // Chapter 03 of /smm — "что делаем".
@@ -68,14 +68,7 @@ export default function SmmOffer() {
         leftFooter={<ToolSpotlight slug="smm-stories" accent={SMM_ACCENT} place="left" />}
         askCard={
           <>
-            <TeamAskCard
-              member={TEAM.tanya}
-              question="Подберу формат — сторис, рилс или комплекс — под вашу нишу"
-              pitch="Сторис, рилс, карусели или комплекс — подберу под нишу и бюджет."
-              actionLabel="Обсудить формат"
-              href="/brief/smm"
-              compact
-            />
+            <TeamPulse data={TANYA_SMM} compact source="/smm · глава «Форматы»" />
             {/* /smm's second September offer — sits under Таня's card
                 (Egor's ask, same fix as chapter 02). Photo swapped for the
                 site's stock library — a hand on a phone with like/comment

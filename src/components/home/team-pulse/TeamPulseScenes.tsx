@@ -38,6 +38,28 @@ export const SCENE_MS: Record<TeamPulseScene, number> = {
   calendar: 5200,
   contact: 5200,
   team: 5200,
+  aiPilot: 5600,
+  aiSavings: 5200,
+  aiPrompts: 5600,
+  aiCrew: 5200,
+  contentTimeline: 5600,
+  contentContact: 5200,
+  contentCrew: 5200,
+  maxHooks: 5600,
+  maxStoryboard: 5200,
+  maxConcepts: 5200,
+  maxCreative: 5000,
+  dimaPhotoToVideo: 5200,
+  dimaFormats: 4800,
+  dimaAvatar: 5000,
+  dimaModels: 5200,
+  smmTimeline: 5600,
+  smmContact: 5200,
+  smmCrew: 5200,
+  tanyaGrid: 5000,
+  tanyaReach: 5200,
+  tanyaPlan: 5200,
+  tanyaReport: 5000,
 };
 
 function Stage({ children }: { children: ReactNode }) {
@@ -403,14 +425,14 @@ function Rebrand() {
 
 /* ── Сцены Егора: этапы, сроки, связь, команда ─────────────────────────── */
 
-const STAGES = ["Бриф", "Концепция", "Сборка", "Правки", "Запуск"];
+const SITE_STAGES = ["Бриф", "Концепция", "Сборка", "Правки", "Запуск"];
 
-function Timeline() {
+function Timeline({ stages: STAGES = SITE_STAGES, doneLabel = "Сайт запущен 🚀", title = "*Каждый этап* ^с твоего «ок»^", sub = "Дальше идём ^только после согласования^" }: { stages?: string[]; doneLabel?: string; title?: string; sub?: string } = {}) {
   const tick = useTick(950);
   const done = Math.min(tick, STAGES.length);
   return (
     <Stage>
-      <Head title="*Каждый этап* ^с твоего «ок»^" sub="Дальше идём ^только после согласования^" />
+      <Head title={title} sub={sub} />
       <Body>
         <div className="absolute left-[36px] right-[36px] top-[118px] h-[6px] rounded-full bg-white/10">
           <motion.div className="h-full rounded-full" style={{ background: ACC }} animate={{ width: `${(Math.max(0, done - 1) / (STAGES.length - 1)) * 100}%` }} transition={SPRING} />
@@ -446,13 +468,13 @@ function Timeline() {
           );
         })}
         <motion.div
-          className="absolute bottom-[40px] left-1/2 -translate-x-1/2 rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
-          style={{ background: ACC }}
+          className="absolute bottom-[40px] left-1/2 rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: done >= STAGES.length ? 1 : 0, scale: done >= STAGES.length ? 1 : 0.8 }}
           transition={SPRING}
         >
-          Сайт запущен 🚀
+          {doneLabel}
         </motion.div>
       </Body>
     </Stage>
@@ -508,13 +530,14 @@ function Calendar() {
   );
 }
 
-function Contact() {
-  const msgs = [
-    { me: true, t: "Когда будет готово?" },
-    { me: false, t: "В пятницу, как договорились ✓" },
-    { me: true, t: "А можно ещё блок с отзывами?" },
-    { me: false, t: "Да, передал Саше — покажу завтра" },
-  ];
+const SITE_MSGS = [
+  { me: true, t: "Когда будет готово?" },
+  { me: false, t: "В пятницу, как договорились ✓" },
+  { me: true, t: "А можно ещё блок с отзывами?" },
+  { me: false, t: "Да, передал Саше — покажу завтра" },
+];
+
+function Contact({ msgs = SITE_MSGS }: { msgs?: { me: boolean; t: string }[] } = {}) {
   return (
     <Stage>
       <Head title="*Один человек* ^на связи^" sub="Не нужно искать, ^кому написать^" />
@@ -546,20 +569,27 @@ function Contact() {
   );
 }
 
-function TeamAssemble() {
-  const crew = [
-    { m: TEAM.sasha, role: "Дизайн", x: 90, y: 30 },
-    { m: TEAM.dima, role: "Моушн · AI", x: 410, y: 30 },
-    { m: TEAM.max, role: "Идея · тексты", x: 240, y: 220 },
+const SITE_CREW = [
+  { m: TEAM.sasha, role: "Дизайн" },
+  { m: TEAM.dima, role: "Моушн · AI" },
+  { m: TEAM.max, role: "Идея · тексты" },
+];
+
+function TeamAssemble({ crew: people = SITE_CREW, center = "Твой сайт", title = "^Команда^ *под задачу*", sub = "Дизайн, моушн и тексты — ^в одном проекте^" }: { crew?: { m: (typeof TEAM)[string]; role: string }[]; center?: string; title?: string; sub?: string } = {}) {
+  const spots = [
+    { x: 90, y: 30 },
+    { x: 390, y: 30 },
+    { x: 240, y: 220 },
   ];
+  const crew = people.map((c, i) => ({ ...c, ...spots[i] }));
   return (
     <Stage>
-      <Head title="^Команда^ *под задачу*" sub="Дизайн, моушн и тексты — ^в одном проекте^" />
+      <Head title={title} sub={sub} />
       <Body>
         <svg className="absolute inset-0" width="480" height="360" fill="none">
           {[
             [90, 80],
-            [410, 80],
+            [390, 80],
             [240, 270],
           ].map(([x, y], i) => (
             <motion.path key={i} d={`M 240 150 L ${x} ${y}`} stroke="url(#tp-line)" strokeWidth="2" strokeDasharray="6 6" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 1 + i * 0.4 }} />
@@ -578,13 +608,13 @@ function TeamAssemble() {
           animate={{ scale: 1, opacity: 1 }}
           transition={SPRING}
         >
-          Твой сайт
+          {center}
         </motion.div>
         {crew.map((c, i) => (
           <motion.div
             key={c.m.id}
-            className="absolute flex w-[120px] -translate-x-1/2 flex-col items-center"
-            style={{ left: c.x, top: c.y }}
+            className="absolute flex w-[120px] flex-col items-center"
+            style={{ x: "-50%", left: c.x, top: c.y }}
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ ...SPRING, delay: 0.4 + i * 0.4 }}
@@ -596,6 +626,871 @@ function TeamAssemble() {
         ))}
       </Body>
     </Stage>
+  );
+}
+
+/* ─── Егор на /ai ──────────────────────────────────────────────────────
+   Та же «живая вёрстка», только про внедрение ИИ: пилот по шагам, было/
+   стало по часам и деньгам, задача простыми словами → готовый результат,
+   AI-команда вокруг проекта. Каждая сцена — один цикл, потом следующий
+   тезис (правило Егора: у каждого тезиса своя графика со своим циклом). */
+
+const AI_STEPS = ["Задача", "Пилот", "Твоё «ок»", "Масштаб"];
+
+function AiPilot() {
+  const tick = useTick(1000);
+  const done = Math.min(tick, AI_STEPS.length);
+  return (
+    <Stage>
+      <Head title="*Пилот* ^за неделю^" sub="Сначала пробуем ^на одной задаче^" />
+      <Body>
+        <div className="absolute left-[50px] right-[50px] top-[74px] h-[6px] rounded-full bg-white/10">
+          <motion.div className="h-full rounded-full" style={{ background: ACC }} animate={{ width: `${(Math.max(0, done - 1) / (AI_STEPS.length - 1)) * 100}%` }} transition={SPRING} />
+        </div>
+        {AI_STEPS.map((st, i) => {
+          const on = i < done;
+          const x = 50 + (i * (480 - 100)) / (AI_STEPS.length - 1);
+          return (
+            <div key={st} className="absolute top-[46px] flex -translate-x-1/2 flex-col items-center" style={{ left: x }}>
+              <motion.span
+                className="grid h-[62px] w-[62px] place-items-center rounded-full font-display text-[20px] font-bold"
+                animate={{
+                  scale: on ? 1 : 0.82,
+                  background: on ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.08)",
+                  color: on ? "#0b0b10" : "#fff",
+                  boxShadow: on ? "0 0 26px rgba(var(--tp-from-rgb),.6)" : "inset 0 0 0 1px rgba(255,255,255,.2)",
+                }}
+                transition={SPRING}
+              >
+                {on ? "✓" : i + 1}
+              </motion.span>
+              <span className="mt-3 whitespace-nowrap font-display text-[12px] font-bold uppercase text-white">{st}</span>
+            </div>
+          );
+        })}
+        <motion.div
+          className="absolute left-[60px] right-[60px] top-[196px] flex items-center gap-4 rounded-[20px] bg-white/[0.05] p-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: done >= 2 ? 1 : 0, y: done >= 2 ? 0 : 14 }}
+          transition={SPRING}
+        >
+          <span className="grid h-[64px] w-[64px] shrink-0 place-items-center rounded-[16px] text-[28px]" style={{ background: ACC }}>
+            🎬
+          </span>
+          <div>
+            <p className="font-display text-[15px] font-bold uppercase leading-tight text-white">
+              Первые <span className="team-pulse-warm">10 роликов</span>
+            </p>
+            <p className="mt-1 font-display text-[11px] font-bold uppercase text-white">Смотришь результат — решаешь дальше</p>
+          </div>
+        </motion.div>
+        <motion.div
+          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ x: "-50%", background: ACC }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: done >= AI_STEPS.length ? 1 : 0, scale: done >= AI_STEPS.length ? 1 : 0.8 }}
+          transition={SPRING}
+        >
+          ИИ в работе 🚀
+        </motion.div>
+      </Body>
+    </Stage>
+  );
+}
+
+function AiSavings() {
+  const rows = [
+    { label: "Часов на контент в неделю", was: 1, now: 0.28, wasT: "20 ч", nowT: "5 ч" },
+    { label: "Бюджет на съёмку ролика", was: 1, now: 0.35, wasT: "Съёмка", nowT: "Генерация" },
+    { label: "Ждать первый ролик", was: 1, now: 0.2, wasT: "Месяц", nowT: "Неделя" },
+  ];
+  return (
+    <Stage>
+      <Head title="*Было* ^→ стало^" sub="Считаю ^до старта^, сколько сэкономишь" />
+      <Body>
+        <div className="absolute left-[36px] right-[36px] top-[10px] flex flex-col gap-6">
+          {rows.map((r, i) => (
+            <div key={r.label}>
+              <p className="mb-2 font-display text-[12px] font-bold uppercase text-white">{r.label}</p>
+              <div className="relative h-[34px] rounded-[10px] bg-white/[0.06]">
+                <motion.div
+                  className="absolute inset-y-0 left-0 flex items-center justify-end rounded-[10px] bg-white/[0.16] pr-3 font-display text-[11px] font-bold uppercase text-white"
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${r.was * 100}%` }}
+                  transition={{ ...SPRING, delay: 0.2 + i * 0.35 }}
+                >
+                  {r.wasT}
+                </motion.div>
+                <motion.div
+                  className="absolute inset-y-0 left-0 flex items-center justify-end whitespace-nowrap rounded-[10px] pr-3 font-display text-[11px] font-bold uppercase text-[#0b0b10]"
+                  style={{ background: ACC, boxShadow: "0 0 22px rgba(var(--tp-from-rgb),.5)" }}
+                  initial={{ width: "0%", opacity: 0 }}
+                  animate={{ width: `${r.now * 100}%`, opacity: 1 }}
+                  transition={{ ...SPRING, delay: 1.8 + i * 0.45 }}
+                >
+                  {r.nowT}
+                </motion.div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <motion.div
+          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ x: "-50%", background: ACC }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ ...SPRING, delay: 3.4 }}
+        >
+          Расчёт — за 15 минут созвона
+        </motion.div>
+      </Body>
+    </Stage>
+  );
+}
+
+function AiPrompts() {
+  const tools = ["Видео", "Голос", "Аватар", "Тексты"];
+  return (
+    <Stage>
+      <Head title="*Без своих* ^промптов^" sub="Ты говоришь задачу — ^дальше моя работа^" />
+      <Body>
+        <motion.div
+          className="absolute left-[30px] top-[6px] max-w-[250px] rounded-[18px] rounded-bl-md px-4 py-3 text-[15px] font-bold leading-snug text-white"
+          style={{ background: "linear-gradient(90deg, rgba(var(--tp-from-rgb),.45), rgba(var(--tp-to-rgb),.35))" }}
+          initial={{ opacity: 0, y: 12, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ ...SPRING, delay: 0.2 }}
+        >
+          Нужны ролики для кофейни на месяц ☕
+        </motion.div>
+        <motion.img
+          src={TEAM.egor.photo}
+          alt=""
+          className="absolute left-[208px] top-[112px] h-[64px] w-[64px] rounded-full object-cover"
+          style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 30px rgba(var(--tp-from-rgb),.55)" }}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ ...SPRING, delay: 1 }}
+        />
+        <div className="absolute inset-x-0 top-[200px] flex justify-center gap-2.5">
+          {tools.map((t, i) => (
+            <motion.span
+              key={t}
+              className="rounded-full bg-white/[0.08] px-3.5 py-2 font-display text-[11px] font-bold uppercase text-white ring-1 ring-white/15"
+              initial={{ opacity: 0, y: -14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...SPRING, delay: 1.7 + i * 0.25 }}
+            >
+              {t}
+            </motion.span>
+          ))}
+        </div>
+        <div className="absolute inset-x-0 bottom-[22px] flex justify-center gap-3">
+          {[0, 1, 2, 3].map((k) => (
+            <motion.span
+              key={k}
+              className="grid h-[82px] w-[52px] place-items-center rounded-[12px] text-[20px]"
+              style={{ background: ACC, boxShadow: "0 0 20px rgba(var(--tp-from-rgb),.45)" }}
+              initial={{ opacity: 0, y: 20, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ ...SPRING, delay: 3 + k * 0.3 }}
+            >
+              ▶
+            </motion.span>
+          ))}
+        </div>
+      </Body>
+    </Stage>
+  );
+}
+
+function AiCrew() {
+  const crew = [
+    { m: TEAM.dima, role: "Генерации", x: 80, y: 40 },
+    { m: TEAM.max, role: "Сценарий", x: 400, y: 40 },
+    { m: TEAM.sasha, role: "Визуал", x: 240, y: 222 },
+  ];
+  return (
+    <Stage>
+      <Head title="^AI-команда^ *под задачу*" sub="Генерации, сценарий и визуал — ^в одном проекте^" />
+      <Body>
+        <svg className="absolute inset-0" width="480" height="360" fill="none">
+          {[
+            [112, 72],
+            [368, 72],
+            [240, 222],
+          ].map(([x, y], i) => (
+            <motion.path key={i} d={`M 240 146 L ${x} ${y}`} stroke="url(#tp-ai-line)" strokeWidth="2" strokeDasharray="6 6" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 1 + i * 0.4 }} />
+          ))}
+          <defs>
+            <linearGradient id="tp-ai-line" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="var(--sp-from)" />
+              <stop offset="100%" stopColor="var(--sp-to)" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <motion.div
+          className="absolute left-[165px] top-[108px] grid h-[76px] w-[150px] place-items-center rounded-[18px] text-center font-display text-[14px] font-bold uppercase leading-tight text-[#0b0b10]"
+          style={{ background: ACC, boxShadow: "0 0 40px rgba(var(--tp-from-rgb),.55)" }}
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={SPRING}
+        >
+          Твой AI-продакшн
+        </motion.div>
+        {crew.map((c, i) => (
+          <motion.div
+            key={c.m.id}
+            className="absolute flex w-[120px] flex-col items-center"
+            style={{ x: "-50%", left: c.x, top: c.y }}
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ ...SPRING, delay: 0.4 + i * 0.4 }}
+          >
+            <img src={c.m.photo} alt="" className="h-[64px] w-[64px] rounded-full object-cover" style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 24px rgba(var(--tp-from-rgb),.5)" }} />
+            <span className="mt-2 font-display text-[12px] font-bold uppercase text-white">{c.m.name}</span>
+            <span className="team-pulse-warm whitespace-nowrap font-display text-[10px] font-bold uppercase">{c.role}</span>
+          </motion.div>
+        ))}
+      </Body>
+    </Stage>
+  );
+}
+
+/* ─── /content: Егор (продакшн по шагам) и Макс (идея и сценарий) ──── */
+
+const SHOOT_STAGES = ["Бриф", "Сценарий", "Съёмка", "Монтаж", "Сдача"];
+const SHOOT_MSGS = [
+  { me: true, t: "Когда будет ролик?" },
+  { me: false, t: "Монтаж в четверг, в пятницу у тебя ✓" },
+  { me: true, t: "А можно версию для рилсов?" },
+  { me: false, t: "Да, передал Вадиму — нарежет 9:16" },
+];
+const SHOOT_CREW = [
+  { m: TEAM.max, role: "Идея · сценарий" },
+  { m: TEAM.dima, role: "Монтаж · AI" },
+  { m: TEAM.sasha, role: "Графика" },
+];
+
+function MaxHooks() {
+  const hooks = ["«Ты тоже так делаешь?»", "«3 секунды — и ты купишь»", "«Никто не говорит об этом»"];
+  const tick = useTick(1100);
+  const pick = tick >= 3 ? 1 : -1;
+  return (
+    <Stage>
+      <Head title="*Цепляем* ^за 3 секунды^" sub="Три крючка на выбор — ^берём сильный^" />
+      <Body>
+        <div className="absolute inset-x-[40px] top-[10px] flex flex-col gap-4">
+          {hooks.map((h, i) => (
+            <motion.div
+              key={h}
+              className="flex items-center gap-4 rounded-[18px] px-5 py-4"
+              initial={{ opacity: 0, x: -24 }}
+              animate={{
+                opacity: pick >= 0 && pick !== i ? 0.35 : i < tick + 1 ? 1 : 0,
+                x: 0,
+                scale: pick === i ? 1.05 : 1,
+                background: pick === i ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.06)",
+              }}
+              transition={SPRING}
+            >
+              <span className={`font-display text-[26px] font-bold ${pick === i ? "text-[#0b0b10]" : "team-pulse-acc"}`}>{i + 1}</span>
+              <span className={`font-display text-[15px] font-bold uppercase ${pick === i ? "text-[#0b0b10]" : "text-white"}`}>{h}</span>
+              {pick === i && <span className="ml-auto font-display text-[18px] font-bold text-[#0b0b10]">✓</span>}
+            </motion.div>
+          ))}
+        </div>
+        <motion.div
+          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ x: "-50%", background: ACC }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: pick >= 0 ? 1 : 0, scale: pick >= 0 ? 1 : 0.8 }}
+          transition={SPRING}
+        >
+          Досматривают до конца 🔥
+        </motion.div>
+      </Body>
+    </Stage>
+  );
+}
+
+function MaxStoryboard() {
+  const frames = [
+    { e: "☕", t: "Утро" },
+    { e: "📦", t: "Продукт" },
+    { e: "😮", t: "Вау" },
+    { e: "🛒", t: "Покупка" },
+  ];
+  return (
+    <Stage>
+      <Head title="*Раскадровка* ^до съёмки^" sub="Видишь ролик ^кадр за кадром^ заранее" />
+      <Body>
+        <div className="absolute inset-x-[30px] top-[20px] grid grid-cols-2 gap-4">
+          {frames.map((f, i) => (
+            <motion.div
+              key={f.t}
+              className="relative h-[120px] overflow-hidden rounded-[16px] bg-white/[0.05] shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]"
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ ...SPRING, delay: 0.3 + i * 0.7 }}
+            >
+              <motion.div
+                className="absolute inset-0 grid place-items-center text-[44px]"
+                style={{ background: "linear-gradient(135deg, rgba(var(--tp-from-rgb),.35), rgba(var(--tp-to-rgb),.25))" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.7 + i * 0.7 }}
+              >
+                {f.e}
+              </motion.div>
+              <span className="absolute left-3 top-2 font-display text-[12px] font-bold uppercase text-white">Кадр {i + 1}</span>
+              <span className="absolute bottom-2 left-3 font-display text-[12px] font-bold uppercase text-white">{f.t}</span>
+            </motion.div>
+          ))}
+        </div>
+      </Body>
+    </Stage>
+  );
+}
+
+function MaxConcepts() {
+  const cards = [
+    { t: "Смешно", e: "😂", r: -8, x: 60 },
+    { t: "Дорого", e: "✨", r: 0, x: 170 },
+    { t: "Честно", e: "🤝", r: 8, x: 280 },
+  ];
+  const tick = useTick(1400);
+  const pick = tick >= 2 ? 1 : -1;
+  return (
+    <Stage>
+      <Head title="*2–3 концепции* ^бесплатно^" sub="Выбираешь идею ^до договора^" />
+      <Body>
+        {cards.map((c, i) => (
+          <motion.div
+            key={c.t}
+            className="absolute top-[40px] flex h-[200px] w-[140px] flex-col items-center justify-center gap-3 rounded-[20px]"
+            style={{ left: c.x }}
+            initial={{ opacity: 0, y: 40, rotate: 0 }}
+            animate={{
+              opacity: pick >= 0 && pick !== i ? 0.35 : 1,
+              y: pick === i ? -10 : 0,
+              rotate: pick === i ? 0 : c.r,
+              scale: pick === i ? 1.1 : 1,
+              background: pick === i ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.07)",
+            }}
+            transition={{ ...SPRING, delay: pick >= 0 ? 0 : 0.3 + i * 0.35 }}
+          >
+            <span className="text-[44px]">{c.e}</span>
+            <span className={`font-display text-[15px] font-bold uppercase ${pick === i ? "text-[#0b0b10]" : "text-white"}`}>{c.t}</span>
+          </motion.div>
+        ))}
+        <motion.div
+          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ x: "-50%", background: ACC }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: pick >= 0 ? 1 : 0, scale: pick >= 0 ? 1 : 0.8 }}
+          transition={SPRING}
+        >
+          Идея выбрана ✓
+        </motion.div>
+      </Body>
+    </Stage>
+  );
+}
+
+function MaxCreative() {
+  const lines = ["Не «ролик про продукт»,", "а история, которую", "досматривают и пересылают"];
+  return (
+    <Stage>
+      <Head title="*Идея* ^важнее бюджета^" sub="Сильный сценарий ^вытягивает любой формат^" />
+      <Body>
+        <div className="absolute left-[50px] right-[50px] top-[20px] rounded-[22px] bg-white/[0.05] p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]">
+          {lines.map((l, i) => (
+            <motion.p
+              key={l}
+              className={`font-display text-[20px] font-bold uppercase leading-tight ${i === 2 ? "team-pulse-acc" : "text-white"}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...SPRING, delay: 0.3 + i * 0.6 }}
+            >
+              {l}
+            </motion.p>
+          ))}
+        </div>
+        <div className="absolute inset-x-0 bottom-[30px] flex justify-center gap-6">
+          {[
+            { v: "×3", t: "досмотры" },
+            { v: "×2", t: "репосты" },
+          ].map((m, i) => (
+            <motion.div
+              key={m.t}
+              className="flex flex-col items-center"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ ...SPRING, delay: 2.4 + i * 0.4 }}
+            >
+              <span className="team-pulse-warm font-display text-[40px] font-bold leading-none">{m.v}</span>
+              <span className="mt-1 font-display text-[12px] font-bold uppercase text-white">{m.t}</span>
+            </motion.div>
+          ))}
+        </div>
+      </Body>
+    </Stage>
+  );
+}
+
+/* ─── Вадим на /ai: генерации, форматы, аватар, подбор модели ────────── */
+
+function DimaPhotoToVideo() {
+  const tick = useTick(900);
+  const phase = Math.min(tick, 4); // 0 фото · 1 скан · 2 кадры · 3 видео · 4 готово
+  return (
+    <Stage>
+      <Head title="*Одна фотка* ^→ ролик^" sub="Съёмочный день ^не нужен^" />
+      <Body>
+        <motion.div
+          className="absolute left-[40px] top-[30px] h-[200px] w-[150px] overflow-hidden rounded-[18px] bg-[#f5f2ec] shadow-[0_20px_40px_rgba(0,0,0,.45)]"
+          animate={{ rotate: phase >= 2 ? -6 : 0, scale: phase >= 2 ? 0.9 : 1 }}
+          transition={SPRING}
+        >
+          <div className="grid h-full place-items-center text-[64px]">🧴</div>
+          <motion.i
+            className="absolute inset-x-0 h-[4px]"
+            style={{ background: ACC, boxShadow: "0 0 18px rgba(var(--tp-from-rgb),.9)" }}
+            initial={{ top: 0, opacity: 0 }}
+            animate={phase === 1 ? { top: ["0%", "100%"], opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.9, ease: "linear" }}
+          />
+          <span className="absolute bottom-2 left-3 font-display text-[11px] font-bold uppercase text-black/70">Фото</span>
+        </motion.div>
+        <motion.span
+          className="team-pulse-acc absolute left-[212px] top-[112px] font-display text-[40px] font-bold"
+          animate={{ opacity: phase >= 1 ? 1 : 0.2, x: phase >= 1 ? 6 : 0 }}
+          transition={SPRING}
+        >
+          →
+        </motion.span>
+        <motion.div
+          className="absolute right-[40px] top-[20px] h-[230px] w-[140px] overflow-hidden rounded-[22px] bg-[#0b0b10] shadow-[inset_0_0_0_2px_rgba(255,255,255,.2),0_20px_40px_rgba(0,0,0,.5)]"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: phase >= 2 ? 1 : 0, x: phase >= 2 ? 0 : 20 }}
+          transition={SPRING}
+        >
+          <motion.div
+            className="absolute inset-0 grid place-items-center text-[60px]"
+            style={{ background: "linear-gradient(160deg, rgba(var(--tp-from-rgb),.55), rgba(var(--tp-to-rgb),.55))" }}
+            animate={{ scale: phase >= 3 ? [1, 1.12, 1] : 1, rotate: phase >= 3 ? [0, 8, -4, 0] : 0 }}
+            transition={{ duration: 2.4, repeat: phase >= 3 ? Infinity : 0 }}
+          >
+            🧴
+          </motion.div>
+          <span className="absolute left-3 top-2 font-display text-[11px] font-bold uppercase text-white">Reels · 9:16</span>
+          <div className="absolute inset-x-3 bottom-3 h-[5px] rounded-full bg-white/20">
+            <motion.div className="h-full rounded-full bg-white" animate={{ width: phase >= 3 ? "100%" : "0%" }} transition={{ duration: 1.8, ease: "linear" }} />
+          </div>
+        </motion.div>
+        <motion.div
+          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ x: "-50%", background: ACC }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: phase >= 4 ? 1 : 0, scale: phase >= 4 ? 1 : 0.8 }}
+          transition={SPRING}
+        >
+          Ролик готов за вечер ✓
+        </motion.div>
+      </Body>
+    </Stage>
+  );
+}
+
+function DimaFormats() {
+  const out = [
+    { t: "Reels", r: "9:16", w: 78, h: 138, x: 30 },
+    { t: "Лента", r: "1:1", w: 110, h: 110, x: 140 },
+    { t: "YouTube", r: "16:9", w: 176, h: 99, x: 272 },
+  ];
+  return (
+    <Stage>
+      <Head title="*Один ролик* ^→ все площадки^" sub="Нарезаю под каждую ^без пересъёмки^" />
+      <Body>
+        <motion.div
+          className="absolute left-1/2 top-[6px] flex h-[70px] w-[200px] items-center justify-center gap-2 rounded-[14px] font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ x: "-50%", background: ACC, boxShadow: "0 0 30px rgba(var(--tp-from-rgb),.5)" }}
+          initial={{ scale: 0.7, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={SPRING}
+        >
+          ▶ Твой ролик
+        </motion.div>
+        {out.map((f, i) => (
+          <motion.div
+            key={f.t}
+            className="absolute flex flex-col items-center"
+            style={{ left: f.x, top: 120 }}
+            initial={{ opacity: 0, y: -60, scale: 0.4 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ ...SPRING, delay: 0.9 + i * 0.6 }}
+          >
+            <div className="grid place-items-center rounded-[12px] bg-white/[0.07] text-[22px] shadow-[inset_0_0_0_2px_rgba(var(--tp-to-rgb),.7)]" style={{ width: f.w, height: f.h }}>
+              ▶
+            </div>
+            <span className="mt-2 font-display text-[12px] font-bold uppercase text-white">{f.t}</span>
+            <span className="team-pulse-warm font-display text-[11px] font-bold uppercase">{f.r}</span>
+          </motion.div>
+        ))}
+      </Body>
+    </Stage>
+  );
+}
+
+function DimaAvatar() {
+  const langs = ["RU", "EN", "KZ", "ES"];
+  const tick = useTick(1000);
+  const lang = tick % langs.length;
+  const lines = ["Привет! Я ведущий вашего бренда", "Hi! I host your brand", "Сәлем! Мен брендтің жүргізушісімін", "¡Hola! Presento tu marca"];
+  return (
+    <Stage>
+      <Head title="*AI-аватар* ^вместо съёмок^" sub="Говорит за тебя ^на любом языке^" />
+      <Body>
+        <div className="absolute left-1/2 top-[6px] -translate-x-1/2">
+          <motion.div
+            className="grid h-[120px] w-[120px] place-items-center rounded-full text-[64px]"
+            style={{ background: ACC, boxShadow: "0 0 40px rgba(var(--tp-from-rgb),.55)" }}
+            animate={{ scale: [1, 1.04, 1] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          >
+            🧑‍💼
+          </motion.div>
+        </div>
+        <div className="absolute left-1/2 top-[140px] flex h-[40px] -translate-x-1/2 items-center gap-[5px]">
+          {Array.from({ length: 16 }, (_, k) => (
+            <motion.i
+              key={k}
+              className="w-[6px] rounded-full"
+              style={{ background: ACC }}
+              animate={{ height: [8, 12 + ((k * 7) % 26), 8] }}
+              transition={{ duration: 0.6 + (k % 4) * 0.15, repeat: Infinity, delay: k * 0.05 }}
+            />
+          ))}
+        </div>
+        <motion.p
+          key={lang}
+          className="absolute inset-x-[30px] top-[196px] text-center text-[16px] font-bold text-white"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={SPRING}
+        >
+          «{lines[lang]}»
+        </motion.p>
+        <div className="absolute inset-x-0 bottom-[24px] flex justify-center gap-2.5">
+          {langs.map((l, i) => (
+            <motion.span
+              key={l}
+              className="rounded-full px-3.5 py-1.5 font-display text-[12px] font-bold"
+              animate={{
+                background: i === lang ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.08)",
+                color: i === lang ? "#0b0b10" : "#fff",
+                scale: i === lang ? 1.1 : 1,
+              }}
+              transition={SPRING}
+            >
+              {l}
+            </motion.span>
+          ))}
+        </div>
+      </Body>
+    </Stage>
+  );
+}
+
+function DimaModels() {
+  const models = [
+    { e: "🎬", t: "Видео" },
+    { e: "🎙", t: "Голос" },
+    { e: "🖼", t: "Картинка" },
+    { e: "🎵", t: "Музыка" },
+    { e: "✍️", t: "Тексты" },
+    { e: "🧑‍💼", t: "Аватар" },
+  ];
+  const tick = useTick(450);
+  const done = tick >= 8;
+  const cur = done ? 0 : tick % models.length;
+  return (
+    <Stage>
+      <Head title="*Подбираю модель* ^под задачу^" sub="Не для галочки — ^под твой результат^" />
+      <Body>
+        <div className="absolute inset-x-[50px] top-[10px] grid grid-cols-3 gap-3">
+          {models.map((m, i) => (
+            <motion.div
+              key={m.t}
+              className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[16px]"
+              animate={{
+                background: i === cur ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.06)",
+                scale: i === cur ? 1.06 : 1,
+                opacity: done && i !== cur ? 0.35 : 1,
+              }}
+              transition={{ duration: 0.25 }}
+            >
+              <span className="text-[30px]">{m.e}</span>
+              <span className={`font-display text-[12px] font-bold uppercase ${i === cur ? "text-[#0b0b10]" : "text-white"}`}>{m.t}</span>
+            </motion.div>
+          ))}
+        </div>
+        <motion.div
+          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ x: "-50%", background: ACC }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: done ? 1 : 0, scale: done ? 1 : 0.8 }}
+          transition={SPRING}
+        >
+          Подобрано: видео-модель ✓
+        </motion.div>
+      </Body>
+    </Stage>
+  );
+}
+
+function ChatDimaFormat({ chosen }: { chosen?: number }) {
+  const frame = (w: number, h: number) => <i className="block rounded-[8px]" style={{ width: w, height: h, background: ACC }} />;
+  return (
+    <ChatTiles
+      chosen={chosen}
+      w={150}
+      title="*Под какую* ^площадку^^?^"
+      sub="Сразу нарежу ^в нужный формат^"
+      tiles={[
+        { label: "Reels · 9:16", art: frame(34, 60) },
+        { label: "Лента · 1:1", art: frame(52, 52) },
+        { label: "YouTube · 16:9", art: frame(72, 40) },
+      ]}
+    />
+  );
+}
+
+/* ─── /smm: Таня (ведение соцсетей) и Егор (этапы ведения) ─────────── */
+
+const SMM_STAGES = ["Аудит", "Стратегия", "Контент", "Таргет", "Отчёт"];
+const SMM_MSGS = [
+  { me: true, t: "Что выходит на этой неделе?" },
+  { me: false, t: "3 рилса и 2 карусели, план уже у тебя ✓" },
+  { me: true, t: "А можно ролик про новинку?" },
+  { me: false, t: "Да, передал Тане — снимем в четверг" },
+];
+const SMM_CREW = [
+  { m: TEAM.tanya, role: "Ведение · таргет" },
+  { m: TEAM.dima, role: "Монтаж рилсов" },
+  { m: TEAM.max, role: "Сценарии" },
+];
+
+function TanyaGrid() {
+  const tick = useTick(420);
+  const filled = Math.min(tick, 9);
+  const tiles = ["🎬", "☕", "✨", "📦", "😍", "🎬", "🔥", "💬", "🎬"];
+  const followers = 1200 + filled * 380;
+  return (
+    <Stage>
+      <Head title="*Профиль,* ^который растёт^" sub="Каждый пост — ^в одном стиле и по плану^" />
+      <Body>
+        <div className="absolute left-[40px] top-[6px] flex items-center gap-3">
+          <span className="grid h-[52px] w-[52px] place-items-center rounded-full text-[24px]" style={{ background: ACC }}>
+            ☕
+          </span>
+          <div>
+            <p className="font-display text-[14px] font-bold uppercase text-white">твой_бренд</p>
+            <p className="font-display text-[12px] font-bold uppercase text-white">
+              <span className="team-pulse-acc text-[16px]">{followers.toLocaleString("ru-RU")}</span> подписчиков
+            </p>
+          </div>
+        </div>
+        <div className="absolute left-[40px] top-[74px] grid grid-cols-3 gap-[6px]">
+          {tiles.map((t, i) => (
+            <motion.div
+              key={i}
+              className="grid h-[84px] w-[128px] place-items-center rounded-[10px] text-[28px]"
+              animate={{
+                background: i < filled ? "linear-gradient(135deg, rgba(var(--tp-from-rgb),.55), rgba(var(--tp-to-rgb),.45))" : "rgba(255,255,255,0.05)",
+                scale: i === filled - 1 ? [0.8, 1.06, 1] : 1,
+              }}
+              transition={{ duration: 0.4 }}
+            >
+              {i < filled ? t : ""}
+            </motion.div>
+          ))}
+        </div>
+      </Body>
+    </Stage>
+  );
+}
+
+function TanyaReach() {
+  const tick = useTick(500);
+  const views = Math.min(tick * 3100, 24800);
+  const hearts = Array.from({ length: 8 }, (_, k) => k);
+  return (
+    <Stage>
+      <Head title="*Рилсы,* ^которые смотрят^" sub="Охват растёт ^без покупки подписчиков^" />
+      <Body>
+        <div className="absolute left-[60px] top-[10px] h-[260px] w-[150px] overflow-hidden rounded-[22px] shadow-[inset_0_0_0_2px_rgba(255,255,255,.2)]" style={{ background: "linear-gradient(160deg, rgba(var(--tp-from-rgb),.5), rgba(var(--tp-to-rgb),.5))" }}>
+          <div className="grid h-full place-items-center text-[56px]">🎬</div>
+          <span className="absolute bottom-3 left-3 font-display text-[12px] font-bold uppercase text-white">▶ {views.toLocaleString("ru-RU")}</span>
+          {hearts.map((k) => (
+            <motion.span
+              key={k}
+              className="absolute right-3 text-[20px]"
+              initial={{ bottom: 20, opacity: 0 }}
+              animate={{ bottom: [20, 240], opacity: [0, 1, 0], x: [0, k % 2 ? -14 : 10, 0] }}
+              transition={{ duration: 2.2, repeat: Infinity, delay: k * 0.35 }}
+            >
+              ❤️
+            </motion.span>
+          ))}
+        </div>
+        <div className="absolute right-[50px] top-[20px] flex w-[190px] flex-col gap-4">
+          {[
+            { t: "Просмотры", v: "×5" },
+            { t: "Сохранения", v: "×3" },
+            { t: "Заявки в директ", v: "+40%" },
+          ].map((m, i) => (
+            <motion.div
+              key={m.t}
+              className="rounded-[16px] bg-white/[0.06] px-4 py-3"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ...SPRING, delay: 0.8 + i * 0.7 }}
+            >
+              <p className="team-pulse-acc font-display text-[28px] font-bold leading-none">{m.v}</p>
+              <p className="mt-1 font-display text-[11px] font-bold uppercase text-white">{m.t}</p>
+            </motion.div>
+          ))}
+        </div>
+      </Body>
+    </Stage>
+  );
+}
+
+function TanyaPlan() {
+  const days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+  const kinds = { reel: { i: "▶", t: "Рилс" }, story: { i: "◐", t: "Сторис" }, carousel: { i: "▦", t: "Карусель" }, live: { i: "●", t: "Эфир" } } as const;
+  const posts: { d: number; k: keyof typeof kinds }[] = [
+    { d: 0, k: "reel" },
+    { d: 1, k: "story" },
+    { d: 2, k: "carousel" },
+    { d: 3, k: "reel" },
+    { d: 4, k: "story" },
+    { d: 5, k: "reel" },
+    { d: 6, k: "live" },
+  ];
+  const col = (436 - 36) / 7;
+  return (
+    <Stage>
+      <Head title="*Контент-план* ^на месяц^" sub="Знаешь заранее, ^что и когда выйдет^" />
+      <Body>
+        <div className="absolute inset-x-[22px] top-[10px] grid grid-cols-7 gap-[6px]">
+          {days.map((d) => (
+            <div key={d} className="flex h-[180px] flex-col items-center rounded-[12px] bg-white/[0.05] pt-2 ring-1 ring-white/10">
+              <span className="font-display text-[12px] font-bold uppercase text-white">{d}</span>
+            </div>
+          ))}
+        </div>
+        {posts.map((p, i) => (
+          <motion.span
+            key={i}
+            className="absolute grid h-[44px] place-items-center rounded-[12px] text-[20px] font-bold text-[#0b0b10]"
+            style={{ left: 22 + p.d * (col + 6) + 4, width: col - 8, background: ACC, boxShadow: "0 0 16px rgba(var(--tp-from-rgb),.45)" }}
+            initial={{ top: -40, opacity: 0 }}
+            animate={{ top: 50 + (i % 2) * 60, opacity: 1 }}
+            transition={{ ...SPRING, delay: 0.3 + i * 0.35 }}
+          >
+            {kinds[p.k].i}
+          </motion.span>
+        ))}
+        <div className="absolute inset-x-0 top-[204px] flex justify-center gap-4">
+          {Object.values(kinds).map((k) => (
+            <span key={k.t} className="flex items-center gap-1.5 font-display text-[11px] font-bold uppercase text-white">
+              <span className="team-pulse-acc text-[14px]">{k.i}</span>
+              {k.t}
+            </span>
+          ))}
+        </div>
+        <motion.div
+          className="absolute bottom-[28px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          style={{ x: "-50%", background: ACC }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ ...SPRING, delay: 3.2 }}
+        >
+          План согласован ✓
+        </motion.div>
+      </Body>
+    </Stage>
+  );
+}
+
+function TanyaReport() {
+  const bars = [
+    { t: "Охват", was: 0.3, now: 0.85 },
+    { t: "Подписчики", was: 0.35, now: 0.7 },
+    { t: "Заявки", was: 0.2, now: 0.62 },
+  ];
+  return (
+    <Stage>
+      <Head title="*Отчёт* ^каждый месяц^" sub="Видишь в цифрах, ^что сработало^" />
+      <Body>
+        <div className="absolute inset-x-[40px] top-[10px] rounded-[20px] bg-white/[0.05] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]">
+          <p className="mb-4 font-display text-[13px] font-bold uppercase text-white">
+            Отчёт · <span className="team-pulse-warm">сентябрь</span>
+          </p>
+          <div className="flex h-[170px] items-end justify-around">
+            {bars.map((b, i) => (
+              <div key={b.t} className="flex flex-col items-center">
+                <div className="flex h-[140px] items-end gap-2">
+                  <motion.i className="block w-[26px] rounded-t-[8px] bg-white/20" initial={{ height: 0 }} animate={{ height: b.was * 140 }} transition={{ ...SPRING, delay: 0.3 + i * 0.2 }} />
+                  <motion.i className="block w-[26px] rounded-t-[8px]" style={{ background: ACC, boxShadow: "0 0 18px rgba(var(--tp-from-rgb),.5)" }} initial={{ height: 0 }} animate={{ height: b.now * 140 }} transition={{ ...SPRING, delay: 1.4 + i * 0.35 }} />
+                </div>
+                <span className="mt-2 font-display text-[11px] font-bold uppercase text-white">{b.t}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="absolute inset-x-0 bottom-[22px] flex justify-center gap-5 font-display text-[11px] font-bold uppercase text-white">
+          <span className="flex items-center gap-2"><i className="h-3 w-3 rounded-sm bg-white/20" /> было</span>
+          <span className="flex items-center gap-2"><i className="h-3 w-3 rounded-sm" style={{ background: ACC }} /> стало</span>
+        </div>
+      </Body>
+    </Stage>
+  );
+}
+
+function ChatSmmWhat({ chosen }: { chosen?: number }) {
+  return (
+    <ChatTiles
+      chosen={chosen}
+      w={180}
+      title="*Что* ^берём на себя^^?^"
+      sub="Скажи, ^что сейчас болит больше всего^"
+      tiles={[
+        { label: "Ведение целиком", art: <Glyph>▦</Glyph> },
+        { label: "Рилсы", art: <Glyph>▶</Glyph> },
+        { label: "Таргет", art: <Glyph>◎</Glyph> },
+        { label: "Аудит профиля", art: <Glyph>🔍</Glyph> },
+      ]}
+    />
+  );
+}
+
+function ChatSmmNow({ chosen }: { chosen?: number }) {
+  return (
+    <ChatTiles
+      chosen={chosen}
+      w={150}
+      title="*Как* ^сейчас^^?^"
+      sub="От этого зависит, ^с чего начнём^"
+      tiles={[
+        { label: "Аккаунта нет", art: <Glyph>＋</Glyph> },
+        { label: "Веду сам", art: <Glyph>✋</Glyph> },
+        { label: "Есть SMM, не растёт", art: <Glyph>↘</Glyph> },
+      ]}
+    />
   );
 }
 
@@ -617,6 +1512,28 @@ export default function TeamPulseScenes({ scene }: { scene: TeamPulseScene }) {
       {scene === "calendar" && <Calendar />}
       {scene === "contact" && <Contact />}
       {scene === "team" && <TeamAssemble />}
+      {scene === "aiPilot" && <AiPilot />}
+      {scene === "aiSavings" && <AiSavings />}
+      {scene === "aiPrompts" && <AiPrompts />}
+      {scene === "aiCrew" && <AiCrew />}
+      {scene === "contentTimeline" && <Timeline stages={SHOOT_STAGES} doneLabel="Ролик у тебя 🎬" />}
+      {scene === "contentContact" && <Contact msgs={SHOOT_MSGS} />}
+      {scene === "contentCrew" && <TeamAssemble crew={SHOOT_CREW} center="Твой ролик" title="^Команда^ *под ролик*" sub="Сценарий, монтаж и графика — ^в одном проекте^" />}
+      {scene === "maxHooks" && <MaxHooks />}
+      {scene === "maxStoryboard" && <MaxStoryboard />}
+      {scene === "maxConcepts" && <MaxConcepts />}
+      {scene === "maxCreative" && <MaxCreative />}
+      {scene === "dimaPhotoToVideo" && <DimaPhotoToVideo />}
+      {scene === "dimaFormats" && <DimaFormats />}
+      {scene === "dimaAvatar" && <DimaAvatar />}
+      {scene === "dimaModels" && <DimaModels />}
+      {scene === "smmTimeline" && <Timeline stages={SMM_STAGES} doneLabel="Соцсети растут 📈" />}
+      {scene === "smmContact" && <Contact msgs={SMM_MSGS} />}
+      {scene === "smmCrew" && <TeamAssemble crew={SMM_CREW} center="Твои соцсети" title="^Команда^ *под соцсети*" sub="Ведение, рилсы и сценарии — ^в одном договоре^" />}
+      {scene === "tanyaGrid" && <TanyaGrid />}
+      {scene === "tanyaReach" && <TanyaReach />}
+      {scene === "tanyaPlan" && <TanyaPlan />}
+      {scene === "tanyaReport" && <TanyaReport />}
     </motion.div>
   );
 }
@@ -993,10 +1910,77 @@ function ChatChannel({ chosen }: { chosen?: number }) {
   );
 }
 
-function ChatBrief({ answers, done }: { answers: string[]; done: boolean }) {
+function ChatAiTask({ chosen }: { chosen?: number }) {
+  return (
+    <ChatTiles
+      chosen={chosen}
+      w={180}
+      title="*Что* ^отдаём ИИ^^?^"
+      sub="Начнём с того, что ^съедает больше всего времени^"
+      tiles={[
+        { label: "Ролики и рилсы", art: <Glyph>▶</Glyph> },
+        { label: "AI-аватар", art: <Glyph>☺</Glyph> },
+        { label: "Соцсети целиком", art: <Glyph>#</Glyph> },
+        { label: "Пока не знаю", art: <span className="team-pulse-acc font-display text-[44px] font-bold leading-none">?</span> },
+      ]}
+    />
+  );
+}
+
+function ChatShootWhat({ chosen }: { chosen?: number }) {
+  return (
+    <ChatTiles
+      chosen={chosen}
+      w={180}
+      title="*Что* ^снимаем^^?^"
+      sub="От формата зависит ^команда и сроки^"
+      tiles={[
+        { label: "Рекламный ролик", art: <Glyph>▶</Glyph> },
+        { label: "Рилсы и шортсы", art: <Glyph>↕</Glyph> },
+        { label: "Имиджевый фильм", art: <Glyph>✦</Glyph> },
+        { label: "Мероприятие", art: <Glyph>★</Glyph> },
+      ]}
+    />
+  );
+}
+
+function ChatShootGoal({ chosen }: { chosen?: number }) {
+  return (
+    <ChatTiles
+      chosen={chosen}
+      w={150}
+      title="*Зачем* ^ролик^^?^"
+      sub="Под цель ^придумаю крючок^"
+      tiles={[
+        { label: "Продажи", art: <Glyph>₽</Glyph> },
+        { label: "Узнаваемость", art: <Glyph>◎</Glyph> },
+        { label: "Запуск продукта", art: <Glyph>🚀</Glyph> },
+      ]}
+    />
+  );
+}
+
+function ChatShootTone({ chosen }: { chosen?: number }) {
+  return (
+    <ChatTiles
+      chosen={chosen}
+      w={150}
+      title="*Какое* ^настроение^^?^"
+      sub="Подача, в которой ^тебя узнают^"
+      tiles={[
+        { label: "Смешно", art: <Glyph>😂</Glyph> },
+        { label: "Дорого", art: <Glyph>✨</Glyph> },
+        { label: "Честно", art: <Glyph>🤝</Glyph> },
+        { label: "Дерзко", art: <Glyph>⚡</Glyph> },
+      ]}
+    />
+  );
+}
+
+function ChatBrief({ answers, done, who }: { answers: string[]; done: boolean; who: string }) {
   return (
     <Stage>
-      <Head title={done ? "Заявка ^у Саши^" : "*Бриф* ^собран^"} sub={done ? "Напишу ^в течение дня^ — можно продолжить в мессенджере" : "Выбирай: ^полный бриф^ или *сразу заказ*"} />
+      <Head title={done ? `Заявка ^у ${who}^` : "*Бриф* ^собран^"} sub={done ? "Напишу ^в течение дня^ — можно продолжить в мессенджере" : "Выбирай: ^полный бриф^ или *сразу заказ*"} />
       <Body>
         <div className="absolute left-[50px] top-[6px] w-[380px] rounded-[20px] bg-white/[0.05] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14),0_30px_60px_rgba(0,0,0,.45)]">
           <div className="flex flex-col gap-2.5">
@@ -1025,11 +2009,14 @@ export function TeamPulseChatScene({
   chosen,
   phase,
   answers,
+  who,
 }: {
   visual?: TeamPulseChatVisual;
   chosen?: number;
   phase: string;
   answers: string[];
+  /** Родительный падеж имени: «Заявка у Егора». */
+  who: string;
 }) {
   const reduced = useReducedMotion();
   const key = phase === "brief" ? visual : phase === "done" ? "done" : "brief";
@@ -1063,9 +2050,28 @@ export function TeamPulseChatScene({
           )}
           {visual === "approver" && <ChatApprover chosen={chosen} />}
           {visual === "channel" && <ChatChannel chosen={chosen} />}
+          {visual === "aiTask" && <ChatAiTask chosen={chosen} />}
+          {visual === "shootWhat" && <ChatShootWhat chosen={chosen} />}
+          {visual === "shootGoal" && <ChatShootGoal chosen={chosen} />}
+          {visual === "shootTone" && <ChatShootTone chosen={chosen} />}
+          {visual === "dimaFormat" && <ChatDimaFormat chosen={chosen} />}
+          {visual === "smmWhat" && <ChatSmmWhat chosen={chosen} />}
+          {visual === "smmNow" && <ChatSmmNow chosen={chosen} />}
+          {visual === "aiVolume" && (
+            <ChatSpeed
+              chosen={chosen}
+              title="*Сколько* ^контента^ нужно^?^"
+              sub="Под объём ^посчитаю экономию^"
+              rows={[
+                { label: "Пара роликов", fill: 0.3, time: "Пилот" },
+                { label: "Каждую неделю", fill: 0.62, time: "Поток" },
+                { label: "Каждый день", fill: 0.95, time: "Завод" },
+              ]}
+            />
+          )}
         </>
       ) : (
-        <ChatBrief answers={answers} done={phase === "done"} />
+        <ChatBrief answers={answers} done={phase === "done"} who={who} />
       )}
     </motion.div>
   );

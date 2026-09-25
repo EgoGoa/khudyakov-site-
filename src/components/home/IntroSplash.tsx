@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { sound } from "@/lib/sound";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 
@@ -41,10 +42,14 @@ const CHAR_DUR = 0.7;
 // Момент, когда собралась последняя буква. 11 = длина "HUD" + ".SERVICE".
 const T_SETTLED = T_CHARS + (11 - 1) * STAGGER + CHAR_DUR;
 // Знак стоит собранным — его должны успеть прочитать, прежде чем он уйдёт.
-// Егор дважды просил длиннее (итог — 2.5с), а затем — резко короче: вся
-// сцена ощущалась как большая пауза перед меню. 1.1с — компромисс: знак
-// ещё читается, но общая сцена короткая.
-const HOLD = 0.45;
+// Финальное ТЗ Егора (записано с его слов, «запомни эту задачу»): знак
+// стоит по центру ровно 1.5с, красиво испаряется, и СРАЗУ следом плавно и
+// последовательно (карточка за карточкой) появляется меню. «Сразу следом»
+// оказалось буквально: меню не должно начинать открываться, пока от знака
+// ещё что-то видно на экране — первая попытка запускала обе анимации в один
+// момент (T_REVEAL = T_VANISH), и знак с меню были видны одновременно, что
+// Егор явно забраковал.
+const HOLD = 1.5;
 /** Момент, с которого знак начинает испаряться. */
 const T_VANISH = T_SETTLED + HOLD;
 /** Испарение — той же природы, что и появление (просьба Егора: «ближе к
@@ -56,13 +61,10 @@ const T_VANISH = T_SETTLED + HOLD;
 const STAGGER_OUT = 0.018;
 const CHAR_DUR_OUT = 0.3;
 const D_DISSOLVE = (11 - 1) * STAGGER_OUT + CHAR_DUR_OUT;
-/** Меню открывается сразу же, как знак начал таять — без паузы между ними
- *  (правка Егора: «долго появляется меню после лого», «нужно сразу же и
- *  плавно»). Знак уже отстоял свой HOLD, читать его больше не нужно;
- *  небольшой запас (не 0, а чуть позже) — чтобы меню не выскочило раньше,
- *  чем первая буква вообще тронулась, иначе это читалось бы как рывок, а
- *  не как проявление сквозь дым. */
-const T_REVEAL = T_VANISH;
+/** Меню открывается сразу, как знак полностью растворился — не раньше:
+ *  на экране не должно быть одновременно и остатков знака, и уже открытого
+ *  меню (просьба Егора после проверки живьём). */
+const T_REVEAL = T_VANISH + D_DISSOLVE;
 /** Стекло уходит вместе с появлением меню — меню проступает сквозь него. */
 const D_FADE = 0.6;
 const T_DONE_MS = (Math.max(T_VANISH + D_DISSOLVE, T_REVEAL + D_FADE) + 0.1) * 1000;
@@ -137,9 +139,14 @@ export default function IntroSplash({
       cb.current.onReveal();
       return;
     }
+    // Ветер на появлении знака. На самом первом заходе браузер его не
+    // пропустит (звук разрешается только после клика), зато слышно при
+    // повторном показе заставки в той же вкладке.
+    const wind = window.setTimeout(() => sound()?.introWind(), T_DOT * 1000);
     const a = window.setTimeout(() => cb.current.onReveal(), T_REVEAL * 1000);
     const b = window.setTimeout(() => setPlaying(false), T_DONE_MS);
     return () => {
+      window.clearTimeout(wind);
       window.clearTimeout(a);
       window.clearTimeout(b);
     };
@@ -149,6 +156,11 @@ export default function IntroSplash({
 
   return createPortal(
     <div
+      // По центру экрана — финальное ТЗ Егора. Меню теперь начинает
+      // открываться только в момент, когда знак уже начал таять (T_REVEAL =
+      // T_VANISH), а не стоит рядом с ним несколько секунд — поэтому знаку
+      // больше незачем подстраиваться под будущее место карточек, конфликта
+      // с ними нет.
       className="pointer-events-none fixed inset-0 z-[120] flex items-center justify-center overflow-hidden"
       aria-hidden="true"
     >
@@ -200,7 +212,10 @@ export default function IntroSplash({
               yChannelSelector="G"
             >
               {/* Ровный набор амплитуды, без скачка: знак не разрывает, а
-                  постепенно уводит в волокна — испарение, а не взрыв. */}
+                  постепенно уводит в волокна — испарение, а не взрыв.
+                  Пик снижен с 150 до 40 — на размере знака 150 рвало буквы
+                  так сильно, что это читалось как дрожь и кривые изломы, а
+                  не как дым (просьба Егора после проверки живьём). */}
               <animate
                 attributeName="scale"
                 dur={`${D_DISSOLVE}s`}
@@ -209,7 +224,7 @@ export default function IntroSplash({
                 calcMode="spline"
                 keyTimes="0;0.35;0.7;1"
                 keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"
-                values="0;24;78;150"
+                values="0;7;20;40"
               />
             </feDisplacementMap>
           </filter>
@@ -227,7 +242,12 @@ export default function IntroSplash({
           className="relative flex flex-col items-center"
           initial={{ y: 0 }}
           animate={{ y: [0, -8, -30, -60] }}
-          transition={{ duration: D_DISSOLVE, times: [0, 0.35, 0.68, 1], ease: EASE, delay: T_VANISH }}
+          // Тот же класс бага, что у точки/букв (см. комментарий там): один
+          // `ease` на несколько ключевых кадров гонит общий прогресс через
+          // всю анимацию целиком. Здесь дрейф и так монотонно растёт, поэтому
+          // это не создавало плато-артефакт, но `easeIn` на каждый отрезок —
+          // честнее, чем EASE (тот сделан для появления, не для дрейфа дыма).
+          transition={{ duration: D_DISSOLVE, times: [0, 0.35, 0.68, 1], ease: ["easeIn", "easeIn", "easeIn"], delay: T_VANISH }}
         >
         {/* Размер знака. Нижняя граница clamp рассчитана на телефон: корневой
             размер там 14.4px, поэтому 2.1rem даёт ~30px — знак остаётся
@@ -242,7 +262,20 @@ export default function IntroSplash({
             className="relative inline-block h-[0.2em] w-[0.2em] shrink-0 rounded-full brand-dot"
             initial={{ opacity: 0, scale: 0.2, filter: "blur(0px)" }}
             animate={{ opacity: [0, 1, 1, 0], scale: [0.2, 1, 1, 1.4], filter: ["blur(0px)", "blur(0px)", "blur(0px)", "blur(10px)"] }}
-            transition={{ ...lifespan(T_DOT, 0.55, T_VANISH, CHAR_DUR_OUT), ease: EASE }}
+            // Один `ease` на четыре ключевых кадра — это была настоящая
+            // причина, по которой HOLD на глаз почти не менялся, сколько его
+            // ни увеличивай: framer-motion в этом случае гонит один и тот же
+            // изогнутый прогресс через ВСЮ шкалу времени целиком, а не по
+            // каждому отрезку своей кривой. Массив из трёх eases — по одному
+            // на отрезок (появление / плато / растворение) — держит плато
+            // ровно плоским. Отрезок растворения — не EASE: у EASE
+            // (0.22,1,0.36,1) обе Y-точки контроля равны 1, то есть кривая
+            // почти мгновенно долетает до конца и там же стоит — на входе
+            // это читается как бодрый разгон, а на 1→0 тот же профиль
+            // читается как рывок в никуда, а не таяние. easeInOut — ровная
+            // симметричная кривая, поэтому знак действительно тает, а не
+            // обрывается.
+            transition={{ ...lifespan(T_DOT, 0.55, T_VANISH, CHAR_DUR_OUT), ease: [EASE, "linear", "easeInOut"] }}
           >
             {[0, 0.28].map((off) => (
               <motion.span
@@ -257,10 +290,14 @@ export default function IntroSplash({
           </motion.span>
 
           {/* Буквы. На входе каждая встаёт из размытия, снизу и с наклоном
-              по оси X, волной слева направо (STAGGER). На выходе — тот же
-              наклон, но в другую сторону, и уходит вверх за нулевую
-              отметку, той же волной (STAGGER_OUT): исчезновение читается
-              как прямое зеркало появления, а не другой приём. */}
+              по оси X, волной слева направо (STAGGER). На выходе — та же
+              анимация зеркально (просьба Егора: исчезновение должно быть
+              «такое же», не другое): тот же наклон по X, но в обратную
+              сторону, та же волна (STAGGER_OUT). Резким это раньше делала
+              не сама форма движения, а слишком сильный дымовой фильтр (см.
+              feDisplacementMap выше, амплитуда уже уменьшена) и жёсткая
+              кривая на самой прозрачности (та теперь easeInOut, а не EASE,
+              ниже в transition) — форму движения трогать не нужно было. */}
           <span className="font-display uppercase leading-none tracking-tight" style={{ perspective: 600 }}>
             {CHARS.map((c, i) => (
               <motion.span
@@ -274,12 +311,15 @@ export default function IntroSplash({
                 animate={{
                   opacity: [0, 1, 1, 0],
                   y: ["0.45em", "0em", "0em", "-0.5em"],
-                  rotateX: [-70, 0, 0, 65],
+                  rotateX: [-70, 0, 0, 70],
                   filter: ["blur(16px)", "blur(0px)", "blur(0px)", "blur(18px)"],
                 }}
                 transition={{
                   ...lifespan(T_CHARS + i * STAGGER, CHAR_DUR, T_VANISH + i * STAGGER_OUT, CHAR_DUR_OUT),
-                  ease: EASE,
+                  // См. комментарий у точки выше — тот же массив eases по
+                  // сегментам, а не один на все четыре ключевых кадра, и та
+                  // же замена EASE на easeInOut для растворения.
+                  ease: [EASE, "linear", "easeInOut"],
                 }}
               >
                 {c.ch}

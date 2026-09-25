@@ -137,7 +137,7 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
                   >
                     <span aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(60%_55%_at_50%_45%,rgba(var(--tp-from-rgb),0.22),transparent_70%)]" />
                     {chat ? (
-                      <TeamPulseChatScene visual={view.visual} chosen={view.chosen} phase={view.phase} answers={view.answers} />
+                      <TeamPulseChatScene visual={view.visual} chosen={view.chosen} phase={view.phase} answers={view.answers} who={data.member.nameGenitive} />
                     ) : (
                       <TeamPulseScenes scene={t.scene} />
                     )}

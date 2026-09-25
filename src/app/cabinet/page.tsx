@@ -3,7 +3,7 @@ import CabinetFrame from "@/components/cabinet/CabinetFrame";
 
 export const metadata: Metadata = {
   title: "Личный кабинет — HUD.SERVICE",
-  description: "Заказы, рекомендации команды, бонусы и связь с продюсером в одном месте.",
+  description: "Заказы, рекомендации команды, подарочные генерации и связь с продюсером в одном месте.",
   robots: { index: false, follow: false },
 };
 

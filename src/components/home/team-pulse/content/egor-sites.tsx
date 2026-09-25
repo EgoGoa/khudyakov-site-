@@ -1,5 +1,5 @@
 import { TEAM } from "@/lib/team";
-import { SITES_ACCENT } from "@/components/home/ai/spotlightSites";
+import { EGOR_ACCENT } from "./egor-ai";
 import type { TeamPulseData } from "../types";
 
 // Егор на /sites, глава «Как проходит работа». Роль — линейный продюсер
@@ -8,7 +8,8 @@ import type { TeamPulseData } from "../types";
 export const EGOR_SITES: TeamPulseData = {
   member: TEAM.egor,
   role: "продюсер",
-  accent: SITES_ACCENT,
+  // Окошки Егора везде в его оранжево-жёлтом, а не в цвете страницы.
+  accent: EGOR_ACCENT,
   image: "/images/service-sites.jpg",
   offers: [
     "Распишу твой проект ^по шагам^ — *за 15 минут созвона*",

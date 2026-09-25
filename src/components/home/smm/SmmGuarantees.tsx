@@ -10,8 +10,8 @@ import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 import { EYEBROW } from "@/lib/typography";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { EGOR_SMM } from "@/components/home/team-pulse/content/egor-smm";
 
 // Chapter 05 — the terms plus a compact FAQ folded into one screen, the same
 // shape AiGuarantees and SitesGuarantees use.
@@ -130,15 +130,10 @@ export default function SmmGuarantees() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <TeamAskCard
-              member={TEAM.egor}
-              question="Фиксирую условия и сроки в договоре — без мелкого шрифта"
-              pitch="Отвечу по договору, срокам и оплате — без сюрпризов и мелкого шрифта."
-              actionLabel="Обсудить задачу"
-              href="/brief/smm"
-              compact
-              className="mt-4"
-            />
+            <div className="mt-4">
+              {/* Егор как сервис — уведомление на месте прежней карточки. */}
+              <TeamPulse data={EGOR_SMM} compact source="/smm · глава «Гарантии»" />
+            </div>
           </Appear>
           <ToolSpotlight slug="smm-ads" accent={SMM_ACCENT} place="left" />
         </div>

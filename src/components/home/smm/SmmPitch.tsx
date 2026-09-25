@@ -8,8 +8,8 @@ import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import SmmDeck, { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 import { EYEBROW } from "@/lib/typography";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { EGOR_SMM } from "@/components/home/team-pulse/content/egor-smm";
 
 // Chapter 01 of /smm — the opening pitch, one level in from the site's own
 // universal Hero (see (landing)/layout.tsx, and the same reasoning in
@@ -105,15 +105,10 @@ export default function SmmPitch() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <TeamAskCard
-              member={TEAM.egor}
-              question="Расскажу, что войдёт в пакет — съёмка, монтаж и ведение одной командой"
-              pitch="Съёмка, монтаж и ведение — расскажу, что войдёт в ваш пакет и сколько это займёт."
-              actionLabel="Обсудить формат"
-              href="/brief/smm"
-              compact
-              className="mt-4"
-            />
+            <div className="mt-4">
+              {/* Егор как сервис — уведомление на месте прежней карточки. */}
+              <TeamPulse data={EGOR_SMM} compact source="/smm · глава 01" />
+            </div>
           </Appear>
           </div>
         </div>

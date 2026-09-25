@@ -5,17 +5,17 @@ import type { CabinetState } from "./store";
 // Таня предлагает запуск с рекламой, «каталог» — Вадим предлагает
 // AI-фото товаров и так далее. Цен нет — только после брифа.
 
-export type CabinetService = { id: string; title: string; desc: string; memberId: string; bonus?: boolean };
+export type CabinetService = { id: string; title: string; desc: string; memberId: string };
 
 export const SERVICES: CabinetService[] = [
-  { id: "ai-video", title: "AI-ролик для главной", desc: "15 секунд из твоих же фото — за пару дней.", memberId: "dima", bonus: true },
-  { id: "kp", title: "КП за вечер", desc: "Коммерческое предложение и 2 концепции под задачу.", memberId: "max", bonus: true },
-  { id: "smm-start", title: "SMM-старт на месяц", desc: "Контент-план, 12 постов, запуск рекламы.", memberId: "tanya", bonus: true },
+  { id: "ai-video", title: "AI-ролик для главной", desc: "15 секунд из твоих же фото — за пару дней.", memberId: "dima" },
+  { id: "kp", title: "КП за вечер", desc: "Коммерческое предложение и 2 концепции под задачу.", memberId: "max" },
+  { id: "smm-start", title: "SMM-старт на месяц", desc: "Контент-план, 12 постов, запуск рекламы.", memberId: "tanya" },
   { id: "site", title: "Сайт под ключ", desc: "От концепции до запуска — каждый этап с твоим «ок».", memberId: "sasha" },
   { id: "event", title: "Упаковка события", desc: "Анонс, фото, видео и отчётный ролик.", memberId: "max" },
   { id: "avatar", title: "AI-аватар эксперта", desc: "Цифровой двойник — ролики без съёмок.", memberId: "dima" },
   { id: "agent", title: "AI-агент на неделю", desc: "Бот, который отвечает клиентам за тебя.", memberId: "dima" },
-  { id: "photo", title: "Нейрофотосессия", desc: "Фото для сайта и соцсетей без студии.", memberId: "sasha", bonus: true },
+  { id: "photo", title: "Нейрофотосессия", desc: "Фото для сайта и соцсетей без студии.", memberId: "sasha" },
 ];
 
 export type CabinetRec = { id: string; memberId: string; title: string; text: string };
@@ -29,7 +29,7 @@ const RULES: { match: RegExp; rec: CabinetRec }[] = [
 ];
 
 const DEFAULT_RECS: CabinetRec[] = [
-  { id: "rec-video", memberId: "dima", title: "AI-ролик *из твоих фото*", text: "15 секунд для главной или сторис — оплатить можно бонусом." },
+  { id: "rec-video", memberId: "dima", title: "AI-ролик *из твоих фото*", text: "15 секунд для главной или сторис — из твоих же фото." },
   { id: "rec-promo", memberId: "max", title: "Акция ^к запуску^", text: "Придумаю механику и тексты — покажу два варианта за вечер." },
   { id: "rec-smm", memberId: "tanya", title: "Контент-план *на месяц*", text: "Разберу твой профиль и соберу план постов под твою аудиторию." },
 ];

@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { MAX_CONTENT } from "@/components/home/team-pulse/content/max-content";
+import { DIMA_AI } from "@/components/home/team-pulse/content/dima-ai";
 import { AnimatePresence, motion } from "framer-motion";
 import CinematicSection from "@/components/ui/CinematicSection";
 import FaqAside from "@/components/home/FaqAside";
@@ -11,8 +14,6 @@ import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
 import { briefHrefFor } from "@/lib/brief";
 import { whyByCategory } from "@/lib/service-content";
-import TeamAskCard from "@/components/home/TeamAskCard";
-import { TRUST_ASK } from "@/lib/team";
 
 // Chapter 03 on /content (the deck position `index`/`chapter` default to) —
 // the old Why + Testimonials + LogoCloud folded into one screen. The client
@@ -237,16 +238,11 @@ export default function Trust({
             высоту, Promo рядом по-прежнему тянется на всю строку сам. */}
         <Appear from="up" delay={BEAT.cta} className="mt-2 lg:self-start lg:max-w-[300px] xl:max-w-[340px]">
           {(() => {
-            const ask = TRUST_ASK[active === "ai" ? "ai" : "content"];
-            return (
-              <TeamAskCard
-                member={ask.member}
-                question={ask.question}
-                pitch={ask.pitch}
-                actionLabel={ask.actionLabel}
-                compact
-                dense
-              />
+            // Человек как сервис (TeamPulse): Макс на /content, Вадим на /ai.
+            return active === "ai" ? (
+              <TeamPulse data={DIMA_AI} compact source="/ai · глава «Продюсерский центр»" />
+            ) : (
+              <TeamPulse data={MAX_CONTENT} compact source="/content · глава «Именно мы»" />
             );
           })()}
         </Appear>

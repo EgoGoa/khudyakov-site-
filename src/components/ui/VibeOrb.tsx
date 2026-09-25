@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { getTier, onTierChange } from "@/lib/perf-tier";
 
 // The site's "vibe" mark: a luminous sphere — a hairline limb sweeping
 // pink→violet→cyan around two wisps of light winding into a hot core.
@@ -253,8 +254,10 @@ export default function VibeOrb({
         ? makeSweep(ctx, S / 2)
         : "rgba(190,120,255,0.75)";
 
-    // One still frame and nothing else for visitors who ask for less motion.
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // One still frame and nothing else for visitors who ask for less motion,
+    // and on weak devices (lib/perf-tier) — the orb is on screen on every
+    // page, so a 60fps canvas repaint there never stops.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || getTier() === "low") {
       drawOrb(ctx, S, 0, 0, sweep);
       return;
     }
@@ -279,9 +282,15 @@ export default function VibeOrb({
     let raf = 0;
     const t0 = performance.now();
 
+    // Mid tier repaints at ~30fps: the swirl is slow enough that half the
+    // frames read the same, at half the canvas work.
+    let minGap = getTier() === "mid" ? 30 : 0;
+    let lastDraw = 0;
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
       if (!onScreen || document.hidden) return;
+      if (now - lastDraw < minGap) return;
+      lastDraw = now;
       const target = trigger.matches(litSelector) ? 1 : 0;
       lit += (target - lit) * 0.12;
       drawOrb(ctx, S, (now - t0) / 1000, lit, sweep);
@@ -296,9 +305,19 @@ export default function VibeOrb({
     );
     io.observe(wrap);
 
+    const stopTierWatch = onTierChange((tier) => {
+      if (tier === "low") {
+        cancelAnimationFrame(raf);
+        drawOrb(ctx, S, 0, 0, sweep);
+      } else {
+        minGap = tier === "mid" ? 30 : 0;
+      }
+    });
+
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      stopTierWatch();
     };
   }, [size]);
 

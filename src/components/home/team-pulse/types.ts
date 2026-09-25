@@ -11,10 +11,21 @@ import type { TeamMember } from "@/lib/team";
 // следующий участник команды добавлялся файлом с текстами, а не правкой
 // вёрстки.
 
-export type TeamPulseScene = "concepts" | "lead" | "catalog" | "rebrand" | "timeline" | "calendar" | "contact" | "team";
+export type TeamPulseScene =
+  | "concepts" | "lead" | "catalog" | "rebrand" | "timeline" | "calendar" | "contact" | "team"
+  // Егор на /ai: пилот по шагам, экономия, «без своих промптов», AI-команда.
+  | "aiPilot" | "aiSavings" | "aiPrompts" | "aiCrew"
+  // /content: Егор (продакшн) и Макс (идея, сценарий).
+  | "contentTimeline" | "contentContact" | "contentCrew"
+  | "maxHooks" | "maxStoryboard" | "maxConcepts" | "maxCreative"
+  // Вадим: генерации, форматы, аватар, подбор модели.
+  | "dimaPhotoToVideo" | "dimaFormats" | "dimaAvatar" | "dimaModels"
+  // /smm: Егор (этапы ведения) и Таня (профиль, охваты, план, отчёт).
+  | "smmTimeline" | "smmContact" | "smmCrew"
+  | "tanyaGrid" | "tanyaReach" | "tanyaPlan" | "tanyaReport";
 
 /** Сцена чата — по одной на вопрос, показывает варианты ответа. */
-export type TeamPulseChatVisual = "what" | "ref" | "mood" | "goal" | "speed" | "stage" | "deadline" | "approver" | "channel";
+export type TeamPulseChatVisual = "what" | "ref" | "mood" | "goal" | "speed" | "stage" | "deadline" | "approver" | "channel" | "aiTask" | "aiVolume" | "shootWhat" | "shootGoal" | "shootTone" | "dimaFormat" | "smmWhat" | "smmNow";
 
 export type TeamPulseThesis = {
   title: string;

@@ -281,6 +281,7 @@ function ConsultCard() {
       actionLabel="Пообщаемся"
       className="h-full"
       backgroundImage="/images/blocks/stock-brainstorm.jpg"
+      classic
     />
   );
 }

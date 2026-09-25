@@ -156,6 +156,12 @@ export default function TeamPulse({
   }, [collapsed, peek, inView, reduced, messages.length]);
 
   const reveal = () => {
+    // Раскрытое окошко встаёт поверх текста блока. Если на обёртке
+    // появления повис filter: blur(0px), backdrop-filter окошка не видит
+    // страницу и сайт просвечивает резким — снимаем такой filter с предков.
+    for (let p = ref.current?.parentElement; p && p !== document.body; p = p.parentElement) {
+      if (/blur\(0(px)?\)/.test(p.style.filter)) p.style.removeProperty("filter");
+    }
     setOffer((o) => (o + 1) % data.offers.length);
     setCount(0);
     setPeek(true);
@@ -192,7 +198,9 @@ export default function TeamPulse({
               compact ? "inset-x-0 bottom-0 z-30 min-h-[9.5rem] py-4" : "inset-0"
             }`}
             initial={reduced ? false : { opacity: 0, scale: 0.92, y: 8, filter: "blur(10px)" }}
-            animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+            // filter снимается после входа: даже blur(0px) отрезает
+            // backdrop-filter от страницы, и сайт просвечивает сквозь окошко.
+            animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
             exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.9, filter: "blur(10px)", transition: { duration: 0.28 } }}
             transition={SPRING}
           >

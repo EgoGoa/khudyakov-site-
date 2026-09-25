@@ -7,8 +7,8 @@ import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import SmmChapterLayout from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { TANYA_SMM } from "@/components/home/team-pulse/content/tanya-smm";
 import PromoCard from "@/components/home/PromoCard";
 
 // Chapter 02 of /smm — "продюсерский центр, не подрядчик".
@@ -129,13 +129,7 @@ export default function SmmMethod() {
         secondary={{ href: "/brief/smm", label: "Обсудить задачу" }}
         askCard={
           <>
-            <TeamAskCard
-              member={TEAM.tanya}
-              question="Веду соцсети сама: аудит → стратегия → контент → таргет → отчёт"
-              pitch="5 шагов: аудит → стратегия → контент → таргет → отчёт. Веду сама."
-              actionLabel="Уточнить систему ведения"
-              compact
-            />
+            <TeamPulse data={TANYA_SMM} compact source="/smm · глава «Система ведения»" />
             {/* /smm's own September offer — sits under Таня's card in the
                 same left column instead of at the bottom of the
                 comparison-table column (Egor's ask). Gap bumped to mt-8

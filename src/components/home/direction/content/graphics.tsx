@@ -400,6 +400,51 @@ export const graphicsContent: DirectionContent = {
   assetsMedia:
   { photo: "/images/stock/desk-aerial.webp", gradient: ACCENT, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
 
+  // Окошки услуги как постоянные блоки — та же механика, что на
+  // presentation.tsx и ai-video.tsx. Порядок массива обязан совпадать с
+  // порядком тезисов «graphics» в spotlightDirections.ts (Невидимое →
+  // 3D-продукт → Данные → Заставки). Цифры — только уже опубликованные на
+  // этой странице; ни одно слово в подписях не длиннее 8 букв, чтобы на
+  // узкой мобильной колонке оно не вылезало за карточку.
+  sceneBreaks: [
+    {
+      after: "task",
+      memberId: "max",
+      facts: [
+        { value: "3–4 нед", label: "3D модель изделия" },
+        { value: "8 лет", label: "в графике для бизнеса" },
+        { value: "1", label: "сценарий до старта работ" },
+      ],
+    },
+    {
+      after: "cases",
+      memberId: "max",
+      facts: [
+        { value: "8", label: "работ без единой камеры" },
+        { value: "450+", label: "проектов уже снято" },
+        { value: "2 нед", label: "путь без 3D" },
+      ],
+    },
+    {
+      after: "pricing",
+      memberId: "max",
+      facts: [
+        { value: "60 000 ₽", label: "старт с анимации лого" },
+        { value: "450 000 ₽", label: "изделие под ключ" },
+        { value: "5", label: "этапов до сдачи" },
+      ],
+    },
+    {
+      after: "assets",
+      memberId: "max",
+      facts: [
+        { value: "7 сек", label: "и лого оживает" },
+        { value: "8 лет", label: "бренд узнают сразу" },
+        { value: "1", label: "комплект на все ролики" },
+      ],
+    },
+  ],
+
   close: {
     media: {
       video: "/video/works/rosalyans.mp4",

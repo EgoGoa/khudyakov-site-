@@ -1,6 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { EGOR_CONTENT } from "@/components/home/team-pulse/content/egor-content";
+import { MAX_AI } from "@/components/home/team-pulse/content/max-content";
 import CinematicSection from "@/components/ui/CinematicSection";
 import TeamAskCard from "@/components/home/TeamAskCard";
 import Appear from "@/components/ui/Appear";
@@ -344,17 +347,8 @@ export default function Process({
             />}
           </Appear>
           <Appear from="up" delay={BEAT.cta} className="h-full">
-            <TeamAskCard
-              member={TEAM.egor}
-              // Card already shows "Егор · генеральный продюсер" above this
-              // line (member.name/role) — no need to repeat his name here.
-              question="Работаем индивидуально — раскрываем именно ваш потенциал, а не шаблон."
-              pitch="Готов созвониться — разберём проект голосом, если так удобнее."
-              actionLabel="Созвониться"
-              compact
-              glow={false}
-              className="h-full"
-            />
+            {/* Егор как сервис (TeamPulse) вместо карточки. */}
+            <TeamPulse data={EGOR_CONTENT} compact source="/content · глава «PRO хронология»" />
           </Appear>
         </div>
       ) : active === "ai" ? (
@@ -371,15 +365,8 @@ export default function Process({
         // 75 000 → 60 000 ₽ at 20% off.
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <Appear from="up" delay={BEAT.cta} className="h-full">
-            <TeamAskCard
-              member={processPerson}
-              question="Отвечу по этапам быстрее, чем вы заполните бриф — прямо в переписке"
-              pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
-              actionLabel="Заполнить бриф"
-              href={briefHrefFor(active)}
-              compact
-              className="h-full"
-            />
+            {/* Макс как сервис (TeamPulse) вместо карточки. */}
+            <TeamPulse data={MAX_AI} compact source="/ai · глава «Как проходит внедрение»" />
           </Appear>
           <Appear from="up" delay={BEAT.cta} className="h-full">
             <PromoCard

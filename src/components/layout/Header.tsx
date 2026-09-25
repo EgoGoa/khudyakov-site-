@@ -3,6 +3,8 @@
 import Link from "next/link";
 import CabinetButton from "@/components/cabinet/CabinetButton";
 import CabinetWindow from "@/components/cabinet/CabinetWindow";
+import LiveBrandWord from "@/components/layout/LiveBrandWord";
+import SoundStation from "@/components/layout/SoundStation";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -259,7 +261,7 @@ export default function Header() {
         >
           <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot sm:h-2.5 sm:w-2.5" />
           <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] land:!text-[0.9rem] uppercase tracking-tight">
-            HUD<span className="brand-word">.SERVICE</span>
+            HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
           </span>
           <span className="ml-1 hidden h-6 w-px shrink-0 bg-paper/25 sm:block land:!hidden" aria-hidden="true" />
           {/* The tagline now carries /sites' chapter-heading treatment: the
@@ -305,6 +307,9 @@ export default function Header() {
           {/* Личный кабинет: иконка с цифрой новых рекомендаций команды;
               само окно кабинета смонтировано здесь же, чтобы открываться
               с любой страницы. */}
+          {/* Станция HDKV: звук сайта и музыка по настроению (lib/sound). */}
+          <SoundStation />
+
           <CabinetButton />
           <CabinetWindow />
 

@@ -7,8 +7,8 @@ import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import AiDeck, { AI_PILL, AI_ROUND } from "@/components/home/ai/AiDeck";
 import { EYEBROW } from "@/lib/typography";
-import { TEAM } from "@/lib/team";
-import TeamAskCard from "@/components/home/TeamAskCard";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { DIMA_AI } from "@/components/home/team-pulse/content/dima-ai";
 
 // Chapter 01 of /ai's deck (see src/app/(landing)/ai/page.tsx) — rebuilt in
 // the composition Egor approved on /sites (see SitesPitch for the same
@@ -103,15 +103,10 @@ export default function AiPitch() {
           </Appear>
 
           <Appear from="up" delay={BEAT.cta}>
-            <TeamAskCard
-              member={TEAM.dima}
-              question="Подбираю AI-инструмент под задачу, а не для галочки"
-              pitch="Подберу AI-инструмент под задачу и покажу, как это будет работать у вас."
-              actionLabel="Обсудить внедрение"
-              href="/brief/ai"
-              compact
-              className="mt-4"
-            />
+{/* Вадим как сервис — уведомление на месте прежней карточки. */}
+            <div className="mt-4">
+              <TeamPulse data={DIMA_AI} compact source="/ai · глава 01" />
+            </div>
           </Appear>
 
           {/* One thin line instead of the old bordered four-cell block. */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { playUi } from "@/lib/sound";
 
 // Drag-to-scrub for the service carousels (AiDeck, SitesDeck, SmmDeck).
 //
@@ -499,6 +500,13 @@ export function useDeckDrag({ count, spacing, onSettle }: DragArgs) {
 const SPRING_OMEGA = 11; // жёсткость: ≈0.45 с на шаг
 
 export function useDeckSpring(active: number, drag: number, dragging: boolean) {
+  // Каждый шаг колоды — короткий шорох (lib/sound). Первый рендер молчит.
+  const soundActive = useRef(active);
+  useEffect(() => {
+    if (soundActive.current === active) return;
+    soundActive.current = active;
+    playUi("swipe");
+  }, [active]);
   const [pos, setPos] = useState(active);
   const posRef = useRef(active);
   const vel = useRef(0);

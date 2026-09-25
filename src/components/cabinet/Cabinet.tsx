@@ -8,11 +8,12 @@ import { TEAM, type TeamMember } from "@/lib/team";
 import { marks } from "@/components/home/team-pulse/marks";
 import {
   ORDER_STAGES,
-  WELCOME_BONUS,
+  WELCOME_GIFTS,
   addEvent,
   answerQuestion,
   dismissRec,
   register,
+  requestGift,
   requestService,
   saveProfile,
   sendToTeam,
@@ -26,11 +27,12 @@ import { GOALS, NICHES, SERVICES, WANTS, recommendationsFor } from "./data";
 // как у Apple: нейтральное стекло, белый текст, фирменные градиенты только
 // в главных заголовках и ключевых цифрах. Кабинет не ждёт действий — он
 // сам спрашивает (вопрос от команды) и предлагает (рекомендации по ответам
-// из чата). Перед входом — обязательная регистрация и бонус на счёте.
+// из чата). Перед входом — обязательная регистрация, в подарок 3 генерации изображения.
 
 const SPRING = { type: "spring", stiffness: 300, damping: 30 } as const;
 const member = (id: string): TeamMember => TEAM[id] ?? TEAM.egor;
-const rub = (n: number) => `${n.toLocaleString("ru-RU")} ₽`;
+/** «3 генерации», «1 генерация», «5 генераций». */
+const gens = (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? "генерация" : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? "генерации" : "генераций"}`;
 
 type Section = "home" | "business" | "orders" | "recs" | "catalog" | "favorites" | "cart" | "kp" | "personal" | "history";
 const NAV: { id: Section; label: string; icon: string }[] = [
@@ -80,14 +82,14 @@ function Register({ state }: { state: CabinetState }) {
     <div className="flex flex-col">
       <p className="font-display text-[22px] font-bold uppercase leading-[1.05] text-white sm:text-[24px]">{marks("Вход в *кабинет*")}</p>
       <p className="mt-2.5 text-[14px] font-semibold leading-relaxed text-white">
-        Регистрация за 10 секунд — и {marks(`^${rub(WELCOME_BONUS)} бонусом^`)} на лицевом счёте на выбор услуг.
+        Регистрация за 10 секунд — и {marks(`^${gens(WELCOME_GIFTS)} изображения^`)} в подарок на самых свежих нейросетях.
       </p>
       <div className="mt-5 flex flex-col gap-2.5">
         <input className="cab-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Имя" autoComplete="name" />
         <input className="cab-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Телефон" autoComplete="tel" />
         <input className="cab-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Почта — по желанию" autoComplete="email" />
         {/* Три согласия, как принято у кабинетов в РФ: соглашение и правила
-            бонуса и обработка ПДн — обязательные; рассылки — отдельно и по
+            подарка и обработка ПДн — обязательные; рассылки — отдельно и по
             желанию (закон о рекламе не даёт склеивать их с остальными). */}
         <label className="mt-1 flex cursor-pointer items-start gap-2.5 text-left text-xs leading-relaxed text-white">
           <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-glow" />
@@ -98,7 +100,7 @@ function Register({ state }: { state: CabinetState }) {
             </Link>{" "}
             и{" "}
             <Link href="/bonus" target="_blank" className="underline">
-              правила бонусной программы
+              правила подарка за регистрацию
             </Link>
           </span>
         </label>
@@ -306,7 +308,6 @@ function Catalog({ state, only }: { state: CabinetState; only?: "favorites" | "c
             <Card key={s.id} className="flex flex-col gap-2 p-4">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[15px] font-extrabold text-white">{s.title}</p>
-                {s.bonus && <span className="cab-bonus-tag">бонус</span>}
               </div>
               <p className="text-[13px] font-semibold leading-relaxed text-white">{s.desc}</p>
               <div className="mt-1 flex items-center gap-1.5">
@@ -496,8 +497,8 @@ function Business({ state }: { state: CabinetState }) {
             <p className="mt-1 text-[13px] font-semibold text-white">Подключим сайт и соцсети — увидишь заявки и конверсию здесь.</p>
           </Card>
           <Card className="p-4">
-            <p className="text-[14px] font-extrabold text-white">{marks("^Бонус^ в работу")}</p>
-            <p className="mt-1 text-[13px] font-semibold text-white">{rub(state.bonus)} можно потратить на услугу из каталога с меткой «бонус».</p>
+            <p className="text-[14px] font-extrabold text-white">{marks("^Подарок^ в работу")}</p>
+            <p className="mt-1 text-[13px] font-semibold text-white">{state.gifts ? `Осталось ${gens(state.gifts)} изображения — опиши картинку справа.` : "Подарочные генерации использованы — результаты пришлём в течение дня."}</p>
           </Card>
         </div>
       </div>
@@ -505,18 +506,70 @@ function Business({ state }: { state: CabinetState }) {
   );
 }
 
-/* ── Правая колонка: баланс и связь с командой ────────────────────────── */
+/* ── Правая колонка: подарок и связь с командой ──────────────────────── */
 
-function Balance({ state }: { state: CabinetState }) {
+/** Подарок за регистрацию: 3 генерации изображения. Клиент описывает
+ *  картинку — заявка уходит команде, генерируем мы на свежих моделях.
+ *  Денег, баланса и пополнения нет (решение Егора). */
+function Gift({ state }: { state: CabinetState }) {
+  const [prompt, setPrompt] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState<string>();
+  const send = async () => {
+    const t = prompt.trim();
+    if (!t || busy) return;
+    setBusy(true);
+    try {
+      await requestGift(t);
+      setPrompt("");
+      setNote("Принято ✓ Пришлём картинку в течение дня.");
+    } catch {
+      setNote("Не отправилось — напиши команде в чат ниже.");
+    }
+    setBusy(false);
+  };
   return (
     <Card className="p-4">
-      <p className="font-display text-[26px] font-bold">{marks(`^${rub(state.bonus)}^`)}</p>
-      <p className="mt-1 text-[13px] font-bold text-white">Бонус на лицевом счёте — на AI-ролик, КП за вечер, SMM-старт или нейрофотосессию</p>
-      <div className="mt-3 flex gap-1.5">
-        <Chip primary disabled>
-          Пополнить · скоро
-        </Chip>
+      <p className="text-[12px] font-extrabold uppercase tracking-[0.08em] text-white">Подарок</p>
+      <p className="mt-1 font-display text-[26px] font-bold leading-tight">{marks(`^${gens(state.gifts)}^`)}</p>
+      <p className="mt-1 text-[13px] font-bold text-white">изображения на самых свежих нейросетях — опиши, что нарисовать</p>
+      <div className="mt-2.5 flex gap-1" aria-hidden>
+        {Array.from({ length: WELCOME_GIFTS }, (_, i) => (
+          <span key={i} className={`h-1.5 flex-1 rounded-full ${i < state.gifts ? "bg-white" : "bg-white/15"}`} />
+        ))}
       </div>
+      {state.gifts > 0 ? (
+        <form
+          className="mt-3 flex flex-col gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            send();
+          }}
+        >
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            rows={2}
+            placeholder="Например: кофейня на рассвете, тёплый свет"
+            className="cab-input resize-none text-[13px]"
+          />
+          <Chip primary onClick={send} disabled={!prompt.trim() || busy}>
+            {busy ? "Отправляю…" : "Сгенерировать"}
+          </Chip>
+        </form>
+      ) : (
+        <p className="mt-3 text-[13px] font-semibold text-white">Все три заказаны — результаты придут сюда и на почту.</p>
+      )}
+      {note && <p className="mt-2 text-[12.5px] font-bold text-white">{note}</p>}
+      {!!state.giftRequests.length && (
+        <ul className="mt-3 flex flex-col gap-1 border-t border-white/[0.07] pt-2.5">
+          {state.giftRequests.map((g) => (
+            <li key={g.at} className="text-[12.5px] font-semibold text-white">
+              {marks("*В работе*")} · {g.prompt}
+            </li>
+          ))}
+        </ul>
+      )}
     </Card>
   );
 }
@@ -637,7 +690,9 @@ export default function Cabinet({ onClose }: { onClose?: () => void }) {
               <p className="mt-2 text-[14px] font-semibold text-white sm:text-[15px]">
                 {state.orders.length
                   ? "Один вопрос ждёт твоего решения — остальное команда держит в работе."
-                  : `На счёте ${rub(state.bonus)} бонусом — выбери услугу или напиши команде.`}
+                  : state.gifts
+                    ? `В подарок ${gens(state.gifts)} изображения — опиши картинку справа или выбери услугу.`
+                    : "Выбери услугу в каталоге или напиши команде."}
               </p>
             </div>
             <AnimatePresence mode="wait">
@@ -663,7 +718,7 @@ export default function Cabinet({ onClose }: { onClose?: () => void }) {
           </main>
 
           <aside className="flex shrink-0 flex-col gap-4 border-t border-white/[0.07] px-5 py-5 lg:border-l lg:border-t-0 lg:px-4 lg:py-8">
-            <Balance state={state} />
+            <Gift state={state} />
             <TeamChat state={state} />
           </aside>
         </>

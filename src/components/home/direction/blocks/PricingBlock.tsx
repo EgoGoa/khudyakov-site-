@@ -174,8 +174,8 @@ export default function PricingBlock({
             />
             {/* Участник «как сервис» стоит своим уведомлением (TeamPulse) —
                 Егор: «Сашу меняем везде». */}
-            {TEAM_PULSE[secondaryMember.id] ? (
-              <TeamPulse data={TEAM_PULSE[secondaryMember.id]} compact source="блок цен на странице формата" />
+            {TEAM_PULSE.sites?.[secondaryMember.id] ? (
+              <TeamPulse data={TEAM_PULSE.sites![secondaryMember.id]} compact source="блок цен на странице формата" />
             ) : (
               <TeamAskCard
                 compact

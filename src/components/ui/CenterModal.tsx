@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { playUi } from "@/lib/sound";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
@@ -66,6 +67,16 @@ export default function CenterModal({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, onClose]);
+
+  // Звук окна (lib/sound). Вступительная сцена (`bare`) — это карточки,
+  // которые появляются одна за другой, поэтому у неё «тюк-тюк-тюк», у
+  // обычных окон — мягкое двухнотное «открылось». Первый рендер молчит.
+  const wasOpen = useRef(open);
+  useEffect(() => {
+    if (wasOpen.current === open) return;
+    wasOpen.current = open;
+    playUi(open ? (bare ? "windows" : "open") : "close");
+  }, [open, bare]);
 
   // Unmounting is ours, not AnimatePresence's.
   //
@@ -133,7 +144,11 @@ export default function CenterModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: bare ? 0.32 : 0.35, ease: EASE }}
+          // bare (вступительная сцена) — 0.32 читалось как резкий хлопок
+          // тёмной подложки прямо на месте, где только что стоял знак
+          // (просьба Егора после проверки живьём). Остальные окна (bare
+          // false) не трогаю — у них своя, уже принятая скорость.
+          transition={{ duration: bare ? 0.55 : 0.35, ease: EASE }}
           role="dialog"
           aria-modal="true"
           aria-label={ariaLabel}

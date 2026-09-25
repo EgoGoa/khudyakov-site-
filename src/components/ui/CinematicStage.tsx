@@ -12,6 +12,7 @@ import {
 import { makeDeckGuard } from "@/lib/deck-gesture";
 import { useCinematicNavRegister } from "@/lib/cinematic-nav";
 import { reportActiveChapter, takePendingChapter } from "@/lib/page-hop";
+import { playUi, sound } from "@/lib/sound";
 
 // One continuous film behind a deck of chapters.
 //
@@ -979,6 +980,22 @@ export default function CinematicStage({
     pane.scrollTop = directionRef.current > 0 || !substantial ? 0 : max;
   }, [activeIndex]);
 
+  // Звук окружения сцены (lib/sound). Страница — из имени ролика:
+  // /video/ai-reel.mp4 → «ai». Колода ушла с экрана или со страницы —
+  // окружение затихает.
+  const soundPage = /\/video\/([a-z]+)-reel/.exec(src)?.[1] ?? null;
+  useEffect(() => {
+    if (!started || !soundPage) return;
+    return () => sound()?.leaveStage();
+  }, [started, soundPage]);
+  // Смена главы — шорох воздуха. Первая глава при заходе молчит.
+  const soundIndex = useRef(activeIndex);
+  useEffect(() => {
+    if (soundIndex.current === activeIndex) return;
+    soundIndex.current = activeIndex;
+    playUi("chapter");
+  }, [activeIndex]);
+
   // Play the active chapter's phase, then hold on its closing frame.
   useEffect(() => {
     const video = videoRef.current;
@@ -1000,6 +1017,8 @@ export default function CinematicStage({
       }
     }
     video.play().catch(() => {});
+    if (soundPage) sound()?.enterChapter(soundPage, activeIndex);
+    let soundHeld = false;
 
     // Blur into the hold instead of coasting to a stop. Playback stays at
     // full speed right up to the cut — reel's one keyframe per second gives
@@ -1058,6 +1077,10 @@ export default function CinematicStage({
       // of the self-heal branch, and holds exactly like a normal phase end.
       if (remaining <= HOLD_BACK_SECONDS || video.ended) {
         if (!video.paused) video.pause();
+        if (!soundHeld) {
+          soundHeld = true;
+          sound()?.holdChapter();
+        }
         if (frame) {
           if (lite) frame.style.transition = `filter ${blurSeconds}s ease`;
           frame.style.filter = lite ? `blur(${maxBlurPx}px)` : `${brightnessPrefix}blur(${maxBlurPx}px)`;
@@ -1109,7 +1132,7 @@ export default function CinematicStage({
     raf = requestAnimationFrame(tick);
 
     return () => cancelAnimationFrame(raf);
-  }, [activeIndex, phases, started, maxBlurPx, blurSeconds, push, brightness]);
+  }, [activeIndex, phases, started, maxBlurPx, blurSeconds, push, brightness, soundPage]);
 
   const api = useMemo<StageApi>(
     () => ({ activeIndex, staged: true, started, seen, warm }),

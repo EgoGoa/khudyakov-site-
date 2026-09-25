@@ -56,13 +56,16 @@ export default function ServiceDeepDive({ slug }: { slug: string }) {
 
   return (
     <>
+      {/* Тот же компактный неоновый пилл, что у карточек направлений на
+          главной (DirectionsGrid «Обсудить формат») — не сплошная тёплая
+          заливка на всю ширину, а аккуратная кнопка-приглашение. */}
       <button
         type="button"
         onClick={() => {
           setStep(0);
           setOpen(true);
         }}
-        className="btn-neon btn-warm !py-3.5"
+        className="btn-neon !px-3.5 !py-1.5 !text-[10px]"
       >
         Почему это работает — {steps} сцен
       </button>
