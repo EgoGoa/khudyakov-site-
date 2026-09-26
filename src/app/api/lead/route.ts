@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { BRIEF_EMAIL } from "@/lib/brief";
+import { BRIEF_EMAIL, looksLikeEmail } from "@/lib/brief";
 
 // Two entry points feed this one route: the "Заказать звонок" mini-brief
 // (budget/format/deadline/refs/wishes) and "Запланировать консультацию с
@@ -41,6 +41,8 @@ const TYPE_LABEL: Record<LeadPayload["type"], string> = {
   team: "Написали через карточку команды",
 };
 
+const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+
 export async function POST(request: Request) {
   let body: LeadPayload;
   try {
@@ -48,10 +50,16 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
+  if (!body || typeof body !== "object") {
+    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+  }
 
-  const name = body.name?.trim();
-  const phone = body.phone?.trim();
-  const email = body.email?.trim();
+  const name = str(body.name);
+  const phone = str(body.phone);
+  const email = str(body.email);
+  // A mistyped address must not cost the lead: it still goes into the letter,
+  // just not into replyTo, which the mail provider may reject outright.
+  const emailOk = looksLikeEmail(email);
   if (!name || (!phone && !email)) {
     return NextResponse.json({ error: "missing_fields" }, { status: 400 });
   }
@@ -66,7 +74,7 @@ export async function POST(request: Request) {
   const lines = [
     `Имя: ${name}`,
     ...(phone ? [`Телефон: ${phone}`] : []),
-    ...(email ? [`Email: ${email}`] : []),
+    ...(email ? [emailOk ? `Email: ${email}` : `Email (похоже, с опечаткой): ${email}`] : []),
     ...Object.entries(body.fields ?? {}).map(([label, value]) => `${label}: ${value || "—"}`),
   ];
 
@@ -76,8 +84,8 @@ export async function POST(request: Request) {
     // address once that domain is added in the Resend dashboard.
     from: "HUD.SERVICE <onboarding@resend.dev>",
     to: BRIEF_EMAIL,
-    replyTo: email || undefined,
-    subject: `${TYPE_LABEL[body.type]} — ${name}`,
+    replyTo: emailOk ? email : undefined,
+    subject: `${Object.hasOwn(TYPE_LABEL, body.type) ? TYPE_LABEL[body.type] : "Заявка с сайта"} — ${name}`,
     text: lines.join("\n"),
   });
 

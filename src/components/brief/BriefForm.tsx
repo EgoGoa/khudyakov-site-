@@ -8,6 +8,7 @@ import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import {
   BRIEF_EMAIL,
   BRIEF_META,
+  looksLikeEmail,
   SCENE_NAMES_BY_VARIANT,
   STEPS_BY_VARIANT,
   type BriefStep,
@@ -29,7 +30,7 @@ function isAnswered(step: BriefStep, answers: Answers) {
   if (step.type === "chips") return Array.isArray(v) && v.length > 0;
   if (step.type === "contact") {
     const c = v as ContactValue | undefined;
-    return Boolean(c?.email && c.email.trim());
+    return looksLikeEmail(c?.email);
   }
   return Boolean(v && String(v).trim());
 }
@@ -93,9 +94,10 @@ export default function BriefForm({ variant = "video" }: { variant?: BriefVarian
     return map;
   }, []);
 
-  const contactOk = isAnswered(
-    STEPS.find((s) => s.type === "contact") as BriefStep,
-    answers
+  const contactStep = STEPS.find((s) => s.type === "contact");
+  const contactOk = contactStep ? isAnswered(contactStep, answers) : false;
+  const emailTyped = Boolean(
+    contactStep && (answers[contactStep.id] as ContactValue | undefined)?.email?.trim()
   );
 
   const validatePage = (page: 1 | 2) => {
@@ -359,7 +361,9 @@ export default function BriefForm({ variant = "video" }: { variant?: BriefVarian
 
                 {!contactOk && (
                   <p className="mt-6 rounded-lg border border-orange/40 bg-orange/10 p-4 text-sm text-white">
-                    Укажите email для связи — без него письмо не сформируется.
+                    {emailTyped
+                      ? "Проверьте email — похоже, в адресе опечатка."
+                      : "Укажите email для связи — без него письмо не сформируется."}
                   </p>
                 )}
 

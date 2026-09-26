@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Container from "@/components/ui/Container";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
-import { BRIEF_EMAIL, type BriefStep } from "@/lib/brief";
+import { BRIEF_EMAIL, looksLikeEmail, type BriefStep } from "@/lib/brief";
 import { HOTEL_VIDEO_STEPS } from "@/lib/hotelVideoBrief";
 
 type ContactValue = { email: string; phone: string };
@@ -20,7 +20,7 @@ function isAnswered(step: BriefStep, answers: Answers) {
   if (step.type === "chips") return Array.isArray(v) && v.length > 0;
   if (step.type === "contact") {
     const c = v as ContactValue | undefined;
-    return Boolean(c?.email && c.email.trim());
+    return looksLikeEmail(c?.email);
   }
   return Boolean(v && String(v).trim());
 }
@@ -60,7 +60,7 @@ export default function HotelVideoBriefForm() {
   };
 
   const contact = (answers.contact as ContactValue) || { email: "", phone: "" };
-  const contactOk = Boolean(contact.email && contact.email.trim());
+  const contactOk = looksLikeEmail(contact.email);
 
   const mailtoHref = () => {
     const lines: string[] = ["БРИФ НА ВИДЕОСЪЁМКУ БАЗЫ ОТДЫХА — HUD.SERVICE", ""];
@@ -186,7 +186,9 @@ export default function HotelVideoBriefForm() {
 
         {!contactOk && (
           <p className="mt-6 rounded-lg border border-orange/40 bg-orange/10 p-4 text-sm text-white">
-            Укажите email для связи — без него письмо не сформируется.
+            {contact.email?.trim()
+              ? "Проверьте email — похоже, в адресе опечатка."
+              : "Укажите email для связи — без него письмо не сформируется."}
           </p>
         )}
 

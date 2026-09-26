@@ -8,6 +8,7 @@ import { MicIcon } from "@/components/ui/Icons";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useDictation } from "@/lib/use-dictation";
 import type { TeamMember } from "@/lib/team";
+import { useResetAfterClose } from "@/lib/use-reset-after-close";
 
 type Screen = "form" | "sending" | "sent" | "error";
 
@@ -46,10 +47,9 @@ export default function TeamConsultModal({
     setConsent(false);
   };
 
-  const close = () => {
-    onClose();
-    setTimeout(reset, 400);
-  };
+  useResetAfterClose(open, reset);
+
+  const close = onClose;
 
   const canSend = name.trim() && contact.trim() && consent;
 

@@ -30,6 +30,13 @@ export type BriefStep = {
 
 export const BRIEF_EMAIL = "khudyakov.yegor@gmail.com";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Loose shape check — catches dictation slips like "собака" instead of "@". */
+export function looksLikeEmail(value: string | undefined): boolean {
+  return EMAIL_RE.test((value ?? "").trim());
+}
+
 // Everything a page needs to present itself as "this brief, not the others":
 // the hero word, the badge naming the direction, the CSS class that repaints
 // the shared orange/cyan brief palette into that direction's own accent (see

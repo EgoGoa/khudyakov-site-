@@ -1,14 +1,17 @@
 import type { MetadataRoute } from "next";
+import { contentDirections } from "@/lib/service-content";
+import { aiToolPages, aiCompactToolPages } from "@/components/home/direction/toolRegistry";
+import { sitesFormatPages } from "@/components/home/direction/sitesFormatRegistry";
+import { smmFormatPages } from "@/components/home/direction/smmFormatRegistry";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://khudyakov-site.vercel.app";
 
-// Kept in sync by hand with the dynamic [param] routes, the same way
-// PAGE_BLOCKS in VibeRail.tsx tracks each page's own chapter ids — there is
-// no shared route registry to derive this from yet.
-const CONTENT_DIRECTIONS = ["presentation", "advertising", "image", "ai-video", "graphics"];
-const AI_TOOLS = ["video", "agent", "comms", "content", "ops", "crm", "voice", "personalization", "analytics", "training"];
-const SITES_FORMATS = ["landing", "card", "turnkey", "assistant", "redesign"];
-const SMM_FORMATS = ["reels", "stories", "carousel", "ads", "bloggers"];
+// Same sources as each [param] route's generateStaticParams, so a page that
+// builds is a page that's listed — a hand-kept copy here once dropped /ai/chat-hub.
+const CONTENT_DIRECTIONS = contentDirections.map((d) => d.slug);
+const AI_TOOLS = [...Object.keys(aiToolPages), ...Object.keys(aiCompactToolPages)];
+const SITES_FORMATS = Object.keys(sitesFormatPages);
+const SMM_FORMATS = Object.keys(smmFormatPages);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

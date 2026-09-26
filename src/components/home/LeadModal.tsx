@@ -6,6 +6,7 @@ import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { MicIcon, PhoneIcon, UserIcon } from "@/components/ui/Icons";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useDictation } from "@/lib/use-dictation";
+import { useResetAfterClose } from "@/lib/use-reset-after-close";
 
 type Screen = "choice" | "call" | "consult" | "sending" | "sent" | "error";
 type Accent = "call" | "consult";
@@ -229,12 +230,9 @@ export default function LeadModal({
     setConsent(false);
   };
 
-  const close = () => {
-    onClose();
-    // Wait for CenterModal's own exit animation before clearing state, so
-    // the form doesn't visibly blank out while the window is still fading.
-    setTimeout(reset, 400);
-  };
+  useResetAfterClose(open, reset);
+
+  const close = onClose;
 
   const submit = async (type: "call" | "consult") => {
     setScreen("sending");

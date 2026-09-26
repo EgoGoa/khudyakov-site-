@@ -4,6 +4,7 @@ import { useState } from "react";
 import CenterModal from "@/components/ui/CenterModal";
 import { MicIcon, SendIcon } from "@/components/ui/Icons";
 import { useDictation } from "@/lib/use-dictation";
+import { useResetAfterClose } from "@/lib/use-reset-after-close";
 
 const TELEGRAM_URL = "https://t.me/hdkv";
 
@@ -37,10 +38,9 @@ export default function BlockAssistant({ context }: { context: string }) {
     setAnswer("");
   };
 
-  const close = () => {
-    setOpen(false);
-    setTimeout(reset, 400);
-  };
+  useResetAfterClose(open, reset);
+
+  const close = () => setOpen(false);
 
   const ask = async (q: string) => {
     const text = q.trim();
