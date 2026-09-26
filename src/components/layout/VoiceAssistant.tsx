@@ -851,9 +851,11 @@ function VoicePanel({ from, to }: { from: string; to: string }) {
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="voice-panel-head">
-        <NanoWave width={48} height={26} from={from} to={to} hot={hot} pulse={s.pulse} dust={false} level={getVoiceLevel} />
-        <div className="min-w-0 flex-1">
-          <p className="voice-panel-title">Ассистент HUD.SERVICE</p>
+        {/* Волна на всю левую часть шапки (Егор: «растяни графику по моей
+            рамке»), под ней — статус. Заголовок убран: он переносился и
+            наезжал, а волна и так говорит, что это ассистент. */}
+        <div className="voice-panel-brand min-w-0 flex-1">
+          <HeaderWave from={from} to={to} hot={hot} pulse={s.pulse} />
           <p className={`voice-panel-status ${s.enabled ? "is-live" : ""}`}>
             {s.enabled && <span className="voice-panel-dot" aria-hidden="true" />}
             {status}
@@ -921,6 +923,24 @@ function VoicePanel({ from, to }: { from: string; to: string }) {
         </button>
       </form>
     </motion.div>
+  );
+}
+
+/** Волна шапки окна: занимает всю ширину своей колонки. */
+function HeaderWave({ from, to, hot, pulse }: { from: string; to: string; hot: boolean; pulse: number }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setW(Math.round(e.contentRect.width)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className="voice-panel-wave">
+      {w > 0 && <NanoWave width={w} height={40} from={from} to={to} hot={hot} pulse={pulse} level={getVoiceLevel} />}
+    </div>
   );
 }
 
