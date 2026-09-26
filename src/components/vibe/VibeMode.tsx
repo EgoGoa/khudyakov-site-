@@ -5,8 +5,8 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import NanoSphere, { type SphereIntro } from "@/components/ui/NanoSphere";
+import { InfoHow, InfoInside, InfoWhat } from "@/components/vibe/VibeInfographics";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
-import LiveBrandWord from "@/components/layout/LiveBrandWord";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { playUi } from "@/lib/sound";
@@ -17,6 +17,7 @@ import {
   encodeAnswers,
   formatBudget,
   isOwn,
+  plainAccent,
   questionsFor,
   vibeAnswersToFields,
   type VibeAnswers,
@@ -54,33 +55,13 @@ const SPLASH_MS = 4800;
 const SMOOTH = [0.65, 0, 0.35, 1] as const;
 const HELLO_TEXT = ["Персонализируй наш сервис ", "для себя"] as const;
 
-const INTRO_STEPS: { title: string; lead?: string; items: { n: string; h: string; t: string }[] }[] = [
-  {
-    title: "Что такое Vibe-сайт",
-    lead: "Лендинг, собранный только под твою задачу",
-    items: [
-      { n: "01", h: "Одна страница", t: "Всё про твой проект" },
-      { n: "02", h: "Без поиска", t: "Не нужно листать сайт" },
-      { n: "03", h: "Под бюджет", t: "Тарифы тебе по силам" },
-    ],
-  },
-  {
-    title: "Как это работает",
-    items: [
-      { n: "01", h: "Бриф", t: "3 минуты, по вопросу" },
-      { n: "02", h: "Сборка", t: "Под задачу и бюджет" },
-      { n: "03", h: "Твой лендинг", t: "Одна страница — сразу" },
-    ],
-  },
-  {
-    title: "Что будет на твоём лендинге",
-    items: [
-      { n: "01", h: "Решение", t: "Что сделаем, по пунктам" },
-      { n: "02", h: "Кейсы", t: "Из твоей сферы" },
-      { n: "03", h: "Тарифы", t: "Под твой бюджет" },
-      { n: "04", h: "Заказ", t: "В один клик" },
-    ],
-  },
+// Три вводных слайда: заголовок, одна строка и живая инфографика с
+// подписями под каждой частью (Егор: «тексты + инфографика, что происходит
+// и для чего это нужно»).
+const INTRO_STEPS: { title: string; lead: string; Info: () => ReactNode }[] = [
+  { title: "Что такое *Vibe-режим*", lead: "Сайт сам собирает страницу под *твою задачу*", Info: InfoWhat },
+  { title: "Как это *работает*", lead: "Отвечаешь на вопросы — страница *собирается сама*", Info: InfoHow },
+  { title: "Что будет на твоей *Vibe-странице*", lead: "Всё, чтобы решить и *заказать*, — в одном месте", Info: InfoInside },
 ];
 
 function useNarrow() {
@@ -98,12 +79,12 @@ function useNarrow() {
 export default function VibeMode({
   open,
   onClose,
-  onPickDirection,
 }: {
   open: boolean;
   onClose: () => void;
-  /** «Просто выбрать направление» — прежнее окно выбора разделов. */
-  onPickDirection: () => void;
+  /** Прежнее окно выбора разделов; ссылку на него из вайб-окна Егор убрал
+   *  («внизу только одна кнопка»), проп оставлен для совместимости. */
+  onPickDirection?: () => void;
 }) {
   // Портал только на клиенте: на сервере document нет.
   const mounted = useSyncExternalStore(
@@ -128,12 +109,12 @@ export default function VibeMode({
 
   if (!mounted) return null;
   return createPortal(
-    <AnimatePresence>{open && <VibeWindow key="vibe" onClose={onClose} onPickDirection={onPickDirection} />}</AnimatePresence>,
+    <AnimatePresence>{open && <VibeWindow key="vibe" onClose={onClose} />}</AnimatePresence>,
     document.body
   );
 }
 
-function VibeWindow({ onClose, onPickDirection }: { onClose: () => void; onPickDirection: () => void }) {
+function VibeWindow({ onClose }: { onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useDialogFocus(true, ref);
   const narrow = useNarrow();
@@ -150,7 +131,7 @@ function VibeWindow({ onClose, onPickDirection }: { onClose: () => void; onPickD
   const [qi, setQi] = useState(0);
   const [answers, setAnswers] = useState<VibeAnswers>({});
   const [pulse, setPulse] = useState(0);
-  const [typing, setTyping] = useState(false);
+  const [, setTyping] = useState(false);
   const bump = () => setPulse((p) => p + 1);
 
   const go = (next: () => void) => {
@@ -170,7 +151,7 @@ function VibeWindow({ onClose, onPickDirection }: { onClose: () => void; onPickD
   const total = questions.length;
   const progress = stage === "quiz" ? qi / (total + 1) : stage === "contact" ? total / (total + 1) : stage === "building" ? 1 : 0;
   const orbSize =
-    stage === "splash" ? (narrow ? 150 : 200) : stage === "hello" ? (narrow ? 96 : 120) : stage === "intro" ? (narrow ? 72 : 84) : stage === "building" ? (narrow ? 104 : 128) : narrow ? 54 : 64;
+    stage === "splash" ? (narrow ? 150 : 200) : stage === "hello" ? (narrow ? 96 : 120) : stage === "intro" ? (narrow ? 56 : 64) : stage === "building" ? (narrow ? 104 : 128) : narrow ? 54 : 64;
   // Отступ сферы сверху: на заставке и приветствии сфера с текстом стоят
   // в середине окна, дальше поднимаются к верху.
   const orbSlot = stage === "contact" ? "quiz" : stage;
@@ -226,10 +207,10 @@ function VibeWindow({ onClose, onPickDirection }: { onClose: () => void; onPickD
           высота задана в CSS, содержимое стоит по центру. */}
       <div className="vibe-mode__scroll z-[1] flex h-full flex-col px-5 pb-6 pt-5 sm:px-8 sm:pb-8">
         <div className="flex items-center justify-between">
-          <span className={`vibe-mode__tag transition-opacity duration-500 ${stage === "splash" || stage === "hello" ? "opacity-0" : ""}`}>
-            Vibe-сайт
-          </span>
-          <button type="button" onClick={onClose} aria-label="Закрыть" className="vibe-mode__icon-btn">
+          {/* «Vibe-режим» — без пилюли, переливается палитрой сферы и
+              тихо выпускает частицы (Егор, 2026-09-26). */}
+          <VibeWordmark className={`transition-opacity duration-500 ${stage === "splash" || stage === "hello" ? "opacity-0" : ""}`} />
+          <button type="button" onClick={onClose} aria-label="Закрыть" className="vibe-mode__close">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
@@ -256,7 +237,9 @@ function VibeWindow({ onClose, onPickDirection }: { onClose: () => void; onPickD
                   size={orbSize}
                   from={ORB_FROM}
                   to={ORB_TO}
-                  hot={typing || stage === "building"}
+                  // В окне сфера всегда «разогрета», как при наведении в
+                  // вайб-баре: шире и активнее волны — видно, что окно живое.
+                  hot
                   pulse={pulse}
                   glow={0.35}
                   intro={orbSlot === "splash" ? sphereIntro : undefined}
@@ -323,18 +306,6 @@ function VibeWindow({ onClose, onPickDirection }: { onClose: () => void; onPickD
           </div>
         </div>
 
-        {stage === "intro" && (
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-              onPickDirection();
-            }}
-            className="vibe-mode__quiet mx-auto mt-auto"
-          >
-            Просто выбрать направление →
-          </button>
-        )}
       </div>
       </motion.div>
     </motion.div>
@@ -385,9 +356,36 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
       or = a.width * 0.4;
     };
 
-    const tints = ["111,134,255", "150,130,255", "176,124,255", "255,122,156", "255,176,122", "255,255,255", "255,255,255"];
+    // Космическая пыль (Егор: «естественно, без обводок, мелко, аккуратно»):
+    // в основном почти белые звёздочки с лёгким оттенком палитры. Каждая —
+    // заранее нарисованный мягкий спрайт с плавным затуханием краёв, без
+    // видимого кружка вокруг.
+    const tints = ["235,238,255", "245,240,255", "255,255,255", "255,255,255", "200,205,255", "225,200,255", "255,215,225"];
+    const sprites = new Map<string, HTMLCanvasElement>();
+    const sprite = (c: string) => {
+      let sp = sprites.get(c);
+      if (!sp) {
+        sp = document.createElement("canvas");
+        sp.width = sp.height = 32;
+        const g = sp.getContext("2d")!;
+        const gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+        gr.addColorStop(0, `rgba(${c},1)`);
+        gr.addColorStop(0.18, `rgba(${c},0.85)`);
+        gr.addColorStop(0.45, `rgba(${c},0.18)`);
+        gr.addColorStop(1, `rgba(${c},0)`);
+        g.fillStyle = gr;
+        g.fillRect(0, 0, 32, 32);
+        sprites.set(c, sp);
+      }
+      return sp;
+    };
+    const star = (x: number, y: number, r: number, al: number, c: string) => {
+      const d = r * 5;
+      ctx.globalAlpha = al;
+      ctx.drawImage(sprite(c), x - d / 2, y - d / 2, d, d);
+    };
     type P = { a: number; d: number; v: number; curl: number; born: number; life: number; r: number; b: number; c: string };
-    const MAX = mid ? 140 : 320;
+    const MAX = mid ? 90 : 200;
     const spawn = (t: number): P => {
       // Сгустки: угол выбираем с весом, который медленно поворачивается.
       let a = 0;
@@ -395,16 +393,20 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
         a = Math.random() * Math.PI * 2;
         if (Math.random() < 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(3 * a + t * 0.15))) break;
       }
-      const tiny = Math.random() < 0.8;
+      // Размеры разные: в основном мелкая пыль, реже средние и крупные
+      // светящиеся точки. Скорость с перекосом: большинство остаётся у
+      // сферы, немногие уходят далеко — чем дальше, тем реже.
+      const roll = Math.random();
+      const size = roll < 0.7 ? 0.2 + Math.random() * 0.3 : roll < 0.93 ? 0.5 + Math.random() * 0.35 : 0.85 + Math.random() * 0.5;
       return {
         a,
         d: 0.85 + Math.random() * 0.3,
-        v: 10 + Math.random() * 34,
+        v: 5 + 60 * Math.random() ** 2.2,
         curl: (Math.random() - 0.5) * 0.5,
         born: t,
-        life: 4 + Math.random() * 6,
-        r: tiny ? 0.25 + Math.random() * 0.5 : 0.6 + Math.random() * 0.8,
-        b: tiny ? 0.25 + Math.random() * 0.55 : 0.5 + Math.random() * 0.5,
+        life: 5 + Math.random() * 8,
+        r: size,
+        b: 0.35 + Math.random() * 0.55,
         c: tints[Math.floor(Math.random() * tints.length)],
       };
     };
@@ -416,6 +418,32 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
       return p;
     });
 
+    // Путешественницы (Егор: «некоторые разлетаются по всему окошку,
+    // ударяются о бока и возвращаются»): вылетают от сферы, мягко
+    // отскакивают от стенок окна и долго плавно дрейфуют, потом тают.
+    type Wd = { x: number; y: number; vx: number; vy: number; born: number; life: number; r: number; b: number; c: string; ph: number };
+    const launch = (t: number): Wd => {
+      const a = Math.random() * Math.PI * 2;
+      const sp = 26 + Math.random() * 34;
+      const tiny = Math.random() < 0.6;
+      return {
+        x: ox + Math.cos(a) * or,
+        y: oy + Math.sin(a) * or,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp,
+        born: t,
+        life: 10 + Math.random() * 12,
+        r: tiny ? 0.25 + Math.random() * 0.3 : 0.55 + Math.random() * 0.5,
+        b: 0.4 + Math.random() * 0.5,
+        c: tints[Math.floor(Math.random() * tints.length)],
+        ph: Math.random() * Math.PI * 2,
+      };
+    };
+    const WN = mid ? 8 : 18;
+    const wds: Wd[] = [];
+    let nextLaunch = start;
+    let prevT = start;
+
     let raf = 0;
     let last = 0;
     let frame = 0;
@@ -425,8 +453,49 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
       last = now;
       if (frame++ % 6 === 0) locate();
       const t = now / 1000;
+      const dt = Math.min(0.05, t - prevT);
+      prevT = t;
+      ctx.globalAlpha = 1;
       ctx.clearRect(0, 0, w, h);
       ctx.globalCompositeOperation = "lighter";
+
+      // Выпускаем путешественниц по одной, чтобы они не вылетали залпом.
+      if (wds.length < WN && t >= nextLaunch) {
+        wds.push(launch(t));
+        nextLaunch = t + 0.35 + Math.random() * 0.5;
+      }
+      for (let i = wds.length - 1; i >= 0; i--) {
+        const p = wds[i];
+        const age = (t - p.born) / p.life;
+        if (age >= 1) {
+          wds.splice(i, 1);
+          continue;
+        }
+        // Скорость плавно гаснет до «дрейфа», направление чуть гуляет.
+        const sp = Math.hypot(p.vx, p.vy);
+        const target = 9;
+        const k = sp > target ? 1 - 0.35 * dt : 1;
+        const turn = Math.sin(t * 0.4 + p.ph) * 0.35 * dt;
+        const vx = (p.vx * Math.cos(turn) - p.vy * Math.sin(turn)) * k;
+        const vy = (p.vx * Math.sin(turn) + p.vy * Math.cos(turn)) * k;
+        p.vx = vx;
+        p.vy = vy;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        // Мягкий отскок от стенок окна.
+        const m = 6;
+        if (p.x < m || p.x > w - m) {
+          p.x = Math.min(w - m, Math.max(m, p.x));
+          p.vx = -p.vx * 0.85;
+        }
+        if (p.y < m || p.y > h - m) {
+          p.y = Math.min(h - m, Math.max(m, p.y));
+          p.vy = -p.vy * 0.85;
+        }
+        const al = p.b * Math.min(1, age * 8) * Math.min(1, (1 - age) * 4) * (0.75 + 0.25 * Math.sin(t * 1.6 + p.ph));
+        star(p.x, p.y, p.r, al, p.c);
+      }
+
       for (let i = 0; i < ps.length; i++) {
         let p = ps[i];
         let age = (t - p.born) / p.life;
@@ -445,16 +514,7 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
         const tw = 0.7 + 0.3 * Math.sin(t * 2 + i);
         const al = p.b * fade * tw;
         if (al < 0.02) continue;
-        if (p.r > 0.6) {
-          ctx.fillStyle = `rgba(${p.c},${al * 0.18})`;
-          ctx.beginPath();
-          ctx.arc(x, y, p.r * 3.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.fillStyle = `rgba(${p.c},${al})`;
-        ctx.beginPath();
-        ctx.arc(x, y, p.r, 0, Math.PI * 2);
-        ctx.fill();
+        star(x, y, p.r, al, p.c);
       }
     };
     raf = requestAnimationFrame(loop);
@@ -464,6 +524,36 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
     };
   }, [originRef]);
   return <canvas ref={ref} aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full" />;
+}
+
+// «Vibe-режим» — словесный знак режима: «Vibe» фиолетовым, «режим» белым,
+// без частиц — только мягкая неспешная пульсация свечения (Егор).
+function VibeWordmark({ className = "", hero = false }: { className?: string; hero?: boolean }) {
+  return (
+    <span className={`vibe-mode__wordmark ${hero ? "vibe-mode__wordmark--hero" : ""} ${className}`}>
+      <span className="vibe-mode__wordmark-vibe">Vibe</span>-режим
+    </span>
+  );
+}
+
+// Акцентные слова: в текстах окна они размечены *звёздочками* и набираются
+// фирменным градиентом (Егор: «в заголовках и подзаголовках одно-два слова
+// в акцентах»).
+function Accent({ text }: { text: string }) {
+  const parts = text.split(/\*([^*]+)\*/);
+  return (
+    <>
+      {parts.map((p, i) =>
+        i % 2 ? (
+          <span key={i} className="vibe-mode__iris">
+            {p}
+          </span>
+        ) : (
+          p
+        )
+      )}
+    </>
+  );
 }
 
 function Screen({ children }: { children: ReactNode }) {
@@ -481,22 +571,6 @@ function Screen({ children }: { children: ReactNode }) {
   );
 }
 
-function Dots({ count, active, onPick }: { count: number; active: number; onPick: (i: number) => void }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      {Array.from({ length: count }, (_, i) => (
-        <button
-          key={i}
-          type="button"
-          aria-label={`Экран ${i + 1}`}
-          aria-current={i === active ? "step" : undefined}
-          onClick={() => onPick(i)}
-          className={`vibe-mode__dot ${i === active ? "is-on" : ""}`}
-        />
-      ))}
-    </div>
-  );
-}
 
 export function Arrow() {
   return (
@@ -515,11 +589,8 @@ function SplashLogo() {
       transition={{ delay: 3, duration: 1.1, ease: SMOOTH }}
       className="pb-8"
     >
-      <h2 className="vibe-mode__hero-logo" aria-label="HUD.SERVICE">
-        <span aria-hidden="true" className="vibe-mode__brand-dot animate-pulse-rec rounded-full brand-dot" />
-        <span>
-          HUD<LiveBrandWord period={1500}>.SERVICE</LiveBrandWord>
-        </span>
+      <h2>
+        <VibeWordmark hero />
       </h2>
     </motion.div>
   );
@@ -560,37 +631,35 @@ function Hello({ onDone }: { onDone: () => void }) {
 function Intro({ slide, onSlide, onStart }: { slide: number; onSlide: (i: number) => void; onStart: () => void }) {
   const last = slide === INTRO_STEPS.length - 1;
   const step = INTRO_STEPS[slide];
+  // Порядок появления (Егор): заголовок акцентно → инфографика собирается
+  // слева направо → одно предложение → одна минималистичная кнопка.
+  const rise = (delay: number) => ({
+    initial: { opacity: 0, filter: "blur(12px)" },
+    animate: { opacity: 1, filter: "blur(0px)" },
+    transition: { delay, duration: 0.8, ease: SMOOTH },
+  });
   return (
     <>
-      <span className="vibe-mode__eyebrow">
+      <motion.span {...rise(0)} className="vibe-mode__eyebrow">
         {String(slide + 1).padStart(2, "0")} / {String(INTRO_STEPS.length).padStart(2, "0")}
-      </span>
-      <h2 className="vibe-mode__title vibe-mode__title--sm mt-2">{step.title}</h2>
-      {step.lead && <p className="vibe-mode__lead mt-2">{step.lead}</p>}
-      <div className={`mt-5 grid w-full gap-2.5 text-left ${step.items.length === 4 ? "grid-cols-2" : "sm:grid-cols-3"}`}>
-        {step.items.map((it) => (
-          <div key={it.n} className="vibe-mode__card">
-            <span className="vibe-mode__num">{it.n}</span>
-            <h3 className="mt-2 font-display text-[15px] font-bold uppercase">{it.h}</h3>
-            <p className="mt-1 text-[12px] leading-snug">{it.t}</p>
-          </div>
-        ))}
+      </motion.span>
+      <motion.h2 {...rise(0.05)} className="vibe-mode__title vibe-mode__title--sm mt-2">
+        <Accent text={step.title} />
+      </motion.h2>
+      {/* Схема сама прорисовывается по линиям (useDrawIn), подписи под
+          ней проявляются, когда она почти собралась. */}
+      <div className="mt-6 w-full">
+        <step.Info />
       </div>
-
-      <div className="mt-7 flex w-full items-center justify-between gap-4">
-        <Dots count={INTRO_STEPS.length} active={slide} onPick={onSlide} />
-        <div className="flex items-center gap-2">
-          {!last && (
-            <button type="button" onClick={onStart} className="vibe-mode__ghost">
-              Начать сразу
-            </button>
-          )}
-          <button type="button" onClick={last ? onStart : () => onSlide(slide + 1)} className="vibe-mode__cta">
-            {last ? "Персонализировать" : "Дальше"}
-            <Arrow />
-          </button>
-        </div>
-      </div>
+      <motion.p {...rise(2.2)} className="vibe-mode__lead mt-5">
+        <Accent text={step.lead} />
+      </motion.p>
+      <motion.div {...rise(2.5)} className="mt-6 flex w-full justify-center">
+        <button type="button" onClick={last ? onStart : () => onSlide(slide + 1)} className="vibe-mode__next">
+          {last ? "Начать" : "Дальше"}
+          <Arrow />
+        </button>
+      </motion.div>
     </>
   );
 }
@@ -702,7 +771,7 @@ function Question({
           }
         }}
         placeholder={placeholder}
-        aria-label={q.kind === "text" ? q.title : "Свой вариант"}
+        aria-label={q.kind === "text" ? plainAccent(q.title) : "Свой вариант"}
         className="w-full bg-transparent outline-none placeholder:text-white/70"
       />
       <span aria-hidden="true" className="whitespace-nowrap text-[11px]">
@@ -716,8 +785,12 @@ function Question({
       <span className="vibe-mode__eyebrow">
         {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
       </span>
-      <h2 className="vibe-mode__title vibe-mode__title--q mt-2">{q.title}</h2>
-      <p className="vibe-mode__lead mt-2">{q.hint}</p>
+      <h2 className="vibe-mode__title vibe-mode__title--q mt-2">
+        <Accent text={q.title} />
+      </h2>
+      <p className="vibe-mode__lead mt-2">
+        <Accent text={q.hint} />
+      </p>
 
       {q.kind === "single" && (
         <div className="mt-5 grid w-full gap-2 sm:grid-cols-2">
@@ -807,10 +880,10 @@ function Question({
       </div>
 
       <div className="mt-4 flex w-full items-center justify-between">
-        <button type="button" onClick={onBack} className="vibe-mode__ghost">
+        <button type="button" onClick={onBack} className="vibe-mode__back">
           ← Назад
         </button>
-        <button type="button" disabled={!canNext} onClick={next} className="vibe-mode__cta">
+        <button type="button" disabled={!canNext} onClick={next} className="vibe-mode__next">
           {!answered && q.optional ? "Пропустить" : "Дальше"}
           <Arrow />
         </button>
@@ -873,8 +946,10 @@ function Contact({
   return (
     <>
       <span className="vibe-mode__eyebrow">Последний шаг</span>
-      <h2 className="vibe-mode__title vibe-mode__title--q mt-3">Куда прислать твой лендинг?</h2>
-      <p className="vibe-mode__lead mt-3">Страница откроется сразу, а копию ссылки пришлём тебе — чтобы не потерялась.</p>
+      <h2 className="vibe-mode__title vibe-mode__title--q mt-3">Куда прислать твой <span className="vibe-mode__iris">лендинг</span>?</h2>
+      <p className="vibe-mode__lead mt-3">
+          Страница откроется <span className="vibe-mode__iris">сразу</span>, а копию ссылки пришлём тебе
+        </p>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -913,10 +988,10 @@ function Contact({
           </p>
         )}
         <div className="mt-4 flex items-center justify-between">
-          <button type="button" onClick={onBack} className="vibe-mode__ghost">
+          <button type="button" onClick={onBack} className="vibe-mode__back">
             ← Назад
           </button>
-          <button type="submit" disabled={!ready} className="vibe-mode__cta">
+          <button type="submit" disabled={!ready} className="vibe-mode__next">
             {sending ? "Отправляю…" : "Собрать мой лендинг"}
             <Arrow />
           </button>

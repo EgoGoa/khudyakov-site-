@@ -19,6 +19,13 @@ import type { PricingTier, ProcessStep, Work } from "./types";
 // она же приходит Егору в письме с заявкой. Имени и телефона в адресе нет —
 // они остаются только в заявке и в браузере самого клиента.
 
+/** Заголовки и подсказки анкеты размечают акцентные слова *звёздочками*
+ *  (Егор: «в каждом заголовке и подзаголовке одно-два слова в акцентах»).
+ *  Для заявок и подписей разметку снимаем. */
+export function plainAccent(text: string): string {
+  return text.replace(/\*/g, "");
+}
+
 export type VibeKind = "single" | "chips" | "multi" | "range" | "text";
 export type VibeOption = { value: string; label: string };
 type Branch = "content" | "sites" | "ai" | "smm";
@@ -71,8 +78,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "direction",
     kind: "single",
-    title: "Что запускаем?",
-    hint: "Выбери главное — вопросы дальше подстроятся под это",
+    title: "Что *запускаем*?",
+    hint: "Выбери главное — вопросы дальше *подстроятся* под это",
     options: [
       { value: "content", label: "Видео и контент" },
       { value: "sites", label: "Сайт или лендинг" },
@@ -85,8 +92,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "sphere",
     kind: "chips",
-    title: "В какой ты сфере?",
-    hint: "По сфере подберём кейсы, похожие на твой проект",
+    title: "В какой ты *сфере*?",
+    hint: "По сфере подберём *кейсы*, похожие на твой проект",
     options: [
       { value: "Авто", label: "Авто" },
       { value: "Медицина", label: "Медицина" },
@@ -112,16 +119,16 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "company",
     kind: "text",
-    title: "Как называется твой проект?",
-    hint: "Название компании или бренда — оно встанет в заголовок лендинга",
+    title: "Как называется твой *проект*?",
+    hint: "Название компании или бренда — оно встанет в *заголовок* лендинга",
     placeholder: "Например, «Мотор Авто»",
     optional: true,
   },
   {
     id: "goal",
     kind: "single",
-    title: "Какая главная цель?",
-    hint: "От цели зависит, с чего начнётся решение на лендинге",
+    title: "Какая главная *цель*?",
+    hint: "От цели зависит, с чего начнётся *решение*",
     options: [
       { value: "leads", label: "Больше заявок и продаж" },
       { value: "launch", label: "Запустить новый продукт" },
@@ -133,8 +140,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "audience",
     kind: "multi",
-    title: "Кто твои клиенты?",
-    hint: "Можно выбрать несколько",
+    title: "Кто твои *клиенты*?",
+    hint: "Можно выбрать *несколько*",
     options: [
       { value: "b2c-young", label: "Молодёжь 18–30" },
       { value: "b2c-family", label: "Семьи" },
@@ -148,8 +155,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "stage",
     kind: "single",
-    title: "Что у тебя уже есть?",
-    hint: "Чтобы не делать заново то, что уже работает",
+    title: "Что у тебя *уже есть*?",
+    hint: "Чтобы не делать заново то, что уже *работает*",
     options: [
       { value: "zero", label: "Ничего — начинаем с нуля" },
       { value: "refresh", label: "Сайт или соцсети, пора обновить" },
@@ -164,8 +171,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "videoFormat",
     kind: "single",
     branch: ["content"],
-    title: "Какое видео нужно?",
-    hint: "Главный формат — остальные можно добавить позже",
+    title: "Какое *видео* нужно?",
+    hint: "*Главный* формат — остальные можно добавить позже",
     options: [
       { value: "ad", label: "Рекламный ролик" },
       { value: "image", label: "Имиджевый фильм о компании" },
@@ -180,8 +187,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "videoLength",
     kind: "single",
     branch: ["content"],
-    title: "Какой длины ролик?",
-    hint: "Ориентир — точно определим на сценарии",
+    title: "Какой *длины* ролик?",
+    hint: "Ориентир — точно определим на *сценарии*",
     options: [
       { value: "15", label: "До 15 секунд" },
       { value: "30", label: "30 секунд" },
@@ -193,8 +200,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "videoPlaces",
     kind: "multi",
     branch: ["content"],
-    title: "Где будут показывать?",
-    hint: "Под каждую площадку сделаем свою версию",
+    title: "Где будут *показывать*?",
+    hint: "Под каждую площадку сделаем *свою версию*",
     options: [
       { value: "tv", label: "ТВ" },
       { value: "youtube", label: "YouTube" },
@@ -208,8 +215,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "videoExtras",
     kind: "multi",
     branch: ["content"],
-    title: "Что понадобится в кадре?",
-    hint: "Выбери всё, что представляешь",
+    title: "Что понадобится в *кадре*?",
+    hint: "Выбери всё, что *представляешь*",
     options: [
       { value: "actors", label: "Актёры" },
       { value: "drone", label: "Дрон" },
@@ -224,8 +231,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "videoCount",
     kind: "single",
     branch: ["content"],
-    title: "Сколько роликов?",
-    hint: "Серия выходит выгоднее за штуку",
+    title: "Сколько *роликов*?",
+    hint: "Серия выходит *выгоднее* за штуку",
     options: [
       { value: "1", label: "Один ролик" },
       { value: "3", label: "2–3 ролика" },
@@ -239,8 +246,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "siteType",
     kind: "single",
     branch: ["sites"],
-    title: "Какой сайт нужен?",
-    hint: "Если не уверен — выбери ближайшее, подскажем на лендинге",
+    title: "Какой *сайт* нужен?",
+    hint: "Если не уверен — выбери ближайшее, *подскажем*",
     options: [
       { value: "landing", label: "Лендинг — одна продающая страница" },
       { value: "card", label: "Сайт-визитка компании" },
@@ -254,8 +261,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "sitePages",
     kind: "single",
     branch: ["sites"],
-    title: "Сколько примерно страниц?",
-    hint: "Карточки товаров не считаем",
+    title: "Сколько примерно *страниц*?",
+    hint: "Карточки товаров *не считаем*",
     options: [
       { value: "1", label: "Одна" },
       { value: "5", label: "До 5" },
@@ -267,8 +274,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "siteFeatures",
     kind: "multi",
     branch: ["sites"],
-    title: "Что должен уметь сайт?",
-    hint: "Выбери нужные функции",
+    title: "Что должен *уметь* сайт?",
+    hint: "Выбери нужные *функции*",
     options: [
       { value: "forms", label: "Заявки и квиз" },
       { value: "pay", label: "Онлайн-оплата" },
@@ -284,8 +291,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "siteContent",
     kind: "single",
     branch: ["sites"],
-    title: "Тексты и фото для сайта есть?",
-    hint: "Если нет — снимем и напишем сами",
+    title: "*Тексты и фото* для сайта есть?",
+    hint: "Если нет — *снимем и напишем* сами",
     options: [
       { value: "ready", label: "Всё есть" },
       { value: "part", label: "Что-то есть" },
@@ -296,8 +303,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "siteSeo",
     kind: "single",
     branch: ["sites"],
-    title: "Нужно продвижение в поиске?",
-    hint: "SEO под Яндекс и Google",
+    title: "Нужно *продвижение* в поиске?",
+    hint: "SEO под *Яндекс и Google*",
     options: [
       { value: "yes", label: "Да, сразу" },
       { value: "later", label: "Позже" },
@@ -310,8 +317,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "aiTasks",
     kind: "multi",
     branch: ["ai"],
-    title: "Что хочешь отдать AI?",
-    hint: "Выбери всё, что сейчас отнимает время",
+    title: "Что хочешь отдать *AI*?",
+    hint: "Выбери всё, что сейчас отнимает *время*",
     options: [
       { value: "support", label: "Ответы клиентам" },
       { value: "sales", label: "Продажи и запись" },
@@ -326,8 +333,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "aiChannels",
     kind: "multi",
     branch: ["ai"],
-    title: "Где общаешься с клиентами?",
-    hint: "Туда и подключим ассистента",
+    title: "Где общаешься с *клиентами*?",
+    hint: "Туда и подключим *ассистента*",
     options: [
       { value: "site", label: "Сайт" },
       { value: "tg", label: "Telegram" },
@@ -341,8 +348,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "aiVolume",
     kind: "single",
     branch: ["ai"],
-    title: "Сколько обращений в день?",
-    hint: "Чтобы рассчитать нагрузку",
+    title: "Сколько *обращений* в день?",
+    hint: "Чтобы рассчитать *нагрузку*",
     options: [
       { value: "10", label: "До 10" },
       { value: "50", label: "10–50" },
@@ -354,8 +361,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "aiStack",
     kind: "multi",
     branch: ["ai"],
-    title: "С чем связать?",
-    hint: "Системы, в которых ты уже работаешь",
+    title: "С чем *связать*?",
+    hint: "Системы, в которых ты *уже работаешь*",
     options: [
       { value: "amo", label: "amoCRM" },
       { value: "bitrix", label: "Битрикс24" },
@@ -371,8 +378,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "smmNets",
     kind: "multi",
     branch: ["smm"],
-    title: "Какие соцсети ведём?",
-    hint: "Можно выбрать несколько",
+    title: "Какие *соцсети* ведём?",
+    hint: "Можно выбрать *несколько*",
     options: [
       { value: "vk", label: "VK" },
       { value: "tg", label: "Telegram" },
@@ -386,8 +393,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "smmFreq",
     kind: "single",
     branch: ["smm"],
-    title: "Как часто публиковать?",
-    hint: "Регулярность важнее количества",
+    title: "Как часто *публиковать*?",
+    hint: "*Регулярность* важнее количества",
     options: [
       { value: "3", label: "3 раза в неделю" },
       { value: "5", label: "5 раз в неделю" },
@@ -398,8 +405,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "smmScope",
     kind: "multi",
     branch: ["smm"],
-    title: "Что берём на себя?",
-    hint: "Выбери всё нужное",
+    title: "Что берём *на себя*?",
+    hint: "Выбери всё *нужное*",
     options: [
       { value: "shoot", label: "Съёмка" },
       { value: "design", label: "Дизайн" },
@@ -413,8 +420,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "smmNow",
     kind: "single",
     branch: ["smm"],
-    title: "Сколько подписчиков сейчас?",
-    hint: "Точка отсчёта для роста",
+    title: "Сколько *подписчиков* сейчас?",
+    hint: "Точка отсчёта для *роста*",
     options: [
       { value: "0", label: "Начинаем с нуля" },
       { value: "1k", label: "До 1 000" },
@@ -427,8 +434,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "budget",
     kind: "range",
-    title: "Какой бюджет на проект?",
-    hint: "Двигай ползунок — под бюджет подберём тариф",
+    title: "Какой *бюджет* на проект?",
+    hint: "Двигай ползунок — под бюджет подберём *тариф*",
     react: (v, a) => {
       const tier = pickTier(branchKey(a), Number(v));
       return `Под этот бюджет подходит тариф «${tier.name}» — ${tier.price}`;
@@ -437,8 +444,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "deadline",
     kind: "single",
-    title: "Когда нужен результат?",
-    hint: "Под сроки соберём команду нужного размера",
+    title: "Когда нужен *результат*?",
+    hint: "Под сроки соберём *команду* нужного размера",
     options: [
       { value: "asap", label: "Вчера — горит" },
       { value: "month", label: "За 2–4 недели" },
@@ -449,8 +456,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "style",
     kind: "single",
-    title: "Какой стиль тебе ближе?",
-    hint: "В этом духе предложим решение",
+    title: "Какой *стиль* тебе ближе?",
+    hint: "В этом духе предложим *решение*",
     options: [
       { value: "minimal", label: "Чистый минимализм" },
       { value: "bold", label: "Ярко и смело" },
@@ -462,8 +469,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "refs",
     kind: "text",
-    title: "Есть ссылка на проект или референсы?",
-    hint: "Сайт, соцсети или то, что нравится. Можно пропустить",
+    title: "Есть ссылка на проект или *референсы*?",
+    hint: "Сайт, соцсети или то, что *нравится*. Можно пропустить",
     placeholder: "Ссылка или пара слов",
     optional: true,
   },
@@ -691,7 +698,7 @@ export function buildOffer(answers: VibeAnswers): VibeOffer {
 export function vibeAnswersToFields(answers: VibeAnswers): Record<string, string> {
   const fields: Record<string, string> = {};
   for (const q of questionsFor(answers)) {
-    fields[q.title] = answerLabel(q, answers[q.id]) || "—";
+    fields[plainAccent(q.title)] = answerLabel(q, answers[q.id]) || "—";
   }
   return fields;
 }

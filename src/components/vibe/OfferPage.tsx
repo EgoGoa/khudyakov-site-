@@ -361,7 +361,7 @@ function OrderSheet({
         </svg>
       </button>
       <div className="vibe-mode__scroll z-[1] flex w-full flex-col items-center px-6 pb-8 pt-10 text-center sm:px-10">
-        <NanoSphere size={80} from={ORB_FROM} to={ORB_TO} glow={0.35} hot={state === "sending" || state === "done"} />
+        <NanoSphere size={80} from={ORB_FROM} to={ORB_TO} glow={0.35} hot />
         {state === "done" ? (
           <>
             <h2 className="vibe-mode__title vibe-mode__title--q mt-6">Заявка принята</h2>
