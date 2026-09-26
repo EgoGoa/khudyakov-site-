@@ -16,6 +16,7 @@ import ProcessBlock from "./blocks/ProcessBlock";
 import FaqBlock from "./blocks/FaqBlock";
 import CloseBlock from "./blocks/CloseBlock";
 import SceneBreak from "./blocks/SceneBreak";
+import InfoWindow from "./blocks/InfoWindow";
 import type { DirectionContent, SceneBreakSlot } from "./types";
 
 // Страница направления внутри /content — одна на все направления.
@@ -63,6 +64,11 @@ export default function DirectionPage({
   headingClass?: string;
 }) {
   const breaks = content.sceneBreaks ?? [];
+  // Два вида окошек между главами из разных сессий: перебивки (SceneBreak,
+  // у страниц инструментов AI/сайтов/SMM — content.sceneBreaks) и живые
+  // окошки с инфографикой (InfoWindow, у направлений /content). Чтобы они не
+  // задваивались, InfoWindow ставится только там, где своих перебивок нет.
+  const useInfo = breaks.length === 0;
   const after = (slot: SceneBreakSlot) => {
     const i = breaks.findIndex((b) => b.after === slot);
     return i === -1 ? null : <SceneBreak slug={content.slug} index={i} total={breaks.length} spec={breaks[i]} backdrop={content.backdrop} />;
@@ -92,8 +98,32 @@ export default function DirectionPage({
           pageLabel={content.hero.eyebrow}
         />
         {after("task")}
+        {/* Четыре развёрнутых окошка с живой инфографикой, вручную
+            расставленные между главами — см. InfoWindow.tsx. Каждое
+            стартует со своего тезиса из шести (directionDeep) и дальше само
+            переключается на следующий. Не рендерятся вовсе, если для
+            направления нет записи в spotlightDirections.ts (directionDeep
+            вернёт null). */}
+                {useInfo && (
+          <InfoWindow
+            slug={content.slug}
+            start={0}
+            accent={content.backdrop}
+            side="left"
+            ctaHref={content.hero.teamAsk?.href ?? "/brief"}
+          />
+        )}
         <AudienceBlock audience={content.audience} />
         {after("audience")}
+        {useInfo && (
+          <InfoWindow
+            slug={content.slug}
+            start={1}
+            accent={content.backdrop}
+            side="right"
+            ctaHref={content.audience.teamAsk?.href ?? "/brief"}
+          />
+        )}
         {/* Кейсы или технический разбор — одно место в странице, два
             разных наполнения. У направлений /content есть снятые работы, у
             AI-инструментов их пока нет, и вместо заглушек там стоит
@@ -101,6 +131,15 @@ export default function DirectionPage({
         {content.cases ? <CasesBlock cases={content.cases} /> : null}
         {content.tech ? <TechBlock tech={content.tech} /> : null}
         {after("cases")}
+        {useInfo && (
+          <InfoWindow
+            slug={content.slug}
+            start={2}
+            accent={content.backdrop}
+            side="left"
+            ctaHref={content.cases?.teamAsk?.href ?? "/brief"}
+          />
+        )}
         <PersonaBudget media={content.budgetMedia} />
         {after("budget")}
         <PricingBlock pricing={content.pricing} headingClass={headingClass} />
@@ -109,6 +148,16 @@ export default function DirectionPage({
         {after("why")}
         <ProcessBlock process={content.process} />
         {after("process")}
+        {useInfo && (
+          <InfoWindow
+            slug={content.slug}
+            start={3}
+            accent={content.backdrop}
+            side="right"
+            ctaHref={content.process.teamAsk?.href ?? "/brief"}
+            ctaLabel="Получить смету"
+          />
+        )}
         <FaqBlock faq={content.faq} />
         {after("faq")}
         <PersonaAssets media={content.assetsMedia} />
