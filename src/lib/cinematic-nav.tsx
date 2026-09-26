@@ -18,34 +18,52 @@ import { createContext, useCallback, useContext, useRef, useState, type ReactNod
 // deliberate move instead, the same way fullpage.tsx's goTo already does for
 // the homepage.
 type GoToFn = (id: string) => boolean;
+/** Шаг на главу вперёд (+1) или назад (-1) — для голосового ассистента
+ *  («дальше», «назад»). false — дальше глав нет, страница решает сама. */
+type StepFn = (delta: number) => boolean;
+/** id главы на экране (null — дек не на экране). Нужен голосовому «отмени». */
+type CurrentFn = () => string | null;
 
 const CinematicNavContext = createContext<{
-  register: (fn: GoToFn | null, firstId?: string | null) => void;
+  register: (fn: GoToFn | null, firstId?: string | null, step?: StepFn | null, current?: CurrentFn | null) => void;
   goTo: (id: string) => boolean;
+  step: (delta: number) => boolean;
+  current: () => string | null;
   /** id первой главы смонтированного дека, если он на странице есть. */
   firstId: string | null;
 }>({
   register: () => {},
   goTo: () => false,
+  step: () => false,
+  current: () => null,
   firstId: null,
 });
 
 export function CinematicNavProvider({ children }: { children: ReactNode }) {
   const fnRef = useRef<GoToFn | null>(null);
+  const stepRef = useRef<StepFn | null>(null);
+  const currentRef = useRef<CurrentFn | null>(null);
   // id первой главы держится в состоянии, а не в ref: его читает кнопка
   // «наверх» из корневого layout, и на ref она бы не перерисовалась —
   // кнопка так и не узнала бы, что на странице появился дек.
   const [firstId, setFirstId] = useState<string | null>(null);
-  const register = useCallback((fn: GoToFn | null, first: string | null = null) => {
+  const register = useCallback(
+    (fn: GoToFn | null, first: string | null = null, step: StepFn | null = null, current: CurrentFn | null = null) => {
     fnRef.current = fn;
+    stepRef.current = step;
+    currentRef.current = current;
     setFirstId(first);
-  }, []);
+  },
+    []
+  );
   // Stable identity so consumers (Header) don't need it in a dependency
   // array — always calls whichever CinematicStage is registered right now.
   const goTo = useCallback((id: string) => fnRef.current?.(id) ?? false, []);
+  const step = useCallback((delta: number) => stepRef.current?.(delta) ?? false, []);
+  const current = useCallback(() => currentRef.current?.() ?? null, []);
 
   return (
-    <CinematicNavContext.Provider value={{ register, goTo, firstId }}>
+    <CinematicNavContext.Provider value={{ register, goTo, step, current, firstId }}>
       {children}
     </CinematicNavContext.Provider>
   );
@@ -60,6 +78,16 @@ export function useCinematicNavRegister() {
 /** For Header (or anything else wanting to jump straight to a chapter). */
 export function useCinematicGoTo() {
   return useContext(CinematicNavContext).goTo;
+}
+
+/** id главы на экране — для голосового «отмени». */
+export function useCinematicCurrent() {
+  return useContext(CinematicNavContext).current;
+}
+
+/** Шаг на соседнюю главу — для голосового ассистента. */
+export function useCinematicStep() {
+  return useContext(CinematicNavContext).step;
 }
 
 /** id первой главы дека на текущей странице — или null, если дека нет.

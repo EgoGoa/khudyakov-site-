@@ -601,7 +601,15 @@ export default function CinematicStage({
       extendLock(STEP_MS + 700);
       return true;
     };
-    registerGoTo(goToId, firstChapterId);
+    // Голосовое «дальше / назад». Пока дек не на экране (посетитель ещё на
+    // общем герое), «дальше» ведёт в первую главу, а не во вторую:
+    // activeIndexRef в этот момент всё ещё 0, и stepBy перепрыгнул бы её.
+    const voiceStep = (delta: number): boolean => {
+      if (!engaged()) return delta > 0 && firstChapterId ? goToId(firstChapterId) : false;
+      return stepBy(delta);
+    };
+    const voiceCurrent = () => (engaged() ? (chapters[activeIndexRef.current]?.id ?? null) : null);
+    registerGoTo(goToId, firstChapterId, voiceStep, voiceCurrent);
 
     // Пришли стрелкой с соседней страницы: сразу встаём на аналогичную главу,
     // без прокрутки. Второй заход в rAF — на случай, если Next сбросил

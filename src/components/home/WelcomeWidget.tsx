@@ -8,6 +8,7 @@ import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import WelcomeBlockGraphic, { WelcomeDirectionGraphic } from "@/components/home/WelcomeBlockGraphic";
 import { blockHref, blocksFor, directionCards, type BlockCard } from "@/lib/welcome-blocks";
+import { InlineVoiceSphere } from "@/components/layout/VoiceAssistant";
 
 // Вступительная сцена: логотип → «Привет, с чего начнём?» → четыре карточки
 // направлений → карточки блоков выбранного направления.
@@ -500,6 +501,22 @@ export default function WelcomeWidget({
               ))}
           </motion.div>
         </AnimatePresence>
+
+        {/* Голосовой ассистент — сфера внизу стартового меню (Егор,
+            2026-09-26): нажал и говоришь, куда пойти или что нужно. Стоит
+            в потоке сцены, а не поверх неё, — подгонка сцены под высоту
+            экрана учитывает её и ничего не перекрывает. */}
+        <motion.div
+          className="mt-4 flex justify-center"
+          initial={{ opacity: 0, filter: "blur(10px)" }}
+          animate={picked || logoReady ? { opacity: 1, filter: "blur(0px)" } : { opacity: 0, filter: "blur(10px)" }}
+          transition={{ duration: 0.6, ease: GENTLE_EASE }}
+        >
+          <InlineVoiceSphere
+            from={PAGE_GRADIENT[picked ?? "content"].from}
+            to={PAGE_GRADIENT[picked ?? "content"].to}
+          />
+        </motion.div>
 
         {/* Нижний ряд: назад к направлениям и тихий выход на сайт. Появляется
             вместе с логотипом (тот же logoReady) — оба идут последними в

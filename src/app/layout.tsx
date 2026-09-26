@@ -6,6 +6,7 @@ import PageBarSpacer from "@/components/layout/PageBarSpacer";
 import SoundSystem from "@/components/layout/SoundSystem";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
+import VoiceAssistant from "@/components/layout/VoiceAssistant";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import MobileScrollRail from "@/components/ui/MobileScrollRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
@@ -149,6 +150,7 @@ export default function RootLayout({
                 <ConditionalFooter />
               </div>
               <VibeRail />
+              <VoiceAssistant />
               <MobileScrollRail />
               {/* Кнопка «наверх» — здесь, а не в шаблонах страниц: она
                   нужна на каждой странице сайта, и один экземпляр в layout

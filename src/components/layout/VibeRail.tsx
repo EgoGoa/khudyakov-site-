@@ -10,6 +10,7 @@ import { useCinematicGoTo } from "@/lib/cinematic-nav";
 import WelcomeWidget from "@/components/home/WelcomeWidget";
 import CenterModal from "@/components/ui/CenterModal";
 import NanoSphere from "@/components/ui/NanoSphere";
+import { OPEN_VIBE_EVENT } from "@/lib/voice/store";
 import VibeMode from "@/components/vibe/VibeMode";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { homeOf } from "@/components/layout/PageBar";
@@ -798,6 +799,13 @@ export default function VibeRail() {
   const [vibeOpen, setVibeOpen] = useState(
     () => typeof window !== "undefined" && new URLSearchParams(window.location.search).has("vibe")
   );
+
+  // Голосовой ассистент: «подбери мне предложение» открывает вайб-режим.
+  useEffect(() => {
+    const open = () => setVibeOpen(true);
+    window.addEventListener(OPEN_VIBE_EVENT, open);
+    return () => window.removeEventListener(OPEN_VIBE_EVENT, open);
+  }, []);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<RailItem | null>(null);
   // Header's desktop burger dropdown lives in roughly the same top-right

@@ -9,6 +9,7 @@ import { useWelcomeGate } from "@/lib/welcome-gate";
 import CenterModal from "@/components/ui/CenterModal";
 import WelcomeWidget from "./WelcomeWidget";
 import IntroSplash from "./IntroSplash";
+import { VOICE_NAV_EVENT } from "@/lib/voice/store";
 
 // shared easing across every motion in this overlay, so entrances/exits read
 // as one authored sequence instead of mismatched curves
@@ -355,6 +356,18 @@ export default function WelcomeOverlay() {
     snooze();
     setVisible(false);
   };
+
+  // Голосовой ассистент ушёл по сайту («открой сайты», «дальше») — сцена
+  // закрывается и не всплывает снова на следующей странице.
+  useEffect(() => {
+    const leave = () => {
+      snooze();
+      setSkippedToSite(true);
+      setVisible(false);
+    };
+    window.addEventListener(VOICE_NAV_EVENT, leave);
+    return () => window.removeEventListener(VOICE_NAV_EVENT, leave);
+  }, [setSkippedToSite]);
 
   const goToSite = () => {
     setSkippedToSite(true);

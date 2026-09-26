@@ -223,7 +223,9 @@ export default function Hero() {
         transition={{ duration: 0.7, delay: 0.35 }}
         className="relative mt-10 shrink-0"
       >
-        <Container className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-4 pb-6">
+        {/* pb-24 на телефоне и планшете — место под волну голосового
+            ассистента (VoiceAssistant), которая стоит там по центру снизу. */}
+        <Container className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-4 pb-24 lg:pb-6">
           {heroStats.map((stat) => (
             <div key={stat.label}>
               <span className="font-display text-2xl uppercase text-paper sm:text-3xl">
