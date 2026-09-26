@@ -696,7 +696,7 @@ export default function VoiceAssistant() {
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
-            <VoiceDock width={136} height={56} from={accent.from} to={accent.to} />
+            <VoiceDock width={164} height={62} from={accent.from} to={accent.to} />
           </motion.div>
         )}
       </AnimatePresence>
