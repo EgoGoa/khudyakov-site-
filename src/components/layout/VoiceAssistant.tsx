@@ -939,7 +939,11 @@ function HeaderWave({ from, to, hot, pulse }: { from: string; to: string; hot: b
   }, []);
   return (
     <div ref={ref} className="voice-panel-wave">
-      {w > 0 && <NanoWave width={w} height={40} from={from} to={to} hot={hot} pulse={pulse} level={getVoiceLevel} />}
+      {/* Короче колонки и без хвостов-пыли — не выходит за границы шапки;
+          концы всё равно уходят в прозрачность градиентом линий. */}
+      {w > 0 && (
+        <NanoWave width={Math.round(w * 0.7)} height={32} from={from} to={to} hot={hot} pulse={pulse} dust={false} level={getVoiceLevel} />
+      )}
     </div>
   );
 }
