@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import LeadModal from "@/components/home/LeadModal";
+import { fitValue, useRefit } from "@/lib/use-fit-text";
 
 // The one loud, sale-poster-styled card on the page — every other surface
 // on /content is quiet glass-on-film, so this is meant to read as a
@@ -77,6 +78,29 @@ export default function PromoCard({
   const [open, setOpen] = useState(false);
   const cyan = palette === "cyan";
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const topRef = useRef<HTMLSpanElement>(null);
+  const bottomRef = useRef<HTMLSpanElement>(null);
+
+  // Егор: мелкая подпись в растянутой карточке оставляла пустые поля —
+  // подпись и список растут (--promo-fit, до ×1.9), пока вместе с ценой и
+  // кнопками помещаются в высоту, которую задают соседи по ряду. Карточка
+  // от этого не растёт: меряем высоту при исходном кегле и в неё и влезаем.
+  useRefit(
+    cardRef,
+    () => {
+      const card = cardRef.current;
+      const top = topRef.current;
+      const bottom = bottomRef.current;
+      if (!card || !top || !bottom) return;
+      const set = (v: number) => card.style.setProperty("--promo-fit", String(v));
+      set(1);
+      const pad = parseFloat(getComputedStyle(card).paddingTop) + parseFloat(getComputedStyle(card).paddingBottom);
+      const room = card.clientHeight - pad;
+      fitValue(set, () => top.offsetHeight + bottom.offsetHeight + 10 <= room, 1, 1.9);
+    },
+    `${subtitle}:${details?.length ?? 0}`,
+  );
 
   // The `autoPlay` attribute alone doesn't reliably start playback in every
   // browser/timing scenario (same issue DirectionsGrid's DirectionOrb hit) —
@@ -109,6 +133,7 @@ export default function PromoCard({
             that bar. Off by default so a page that reuses this card without
             that context isn't forced into it. */}
         <div
+          ref={cardRef}
           className={`promo-card group relative block h-full w-full overflow-hidden rounded-2xl p-3 text-left ${
             cyan ? "promo-card-cyan" : ""
           } ${glow ? (cyan ? "promo-card-pulse-glow-cyan" : "promo-card-pulse-glow") : ""}`}
@@ -149,7 +174,7 @@ export default function PromoCard({
               price and buttons anchor to the bottom instead of floating
               wherever the text above happens to end. */}
           <span className="relative z-10 flex h-full flex-col justify-between">
-            <span>
+            <span ref={topRef}>
               {/* "warm" reuses the page's own `.kw` magenta→orange (Trust.tsx
                   sits inside .content-warm-headings, so `.kw` here already
                   picks up /content's own ramp) — "cyan" gets its own gradient
@@ -161,16 +186,20 @@ export default function PromoCard({
               >
                 {title}
               </span>
-              <span className="mt-0.5 block text-[10px] font-semibold leading-snug text-white">{subtitle}</span>
+              {/* Набрано как описания шагов в соседних окошках (font-display,
+                  tracking-tight) — Егор: «как в окошках с последовательностью». */}
+              <span className="mt-1 block font-display text-[length:calc(10px*var(--promo-fit,1))] leading-snug tracking-tight text-white">
+                {subtitle}
+              </span>
               {details && details.length > 0 && (
-                <ul className="mt-1.5 space-y-1">
+                <ul className="mt-1.5 space-y-[calc(0.25rem*var(--promo-fit,1))]">
                   {details.map((item) =>
                     typeof item === "string" ? (
-                      <li key={item} className="text-[9px] font-medium leading-snug text-white">
+                      <li key={item} className="font-display text-[length:calc(9px*var(--promo-fit,1))] leading-snug tracking-tight text-white">
                         {item}
                       </li>
                     ) : (
-                      <li key={item.lead} className="flex items-start gap-1.5 text-[10px] leading-snug text-white">
+                      <li key={item.lead} className="flex items-start gap-1.5 text-[length:calc(10px*var(--promo-fit,1))] leading-snug text-white">
                         <span
                           className={`mt-px shrink-0 font-bold ${cyan ? "text-[#5ee7ff]" : "text-[#ffb36b]"}`}
                           aria-hidden="true"
@@ -189,7 +218,7 @@ export default function PromoCard({
                 </ul>
               )}
             </span>
-            <span>
+            <span ref={bottomRef}>
               <span className="flex items-baseline gap-2">
                 <span className="font-display text-xl leading-none text-white">{price}</span>
                 <span className="font-display text-sm leading-none text-white/50 line-through">{oldPrice}</span>

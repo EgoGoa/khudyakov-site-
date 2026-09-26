@@ -140,6 +140,20 @@ const pages = [
 // already viewing instead of bouncing to the default service
 const landingSlugs = ["content", "ai", "sites", "smm"];
 
+/** Логотип: точка + HUD.SERVICE. Слоган «DIGITAL AI CREATIVE» Егор пока
+ *  убрал — сначала стоял справа за чертой, потом под логотипом, и в итоге
+ *  решено оставить только основной текст. */
+function BrandLockup() {
+  return (
+    <span className="flex items-center gap-2 sm:gap-2.5">
+      <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot sm:h-2.5 sm:w-2.5" />
+      <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] land:!text-[0.9rem] uppercase tracking-tight">
+        HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
+      </span>
+    </span>
+  );
+}
+
 export default function Header() {
   const pathname = useCleanPathname();
   const isHome = pathname === "/";
@@ -256,40 +270,7 @@ export default function Header() {
           onClick={navigateHome}
           className="flex shrink-0 items-center gap-2 py-2 land:pointer-events-auto land:py-0 land:opacity-80 font-display uppercase leading-none tracking-[0.08em] text-paper transition active:scale-[0.97] sm:gap-2.5"
         >
-          <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot sm:h-2.5 sm:w-2.5" />
-          <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] land:!text-[0.9rem] uppercase tracking-tight">
-            HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
-          </span>
-          <span className={`ml-1 hidden h-6 w-px shrink-0 bg-paper/25 land:!hidden xl:block`} aria-hidden="true" />
-          {/* The tagline now carries /sites' chapter-heading treatment: the
-              display face, the near-white under a warm orange bloom
-              (.chapter-neon-warm), and the keyword in the same
-              magenta-to-cyan gradient (.kw). It used to be the light sans at
-              60% paper with only "AI" picked out, which read as a caption
-              beside the logo rather than as the line the logo is making.
-              .kw rather than .header-ai-mark — same gradient, but .kw also
-              clears text-shadow, which the parent's new bloom needs: a shadow
-              under a transparent-filled glyph is not hidden by it, and would
-              have painted an orange slab in the shape of the word. */}
-          {/* font-sans/300, not the display face: Egor asked for this line to
-              read thinner and cleaner beside the logo. Unbounded (font-display)
-              has no cut below 500 in this project, so "thinner" is simply not
-              reachable in it — its wide, blocky geometry is also what made the
-              line read as heavy next to the wordmark. Manrope Light gives the
-              plain, thin setting asked for at this size.
-              "AI" is pinned back to `font-display font-normal` so it stays
-              exactly as it was — it would otherwise inherit the new face and
-              weight from this parent along with the rest of the line. */}
-          {/* One line now — "АГЕНТСТВО" was dropped at Egor's request, so the
-              two-line stack (flex-col + gap) that used to hold it went with
-              it: a column of one is just a line, and its `gap` would only
-              have offset the text from nothing. As a single line it centres
-              against the wordmark on its own, from the parent Link's own
-              `items-center`, instead of being a block whose two rows
-              straddled the logo's centre. */}
-          <span className={`chapter-neon-warm hidden land:!hidden shrink-0 whitespace-nowrap text-center font-sans text-[0.65rem] font-light uppercase leading-none tracking-[0.12em] xl:block`}>
-            DIGITAL <span className="kw font-display font-normal">AI</span> CREATIVE
-          </span>
+          <BrandLockup />
         </Link>
 
         <div className="flex shrink-0 items-center gap-3 sm:gap-4">

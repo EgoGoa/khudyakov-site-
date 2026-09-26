@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { accentVars, type TeamPulseData } from "./types";
 import TeamPulseWindow from "./TeamPulseWindow";
 import { marks, plain } from "./marks";
+import { fitValue, useRefit } from "@/lib/use-fit-text";
 
 // Мини-окошко человека команды, встроенное в вёрстку блока.
 //
@@ -64,10 +65,65 @@ function TypedOffer({ text, count }: { text: string; count: number }) {
   );
 }
 
+/** Область текста в окошке «на всю ячейку»: подбирает кегль (в --fit-px)
+ *  так, чтобы самый длинный из `texts` занял её целиком и не обрезался —
+ *  тогда смена сообщений не меняет размер шрифта и ничего не прыгает.
+ *  Невидимый зонд повторяет типографику текста (`probeClassName`). */
+function FitArea({
+  texts,
+  min,
+  max,
+  className = "",
+  probeClassName,
+  children,
+}: {
+  texts: string[];
+  min: number;
+  max: number;
+  className?: string;
+  probeClassName: string;
+  children: ReactNode;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const probe = useRef<HTMLSpanElement>(null);
+  useRefit(
+    ref,
+    () => {
+      const area = ref.current;
+      const m = probe.current;
+      if (!area || !m) return;
+      const h = area.clientHeight;
+      const px = fitValue(
+        (v) => area.style.setProperty("--fit-px", `${v}px`),
+        // «+ ▍» — запас под мигающую каретку печати.
+        () => texts.every((t) => ((m.textContent = `${t} ▍`), m.offsetHeight <= h)),
+        min,
+        max,
+      );
+      area.style.setProperty("--fit-px", `${Math.floor(px * 2) / 2}px`);
+    },
+    `${texts.join("|")}:${min}:${max}`,
+  );
+  return (
+    <span ref={ref} className={`relative block min-h-0 flex-1 overflow-hidden ${className}`}>
+      <span
+        ref={probe}
+        aria-hidden="true"
+        className={`pointer-events-none invisible absolute inset-x-0 top-0 block ${probeClassName}`}
+      />
+      {children}
+    </span>
+  );
+}
+
+// Типографика текста в режиме fill — одна строка на текст и на его зонд.
+const FIT_TEXT = "font-display uppercase leading-[1.3] tracking-tight text-[length:var(--fit-px,14px)]";
+
 export default function TeamPulse({
   data: base,
   className = "",
   compact = false,
+  fill = false,
   source,
 }: {
   data: TeamPulseData;
@@ -77,6 +133,10 @@ export default function TeamPulse({
    *  поверх, вверх, не сдвигая ничего вокруг — главы там подогнаны под
    *  один экран. */
   compact?: boolean;
+  /** Вместе с compact: окошко занимает всю ячейку сетки, как соседние
+   *  карточки, а не узкую полоску уведомления (Егор, глава «PRO
+   *  хронология» на /content). Раскрытая карточка встаёт на то же место. */
+  fill?: boolean;
   /** Подпись «откуда» в заявке, если этот человек стоит в другом блоке. */
   source?: string;
 }) {
@@ -177,7 +237,7 @@ export default function TeamPulse({
   return (
     <div
       ref={ref}
-      className={`relative ${compact ? "h-[4.9rem]" : "h-[9.5rem] sm:h-[8.75rem]"} ${className}`}
+      className={`relative ${fill ? "h-full min-h-[9.5rem]" : compact ? "h-[4.9rem]" : "h-[9.5rem] sm:h-[8.75rem]"} ${className}`}
       style={accentVars(data.accent)}
       onMouseEnter={() => {
         hovering.current = true;
@@ -195,7 +255,7 @@ export default function TeamPulse({
             type="button"
             onClick={openWindow}
             className={`team-pulse-card group absolute flex items-center gap-4 rounded-[24px] px-4 text-left sm:gap-5 sm:px-5 ${
-              compact ? "inset-x-0 bottom-0 z-30 min-h-[9.5rem] py-4" : "inset-0"
+              fill ? "inset-0 py-4" : compact ? "inset-x-0 bottom-0 z-30 min-h-[9.5rem] py-4" : "inset-0"
             }`}
             initial={reduced ? false : { opacity: 0, scale: 0.92, y: 8, filter: "blur(10px)" }}
             // filter снимается после входа: даже blur(0px) отрезает
@@ -210,16 +270,24 @@ export default function TeamPulse({
               </span>
               <span className="team-pulse-online absolute bottom-0 right-0 h-3 w-3 rounded-full" />
             </span>
-            <span className="min-w-0 flex-1">
+            <span className={`min-w-0 flex-1 ${fill ? "flex h-full flex-col" : ""}`}>
               <span className="flex items-center gap-2 font-display text-[9.5px] uppercase tracking-[0.14em] sm:text-[10.5px]">
                 <span className="team-pulse-acc">
                   {member.name} · {data.role}
                 </span>
                 <span className="text-[#30d158]">● пишет…</span>
               </span>
-              <span className={`mt-1.5 block font-display uppercase leading-[1.38] tracking-tight text-white ${compact ? "h-[5.6em] text-[12px] sm:text-[13px]" : "h-[4.15em] text-[13px] sm:text-[15px]"}`}>
-                <TypedOffer text={text} count={count} />
-              </span>
+              {fill ? (
+                <FitArea texts={data.offers.map(plain)} min={11} max={24} className="mt-1.5" probeClassName={FIT_TEXT}>
+                  <span className={`block text-white ${FIT_TEXT}`}>
+                    <TypedOffer text={text} count={count} />
+                  </span>
+                </FitArea>
+              ) : (
+                <span className={`mt-1.5 block font-display uppercase leading-[1.38] tracking-tight text-white ${compact ? "h-[5.6em] text-[12px] sm:text-[13px]" : "h-[4.15em] text-[13px] sm:text-[15px]"}`}>
+                  <TypedOffer text={text} count={count} />
+                </span>
+              )}
               <span className="mt-1.5 flex items-center gap-3">
                 <span className="team-pulse-cta">
                   <u>Пообщаться</u>
@@ -246,8 +314,59 @@ export default function TeamPulse({
                 действие одно — кнопка «Пообщаться» внутри, без кнопки в кнопке. */}
             <div
               onClick={reveal}
-              className="team-pulse-note flex w-full cursor-pointer items-center gap-3 rounded-[22px] px-3.5 py-3 text-left sm:gap-3.5"
+              className={`team-pulse-note flex w-full cursor-pointer rounded-[22px] text-left ${
+                fill
+                  ? "h-full items-center gap-4 px-4 py-4 sm:gap-5 sm:px-5"
+                  : "items-center gap-3 px-3.5 py-3 sm:gap-3.5"
+              }`}
             >
+              {fill ? (
+                <>
+                  {/* Та же раскладка, что у раскрытой карточки (аватар слева,
+                      справа имя → текст → призыв), — при наведении одно
+                      перетекает в другое на месте, без перестройки. */}
+                  <span className={`team-pulse-avatar relative h-14 w-14 shrink-0 rounded-full sm:h-16 sm:w-16 ${seen ? "" : "is-pulsing"}`}>
+                    <span className="relative block h-full w-full overflow-hidden rounded-full">
+                      <Image unoptimized src={member.photo} alt="" fill sizes="64px" className="object-cover" />
+                    </span>
+                    <span className="team-pulse-online absolute bottom-0 right-0 h-3 w-3 rounded-full" />
+                  </span>
+                  <span className="flex h-full min-w-0 flex-1 flex-col">
+                    <span className="flex items-baseline gap-2 font-display text-[9.5px] uppercase tracking-[0.14em] sm:text-[10.5px]">
+                      <span className="team-pulse-acc">
+                        {member.name} · {data.role}
+                      </span>
+                      <span className="font-sans text-[11px] font-semibold normal-case tracking-normal text-white">сейчас</span>
+                    </span>
+                    <FitArea texts={messages.map(plain)} min={11} max={24} className="mt-1.5 flex items-center" probeClassName={FIT_TEXT}>
+                      <AnimatePresence mode="wait" initial={false}>
+                        <motion.span
+                          key={note}
+                          className={`block text-white ${FIT_TEXT}`}
+                          initial={reduced ? false : { opacity: 0, y: -10, filter: "blur(4px)" }}
+                          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                          exit={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+                          transition={SPRING}
+                        >
+                          {marks(messages[note % messages.length])}
+                        </motion.span>
+                      </AnimatePresence>
+                    </FitArea>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openWindow();
+                      }}
+                      className="team-pulse-cta mt-1.5 self-start"
+                    >
+                      <u>Пообщаться</u>
+                      <i aria-hidden="true">→</i>
+                    </button>
+                  </span>
+                </>
+              ) : (
+              <>
               <span className={`team-pulse-avatar relative h-10 w-10 shrink-0 rounded-full ${seen ? "" : "is-pulsing"}`}>
                 <span className="relative block h-full w-full overflow-hidden rounded-full">
                   <Image unoptimized src={member.photo} alt="" fill sizes="40px" className="object-cover" />
@@ -286,6 +405,8 @@ export default function TeamPulse({
                 <u className={compact ? "hidden" : "hidden sm:inline"}>Пообщаться</u>
                 <i aria-hidden="true">→</i>
               </button>
+              </>
+              )}
             </div>
           </motion.div>
         )}

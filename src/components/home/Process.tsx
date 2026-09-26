@@ -348,7 +348,7 @@ export default function Process({
           </Appear>
           <Appear from="up" delay={BEAT.cta} className="h-full">
             {/* Егор как сервис (TeamPulse) вместо карточки. */}
-            <TeamPulse data={EGOR_CONTENT} compact source="/content · глава «PRO хронология»" />
+            <TeamPulse data={EGOR_CONTENT} compact fill source="/content · глава «PRO хронология»" />
           </Appear>
         </div>
       ) : active === "ai" ? (
@@ -366,7 +366,7 @@ export default function Process({
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <Appear from="up" delay={BEAT.cta} className="h-full">
             {/* Макс как сервис (TeamPulse) вместо карточки. */}
-            <TeamPulse data={MAX_AI} compact source="/ai · глава «Как проходит внедрение»" />
+            <TeamPulse data={MAX_AI} compact fill source="/ai · глава «Как проходит внедрение»" />
           </Appear>
           <Appear from="up" delay={BEAT.cta} className="h-full">
             <PromoCard
