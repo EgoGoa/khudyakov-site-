@@ -30,7 +30,12 @@ export function ServiceProvider({
 
   useEffect(() => {
     if (forcedValue) return;
-    const saved = window.localStorage.getItem(STORAGE_KEY);
+    let saved: string | null = null;
+    try {
+      saved = window.localStorage.getItem(STORAGE_KEY);
+    } catch {
+      // Storage blocked (strict private mode, some in-app browsers) — keep the default.
+    }
     if (saved && (serviceOrder as string[]).includes(saved)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount read, localStorage isn't available during SSR so this can't move to a lazy useState initializer without a hydration mismatch
       setActiveState(saved as ServiceKey);
@@ -40,7 +45,11 @@ export function ServiceProvider({
   const setActive = (key: ServiceKey) => {
     if (forcedValue) return;
     setActiveState(key);
-    window.localStorage.setItem(STORAGE_KEY, key);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, key);
+    } catch {
+      // Not persisting the choice is fine; breaking the switch isn't.
+    }
   };
 
   return (

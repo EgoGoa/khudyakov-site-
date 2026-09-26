@@ -92,7 +92,8 @@ export default function TaskAssistant({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           question: question.trim(),
-          context: `${context} Посетитель оставляет заявку, а не задаёт вопрос. Не отвечай ему — вместо ответа перепиши его сообщение в 2-4 коротких пункта: что нужно, для какой задачи, важные детали. От третьего лица, по-русски, без markdown и без фраз вроде «клиент пишет».`,
+          context,
+          mode: "summary",
         }),
       });
       const summary = summaryRes.ok ? ((await summaryRes.json()).answer as string) : "";
@@ -165,6 +166,7 @@ export default function TaskAssistant({
                   onChange={(e) => setQuestion(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && goToContact()}
                   placeholder="Опишите свою задачу…"
+                  maxLength={2000}
                   className="w-full rounded-lg border border-paper/15 bg-paper/[0.04] py-3 pl-4 pr-20 text-sm text-paper placeholder:text-paper/35 focus:border-glow focus:outline-none"
                 />
                 {supported && (

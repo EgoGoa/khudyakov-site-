@@ -120,6 +120,7 @@ export default function BlockAssistant({ context }: { context: string }) {
                   onChange={(e) => setQuestion(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && ask(question)}
                   placeholder="Свой вопрос…"
+                  maxLength={2000}
                   className="w-full rounded-lg border border-paper/15 bg-paper/[0.04] py-3 pl-4 pr-20 text-sm text-paper placeholder:text-paper/35 focus:border-glow focus:outline-none"
                 />
                 {supported && (
