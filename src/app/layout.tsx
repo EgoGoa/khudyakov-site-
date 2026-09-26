@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Unbounded, Manrope } from "next/font/google";
+import { Unbounded, Manrope, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
 import PageBarSpacer from "@/components/layout/PageBarSpacer";
@@ -37,6 +37,18 @@ const bebas = Unbounded({
   variable: "--font-bebas",
   display: "swap",
   weight: ["500", "600", "700", "800", "900"],
+});
+
+// Вайб-режим (Егор: «больше формат Apple, технологичнее»). На Mac и iPhone
+// окно берёт системный SF Pro, остальным отдаём Inter — ближайший к нему
+// открытый шрифт с кириллицей. Без предзагрузки: файл нужен только когда
+// посетитель открывает вайб-режим, на остальных страницах он не качается.
+const inter = Inter({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-inter",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
+  preload: false,
 });
 
 // Моноширинного шрифта больше нет: после запрета тонкого моно (JetBrains
@@ -107,7 +119,7 @@ export default function RootLayout({
       lang="ru"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${montserrat.variable} ${bebas.variable}`}
+      className={`${montserrat.variable} ${bebas.variable} ${inter.variable}`}
     >
       <head>
         {/* Marks weak devices / slow connections before first paint so the

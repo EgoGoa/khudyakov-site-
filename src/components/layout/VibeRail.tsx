@@ -10,6 +10,7 @@ import { useCinematicGoTo } from "@/lib/cinematic-nav";
 import WelcomeWidget from "@/components/home/WelcomeWidget";
 import CenterModal from "@/components/ui/CenterModal";
 import NanoSphere from "@/components/ui/NanoSphere";
+import VibeMode from "@/components/vibe/VibeMode";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { homeOf } from "@/components/layout/PageBar";
 import { serviceOrder } from "@/lib/service-content";
@@ -791,6 +792,12 @@ export default function VibeRail() {
   const { pageItems, crossPageItems, anchorIds } = useRailItems();
   const activeRailId = useActiveRailId(anchorIds);
   const [pickerOpen, setPickerOpen] = useState(false);
+  // Сфера открывает вайб-режим (анкета → персональное предложение), а
+  // прежний выбор направлений остался ссылкой внутри этого окна.
+  // Ссылка с `?vibe=1` (реклама, рассылка, соцсети) открывает окно сразу.
+  const [vibeOpen, setVibeOpen] = useState(
+    () => typeof window !== "undefined" && new URLSearchParams(window.location.search).has("vibe")
+  );
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<RailItem | null>(null);
   // Header's desktop burger dropdown lives in roughly the same top-right
@@ -848,8 +855,8 @@ export default function VibeRail() {
       >
         <button
           type="button"
-          onClick={() => setPickerOpen(true)}
-          aria-label="Vibe"
+          onClick={() => setVibeOpen(true)}
+          aria-label="Vibe-режим"
           aria-haspopup="dialog"
           className="vibe-bubble vibe-bubble--crown mb-1"
         >
@@ -926,7 +933,7 @@ export default function VibeRail() {
                 type="button"
                 onClick={() => {
                   setSheetOpen(false);
-                  setPickerOpen(true);
+                  setVibeOpen(true);
                 }}
                 className="vibe-orb-trigger flex w-full items-center gap-3 rounded-xl px-2 py-3"
               >
@@ -934,7 +941,7 @@ export default function VibeRail() {
                   <NanoSphere size={28} from={accent.from} to={accent.to} />
                 </span>
                 <span className="font-display text-xs uppercase tracking-[0.16em] text-paper">
-                  Vibe — выбор направления
+                  Vibe-режим — сайт под тебя
                 </span>
               </button>
 
@@ -972,6 +979,8 @@ export default function VibeRail() {
       <CenterModal open={!!activeItem} onClose={() => setActiveItem(null)} ariaLabel="Vibe режим">
         {activeItem && <VibeModeWindow item={activeItem} onClose={() => setActiveItem(null)} />}
       </CenterModal>
+
+      <VibeMode open={vibeOpen} onClose={() => setVibeOpen(false)} onPickDirection={() => setPickerOpen(true)} />
 
       {/* Top "Vibe" row — the greeting / direction-picker widget, relocated
           verbatim from the old floating button. */}

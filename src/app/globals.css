@@ -6873,3 +6873,294 @@ html[data-lite] .vibe-tip {
   backdrop-filter: blur(18px) saturate(1.6) !important;
 }
 
+
+/* ---------- Vibe-режим (components/vibe/VibeMode.tsx) ----------
+   Егор, 2026-09-26: «больше формат Apple, технологичнее, стильные мощные
+   градиенты вместо детских», сфера всегда в центре. Шрифт — системный
+   SF Pro на Apple-устройствах, Inter у остальных. Спектр окна — сине-
+   фиолетовый → розовый → коралловый, в глубине, а не неоном по кнопкам. */
+.vibe-mode {
+  --vm-a: #6f86ff;
+  --vm-b: #b07cff;
+  --vm-c: #ff7a9c;
+  --vm-d: #ffb07a;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", var(--font-inter), "Segoe UI", system-ui, sans-serif;
+  color: #fff;
+  background: rgba(3, 3, 6, 0.86);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-font-smoothing: antialiased;
+}
+.vibe-mode__aurora {
+  position: fixed;
+  inset: -20%;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 30% at 50% 38%, rgba(111, 134, 255, 0.22), transparent 70%),
+    radial-gradient(30% 26% at 36% 58%, rgba(176, 124, 255, 0.16), transparent 70%),
+    radial-gradient(30% 24% at 64% 60%, rgba(255, 122, 156, 0.14), transparent 70%),
+    radial-gradient(60% 40% at 50% 115%, rgba(255, 176, 122, 0.10), transparent 70%);
+  animation: vibe-aurora 18s ease-in-out infinite alternate;
+}
+@keyframes vibe-aurora {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(8deg) scale(1.08); }
+}
+html[data-lite] .vibe-mode__aurora,
+html[data-mid] .vibe-mode__aurora { animation: none; }
+html[data-lite] .vibe-mode { backdrop-filter: blur(18px); }
+.vibe-mode__orb::before {
+  /* Мягкий свет под сферой — сама сфера рисуется на холсте. */
+  content: "";
+  position: absolute;
+  inset: -45%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(111, 134, 255, 0.28), rgba(255, 122, 156, 0.10) 45%, transparent 68%);
+  pointer-events: none;
+}
+.vibe-mode__progress {
+  background: linear-gradient(90deg, var(--vm-a), var(--vm-b), var(--vm-c), var(--vm-d));
+  box-shadow: 0 0 12px rgba(176, 124, 255, 0.8);
+}
+.vibe-mode__eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.vibe-mode__title {
+  font-size: clamp(38px, 6.2vw, 72px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  background: linear-gradient(180deg, #fff 30%, rgba(255, 255, 255, 0.72));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.vibe-mode__title--sm { font-size: clamp(30px, 4.4vw, 48px); }
+.vibe-mode__title--q { font-size: clamp(28px, 4vw, 44px); line-height: 1.08; letter-spacing: -0.035em; }
+.vibe-mode__iris {
+  background: linear-gradient(100deg, var(--vm-a) 0%, var(--vm-b) 38%, var(--vm-c) 72%, var(--vm-d) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: vibe-iris 8s ease-in-out infinite alternate;
+}
+@keyframes vibe-iris {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+.vibe-mode__lead {
+  font-size: clamp(16px, 1.5vw, 19px);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.vibe-mode__pill {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
+}
+.vibe-mode__card {
+  padding: 20px 22px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+}
+.vibe-mode__card--accent {
+  background:
+    linear-gradient(rgba(12, 12, 20, 0.86), rgba(12, 12, 20, 0.86)) padding-box,
+    linear-gradient(120deg, var(--vm-a), var(--vm-b), var(--vm-c), var(--vm-d)) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 0 40px -10px rgba(176, 124, 255, 0.55);
+}
+.vibe-mode__num {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--vm-a), var(--vm-c));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.vibe-mode__cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #07070b;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 10px 40px -8px rgba(176, 124, 255, 0.75), 0 0 60px -20px rgba(255, 122, 156, 0.8);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.2s;
+}
+.vibe-mode__cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px #fff, 0 14px 50px -6px rgba(176, 124, 255, 0.95), 0 0 80px -16px rgba(255, 122, 156, 1);
+}
+.vibe-mode__cta:disabled { opacity: 0.35; box-shadow: none; transform: none; cursor: default; }
+.vibe-mode__ghost {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  transition: background 0.2s;
+}
+.vibe-mode__ghost:hover { background: rgba(255, 255, 255, 0.08); }
+.vibe-mode__ghost--pill { padding: 0 20px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18); }
+.vibe-mode__quiet {
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+.vibe-mode__quiet:hover { opacity: 1; text-decoration: underline; text-underline-offset: 4px; }
+.vibe-mode__icon-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 0.2s;
+}
+.vibe-mode__icon-btn:hover { background: rgba(255, 255, 255, 0.16); }
+.vibe-mode__dot {
+  width: 22px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.22);
+  transition: width 0.35s ease, background 0.35s ease;
+}
+.vibe-mode__dot.is-on {
+  width: 36px;
+  background: linear-gradient(90deg, var(--vm-a), var(--vm-c));
+}
+.vibe-mode__option,
+.vibe-mode__chip,
+.vibe-mode__own,
+.vibe-mode__field {
+  border: 1.5px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+  transition: background 0.2s, box-shadow 0.25s, transform 0.2s;
+}
+.vibe-mode__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.vibe-mode__chip {
+  padding: 11px 16px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+}
+.vibe-mode__option:hover,
+.vibe-mode__chip:hover {
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+.vibe-mode__option.is-on,
+.vibe-mode__chip.is-on,
+.vibe-mode__own.is-on {
+  background:
+    linear-gradient(rgba(16, 14, 28, 0.8), rgba(16, 14, 28, 0.8)) padding-box,
+    linear-gradient(120deg, var(--vm-a), var(--vm-b), var(--vm-c), var(--vm-d)) border-box;
+  box-shadow: 0 0 28px -6px rgba(176, 124, 255, 0.7);
+}
+.vibe-mode__key {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+}
+.vibe-mode__option.is-on .vibe-mode__key {
+  background: linear-gradient(135deg, var(--vm-a), var(--vm-c));
+}
+.vibe-mode__own {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 54px;
+  padding: 0 18px;
+  border-radius: 18px;
+  font-size: 16px;
+  text-align: left;
+}
+.vibe-mode__own:focus-within { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3); }
+.vibe-mode__field {
+  height: 54px;
+  padding: 0 18px;
+  border-radius: 16px;
+  font-size: 16px;
+  color: #fff;
+  outline: none;
+}
+.vibe-mode__field::placeholder { color: rgba(255, 255, 255, 0.7); }
+.vibe-mode__field:focus { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 0 24px -8px rgba(176, 124, 255, 0.7); }
+.vibe-mode__assist {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.vibe-mode__assist-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--vm-a), var(--vm-c));
+  box-shadow: 0 0 10px rgba(176, 124, 255, 0.9);
+}
+/* Логотип в заголовке вайб-режима — шрифт и знак шапки, чуть мельче строки. */
+.vibe-mode__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22em;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  vertical-align: 0.04em;
+}
+.vibe-mode__brand-dot {
+  width: 0.22em;
+  height: 0.22em;
+  flex: none;
+}
