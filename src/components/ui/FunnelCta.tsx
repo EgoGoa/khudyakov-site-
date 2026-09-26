@@ -162,7 +162,7 @@ function EyebrowPill({
 }) {
   const skin =
     tone === "glass"
-      ? "border-[#e85fa0]/40 bg-[#e85fa0]/10 text-[#f4a8cd]"
+      ? "border-vibe/40 bg-vibe/10 text-vibe-pale"
       : "border-orange/35 bg-orange/10 text-orange";
   return (
     <span
@@ -171,7 +171,7 @@ function EyebrowPill({
       }`}
     >
       <span
-        className={`h-1.5 w-1.5 shrink-0 rounded-full ${tone === "glass" ? "bg-[#e85fa0]" : "bg-orange"}`}
+        className={`h-1.5 w-1.5 shrink-0 rounded-full ${tone === "glass" ? "bg-vibe" : "bg-orange"}`}
       />
       {children}
     </span>

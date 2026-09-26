@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Cabinet from "./Cabinet";
 import { useCabinet } from "./store";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
+import { useDialogFocus } from "@/lib/use-dialog-focus";
 
 // Кабинет поверх любой страницы — открывается иконкой в шапке и кнопкой
 // после заявки в чате. Та же вёрстка, что на отдельной странице /cabinet.
@@ -23,17 +25,17 @@ export default function CabinetWindow() {
     window.addEventListener(OPEN_CABINET, show);
     return () => window.removeEventListener(OPEN_CABINET, show);
   }, []);
+  // Общая блокировка (не своя на <html>): она держит ширину страницы, чтобы
+  // сайт не дёргался вбок, и её видит CinematicStage — колесо внутри кабинета
+  // не листает главы под ним.
+  useBodyScrollLock(open);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open && mounted, dialogRef);
   useEffect(() => {
     if (!open) return;
-    const html = document.documentElement;
-    const prev = html.style.overflow;
-    html.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
-    return () => {
-      html.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
   if (!mounted) return null;
   return createPortal(
@@ -44,10 +46,12 @@ export default function CabinetWindow() {
               чтобы фокус был только на окне. */}
           <div className="absolute inset-0 bg-ink/75 backdrop-blur-md" onClick={() => setOpen(false)} aria-hidden="true" />
           <motion.div
+            ref={dialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Личный кабинет"
-            className={gate ? "relative w-full max-w-[440px]" : "relative h-[min(820px,calc(100dvh-1.5rem))] w-full max-w-[1320px]"}
+            className={gate ? "relative w-full outline-none max-w-[440px]" : "relative h-[min(820px,calc(100dvh-1.5rem))] w-full max-w-[1320px] outline-none"}
             layout
             // Без filter в анимации: filter на предке ломает backdrop-filter
             // стекла кабинета — оно перестаёт размывать страницу под собой.

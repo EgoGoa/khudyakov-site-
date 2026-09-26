@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { CloseIcon } from "@/components/ui/Icons";
+import { useDialogFocus } from "@/lib/use-dialog-focus";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -113,6 +114,9 @@ export default function CenterModal({
   // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount flag, see the comment at its use below
   useEffect(() => setMounted(true), []);
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open && mounted, dialogRef);
+
   if (!open && !keepAlive) return null;
 
   // `position: fixed` is positioned relative to the nearest ancestor with a
@@ -149,10 +153,12 @@ export default function CenterModal({
           // (просьба Егора после проверки живьём). Остальные окна (bare
           // false) не трогаю — у них своя, уже принятая скорость.
           transition={{ duration: bare ? 0.55 : 0.35, ease: EASE }}
+          ref={dialogRef}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           aria-label={ariaLabel}
-          className={`fixed inset-0 z-[100] flex justify-center overflow-y-auto px-4 ${bare ? "pt-2 pb-10 sm:pt-3" : "py-10"} sm:px-6 ${
+          className={`fixed inset-0 z-[100] flex outline-none justify-center overflow-y-auto px-4 ${bare ? "pt-2 pb-10 sm:pt-3" : "py-10"} sm:px-6 ${
             // Сцена входа гасит И размывает страницу под собой (см.
             // .welcome-backdrop в globals.css). Остальные окна только
             // затемняют: у них блюр живёт на собственном стекле карточки,

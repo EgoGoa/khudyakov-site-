@@ -93,6 +93,15 @@ const deckVariants: Variants = {
   show: { transition: { staggerChildren: CARD_STAGGER, delayChildren: 0.05 } },
 };
 
+/** «Уменьшить движение» в системе: без блюра, сдвига и очереди — короткое
+ *  проявление всех карточек разом. */
+// Блюр и сдвиг сброшены явно: настройка читается после первого кадра, и
+// карточки к этому моменту уже могли встать в скрытое состояние dissolveIn.
+const fadeInReduced: Variants = {
+  hidden: { opacity: 0, y: 0, filter: "blur(0px)" },
+  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.2 } },
+};
+
 /** Пауза перед роутингом. Переход и закрытие, запущенные в один кадр, спорят
  *  за главный поток: рендер новой страницы съедает середину исчезновения, и
  *  сцена уходит рывком. Пауза чуть короче самого исчезновения. */
@@ -402,7 +411,7 @@ export default function WelcomeWidget({
         <AnimatePresence mode="wait">
           <motion.div
             key={picked ?? "directions"}
-            variants={picked ? undefined : deckVariants}
+            variants={picked || reduced ? undefined : deckVariants}
             initial={picked ? { opacity: 0 } : "hidden"}
             animate={picked ? { opacity: 1 } : "show"}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
@@ -420,7 +429,7 @@ export default function WelcomeWidget({
                   // deckVariants (staggerChildren) — не руками на каждой
                   // карточке. Последняя карточка сигналит: как только она
                   // сама доиграла вход, можно проявлять логотип.
-                  variants={dissolveIn}
+                  variants={reduced ? fadeInReduced : dissolveIn}
                   onAnimationComplete={i === directionCards.length - 1 ? () => setLogoReady(true) : undefined}
                   onClick={() => {
                     setLogoReady(true);
@@ -461,9 +470,9 @@ export default function WelcomeWidget({
                 <motion.button
                   key={block.id}
                   type="button"
-                  initial={{ opacity: 0, y: 16, scale: 0.98, filter: "blur(9px)" }}
-                  animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 0.62, ease: EASE, delay: reduced ? 0 : i * 0.06 }}
+                  initial={reduced ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.98, filter: "blur(9px)" }}
+                  animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                  transition={reduced ? { duration: 0.2 } : { duration: 0.62, ease: EASE, delay: i * 0.06 }}
                   onClick={() => go(blockHref(picked, block))}
                   aria-label={`Блок ${block.num}. ${block.title}. ${block.subtitle}`}
                   style={accentVars(picked)}

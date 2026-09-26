@@ -14,6 +14,7 @@ import { CloseIcon, MenuIcon, PhoneIcon } from "@/components/ui/Icons";
 import { useFullpage } from "@/lib/fullpage";
 import { useHeaderMenu } from "@/lib/header-menu";
 import { useCinematicGoTo } from "@/lib/cinematic-nav";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
 // Same 20-unit, 1.75-stroke line-icon language as VibeRail's own row glyphs
 // (see PageBlock/CROSS_PAGE_ITEMS there) — reused here rather than shared
@@ -172,17 +173,15 @@ export default function Header() {
     setMenuOpen(false);
   }, [pathname]);
 
+  useBodyScrollLock(menuOpen);
+
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
     if (!menuOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMenuOpen(false);
     };
     window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
   // Non-fullpage routes (or before the slide deck has registered) fall back

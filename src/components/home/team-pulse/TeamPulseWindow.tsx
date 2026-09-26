@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CloseIcon } from "@/components/ui/Icons";
@@ -9,6 +9,8 @@ import { accentVars, type TeamPulseChatVisual, type TeamPulseData } from "./type
 import TeamPulseScenes, { SCENE_MS, TeamPulseChatScene } from "./TeamPulseScenes";
 import TeamPulseChat, { type Phase } from "./TeamPulseChat";
 import { marks } from "./marks";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
+import { useDialogFocus } from "@/lib/use-dialog-focus";
 
 // Большое окно человека команды — нарочно собрано из тех же деталей, что
 // окошки услуг (ToolSpotlight): стекло `.glass-panel`, неоновый контур
@@ -42,17 +44,16 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
     return () => clearTimeout(t);
   }, [open, chat, hold, reduced, step, data.theses]);
 
+  // Общая блокировка прокрутки: страница не дёргается вбок, а CinematicStage
+  // видит её и не листает главы под окном.
+  useBodyScrollLock(open);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open && mounted, dialogRef);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    const html = document.documentElement;
-    const prev = html.style.overflow;
-    html.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => {
-      html.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
   // Закрыли — в следующий раз окно снова открывается рассказом, а не
@@ -85,10 +86,12 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
           <div className="absolute inset-0 bg-ink/75" onClick={onClose} aria-hidden="true" />
 
           <motion.div
+            ref={dialogRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label={`${data.member.name}: ${data.windowCta}`}
-            className="relative h-[min(640px,calc(100dvh-6.5rem))] w-full max-w-[1200px] sm:h-[min(580px,calc(100dvh-9rem))]"
+            className="relative outline-none h-[min(640px,calc(100dvh-6.5rem))] w-full max-w-[1200px] sm:h-[min(580px,calc(100dvh-9rem))]"
             style={accentVars(data.accent)}
             initial={reduced ? false : { opacity: 0, y: 28, scale: 0.98, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}

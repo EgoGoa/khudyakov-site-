@@ -242,11 +242,10 @@ export default function TeamPulse({
             exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.97, filter: "blur(8px)", transition: { duration: 0.22 } }}
             transition={SPRING}
           >
+            {/* Клик по карточке — удобство для мыши; для клавиатуры и читалок
+                действие одно — кнопка «Пообщаться» внутри, без кнопки в кнопке. */}
             <div
-              role="button"
-              tabIndex={0}
               onClick={reveal}
-              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && reveal()}
               className="team-pulse-note flex w-full cursor-pointer items-center gap-3 rounded-[22px] px-3.5 py-3 text-left sm:gap-3.5"
             >
               <span className={`team-pulse-avatar relative h-10 w-10 shrink-0 rounded-full ${seen ? "" : "is-pulsing"}`}>
@@ -281,6 +280,7 @@ export default function TeamPulse({
                   e.stopPropagation();
                   openWindow();
                 }}
+                aria-label={`Пообщаться: ${member.name}`}
                 className="team-pulse-cta shrink-0"
               >
                 <u className={compact ? "hidden" : "hidden sm:inline"}>Пообщаться</u>

@@ -55,7 +55,7 @@ export default function SeoAccordion({
                 type="button"
                 onClick={() => setOpenIndex(isOpen ? null : i)}
                 aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-4 py-2 text-left [@media(max-height:860px)]:py-1.5"
+                className="flex w-full items-center justify-between gap-4 py-2 text-left [@media(max-height:860px)]:py-1.5 [@media(pointer:coarse)]:min-h-[44px]"
               >
                 <span className="flex items-baseline gap-2.5">
                   <span className="font-display text-[9px] text-glow/70">

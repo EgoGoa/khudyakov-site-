@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import SpotlightScene from "@/components/home/ai/SpotlightScene";
 import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
 import { directionDeep } from "@/components/home/ai/spotlightDirections";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
+import { useDialogFocus } from "@/lib/use-dialog-focus";
 
 // Расширенное окно услуги на странице направления: то же окошко, что на
 // /content, только шире и глубже — 6 сцен вместо 4, автосмена, кнопка «в
@@ -40,16 +42,15 @@ export default function ServiceDeepDive({ slug }: { slug: string }) {
     return () => window.clearInterval(id);
   }, [open, held, reduced, steps]);
 
+  useBodyScrollLock(open);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open && mounted, dialogRef);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     window.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [open, close]);
 
   if (!data) return null;
@@ -80,7 +81,9 @@ export default function ServiceDeepDive({ slug }: { slug: string }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: reduced ? 0 : 0.35 }}
-                className="fixed inset-0 z-[120] flex items-end justify-center bg-ink/80 backdrop-blur-md sm:items-center sm:p-6"
+                ref={dialogRef}
+                tabIndex={-1}
+                className="fixed inset-0 z-[120] flex items-end justify-center bg-ink/80 outline-none backdrop-blur-md sm:items-center sm:p-6"
                 onClick={close}
                 role="dialog"
                 aria-modal="true"

@@ -60,6 +60,11 @@ const config: Config = {
           DEFAULT: "#FF6A3D",
           bright: "#FF8A5C",
         },
+        // Розовый режима Vibe — тот же rgb(236,72,153), что в свечении окон и рейки.
+        vibe: {
+          DEFAULT: "#EC4899",
+          pale: "#F4A8CD",
+        },
       },
       fontFamily: {
         sans: ["var(--font-montserrat)", "system-ui", "sans-serif"],
