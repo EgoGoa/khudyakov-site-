@@ -7589,10 +7589,9 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
   bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 .voice-sphere { cursor: pointer; -webkit-tap-highlight-color: transparent; }
-/* В покое волна полупрозрачная, при наведении/касании и в разговоре —
-   проявляется целиком. Без подсветки вокруг: только сами линии. */
+/* Волна всегда яркая, как при наведении (Егор). Без подсветки вокруг. */
 .voice-sphere-core {
-  opacity: 0.45;
+  opacity: 1;
   transition: opacity 0.45s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .voice-sphere:hover .voice-sphere-core,

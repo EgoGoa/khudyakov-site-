@@ -137,13 +137,9 @@ export default function NanoWave({
     document.documentElement.addEventListener("pointerleave", onOut);
 
     let energy = 1;
-    let hover = false;
+    // Всегда яркая, как при наведении (Егор) — наведение больше не нужно.
+    const hover = true;
     let seenPulse = pulseRef.current;
-    const excite = () => (hover = true);
-    const calm = () => (hover = false);
-    const host = wrap.closest("button") ?? wrap;
-    host.addEventListener("pointerenter", excite);
-    host.addEventListener("pointerleave", calm);
 
     const draw = (t: number) => {
       // Покой — тихое дыхание; наведение — чуть живее; разговор — в полную силу.
@@ -281,8 +277,6 @@ export default function NanoWave({
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onMove);
       document.documentElement.removeEventListener("pointerleave", onOut);
-      host.removeEventListener("pointerenter", excite);
-      host.removeEventListener("pointerleave", calm);
     };
   }, [width, height, from, to, padX, padY, dust]);
 
