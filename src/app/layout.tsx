@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Unbounded, Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
+import PageBarSpacer from "@/components/layout/PageBarSpacer";
 import SoundSystem from "@/components/layout/SoundSystem";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
@@ -119,7 +120,10 @@ export default function RootLayout({
                   button never did either. */}
               <div className="relative z-10">
                 <Header />
-                <main>{children}</main>
+                <main>
+                  <PageBarSpacer />
+                  {children}
+                </main>
                 <ConditionalFooter />
               </div>
               <VibeRail />

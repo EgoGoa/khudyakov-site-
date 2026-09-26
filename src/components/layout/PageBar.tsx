@@ -72,6 +72,26 @@ const SPACING = 100;
 const UNDERGLOW_MASK =
   "linear-gradient(to bottom, #000 0 2px, rgba(0,0,0,0.75) 2px, transparent 100%), linear-gradient(90deg, transparent, rgba(0,0,0,0.35) 20%, #000 50%, rgba(0,0,0,0.35) 80%, transparent)";
 
+// Какой услуге принадлежит адрес. Подстраницы — своей услуге (кейсы и
+// тарифы SMM → SMM, направления контента и портфолио → контент, брифы — по
+// своему направлению); общие страницы — никакой (-1). Просьба Егора: бар и
+// листание на всех страницах и подстраницах.
+const HOME_PREFIXES: [string, ServiceKey][] = [
+  ["/content", "content"],
+  ["/works", "content"],
+  ["/brief/hotel-video", "content"],
+  ["/ai", "ai"],
+  ["/brief/ai", "ai"],
+  ["/sites", "sites"],
+  ["/brief/sites", "sites"],
+  ["/smm", "smm"],
+  ["/brief/smm", "smm"],
+];
+function homeOf(path: string) {
+  const hit = HOME_PREFIXES.find(([p]) => path === p || path.startsWith(`${p}/`));
+  return hit ? serviceOrder.indexOf(hit[1]) : -1;
+}
+
 const COUNT = serviceOrder.length;
 // Пауза перед переходом на выбранную страницу.
 const NAV_DELAY_MS = 280;
@@ -80,17 +100,31 @@ const NAV_DELAY_MS = 280;
 export default function PageBar({ hidden = false }: { hidden?: boolean }) {
   const pathname = useCleanPathname();
   const router = useRouter();
-  const current = serviceOrder.findIndex((k) => `/${serviceMeta[k].slug}` === pathname);
+  // Чья это страница: у главных четырёх и их подстраниц — своя услуга, у
+  // общих (бонус, калькулятор, кабинет…) — ничья (-1).
+  const home = homeOf(pathname);
+  const onTop = home >= 0 && pathname === `/${serviceMeta[serviceOrder[home]].slug}`;
 
   // `active` считается без свёртки по модулю — см. fanSlots.
-  const [active, setActive] = useState(Math.max(current, 0));
-  const step = useCallback((delta: number) => setActive((prev) => prev + delta), []);
+  const [active, setActive] = useState(Math.max(home, 0));
+  // Жест руки. На общих странице бар сам никуда не ведёт, пока его не
+  // пролистнули, — `touched` отличает жест от первоначальной расстановки.
+  const touched = useRef(false);
+  const step = useCallback((delta: number) => {
+    touched.current = true;
+    setActive((prev) => prev + delta);
+  }, []);
   const goTo = useCallback(
     (target: number) => setActive((prev) => prev + wrapOffset(target - modIndex(prev, COUNT), COUNT)),
     [],
   );
 
-  const { drag, dragging, bind } = useDeckDrag({ count: COUNT, spacing: SPACING, onSettle: step });
+  // Один жест — одна страница. У колод на страницах инерция броска доносит
+  // на несколько карточек, но страниц всего четыре: бросок на три вперёд по
+  // кругу — это шаг назад, и тянул вправо, а попадал влево (Егор: «не
+  // листается как карусель»).
+  const settleOne = useCallback((delta: number) => step(Math.sign(delta)), [step]);
+  const { drag, dragging, bind } = useDeckDrag({ count: COUNT, spacing: SPACING, onSettle: settleOne });
   const { lag, moving } = useDeckSpring(active, drag, dragging);
   const live = dragging || moving;
 
@@ -99,23 +133,23 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
   const pushed = useRef<number | null>(null);
 
   useEffect(() => {
-    if (current < 0) return;
-    if (pushed.current === current) {
+    if (home < 0) return;
+    if (pushed.current === home) {
       pushed.current = null;
       return;
     }
-    goTo(current);
-  }, [current, goTo]);
+    goTo(home);
+  }, [home, goTo]);
 
   const chosen = modIndex(active, COUNT);
   useEffect(() => {
-    if (current < 0 || chosen === current || dragging) return;
+    if (chosen === home || dragging || (home < 0 && !touched.current)) return;
     const t = window.setTimeout(() => {
       pushed.current = chosen;
       router.push(`/${serviceMeta[serviceOrder[chosen]].slug}`);
     }, NAV_DELAY_MS);
     return () => window.clearTimeout(t);
-  }, [chosen, current, dragging, router]);
+  }, [chosen, home, dragging, router]);
 
   useEffect(() => {
     serviceOrder.forEach((k) => router.prefetch(`/${serviceMeta[k].slug}`));
@@ -155,12 +189,15 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
     step(e.key === "ArrowRight" ? 1 : -1);
   };
 
-  if (current < 0) return null;
+  if (pathname.startsWith("/admin")) return null;
 
   return (
+    // z-20: контейнер шапки (логотип, иконки) растянут на всю ширину и стоит
+    // выше (z-10) — без этого он перехватывал мышь, трекпад и палец, и бар
+    // нельзя было листать.
     <nav
       aria-label="Страницы услуг"
-      className={`pointer-events-auto relative flex h-14 w-full items-center justify-center transition-opacity duration-300 lg:absolute lg:left-1/2 lg:top-0 lg:h-20 lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
+      className={`pointer-events-auto relative z-20 flex h-14 w-full items-center justify-center transition-opacity duration-300 lg:absolute lg:left-1/2 lg:top-0 lg:h-20 lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
@@ -215,9 +252,19 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                 <button
                   type="button"
                   tabIndex={-1}
-                  aria-current={isFront ? "page" : undefined}
+                  aria-current={isFront && onTop ? "page" : undefined}
                   aria-label={serviceMeta[pageKey].label}
-                  onClick={() => (isFront ? window.scrollTo({ top: 0, behavior: "instant" }) : goTo(i))}
+                  onClick={() => {
+                    if (!isFront) {
+                      touched.current = true;
+                      goTo(i);
+                    } else if (onTop) {
+                      window.scrollTo({ top: 0, behavior: "instant" });
+                    } else {
+                      // С подстраницы или общей страницы — на главную этой услуги.
+                      router.push(`/${serviceMeta[pageKey].slug}`);
+                    }
+                  }}
                   className={`absolute inset-0 ${isFront ? "" : "cursor-pointer"}`}
                 >
                   <span
@@ -244,6 +291,8 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                           aria-hidden="true"
                           className="pointer-events-none absolute -inset-x-3 top-[calc(100%+3px)] h-[14px]"
                           style={{
+                            // На общих страницах ничего не «нажато».
+                            opacity: home >= 0 ? 1 : 0,
                             background: `linear-gradient(90deg, ${g.from}, ${g.to})`,
                             // Ярче и насыщеннее самих цветов страницы.
                             filter: "saturate(2) brightness(1.25)",

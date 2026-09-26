@@ -261,7 +261,7 @@ export default function Header() {
           <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] land:!text-[0.9rem] uppercase tracking-tight">
             HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
           </span>
-          <span className={`ml-1 hidden h-6 w-px shrink-0 bg-paper/25 land:!hidden ${isLanding ? "xl:block" : "sm:block"}`} aria-hidden="true" />
+          <span className={`ml-1 hidden h-6 w-px shrink-0 bg-paper/25 land:!hidden xl:block`} aria-hidden="true" />
           {/* The tagline now carries /sites' chapter-heading treatment: the
               display face, the near-white under a warm orange bloom
               (.chapter-neon-warm), and the keyword in the same
@@ -288,7 +288,7 @@ export default function Header() {
               against the wordmark on its own, from the parent Link's own
               `items-center`, instead of being a block whose two rows
               straddled the logo's centre. */}
-          <span className={`chapter-neon-warm hidden land:!hidden shrink-0 whitespace-nowrap text-center font-sans text-[0.65rem] font-light uppercase leading-none tracking-[0.12em] ${isLanding ? "xl:block" : "sm:block"}`}>
+          <span className={`chapter-neon-warm hidden land:!hidden shrink-0 whitespace-nowrap text-center font-sans text-[0.65rem] font-light uppercase leading-none tracking-[0.12em] xl:block`}>
             DIGITAL <span className="kw font-display font-normal">AI</span> CREATIVE
           </span>
         </Link>
@@ -296,10 +296,13 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-3 sm:gap-4">
           <a
             href="tel:+79925111812"
-            className={`hidden items-center gap-2 whitespace-nowrap text-sm font-medium text-paper/80 transition-colors hover:text-paper land:!hidden ${isLanding ? "sm:max-lg:inline-flex xl:inline-flex" : "sm:inline-flex"}`}
+            aria-label="Позвонить: +7 992 511-18-12"
+            title="+7 992 511-18-12"
+            // Только значок, без номера (просьба Егора): номер остаётся в
+            // aria-label и всплывает подсказкой при наведении.
+            className="hidden items-center text-paper/80 transition-colors hover:text-paper sm:inline-flex land:!hidden"
           >
             <PhoneIcon className="icon-neon-pulse text-glow" />
-            +7 992 511-18-12
           </a>
 
           {/* Личный кабинет: иконка с цифрой новых рекомендаций команды;
@@ -399,11 +402,12 @@ export default function Header() {
         </div>
       </Container>
 
-      {/* Бар страниц: на телефоне и планшете — второй строкой под логотипом,
+      {/* Бар страниц — на всех страницах (просьба Егора). На телефоне и
+          планшете — второй строкой под логотипом,
           на десктопе и у телефона боком — по центру шапки. Логотип и иконки
           на это время уходят по углам: подпись у логотипа и телефон
           показываются только там, где им хватает места рядом с баром. */}
-      {isLanding && <PageBar hidden={menuOpen} />}
+      <PageBar hidden={menuOpen} />
 
       {/* Mobile/tablet: a compact glass panel on the right — about 84% of a
           portrait phone (capped at 320px) and a third of a landscape one —

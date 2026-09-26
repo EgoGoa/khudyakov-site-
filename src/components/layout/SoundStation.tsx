@@ -83,30 +83,6 @@ const MOOD_GLYPH: Record<MoodId, ReactNode> = {
   ),
 };
 
-/** Пластинка вместо ноты: минималистичный диск с бороздками и бликом.
- *  Крутится, пока играет музыка, и замирает на месте на паузе. */
-function Vinyl({ spinning, size = 20 }: { spinning: boolean; size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      aria-hidden="true"
-      className="shrink-0 animate-spin"
-      style={{ animationDuration: "2.8s", animationPlayState: spinning ? "running" : "paused" }}
-    >
-      <circle cx="12" cy="12" r="9" strokeWidth="1.75" />
-      <circle cx="12" cy="12" r="6" strokeWidth="0.9" opacity="0.55" />
-      <circle cx="12" cy="12" r="2.2" strokeWidth="1.75" />
-      {/* блик — по нему и видно, что диск вращается */}
-      <path d="M12 4.6a7.4 7.4 0 0 1 6.4 3.7" strokeWidth="1.75" />
-    </svg>
-  );
-}
-
 /** Тонкий регулятор громкости: заливка градиентом до текущего значения. */
 function VolumeSlider({ value, className = "" }: { value: number; className?: string }) {
   return (
@@ -217,45 +193,38 @@ export default function SoundStation() {
 
   return (
     <div ref={wrapRef} className="relative flex items-center land:pointer-events-auto" data-sound="off">
-      {/* Звук сайта. На компьютере при наведении рядом выезжает громкость. */}
+      {/* Одна кнопка на звук и музыку (просьба Егора, 2026-09-26 — вместо
+          двух отдельных): динамик открывает весь проигрыватель, а в нём уже
+          музыка, настроения, громкость и звуки сайта. Пока играет музыка,
+          рядом бежит дорожка в такт. На компьютере при наведении выезжает
+          громкость. */}
       <div className="group/vol flex items-center">
-      <button
-        type="button"
-        onClick={() => sound()?.setSfx(!sfx)}
-        aria-label={sfx ? "Выключить звук сайта" : "Включить звук сайта"}
-        aria-pressed={sfx}
-        title={sfx ? "Звук сайта включён" : "Звук сайта выключен"}
-        className={`relative flex h-10 w-10 shrink-0 items-center justify-center transition-colors duration-200 sm:h-11 sm:w-11 ${
-          sfx ? "text-paper/80 hover:text-paper" : "text-paper/45 hover:text-paper/80"
-        }`}
-      >
-        <Glyph>
-          <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" />
-          {sfx ? (
-            <path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11" />
-          ) : (
-            <path d="M16 9.5l5 5M21 9.5l-5 5" />
-          )}
-        </Glyph>
-      </button>
-      <div className="hidden w-0 overflow-hidden opacity-0 transition-[width,opacity] duration-300 ease-out group-hover/vol:w-[76px] group-hover/vol:opacity-100 group-focus-within/vol:w-[76px] group-focus-within/vol:opacity-100 lg:flex">
-        <VolumeSlider value={volume} className="mx-1 w-[68px]" />
+        <button
+          type="button"
+          onClick={toggleOpen}
+          aria-label="Звук и музыка сайта"
+          aria-expanded={open}
+          title={sfx || playing ? "Звук и музыка" : "Звук выключен"}
+          className={`relative flex h-10 shrink-0 items-center justify-center gap-2 rounded-full transition-[color,padding] duration-300 sm:h-11 ${
+            playing
+              ? "px-2.5 text-glow"
+              : `w-10 sm:w-11 ${sfx ? "text-paper/80 hover:text-paper" : "text-paper/45 hover:text-paper/80"}`
+          }`}
+        >
+          <Glyph>
+            <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" />
+            {sfx || playing ? (
+              <path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11" />
+            ) : (
+              <path d="M16 9.5l5 5M21 9.5l-5 5" />
+            )}
+          </Glyph>
+          {playing && <Waveform playing={playing} />}
+        </button>
+        <div className="hidden w-0 overflow-hidden opacity-0 transition-[width,opacity] duration-300 ease-out group-hover/vol:w-[76px] group-hover/vol:opacity-100 group-focus-within/vol:w-[76px] group-focus-within/vol:opacity-100 lg:flex">
+          <VolumeSlider value={volume} className="mx-1 w-[68px]" />
+        </div>
       </div>
-      </div>
-
-      {/* Музыка */}
-      <button
-        type="button"
-        onClick={toggleOpen}
-        aria-label="Музыка сайта"
-        aria-expanded={open}
-        className={`relative flex h-10 shrink-0 items-center justify-center gap-2 rounded-full transition-[color,padding,background-color] duration-300 sm:h-11 ${
-          playing ? "px-2.5 text-glow" : "w-10 text-paper/80 hover:text-paper sm:w-11"
-        }`}
-      >
-        <Vinyl spinning={playing} />
-        {playing && <Waveform playing={playing} />}
-      </button>
 
       <AnimatePresence>
         {open && (
