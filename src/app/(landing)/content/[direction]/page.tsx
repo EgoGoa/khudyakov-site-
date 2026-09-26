@@ -8,6 +8,7 @@ import { contentDirections } from "@/lib/service-content";
 import DirectionFullPage from "@/components/home/direction/DirectionPage";
 import { directionPages } from "@/components/home/direction/registry";
 import FormatSideNav from "@/components/home/direction/FormatSideNav";
+import { assertRingCovers } from "@/components/home/direction/siblings";
 
 // Superficial on purpose — one screen of real copy per direction (pitch +
 // what's included) rather than the full ruvision-style case-study/pricing/
@@ -20,7 +21,9 @@ import FormatSideNav from "@/components/home/direction/FormatSideNav";
 // each gets its own content.
 
 export function generateStaticParams() {
-  return contentDirections.map((d) => ({ direction: d.slug }));
+  const slugs = contentDirections.map((d) => d.slug);
+  assertRingCovers("content", slugs);
+  return slugs.map((direction) => ({ direction }));
 }
 
 export async function generateMetadata({

@@ -4,6 +4,7 @@ import DirectionFullPage from "@/components/home/direction/DirectionPage";
 import CompactToolPage from "@/components/home/direction/CompactToolPage";
 import { aiToolPages, aiCompactToolPages, aiToolMeta } from "@/components/home/direction/toolRegistry";
 import FormatSideNav from "@/components/home/direction/FormatSideNav";
+import { assertRingCovers } from "@/components/home/direction/siblings";
 
 // Страница одного AI-инструмента — /ai/agent и ещё девять.
 //
@@ -18,7 +19,9 @@ import FormatSideNav from "@/components/home/direction/FormatSideNav";
 // каком из них есть slug, и рендерит соответствующий — DirectionPage
 // (12 экранов, полный шаблон) или CompactToolPage (7 экранов, слитые блоки).
 export function generateStaticParams() {
-  return [...Object.keys(aiToolPages), ...Object.keys(aiCompactToolPages)].map((tool) => ({ tool }));
+  const slugs = [...Object.keys(aiToolPages), ...Object.keys(aiCompactToolPages)];
+  assertRingCovers("ai", slugs, Object.keys(aiToolMeta));
+  return slugs.map((tool) => ({ tool }));
 }
 
 export async function generateMetadata({

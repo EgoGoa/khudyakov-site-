@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import CompactToolPage from "@/components/home/direction/CompactToolPage";
 import { smmFormatPages, smmFormatMeta } from "@/components/home/direction/smmFormatRegistry";
 import FormatSideNav from "@/components/home/direction/FormatSideNav";
+import { assertRingCovers } from "@/components/home/direction/siblings";
 
 // Страница одного формата SMM — /smm/reels и (со временем) ещё четыре:
 // stories, carousel, ads, bloggers — те же пять карточек, что в карусели
@@ -14,7 +15,9 @@ import FormatSideNav from "@/components/home/direction/FormatSideNav";
 // наследия нет — все форматы сразу идут на компактном шаблоне
 // (CompactToolPage), с фиолетовым акцентом страницы через `headingClass`.
 export function generateStaticParams() {
-  return Object.keys(smmFormatPages).map((format) => ({ format }));
+  const slugs = Object.keys(smmFormatPages);
+  assertRingCovers("smm", slugs, Object.keys(smmFormatMeta));
+  return slugs.map((format) => ({ format }));
 }
 
 export async function generateMetadata({

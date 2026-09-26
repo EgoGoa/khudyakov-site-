@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import CompactToolPage from "@/components/home/direction/CompactToolPage";
 import { sitesFormatPages, sitesFormatMeta } from "@/components/home/direction/sitesFormatRegistry";
 import FormatSideNav from "@/components/home/direction/FormatSideNav";
+import { assertRingCovers } from "@/components/home/direction/siblings";
 
 // Страница одного формата /sites — /sites/landing и ещё четыре: card,
 // turnkey, assistant, redesign. Те же пять карточек, что в карусели
@@ -16,7 +17,9 @@ import FormatSideNav from "@/components/home/direction/FormatSideNav";
 // переопределяющий класс — передать сюда дефолт CompactToolPage
 // (.ai-cool-headings) перекрасил бы их в эмеральд /ai.
 export function generateStaticParams() {
-  return Object.keys(sitesFormatPages).map((format) => ({ format }));
+  const slugs = Object.keys(sitesFormatPages);
+  assertRingCovers("sites", slugs, Object.keys(sitesFormatMeta));
+  return slugs.map((format) => ({ format }));
 }
 
 export async function generateMetadata({

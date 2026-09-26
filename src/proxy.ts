@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { ADMIN_COOKIE, sessionToken } from "@/lib/adminAuth";
+import { ADMIN_COOKIE, verifySessionToken } from "@/lib/adminAuth";
 
 const OPEN_PATHS = ["/admin/login", "/admin/setup"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (OPEN_PATHS.some((p) => pathname.startsWith(p))) {
@@ -18,8 +18,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.rewrite(new URL("/admin/setup", req.url));
   }
 
-  const expected = await sessionToken(password);
-  if (req.cookies.get(ADMIN_COOKIE)?.value === expected) {
+  if (await verifySessionToken(password, req.cookies.get(ADMIN_COOKIE)?.value)) {
     return NextResponse.next();
   }
 

@@ -39,7 +39,11 @@ export default async function AdminLoginPage({
           </label>
 
           {error && (
-            <p className="text-sm text-rec">Неверный пароль — попробуйте ещё раз.</p>
+            <p className="text-sm text-rec">
+              {error === "locked"
+                ? "Слишком много попыток — подождите 15 минут."
+                : "Неверный пароль — попробуйте ещё раз."}
+            </p>
           )}
 
           <button

@@ -15,7 +15,7 @@ rsync -a --delete \
 [ -d "$DST/node_modules" ] || cp -cR "$SRC/node_modules" "$DST/node_modules"
 
 cd "$DST"
-rm -rf src/app/api src/app/admin src/middleware.ts
+rm -rf src/app/api src/app/admin src/middleware.ts src/proxy.ts
 
 cat > next.config.mjs <<'CFG'
 /** @type {import('next').NextConfig} */

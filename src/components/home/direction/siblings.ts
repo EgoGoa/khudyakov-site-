@@ -77,3 +77,20 @@ export function siblingsOf(
 export function ringOf(section: string): Sibling[] {
   return RINGS[section] ? [...RINGS[section]] : [];
 }
+
+/** Build-time guard, called from each [param] route's generateStaticParams:
+ *  every page that builds must sit in its section's ring (arrows, menus), and
+ *  the ring must not point at pages that don't exist. Fails the build with the
+ *  exact slugs instead of shipping a page no menu links to. */
+export function assertRingCovers(section: string, slugs: string[], metaKeys?: string[]) {
+  const ring = (RINGS[section] ?? []).map((s) => s.href.split("/").pop() ?? "");
+  const missing = slugs.filter((s) => !ring.includes(s));
+  const extra = ring.filter((s) => !slugs.includes(s));
+  const noMeta = metaKeys ? slugs.filter((s) => !metaKeys.includes(s)) : [];
+  if (missing.length || extra.length || noMeta.length) {
+    throw new Error(
+      `[${section}] ссылки и страницы разошлись — нет в меню/стрелках: ${missing.join(", ") || "—"}; ` +
+        `в меню, но страницы нет: ${extra.join(", ") || "—"}; нет title/description: ${noMeta.join(", ") || "—"}`
+    );
+  }
+}
