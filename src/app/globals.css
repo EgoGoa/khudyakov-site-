@@ -6716,3 +6716,160 @@ html[data-lite] [data-site-header].header-glass {
   backdrop-filter: blur(24px) saturate(1.7) brightness(1.04) !important;
 }
 
+
+/* ── Меню-шторка шапки (Header, вариант A) ─────────────────────────────────
+   Стиль шапки: Unbounded капсом, белый текст, цвет страницы — только в
+   свете у активного пункта (как в баре страниц) и в кнопке. Цвета берутся
+   из --g-from/--g-to, их ставит шторка по услуге текущей страницы. */
+.menu-kicker {
+  margin-bottom: 0.75rem;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--g-from), var(--g-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 0;
+  color: var(--color-paper, #f5f5f2);
+  transition: opacity 0.2s ease;
+}
+.menu-item:hover { opacity: 0.8; }
+.menu-item svg { flex-shrink: 0; }
+.menu-item.is-active svg { color: var(--g-to); }
+.menu-label {
+  position: relative;
+  font-size: 15px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+.menu-item.is-active .menu-label::before,
+.menu-item.is-active .menu-label::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  top: calc(100% + 5px);
+  background: linear-gradient(90deg, var(--g-from), var(--g-to));
+  pointer-events: none;
+}
+.menu-item.is-active .menu-label::before {
+  height: 1.5px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+}
+.menu-item.is-active .menu-label::after {
+  height: 14px;
+  opacity: 0.7;
+  -webkit-mask-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.35) 35%, transparent),
+    linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.55) 24%, #000 50%, rgba(0, 0, 0, 0.55) 76%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.35) 35%, transparent),
+    linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.55) 24%, #000 50%, rgba(0, 0, 0, 0.55) 76%, transparent);
+  mask-composite: intersect;
+}
+.menu-cta {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.8rem 1.35rem;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(90deg, var(--g-from), var(--g-to));
+  box-shadow: 0 10px 30px -10px var(--g-from);
+  transition: filter 0.2s ease;
+}
+.menu-cta:hover { filter: brightness(1.1); }
+.menu-round {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+.menu-round:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* ── Вайб-панель, вариант C: парящие стеклянные кнопки (VibeRail) ──────────
+   Каждая кнопка — своё матовое стекло, как шапка; общей подложки нет.
+   Активная (раздел на экране) — крупнее, со светящимся кольцом в градиенте
+   страницы (--g-from/--g-to ставит панель). Подпись всплывает стеклянной
+   таблеткой слева при наведении. */
+.vibe-bubble {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  color: var(--color-paper, #f5f5f2);
+  /* Прозрачнее шапки (Егор: «меньше, ближе к краю, прозрачнее»). */
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)), rgba(14, 14, 20, 0.18);
+  backdrop-filter: blur(18px) saturate(1.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 22px -12px rgba(0, 0, 0, 0.7);
+  transition: width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+.vibe-bubble svg { width: 13px; height: 13px; }
+.vibe-bubble:hover { transform: scale(1.08); }
+.vibe-bubble.is-active {
+  width: 34px;
+  height: 34px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px color-mix(in srgb, var(--g-to) 55%, transparent),
+    0 8px 26px -6px color-mix(in srgb, var(--g-from) 65%, transparent);
+}
+.vibe-bubble.is-active svg { width: 15px; height: 15px; }
+.vibe-bubble--crown {
+  width: 44px;
+  height: 44px;
+  /* Сердце меню светится прямо на фоне страницы — без стеклянного кружка. */
+  background: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.vibe-bubble--crown:hover { transform: scale(1.05); }
+.vibe-tip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translate(4px, -50%);
+  white-space: nowrap;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)), rgba(14, 14, 20, 0.55);
+  backdrop-filter: blur(18px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.vibe-bubble:hover .vibe-tip,
+.vibe-bubble:focus-visible .vibe-tip {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+/* Стекло кнопок и в облегчённом режиме — как у шапки: их немного, а без
+   размытия они читаются просто тёмными кружками. */
+html[data-lite] .vibe-bubble:not(.vibe-bubble--crown),
+html[data-lite] .vibe-tip {
+  backdrop-filter: blur(18px) saturate(1.6) !important;
+}
+

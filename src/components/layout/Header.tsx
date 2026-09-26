@@ -7,10 +7,13 @@ import LiveBrandWord from "@/components/layout/LiveBrandWord";
 import SoundStation from "@/components/layout/SoundStation";
 import PageBar from "@/components/layout/PageBar";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
-import { CloseIcon, MenuIcon, PhoneIcon } from "@/components/ui/Icons";
+import { CloseIcon, MenuIcon, PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
+import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
+import { homeOf } from "@/components/layout/PageBar";
+import { serviceOrder } from "@/lib/service-content";
 import { useFullpage } from "@/lib/fullpage";
 import { useHeaderMenu } from "@/lib/header-menu";
 import { useCinematicGoTo } from "@/lib/cinematic-nav";
@@ -163,7 +166,20 @@ export default function Header() {
   const fullpageActive = isHome && (api?.ready ?? false);
   const [scrolled, setScrolled] = useState(false);
   const { menuOpen, setMenuOpen } = useHeaderMenu();
+  // Цвет света у активного пункта меню — градиент услуги этой страницы.
+  const accent = PAGE_GRADIENT[serviceOrder[Math.max(homeOf(pathname), 0)]];
   const [active, setActive] = useState<string>("");
+  // Высота шапки — шторка меню встаёт ровно под её нижний край. Меряется
+  // живьём: на телефоне бар страниц делает шапку выше, у телефона боком ниже.
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerH, setHeaderH] = useState(70);
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setHeaderH(el.getBoundingClientRect().height));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // On the homepage, navigation is a fullpage slide deck (see
   // src/lib/fullpage.tsx) — there is no real document scroll to watch, so
@@ -258,13 +274,32 @@ export default function Header() {
   };
 
   return (
+    <>
+      {/* Затемнение страницы под шапкой и шторкой; сама шапка поверх него
+          не тускнеет. Тап — закрыть меню. */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.button
+            key="scrim"
+            type="button"
+            aria-label="Закрыть меню"
+            onClick={() => setMenuOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-40 cursor-default bg-ink/40"
+          />
+        )}
+      </AnimatePresence>
     <header
+      ref={headerRef}
       data-site-header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 land:pointer-events-none land:!border-transparent land:!bg-transparent land:!backdrop-blur-none land:before:pointer-events-none land:before:absolute land:before:inset-x-0 land:before:top-0 land:before:h-16 land:before:content-[''] land:before:bg-[linear-gradient(to_bottom,rgba(11,11,16,0.78),rgba(11,11,16,0.6)_30%,rgba(11,11,16,0.28)_65%,rgba(11,11,16,0))] ${
-        menuOpen ? "bg-transparent" : "header-glass"
+        "header-glass"
       }`}
     >
-      <Container className="relative z-10 flex h-16 items-center justify-between sm:h-20 land:h-10">
+      <Container className="relative z-10 flex h-14 items-center justify-between sm:h-[70px] land:h-10">
         <Link
           href="/"
           onClick={navigateHome}
@@ -311,73 +346,6 @@ export default function Header() {
               {menuOpen ? <CloseIcon /> : <MenuIcon />}
             </motion.button>
 
-            {/* Desktop: a compact glass popover instead of the full-screen
-                takeover below — anchored right under the burger button, the
-                same corner it sits in. VibeRail (fixed right, vertically
-                centred) fades out for as long as this is open instead of the
-                two floating panels risking an overlap (see useHeaderMenu). */}
-            <AnimatePresence>
-              {menuOpen && (
-                <motion.div
-                  key="desktop-panel"
-                  initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                  transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute right-0 top-full z-10 mt-3 hidden w-72 origin-top-right overflow-hidden rounded-2xl bg-ink/80 shadow-[0_24px_60px_-16px_rgba(0,0,0,0.85)] backdrop-blur-2xl lg:block"
-                >
-                  <nav className="flex flex-col p-1.5">
-                    {sections.map((s) => (
-                      <Link
-                        key={s.id}
-                        href={hrefFor(s.id)}
-                        onClick={(e) => {
-                          navigateTo(e, s.id);
-                          setMenuOpen(false);
-                        }}
-                        className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                          active === s.id ? "bg-glow/10 text-glow" : "text-paper/85 hover:bg-paper/5 hover:text-paper"
-                        }`}
-                      >
-                        <NavGlyph>{s.glyph}</NavGlyph>
-                        {s.label}
-                      </Link>
-                    ))}
-                    <div className="my-1.5 border-t border-paper/10" />
-                    {pages.map((p) => (
-                      <Link
-                        key={p.href}
-                        href={p.href}
-                        onClick={() => setMenuOpen(false)}
-                        className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                          pathname === p.href ? "bg-glow/10 text-glow" : "text-paper/85 hover:bg-paper/5 hover:text-paper"
-                        }`}
-                      >
-                        <NavGlyph>{p.glyph}</NavGlyph>
-                        {p.label}
-                      </Link>
-                    ))}
-                  </nav>
-
-                  <div className="flex items-center justify-between gap-3 border-t border-paper/10 px-3.5 py-3">
-                    <a
-                      href="tel:+79925111812"
-                      className="flex items-center gap-1.5 text-xs font-medium text-paper/70 transition-colors hover:text-paper"
-                    >
-                      <PhoneIcon className="h-3.5 w-3.5" />
-                      +7 992 511-18-12
-                    </a>
-                    <Link
-                      href="/brief"
-                      onClick={() => setMenuOpen(false)}
-                      className="btn-neon btn-warm !px-4 !py-2 !text-[11px]"
-                    >
-                      Бриф
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
         </div>
       </Container>
@@ -387,94 +355,84 @@ export default function Header() {
           на десктопе и у телефона боком — по центру шапки. Логотип и иконки
           на это время уходят по углам: подпись у логотипа и телефон
           показываются только там, где им хватает места рядом с баром. */}
-      <PageBar hidden={menuOpen} />
+      <PageBar />
 
-      {/* Mobile/tablet: a compact glass panel on the right — about 84% of a
-          portrait phone (capped at 320px) and a third of a landscape one —
-          instead of a full-screen takeover. A scrim behind it closes the menu
-          on tap. */}
+    </header>
+      {/* Меню — шторка из-под шапки (вариант A, выбор Егора 2026-09-26).
+          Шапка при этом не меняется: шторка выезжает снизу из-под неё тем же
+          (живёт рядом с шапкой, а не внутри: у шапки свой backdrop-filter, и
+          вложенное стекло размывало бы только её саму, а не страницу)
+          матовым стеклом (.header-glass) и раскрывается сверху вниз
+          (clip-path), а не падает отдельной панелью. На компьютере — три
+          колонки: разделы страницы, страницы, связь; на телефоне — одна.
+          Шрифт и свет у активного пункта — как в баре страниц. */}
       <AnimatePresence>
         {menuOpen && (
-          <>
-            <motion.button
-              key="scrim"
-              type="button"
-              aria-label="Закрыть меню"
-              onClick={() => setMenuOpen(false)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="pointer-events-auto fixed inset-0 z-0 cursor-default bg-ink/45 lg:hidden"
-            />
-            <motion.div
-              key="panel"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-auto fixed inset-y-0 right-0 z-0 flex w-[min(84vw,320px)] flex-col rounded-l-3xl bg-ink/85 shadow-[-24px_0_60px_-20px_rgba(0,0,0,0.85)] backdrop-blur-2xl lg:hidden land:w-[max(33vw,300px)] land:pr-[env(safe-area-inset-right)]"
-            >
-              <nav className="flex flex-1 flex-col justify-center gap-0 overflow-y-auto px-5 pt-16 land:pt-12">
-                {sections.map((s, i) => (
-                  <Link
-                    key={s.id}
-                    href={hrefFor(s.id)}
-                    onClick={(e) => {
-                      navigateTo(e, s.id);
-                      setMenuOpen(false);
-                    }}
-                    className={`group flex items-baseline gap-3 border-b border-paper/10 py-2.5 transition-all duration-150 active:translate-x-1 land:py-1.5 ${
-                      active === s.id ? "text-glow" : "text-paper hover:text-glow"
-                    }`}
-                  >
-                    <span className="w-5 shrink-0 font-display text-[0.6rem] text-paper/40 group-hover:text-glow/60">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="font-display text-[1.05rem] uppercase leading-none tracking-tight">
-                      {s.label}
-                    </span>
-                  </Link>
-                ))}
-
-                {pages.map((p, i) => (
+          <motion.nav
+            key="drawer"
+            aria-label="Меню"
+            initial={{ clipPath: "inset(0 0 100% 0 round 0 0 28px 28px)", opacity: 0.6 }}
+            animate={{ clipPath: "inset(0 0 0% 0 round 0 0 28px 28px)", opacity: 1 }}
+            exit={{ clipPath: "inset(0 0 100% 0 round 0 0 28px 28px)", opacity: 0.6 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="header-glass fixed inset-x-0 z-[49] overflow-y-auto rounded-b-[28px]"
+            style={{ top: headerH, maxHeight: `calc(100dvh - ${headerH}px - 1rem)`, "--g-from": accent.from, "--g-to": accent.to } as React.CSSProperties}
+          >
+            <Container className="grid gap-8 py-7 sm:py-8 lg:grid-cols-[1.25fr_1fr_1fr] lg:gap-14">
+              <div>
+                <p className="menu-kicker font-display">На этой странице</p>
+                <div className="grid sm:grid-cols-2 sm:gap-x-8">
+                  {sections.map((s) => (
+                    <Link
+                      key={s.id}
+                      href={hrefFor(s.id)}
+                      onClick={(e) => {
+                        navigateTo(e, s.id);
+                        setMenuOpen(false);
+                      }}
+                      className={`menu-item ${active === s.id ? "is-active" : ""}`}
+                    >
+                      <NavGlyph>{s.glyph}</NavGlyph>
+                      <span className="menu-label font-display">{s.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="menu-kicker font-display">Страницы</p>
+                {pages.map((p) => (
                   <Link
                     key={p.href}
                     href={p.href}
                     onClick={() => setMenuOpen(false)}
-                    className={`group flex items-baseline gap-3 border-b border-paper/10 py-2.5 transition-all duration-150 active:translate-x-1 land:py-1.5 ${
-                      pathname === p.href ? "text-glow" : "text-paper hover:text-glow"
-                    }`}
+                    className={`menu-item ${pathname === p.href ? "is-active" : ""}`}
                   >
-                    <span className="w-5 shrink-0 font-display text-[0.6rem] text-paper/40 group-hover:text-glow/60">
-                      {String(sections.length + i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="font-display text-[1.05rem] uppercase leading-none tracking-tight">
-                      {p.label}
-                    </span>
+                    <NavGlyph>{p.glyph}</NavGlyph>
+                    <span className="menu-label font-display">{p.label}</span>
                   </Link>
                 ))}
-              </nav>
-
-              <div className="flex flex-col gap-2.5 px-5 pb-6 pt-3 land:pb-3">
-                <a
-                  href="tel:+79925111812"
-                  className="text-center text-xs font-medium text-paper/70 transition-colors hover:text-paper"
-                >
-                  +7 992 511-18-12
-                </a>
-                <Link
-                  href="/brief"
-                  onClick={() => setMenuOpen(false)}
-                  className="btn-neon btn-warm w-full !py-2.5 !text-[11px]"
-                >
-                  Заполнить бриф
-                </Link>
               </div>
-            </motion.div>
-          </>
+              <div>
+                <p className="menu-kicker font-display">Связаться</p>
+                <p className="text-sm leading-relaxed text-paper">
+                  Расскажите задачу — ответим в течение 15 минут и предложим 2–3 решения.
+                </p>
+                <div className="mt-5 flex items-center gap-2.5">
+                  <Link href="/brief" onClick={() => setMenuOpen(false)} className="menu-cta font-display">
+                    Пообщаться →
+                  </Link>
+                  <a href="https://t.me/hdkv" target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram" className="menu-round">
+                    <TelegramIcon className="h-[18px] w-[18px]" />
+                  </a>
+                  <a href="https://wa.me/79925111812" target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp" className="menu-round">
+                    <WhatsAppIcon className="h-[18px] w-[18px]" />
+                  </a>
+                </div>
+              </div>
+            </Container>
+          </motion.nav>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }

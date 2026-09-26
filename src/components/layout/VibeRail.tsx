@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { AnimatePresence, motion } from "framer-motion";
@@ -9,7 +9,10 @@ import { useHeaderMenu } from "@/lib/header-menu";
 import { useCinematicGoTo } from "@/lib/cinematic-nav";
 import WelcomeWidget from "@/components/home/WelcomeWidget";
 import CenterModal from "@/components/ui/CenterModal";
-import VibeOrb from "@/components/ui/VibeOrb";
+import NanoSphere from "@/components/ui/NanoSphere";
+import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
+import { homeOf } from "@/components/layout/PageBar";
+import { serviceOrder } from "@/lib/service-content";
 
 // Standalone routes where the whole page *is* one rail item — no in-page
 // anchor to scroll-spy, the URL alone decides it.
@@ -140,13 +143,6 @@ const RAIL_LABEL_HOVER =
   "group-hover:[text-shadow:0_0_1px_rgba(255,255,255,1),0_0_3px_rgba(255,255,255,0.95),0_0_7px_rgba(255,255,255,0.7)]";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const VIBE_RAIL_WIDTH = 48; // px — collapsed, icon-only width
-// One duration for the whole expand/collapse state change — clipPath,
-// scale, opacity and the backdrop's background all read it, so the rail
-// arrives as one motion instead of several properties settling at
-// different times (see the note on the outer motion.div below).
-const RAIL_DUR = 0.32;
-
 type RailItem = {
   id: string;
   label: string;
@@ -750,94 +746,6 @@ function VibeModeWindow({ item, onClose }: { item: RailItem; onClose: () => void
   );
 }
 
-function RailRow({
-  glyph,
-  label,
-  expanded,
-  active = false,
-  className = "",
-  onClick,
-}: {
-  glyph: ReactNode;
-  label: string;
-  expanded: boolean;
-  /** Extra classes on the row's button — used to mark the vibe row as the
-   *  orb's hover trigger, so the whole row lights it, not just the sphere. */
-  className?: string;
-  /** This row's section is the one currently on screen — its icon scales up
-   *  and lights up white-neon in place. Each row's icon animates on its own
-   *  (a plain CSS transition keyed off this flag), not a glow sliding
-   *  between rows — the previous shared-layoutId version visibly hopped
-   *  from one icon to the next, which read as a stray moving blob rather
-   *  than "this section is now active". */
-  active?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={expanded ? undefined : label}
-      aria-label={label}
-      aria-current={active ? "true" : undefined}
-      // flex-row-reverse + justify-start (reversed, so visually flush right)
-      // is what keeps the icon pinned to a constant distance from the page's
-      // right edge no matter how wide the row grows — the label just grows
-      // in to its left. Anchoring the icon to the row's *left* instead was
-      // what made it visibly drift sideways as the panel widened.
-      // The rest-state dimming that used to live on the whole rail sits here
-      // now, per row, so the active row can stay at full brightness while
-      // the rail is collapsed and unhovered — see the note on the shell's
-      // own `opacity` for why it could not stay up there.
-      className={`group flex w-full flex-row-reverse items-center justify-start gap-2 rounded-xl py-2 pl-2.5 pr-3 text-right text-white transition-[background-color,opacity] duration-300 hover:bg-paper/[0.08] ${
-        expanded || active ? "opacity-100" : "opacity-40"
-      } ${className}`}
-    >
-      {/* Scales up and glows white-neon on its own — no shared element, no
-          sliding — the moment its section becomes the active one. This is
-          the scroll-spy cue: with the rail collapsed and untouched, the icon
-          of the chapter currently on screen is the one thing in the column
-          at full strength. */}
-      <span
-        className={`flex h-5 w-5 shrink-0 items-center justify-center transition-transform duration-300 ease-out [&_svg]:h-[18px] [&_svg]:w-[18px] [&_svg]:transition-[filter,stroke-width] [&_svg]:duration-300 [&_svg]:ease-out ${
-          active ? "scale-[1.35] [&_svg]:stroke-[2.35]" : ""
-        }`}
-        style={
-          active
-            ? {
-                // Three stacked shadows rather than two: a tight white core,
-                // a mid bloom and a wide halo, so the active glyph reads as
-                // genuinely lit rather than merely outlined. It can finally
-                // show at its real strength now that no parent opacity is
-                // scaling it down.
-                filter:
-                  "drop-shadow(0 0 3px rgba(255,255,255,1)) drop-shadow(0 0 9px rgba(255,255,255,0.9)) drop-shadow(0 0 22px rgba(255,255,255,0.6))",
-              }
-            : undefined
-        }
-      >
-        {glyph}
-      </span>
-      <span
-        // Opacity only — no width/max-width transition of its own. The
-        // label used to animate its own max-width *at the same time* as the
-        // rail's outer width, and the two animations (different easing,
-        // different duration) fell out of step: the box clipped the text at
-        // whatever width it happened to be mid-transition, which read as
-        // the label flickering and getting cut in half. The rail's own
-        // overflow-hidden already does 100% of the reveal/hide work as it
-        // widens, so the label only needs to fade in once there's visibly
-        // room for it — never clip itself again.
-        className={`${RAIL_LABEL_CLASS} ${RAIL_LABEL_HOVER} ${
-          expanded ? "opacity-100 duration-200 delay-200" : "opacity-0 duration-100"
-        }`}
-      >
-        {label}
-      </span>
-    </button>
-  );
-}
-
 /** One row of the mobile sheet. Labels always show there (no hover state to
  *  reveal them), so it carries the same white/thin treatment plus the active
  *  glow rather than the desktop row's expand logic. */
@@ -882,7 +790,6 @@ function SheetRow({
 export default function VibeRail() {
   const { pageItems, crossPageItems, anchorIds } = useRailItems();
   const activeRailId = useActiveRailId(anchorIds);
-  const [expanded, setExpanded] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<RailItem | null>(null);
@@ -891,33 +798,14 @@ export default function VibeRail() {
   // is simpler and more robust than trying to keep two floating panels from
   // ever overlapping by careful positioning alone.
   const { menuOpen: headerMenuOpen } = useHeaderMenu();
+  // Цвет нано-сферы и света активной кнопки — градиент услуги этой страницы.
+  const railPath = useCleanPathname();
+  const accent = PAGE_GRADIENT[serviceOrder[Math.max(homeOf(railPath), 0)]];
 
   useBodyScrollLock(pickerOpen || sheetOpen || !!activeItem);
 
-  // A raw onMouseLeave={() => setExpanded(false)} collapses (and restarts
-  // the 0.32s expand/collapse transition, plus the backdrop's pulse loop)
-  // the instant the pointer so much as twitches across the strip's edge —
-  // natural hand tremor while reading a 9-row panel did this several times
-  // a second, which read as the whole rail "misfiring"/flickering rather
-  // than a steady hover state. Collapsing waits a beat so a hovering pointer
-  // that never actually left the rail's neighbourhood doesn't retrigger it;
-  // entering still expands instantly (no delay there — that's not what was
-  // stuttering, and delaying it too would feel laggy).
-  const collapseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cancelCollapse = () => {
-    if (collapseTimeout.current) clearTimeout(collapseTimeout.current);
-    collapseTimeout.current = null;
-  };
-  const scheduleCollapse = () => {
-    cancelCollapse();
-    collapseTimeout.current = setTimeout(() => setExpanded(false), 180);
-  };
-  useEffect(() => cancelCollapse, []);
-
   const openItem = (item: RailItem) => {
-    cancelCollapse();
     setSheetOpen(false);
-    setExpanded(false);
     setActiveItem(item);
   };
 
@@ -946,220 +834,44 @@ export default function VibeRail() {
           numeric-interpolated by Motion the same way boxShadow already is
           elsewhere in this file, on one shared duration with scale/opacity
           so the whole rail arrives together instead of in stages. */}
-      <motion.div
-        onMouseEnter={() => {
-          cancelCollapse();
-          setExpanded(true);
-        }}
-        onMouseLeave={scheduleCollapse}
-        onFocus={() => {
-          cancelCollapse();
-          setExpanded(true);
-        }}
-        onBlur={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget as Node)) scheduleCollapse();
-        }}
-        animate={{
-          // Steps out of the way (see the headerMenuOpen comment above)
-          // rather than trying to out-position the burger dropdown.
-          //
-          // Opacity here is now only ever 0 or 1 — the rest-state dimming it
-          // used to apply (0.4) moved down onto the individual rows and the
-          // backdrop. It had to: opacity on a parent multiplies through its
-          // entire subtree, so while the collapsed rail sat at 0.4 the
-          // active section's icon was capped at 40% brightness no matter how
-          // strong its own glow was — and scroll-spy without hover is
-          // exactly the state Egor wants that icon burning at full. Dimming
-          // per-row lets the active one stay at 1 while its neighbours rest.
-          opacity: headerMenuOpen ? 0 : 1,
-          scale: expanded ? 1 : 0.7,
-          // The vertical centring has to live here too, not in the className.
-          // Motion composes every transform value in this object into one
-          // `transform` that *replaces* whatever CSS set — the moment `scale`
-          // joined, the class's own `-translate-y-1/2` was dropped and the
-          // rail fell out of centre (and out from under the pointer, which is
-          // also why hover stopped registering). Keeping y here means one
-          // system owns the whole transform.
-          y: "-50%",
-          // Moved here from the decorative backdrop below, and this is the
-          // fix for "раскрывается слишком рано": this outer element is the
-          // one with onMouseEnter, and its own hit-test box used to be the
-          // full 226px shell at every state — the backdrop's clipPath only
-          // ever masked what got *painted*, not what could catch the
-          // pointer. So the collapsed rail was already listening across the
-          // whole 226px-wide strip, invisible bulk included, and firing
-          // `setExpanded(true)` the moment the cursor crossed into that
-          // empty space — well before it ever touched the visible pill.
-          // clip-path clips hit-testing along with paint (unlike width,
-          // it's not a layout property, so this doesn't reintroduce the
-          // reflow this component was rewritten to avoid — see the note
-          // above), so putting the same expression here makes the
-          // interactive area match the visible shape at every state: a
-          // narrow strip collapsed, the full panel once it actually opens.
-          clipPath: expanded
-            ? "inset(0px 0px 0px 0px round 26px)"
-            : `inset(0px 0px 0px ${226 - VIBE_RAIL_WIDTH}px round 999px)`,
-        }}
-        transition={{
-          opacity: { duration: RAIL_DUR, ease: EASE },
-          scale: { duration: RAIL_DUR, ease: EASE },
-          y: { duration: 0 },
-          clipPath: { duration: RAIL_DUR, ease: EASE },
-        }}
-        // origin-right so the rest-state shrink pulls the rail toward the
-        // screen edge it is parked against rather than floating it inward.
-        className={`fixed right-2 top-1/2 z-[65] hidden w-[226px] origin-right pb-2.5 pt-0.5 lg:block ${
-          headerMenuOpen ? "pointer-events-none" : ""
+      {/* Вариант C (Егор, 2026-09-26): парящие стеклянные кнопки вместо
+          раскрывающейся панели. Наверху — нано-сфера (открывает вайб-окно),
+          ниже — разделы страницы и общие страницы, каждая кнопка своим
+          матовым стеклом, как шапка. Раздел на экране — крупнее и в кольце
+          света цвета страницы; подпись всплывает при наведении. */}
+      <nav
+        aria-label="Vibe"
+        className={`fixed right-2 top-1/2 z-[65] hidden -translate-y-1/2 flex-col items-center gap-1.5 transition-opacity duration-300 lg:flex ${
+          headerMenuOpen ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
+        style={{ "--g-from": accent.from, "--g-to": accent.to } as CSSProperties}
       >
-        {/* The decorative backdrop — background, blur and glow, separated
-            from the content above it so content never has to reflow (see
-            the note above). The pill/panel SHAPE itself is no longer
-            clipped here: it lives on the outer wrapper's own `clipPath` now
-            (see that element's `animate`), because hit-testing needed to
-            follow the same shape as the paint — see the note there for why.
-            This element just fills whatever area the parent leaves clipped.
-            `pointer-events-none`: this layer is paint only, every click
-            still reaches the real buttons stacked on top of it. */}
-        <motion.div
-          aria-hidden="true"
-          animate={{
-            // The backdrop physically shrinks to the collapsed pill instead
-            // of staying 226px wide and letting the parent's clipPath crop
-            // it. That crop was fine while the glow was a soft cloud, but a
-            // rim has to trace the panel's actual outline — a clipped
-            // element's ring gets sliced off flat down the cut line, so the
-            // collapsed pill showed a rim on three sides and a hard edge on
-            // the fourth. Animating this element's own `left`/`borderRadius`
-            // in step with the parent's clipPath means the two shapes
-            // coincide exactly, so nothing is ever cut. It is a leaf node
-            // with no children, so this costs one element's layout and
-            // reflows no content (the reason the component avoids animating
-            // width on the shell itself — see the note above).
-            left: expanded ? 0 : 226 - VIBE_RAIL_WIDTH,
-            borderRadius: expanded ? 26 : 999,
-            // A touch darker once labels appear, but staying translucent —
-            // going fully opaque here made the panel read as a flat solid
-            // card instead of glass. Legibility over busy backgrounds now
-            // comes from the label's own text-shadow instead (see RailRow),
-            // the same trick the rest of the site uses over video/photo.
-            background: expanded ? "rgba(5,5,9,0.86)" : "rgba(7,7,11,0.4)",
-            // Same pink→cyan family as the "VIBE САЙТ" pill and the CenterModal
-            // window it lights up (see GLASS_BTN.vibe in WelcomeOverlay.tsx),
-            // just pushed brighter here — the rail is the thing you're meant
-            // to notice first. A dim, steady default (below) so it never reads
-            // as fully off; the pulsing wider/more-saturated version on expand
-            // is a plain CSS animation (.vibe-rail-backdrop-glow) rather than a
-            // Framer `boxShadow: [...]` loop — the loop ran on the JS thread
-            // via an inline-style rewrite every frame, competing with click
-            // handling and CinematicStage's own scroll rAF for main-thread
-            // time the whole time the rail was expanded.
-          }}
-          transition={{
-            background: { duration: RAIL_DUR, ease: EASE },
-            left: { duration: RAIL_DUR, ease: EASE },
-            borderRadius: { duration: RAIL_DUR, ease: EASE },
-          }}
-          style={{
-            backdropFilter: "blur(28px)",
-            WebkitBackdropFilter: "blur(28px)",
-            // The resting rim: a hairline neon ring tracing this element's
-            // own border-radius from the inside, plus its inward bloom. Same
-            // shape and colours the expanded state's pulse animates between
-            // (.vibe-rail-backdrop-glow in globals.css) so the two read as
-            // one light source at two intensities, not two effects. Inset
-            // rather than outer for the clip-path reason spelled out on
-            // those keyframes.
-            boxShadow:
-              "inset 0 0 0 1px rgba(255,138,92,0.42), inset 0 0 14px rgba(255,106,61,0.22), inset 0 0 30px rgba(236,72,153,0.14)",
-          }}
-          // inset-y-0 right-0 rather than inset-0: `left` is animated above,
-          // and a Tailwind `left: 0` from inset-0 would fight it.
-          className={`pointer-events-none absolute inset-y-0 right-0 ${
-            expanded ? "vibe-rail-backdrop-glow" : ""
-          }`}
-        />
-        {/* The rail's crown: the vibe orb replaces the old gradient "V" disc.
-            Sized to sit inside the pill's rounded cap with a couple of pixels
-            of clearance, so its limb traces the rail's own curve — collapsed
-            (a full semicircular cap) and expanded (a 26px corner) alike, since
-            it stays pinned to the same corner in both. */}
         <button
           type="button"
-          onClick={() => {
-            setExpanded(false);
-            setPickerOpen(true);
-          }}
+          onClick={() => setPickerOpen(true)}
           aria-label="Vibe"
           aria-haspopup="dialog"
-          // The orb itself is the rail's mark and stays lit at rest — only
-          // its label follows the same white/thin treatment as the rows.
-          // `relative z-10`: see the note on the nav wrapper below — without
-          // it the decorative backdrop paints over this row's label too.
-          className="vibe-orb-trigger group relative z-10 flex w-full flex-row-reverse items-center justify-start gap-2 pl-2.5 pr-1 text-right"
+          className="vibe-bubble vibe-bubble--crown mb-1"
         >
-          <VibeOrb size={40} />
-          <span
-            className={`${RAIL_LABEL_CLASS} ${RAIL_LABEL_HOVER} ${
-              expanded ? "opacity-100 duration-200 delay-200" : "opacity-0 duration-100"
-            }`}
-          >
-            Vibe
-          </span>
+          <NanoSphere size={36} from={accent.from} to={accent.to} />
+          <span className="vibe-tip font-display">Vibe</span>
         </button>
-
-        {/* `relative z-10` is load-bearing, not cosmetic. The backdrop above
-            is `position: absolute` while these rows are ordinary in-flow
-            content, and CSS paints positioned elements (step 8 of the
-            painting order) ON TOP of in-flow inline content (step 6) —
-            regardless of DOM order. So the backdrop was being painted over
-            the labels, and since its background animates from
-            rgba(7,7,11,0.4) to rgba(5,5,9,0.86) as the rail opens, the text
-            was being buried under a veil that darkens from 40% to 86% while
-            you watch: bright for an instant, then almost gone. That is the
-            real reason the labels read as washed-out — the colour, weight
-            and smoothing were only ever making a fully-occluded label
-            slightly more or less visible through the veil. Giving the
-            content its own stacking level puts it back above the glass. */}
-        <div className="relative z-10 overflow-hidden">
-          <nav className="flex flex-col gap-0.5">
-            <div className="mx-3 my-1.5 h-px bg-paper/10" />
-            {/* Distinguishes this rail from Header's ordinary nav — without
-                it the two read as duplicate menus, since several rows below
-                point at the same sections/pages Header already links to.
-                Opacity-only, same reveal timing as RailRow's own label, so
-                it appears together with the rest of the panel's text. */}
-            <div
-              className={`px-3 pb-0.5 pt-0.5 font-display text-[8px] uppercase tracking-[0.16em] text-paper/35 transition-opacity ${
-                expanded ? "opacity-100 duration-200 delay-200" : "opacity-0 duration-100"
-              }`}
+        {[...pageItems, ...crossPageItems].map((item, i) => (
+          <Fragment key={item.id}>
+            {i === pageItems.length && pageItems.length > 0 && <span aria-hidden="true" className="my-0.5 h-px w-4 bg-paper/20" />}
+            <button
+              type="button"
+              onClick={() => openItem(item)}
+              aria-label={item.label}
+              aria-current={item.id === activeRailId ? "true" : undefined}
+              className={`vibe-bubble ${item.id === activeRailId ? "is-active" : ""}`}
             >
-              Vibe-режим
-            </div>
-            {pageItems.map((item) => (
-              <RailRow
-                key={item.id}
-                glyph={item.glyph}
-                label={item.label}
-                expanded={expanded}
-                active={item.id === activeRailId}
-                onClick={() => openItem(item)}
-              />
-            ))}
-            {pageItems.length > 0 && <div className="mx-3 my-1.5 h-px bg-paper/10" />}
-            {crossPageItems.map((item) => (
-              <RailRow
-                key={item.id}
-                glyph={item.glyph}
-                label={item.label}
-                expanded={expanded}
-                active={item.id === activeRailId}
-                onClick={() => openItem(item)}
-              />
-            ))}
-          </nav>
-        </div>
-      </motion.div>
+              {item.glyph}
+              <span className="vibe-tip font-display">{item.label}</span>
+            </button>
+          </Fragment>
+        ))}
+      </nav>
 
       {/* Mobile entry point — the old floating "VIBE САЙТ" button's slot and
           role, same static round style as the desktop rail's trigger rather
@@ -1176,7 +888,7 @@ export default function VibeRail() {
           // gradient pill that would mute its own glow.
           className="vibe-orb-trigger flex h-12 w-12 items-center justify-center rounded-full"
         >
-          <VibeOrb size={40} />
+          <NanoSphere size={40} from={accent.from} to={accent.to} />
         </button>
       </div>
 
@@ -1219,7 +931,7 @@ export default function VibeRail() {
                 className="vibe-orb-trigger flex w-full items-center gap-3 rounded-xl px-2 py-3"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center">
-                  <VibeOrb size={28} />
+                  <NanoSphere size={28} from={accent.from} to={accent.to} />
                 </span>
                 <span className="font-display text-xs uppercase tracking-[0.16em] text-paper">
                   Vibe — выбор направления

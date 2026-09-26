@@ -96,7 +96,7 @@ const HOME_PREFIXES: [string, ServiceKey][] = [
   ["/smm", "smm"],
   ["/brief/smm", "smm"],
 ];
-function homeOf(path: string) {
+export function homeOf(path: string) {
   const hit = HOME_PREFIXES.find(([p]) => path === p || path.startsWith(`${p}/`));
   return hit ? serviceOrder.indexOf(hit[1]) : -1;
 }
@@ -206,7 +206,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
     // нельзя было листать.
     <nav
       aria-label="Страницы услуг"
-      className={`pointer-events-auto relative z-20 flex h-14 w-full items-center justify-center transition-opacity duration-300 lg:absolute lg:left-1/2 lg:top-0 lg:h-20 lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
+      className={`pointer-events-auto relative z-20 flex h-14 w-full items-center justify-center transition-opacity duration-300 lg:absolute lg:left-1/2 lg:top-0 lg:h-[70px] lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >

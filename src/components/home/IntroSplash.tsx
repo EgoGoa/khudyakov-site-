@@ -52,34 +52,25 @@ const T_SETTLED = T_CHARS + (11 - 1) * STAGGER + CHAR_DUR;
 const HOLD = 1.5;
 /** Момент, с которого знак начинает испаряться. */
 const T_VANISH = T_SETTLED + HOLD;
-/** Испарение — той же природы, что и появление (просьба Егора: «ближе к
- *  стилю появления»), только в обратную сторону: буквы точно так же по
- *  одной, тем же наклоном по X и тем же блюром, волной слева направо —
- *  просто тают, а не встают. Шаг и длительность чуть крупнее, чем на входе
- *  (0.05 и 0.8 вместо 0.045 и 0.7): рассыпаться на глаз должно чуть
- *  медленнее, чем собраться. */
-const STAGGER_OUT = 0.018;
-const CHAR_DUR_OUT = 0.3;
-const D_DISSOLVE = (11 - 1) * STAGGER_OUT + CHAR_DUR_OUT;
+/** Уход знака (Егор, 2026-09-26, вариант «A — мягкий» из макета): весь знак
+ *  целиком летит на зрителя с разгоном — ×1.8 за 0.9с, размываясь и
+ *  растворяясь, — а на его месте вспыхивает и медленно расходится мягкая
+ *  дымка (размытая копия знака). Без дымового фильтра и побуквенного
+ *  таяния: «очень дизайнерски, без дополнительных эффектов». */
+const D_ZOOM = 0.9;
+const ZOOM_TO = 1.8;
+const ZOOM_EASE = [0.6, 0, 0.85, 0.25] as const;
+const D_HAZE = 1.75;
+/** Сколько длится весь уход — до последней капли дымки. */
+const D_DISSOLVE = D_HAZE;
 /** Меню открывается сразу, как знак полностью растворился — не раньше:
  *  на экране не должно быть одновременно и остатков знака, и уже открытого
- *  меню (просьба Егора после проверки живьём). */
+ *  меню (просьба Егора после проверки живьём). Дымка — тоже остаток знака,
+ *  поэтому ждём и её. */
 const T_REVEAL = T_VANISH + D_DISSOLVE;
 /** Стекло уходит вместе с появлением меню — меню проступает сквозь него. */
 const D_FADE = 0.6;
 const T_DONE_MS = (Math.max(T_VANISH + D_DISSOLVE, T_REVEAL + D_FADE) + 0.1) * 1000;
-
-/** Собирает единый transition для элемента, который сначала встаёт
- *  (появление), потом стоит (HOLD), потом тает (испарение) — все три фазы
- *  одним таймлайном, потому что у framer только один `animate` на элемент.
- *  `enterDelay`/`enterDur` — когда и как долго встаёт; `exitDelay` — когда
- *  начинает таять (абсолютное время сцены); `exitDur` — как долго тает. */
-function lifespan(enterDelay: number, enterDur: number, exitDelay: number, exitDur: number) {
-  const total = exitDelay + exitDur - enterDelay;
-  const tEnter = enterDur / total;
-  const tExitStart = (exitDelay - enterDelay) / total;
-  return { delay: enterDelay, duration: total, times: [0, tEnter, tExitStart, 1] };
-}
 
 /** Слово знака посимвольно. Градиент `.brand-word` идёт по всему слову
  *  сразу, а посимвольная анимация требует отдельного элемента на букву —
@@ -181,78 +172,38 @@ export default function IntroSplash({
         animate={{ opacity: 0 }}
         transition={{ duration: D_FADE, ease: EASE, delay: T_REVEAL }}
       />
-      {/* Дымовой фильтр. Турбулентный шум смещает пиксели знака (feTurbulence
-          → feDisplacementMap): пока `scale` нулевой, фильтр ничего не делает
-          и знак стоит резким; на растворении `scale` растёт — и буквы
-          разрывает на волокна, как дым. Одновременно растёт частота шума:
-          дым не просто расходится, а истончается.
-
-          Анимация — SMIL внутри самого фильтра, а не через framer-motion:
-          примитивы фильтра не CSS-свойства, из JS их пришлось бы дёргать
-          покадрово. SMIL стартует сам по `begin` и играет ровно один раз.
-
-          Фильтр висит на отдельной обёртке, а не на motion-контейнере ниже:
-          framer не умеет интерполировать `url()` внутри `filter`, и общий
-          список сломал бы анимацию блюра. */}
-      <svg width="0" height="0" className="absolute" aria-hidden="true">
-        <defs>
-          <filter id="hdkv-smoke" x="-70%" y="-70%" width="240%" height="240%" colorInterpolationFilters="sRGB">
-            <feTurbulence type="fractalNoise" baseFrequency="0.009 0.015" numOctaves="3" seed="7" result="noise">
-              <animate
-                attributeName="baseFrequency"
-                dur={`${D_DISSOLVE}s`}
-                begin={`${T_VANISH}s`}
-                fill="freeze"
-                calcMode="spline"
-                keyTimes="0;0.5;1"
-                keySplines="0.4 0 0.6 1;0.4 0 0.6 1"
-                values="0.009 0.015;0.025 0.045;0.055 0.085"
-              />
-            </feTurbulence>
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="noise"
-              scale="0"
-              xChannelSelector="R"
-              yChannelSelector="G"
-            >
-              {/* Ровный набор амплитуды, без скачка: знак не разрывает, а
-                  постепенно уводит в волокна — испарение, а не взрыв.
-                  Пик снижен с 150 до 40 — на размере знака 150 рвало буквы
-                  так сильно, что это читалось как дрожь и кривые изломы, а
-                  не как дым (просьба Егора после проверки живьём). */}
-              <animate
-                attributeName="scale"
-                dur={`${D_DISSOLVE}s`}
-                begin={`${T_VANISH}s`}
-                fill="freeze"
-                calcMode="spline"
-                keyTimes="0;0.35;0.7;1"
-                keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"
-                values="0;7;20;40"
-              />
-            </feDisplacementMap>
-          </filter>
-        </defs>
-      </svg>
-
-      <div style={{ filter: "url(#hdkv-smoke)" }}>
+      <div className="relative grid place-items-center">
         {/* Знак собирается на месте, поэтому вся сборка живёт в одном
             контейнере. Он же на выходе слегка поднимается целиком (тот же
             дрейф дыма вверх), но гаснет не сразу весь — каждая буква тает
             по отдельности, тем же приёмом, что и вставала: см. `lifespan`
             на буквах ниже. Турбулентность выше рвёт уже тающие буквы на
             волокна поверх этого. */}
+        {/* Дымка: размытая копия знака. Появляется в момент рывка и медленно
+            расходится — «как будто немножко дымки осталось». */}
+        <motion.div
+          className="pointer-events-none absolute flex items-center gap-[0.3em] text-[clamp(1.05rem,4.25vw,3.25rem)] sm:gap-[0.35em]"
+          style={{ filter: "blur(16px)" }}
+          initial={{ opacity: 0, scale: 1 }}
+          animate={{ opacity: [0, 0.5, 0], scale: [1, 1.45, 2.3] }}
+          transition={{ duration: D_HAZE, times: [0, 0.29, 1], ease: ["easeOut", "easeOut"], delay: T_VANISH + 0.08 }}
+          aria-hidden="true"
+        >
+          <span className="inline-block h-[0.2em] w-[0.2em] shrink-0 rounded-full brand-dot" />
+          <span className="font-display uppercase leading-none tracking-tight">
+            {CHARS.map((c, i) => (
+              <span key={i} style={{ color: c.color }}>{c.ch}</span>
+            ))}
+          </span>
+        </motion.div>
+
+        {/* Сам знак: собирается по буквам, стоит, и уходит целиком — рывком
+            на зрителя с размытием и растворением. */}
         <motion.div
           className="relative flex flex-col items-center"
-          initial={{ y: 0 }}
-          animate={{ y: [0, -8, -30, -60] }}
-          // Тот же класс бага, что у точки/букв (см. комментарий там): один
-          // `ease` на несколько ключевых кадров гонит общий прогресс через
-          // всю анимацию целиком. Здесь дрейф и так монотонно растёт, поэтому
-          // это не создавало плато-артефакт, но `easeIn` на каждый отрезок —
-          // честнее, чем EASE (тот сделан для появления, не для дрейфа дыма).
-          transition={{ duration: D_DISSOLVE, times: [0, 0.35, 0.68, 1], ease: ["easeIn", "easeIn", "easeIn"], delay: T_VANISH }}
+          initial={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+          animate={{ scale: ZOOM_TO, opacity: 0, filter: "blur(12px)" }}
+          transition={{ duration: D_ZOOM, ease: ZOOM_EASE, delay: T_VANISH }}
         >
         {/* Размер знака. Нижняя граница clamp рассчитана на телефон: корневой
             размер там 14.4px, поэтому 2.1rem даёт ~30px — знак остаётся
@@ -265,8 +216,8 @@ export default function IntroSplash({
               тает первой же, тем же приёмом, что и буквы (см. lifespan). */}
           <motion.span
             className="relative inline-block h-[0.2em] w-[0.2em] shrink-0 rounded-full brand-dot"
-            initial={{ opacity: 0, scale: 0.2, filter: "blur(0px)" }}
-            animate={{ opacity: [0, 1, 1, 0], scale: [0.2, 1, 1, 1.4], filter: ["blur(0px)", "blur(0px)", "blur(0px)", "blur(10px)"] }}
+            initial={{ opacity: 0, scale: 0.2 }}
+            animate={{ opacity: 1, scale: 1 }}
             // Один `ease` на четыре ключевых кадра — это была настоящая
             // причина, по которой HOLD на глаз почти не менялся, сколько его
             // ни увеличивай: framer-motion в этом случае гонит один и тот же
@@ -280,7 +231,7 @@ export default function IntroSplash({
             // читается как рывок в никуда, а не таяние. easeInOut — ровная
             // симметричная кривая, поэтому знак действительно тает, а не
             // обрывается.
-            transition={{ ...lifespan(T_DOT, 0.55, T_VANISH, CHAR_DUR_OUT), ease: [EASE, "linear", "easeInOut"] }}
+            transition={{ duration: 0.55, delay: T_DOT, ease: EASE }}
           >
             {[0, 0.28].map((off) => (
               <motion.span
@@ -313,19 +264,8 @@ export default function IntroSplash({
                   textShadow: `0 0 28px ${c.glow}, 0 0 70px rgba(0,0,0,0.5)`,
                 }}
                 initial={{ opacity: 0, y: "0.45em", rotateX: -70, filter: "blur(16px)" }}
-                animate={{
-                  opacity: [0, 1, 1, 0],
-                  y: ["0.45em", "0em", "0em", "-0.5em"],
-                  rotateX: [-70, 0, 0, 70],
-                  filter: ["blur(16px)", "blur(0px)", "blur(0px)", "blur(18px)"],
-                }}
-                transition={{
-                  ...lifespan(T_CHARS + i * STAGGER, CHAR_DUR, T_VANISH + i * STAGGER_OUT, CHAR_DUR_OUT),
-                  // См. комментарий у точки выше — тот же массив eases по
-                  // сегментам, а не один на все четыре ключевых кадра, и та
-                  // же замена EASE на easeInOut для растворения.
-                  ease: [EASE, "linear", "easeInOut"],
-                }}
+                animate={{ opacity: 1, y: "0em", rotateX: 0, filter: "blur(0px)" }}
+                transition={{ duration: CHAR_DUR, delay: T_CHARS + i * STAGGER, ease: EASE }}
               >
                 {c.ch}
               </motion.span>
