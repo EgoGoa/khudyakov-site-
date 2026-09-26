@@ -71,8 +71,10 @@ export default function NanoWave({
     const H = (height + padY * 2) * dpr;
     canvas.width = Math.round(W);
     canvas.height = Math.round(H);
-    const x0 = padX * dpr;
-    const len = width * dpr;
+    // Линии длиннее самого знака: хвосты заходят в поля холста и там
+    // плавно уходят в прозрачность (Егор: «края чуть удлинить»).
+    const x0 = (dust ? padX * 0.35 : padX) * dpr;
+    const len = (dust ? width + padX * 1.3 : width) * dpr;
     const cy = H / 2;
     const amp = (height / 2) * dpr;
     const k = Math.max(1, height / 28) ** 0.55;
@@ -93,7 +95,8 @@ export default function NanoWave({
     let moteAcc = 0;
     let moteLast = 0;
     const spawnMote = (t: number): Mote => {
-      const side = Math.random() < 0.5 ? -1 : 1;
+      // С той стороны, где курсор, пыли больше.
+      const side = Math.random() < 0.5 + 0.35 * pull ? 1 : -1;
       return {
         side,
         u: side < 0 ? 0.12 + Math.random() * 0.14 : 0.74 + Math.random() * 0.14,
@@ -106,6 +109,32 @@ export default function NanoWave({
         mix: Math.random(),
       };
     };
+
+    // Курсор (Егор: «за мышкой следуют волны»): волна не ускоряется, а
+    // медленно тянется к нему — гребень смещается в его сторону, с той
+    // стороны выше размах и ярче свет, волны текут туда. bias — где курсор
+    // по горизонтали (-1 слева … 1 справа), near — насколько он близко.
+    let bias = 0;
+    let near = 0;
+    let biasS = 0;
+    let nearS = 0;
+    let pull = 0;
+    let ph1 = 0;
+    let ph2 = 0;
+    let lastT = 0;
+    let hoverS = 0;
+    const onMove = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      bias = Math.max(-1, Math.min(1, dx / (r.width * 0.5 + 220)));
+      near = Math.max(0, Math.min(1, 1 - Math.hypot(dx, dy) / 720));
+    };
+    const onOut = () => {
+      near = 0;
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onOut);
 
     let energy = 1;
     let hover = false;
@@ -121,7 +150,13 @@ export default function NanoWave({
       // В разговоре размах идёт за громкостью голоса: тишина — спокойная
       // волна, слог — всплеск. Без источника громкости — ровно «горячая».
       const lv = levelRef.current?.() ?? 0.55;
-      const target = hotRef.current ? 1.2 + lv * 3.6 : hover ? 1.8 : 1;
+      const dt = Math.max(0, Math.min(0.05, t - lastT));
+      lastT = t;
+      // Медленно, без рывков: курсор «притягивает», а не дёргает.
+      biasS += (bias - biasS) * 0.035;
+      nearS += (near - nearS) * 0.03;
+      pull = biasS * (0.3 + 0.7 * nearS);
+      const target = hotRef.current ? 1.2 + lv * 3.6 : hover ? 1.8 : 1 + 0.9 * nearS;
       if (pulseRef.current !== seenPulse) {
         seenPulse = pulseRef.current;
         energy = Math.max(energy, 4.2);
@@ -130,8 +165,12 @@ export default function NanoWave({
       energy += (target - energy) * (hotRef.current ? 0.3 : 0.07);
       const breath = 1 + 0.18 * Math.sin(t * 1.1) + 0.07 * Math.sin(t * 2.3);
       const e = energy * breath;
-      // Разговор ещё и ускоряет волны — как речь, а не как море.
-      const speed = 1 + (energy - 1) * 0.55;
+      // Скорость меняет только разговор (речь). Наведение и курсор скорость
+      // не трогают (Егор: «скорость та же, но импульс больше и ярче») —
+      // от них растут размах, яркость и пыль.
+      const speed = hotRef.current ? 1 + (energy - 1) * 0.55 : 1;
+      hoverS += ((hover ? 1 : 0) - hoverS) * 0.06;
+      const glowK = Math.max(nearS, hoverS);
 
       ctx.clearRect(0, 0, W, H);
       ctx.globalCompositeOperation = "lighter";
@@ -140,15 +179,18 @@ export default function NanoWave({
       // Без ореола вокруг (Егор: свечение за волной читалось рамкой и
       // «нехорошим фоном») — свет только в самих линиях.
       // Перелив: по ленте слева направо бежит яркая голова света.
-      const flow = (((t * 0.35) % 1) + 1) % 1;
+      // Голова света стоит там, куда тянет курсор, и чуть пульсирует.
+      const head = Math.max(0.2, Math.min(0.8, 0.5 + 0.34 * pull + 0.03 * Math.sin(t * 0.8)));
+      const flare = 0.8 + 0.2 * glowK + 0.1 * Math.sin(t * 2.6) * glowK;
+      const lift = (c: number) => Math.min(255, Math.round(c + 90 * glowK));
       const grad = ctx.createLinearGradient(x0, 0, x0 + len, 0);
       // Концы каждой линии уходят в полную прозрачность — лента растворяется
       // к краям сама, а не обрезается маской.
       const stops: [number, string][] = [
         [0, `rgba(${fr},${fg},${fb},0)`],
-        [0.2, `rgba(${fr},${fg},${fb},0.55)`],
-        [Math.min(0.78, Math.max(0.22, flow)), `rgba(${tr},${tg},${tb},1)`],
-        [0.8, `rgba(${tr},${tg},${tb},0.6)`],
+        [0.16, `rgba(${fr},${fg},${fb},${0.45 + 0.4 * Math.max(0, -pull)})`],
+        [head, `rgba(${lift(tr)},${lift(tg)},${lift(tb)},${flare})`],
+        [0.84, `rgba(${tr},${tg},${tb},${0.45 + 0.4 * Math.max(0, pull)})`],
         [1, `rgba(${tr},${tg},${tb},0)`],
       ];
       for (const [o, c] of stops.sort((a, b) => a[0] - b[0])) grad.addColorStop(Math.min(1, Math.max(0, o)), c);
@@ -157,18 +199,30 @@ export default function NanoWave({
       ctx.shadowBlur = 3 * dpr * k;
       ctx.shadowColor = `rgba(${fr},${fg},${fb},0.4)`;
 
+      // Волны текут к курсору: фаза набегает в его сторону. В разговоре
+      // добавляется собственное движение речи.
+      const drift = speed * (1.9 * pull + (hotRef.current ? 1.2 : 0.18) * (pull < 0 ? -1 : 1));
+      ph1 += dt * 2.1 * drift;
+      ph2 += dt * 3.3 * drift;
+      // Гребень смещается к курсору: середина огибающей едет в его сторону.
+      const u0 = 0.5 + 0.24 * pull;
+      const lean = Math.abs(pull);
+      const toward = pull < 0 ? -1 : 1;
+
       for (let j = 0; j < LINES; j++) {
         const phase = j * 0.42;
         ctx.beginPath();
         for (let i = 0; i <= POINTS; i++) {
           const u = i / POINTS;
           // Сходится в точку на концах, громче всего в середине.
-          const env = Math.sin(Math.PI * u) ** 2;
+          const uw = u < u0 ? (0.5 * u) / u0 : 0.5 + (0.5 * (u - u0)) / (1 - u0);
+          const side = 1 + 0.8 * lean * Math.max(0, (u - 0.5) * 2 * toward);
+          const env = Math.sin(Math.PI * uw) ** 2 * side;
           const x = x0 + u * len;
           const w =
-            0.42 * Math.sin(u * 9 + t * 2.1 * speed + phase) +
-            0.3 * Math.sin(u * 15 - t * 3.3 * speed + phase * 1.7) +
-            0.18 * Math.sin(u * 23 + t * 5.2 * speed - phase * 0.8);
+            0.42 * Math.sin(u * 9 - ph1 + phase) * (0.8 + 0.2 * Math.sin(t * 0.9 + phase)) +
+            0.3 * Math.sin(u * 15 - ph2 + phase * 1.7) +
+            0.18 * Math.sin(u * 23 + t * 2.6 * speed - phase * 0.8);
           const spread = (j - LINES / 2) * 0.032;
           const y = cy + amp * env * (w * 0.3 * Math.min(e, 4.6) + spread * Math.min(e, 2));
           if (i === 0) ctx.moveTo(x, y);
@@ -179,7 +233,7 @@ export default function NanoWave({
 
       if (dust) {
         ctx.shadowBlur = 0;
-        moteAcc += MOTES_PER_S * (0.6 + 0.4 * energy) * Math.max(0, t - moteLast);
+        moteAcc += MOTES_PER_S * (0.6 + 0.4 * energy) * (1 + 1.6 * glowK) * Math.max(0, t - moteLast);
         moteLast = t;
         while (moteAcc >= 1) {
           moteAcc -= 1;
@@ -225,6 +279,8 @@ export default function NanoWave({
     }
     return () => {
       cancelAnimationFrame(raf);
+      window.removeEventListener("pointermove", onMove);
+      document.documentElement.removeEventListener("pointerleave", onOut);
       host.removeEventListener("pointerenter", excite);
       host.removeEventListener("pointerleave", calm);
     };
@@ -240,8 +296,8 @@ export default function NanoWave({
           height: height + padY * 2,
           ...(dust
             ? {
-                maskImage: "linear-gradient(90deg, transparent 0%, #000 42%, #000 58%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 42%, #000 58%, transparent 100%)",
+                maskImage: "linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)",
               }
             : null),
         }}

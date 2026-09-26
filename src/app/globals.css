@@ -7585,7 +7585,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
    правой колонке с вайб-панелью: ниже волна наезжала на ряд цифр героя. */
 .voice-dock-corner {
   right: max(0.75rem, calc(env(safe-area-inset-right) + 0.5rem));
-  bottom: calc(9.25rem + env(safe-area-inset-bottom));
+  bottom: calc(11rem + env(safe-area-inset-bottom));
 }
 /* Телефон и планшет: по центру снизу, под большим пальцем. */
 @media (max-width: 1023px) {
