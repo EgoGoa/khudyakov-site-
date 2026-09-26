@@ -28,13 +28,30 @@ export default function NanoSphere({
   size = 40,
   from,
   to,
+  hot = false,
+  pulse = 0,
+  glow = 1,
 }: {
   size?: number;
   from: string;
   to: string;
+  /** Держать сферу «разогретой» (как при наведении), пока true. */
+  hot?: boolean;
+  /** Любая смена числа — короткая яркая вспышка (ответ, шаг, клик). */
+  pulse?: number;
+  /** Сила ореола и размытия линий: 1 — как в баре, меньше — чище (окна). */
+  glow?: number;
 }) {
   const wrapRef = useRef<HTMLSpanElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Живут в ref, а не в зависимостях эффекта: смена состояния не должна
+  // пересоздавать холст и сбрасывать анимацию.
+  const hotRef = useRef(hot);
+  const pulseRef = useRef(pulse);
+  useEffect(() => {
+    hotRef.current = hot;
+    pulseRef.current = pulse;
+  }, [hot, pulse]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -50,6 +67,10 @@ export default function NanoSphere({
     canvas.height = Math.round(box * dpr);
     const c = (box * dpr) / 2;
     const R = size * 0.4 * dpr;
+    // Крупная сфера (вайб-режим, ~260px) — те же линии, но толще и шире
+    // разнесены, иначе на большом радиусе кольцо читается ниткой. До 40px
+    // множитель ровно 1, маленькие сферы не меняются.
+    const k = Math.max(1, size / 40) ** 0.55;
     const [fr, fg, fb] = hexToRgb(from);
     const [tr, tg, tb] = hexToRgb(to);
 
@@ -66,19 +87,26 @@ export default function NanoSphere({
       v: R * (0.12 + Math.random() * 0.35),
       born: now - Math.random() * 1.5,
       life: 1.2 + Math.random() * 1.8,
-      size: (0.4 + Math.random() * 0.5) * dpr,
+      size: (0.4 + Math.random() * 0.5) * dpr * k,
     });
     const sparks: Spark[] = Array.from({ length: SPARKS }, () => spawn(0));
 
     let energy = 1;
     let target = 1;
-    const excite = () => (target = 1.9);
-    const calm = () => (target = 1);
+    let hover = false;
+    let seenPulse = pulseRef.current;
+    const excite = () => (hover = true);
+    const calm = () => (hover = false);
     const host = wrap.closest("button") ?? wrap;
     host.addEventListener("pointerenter", excite);
     host.addEventListener("pointerleave", calm);
 
     const draw = (t: number) => {
+      target = hover || hotRef.current ? 1.9 : 1;
+      if (pulseRef.current !== seenPulse) {
+        seenPulse = pulseRef.current;
+        energy = Math.max(energy, 3);
+      }
       energy += (target - energy) * 0.06;
       // Постоянное дыхание: волны и свечение плавно нарастают и спадают.
       const breath = 1 + 0.2 * Math.sin(t * 1.1) + 0.08 * Math.sin(t * 2.3);
@@ -89,13 +117,13 @@ export default function NanoSphere({
       // Мягкое общее свечение за кольцом.
       const halo = ctx.createRadialGradient(c, c, R * 0.5, c, c, R * 2.05);
       halo.addColorStop(0, `rgba(${fr},${fg},${fb},0)`);
-      halo.addColorStop(0.4, `rgba(${fr},${fg},${fb},${0.06 + 0.035 * breath * energy})`);
+      halo.addColorStop(0.4, `rgba(${fr},${fg},${fb},${(0.06 + 0.035 * breath * energy) * glow})`);
       halo.addColorStop(1, `rgba(${tr},${tg},${tb},0)`);
       ctx.fillStyle = halo;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.lineWidth = 0.55 * dpr;
-      ctx.shadowBlur = 10 * dpr;
+      ctx.lineWidth = 0.55 * dpr * k;
+      ctx.shadowBlur = 10 * dpr * k * glow;
       // Перелив по часовой стрелке (Егор: «по кругу плавно течёт»): по
       // кольцу бежит яркая голова света с длинным хвостом, напротив — вторая,
       // слабее. Конический градиент поворачивается каждый кадр; в canvas угол
@@ -114,17 +142,17 @@ export default function NanoSphere({
       }
       ctx.strokeStyle = conic ?? `rgba(${fr},${fg},${fb},0.34)`;
       ctx.shadowColor = `rgba(${fr},${fg},${fb},0.35)`;
-      for (let k = 0; k < LINES; k++) {
+      for (let j = 0; j < LINES; j++) {
         ctx.beginPath();
         for (let i = 0; i <= POINTS; i++) {
           const a = (i / POINTS) * Math.PI * 2;
           // Узор волн ещё и медленно вращается (a + t·0.25).
           const aa = a + t * 0.25;
           const wave =
-            0.055 * Math.sin(3 * aa + t * 1.1 + k * 0.17) +
-            0.04 * Math.sin(5 * aa - t * 1.6 + k * 0.31) +
-            0.025 * Math.sin(2 * aa + t * 0.7 - k * 0.12);
-          const rr = R * (1 + wave * e) + (k - LINES / 2) * 0.28 * dpr;
+            0.055 * Math.sin(3 * aa + t * 1.1 + j * 0.17) +
+            0.04 * Math.sin(5 * aa - t * 1.6 + j * 0.31) +
+            0.025 * Math.sin(2 * aa + t * 0.7 - j * 0.12);
+          const rr = R * (1 + wave * e) + (j - LINES / 2) * 0.28 * dpr * k;
           const x = c + Math.cos(a) * rr;
           const y = c + Math.sin(a) * rr;
           if (i === 0) ctx.moveTo(x, y);
@@ -178,7 +206,7 @@ export default function NanoSphere({
       host.removeEventListener("pointerenter", excite);
       host.removeEventListener("pointerleave", calm);
     };
-  }, [size, from, to]);
+  }, [size, from, to, glow]);
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width: size, height: size }} aria-hidden="true">

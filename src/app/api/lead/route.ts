@@ -18,7 +18,9 @@ type LeadPayload = {
     | "brief-smm"
     | "brief-sites"
     | "brief-hotel-video"
-    | "team";
+    | "team"
+    | "vibe"
+    | "vibe-order";
   name: string;
   phone?: string;
   email?: string;
@@ -39,6 +41,11 @@ const TYPE_LABEL: Record<LeadPayload["type"], string> = {
   // Sent from a TeamCard/TeamConsultModal — `fields["Кому адресовано"]`
   // carries which team member the visitor actually clicked on.
   team: "Написали через карточку команды",
+  // Анкета вайб-режима (сфера в вайб-баре) — ждёт персональную страницу
+  // в течение часа.
+  vibe: "Vibe-режим: клиент собрал КП",
+  // Кнопка «Выбрать план» на странице-КП (/offer).
+  "vibe-order": "Vibe-режим: заказ тарифа из КП",
 };
 
 const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");

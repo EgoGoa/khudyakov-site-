@@ -6873,3 +6873,467 @@ html[data-lite] .vibe-tip {
   backdrop-filter: blur(18px) saturate(1.6) !important;
 }
 
+
+/* ---------- Vibe-режим (components/vibe/VibeMode.tsx) ----------
+   Егор, 2026-09-26: окошко по центру, а не весь экран; текст фирменный —
+   Unbounded в заголовках, Manrope 600–700 в подписях, никакого тонкого
+   белого; текста минимум; сфера небольшая и без мутного ореола. Спектр
+   окна — сине-фиолетовый → розовый → коралловый. */
+.vibe-mode {
+  --vm-a: #6f86ff;
+  --vm-b: #b07cff;
+  --vm-c: #ff7a9c;
+  --vm-d: #ffb07a;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  color: #fff;
+  background: rgba(3, 3, 6, 0.55);
+}
+.vibe-mode__window {
+  position: relative;
+  width: min(640px, 100%);
+  border-radius: 30px;
+  overflow: hidden;
+  background: rgba(12, 12, 20, 0.74);
+  backdrop-filter: blur(30px) saturate(1.4);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 40px 120px -24px rgba(0, 0, 0, 0.85);
+}
+.vibe-mode__scroll {
+  position: relative;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.vibe-mode__scroll::-webkit-scrollbar { display: none; }
+.vibe-mode__aurora {
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  background:
+    radial-gradient(34% 26% at 50% 22%, rgba(111, 134, 255, 0.20), transparent 70%),
+    radial-gradient(30% 26% at 30% 70%, rgba(176, 124, 255, 0.12), transparent 70%),
+    radial-gradient(30% 24% at 72% 72%, rgba(255, 122, 156, 0.12), transparent 70%);
+  animation: vibe-aurora 18s ease-in-out infinite alternate;
+}
+@keyframes vibe-aurora {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(8deg) scale(1.08); }
+}
+html[data-lite] .vibe-mode__aurora,
+html[data-mid] .vibe-mode__aurora { animation: none; }
+html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
+.vibe-mode__progress {
+  background: linear-gradient(90deg, var(--vm-a), var(--vm-b), var(--vm-c), var(--vm-d));
+  box-shadow: 0 0 10px rgba(176, 124, 255, 0.7);
+}
+.vibe-mode__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.vibe-mode__title {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: clamp(24px, 3.4vw, 34px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.vibe-mode__title--sm { font-size: clamp(22px, 3vw, 28px); }
+.vibe-mode__title--q { font-size: clamp(20px, 2.8vw, 26px); line-height: 1.15; }
+.vibe-mode__iris {
+  background: linear-gradient(100deg, var(--vm-a) 0%, var(--vm-b) 38%, var(--vm-c) 72%, var(--vm-d) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: vibe-iris 8s ease-in-out infinite alternate;
+}
+@keyframes vibe-iris {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+.vibe-mode__lead {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #fff;
+}
+.vibe-mode__pill {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
+}
+.vibe-mode__card {
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+}
+.vibe-mode__card--accent {
+  background:
+    linear-gradient(rgba(12, 12, 20, 0.86), rgba(12, 12, 20, 0.86)) padding-box,
+    linear-gradient(120deg, var(--vm-a), var(--vm-b), var(--vm-c), var(--vm-d)) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 0 40px -10px rgba(176, 124, 255, 0.55);
+}
+.vibe-mode__num {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--vm-a), var(--vm-c));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.vibe-mode__cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #07070b;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 10px 40px -8px rgba(176, 124, 255, 0.75), 0 0 60px -20px rgba(255, 122, 156, 0.8);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.2s;
+}
+.vibe-mode__cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px #fff, 0 14px 50px -6px rgba(176, 124, 255, 0.95), 0 0 80px -16px rgba(255, 122, 156, 1);
+}
+.vibe-mode__cta:disabled { opacity: 0.35; box-shadow: none; transform: none; cursor: default; }
+.vibe-mode__ghost {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  transition: background 0.2s;
+}
+.vibe-mode__ghost:hover { background: rgba(255, 255, 255, 0.08); }
+.vibe-mode__ghost--pill { padding: 0 20px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18); }
+.vibe-mode__quiet {
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+.vibe-mode__quiet:hover { opacity: 1; text-decoration: underline; text-underline-offset: 4px; }
+.vibe-mode__icon-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 0.2s;
+}
+.vibe-mode__icon-btn:hover { background: rgba(255, 255, 255, 0.16); }
+.vibe-mode__dot {
+  width: 22px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.22);
+  transition: width 0.35s ease, background 0.35s ease;
+}
+.vibe-mode__dot.is-on {
+  width: 36px;
+  background: linear-gradient(90deg, var(--vm-a), var(--vm-c));
+}
+.vibe-mode__option,
+.vibe-mode__chip,
+.vibe-mode__own,
+.vibe-mode__field {
+  border: 1.5px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+  transition: background 0.2s, box-shadow 0.25s, transform 0.2s;
+}
+.vibe-mode__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.vibe-mode__chip {
+  padding: 9px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.vibe-mode__option:hover,
+.vibe-mode__chip:hover {
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+.vibe-mode__option.is-on,
+.vibe-mode__chip.is-on,
+.vibe-mode__own.is-on {
+  background:
+    linear-gradient(rgba(16, 14, 28, 0.8), rgba(16, 14, 28, 0.8)) padding-box,
+    linear-gradient(120deg, var(--vm-a), var(--vm-b), var(--vm-c), var(--vm-d)) border-box;
+  box-shadow: 0 0 28px -6px rgba(176, 124, 255, 0.7);
+}
+.vibe-mode__key {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+}
+.vibe-mode__option.is-on .vibe-mode__key {
+  background: linear-gradient(135deg, var(--vm-a), var(--vm-c));
+}
+.vibe-mode__own {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 50px;
+  padding: 0 16px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+}
+.vibe-mode__own:focus-within { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3); }
+.vibe-mode__field {
+  height: 54px;
+  padding: 0 18px;
+  border-radius: 16px;
+  font-size: 16px;
+  color: #fff;
+  outline: none;
+}
+.vibe-mode__field::placeholder { color: rgba(255, 255, 255, 0.7); }
+.vibe-mode__field:focus { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 0 24px -8px rgba(176, 124, 255, 0.7); }
+.vibe-mode__assist {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.vibe-mode__assist-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--vm-a), var(--vm-c));
+  box-shadow: 0 0 10px rgba(176, 124, 255, 0.9);
+}
+/* Логотип в заголовке вайб-режима — шрифт и знак шапки, чуть мельче строки. */
+.vibe-mode__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22em;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  vertical-align: 0.04em;
+}
+.vibe-mode__brand-dot {
+  width: 0.22em;
+  height: 0.22em;
+  flex: none;
+}
+/* Вайб-режим: мультивыбор, ползунок бюджета. */
+.vibe-mode__chip { display: inline-flex; align-items: center; gap: 8px; }
+.vibe-mode__tick {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.45);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.vibe-mode__tick.is-on {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat,
+    linear-gradient(135deg, var(--vm-a), var(--vm-c));
+  box-shadow: none;
+}
+.vibe-mode__budget {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: clamp(30px, 4.6vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  background: linear-gradient(100deg, #fff 20%, var(--vm-b) 60%, var(--vm-c));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.vibe-mode__range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--vm-a), var(--vm-b), var(--vm-c)) 0 0 / var(--fill, 50%) 100% no-repeat,
+    rgba(255, 255, 255, 0.12);
+  outline: none;
+  cursor: pointer;
+}
+.vibe-mode__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 6px rgba(176, 124, 255, 0.25), 0 0 24px rgba(176, 124, 255, 0.9);
+}
+.vibe-mode__range::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 6px rgba(176, 124, 255, 0.25), 0 0 24px rgba(176, 124, 255, 0.9);
+}
+
+/* ---------- Страница-КП вайб-режима (components/vibe/OfferPage.tsx) ----------
+   Фирменный стиль сайта: заголовки Unbounded капсом, одно ключевое слово
+   главы — градиентом направления (--of-from → --of-to), стеклянные
+   карточки, белый текст. Кнопки и сфера — общие с окном вайб-режима. */
+.offer {
+  --vm-a: #6f86ff;
+  --vm-b: #b07cff;
+  --vm-c: #ff7a9c;
+  --vm-d: #ffb07a;
+  color: #fff;
+}
+.offer-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.45;
+}
+.offer-hero-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 50% at 50% 40%, rgba(5, 5, 9, 0.35), rgba(5, 5, 9, 0.85) 80%),
+    linear-gradient(180deg, rgba(5, 5, 9, 0.2), #050509 96%);
+}
+.offer-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.offer-h1 {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: clamp(34px, 6vw, 76px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.offer-h2 {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: clamp(28px, 4.2vw, 52px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.offer-kw {
+  background: linear-gradient(95deg, var(--of-from), var(--of-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.offer-lead {
+  font-size: clamp(16px, 1.5vw, 19px);
+  line-height: 1.55;
+}
+.offer-card {
+  padding: 22px 24px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px);
+}
+.offer-card--glow {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 0 60px -20px var(--of-from);
+}
+.offer-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--of-to);
+}
+.offer-num {
+  flex: none;
+  font-family: var(--font-bebas), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  background: linear-gradient(95deg, var(--of-from), var(--of-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.offer-case { color: #fff; }
+.offer-tier {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 26px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px);
+}
+.offer-tier > button { margin-top: auto; }
+.offer-tier ul { margin-bottom: 32px; }
+.offer-tier.is-rec {
+  background:
+    linear-gradient(rgba(14, 12, 24, 0.9), rgba(14, 12, 24, 0.9)) padding-box,
+    linear-gradient(130deg, var(--of-from), var(--vm-b), var(--of-to)) border-box;
+  border: 1.5px solid transparent;
+  box-shadow: 0 0 70px -18px var(--of-from);
+}
+.offer-badge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #07070b;
+  background: #fff;
+  box-shadow: 0 0 24px -4px var(--of-from);
+}
