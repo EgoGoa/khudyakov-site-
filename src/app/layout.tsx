@@ -13,6 +13,8 @@ import MediaGovernor from "@/components/layout/MediaGovernor";
 import PerfGovernor from "@/components/layout/PerfGovernor";
 import MotionTier from "@/components/layout/MotionTier";
 import { LITE_DETECT_SNIPPET } from "@/lib/lite";
+import { SITE_URL, BRAND } from "@/lib/site";
+import { BRIEF_EMAIL } from "@/lib/brief";
 import OffscreenAnimationPause from "@/components/layout/OffscreenAnimationPause";
 import FluidSmoke from "@/components/layout/FluidSmoke";
 import { FullpageProvider } from "@/lib/fullpage";
@@ -42,7 +44,6 @@ const bebas = Unbounded({
 // предзагружались на каждой странице. `font-mono` / --font-azeret-mono
 // откатываются на системный ui-monospace.
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://khudyakov-site.vercel.app";
 const TITLE = "HUD.SERVICE — AI-диджитал сервис полного цикла";
 const DESCRIPTION =
   "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HUD.SERVICE соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 8 лет опыта, 450+ проектов, 350+ клиентов.";
@@ -64,11 +65,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: TITLE,
   description: DESCRIPTION,
+  // "./" — адрес текущей страницы на главном домене: каждая страница сама
+  // объявляет себя оригиналом, и копия на vercel.app не спорит с hdkv-ai.ru.
+  alternates: { canonical: "./" },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
-    url: SITE_URL,
-    siteName: "HUD.SERVICE",
+    url: "./",
+    siteName: BRAND,
     locale: "ru_RU",
     type: "website",
   },
@@ -77,6 +81,20 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
   },
+};
+
+// Карточка компании для Яндекса и Google (schema.org): название, контакты и
+// что работаем по всей России онлайн — из неё поисковик собирает сниппет.
+const ORGANIZATION_LD = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  name: BRAND,
+  url: SITE_URL,
+  description: DESCRIPTION,
+  telephone: "+79925111812",
+  email: BRIEF_EMAIL,
+  areaServed: { "@type": "Country", name: "Россия" },
+  sameAs: ["https://t.me/hdkv"],
 };
 
 export default function RootLayout({
@@ -95,6 +113,10 @@ export default function RootLayout({
         {/* Marks weak devices / slow connections before first paint so the
             "lite" CSS (globals.css) applies with no flash — see lib/lite.ts. */}
         <script dangerouslySetInnerHTML={{ __html: LITE_DETECT_SNIPPET }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }}
+        />
       </head>
       <body className="relative bg-ink font-sans text-paper antialiased">
         <BackgroundFX />

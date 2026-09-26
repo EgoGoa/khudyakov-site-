@@ -1,3 +1,14 @@
 RewriteEngine On
+
+# Одно зеркало для поисковиков: www.hdkv-ai.ru → hdkv-ai.ru (301),
+# иначе Яндекс видит два одинаковых сайта.
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# Корень сразу ведёт на «Создание контента» серверным 301. В статичной
+# версии redirect() из page.tsx срабатывает только в браузере, а робот
+# видел на главной пустую страницу-ошибку.
+RewriteRule ^$ /content/ [R=301,L]
+
 RewriteRule ^portfolio/?$ /#works [R=302,NE,L]
 ErrorDocument 404 /404.html

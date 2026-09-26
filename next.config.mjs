@@ -23,6 +23,13 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_BUILD_ID: buildId,
   },
+  // Копия на khudyakov-site.vercel.app закрыта от индекса: главный домен
+  // для поиска — hdkv-ai.ru (src/lib/site.ts). Статичная сборка для reg.ru
+  // этот конфиг не использует, так что там заголовка нет.
+  async headers() {
+    if (!process.env.VERCEL) return [];
+    return [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex" }] }];
+  },
   async redirects() {
     return [
       { source: "/portfolio", destination: "/#works", permanent: false },

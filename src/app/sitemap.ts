@@ -3,8 +3,7 @@ import { contentDirections } from "@/lib/service-content";
 import { aiToolPages, aiCompactToolPages } from "@/components/home/direction/toolRegistry";
 import { sitesFormatPages } from "@/components/home/direction/sitesFormatRegistry";
 import { smmFormatPages } from "@/components/home/direction/smmFormatRegistry";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://khudyakov-site.vercel.app";
+import { SITE_URL } from "@/lib/site";
 
 // Same sources as each [param] route's generateStaticParams, so a page that
 // builds is a page that's listed — a hand-kept copy here once dropped /ai/chat-hub.
@@ -16,8 +15,9 @@ const SMM_FORMATS = Object.keys(smmFormatPages);
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
+  // "/" не входит: корень отдаёт 301 на /content/ (.htaccess), а в карте
+  // сайта должны стоять только адреса, которые открываются сами.
   const staticRoutes = [
-    "/",
     "/content",
     "/ai",
     "/sites",
@@ -37,7 +37,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   return [...staticRoutes, ...dynamicRoutes].map((path) => ({
-    url: `${SITE_URL}${path}`,
+    // Со слешем на конце — как их отдаёт статичная версия (trailingSlash),
+    // иначе каждый адрес из карты сначала упирается в редирект.
+    url: `${SITE_URL}${path}/`,
     lastModified: now,
   }));
 }
