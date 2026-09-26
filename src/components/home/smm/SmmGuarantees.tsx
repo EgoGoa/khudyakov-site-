@@ -107,15 +107,9 @@ export default function SmmGuarantees() {
     >
       <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14 land:flex land:items-start land:gap-6">
         <div className="w-full shrink-0 lg:w-[38%] land:w-[40%]">
-          <Appear from="up" delay={BEAT.eyebrow}>
-            <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-              <span className={`${EYEBROW} text-[#c4a0ff]`}>05</span>
-              <span className="h-px w-8 bg-[#a855f7]/40" />
-            </div>
-          </Appear>
 
           <Appear from="up" delay={BEAT.title}>
-            <h2 className="chapter-neon-violet mt-3 max-w-[6.7em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] lg:text-[3.24rem] xl:text-[3.6rem]">
+            <h2 className="chapter-neon-violet max-w-[6.7em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] lg:text-[3.24rem] xl:text-[3.6rem]">
               Что
               <br />
               <span className="kw">входит</span>

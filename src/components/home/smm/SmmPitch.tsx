@@ -7,7 +7,6 @@ import { useLandscapePhone } from "@/lib/use-landscape-phone";
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import SmmDeck, { PILL, ROUND } from "@/components/home/smm/SmmDeck";
-import { EYEBROW } from "@/lib/typography";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { EGOR_SMM } from "@/components/home/team-pulse/content/egor-smm";
 
@@ -67,12 +66,6 @@ export default function SmmPitch() {
             carousel rather than against itself. */}
         <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-auto land:shrink-0">
           <div className="order-1 lg:order-none land:order-none">
-          <Appear from="up" delay={BEAT.eyebrow}>
-            <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-              <span className={`${EYEBROW} text-[#c4a0ff]`}>01</span>
-              <span className="h-px w-8 bg-[#a855f7]/40" />
-            </div>
-          </Appear>
 
           <Appear from="up" delay={BEAT.title}>
             {/* The explicit break is what puts "продакшена" on its own line as
@@ -86,7 +79,7 @@ export default function SmmPitch() {
                 word itself ("ПРОДАКШ"/"ЕНА"). Scaling just this word down
                 keeps it on one line there without touching "SMM силами" or
                 any other heading's size. */}
-            <h2 className="chapter-neon-violet mt-3 max-w-[7.3em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.24rem] xl:text-[3.6rem]">
+            <h2 className="chapter-neon-violet max-w-[7.3em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.24rem] xl:text-[3.6rem]">
               SMM силами
               <br />
               <span className="kw" style={{ fontSize: "0.72em" }}>

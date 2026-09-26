@@ -8,7 +8,6 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
-import { EYEBROW } from "@/lib/typography";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { SASHA_SITES } from "@/components/home/team-pulse/content/sasha-sites";
 import PromoCard from "@/components/home/PromoCard";
@@ -99,15 +98,9 @@ export default function SitesMethodAudience() {
             Саша's card, the narrower column read cramped next to the
             comparison table. */}
         <div className="w-full shrink-0 lg:w-[44%] land:w-[40%]">
-          <Appear from="up" delay={BEAT.eyebrow}>
-            <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-              <span className={`${EYEBROW} text-glow`}>02</span>
-              <span className="h-px w-8 bg-glow/40" />
-            </div>
-          </Appear>
 
           <Appear from="up" delay={BEAT.title}>
-            <h2 className="chapter-neon-warm mt-3 max-w-[6.7em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] lg:text-[3.24rem] xl:text-[3.6rem]">
+            <h2 className="chapter-neon-warm max-w-[6.7em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] lg:text-[3.24rem] xl:text-[3.6rem]">
               Никакой
               <br />
               <span className="kw">магии</span>

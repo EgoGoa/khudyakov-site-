@@ -53,7 +53,7 @@ export const CHAPTER_COLUMN = "max-w-xl lg:max-w-[56%]";
 // работать. См. комментарий там о том, почему клиентский модуль не место
 // для константы, нужной и серверным компонентам.
 export { CHAPTER_INTRO } from "@/lib/typography";
-import { CHAPTER_INTRO, EYEBROW } from "@/lib/typography";
+import { CHAPTER_INTRO } from "@/lib/typography";
 
 export type EntranceKind = "slide-left" | "slide-right" | "rise" | "zoom" | "unfold";
 
@@ -88,15 +88,6 @@ function entranceFor(kind: EntranceKind, active: boolean) {
 // these to land at duration 0 instead of replaying the BEAT delay and
 // blur-in — the header's own version of what Appear does for everything
 // inside the body.
-const HEADER_EYEBROW = (instant: boolean): Variants => ({
-  off: { opacity: 0, y: 10, filter: "blur(8px)" },
-  on: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: instant ? 0 : DUR.text, delay: instant ? 0 : BEAT.eyebrow, ease: MOTION_EASE },
-  },
-});
 const HEADER_TITLE = (instant: boolean): Variants => ({
   off: { opacity: 0, y: 22, filter: "blur(18px)" },
   on: {
@@ -140,7 +131,6 @@ const DECOR = (instant: boolean): Variants => ({
 
 export default function CinematicSection({
   index,
-  chapter,
   title,
   intro,
   side = "left",
@@ -159,8 +149,9 @@ export default function CinematicSection({
 }: {
   /** Position in the deck — must match this chapter's entry in `chapters`. */
   index: number;
-  /** "01".."06" */
-  chapter: string;
+  /** "01".."06". Номер больше не показывается (Егор, 2026-09-26: убрать
+   *  номера блоков на всех страницах); оставлен для совместимости вызовов. */
+  chapter?: string;
   /** ReactNode rather than string so a chapter can force its own line
    *  breaks — /sites' chapter 01 sets the heading over four lines the way
    *  its approved sketch does, which no automatic wrap reproduces. It is
@@ -371,19 +362,6 @@ export default function CinematicSection({
             any corner. Kept separate, a centred title can still be a centred
             title. No per-chapter glyph next to it any more (removed by
             request) — the number alone is the marker. */}
-        <motion.div
-          initial={false}
-          animate={active ? "on" : "off"}
-          variants={reduced ? undefined : HEADER_EYEBROW(instant)}
-          className={`flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)] ${
-            alignRight ? "lg:justify-end" : ""
-          }`}
-        >
-          <span className={`${EYEBROW} text-glow`}>
-            {chapter}
-          </span>
-          <span className="h-px w-8 bg-glow/40" />
-        </motion.div>
 
         {/* The title is always centred on its own, independent of which
             corner the number sits in — bigger too, since it's now the one
@@ -392,7 +370,7 @@ export default function CinematicSection({
         <motion.div
           initial={false}
           animate={active ? "on" : "off"}
-          className={`mt-2 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)] ${
+          className={`[text-shadow:0_2px_24px_rgba(11,11,16,0.9)] ${
             column ? `${CHAPTER_COLUMN} text-left` : "mx-auto max-w-5xl text-center"
           }`}
         >

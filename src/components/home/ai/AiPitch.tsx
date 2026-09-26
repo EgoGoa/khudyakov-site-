@@ -6,7 +6,6 @@ import { useLandscapePhone } from "@/lib/use-landscape-phone";
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import AiDeck, { AI_PILL, AI_ROUND } from "@/components/home/ai/AiDeck";
-import { EYEBROW } from "@/lib/typography";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { DIMA_AI } from "@/components/home/team-pulse/content/dima-ai";
 
@@ -69,15 +68,9 @@ export default function AiPitch() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:grid land:grid-cols-[40%_1fr] land:items-start land:gap-x-6 land:gap-y-2">
         <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-auto land:shrink-0">
           <div className="order-1 lg:order-none land:order-none">
-          <Appear from="up" delay={BEAT.eyebrow}>
-            <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-              <span className={`${EYEBROW} text-emerald-300`}>01</span>
-              <span className="h-px w-8 bg-emerald-300/40" />
-            </div>
-          </Appear>
 
           <Appear from="up" delay={BEAT.title}>
-            <h2 className="chapter-neon-cool mt-3 max-w-[9.4em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.15rem] xl:text-[3.51rem]">
+            <h2 className="chapter-neon-cool max-w-[9.4em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.15rem] xl:text-[3.51rem]">
               <span className="whitespace-nowrap"><span className="kw">AI</span>-решения</span><br />
               быстрее рынка
             </h2>

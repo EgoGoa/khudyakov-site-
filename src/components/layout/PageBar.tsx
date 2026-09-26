@@ -67,10 +67,19 @@ const BLUR_BOOST = 0.4;
 // Сколько макетных пикселей рука проходит на одну карточку.
 const SPACING = 100;
 
-// Свет под выбранным: линия 2px, под ней затухание вниз; по горизонтали ярче
-// всего в центре.
-const UNDERGLOW_MASK =
-  "linear-gradient(to bottom, #000 0 2px, rgba(0,0,0,0.75) 2px, transparent 100%), linear-gradient(90deg, transparent, rgba(0,0,0,0.35) 20%, #000 50%, rgba(0,0,0,0.35) 80%, transparent)";
+// Свет под выбранным (Егор): чёткая линия в градиенте страницы прямо под
+// буквами, и от неё свет идёт только вниз — под центром сильнее, к краям
+// слабее. Без blur: форму задают градиентные маски, поэтому верхний край
+// ровный и ничего не поднимается выше линии.
+const LINE_MASK = "linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent)";
+// Свет — ровная полоса, а не овальное пятно (Егор: пятно «некрасивое», от
+// центра резко обрывалось). По вертикали плавно стекает от линии вниз, по
+// горизонтали — мягкая кривая: к центру чуть плотнее, к краям гаснет без
+// ступеньки. Две маски перемножаются (intersect).
+const GLOW_MASK_Y = "linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.4) 35%, rgba(0,0,0,0.12) 70%, transparent)";
+const GLOW_MASK_X =
+  "linear-gradient(90deg, transparent, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.55) 24%, rgba(0,0,0,0.85) 38%, #000 50%, rgba(0,0,0,0.85) 62%, rgba(0,0,0,0.55) 76%, rgba(0,0,0,0.2) 90%, transparent)";
+const GLOW_MASK = `${GLOW_MASK_Y}, ${GLOW_MASK_X}`;
 
 // Какой услуге принадлежит адрес. Подстраницы — своей услуге (кейсы и
 // тарифы SMM → SMM, направления контента и портфолио → контент, брифы — по
@@ -224,13 +233,8 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
             const d = Math.abs(offset);
             const fullO = Math.max(0, Math.min(1, 1 - d * 1.6));
             const shortO = Math.max(0, Math.min(1, (d - 0.35) * 1.6));
-            const textGrad: CSSProperties = {
-              backgroundImage: `linear-gradient(90deg, ${g.from}, ${g.to})`,
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              color: "transparent",
-              WebkitTextFillColor: "transparent",
-            };
+            // Буквы в баре белые (Егор), цвет страницы — только в линии и свете.
+            const pageGrad = `linear-gradient(90deg, ${g.from}, ${g.to})`;
             const fade = live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]";
 
             return (
@@ -281,7 +285,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                         перетекают по расстоянию до центра, а размер везде
                         один — крупнее или мельче их делает масштаб карточки.
                         Так при листании нет рывка ни в тексте, ни в размере. */}
-                    <span className="grid place-items-center font-display text-[15px] uppercase leading-none tracking-tight text-white [&>*]:[grid-area:1/1]">
+                    <span className="grid place-items-center font-display text-[13px] uppercase leading-none tracking-tight text-white [&>*]:[grid-area:1/1]">
                       <span className={`relative whitespace-nowrap ${fade}`} style={{ opacity: fullO }}>
                         {/* Выбранная страница «нажата» (просьба Егора): сразу
                             под буквами ровная светлая линия в градиенте
@@ -289,21 +293,25 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                             Насыщеннее всего по центру, к краям гаснет. */}
                         <span
                           aria-hidden="true"
-                          className="pointer-events-none absolute -inset-x-3 top-[calc(100%+3px)] h-[14px]"
-                          style={{
-                            // На общих страницах ничего не «нажато».
-                            opacity: home >= 0 ? 1 : 0,
-                            background: `linear-gradient(90deg, ${g.from}, ${g.to})`,
-                            // Ярче и насыщеннее самих цветов страницы.
-                            filter: "saturate(2) brightness(1.25)",
-                            WebkitMaskImage: UNDERGLOW_MASK,
-                            maskImage: UNDERGLOW_MASK,
-                            WebkitMaskComposite: "source-in",
-                            maskComposite: "intersect",
-                          }}
-                        />
-                        {LABEL[pageKey][0]}{" "}
-                        <span style={textGrad}>{LABEL[pageKey][1]}</span>
+                          // На общих страницах ничего не «нажато».
+                          className={`pointer-events-none absolute -inset-x-2 top-[calc(100%+4px)] h-[18px] ${home >= 0 ? "opacity-100" : "opacity-0"}`}
+                        >
+                          <span
+                            className="absolute inset-0 opacity-70"
+                            style={{
+                              background: pageGrad,
+                              WebkitMaskImage: GLOW_MASK,
+                              maskImage: GLOW_MASK,
+                              WebkitMaskComposite: "source-in",
+                              maskComposite: "intersect",
+                            }}
+                          />
+                          <span
+                            className="absolute inset-x-0 top-0 h-[1.5px]"
+                            style={{ background: pageGrad, WebkitMaskImage: LINE_MASK, maskImage: LINE_MASK }}
+                          />
+                        </span>
+                        {LABEL[pageKey][0]} {LABEL[pageKey][1]}
                       </span>
                       <span className={`relative whitespace-nowrap ${fade}`} style={{ opacity: shortO }}>
                         {/* Соседи подчёркнуты просто волосяной линией в цвете
@@ -318,7 +326,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                             maskImage: "linear-gradient(90deg, transparent, #000 50%, transparent)",
                           }}
                         />
-                        <span style={textGrad}>{SHORT[pageKey]}</span>
+                        {SHORT[pageKey]}
                       </span>
                     </span>
                   </span>

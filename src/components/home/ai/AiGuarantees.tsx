@@ -219,7 +219,7 @@ const TERM_SCENES: { icon: string; render: () => React.ReactNode }[] = [
  *  line — instead of just sitting there for the extra time. */
 function GuaranteeInfographic() {
   return (
-    <div className="ai-thumb-live relative h-full w-full overflow-hidden rounded-2xl border border-emerald-300/15 bg-white/[0.025]">
+    <div className="ai-thumb-live relative h-full w-full overflow-hidden rounded-[20px] border border-emerald-300/15 bg-white/[0.025]">
       <span
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
@@ -233,7 +233,7 @@ function GuaranteeInfographic() {
         >
           <div className="flex items-center gap-2.5">
             <span className="text-[28px] leading-none">{TERM_SCENES[i].icon}</span>
-            <h3 className="kw max-w-[11em] text-left font-display text-base uppercase leading-[1.15] tracking-tight">
+            <h3 className="kw min-w-0 max-w-[18em] text-left font-display text-sm uppercase leading-[1.15] tracking-tight xl:text-base">
               {term.title}
             </h3>
           </div>
@@ -259,7 +259,6 @@ function GuaranteeInfographic() {
 export default function AiGuarantees() {
   return (
     <CinematicSection
-      footer={<ToolSpotlight slug="voice" place="right" />}
       index={5}
       chapter="06"
       title={<>Условия и <span className="kw">гарантии</span></>}
@@ -278,8 +277,12 @@ export default function AiGuarantees() {
         />
       }
     >
-      <div className="lg:flex lg:items-start lg:gap-12">
-        <ul className="lg:max-w-md lg:flex-1">
+      {/* Раскладка как у глав 04–05 (Егор: «хаотично, собрать однородно,
+          растянуть»): две равные колонки на всю ширину. Слева семь условий,
+          справа плотная стопка окошек одной ширины — Егор, инфографика и
+          плашка «Озвучка», которая раньше висела отдельной полосой внизу. */}
+      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-10 xl:gap-14">
+        <ul>
           {TERMS.map((term, i) => (
             <Appear
               key={term.title}
@@ -305,27 +308,24 @@ export default function AiGuarantees() {
           ))}
         </ul>
 
-        {/* Команда + FAQ dropped — Egor's call: both repeated near-identical
-            content already sitting elsewhere on this page (and across other
-            service pages), and read as filler next to the seven terms.
-            Replaced with a wide TeamAskCard for Egor himself — discussing
-            collaboration terms and this specific project's details is
-            exactly what this chapter is about. The bottom half, left empty
-            at first, now carries a 14s looping infographic (GuaranteeInfographic)
-            that retells the seven terms one at a time, ~2s each, same order
-            as the list beside it. */}
-        <div className="mt-8 flex flex-col gap-4 lg:mt-0 lg:h-[560px] lg:w-[360px] lg:shrink-0 xl:w-[400px]">
-          <Appear from="right" delay={BEAT.content + TERMS.length * STAGGER.tight} className="lg:h-[calc(50%-8px)]">
-{/* Егор как сервис (TeamPulse) — на месте прежней карточки
-                TeamAskCard, в своём оранжево-жёлтом (см. egor-ai.tsx). */}
+        <div className="mt-8 flex flex-col gap-4 lg:mt-0">
+          {/* Егор как сервис (TeamPulse), в своём оранжево-жёлтом (см. egor-ai.tsx).
+              TeamPulse держит плашку (78px) по центру своей коробки высотой
+              8.75rem — сверху и снизу по ~31px пустоты. На десктопе её
+              съедают отрицательные поля, чтобы верх плашки встал ровно по
+              верхней линии списка слева (Егор: «выровняй выше»). */}
+          <Appear from="right" delay={BEAT.content + TERMS.length * STAGGER.tight} className="lg:-my-[31px]">
             <TeamPulse data={EGOR_AI} />
           </Appear>
           <Appear
             from="right"
             delay={BEAT.content + TERMS.length * STAGGER.tight + STAGGER.tight}
-            className="lg:h-[calc(50%-8px)]"
+            className="h-[250px]"
           >
             <GuaranteeInfographic />
+          </Appear>
+          <Appear from="right" delay={BEAT.content + TERMS.length * STAGGER.tight + STAGGER.tight * 2}>
+            <ToolSpotlight slug="voice" shape="card" />
           </Appear>
         </div>
       </div>

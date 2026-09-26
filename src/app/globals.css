@@ -3727,6 +3727,24 @@ body {
 .guar-term-slide { animation: guar-slide 28s ease-in-out infinite both; }
 .guar-dot { animation: guar-dot 28s ease-in-out infinite both; }
 
+/* Лёгкий и средний режимы проигрывают бесконечные анимации один раз, а
+   последний кадр guar-slide прозрачный — через 28 с все семь слайдов
+   гасли, и оставалась пустая рамка. Там показываем первый пункт статично. */
+html[data-lite] .guar-term-slide,
+html[data-mid] .guar-term-slide,
+html[data-lite] .guar-dot,
+html[data-mid] .guar-dot {
+  animation: none !important;
+}
+html[data-lite] .guar-term-slide,
+html[data-mid] .guar-term-slide {
+  opacity: 0;
+}
+html[data-lite] .guar-term-slide:first-of-type,
+html[data-mid] .guar-term-slide:first-of-type {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .guar-term-slide,
   .guar-dot {

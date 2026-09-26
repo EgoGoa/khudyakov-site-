@@ -5,7 +5,6 @@ import Link from "next/link";
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
-import { EYEBROW } from "@/lib/typography";
 import { PersonBadge } from "@/components/ui/FunnelCta";
 import type { TeamMember } from "@/lib/team";
 
@@ -34,7 +33,9 @@ import type { TeamMember } from "@/lib/team";
  *  is never generated and silently renders unstyled. */
 export type ChapterAccent = {
   /** The chapter number, e.g. "text-glow" or "text-[#c4a0ff]". */
-  number: string;
+  /** Номер главы — больше не показывается (Егор, 2026-09-26: убрать номера
+   *  блоков на всех страницах); оставлен для совместимости вызовов. */
+  number?: string;
   /** The short rule beside it. */
   rule: string;
   /** The heading's neon treatment, e.g. "chapter-neon-warm". */
@@ -47,7 +48,6 @@ export type ChapterAccent = {
 
 export default function ChapterLayout({
   accent,
-  number,
   title,
   sub,
   primary,
@@ -98,18 +98,10 @@ export default function ChapterLayout({
   return (
     <div className="relative z-10 lg:flex lg:items-center lg:gap-10 xl:gap-14 land:flex land:items-start land:gap-6">
       <div className={`w-full shrink-0 ${columnClassName} land:w-[40%]`}>
-        <Appear from="up" delay={BEAT.eyebrow}>
-          <div className="flex items-center gap-3 [text-shadow:0_2px_24px_rgba(11,11,16,0.9)]">
-            <span className={`${EYEBROW} ${accent.number}`}>
-              {number}
-            </span>
-            <span className={`h-px w-8 ${accent.rule}`} />
-          </div>
-        </Appear>
 
         <Appear from="up" delay={BEAT.title}>
           <h2
-            className={`${accent.heading} mt-3 max-w-[6.7em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] lg:text-[3.24rem] xl:text-[3.6rem]`}
+            className={`${accent.heading} max-w-[6.7em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] lg:text-[3.24rem] xl:text-[3.6rem]`}
           >
             {title}
           </h2>
