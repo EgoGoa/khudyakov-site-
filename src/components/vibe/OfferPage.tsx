@@ -12,7 +12,7 @@ import { buildOffer, decodeAnswers, encodeAnswers, formatBudget, type VibeAnswer
 import type { PricingTier } from "@/lib/types";
 import { Arrow, CONTACT_KEY, ORB_FROM, ORB_TO, TELEGRAM } from "./VibeMode";
 
-// Страница-КП вайб-режима (Егор, 2026-09-26): отдельная страница в
+// Персональный лендинг вайб-режима (Егор, 2026-09-26): отдельная страница в
 // фирменном стиле сайта, которая выглядит как коммерческое предложение и
 // презентация продукта под конкретного клиента — его сфера, задача,
 // бюджет, решение, кейсы и тарифы с заказом в один клик. Собирается в
@@ -77,10 +77,10 @@ export default function OfferPage() {
     return (
       <main className="offer flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
         <NanoSphere size={120} from={ORB_FROM} to={ORB_TO} glow={0.35} />
-        <h1 className="offer-h2 mt-8">КП не найдено</h1>
+        <h1 className="offer-h2 mt-8">Лендинг не найден</h1>
         <p className="offer-lead mt-4 max-w-[480px]">Ссылка неполная. Пройди вайб-режим заново — это три минуты.</p>
         <Link href="/?vibe=1" className="vibe-mode__cta mt-8">
-          Собрать КП
+          Собрать лендинг
           <Arrow />
         </Link>
       </main>
@@ -115,7 +115,7 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: EASE }}>
             <span className="offer-eyebrow mt-6 block">
-              Персональное предложение · HUD.SERVICE{contact ? ` · для ${contact.name}` : ""}
+              Персональный лендинг · HUD.SERVICE{contact ? ` · для ${contact.name}` : ""}
             </span>
             <h1 className="offer-h1 mx-auto mt-5 max-w-[1000px]">
               <span className="offer-kw">{offer.product}</span>
@@ -334,8 +334,8 @@ function OrderSheet({
           phone: phone.trim(),
           fields: {
             "Выбранный план": `${tier.name} · ${tier.price}`,
-            "КП": title,
-            "Ссылка на КП": `${window.location.origin}/offer?p=${encodeAnswers(answers)}`,
+            "Лендинг": title,
+            "Ссылка на лендинг": `${window.location.origin}/offer?p=${encodeAnswers(answers)}`,
           },
         }),
       });
@@ -367,7 +367,7 @@ function OrderSheet({
             <h2 className="vibe-mode__title vibe-mode__title--q mt-6">Заявка принята</h2>
             <p className="vibe-mode__lead mt-3">План «{tier.name}». Продюсер свяжется в течение часа.</p>
             <button type="button" onClick={onClose} className="vibe-mode__cta mt-8">
-              Вернуться к КП
+              Вернуться к лендингу
             </button>
           </>
         ) : (

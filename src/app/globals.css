@@ -6884,19 +6884,71 @@ html[data-lite] .vibe-tip {
   --vm-b: #b07cff;
   --vm-c: #ff7a9c;
   --vm-d: #ffb07a;
-  font-family: var(--font-montserrat), system-ui, sans-serif;
+  /* Весь текст окна — фирменный Unbounded, не тоньше 600 (Егор: «убрать
+     все тонкие шрифты, фирменные повсюду»). Поля и кнопки наследуют. */
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   color: #fff;
   background: rgba(3, 3, 6, 0.55);
 }
+.vibe-mode input,
+.vibe-mode button,
+.vibe-mode label { font-family: inherit; font-weight: inherit; }
+.vibe-mode label { color: #fff; }
+/* Метка режима в углу окна. */
+.vibe-mode__tag {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+/* Логотип HUD.SERVICE — заголовок вступления. Тот же набор, что в шапке
+   (BrandLockup в Header.tsx): Unbounded обычной жирности, tracking-tight,
+   точка ~0.45em; только крупнее шапки. */
+.vibe-mode .vibe-mode__hero-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42em;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: clamp(24px, 5.4vw, 36px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.vibe-mode__hero-logo .vibe-mode__brand-dot { width: 0.42em; height: 0.42em; }
+/* Курсор печати в приветствии окна. */
+.vibe-mode__caret {
+  display: inline-block;
+  width: 0.08em;
+  height: 0.9em;
+  margin-left: 0.08em;
+  vertical-align: -0.08em;
+  background: linear-gradient(180deg, var(--vm-b), var(--vm-c));
+  animation: vibe-caret 0.9s steps(1) infinite;
+}
+.vibe-mode__caret.is-done { animation-duration: 0.6s; }
+@keyframes vibe-caret { 50% { opacity: 0; } }
 .vibe-mode__window {
   position: relative;
   width: min(640px, 100%);
   border-radius: 30px;
+  /* clip, а не hidden: сияние шире окна, и при hidden браузер по фокусу
+     прокручивал окно внутрь — анкета съезжала влево-вверх. */
   overflow: hidden;
+  overflow: clip;
   background: rgba(12, 12, 20, 0.74);
   backdrop-filter: blur(30px) saturate(1.4);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 40px 120px -24px rgba(0, 0, 0, 0.85);
 }
+/* Окно вайб-сайта статичное: одна высота на все шаги, не прыгает под текст. */
+.vibe-mode__window--fixed { height: min(640px, calc(100dvh - 32px)); }
 .vibe-mode__scroll {
   position: relative;
   max-height: calc(100dvh - 32px);
@@ -6914,12 +6966,44 @@ html[data-lite] .vibe-tip {
     radial-gradient(30% 24% at 72% 72%, rgba(255, 122, 156, 0.12), transparent 70%);
   animation: vibe-aurora 18s ease-in-out infinite alternate;
 }
+/* Мягкие цветные вспышки за окном — медленно, вразнобой пульсируют
+   (Егор: «мягкие цвета на фоне плавно пульсируют медленно»). */
+.vibe-mode__aurora::before,
+.vibe-mode__aurora::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  animation: vibe-glow 9s ease-in-out infinite;
+}
+.vibe-mode__aurora::before {
+  width: 38%;
+  height: 30%;
+  left: 22%;
+  top: 30%;
+  background: rgba(111, 134, 255, 0.22);
+}
+.vibe-mode__aurora::after {
+  width: 34%;
+  height: 28%;
+  right: 22%;
+  bottom: 30%;
+  background: rgba(255, 122, 156, 0.18);
+  animation-duration: 11s;
+  animation-delay: -5s;
+}
+@keyframes vibe-glow {
+  0%, 100% { opacity: 0.25; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
 @keyframes vibe-aurora {
   from { transform: rotate(0deg) scale(1); }
   to { transform: rotate(8deg) scale(1.08); }
 }
 html[data-lite] .vibe-mode__aurora,
-html[data-mid] .vibe-mode__aurora { animation: none; }
+html[data-mid] .vibe-mode__aurora,
+html[data-lite] .vibe-mode__aurora::before,
+html[data-lite] .vibe-mode__aurora::after { animation: none; }
 html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
 .vibe-mode__progress {
   background: linear-gradient(90deg, var(--vm-a), var(--vm-b), var(--vm-c), var(--vm-d));
@@ -6956,7 +7040,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   to { background-position: 100% 50%; }
 }
 .vibe-mode__lead {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1.45;
   color: #fff;
@@ -6964,8 +7048,8 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
 .vibe-mode__pill {
   padding: 8px 14px;
   border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   background: rgba(255, 255, 255, 0.07);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
 }
@@ -6985,7 +7069,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
 }
 .vibe-mode__num {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   background: linear-gradient(90deg, var(--vm-a), var(--vm-c));
@@ -7001,7 +7085,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   height: 46px;
   padding: 0 22px;
   border-radius: 999px;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: #07070b;
   background: #fff;
@@ -7019,8 +7103,8 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   height: 44px;
   padding: 0 14px;
   border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: #fff;
   transition: background 0.2s;
 }
@@ -7028,8 +7112,8 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
 .vibe-mode__ghost--pill { padding: 0 20px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18); }
 .vibe-mode__quiet {
   padding: 10px 14px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: #fff;
   opacity: 0.85;
   transition: opacity 0.2s;
@@ -7073,14 +7157,14 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   padding: 10px 14px;
   border-radius: 16px;
   text-align: left;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 .vibe-mode__chip {
   padding: 9px 14px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
 }
 .vibe-mode__option:hover,
@@ -7104,7 +7188,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   height: 28px;
   border-radius: 9px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   background: rgba(255, 255, 255, 0.08);
 }
 .vibe-mode__option.is-on .vibe-mode__key {
@@ -7117,7 +7201,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   height: 50px;
   padding: 0 16px;
   border-radius: 16px;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   text-align: left;
 }
@@ -7127,6 +7211,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   padding: 0 18px;
   border-radius: 16px;
   font-size: 16px;
+  font-weight: 600;
   color: #fff;
   outline: none;
 }
@@ -7136,7 +7221,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 .vibe-mode__assist-dot {
@@ -7227,8 +7312,16 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   --vm-b: #b07cff;
   --vm-c: #ff7a9c;
   --vm-d: #ffb07a;
+  /* Как в вайб-окне: весь текст лендинга — Unbounded, не тоньше 600. */
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   color: #fff;
 }
+.offer .font-medium,
+.offer .font-normal { font-weight: 600; }
+.offer input,
+.offer button { font-family: inherit; }
 .offer-hero-video {
   position: absolute;
   inset: 0;
@@ -7273,7 +7366,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(18px); }
   color: transparent;
 }
 .offer-lead {
-  font-size: clamp(16px, 1.5vw, 19px);
+  font-size: clamp(15px, 1.3vw, 17px);
   line-height: 1.55;
 }
 .offer-card {

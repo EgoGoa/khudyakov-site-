@@ -21,7 +21,10 @@ const EASE = 0.16; // постоянная времени разгона/тор�
 // замыкался без шва.
 const COLORS = ["#10b981", "#00d2ff", "#a855f7", "#ff4fd8", "#ff6a3d", "#ffc53d", "#7cf2b0", "#10b981"];
 
-export default function LiveBrandWord({ children }: { children: string }) {
+/** period — длина круга цветов, px. Для крупного логотипа (заставка
+ *  вайб-окна) его растягивают, чтобы перелив был таким же плавным, как в
+ *  шапке, а не пёстрым. */
+export default function LiveBrandWord({ children, period = PERIOD }: { children: string; period?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -29,8 +32,8 @@ export default function LiveBrandWord({ children }: { children: string }) {
     if (!el) return;
     // Горизонтальный период наклонного повторяющегося градиента: сдвиг
     // фона ровно на него даёт ту же картинку — поэтому круг бесконечный.
-    const hPeriod = PERIOD / Math.abs(Math.sin((ANGLE * Math.PI) / 180));
-    el.style.backgroundImage = `repeating-linear-gradient(${ANGLE}deg, ${COLORS.map((c, i) => `${c} ${Math.round((i / (COLORS.length - 1)) * PERIOD)}px`).join(", ")})`;
+    const hPeriod = period / Math.abs(Math.sin((ANGLE * Math.PI) / 180));
+    el.style.backgroundImage = `repeating-linear-gradient(${ANGLE}deg, ${COLORS.map((c, i) => `${c} ${Math.round((i / (COLORS.length - 1)) * period)}px`).join(", ")})`;
     el.style.backgroundSize = `calc(100% + ${Math.ceil(hPeriod)}px) 100%`;
     el.style.backgroundRepeat = "no-repeat";
 
@@ -68,7 +71,7 @@ export default function LiveBrandWord({ children }: { children: string }) {
       events.forEach((e) => window.removeEventListener(e, wake, { capture: true }));
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [period]);
 
   return (
     <span ref={ref} className="brand-word brand-word-live">
