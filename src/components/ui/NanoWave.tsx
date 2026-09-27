@@ -87,7 +87,8 @@ export default function NanoWave({
     const html = document.documentElement;
     const light = html.hasAttribute("data-lite") || html.hasAttribute("data-mid");
     // Не слишком плотно (Егор): лента из 13 линий, а не 20.
-    const LINES = light ? 9 : 13;
+    // Большая волна (окно) — больше линий, чтобы не терять детализацию.
+    const LINES = Math.round((light ? 9 : 13) * Math.min(1.5, Math.max(1, height / 60)));
 
     // Пыль на концах (Егор: «чтобы по краям она распылялась»): мелкие искры
     // рождаются у обоих концов ленты и улетают наружу, растворяясь. В
@@ -152,8 +153,18 @@ export default function NanoWave({
     let lastX = 0;
     let lastY = 0;
     let nowT = 0;
+    const boostBuf = new Float32Array(POINTS + 1);
+    // Прямоугольник холста кешируется: getBoundingClientRect на каждое
+    // движение мыши заставлял браузер пересчитывать вёрстку. Сбрасывается
+    // при прокрутке и изменении размера.
+    let rect: DOMRect | null = null;
+    const dropRect = () => {
+      rect = null;
+    };
+    window.addEventListener("scroll", dropRect, { passive: true, capture: true });
+    window.addEventListener("resize", dropRect);
     const locate = (e: PointerEvent) => {
-      const r = canvas.getBoundingClientRect();
+      const r = (rect ??= canvas.getBoundingClientRect());
       const u = ((e.clientX - r.left) * (W / r.width) - x0) / len;
       const dy = Math.abs(e.clientY - (r.top + r.height / 2));
       return { u, hit: u > 0.04 && u < 0.96 && dy < Math.max(28, height * 0.85) };
@@ -165,7 +176,7 @@ export default function NanoWave({
     };
     const onMove = (e: PointerEvent) => {
       const { u, hit } = locate(e);
-      if (hit && !inside) ripple(u, 0.9); // вход в зону — сразу всплеск
+      if (hit && !inside) ripple(u, 0.7); // вход в зону — сразу всплеск
       inside = hit;
       if (!hit) return;
       cu = u;
@@ -173,7 +184,7 @@ export default function NanoWave({
       const moved = Math.hypot(e.clientX - lastX, e.clientY - lastY);
       lastX = e.clientX;
       lastY = e.clientY;
-      if (moved > 4 && nowT - lastRipple > 0.09) ripple(u, Math.min(1, 0.25 + moved / 60));
+      if (moved > 6 && nowT - lastRipple > 0.14) ripple(u, Math.min(0.8, 0.2 + moved / 90));
     };
     const onDown = (e: PointerEvent) => {
       const { u, hit } = locate(e);
@@ -191,8 +202,14 @@ export default function NanoWave({
     // Для искр — тянутся с той стороны, где курсор (spawnSpark читает pull).
     let pull = 0;
 
+    let rectAt = 0;
     const draw = (t: number) => {
       nowT = t;
+      // Окно может выезжать с анимацией — прямоугольник освежаем раз в 0.5 с.
+      if (t - rectAt > 0.5) {
+        rect = null;
+        rectAt = t;
+      }
       // Покой — спокойное дыхание; разговор — размах за громкостью голоса.
       const lv = levelRef.current?.() ?? 0.55;
       const dt = Math.max(0, Math.min(0.05, t - lastT));
@@ -200,15 +217,15 @@ export default function NanoWave({
       const target = hotRef.current ? 1.2 + lv * 3.6 : 1.15;
       if (pulseRef.current !== seenPulse) {
         seenPulse = pulseRef.current;
-        energy = Math.max(energy, 4.2);
+        energy = Math.max(energy, 2.6);
       }
-      energy += (target - energy) * (hotRef.current ? 0.3 : 0.07);
+      energy += (target - energy) * (hotRef.current ? 0.16 : 0.05);
       const breath = 1 + 0.14 * Math.sin(t * 0.9) + 0.05 * Math.sin(t * 2.1);
       const e = energy * breath;
       const speed = hotRef.current ? 1 + (energy - 1) * 0.55 : 0.8;
       // Отклик моментальный: вход — быстро, уход — мягко.
-      hoverS += ((inside ? 1 : 0) - hoverS) * (inside ? 0.25 : 0.05);
-      cuS += (cu - cuS) * 0.35;
+      hoverS += ((inside ? 1 : 0) - hoverS) * (inside ? 0.12 : 0.04);
+      cuS += (cu - cuS) * 0.14;
       pull = (cuS - 0.5) * 2 * hoverS;
       const glowK = 0.6 + 0.4 * hoverS;
 
@@ -232,23 +249,27 @@ export default function NanoWave({
       ];
       for (const [o, c] of stops.sort((a, b) => a[0] - b[0])) grad.addColorStop(Math.min(1, Math.max(0, o)), c);
       ctx.strokeStyle = grad;
-      ctx.lineWidth = 0.8 * dpr * k;
-      ctx.shadowBlur = 3 * dpr * k;
-      ctx.shadowColor = `rgba(${fr},${fg},${fb},0.4)`;
+      // Тонкие линии при любом размере: толщина не растёт с волной, иначе
+      // в большом окне рисунок терял детализацию. Без shadowBlur — он
+      // самый дорогой шаг canvas; свечение дают сами линии «lighter».
+      ctx.lineWidth = 0.8 * dpr * Math.min(k, 1.15);
 
       ph += dt * 2 * speed;
 
       // Рябь: фронт каждой волны уходит от точки рождения в обе стороны.
-      for (let i = ripples.length - 1; i >= 0; i--) if (t - ripples[i].born > 2.2) ripples.splice(i, 1);
-      const boost = new Float32Array(POINTS + 1);
+      for (let i = ripples.length - 1; i >= 0; i--) if (t - ripples[i].born > 2.8) ripples.splice(i, 1);
+      const boost = boostBuf;
       for (let i = 0; i <= POINTS; i++) {
         const u = i / POINTS;
-        const du = (u - cuS) / 0.09;
-        let b = 2.3 * hoverS * Math.exp(-du * du);
+        const du = (u - cuS) / 0.12;
+        let b = 1.9 * hoverS * Math.exp(-du * du);
         for (const r of ripples) {
           const age = t - r.born;
-          const front = (Math.abs(u - r.u) - age * 0.5) / 0.05;
-          b += 2.4 * r.amp * Math.exp(-age * 1.8) * Math.exp(-front * front);
+          // Круг набирает силу за 0.15 с (без щелчка), расходится медленно и
+          // широким мягким фронтом.
+          const front = (Math.abs(u - r.u) - age * 0.32) / 0.085;
+          const rise = Math.min(1, age / 0.15);
+          b += 1.6 * r.amp * rise * Math.exp(-age * 1.3) * Math.exp(-front * front);
         }
         boost[i] = 1 + b;
       }
@@ -276,7 +297,6 @@ export default function NanoWave({
       }
 
       if (dust || sparkle) {
-        ctx.shadowBlur = 0;
         moteAcc += MOTES_PER_S * (0.6 + 0.4 * energy) * (1 + 1.6 * glowK) * Math.max(0, t - moteLast);
         moteLast = t;
         while (moteAcc >= 1) {
@@ -306,6 +326,11 @@ export default function NanoWave({
     };
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let onScreen = true;
+    const io = new IntersectionObserver(([en]) => {
+      onScreen = en.isIntersecting;
+    });
+    io.observe(wrap);
     let raf = 0;
     if (still) {
       draw(1.3);
@@ -315,6 +340,8 @@ export default function NanoWave({
       let last = 0;
       const loop = (now: number) => {
         raf = requestAnimationFrame(loop);
+        // Вне экрана и в фоновой вкладке не рисуем вовсе.
+        if (!onScreen || document.hidden) return;
         if (now - last < frameMs) return;
         last = now;
         draw(Math.max(0, now - start) / 1000);
@@ -323,6 +350,9 @@ export default function NanoWave({
     }
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
+      window.removeEventListener("scroll", dropRect, { capture: true });
+      window.removeEventListener("resize", dropRect);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
       document.documentElement.removeEventListener("pointerleave", onOut);
