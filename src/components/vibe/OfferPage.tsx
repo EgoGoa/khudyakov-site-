@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import NanoSphere from "@/components/ui/NanoSphere";
+import { DustyOrb } from "@/components/ui/SphereDust";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { buildOffer, decodeAnswers, encodeAnswers, formatBudget, type VibeAnswers } from "@/lib/vibe-quiz";
@@ -76,7 +77,7 @@ export default function OfferPage() {
   if (!answers || !answers.direction) {
     return (
       <main className="offer flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
-        <NanoSphere size={120} from={ORB_FROM} to={ORB_TO} glow={0.35} />
+        <DustyOrb><NanoSphere size={120} from={ORB_FROM} to={ORB_TO} glow={0.35} /></DustyOrb>
         <h1 className="offer-h2 mt-8">Лендинг не найден</h1>
         <p className="offer-lead mt-4 max-w-[480px]">Ссылка неполная. Пройди вайб-режим заново — это три минуты.</p>
         <Link href="/?vibe=1" className="vibe-mode__cta mt-8">
@@ -111,7 +112,7 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
         <div className="offer-hero-veil" aria-hidden="true" />
         <div className="relative z-[1] flex flex-col items-center">
           <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, ease: EASE }}>
-            <NanoSphere size={120} from={ORB_FROM} to={ORB_TO} glow={0.35} pulse={pulse} />
+            <DustyOrb><NanoSphere size={120} from={ORB_FROM} to={ORB_TO} glow={0.35} pulse={pulse} /></DustyOrb>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: EASE }}>
             <span className="offer-eyebrow mt-6 block">
@@ -270,7 +271,7 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
 
       {/* ---------- Финал ---------- */}
       <section className="mx-auto flex max-w-[860px] flex-col items-center px-4 pb-28 pt-10 text-center">
-        <NanoSphere size={96} from={ORB_FROM} to={ORB_TO} glow={0.35} hot />
+        <DustyOrb><NanoSphere size={96} from={ORB_FROM} to={ORB_TO} glow={0.35} hot /></DustyOrb>
         <h2 className="offer-h2 mt-8">
           Запускаем <span className="offer-kw">твой проект?</span>
         </h2>
@@ -361,7 +362,7 @@ function OrderSheet({
         </svg>
       </button>
       <div className="vibe-mode__scroll z-[1] flex w-full flex-col items-center px-6 pb-8 pt-10 text-center sm:px-10">
-        <NanoSphere size={80} from={ORB_FROM} to={ORB_TO} glow={0.35} hot />
+        <DustyOrb><NanoSphere size={80} from={ORB_FROM} to={ORB_TO} glow={0.35} hot /></DustyOrb>
         {state === "done" ? (
           <>
             <h2 className="vibe-mode__title vibe-mode__title--q mt-6">Заявка принята</h2>

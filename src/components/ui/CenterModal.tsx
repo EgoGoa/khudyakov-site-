@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { CloseIcon } from "@/components/ui/Icons";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { WIN, WIN_DIM } from "@/lib/motion";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -145,9 +146,9 @@ export default function CenterModal({
     <AnimatePresence>
       {open && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={WIN_DIM.initial}
+          animate={bare ? { opacity: 1 } : WIN_DIM.animate}
+          exit={bare ? { opacity: 0 } : WIN_DIM.exit}
           // bare (вступительная сцена) — 0.32 читалось как резкий хлопок
           // тёмной подложки прямо на месте, где только что стоял знак
           // (просьба Егора после проверки живьём). Остальные окна (bare
@@ -184,9 +185,10 @@ export default function CenterModal({
             // сюда, но уходит туда же, в туман. Обычные окна (бриф,
             // вайб-режим блока) — на прежней механике сдвиг+масштаб, они не
             // связаны с заставкой.
-            initial={bare ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 22, scale: 0.96 }}
-            animate={bare ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 1, y: 0, scale: 1 }}
-            exit={bare ? { opacity: 0, y: -8, filter: "blur(14px)" } : { opacity: 0, y: 14, scale: 0.97 }}
+            // Обычные окна — общая анимация окон сайта (WIN, lib/motion).
+            initial={bare ? { opacity: 1, y: 0, filter: "blur(0px)" } : WIN.initial}
+            animate={bare ? { opacity: 1, y: 0, filter: "blur(0px)" } : WIN.animate}
+            exit={bare ? { opacity: 0, y: -8, filter: "blur(14px)" } : WIN.exit}
             transition={{ duration: bare ? 0.4 : 0.4, ease: EASE }}
             onClick={(e) => e.stopPropagation()}
             // Sized wide enough that the voice-wave graphic, the four service

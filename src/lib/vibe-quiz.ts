@@ -38,6 +38,9 @@ export type VibeQuestion = {
   options?: VibeOption[];
   /** Можно ответить своими словами (single/chips/multi). */
   own?: boolean;
+  /** Крупные варианты, как у single, но можно отметить несколько (Егор,
+   *  2026-09-27: «автомедицина, видеоконтент и сайты-лендинг сразу»). */
+  many?: boolean;
   optional?: boolean;
   placeholder?: string;
   /** Только для этих веток направления. Без поля — вопрос для всех. */
@@ -60,9 +63,24 @@ export function formatBudget(n: number): string {
   return `${n.toLocaleString("ru-RU")} ₽`;
 }
 
+const listOf = (v: VibeValue | undefined): string[] => (Array.isArray(v) ? v : v ? [v] : []);
+const isBranch = (d: string): d is Branch => d === "content" || d === "sites" || d === "ai" || d === "smm";
+
+/** Все выбранные направления по порядку выбора; «под ключ» — видео, сайт и
+ *  SMM вместе. Направлений можно выбрать несколько. */
+export function branchesOf(answers: VibeAnswers): Branch[] {
+  const out: Branch[] = [];
+  for (const d of listOf(answers.direction)) {
+    for (const b of d === "complex" ? (["sites", "content", "smm"] as Branch[]) : isBranch(d) ? [d] : []) {
+      if (!out.includes(b)) out.push(b);
+    }
+  }
+  return out.length ? out : ["sites"];
+}
+
+/** Главное направление — выбранное первым: по нему тариф и процесс. */
 function branchOf(answers: VibeAnswers): Branch {
-  const d = answers.direction;
-  return d === "content" || d === "ai" || d === "smm" ? d : "sites";
+  return branchesOf(answers)[0];
 }
 
 const DIRECTION_WORD: Record<string, string> = {
@@ -78,8 +96,9 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "direction",
     kind: "single",
+    many: true,
     title: "Что *запускаем*?",
-    hint: "Выбери главное — вопросы дальше *подстроятся* под это",
+    hint: "Можно выбрать *несколько* — вопросы дальше подстроятся",
     options: [
       { value: "content", label: "Видео и контент" },
       { value: "sites", label: "Сайт или лендинг" },
@@ -87,13 +106,16 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
       { value: "smm", label: "Соцсети и SMM" },
       { value: "complex", label: "Всё вместе, под ключ" },
     ],
-    react: (v) => `Отлично, собираю лендинг под ${DIRECTION_WORD[String(v)] ?? "задачу"}`,
+    react: (v) => {
+      const words = listOf(v).map((d) => DIRECTION_WORD[d]).filter(Boolean);
+      return words.length ? `Отлично, собираю лендинг под ${words.join(" + ")}` : null;
+    },
   },
   {
     id: "sphere",
-    kind: "chips",
+    kind: "multi",
     title: "В какой ты *сфере*?",
-    hint: "По сфере подберём *кейсы*, похожие на твой проект",
+    hint: "Можно *несколько* — подберём кейсы, похожие на твой проект",
     options: [
       { value: "Авто", label: "Авто" },
       { value: "Медицина", label: "Медицина" },
@@ -110,10 +132,11 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     ],
     own: true,
     react: (v) => {
-      const s = String(v);
-      if (isOwn(s)) return "Запомнила сферу — найдём самые близкие кейсы";
-      const n = works.filter((w) => w.sphere === s).length;
-      return n > 0 ? `В этой сфере у нас ${n} ${plural(n, "проект", "проекта", "проектов")} — покажу лучшие на лендинге` : "Подберём кейсы из соседних сфер";
+      const picked = listOf(v);
+      if (!picked.length) return null;
+      if (picked.every(isOwn)) return "Запомнила сферу — найдём самые близкие кейсы";
+      const n = works.filter((w) => w.sphere && picked.includes(w.sphere)).length;
+      return n > 0 ? `${picked.length > 1 ? "В этих сферах" : "В этой сфере"} у нас ${n} ${plural(n, "проект", "проекта", "проектов")} — покажу лучшие на лендинге` : "Подберём кейсы из соседних сфер";
     },
   },
   {
@@ -170,9 +193,10 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "videoFormat",
     kind: "single",
+    many: true,
     branch: ["content"],
     title: "Какое *видео* нужно?",
-    hint: "*Главный* формат — остальные можно добавить позже",
+    hint: "Можно выбрать *несколько* форматов",
     options: [
       { value: "ad", label: "Рекламный ролик" },
       { value: "image", label: "Имиджевый фильм о компании" },
@@ -245,9 +269,10 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "siteType",
     kind: "single",
+    many: true,
     branch: ["sites"],
     title: "Какой *сайт* нужен?",
-    hint: "Если не уверен — выбери ближайшее, *подскажем*",
+    hint: "Можно *несколько*; не уверен — выбери ближайшее, подскажем",
     options: [
       { value: "landing", label: "Лендинг — одна продающая страница" },
       { value: "card", label: "Сайт-визитка компании" },
@@ -478,8 +503,8 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
 
 /** Вопросы для текущих ответов: общие плюс ветка выбранной услуги. */
 export function questionsFor(answers: VibeAnswers): VibeQuestion[] {
-  const b = branchOf(answers);
-  return VIBE_QUESTIONS.filter((q) => !q.branch || q.branch.includes(b));
+  const bs = branchesOf(answers);
+  return VIBE_QUESTIONS.filter((q) => !q.branch || q.branch.some((b) => bs.includes(b)));
 }
 
 function plural(n: number, one: string, few: string, many: string) {
@@ -601,19 +626,26 @@ export type VibeOffer = {
 
 export function buildOffer(answers: VibeAnswers): VibeOffer {
   const key = branchKey(answers);
-  const direction = String(answers.direction ?? "sites");
+  const branches = branchesOf(answers);
+  const complex = listOf(answers.direction).includes("complex");
   const qs = questionsFor(answers);
   const lbl = (id: string) => {
     const q = qs.find((x) => x.id === id);
     return q ? answerLabel(q, answers[id]) : "";
   };
 
-  let product: string;
-  if (direction === "complex") product = "Комплекс под ключ";
-  else if (key === "content") product = VIDEO_PRODUCT[String(answers.videoFormat)] ?? (lbl("videoFormat") || "Видеопродакшн");
-  else if (key === "sites") product = SITE_PRODUCT[String(answers.siteType)] ?? (lbl("siteType") || "Сайт");
-  else if (key === "ai") product = "AI-ассистент для бизнеса";
-  else product = "Ведение соцсетей";
+  // Несколько направлений и форматов — все в названии через «+».
+  const productOf = (b: Branch): string => {
+    const own = (id: string, map: Record<string, string>, fallback: string) => {
+      const list = listOf(answers[id]).map((v) => map[v] ?? (isOwn(v) ? v.slice(1) : v));
+      return list.length ? list.join(" + ") : fallback;
+    };
+    if (b === "content") return own("videoFormat", VIDEO_PRODUCT, "Видеопродакшн");
+    if (b === "sites") return own("siteType", SITE_PRODUCT, "Сайт");
+    if (b === "ai") return "AI-ассистент для бизнеса";
+    return "Ведение соцсетей";
+  };
+  const product = complex && branches.length >= 3 ? "Комплекс под ключ" : branches.map(productOf).join(" + ");
 
   const companyRaw = typeof answers.company === "string" ? answers.company.trim() : "";
   const company = companyRaw ? companyRaw.replace(/^[«"]|[»"]$/g, "") : null;
@@ -634,20 +666,22 @@ export function buildOffer(answers: VibeAnswers): VibeOffer {
   ].filter((b) => b.value);
 
   const solution: string[] = [];
-  if (key === "content") {
+  for (const b of branches) {
+  const product = productOf(b);
+  if (b === "content") {
     const len = lbl("videoLength");
     const count = lbl("videoCount");
     solution.push(`${product}${len ? ` · ${len.toLowerCase()}` : ""}${count ? ` · ${count.toLowerCase()}` : ""}`);
     if (lbl("videoPlaces")) solution.push(`Версии под площадки: ${lbl("videoPlaces")}`);
     if (lbl("videoExtras")) solution.push(`В производстве: ${lbl("videoExtras").toLowerCase()}`);
     solution.push("2–3 творческие концепции до договора — бесплатно");
-  } else if (key === "sites") {
+  } else if (b === "sites") {
     solution.push(`${product}${lbl("sitePages") ? ` · страниц: ${lbl("sitePages").toLowerCase()}` : ""}`);
     if (lbl("siteFeatures")) solution.push(`Функции: ${lbl("siteFeatures")}`);
     if (answers.siteContent === "none" || answers.siteContent === "part") solution.push("Тексты, фото и видео для сайта создаём сами");
     if (answers.siteSeo === "yes") solution.push("SEO-продвижение в Яндексе и Google с первого дня");
     solution.push("Адаптивная вёрстка — одинаково красиво на телефоне и компьютере");
-  } else if (key === "ai") {
+  } else if (b === "ai") {
     if (lbl("aiTasks")) solution.push(`AI берёт на себя: ${lbl("aiTasks").toLowerCase()}`);
     if (lbl("aiChannels")) solution.push(`Подключаем в каналы: ${lbl("aiChannels")}`);
     if (lbl("aiStack")) solution.push(`Интеграция: ${lbl("aiStack")}`);
@@ -658,14 +692,15 @@ export function buildOffer(answers: VibeAnswers): VibeOffer {
     if (lbl("smmScope")) solution.push(`Берём на себя: ${lbl("smmScope").toLowerCase()}`);
     solution.push("Контент-план и отчёт по цифрам каждый месяц");
   }
-  if (direction === "complex") solution.push("Видео и SMM для запуска — в одной команде, одним договором");
+  }
+  if (complex || branches.length > 1) solution.push("Все направления — в одной команде, одним договором");
   if (typeof answers.refs === "string" && answers.refs.trim()) solution.push(`Учтём твои референсы: ${answers.refs.trim()}`);
 
   // Кейсы: сфера клиента → формат ролика → свежие шоурилы.
   const byDate = (a: Work, b: Work) => (b.date ?? "").localeCompare(a.date ?? "");
-  const sphereValue = typeof answers.sphere === "string" && !isOwn(answers.sphere) ? answers.sphere : null;
-  const cats = VIDEO_CATEGORY[String(answers.videoFormat)] ?? [];
-  const inSphere = sphereValue ? works.filter((w) => w.sphere === sphereValue).sort(byDate) : [];
+  const spheres = listOf(answers.sphere).filter((v) => !isOwn(v));
+  const cats = listOf(answers.videoFormat).flatMap((v) => VIDEO_CATEGORY[v] ?? []);
+  const inSphere = works.filter((w) => w.sphere && spheres.includes(w.sphere)).sort(byDate);
   const inFormat = works.filter((w) => cats.includes(w.category) || w.tags?.some((t) => cats.includes(t))).sort(byDate);
   const reels = works.filter((w) => w.category === "Шоурилы").sort(byDate);
   const cases: Work[] = [];

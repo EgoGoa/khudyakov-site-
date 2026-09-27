@@ -1,5 +1,6 @@
 "use client";
 
+import { useBootPreload } from "@/lib/boot-sequence";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
@@ -7,7 +8,7 @@ import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Appear, { useChapterActive } from "@/components/ui/Appear";
 import BlockMedia from "@/components/home/direction/BlockMedia";
-import { BEAT, EASE as MOTION_EASE, STAGGER } from "@/lib/motion";
+import { BEAT, EASE as MOTION_EASE, STAGGER, WIN, WIN_DIM } from "@/lib/motion";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { CloseIcon } from "@/components/ui/Icons";
 import LeadModal from "@/components/home/LeadModal";
@@ -215,6 +216,7 @@ export default function Works({
   limit,
   filtersAside,
 }: { bare?: boolean; limit?: number; filtersAside?: ReactNode; tight?: boolean } = {}) {
+  const bootPreload = useBootPreload();
   const { active: activeService } = useService();
   const works = worksByCategory[activeService];
   // Основные рубрики идут в том порядке, в котором сгруппированы работы в
@@ -479,7 +481,7 @@ export default function Works({
                         muted
                         loop
                         playsInline
-                        preload="metadata"
+                        preload={bootPreload}
                         aria-hidden="true"
                         tabIndex={-1}
                       />
@@ -621,9 +623,9 @@ export default function Works({
       <AnimatePresence>
         {active && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={WIN_DIM.initial}
+            animate={WIN_DIM.animate}
+            exit={WIN_DIM.exit}
             className="fixed inset-0 z-50 flex items-center justify-center bg-ink/90 p-4 sm:p-10"
             onClick={() => setActiveId(null)}
           >
@@ -635,9 +637,9 @@ export default function Works({
               <CloseIcon />
             </button>
             <motion.div
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
+              initial={WIN.initial}
+              animate={WIN.animate}
+              exit={WIN.exit}
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-3xl"
             >

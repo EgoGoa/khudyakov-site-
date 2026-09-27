@@ -4,8 +4,10 @@ import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } fro
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSiteFreeze } from "@/lib/use-site-freeze";
+import { InlineVoiceSphere } from "@/components/layout/VoiceAssistant";
+import { WIN, WIN_DIM } from "@/lib/motion";
 import NanoSphere, { type SphereIntro } from "@/components/ui/NanoSphere";
-import SphereDust from "@/components/ui/SphereDust";
 import { InfoHow, InfoInside, InfoWhat } from "@/components/vibe/VibeInfographics";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
@@ -116,6 +118,8 @@ export default function VibeMode({
 }
 
 function VibeWindow({ onClose }: { onClose: () => void }) {
+  // Сайт за окном стоит картинкой, пока окно открыто (lib/use-site-freeze).
+  useSiteFreeze();
   const ref = useRef<HTMLDivElement>(null);
   useDialogFocus(true, ref);
   const narrow = useNarrow();
@@ -179,26 +183,24 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
       role="dialog"
       aria-modal="true"
       aria-label="Vibe-сайт"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4, ease: EASE }}
+      initial={WIN_DIM.initial}
+      animate={WIN_DIM.animate}
+      exit={WIN_DIM.exit}
       className="vibe-mode fixed inset-0 z-[100] flex items-center justify-center p-4 outline-none"
       onClick={onClose}
     >
       {/* Окошко по центру (Егор: «окошко, а не на весь экран»). */}
       <motion.div
-        initial={{ opacity: 0, y: 18, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 12, scale: 0.98 }}
-        transition={{ duration: 0.45, ease: EASE }}
+        // Общая анимация окон сайта (WIN, lib/motion).
+        initial={WIN.initial}
+        animate={WIN.animate}
+        exit={WIN.exit}
         onClick={(e) => e.stopPropagation()}
         className="vibe-mode__window vibe-mode__window--fixed"
       >
       <div aria-hidden="true" className="vibe-mode__aurora" />
-      {/* Частицы от сферы — та же механика и интенсивность, что в стартовом
-          окошке (ui/SphereDust, Егор 2026-09-27). */}
-      <SphereDust orbRef={orbRef} />
+      {/* Частиц вокруг сферы нет (Егор, 2026-09-27): пыль живёт только в
+          сборке сферы на заставке и сливается в кольцо. */}
 
       {/* Тонкая полоса прогресса по верхнему краю окна — в анкете. */}
       <div aria-hidden="true" className="absolute inset-x-0 top-0 z-[2] h-[2px]">
@@ -211,7 +213,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
 
       {/* Окно статичного размера (Егор: «не адаптируется под текст»):
           высота задана в CSS, содержимое стоит по центру. */}
-      <div className="vibe-mode__scroll z-[1] flex h-full flex-col px-5 pb-6 pt-5 sm:px-8 sm:pb-8">
+      <div className="vibe-mode__scroll z-[1] flex h-full flex-col px-5 pb-3 pt-5 sm:px-8 sm:pb-4">
         <div className="flex items-center justify-between">
           {/* «Vibe-режим» — без пилюли, переливается палитрой сферы и
               тихо выпускает частицы (Егор, 2026-09-26). */}
@@ -250,6 +252,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
                   hot
                   pulse={pulse}
                   glow={0.35}
+                  bare
                   intro={orbSlot === "splash" ? sphereIntro : undefined}
                 />
               </motion.div>
@@ -314,6 +317,14 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
+        {/* Волна ассистента в самом низу окна, под всеми кнопками, в полтора
+            раза меньше плавающей (164×62 → 110×41, Егор 2026-09-27). Пока
+            она здесь, плавающая прячется (InlineVoiceSphere). */}
+        {/* Холст волны шире неё самой (запас под раскачку) — полоса
+            обрезана, чтобы этот запас не раздувал окно до прокрутки. */}
+        <div className="flex h-7 shrink-0 items-center justify-center overflow-hidden">
+          <InlineVoiceSphere from={ORB_FROM} to={ORB_TO} width={110} height={41} waveOnly />
+        </div>
       </div>
       </motion.div>
     </motion.div>
@@ -498,7 +509,7 @@ function Question({
   const current = typeof value === "string" ? value : "";
   const list = Array.isArray(value) ? value : [];
   const [own, setOwn] = useState(
-    q.kind === "text" ? current : q.kind === "multi" ? (list.find(isOwn)?.slice(1) ?? "") : isOwn(current) ? current.slice(1) : ""
+    q.kind === "text" ? current : q.kind === "multi" || q.many ? (list.find(isOwn)?.slice(1) ?? "") : isOwn(current) ? current.slice(1) : ""
   );
   const advance = useRef<number | null>(null);
   useEffect(
@@ -534,7 +545,7 @@ function Question({
   const commitOwn = (text: string) => {
     const t = text.trim();
     if (q.kind === "text") return onAnswer(t);
-    if (q.kind === "multi") {
+    if (q.kind === "multi" || q.many) {
       const rest = list.filter((x) => !isOwn(x));
       return onAnswer(t ? [...rest, OWN_PREFIX + t] : rest);
     }
@@ -551,7 +562,7 @@ function Question({
   }, [q.id]);
 
   const answered =
-    q.kind === "multi" ? list.length > 0 : q.kind === "text" ? own.trim().length > 0 : !!current || own.trim().length > 0;
+    q.kind === "multi" || q.many ? list.length > 0 : q.kind === "text" ? own.trim().length > 0 : !!current || own.trim().length > 0;
   const canNext = answered || !!q.optional;
   const reaction = answered && value !== undefined && q.react ? q.react(value, answers) : null;
 
@@ -603,18 +614,22 @@ function Question({
 
       {q.kind === "single" && (
         <div className="mt-5 grid w-full gap-2 sm:grid-cols-2">
-          {q.options!.map((o, i) => (
-            <button
-              key={o.value}
-              type="button"
-              onClick={() => pickSingle(o.value)}
-              aria-pressed={current === o.value}
-              className={`vibe-mode__option ${current === o.value ? "is-on" : ""}`}
-            >
-              <span className="vibe-mode__key">{String.fromCharCode(65 + i)}</span>
-              <span>{o.label}</span>
-            </button>
-          ))}
+          {q.options!.map((o, i) => {
+            // many — можно отметить несколько; дальше по кнопке «Дальше».
+            const on = q.many ? list.includes(o.value) : current === o.value;
+            return (
+              <button
+                key={o.value}
+                type="button"
+                onClick={() => (q.many ? toggleMulti(o.value) : pickSingle(o.value))}
+                aria-pressed={on}
+                className={`vibe-mode__option ${on ? "is-on" : ""}`}
+              >
+                <span className="vibe-mode__key">{q.many ? (on ? "✓" : "+") : String.fromCharCode(65 + i)}</span>
+                <span>{o.label}</span>
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -668,7 +683,7 @@ function Question({
       )}
 
       {q.kind === "text" && <div className="mt-5 flex w-full justify-center">{ownInput(q.placeholder ?? "")}</div>}
-      {q.own && q.kind !== "text" && ownInput(q.kind === "multi" ? "Добавить своё…" : "Свой вариант…")}
+      {q.own && q.kind !== "text" && ownInput(q.kind === "multi" || q.many ? "Добавить своё…" : "Свой вариант…")}
 
       <div className="mt-3 min-h-[22px]">
         <AnimatePresence mode="wait">

@@ -2,6 +2,7 @@ import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-conten
 import { blocksFor, type BlockCard, type BlockRole } from "@/lib/welcome-blocks";
 import { ringOf } from "@/components/home/direction/siblings";
 import { TEAM } from "@/lib/team";
+import type { MoodId } from "@/lib/sound";
 
 // Голосовой ассистент: понимание фразы на месте, без сети и мгновенно.
 //
@@ -33,6 +34,9 @@ export type VoiceAction =
   /** Нажать кнопку/ссылку на экране, которая лучше всего подходит под фразу. */
   | { type: "click"; query: string }
   | { type: "stop" }
+  /** Плеер музыки: включить, пауза, трек вперёд/назад, громкость,
+   *  настроение, «что играет». */
+  | { type: "music"; op: "play" | "pause" | "next" | "prev" | "louder" | "quieter" | "what"; mood?: MoodId }
   | { type: "none" };
 
 export type VoiceReply = { say: string; action: VoiceAction };
@@ -101,6 +105,41 @@ const T = {
     "=кто", "=когда", "=нужен", "=нужно ли", "объясн", "подскаж", "посовет", "=ли", "расскажи о", "расскажи мне",
   ],
 };
+
+// Музыка сайта: слова про плеер и названия настроений (lib/sound MOODS).
+const MUSIC = ["музык", "трек", "песн", "мелоди", "плеер", "=радио", "станци", "плейлист"];
+const MOOD_TAGS: Record<MoodId, string[]> = {
+  focus: ["фокус", "сосредоточ", "концентрац"],
+  chill: ["=чил", "=чилл", "чилаут", "chill"],
+  jazzhop: ["расслаб", "джаз", "хипхоп", "хип-хоп", "лоуфай", "lofi"],
+  nightdrive: ["драйв", "=дип", "хаус", "ночн дорог"],
+  tokyo: ["энерги", "техно", "бодр"],
+  soul: ["соул", "=soul", "душевн"],
+};
+function findMood(p: Phrase): MoodId | null {
+  for (const [id, tags] of Object.entries(MOOD_TAGS)) if (any(p, tags)) return id as MoodId;
+  return null;
+}
+
+/** Команда плееру или null, если фраза не про музыку. */
+function parseMusic(p: Phrase): VoiceReply | null {
+  const mood = findMood(p);
+  const WHAT = ["что игра", "что за трек", "что за песн", "какая песн", "какой трек", "кто поет", "кто исполн"];
+  const about = any(p, MUSIC) || any(p, WHAT) || (mood && any(p, ["включ", "постав", "давай", "=хочу", "сыграй", "=игра"]));
+  const vol = any(p, ["громче", "погромч", "прибав", "тише", "потиш", "убав", "потише"]);
+  if (!about && !vol) return null;
+  const m = (op: Extract<VoiceAction, { type: "music" }>["op"], moodId?: MoodId): VoiceReply => ({
+    say: "",
+    action: { type: "music", op, mood: moodId },
+  });
+  if (any(p, WHAT) || any(p, ["как называ"])) return m("what");
+  if (any(p, ["громче", "погромч", "прибав"])) return m("louder");
+  if (any(p, ["тише", "потиш", "убав"])) return m("quieter");
+  if (any(p, ["выключ", "отключ", "останов", "пауз", "=стоп", "хватит", "убер", "замолч"])) return m("pause");
+  if (any(p, ["предыдущ", "прошл", "назад", "вернись"])) return m("prev");
+  if (any(p, ["следующ", "друг", "смени", "дальш", "переключ", "пропуст"])) return m("next");
+  return m("play", mood ?? undefined);
+}
 
 // Разделы сайта — по смыслу, а не по названию страницы.
 const SERVICE_TAGS: Record<ServiceKey, string[]> = {
@@ -258,6 +297,9 @@ export function parseCommand(raw: string, pathname: string, loose = false, noPre
   const here = serviceFromPath(pathname);
 
   // 1. Служебное — важнее всего остального в фразе.
+  // Музыка — до «стоп»: «выключи музыку» не выключает сам голос.
+  const music = parseMusic(p);
+  if (music) return music;
   if (any(p, T.stop) && !any(p, ["видео", "звук", "музык"])) {
     return { say: "Выключаю голос. Нажми на волну, когда понадоблюсь.", action: { type: "stop" } };
   }

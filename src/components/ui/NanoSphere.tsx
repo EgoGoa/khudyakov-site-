@@ -1,7 +1,11 @@
 "use client";
-import { isWelcomeOpen } from "@/lib/welcome-freeze";
+import { frozenFor } from "@/lib/welcome-freeze";
 
 import { useEffect, useRef } from "react";
+
+// Спящий режим (prop `sleepy`): скорость времени и шаг кадра в покое.
+const SLEEP_RATE = 0.5;
+const SLEEP_FRAME_MS = 50;
 
 // «Сердце умного меню» — знак вайб-панели (Егор, 2026-09-26, по референсу:
 // светящееся энергетическое кольцо с тёмным центром). Рисуется на canvas:
@@ -57,6 +61,9 @@ export default function NanoSphere({
   intro,
   core = false,
   soft = false,
+  cloud = false,
+  bare = false,
+  sleepy = false,
 }: {
   size?: number;
   from: string;
@@ -76,6 +83,15 @@ export default function NanoSphere({
    *  кольца и очень мягкое, перелив без ярких бегущих бликов, линии
    *  прозрачнее, всё чуть медленнее. */
   soft?: boolean;
+  /** Облако пылинок у кольца (Егор, 2026-09-27): у самого кольца густо,
+   *  чем дальше — тем реже. Для крупной сферы вайб-окна. */
+  cloud?: boolean;
+  /** Без частиц вокруг вовсе (вайб-окно, Егор 2026-09-27): пыль есть
+   *  только в сборке (intro), потом сливается в кольцо и пропадает. */
+  bare?: boolean;
+  /** Спящий режим (сфера вайб-бара): в покое вдвое медленнее и 20 кадров/с,
+   *  при наведении и разогреве — полная скорость. Экономит процессор. */
+  sleepy?: boolean;
 }) {
   // Холст шире знака; схлопыванию нужен запас — вихрь стартует широким.
   const boxK = intro === "implode" ? 2.6 : 1.7;
@@ -143,7 +159,8 @@ export default function NanoSphere({
       life: 1.2 + Math.random() * 1.8,
       size: (0.4 + Math.random() * 0.5) * dpr * k,
     });
-    const sparks: Spark[] = Array.from({ length: SPARKS }, () => spawn(0));
+    // С облаком вдали почти пусто — одна искра.
+    const sparks: Spark[] = Array.from({ length: bare ? 0 : cloud ? 1 : SPARKS }, () => spawn(0));
 
     // Пыль для варианта dust.
     const dustN = light ? 130 : DUST;
@@ -170,6 +187,51 @@ export default function NanoSphere({
       b: 0.2 + Math.random() * 0.45,
       mix: Math.random(),
     }));
+
+    // Облако у кольца (Егор, 2026-09-27): почти все пылинки стоят прямо по краям
+    // кольца — не разлетаются, только мерцают и медленно плывут по кругу.
+    // Лишь единицы рождаются у края, улетают далеко и гаснут.
+    // Количество — по размеру сферы: 180 на большой (260px), на маленькой
+    // сфере бара (~36px) около 25, иначе кольцо тонет в пыли.
+    // Развёрнутая сфера вайб-окна (Егор, 2026-09-27): пылинок всего ~13% —
+    // лёгкие брызги, которые срываются с розового потока, бегущего по
+    // кольцу, отстают от него, чуть отлетают наружу и гаснут.
+    const ride = cloud && size >= 120 && !soft;
+    const cloudN = cloud ? Math.round((light ? 90 : 180) * (ride ? 0.13 : Math.min(1, Math.max(0.14, size / 260)))) : 0;
+    const cloudDust = Array.from({ length: cloudN }, () => {
+      // Дальних — единицы: ≈1–2 на 180 (Егор: вдали совсем немного).
+      const far = Math.random() < 0.008;
+      // Ближние стянуты к кольцу: четверть прямо на ленте, остальные —
+      // тонким слоем по её краям (лента ≈ ±0.07R), больше снаружи.
+      const onBand = Math.random() < 0.25;
+      const side = Math.random() < 0.7 ? 1 : -1;
+      const nearOff = onBand ? (Math.random() * 2 - 1) * 0.07 : side * (0.07 + Math.random() ** 2 * 0.045);
+      return {
+        far,
+        off: far ? 0.32 + Math.random() * 0.45 : nearOff,
+        a: Math.random() * Math.PI * 2,
+        // Все плывут по периметру вместе с узором волн (он вращается со
+        // скоростью 0.25 рад/с), чуть вразнобой.
+        spin: 0.25 * (0.75 + Math.random() * 0.5),
+        // Дальние сходят с контура по спирали — медленно, за 5–8 с.
+        life: far ? 5 + Math.random() * 3 : 2.6 + Math.random() * 2.6,
+        phase: Math.random() * 10,
+        // На маленькой сфере бара пылинка не мельче ~0.7px, иначе не видна.
+        size: Math.max(size < 80 ? 0.7 * dpr : 0, (0.22 + Math.random() * 0.36) * dpr * k),
+        mix: Math.random(),
+        tw: Math.random() * Math.PI * 2,
+        // Брызги потока: какая голова (две розовые, напротив друг друга —
+        // главная ярче), насколько отстаёт и отлетает за жизнь.
+        head: Math.random() < 0.7 ? 0 : 1,
+        lag: 0.5 + Math.random() * 0.9,
+        drift: (0.04 + Math.random() * 0.2) * (Math.random() < 0.8 ? 1 : -0.4),
+        base: (Math.random() * 2 - 1) * 0.06,
+        // При разогреве каждая третья ближняя пылинка уходит по спирали наружу.
+        burst: !far && Math.random() < 0.35,
+      };
+    });
+
+    const cloudPaths = new Map<string, Path2D>();
 
     let energy = 1;
     let target = 1;
@@ -230,6 +292,9 @@ export default function NanoSphere({
         energy = Math.max(energy, 3);
       }
       energy += (target - energy) * 0.06;
+      // Разогрев (0…1): тихая сфера бара, пока открыто меню или вайб-режим,
+      // светится ярче и выпускает больше пылинок (Егор, 2026-09-27).
+      const lift = clamp01((energy - 1) / 0.9);
       // Постоянное дыхание: волны и свечение плавно нарастают и спадают.
       const breath = 1 + 0.2 * Math.sin(t * 1.1) + 0.08 * Math.sin(t * 2.3);
       // Пока кольцо проявляется, волны чуть сильнее и успокаиваются к концу.
@@ -240,15 +305,17 @@ export default function NanoSphere({
 
       // Мягкое общее свечение за кольцом.
       // В тихом режиме оно начинается от самого кольца — внутри темно.
+      // Тихая сфера — только мини-свечение (Егор, 2026-09-27): узкое, от
+      // самого кольца наружу, неподвижное (не бежит по кругу) и полностью
+      // гаснет в полтора радиуса — внутри кольца темно, края холста нет.
       const halo = soft
-        ? ctx.createRadialGradient(c, c, R * 1.05, c, c, R * 2.3)
+        ? ctx.createRadialGradient(c, c, R * 0.98, c, c, R * 1.55)
         : ctx.createRadialGradient(c, c, R * 0.5, c, c, R * 2.05);
       halo.addColorStop(0, `rgba(${fr},${fg},${fb},0)`);
-      halo.addColorStop(soft ? 0.3 : 0.4, `rgba(${fr},${fg},${fb},${(soft ? 0.03 + 0.012 * breath * energy : 0.06 + 0.035 * breath * energy) * glow})`);
+      halo.addColorStop(soft ? 0.18 : 0.4, `rgba(${fr},${fg},${fb},${(soft ? 0.09 + 0.03 * breath * energy + 0.05 * lift : (0.06 + 0.035 * breath * energy) * glow)})`);
       halo.addColorStop(1, `rgba(${tr},${tg},${tb},0)`);
       ctx.fillStyle = halo;
-      // Тихая сфера — без ореола совсем: только чёткие линии (Егор).
-      if (!soft) ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.lineWidth = 0.55 * dpr * k;
       // Размытая тень штрихов бежит по кругу вместе с переливом и читается
@@ -264,10 +331,11 @@ export default function NanoSphere({
       if (conic && soft) {
         // Перелив без бликов: разница между светлой и тёмной частью мала,
         // переходы длинные — цвет течёт, но ничего не вспыхивает.
-        conic.addColorStop(0, `rgba(${tr},${tg},${tb},0.5)`);
-        conic.addColorStop(0.35, `rgba(${fr},${fg},${fb},0.32)`);
-        conic.addColorStop(0.65, `rgba(${tr},${tg},${tb},0.4)`);
-        conic.addColorStop(1, `rgba(${tr},${tg},${tb},0.5)`);
+        const hk = 1 + 0.75 * lift;
+        conic.addColorStop(0, `rgba(${tr},${tg},${tb},${0.5 * hk})`);
+        conic.addColorStop(0.35, `rgba(${fr},${fg},${fb},${0.32 * hk})`);
+        conic.addColorStop(0.65, `rgba(${tr},${tg},${tb},${0.4 * hk})`);
+        conic.addColorStop(1, `rgba(${tr},${tg},${tb},${0.5 * hk})`);
       } else if (conic) {
         conic.addColorStop(0, `rgba(${tr},${tg},${tb},0.95)`);
         conic.addColorStop(0.1, `rgba(${fr},${fg},${fb},0.55)`);
@@ -426,6 +494,73 @@ export default function NanoSphere({
         }
       }
       ctx.globalAlpha = ring;
+      if (cloudN) {
+        const tw = soft ? t * 0.7 : t;
+        const flowNow = t * 1.35;
+        for (const b of cloudDust) {
+          if (ride) {
+            // Рождается у головы потока, отстаёт от неё и отлетает наружу.
+            const ra = ((t / 0.8 + b.phase) % b.life) / b.life;
+            const a = flowNow + b.head * Math.PI - b.lag * easeOut(ra) + (b.mix - 0.5) * 0.12;
+            const aa = a + tw * 0.25;
+            const wave = 0.055 * Math.sin(3 * aa + tw * 1.1 + 1.5) + 0.04 * Math.sin(5 * aa - tw * 1.6 + 2.8) + 0.025 * Math.sin(2 * aa + tw * 0.7 - 1.1);
+            const off = b.base + b.drift * easeOut(ra);
+            const d = R * grow * (1 + wave * e + off);
+            const alpha = clamp01(ra / 0.08) * (1 - ra) ** 1.4 * (b.head ? 0.55 : 0.9);
+            if (alpha < 0.01) continue;
+            // У головы — розовый цвет потока, дальше белеет.
+            const white = Math.round(ra * 2) / 2 * 0.8;
+            const key = `1,${white},${Math.round(alpha * 14)}`;
+            let path = cloudPaths.get(key);
+            if (!path) cloudPaths.set(key, (path = new Path2D()));
+            const x = c + Math.cos(a) * d;
+            const y = c + Math.sin(a) * d;
+            const r = b.size * (1.6 - 0.6 * ra);
+            path.moveTo(x + r, y);
+            path.arc(x, y, r, 0, Math.PI * 2);
+            continue;
+          }
+          const burst = b.burst && lift > 0.01;
+          const age = b.far || burst ? ((t + b.phase) % (b.far ? b.life : b.life * 0.6)) / (b.far ? b.life : b.life * 0.6) : 0;
+          // Дальняя пылинка плавно отходит от контура, продолжая идти по
+          // кругу, — получается пологая спираль наружу. При разогреве так же
+          // уходят «выпускаемые» пылинки, но ближе.
+          const off = b.far ? 0.07 + (b.off - 0.07) * easeInOut(age) : burst ? b.off + lift * 0.5 * easeInOut(age) : b.off;
+          const a = b.a + b.spin * (soft ? 0.7 : 1) * t + (b.far ? 1.4 * easeOut(age) : burst ? lift * 1.2 * easeOut(age) : 0);
+          // Облако повторяет изгиб волн кольца, а не идеальный круг.
+          const aa = a + tw * 0.25;
+          const wave = 0.055 * Math.sin(3 * aa + tw * 1.1 + 1.5) + 0.04 * Math.sin(5 * aa - tw * 1.6 + 2.8) + 0.025 * Math.sin(2 * aa + tw * 0.7 - 1.1);
+          const d = R * grow * (1 + wave * e + off);
+          const near = Math.exp(-Math.max(0, Math.abs(off) - 0.07) / 0.1);
+          // Ближние — ровное мерцание на месте; дальние — проявление у края
+          // и угасание к концу пути.
+          const life = b.far ? clamp01(age / 0.2) * (1 - age) ** 1.2 : burst ? 1 - lift + lift * (1 - age) ** 1.2 : 1;
+          const alpha = Math.min(1, life * (0.08 + 0.5 * near) * (0.6 + 0.4 * Math.sin(t * 2.2 + b.tw)) * (1 + 0.6 * lift));
+          if (alpha < 0.01) continue;
+          // Ближние — цвета кольца, дальние — белые тихие искры. Цвет и
+          // яркость округлены до ступенек: пылинки одной ступеньки рисуются
+          // одной заливкой — ~20–30 заливок на кадр вместо 180.
+          const mix = Math.round(b.mix * 2) / 2;
+          const white = Math.round((1 - near * 0.6) * 2) / 2;
+          const key = `${mix},${white},${Math.round(alpha * 14)}`;
+          let path = cloudPaths.get(key);
+          if (!path) cloudPaths.set(key, (path = new Path2D()));
+          const x = c + Math.cos(a) * d;
+          const y = c + Math.sin(a) * d;
+          const r = b.size * (0.7 + 0.4 * near);
+          path.moveTo(x + r, y);
+          path.arc(x, y, r, 0, Math.PI * 2);
+        }
+        for (const [key, path] of cloudPaths) {
+          const [mix, white, al] = key.split(",").map(Number);
+          const cr = fr + (tr - fr) * mix;
+          const cg = fg + (tg - fg) * mix;
+          const cb = fb + (tb - fb) * mix;
+          ctx.fillStyle = `rgba(${Math.round(cr + (255 - cr) * white)},${Math.round(cg + (255 - cg) * white)},${Math.round(cb + (255 - cb) * white)},${al / 14})`;
+          ctx.fill(path);
+        }
+        cloudPaths.clear();
+      }
       // С пылью из центра искры вокруг — это она же, вылетевшая за кольцо,
       // поэтому отдельные искры у кольца не рождаются.
       for (let i = 0; i < (core ? 0 : sparks.length); i++) {
@@ -490,18 +625,31 @@ export default function NanoSphere({
     if (still) {
       draw(1.3);
     } else {
-      const start = performance.now();
       // На mid/low — 30 кадров/с вместо 60: движение то же, нагрузки вдвое меньше.
       const frameMs = light ? 33 : 0;
       let last = 0;
+      // Собственные часы сферы: пока сайт заморожен окном, время стоит.
+      // Поэтому сборка (intro) сферы за стартовым окном начинается, когда
+      // окно закрылось, а не проигрывается впустую за ним.
+      let clock = 0;
+      let rate = 1;
       // Сфера за стартовым окном замирает, пока оно открыто (lib/welcome-freeze).
-      const behindWelcome = !canvas.closest(".welcome-shell");
+      const frozen = frozenFor(canvas);
       const loop = (now: number) => {
         raf = requestAnimationFrame(loop);
-        if (behindWelcome && isWelcomeOpen()) return;
-        if (now - last < frameMs) return;
+        if (frozen()) {
+          last = now;
+          return;
+        }
+        // Спящий режим: после сборки и без наведения/разогрева сфера
+        // живёт медленно и рисуется реже — движение медленное, поэтому
+        // редкие кадры глазом не видны. Скорость перетекает плавно.
+        const awake = !sleepy || hover || hotRef.current || energy > 1.1 || clock < 4000;
+        rate += ((awake ? 1 : SLEEP_RATE) - rate) * 0.15;
+        if (now - last < (awake ? frameMs : Math.max(frameMs, SLEEP_FRAME_MS))) return;
+        if (last) clock += Math.min(now - last, 100) * rate;
         last = now;
-        draw((now - start) / 1000);
+        draw(clock / 1000);
       };
       raf = requestAnimationFrame(loop);
     }
@@ -510,7 +658,7 @@ export default function NanoSphere({
       host.removeEventListener("pointerenter", excite);
       host.removeEventListener("pointerleave", calm);
     };
-  }, [size, from, to, glow, intro, boxK, core, soft]);
+  }, [size, from, to, glow, intro, boxK, core, soft, cloud, bare, sleepy]);
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width: size, height: size }} aria-hidden="true">

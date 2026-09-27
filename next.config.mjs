@@ -18,6 +18,9 @@ try {
 }
 
 const nextConfig = {
+  // Второй dev-сервер (превью другого чата) собирает в свою папку, чтобы не
+  // делить .next и её блокировку с уже запущенным — см. .claude/launch.json.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   // Hides the round "N" dev badge; it never ships to production anyway.
   devIndicators: false,
   env: {

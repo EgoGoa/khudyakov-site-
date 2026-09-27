@@ -116,11 +116,12 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: LITE_DETECT_SNIPPET }} />
         {/* Стартовое окно рендерится сервером и видно с первого кадра; если
             посетитель недавно его закрыл, этот флаг прячет его ещё до
-            отрисовки — без вспышки окна (см. WelcomeOverlay). */}
+            отрисовки — без вспышки окна (см. WelcomeOverlay). data-boot —
+            этап очереди загрузки (lib/boot-sequence), с первого кадра. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var h=document.documentElement;if(Number(localStorage.getItem('hdkv_welcome_snoozed_until'))>Date.now())h.setAttribute('data-welcome-snoozed','');else if(/^\\/(content|ai|sites|smm)(\\/|\\.html|$)/.test(location.pathname))h.setAttribute('data-welcome-open','')}catch(e){}",
+              "try{var h=document.documentElement;h.setAttribute('data-boot','0');if(Number(localStorage.getItem('hdkv_welcome_snoozed_until'))>Date.now())h.setAttribute('data-welcome-snoozed','');else if(/^\\/(content|ai|sites|smm)(\\/|\\.html|$)/.test(location.pathname))h.setAttribute('data-welcome-open','')}catch(e){}",
           }}
         />
         <script

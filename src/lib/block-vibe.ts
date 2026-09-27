@@ -91,6 +91,8 @@ const opt = (pairs: [string, string][]): BlockOption[] => pairs.map(([value, lab
 export const SPHERE_QUESTION: BlockQuestion = {
   id: "sphere",
   title: "В какой ты *сфере*?",
+  // Сфер может быть несколько: «авто и медицина» (Егор, 2026-09-27).
+  multi: 3,
   options: opt([
     ["Авто", "Авто"],
     ["Медицина", "Медицина"],
@@ -165,7 +167,7 @@ function kindQuestions(kind: BlockKind, service: ServiceKey): BlockQuestion[] {
       ];
     case "offer":
       return [
-        { id: "need", title: "Что *нужно*?", options: NEED[service].map(([value, label]) => ({ value, label })) },
+        { id: "need", title: "Что *нужно*?", multi: 3, options: NEED[service].map(([value, label]) => ({ value, label })) },
         { id: "must", title: "Что *обязательно*?", multi: 3, options: opt(MUST[service]) },
       ];
     case "process":
@@ -192,20 +194,90 @@ export function answerText(q: BlockQuestion, v: string | string[] | undefined): 
   return list.map((x) => q.options.find((o) => o.value === x)?.label ?? x).join(", ");
 }
 
-// ---------- Примеры: работы из портфолио ----------
+// ---------- Примеры: только из своей услуги ----------
+// Егор (2026-09-27): на шаге «покажи, что нравится» — варианты именно той
+// услуги, из которой пришёл человек. На /ai — единый чат, чат-боты,
+// генерация; выбрал «3D и моушн» — работы моушн-графики. Ролики подряд
+// везде не показываем.
 
-/** Шесть работ для шага «примеры»: сначала из сферы клиента, потом свежие. */
-export function exampleWorks(sphere: string | undefined): Work[] {
-  const byDate = (a: Work, b: Work) => (b.date ?? "").localeCompare(a.date ?? "");
-  const own = sphere ? works.filter((w) => w.sphere === sphere).sort(byDate) : [];
-  const rest = [...works].sort(byDate);
-  const out: Work[] = [];
-  for (const w of [...own, ...rest]) {
-    if (!out.includes(w)) out.push(w);
-    if (out.length === 6) break;
+export type BlockExample = { id: string; title: string; image: string };
+
+/** Форматы каждой услуги — те же карточки и кадры, что в колодах страниц
+ *  (AiDeck, SitesDeck, SmmDeck). У видео вместо них — работы портфолио. */
+const CATALOG: Record<Exclude<ServiceKey, "content">, BlockExample[]> = {
+  ai: [
+    { id: "chathub", title: "Единый AI-чат для мессенджеров", image: "/images/stock/devs-night.webp" },
+    { id: "bots", title: "Чат-боты и AI-агенты", image: "/images/stock/robot-hand-chip.webp" },
+    { id: "gen", title: "Генерация видео и фото", image: "/images/stock/holi-face.webp" },
+    { id: "auto", title: "Автоматизация коммуникации", image: "/images/stock/man-laptop-dark.webp" },
+    { id: "text", title: "Текстовый контент", image: "/images/stock/ink-pink.webp" },
+    { id: "inner", title: "Ассистенты для процессов", image: "/images/stock/planner-desk.webp" },
+    { id: "crm", title: "AI внутри CRM", image: "/images/stock/brain-circuit.webp" },
+    { id: "voice", title: "Голосовые решения", image: "/images/stock/hologram-laptop.webp" },
+    { id: "analytics", title: "AI-аналитика", image: "/images/stock/platform-speed.webp" },
+  ],
+  sites: [
+    { id: "landing", title: "Лендинг", image: "/images/stock/desk-aerial.webp" },
+    { id: "card", title: "Сайт-визитка", image: "/images/stock/design-tablet.webp" },
+    { id: "turnkey", title: "Сайт под ключ", image: "/images/stock/team-night-office.webp" },
+    { id: "assistant", title: "AI-ассистент на сайте", image: "/images/stock/holo-keyboard.webp" },
+    { id: "redesign", title: "Редизайн", image: "/images/stock/paint-purple-macro.webp" },
+  ],
+  smm: [
+    { id: "reels", title: "Reels", image: "/images/stock/smm-phone-bokeh.webp" },
+    { id: "stories", title: "Сторис", image: "/images/stock/night-lights.webp" },
+    { id: "carousel", title: "Карусели", image: "/images/stock/dj-neon.webp" },
+    { id: "ads", title: "Таргет", image: "/images/stock/brain-circuit.webp" },
+    { id: "bloggers", title: "Блогеры", image: "/images/stock/vr-neon-triangle.webp" },
+  ],
+};
+
+/** Выбранное «что нужно» поднимает свои форматы в начало. */
+const NEED_FIRST: Record<string, string[]> = {
+  bot: ["bots", "chathub", "voice"],
+  gen: ["gen", "text"],
+  analytics: ["analytics", "crm"],
+  automate: ["auto", "inner", "crm"],
+  landing: ["landing"],
+  card: ["card"],
+  shop: ["turnkey"],
+  turnkey: ["turnkey", "assistant"],
+  content: ["reels", "stories", "carousel"],
+  ads: ["ads", "bloggers"],
+};
+
+/** Видео: «что нужно» → категории портфолио. */
+const NEED_CATEGORY: Record<string, string[]> = {
+  ad: ["Рекламные"],
+  image: ["Имиджевые и презентации", "Корпоративные", "Документальные"],
+  social: ["Фэшн и арт", "Событийные", "Тревел", "Музыкальные"],
+  motion: ["Моушн и 3D"],
+};
+
+/** Шесть примеров для шага «покажи, что нравится». */
+export function blockExamples(service: ServiceKey, a: BlockAnswers): BlockExample[] {
+  const needs = many(a, "need");
+  if (service !== "content") {
+    const all = CATALOG[service];
+    const first = needs.flatMap((n) => NEED_FIRST[n] ?? []);
+    return [...all].sort((x, y) => rank(first, x.id) - rank(first, y.id)).slice(0, 6);
   }
-  return out;
+  const byDate = (x: Work, y: Work) => (y.date ?? "").localeCompare(x.date ?? "");
+  const spheres = many(a, "sphere");
+  const cats = needs.flatMap((n) => NEED_CATEGORY[n] ?? []);
+  // Выбран формат — только его работы; сфера клиента поднимает свои выше.
+  const pool = cats.length ? works.filter((w) => cats.includes(w.category) || w.tags?.some((t) => cats.includes(t))) : works;
+  const sorted = [...pool].sort((x, y) => {
+    const s = Number(spheres.includes(y.sphere ?? "")) - Number(spheres.includes(x.sphere ?? ""));
+    return s || byDate(x, y);
+  });
+  return sorted.slice(0, 6).map((w) => ({ id: w.id, title: w.title, image: workThumb(w) }));
 }
+
+const rank = (order: string[], id: string) => {
+  const i = order.indexOf(id);
+  return i < 0 ? order.length : i;
+};
 
 export const workThumb = (w: Work) => `/images/works/${w.youtubeId ?? w.id}.jpg`;
 
@@ -281,12 +353,13 @@ export function tuneBlock(kind: BlockKind, service: ServiceKey, a: BlockAnswers)
       };
     }
     case "works": {
-      const own = works.filter((w) => w.sphere === one(a, "sphere"));
+      const own = works.filter((w) => many(a, "sphere").includes(w.sphere ?? ""));
       const picked = many(a, "works")
         .map((id) => works.find((w) => w.id === id))
         .filter((w): w is Work => Boolean(w));
       const list: Work[] = [];
-      for (const w of [...picked, ...own, ...exampleWorks(undefined)]) {
+      const fresh = [...works].sort((x, y) => (y.date ?? "").localeCompare(x.date ?? ""));
+      for (const w of [...picked, ...own, ...fresh]) {
         if (!list.includes(w)) list.push(w);
         if (list.length === 3) break;
       }
@@ -487,8 +560,7 @@ export function useTunedProgress(path: string): { done: number; total: number } 
 }
 
 /** Сфера из последнего собранного блока — подставляется в следующий. */
-export function lastSphere(): string | undefined {
+export function lastSphere(): string | string[] | undefined {
   const all = Object.values(read());
-  const v = all[all.length - 1]?.sphere;
-  return typeof v === "string" ? v : undefined;
+  return all[all.length - 1]?.sphere;
 }

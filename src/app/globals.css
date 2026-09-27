@@ -5655,7 +5655,8 @@ html:not([data-lite])[data-mid] .sp-pulse {
 }
 /* Сайт за стартовым окном замирает (lib/welcome-freeze): все CSS-анимации
    вне окна на паузе и продолжатся с того же кадра после закрытия. */
-html[data-welcome-open]:not([data-welcome-snoozed]) body *:not(.welcome-shell, .welcome-shell *) {
+html[data-welcome-open]:not([data-welcome-snoozed]) body *:not(.welcome-shell, .welcome-shell *),
+html[data-overlay-open] body *:not(.vibe-mode, .vibe-mode *, .block-vibe, .block-vibe *) {
   animation-play-state: paused !important;
 }
 /* Плавающая волна ассистента не лезет поверх стартового окна (в меню есть
@@ -5675,6 +5676,21 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe
   transition: none;
 }
 .welcome-logo-band { height: 104px; flex-shrink: 0; }
+/* Телефон (Егор, 2026-09-27): стартовое меню на весь экран, без окошка —
+   в узком окне края кнопок сливались с краями стекла. Стекло плотнее,
+   потому что сайта вокруг уже не видно. */
+@media (max-width: 767px) {
+  .welcome-shell { padding: 0; }
+  .welcome-window {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+    background: rgba(8, 8, 14, 0.86);
+    box-shadow: none;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
 @keyframes welcome-fade-in { from { opacity: 0; } }
 @keyframes welcome-window-in { from { opacity: 0; transform: scale(0.97); } }
 @media (prefers-reduced-motion: reduce) {
@@ -7852,6 +7868,63 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
     0 28px 70px -34px rgba(0, 0, 0, 0.95);
   overflow: hidden;
 }
+/* Знакомство с голосом (VoiceTour): окошко справа внизу, в стиле
+   слайдов Vibe-режима — то же стекло, шрифт и кнопки. */
+.voice-tour {
+  right: max(1.5rem, calc(env(safe-area-inset-right) + 1rem));
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
+  width: min(540px, calc(100vw - 2rem));
+  height: min(560px, calc(100dvh - 7rem));
+  display: flex;
+  flex-direction: column;
+  padding: 1.6rem 1.4rem 1.3rem;
+  border-radius: 30px;
+  overflow: hidden;
+  overflow: clip;
+  background: rgba(12, 12, 20, 0.62);
+  backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 40px 120px -24px rgba(0, 0, 0, 0.85);
+}
+@media (max-width: 767px) {
+  .voice-tour { right: 0.75rem; left: 0.75rem; width: auto; bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+}
+.voice-tour__wave {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+}
+.voice-tour__status {
+  min-height: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+.voice-tour__tasks {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  margin-top: 14px;
+}
+.voice-tour__task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: box-shadow 0.4s, background 0.4s;
+}
+.voice-tour__task.is-now {
+  box-shadow: inset 0 0 0 1px rgba(176, 124, 255, 0.7), 0 0 18px -6px rgba(176, 124, 255, 0.8);
+}
+.voice-tour__task.is-done { background: rgba(176, 124, 255, 0.14); }
 .voice-stage-close {
   position: absolute;
   top: 0.9rem;
@@ -7964,7 +8037,6 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
   position: fixed;
   inset: 0;
   z-index: 64;
-  pointer-events: none;
   background: rgba(3, 3, 6, 0.42);
 }
 @media (max-width: 1023px) {
@@ -8079,6 +8151,7 @@ html[data-lite] .block-vibe {
 .block-vibe__brief b { display: block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #c9b4ff; }
 .block-vibe__tick {
   position: absolute;
+  z-index: 2;
   top: 4px;
   right: 4px;
   display: grid;
@@ -8126,6 +8199,30 @@ html[data-lite] .block-vibe {
   transition: transform 0.2s, box-shadow 0.25s;
 }
 .block-vibe__work img { width: 100%; height: 100%; object-fit: cover; }
+/* Подпись варианта поверх кадра: примеры теперь не только ролики, но и
+   форматы услуги («Чат-боты», «Лендинг») — без названия их не понять. */
+.block-vibe__work::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(6, 6, 10, 0.85), rgba(6, 6, 10, 0) 70%);
+}
+.block-vibe__work-name {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 5px;
+  z-index: 1;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: left;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .block-vibe__work:hover { transform: scale(1.03); }
 .block-vibe__work.is-on {
   border-color: #b07cff;
@@ -8315,11 +8412,33 @@ body:has(.vibe-fan-dim) .voice-dock {
   opacity: 0;
   pointer-events: none;
 }
+/* Пока веер открыт, весь сайт приглушён — вместе с шапкой (Егор). */
 .vibe-fan-dim {
   position: fixed;
   inset: 0;
   z-index: 65;
-  background: rgba(3, 3, 6, 0.5);
+  background: rgba(3, 3, 6, 0.62);
+}
+/* Подписи прячутся (Егор, 2026-09-27): первый тап по сфере — только
+   кружки, тап по кружку — его подпись, второй тап по нему — переход.
+   Иначе столбик подписей закрывал весь экран. */
+.vibe-fan__label {
+  opacity: 0;
+  transform: translateX(8px) scale(0.92);
+  transform-origin: right center;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Невидимая подпись не должна ловить тапы мимо кружков: кнопка
+   пропускает касания, ловят только кружок (с запасом 8px) и открытая
+   подпись. */
+.vibe-fan__btn { pointer-events: none; }
+.vibe-fan__dot { position: relative; pointer-events: auto; }
+.vibe-fan__dot::before { content: ""; position: absolute; inset: -8px; }
+.vibe-fan__btn.is-armed .vibe-fan__label {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 .vibe-fan__list {
   display: flex;
@@ -8386,4 +8505,241 @@ body:has(.vibe-fan-dim) .voice-dock {
   height: 48px;
   margin-right: 0;
   place-items: center;
+}
+
+/* ── Плеер музыки (SoundStation) ───────────────────────────────────────────
+   Раскладка Apple Music (обложка → название → полоса → кнопки → громкость),
+   а стекло — то же матовое, что у шапки и вайб-окошек: плотная заливка,
+   сильный блюр, зерно, сайт за окном приглушён. Цвет — от настроения
+   (--m-from/--m-to): обложка, подсветка окна, полосы, активное настроение. */
+.music-dim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(3, 3, 6, 0.42);
+  pointer-events: none;
+}
+.music-player {
+  position: fixed;
+  z-index: 61;
+  width: min(calc(100vw - 24px), 348px);
+  max-height: calc(100dvh - 84px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 16px 16px 14px;
+  border-radius: 26px;
+  transform-origin: top right;
+  color: #fff;
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
+    rgba(16, 16, 24, 0.8);
+  backdrop-filter: blur(40px) saturate(1.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
+    0 30px 90px -24px rgba(0, 0, 0, 0.85);
+}
+.music-player::-webkit-scrollbar { display: none; }
+.music-player::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.music-player__ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 55% at 20% 0%, color-mix(in srgb, var(--m-from) 26%, transparent), transparent 70%),
+    radial-gradient(90% 45% at 100% 10%, color-mix(in srgb, var(--m-to) 22%, transparent), transparent 70%);
+  transition: background 0.6s ease;
+}
+.music-grad-text {
+  background: linear-gradient(90deg, var(--m-from), var(--m-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.music-kicker {
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.music-btn {
+  color: #fff;
+  transition: transform 0.18s ease, opacity 0.2s ease;
+}
+.music-btn:hover { transform: scale(1.08); }
+.music-btn:active { transform: scale(0.92); }
+.music-btn:disabled { opacity: 0.35; transform: none; }
+.music-scrub {
+  display: block;
+  height: 4px;
+  border-radius: 999px;
+  appearance: none;
+  cursor: pointer;
+  transition: height 0.18s ease;
+}
+.music-scrub:hover { height: 6px; }
+.music-scrub::-webkit-slider-thumb {
+  appearance: none;
+  width: 0;
+  height: 0;
+}
+.music-scrub:hover::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #fff;
+}
+.music-scrub::-moz-range-thumb { width: 0; height: 0; border: 0; }
+.music-mood {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 9px 10px 10px;
+  border-radius: 14px;
+  text-align: left;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.music-mood:hover { background: rgba(255, 255, 255, 0.09); }
+.music-mood.is-active {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--a) 22%, transparent), color-mix(in srgb, var(--b) 12%, transparent));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--a) 55%, transparent);
+}
+.music-mood.is-soon { opacity: 0.45; cursor: default; }
+.music-mood__dot {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 2px;
+  border-radius: 8px;
+  color: #0b0b10;
+  background: linear-gradient(135deg, var(--a), var(--b));
+}
+
+/* Очередь загрузки (lib/boot-sequence). Этапы в data-boot на <html>:
+   0–1 видео, 2 первый экран, 3 блоки, 4 сфера, 5 меню вайб-бара, 6 волна,
+   7 дым. */
+
+/* До этапа «блоки» все CSS-анимации сайта (неоновые кнопки, пульсации,
+   дрейф иконок — их ~70) стоят на паузе: первый кадр держится картинкой,
+   процессор занят видео и первым экраном. Окно-приветствие и сами шаги
+   очереди не замирают. */
+html:is([data-boot="0"], [data-boot="1"], [data-boot="2"]) body *:not(.welcome-shell, .welcome-shell *, .boot-late),
+html:is([data-boot="0"], [data-boot="1"], [data-boot="2"]) body *:not(.welcome-shell, .welcome-shell *)::before,
+html:is([data-boot="0"], [data-boot="1"], [data-boot="2"]) body *:not(.welcome-shell, .welcome-shell *)::after {
+  animation-play-state: paused !important;
+}
+
+/* Боковые стрелки — последний шаг каскада первого экрана: проявляются
+   через 0,8 с после заголовка. */
+html:is([data-boot="0"], [data-boot="1"]) .boot-late {
+  opacity: 0;
+  pointer-events: none;
+}
+html:not([data-boot="0"], [data-boot="1"]) .boot-late {
+  animation: boot-fade-in 0.6s ease 0.8s both;
+}
+@keyframes boot-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Сфера вайб-бара: стекло кнопки проявляется вместе со сборкой сферы. */
+html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"]) .boot-sphere {
+  opacity: 0;
+  pointer-events: none;
+}
+html:not([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"]) .boot-sphere {
+  animation: boot-fade-in 0.5s ease backwards;
+}
+
+/* Меню вайб-бара опускается из-под сферы по одной кнопке. `translate`, а
+   не `transform`, и заливка `backwards` — чтобы после анимации не мешать
+   собственному масштабу кнопок (активная крупнее). */
+html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [data-boot="4"]) .boot-rail {
+  opacity: 0;
+  pointer-events: none;
+}
+html:not([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [data-boot="4"]) .boot-rail {
+  animation: boot-rail-drop 0.45s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--boot-i, 0) * 70ms) backwards;
+}
+@keyframes boot-rail-drop {
+  from { opacity: 0; translate: 0 -18px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* Неон кнопок живёт только под курсором (Егор, 2026-09-27): бегущий свет
+   по кольцу и дыхание на десятках кнопок разом давали около трети всей
+   нагрузки сайта в покое. В покое кольцо и свечение стоят статично (кадр
+   анимации на паузе не пересчитывается), а при наведении или фокусе —
+   на самой кнопке или на карточке, внутри которой она лежит, — оживают. */
+.btn-neon,
+.btn-neon::before,
+.btn-neon-breathe,
+.spotlight-strip::after {
+  animation-play-state: paused;
+}
+/* Кадр покоя — пик дыхания (середина 3,2-секундного цикла): кнопка стоит
+   со свечением, а не на самом тёмном кадре. */
+.btn-neon,
+.btn-neon-breathe {
+  animation-delay: -1.6s;
+}
+.btn-neon:is(:hover, :focus-visible),
+.btn-neon:is(:hover, :focus-visible)::before,
+.btn-neon-breathe:is(:hover, :focus-visible),
+.group:hover .btn-neon,
+.group:hover .btn-neon::before,
+.spotlight-strip:hover::after {
+  animation-play-state: running;
+}
+
+/* Слабые устройства (data-lite): стекло без размытия (Егор, 2026-09-27).
+   backdrop-filter — самая тяжёлая для видеокарты вещь на сайте: слой под
+   стеклом пересчитывается на каждый кадр прокрутки и анимации. Здесь он
+   заменён плотной матовой подложкой под собственной заливкой стекла — вид
+   тот же «матовый», только сквозь него не просвечивает сайт. Шапка и
+   кнопки вайб-бара оставляют размытие по прежнему решению (их немного). */
+html[data-lite] :is(.liquid-glass, .btn-glass, .glass-tile, .c3-card, .glass-panel, .spotlight-tab,
+  .welcome-window, .welcome-quiet, .team-pulse-card, .team-pulse-note, .cab-glass,
+  .vibe-mode__window, .vibe-mode__card, .offer-card, .offer-tier, .voice-invite, .voice-caption,
+  .voice-stage, .voice-tour, .block-vibe, .tuned-block__card, .before-after, .music-player) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background-color: rgba(18, 18, 26, 0.94);
+}
+html[data-lite] :is(.glass-strip, .welcome-backdrop) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html[data-lite] .welcome-backdrop {
+  background-color: rgba(6, 6, 10, 0.7);
+}
+/* Метка «к странице» на плитке настроения, подходящего открытой странице. */
+.music-mood { position: relative; }
+.music-mood__page {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #0b0b10;
+  background: linear-gradient(90deg, var(--a), var(--b));
 }

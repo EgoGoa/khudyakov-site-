@@ -9,6 +9,8 @@ import { useSyncExternalStore } from "react";
 /** Ассистент уходит по сайту — стартовая сцена должна закрыться. */
 export const VOICE_NAV_EVENT = "hdkv:voice-nav";
 /** «Подбери предложение» — VibeRail открывает вайб-режим. */
+/** Знакомство с голосом уже показано (VoiceTour). */
+export const TOUR_KEY = "hdkv_voice_tour_seen";
 export const OPEN_VIBE_EVENT = "hdkv:open-vibe";
 
 export type VoiceStatus = "idle" | "listening" | "thinking" | "speaking";
@@ -39,6 +41,8 @@ export type VoiceState = {
   invite: boolean;
   /** Открыто окно «Написать …» человека команды (id из lib/team). */
   team: string | null;
+  /** Открыто знакомство с голосом (VoiceTour): слайды и мини-обучение. */
+  tour: boolean;
 };
 
 let state: VoiceState = {
@@ -54,6 +58,7 @@ let state: VoiceState = {
   pulse: 0,
   invite: false,
   team: null,
+  tour: false,
 };
 
 /** Громкость голоса прямо сейчас, 0..1: твоего, пока ассистент слушает,
