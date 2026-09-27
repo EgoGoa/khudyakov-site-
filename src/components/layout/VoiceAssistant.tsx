@@ -11,7 +11,7 @@ import { useCinematicCurrent, useCinematicFirstId, useCinematicGoTo, useCinemati
 import { useHeaderMenu } from "@/lib/header-menu";
 import { serviceMeta, serviceOrder } from "@/lib/service-content";
 import { blocksFor } from "@/lib/welcome-blocks";
-import { CONTACTS, HELP_SAY, parseCommand, serviceFromPath, type VoiceAction } from "@/lib/voice/intents";
+import { CONTACTS, parseCommand, serviceFromPath, type VoiceAction } from "@/lib/voice/intents";
 import {
   OPEN_VIBE_EVENT,
   VOICE_NAV_EVENT,
@@ -64,7 +64,18 @@ function writeFlag(key: string, on: boolean) {
 // 0.05 с тишины — «разогрев» <audio> в жесте пользователя для iOS.
 const SILENCE = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 
-const HINTS = ["Дальше", "Следующая страница", "Покажи третий блок", "Сколько стоит сайт?"];
+// Подсказки, которые по очереди тихо проявляются под волной в окне.
+const HINTS = [
+  "Скажи «дальше» или «назад»",
+  "«Следующая страница»",
+  "«Покажи третий блок»",
+  "«Открой сайты»",
+  "«Покажи цены»",
+  "Спроси: сколько стоит ролик?",
+  "«Отмени» — вернёт, как было",
+  "«Позвони продюсеру»",
+  "«Стоп» — выключить голос",
+];
 
 type Rec = {
   lang: string;
@@ -212,7 +223,7 @@ export default function VoiceAssistant() {
             disable();
             setVoiceState({
               panelOpen: true,
-              notice: "Микрофон закрыт. Нажми на значок замка в адресной строке → «Микрофон: разрешить» — или просто напиши.",
+              notice: "Разреши микрофон: значок замка в адресной строке",
             });
           }
           return;
@@ -592,7 +603,7 @@ export default function VoiceAssistant() {
           setVoiceState({
             status: "idle",
             panelOpen: true,
-            notice: "Микрофон закрыт. Нажми на значок замка в адресной строке → «Микрофон: разрешить» — или просто напиши.",
+            notice: "Разреши микрофон: значок замка в адресной строке",
           });
           return;
         }
@@ -618,7 +629,7 @@ export default function VoiceAssistant() {
     }
 
     registerVoiceEngine({
-      tap: () => {
+      tap: (inStage?: boolean) => {
         const st = getVoiceState();
         if (!st.enabled) {
           enable();
@@ -631,6 +642,8 @@ export default function VoiceAssistant() {
           scheduleListen(0);
           return;
         }
+        // Волна внутри окна не закрывает окно — для этого крестик.
+        if (inStage) return;
         setVoiceState({ panelOpen: !st.panelOpen });
       },
       enable,
@@ -810,124 +823,16 @@ export function InlineVoiceSphere({ from, to }: { from: string; to: string }) {
     setVoiceState((st) => ({ inlineCount: st.inlineCount + 1 }));
     return () => setVoiceState((st) => ({ inlineCount: Math.max(0, st.inlineCount - 1) }));
   }, []);
-  return <VoiceDock width={240} height={84} from={from} to={to} />;
+  return <VoiceDock width={240} height={56} from={from} to={to} />;
 }
 
+/** Окно ассистента по центру экрана (Егор: «никаких чатов, никаких слов —
+ *  просто красиво»). В центре — большая волна, по краям ~20% воздуха; под
+ *  ней одна тихая строка: что ты сказал, что ответил ассистент, а в паузах —
+ *  подсказки, что можно сказать. Каждая проявляется и растворяется. */
 function VoicePanel({ from, to }: { from: string; to: string }) {
   const s = useVoiceState();
   const [draft, setDraft] = useState("");
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [s.turns.length, s.live]);
-
-  const status = !s.enabled
-    ? s.canListen
-      ? "Голос выключен"
-      : "Напиши, что нужно"
-    : s.status === "thinking"
-      ? "Думаю…"
-      : s.status === "speaking"
-        ? "Отвечаю"
-        : "Слушаю…";
-  const showHints = s.turns.filter((t) => t.role === "user").length === 0;
-  const hot = s.status === "listening" || s.status === "speaking";
-
-  const submit = (text: string) => {
-    voice.send(text);
-    setDraft("");
-  };
-
-  return (
-    <motion.div
-      role="dialog"
-      aria-label="Голосовой ассистент"
-      className="voice-panel fixed z-[110]"
-      style={{ "--g-from": from, "--g-to": to } as CSSProperties}
-      initial={{ opacity: 0, y: 24, scale: 0.96, filter: "blur(8px)" }}
-      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-      exit={{ opacity: 0, y: 18, scale: 0.97, filter: "blur(6px)" }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className="voice-panel-head">
-        {/* Волна на всю левую часть шапки (Егор: «растяни графику по моей
-            рамке»), под ней — статус. Заголовок убран: он переносился и
-            наезжал, а волна и так говорит, что это ассистент. */}
-        <div className="voice-panel-brand min-w-0 flex-1">
-          <HeaderWave from={from} to={to} hot={hot} pulse={s.pulse} />
-          <p className={`voice-panel-status ${s.enabled ? "is-live" : ""}`}>
-            {s.enabled && <span className="voice-panel-dot" aria-hidden="true" />}
-            {status}
-          </p>
-        </div>
-        {s.canListen && (
-          <button
-            type="button"
-            className="voice-panel-toggle"
-            onClick={() => (s.enabled ? voice.disable() : voice.enable())}
-          >
-            {s.enabled ? "Выключить голос" : "Включить голос"}
-          </button>
-        )}
-        <button type="button" onClick={() => voice.closePanel()} aria-label="Закрыть окно" className="voice-panel-close">
-          <CloseIcon />
-        </button>
-      </div>
-
-      <div ref={scrollRef} className="voice-panel-body" aria-live="polite">
-        {s.turns.length === 0 && <p className="voice-bubble">{HELP_SAY}</p>}
-        {s.turns.map((t, i) => (
-          <p key={i} className={t.role === "user" ? "voice-bubble voice-bubble--me" : "voice-bubble"}>
-            {t.text}
-          </p>
-        ))}
-        {s.live && <p className="voice-bubble voice-bubble--me is-live">{s.live}</p>}
-        {s.status === "thinking" && (
-          <p className="voice-bubble voice-typing" aria-label="Ассистент думает">
-            <span />
-            <span />
-            <span />
-          </p>
-        )}
-        {s.notice && <p className="voice-notice">{s.notice}</p>}
-        {s.contact && <ContactButton kind={s.contact} />}
-      </div>
-
-      {showHints && (
-        <div className="voice-hints">
-          {HINTS.map((h) => (
-            <button key={h} type="button" onClick={() => submit(h)} className="voice-hint">
-              {h}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <form
-        className="voice-input"
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit(draft);
-        }}
-      >
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder={s.enabled ? "Или напиши…" : "Напиши, что нужно…"}
-          aria-label="Сообщение ассистенту"
-          enterKeyHint="send"
-        />
-        <button type="submit" aria-label="Отправить" disabled={!draft.trim()}>
-          <SendIcon />
-        </button>
-      </form>
-    </motion.div>
-  );
-}
-
-/** Волна шапки окна: занимает всю ширину своей колонки. */
-function HeaderWave({ from, to, hot, pulse }: { from: string; to: string; hot: boolean; pulse: number }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [w, setW] = useState(0);
   useEffect(() => {
@@ -937,13 +842,139 @@ function HeaderWave({ from, to, hot, pulse }: { from: string; to: string; hot: b
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  const hot = s.status === "listening" || s.status === "speaking";
+
   return (
-    <div ref={ref} className="voice-panel-wave">
-      {/* Короче колонки и без хвостов-пыли — не выходит за границы шапки;
-          концы всё равно уходят в прозрачность градиентом линий. */}
-      {w > 0 && (
-        <NanoWave width={Math.round(w * 0.7)} height={32} from={from} to={to} hot={hot} pulse={pulse} dust={false} level={getVoiceLevel} />
+    <motion.div
+      role="dialog"
+      aria-label="Голосовой ассистент"
+      className="voice-stage fixed z-[110]"
+      style={{ "--g-from": from, "--g-to": to } as CSSProperties}
+      initial={{ opacity: 0, scale: 0.96, filter: "blur(10px)" }}
+      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+      exit={{ opacity: 0, scale: 0.97, filter: "blur(8px)" }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <button type="button" onClick={() => voice.closePanel()} aria-label="Закрыть" className="voice-stage-close">
+        <CloseIcon />
+      </button>
+
+      <div ref={ref} className="voice-stage-wave">
+        {w > 0 && (
+          <button
+            type="button"
+            onClick={() => voice.tap(true)}
+            aria-label={s.enabled ? "Перебить ассистента" : "Включить голос"}
+            className="voice-sphere"
+          >
+            <NanoWave
+              width={Math.round(w * 0.6)}
+              height={Math.round(Math.min(130, w * 0.3))}
+              from={from}
+              to={to}
+              hot={hot}
+              pulse={s.pulse}
+              sparkle
+              level={getVoiceLevel}
+            />
+          </button>
+        )}
+      </div>
+
+      <VoiceTicker />
+
+      {s.contact && (
+        <div className="voice-stage-contact">
+          <ContactButton kind={s.contact} />
+        </div>
       )}
+
+      {!s.canListen && (
+        <form
+          className="voice-input"
+          onSubmit={(e) => {
+            e.preventDefault();
+            voice.send(draft);
+            setDraft("");
+          }}
+        >
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="Напиши, что нужно…"
+            aria-label="Сообщение ассистенту"
+            enterKeyHint="send"
+          />
+          <button type="submit" aria-label="Отправить" disabled={!draft.trim()}>
+            <SendIcon />
+          </button>
+        </form>
+      )}
+    </motion.div>
+  );
+}
+
+/** Одна тихая строка под волной. Приоритет: что слышно прямо сейчас →
+ *  свежая реплика (2.8 с) → предупреждение → подсказки по кругу. */
+function VoiceTicker() {
+  const s = useVoiceState();
+  const [hint, setHint] = useState(0);
+  const [fresh, setFresh] = useState<{ id: number; text: string; me: boolean } | null>(null);
+  const turns = s.turns.length;
+  const last = s.turns.at(-1);
+
+  useEffect(() => {
+    if (!last) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- показ по внешнему событию (новая реплика)
+    setFresh({ id: turns, text: last.text, me: last.role === "user" });
+    const t = window.setTimeout(() => setFresh(null), 2800);
+    return () => window.clearTimeout(t);
+  }, [turns, last]);
+
+  useEffect(() => {
+    const t = window.setInterval(() => setHint((h) => (h + 1) % HINTS.length), 2600);
+    return () => window.clearInterval(t);
+  }, []);
+
+  let key: string;
+  let text: string;
+  let me = false;
+  if (s.live) {
+    key = "live";
+    text = s.live;
+    me = true;
+  } else if (s.status === "thinking") {
+    key = "think";
+    text = "…";
+  } else if (fresh) {
+    key = `turn-${fresh.id}`;
+    text = fresh.text;
+    me = fresh.me;
+  } else if (s.notice) {
+    key = "notice";
+    text = s.notice;
+  } else if (!s.enabled) {
+    key = `off-${hint % 2}`;
+    text = hint % 2 ? HINTS[hint] : s.canListen ? "Коснись волны — и говори" : "Напиши, что нужно";
+  } else {
+    key = `hint-${hint}`;
+    text = HINTS[hint];
+  }
+
+  return (
+    <div className="voice-ticker" aria-live="polite">
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={key}
+          className={`voice-ticker-line ${me ? "is-me" : ""}`}
+          initial={{ opacity: 0, y: 6, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -4, filter: "blur(6px)" }}
+          transition={{ duration: 0.6, ease: [0.45, 0, 0.15, 1] }}
+        >
+          {text}
+        </motion.p>
+      </AnimatePresence>
     </div>
   );
 }

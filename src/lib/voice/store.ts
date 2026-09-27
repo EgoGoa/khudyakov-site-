@@ -83,7 +83,7 @@ export function useVoiceState() {
 // Движок регистрирует себя здесь; сферы только дёргают эти функции.
 type Engine = {
   /** Нажатие на волну: включить голос / перебить / открыть-скрыть окно. */
-  tap: () => void;
+  tap: (inStage?: boolean) => void;
   /** Кнопка «Включить» в приглашении. */
   enable: () => void;
   disable: () => void;
@@ -98,7 +98,7 @@ export function registerVoiceEngine(e: Engine | null) {
 }
 
 export const voice = {
-  tap: () => engine?.tap(),
+  tap: (inStage?: boolean) => engine?.tap(inStage),
   enable: () => engine?.enable(),
   disable: () => engine?.disable(),
   dismissInvite: () => engine?.dismissInvite(),

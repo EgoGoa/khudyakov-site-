@@ -30,6 +30,7 @@ export default function NanoWave({
   pulse = 0,
   dust = true,
   level,
+  sparkle = false,
 }: {
   width?: number;
   height?: number;
@@ -43,6 +44,8 @@ export default function NanoWave({
   dust?: boolean;
   /** Громкость голоса 0..1 каждый кадр — волна качается в такт речи. */
   level?: () => number;
+  /** Большое окно: искры, как у сферы, — крупнее, чаще и от всей волны. */
+  sparkle?: boolean;
 }) {
   const wrapRef = useRef<HTMLSpanElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -83,18 +86,36 @@ export default function NanoWave({
 
     const html = document.documentElement;
     const light = html.hasAttribute("data-lite") || html.hasAttribute("data-mid");
-    // Плотнее (Егор): больше линий и ближе друг к другу.
-    const LINES = light ? 12 : 20;
+    // Не слишком плотно (Егор): лента из 13 линий, а не 20.
+    const LINES = light ? 9 : 13;
 
     // Пыль на концах (Егор: «чтобы по краям она распылялась»): мелкие искры
     // рождаются у обоих концов ленты и улетают наружу, растворяясь. В
     // разговоре их больше и летят они дальше.
     type Mote = { side: -1 | 1; u: number; y: number; vx: number; vy: number; born: number; life: number; size: number; mix: number };
     const motes: Mote[] = [];
-    const MOTES_PER_S = light ? 5 : 9;
+    const MOTES_PER_S = sparkle ? (light ? 12 : 26) : light ? 5 : 9;
     let moteAcc = 0;
     let moteLast = 0;
+    // Искры сферы: рождаются у волны по всей длине, вспыхивают и уходят
+    // вверх-вниз и немного к курсору, белея и растворяясь.
+    const spawnSpark = (t: number): Mote => {
+      const u = 0.12 + Math.random() * 0.76;
+      const up = Math.random() < 0.5 ? -1 : 1;
+      return {
+        side: up < 0 ? -1 : 1,
+        u,
+        y: up * Math.random() * amp * 0.25 * Math.sin(Math.PI * u),
+        vx: ((Math.random() - 0.5) * 0.08 + 0.06 * pull) * len,
+        vy: up * (0.35 + Math.random() * 0.9) * amp * Math.sin(Math.PI * u),
+        born: t,
+        life: 1.3 + Math.random() * 1.7,
+        size: (0.7 + Math.random() * 1.1) * dpr * k,
+        mix: Math.random(),
+      };
+    };
     const spawnMote = (t: number): Mote => {
+      if (sparkle) return spawnSpark(t);
       // С той стороны, где курсор, пыли больше.
       const side = Math.random() < 0.5 + 0.35 * pull ? 1 : -1;
       return {
@@ -123,12 +144,20 @@ export default function NanoWave({
     let ph2 = 0;
     let lastT = 0;
     let hoverS = 0;
+    // Магнит: вся волна чуть смещается к курсору, как кнопка, которая
+    // тянется за мышкой (до 14px по горизонтали, 8px по вертикали).
+    let mx = 0;
+    let my = 0;
+    let magX = 0;
+    let magY = 0;
     const onMove = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
       const dx = e.clientX - (r.left + r.width / 2);
       const dy = e.clientY - (r.top + r.height / 2);
-      bias = Math.max(-1, Math.min(1, dx / (r.width * 0.5 + 220)));
-      near = Math.max(0, Math.min(1, 1 - Math.hypot(dx, dy) / 720));
+      bias = Math.max(-1, Math.min(1, dx / (r.width * 0.5 + 60)));
+      near = Math.max(0, Math.min(1, 1 - Math.hypot(dx, dy) / 900));
+      mx = dx;
+      my = dy;
     };
     const onOut = () => {
       near = 0;
@@ -151,7 +180,11 @@ export default function NanoWave({
       // Медленно, без рывков: курсор «притягивает», а не дёргает.
       biasS += (bias - biasS) * 0.035;
       nearS += (near - nearS) * 0.03;
-      pull = biasS * (0.3 + 0.7 * nearS);
+      pull = biasS * (0.55 + 0.45 * nearS);
+      const m = Math.max(0, 1 - Math.hypot(mx, my) / 420);
+      magX += (Math.max(-14, Math.min(14, mx * 0.06)) * m - magX) * 0.08;
+      magY += (Math.max(-8, Math.min(8, my * 0.06)) * m - magY) * 0.08;
+      canvas.style.transform = `translate(calc(-50% + ${magX.toFixed(2)}px), calc(-50% + ${magY.toFixed(2)}px))`;
       const target = hotRef.current ? 1.2 + lv * 3.6 : hover ? 1.8 : 1 + 0.9 * nearS;
       if (pulseRef.current !== seenPulse) {
         seenPulse = pulseRef.current;
@@ -201,7 +234,7 @@ export default function NanoWave({
       ph1 += dt * 2.1 * drift;
       ph2 += dt * 3.3 * drift;
       // Гребень смещается к курсору: середина огибающей едет в его сторону.
-      const u0 = 0.5 + 0.24 * pull;
+      const u0 = 0.5 + 0.32 * pull;
       const lean = Math.abs(pull);
       const toward = pull < 0 ? -1 : 1;
 
@@ -212,22 +245,25 @@ export default function NanoWave({
           const u = i / POINTS;
           // Сходится в точку на концах, громче всего в середине.
           const uw = u < u0 ? (0.5 * u) / u0 : 0.5 + (0.5 * (u - u0)) / (1 - u0);
-          const side = 1 + 0.8 * lean * Math.max(0, (u - 0.5) * 2 * toward);
+          // Сторона курсора: гребни выше и чаще, дальняя сторона затихает.
+          const sideT = (u - 0.5) * 2 * toward;
+          const side = 1 + 1.3 * lean * Math.max(0, sideT) - 0.35 * lean * Math.max(0, -sideT);
+          const dense = 1 + 0.7 * lean * Math.max(0, sideT);
           const env = Math.sin(Math.PI * uw) ** 2 * side;
           const x = x0 + u * len;
           const w =
-            0.42 * Math.sin(u * 9 - ph1 + phase) * (0.8 + 0.2 * Math.sin(t * 0.9 + phase)) +
-            0.3 * Math.sin(u * 15 - ph2 + phase * 1.7) +
+            0.42 * Math.sin(u * 9 * dense - ph1 + phase) * (0.8 + 0.2 * Math.sin(t * 0.9 + phase)) +
+            0.3 * Math.sin(u * 15 * dense - ph2 + phase * 1.7) +
             0.18 * Math.sin(u * 23 + t * 2.6 * speed - phase * 0.8);
           const spread = (j - LINES / 2) * 0.032;
-          const y = cy + amp * env * (w * 0.3 * Math.min(e, 4.6) + spread * Math.min(e, 2));
+          const y = cy + amp * env * (w * 0.22 * Math.min(e, 4.2) + spread * Math.min(e, 2));
           if (i === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
         ctx.stroke();
       }
 
-      if (dust) {
+      if (dust || sparkle) {
         ctx.shadowBlur = 0;
         moteAcc += MOTES_PER_S * (0.6 + 0.4 * energy) * (1 + 1.6 * glowK) * Math.max(0, t - moteLast);
         moteLast = t;
@@ -245,7 +281,7 @@ export default function NanoWave({
           const ease = 1 - (1 - age) ** 2;
           const x = x0 + m.u * len + m.vx * ease * (0.7 + 0.3 * energy);
           const y = cy + m.y + m.vy * ease;
-          const alpha = Math.min(1, age * 5) * (1 - age) * 0.6;
+          const alpha = sparkle ? Math.min(1, age * 8) * (1 - age) ** 1.2 * 0.85 : Math.min(1, age * 5) * (1 - age) * 0.6;
           const r = fr + (tr - fr) * m.mix;
           const g = fg + (tg - fg) * m.mix;
           const b = fb + (tb - fb) * m.mix;
@@ -278,7 +314,7 @@ export default function NanoWave({
       window.removeEventListener("pointermove", onMove);
       document.documentElement.removeEventListener("pointerleave", onOut);
     };
-  }, [width, height, from, to, padX, padY, dust]);
+  }, [width, height, from, to, padX, padY, dust, sparkle]);
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width, height }} aria-hidden="true">
