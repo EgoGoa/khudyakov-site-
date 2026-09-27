@@ -94,7 +94,8 @@ export default function NanoWave({
     // разговоре их больше и летят они дальше.
     type Mote = { side: -1 | 1; u: number; y: number; vx: number; vy: number; born: number; life: number; size: number; mix: number };
     const motes: Mote[] = [];
-    const MOTES_PER_S = sparkle ? (light ? 12 : 26) : light ? 5 : 9;
+    // Искры минимальные, как у сферы (Егор: «не надо крупные частицы»).
+    const MOTES_PER_S = sparkle ? (light ? 6 : 12) : light ? 5 : 9;
     let moteAcc = 0;
     let moteLast = 0;
     // Искры сферы: рождаются у волны по всей длине, вспыхивают и уходят
@@ -110,7 +111,7 @@ export default function NanoWave({
         vy: up * (0.35 + Math.random() * 0.9) * amp * Math.sin(Math.PI * u),
         born: t,
         life: 1.3 + Math.random() * 1.7,
-        size: (0.7 + Math.random() * 1.1) * dpr * k,
+        size: (0.35 + Math.random() * 0.45) * dpr,
         mix: Math.random(),
       };
     };
@@ -281,7 +282,7 @@ export default function NanoWave({
           const ease = 1 - (1 - age) ** 2;
           const x = x0 + m.u * len + m.vx * ease * (0.7 + 0.3 * energy);
           const y = cy + m.y + m.vy * ease;
-          const alpha = sparkle ? Math.min(1, age * 8) * (1 - age) ** 1.2 * 0.85 : Math.min(1, age * 5) * (1 - age) * 0.6;
+          const alpha = sparkle ? Math.min(1, age * 6) * (1 - age) * 0.5 : Math.min(1, age * 5) * (1 - age) * 0.6;
           const r = fr + (tr - fr) * m.mix;
           const g = fg + (tg - fg) * m.mix;
           const b = fb + (tb - fb) * m.mix;
