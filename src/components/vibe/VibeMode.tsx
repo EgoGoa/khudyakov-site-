@@ -65,15 +65,15 @@ const INTRO_STEPS: { title: string; lead: string; Info: () => ReactNode }[] = [
   { title: "Что будет на твоей *Vibe-странице*", lead: "Всё, чтобы решить и *заказать*, — в одном месте", Info: InfoInside },
 ];
 
-function useNarrow() {
+function useNarrow(query = "(max-width: 640px)") {
   const [narrow, setNarrow] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
+    const mq = window.matchMedia(query);
     const sync = () => setNarrow(mq.matches);
     sync();
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
-  }, []);
+  }, [query]);
   return narrow;
 }
 
@@ -119,6 +119,9 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useDialogFocus(true, ref);
   const narrow = useNarrow();
+  // Невысокий телефон (SE, мини, альбом с панелью браузера): сфера мельче,
+  // чтобы вопросы с длинным списком и кнопка «Дальше» влезали в окно.
+  const short = useNarrow("(max-width: 640px) and (max-height: 720px)");
   const router = useRouter();
 
   const [stage, setStage] = useState<Stage>("splash");
@@ -152,14 +155,15 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
   const total = questions.length;
   const progress = stage === "quiz" ? qi / (total + 1) : stage === "contact" ? total / (total + 1) : stage === "building" ? 1 : 0;
   const orbSize =
-    stage === "splash" ? (narrow ? 150 : 200) : stage === "hello" ? (narrow ? 96 : 120) : stage === "intro" ? (narrow ? 84 : 96) : stage === "building" ? (narrow ? 104 : 128) : narrow ? 54 : 64;
+    stage === "splash" ? (narrow ? 150 : 200) : stage === "hello" ? (narrow ? 96 : 120) : stage === "intro" ? (short ? 64 : narrow ? 84 : 96) : stage === "building" ? (narrow ? 104 : 128) : short ? 40 : narrow ? 54 : 64;
   // Отступ сферы сверху: на заставке и приветствии сфера с текстом стоят
   // в середине окна, дальше поднимаются к верху.
   const orbSlot = stage === "contact" ? "quiz" : stage;
   const orbTop = stage === "splash" ? (narrow ? 70 : 96) : stage === "hello" ? (narrow ? 90 : 120) : stage === "building" ? 60 : 0;
   // Над слайдами сфера крупнее (64 → 96px) и поднята выше, по центру, но
   // кольцо целиком остаётся внутри окна (Егор, 2026-09-26).
-  const orbLift = stage === "intro" ? (narrow ? -34 : -40) : 0;
+  // На телефоне не поднимаем: там сфера наезжала на «Vibe-режим» слева.
+  const orbLift = stage === "intro" && !narrow ? -40 : 0;
 
   const finish = () => {
     setStage("building");
@@ -688,7 +692,7 @@ function Question({
         </AnimatePresence>
       </div>
 
-      <div className="mt-4 flex w-full items-center justify-between">
+      <div className="vibe-mode__nav mt-4 flex w-full items-center justify-between">
         <button type="button" onClick={onBack} className="vibe-mode__back">
           ← Назад
         </button>

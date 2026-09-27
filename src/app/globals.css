@@ -7212,6 +7212,34 @@ html[data-lite] .vibe-mode__wordmark { animation: none; }
 }
 /* Окно вайб-сайта статичное: одна высота на все шаги, не прыгает под текст. */
 .vibe-mode__window--fixed { height: min(640px, calc(100dvh - 32px)); }
+/* Телефон: окно на всю высоту экрана (за вычетом полей подложки) — в 640px
+   не влезали длинные вопросы (7 вариантов + своё поле), и «Дальше» уезжало
+   за нижний край. */
+@media (max-width: 640px) {
+  .vibe-mode__window--fixed { height: calc(100dvh - 32px); }
+  .vibe-mode__next,
+  .vibe-mode__back { gap: 8px; font-size: 12px; letter-spacing: 0.05em; white-space: nowrap; }
+  /* Поля ввода не мельче 16px: иначе iOS Safari зумит страницу по фокусу. */
+  .vibe-mode__own input { font-size: 16px; }
+}
+@media (max-width: 640px) and (max-height: 720px) {
+  .vibe-mode__option { min-height: 42px; padding: 7px 12px; gap: 10px; }
+  .vibe-mode__key { width: 24px; height: 24px; border-radius: 8px; }
+  .vibe-mode__chip { padding: 8px 12px; }
+  .vibe-mode__own { height: 44px; }
+  .vibe-mode__field { height: 48px; }
+  /* Длинный список всё равно может не влезть — тогда «Назад / Дальше»
+     прилипают к низу окна, а варианты прокручиваются под ними. */
+  .vibe-mode__nav {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    width: calc(100% + 40px) !important;
+    margin: 8px -20px 0;
+    padding: 14px 20px 0;
+    background: linear-gradient(to bottom, transparent, rgba(12, 12, 20, 0.85) 45%);
+  }
+}
 .vibe-mode__scroll {
   position: relative;
   max-height: calc(100dvh - 32px);
@@ -7946,7 +7974,20 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
     0 30px 90px -24px rgba(0, 0, 0, 0.85);
+  /* clip, а не hidden (как у .vibe-mode__window): сияние шире окошка, и при
+     hidden браузер по фокусу (тап по работе на шаге «Примеры») прокручивал
+     окошко внутрь — на телефоне оно съезжало влево за край экрана. */
   overflow: hidden;
+  overflow: clip;
+}
+/* На телефоне окошко стоит внизу, там же, где волна ассистента, — волна
+   с приглашением «Включить» закрывала кнопку «Дальше». Пока окошко
+   открыто, волну прячем. */
+@media (max-width: 1023px) {
+  body:has(.block-vibe) .voice-dock-corner {
+    opacity: 0 !important;
+    pointer-events: none;
+  }
 }
 /* То же зерно, что у шапки — оно и делает стекло матовым на вид. */
 .block-vibe::after {
@@ -8047,6 +8088,8 @@ html[data-lite] .block-vibe {
 .block-vibe__next:disabled { opacity: 0.35; box-shadow: none; cursor: default; }
 .block-vibe__cta { flex: 1; justify-content: center; height: 44px !important; font-size: 12px !important; }
 .block-vibe__field { height: 46px !important; font-size: 14px !important; }
+/* Телефон: 16px, иначе iOS Safari зумит страницу при фокусе на поле. */
+@media (max-width: 1023px) { .block-vibe__field { font-size: 16px !important; } }
 .block-vibe__link {
   font-size: 11px;
   font-weight: 700;
@@ -8319,7 +8362,14 @@ body:has(.vibe-fan-dim) .voice-dock {
   position: fixed;
   inset: 0;
   z-index: 65;
-  background: rgba(3, 3, 6, 0.5);
+  /* Плотнее: подписи кнопок стоят поверх кнопок и текста страницы. */
+  background: rgba(3, 3, 6, 0.66);
+}
+/* Пока веер открыт, волна ассистента (внизу по центру, тот же z-index)
+   прячется: она ловила тапы по нижним кнопкам веера. */
+body:has(.vibe-fan__list) .voice-dock-corner {
+  opacity: 0 !important;
+  pointer-events: none;
 }
 .vibe-fan__list {
   display: flex;

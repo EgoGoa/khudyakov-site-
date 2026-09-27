@@ -317,8 +317,11 @@ export default function WelcomeOverlay() {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    // Ссылка с ?vibe=1 сразу открывает вайб-окно (VibeRail) — стартовое окно
+    // под ним не показываем: иначе сайт «замирает» под ним, и сфера с
+    // приветствием в вайб-окне не рисуются.
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, localStorage read has to happen post-hydration (see comment above on the initial useState)
-    if (isSnoozed()) setVisible(false);
+    if (isSnoozed() || new URLSearchParams(window.location.search).has("vibe")) setVisible(false);
   }, []);
 
   // Блокировка прокрутки снимается не в момент закрытия, а после того, как
