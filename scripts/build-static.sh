@@ -9,10 +9,13 @@ DST="$SRC/../khudyakov-site-static"
 
 mkdir -p "$DST"
 rsync -a --delete \
-  --exclude node_modules --exclude .next --exclude out --exclude .git \
+  --exclude node_modules --exclude .next --exclude .next-preview --exclude out --exclude .git \
   --exclude _backups --exclude .claude --exclude 'hdkv-ai-static.zip' \
   "$SRC/" "$DST/"
 [ -d "$DST/node_modules" ] || cp -cR "$SRC/node_modules" "$DST/node_modules"
+# Папка второго dev-сервера (превью другого чата): её типы ссылаются на
+# админку, которой в статичной версии нет, и ломают проверку TypeScript.
+rm -rf "$DST/.next-preview"
 
 cd "$DST"
 rm -rf src/app/api src/app/admin src/middleware.ts src/proxy.ts
