@@ -247,10 +247,13 @@ export default function NanoSphere({
       halo.addColorStop(soft ? 0.3 : 0.4, `rgba(${fr},${fg},${fb},${(soft ? 0.03 + 0.012 * breath * energy : 0.06 + 0.035 * breath * energy) * glow})`);
       halo.addColorStop(1, `rgba(${tr},${tg},${tb},0)`);
       ctx.fillStyle = halo;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Тихая сфера — без ореола совсем: только чёткие линии (Егор).
+      if (!soft) ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.lineWidth = 0.55 * dpr * k;
-      ctx.shadowBlur = (soft ? 5 : 10) * dpr * k * glow * blurBoost;
+      // Размытая тень штрихов бежит по кругу вместе с переливом и читается
+      // недетализированным свечением — в тихом режиме её нет.
+      ctx.shadowBlur = soft ? 0 : 10 * dpr * k * glow * blurBoost;
       // Перелив по часовой стрелке (Егор: «по кругу плавно течёт»): по
       // кольцу бежит яркая голова света с длинным хвостом, напротив — вторая,
       // слабее. Конический градиент поворачивается каждый кадр; в canvas угол

@@ -32,6 +32,7 @@ export default function NanoWave({
   dust = true,
   level,
   sparkle = false,
+  particles = true,
 }: {
   width?: number;
   height?: number;
@@ -47,6 +48,8 @@ export default function NanoWave({
   level?: () => number;
   /** Большое окно: искры, как у сферы, — крупнее, чаще и от всей волны. */
   sparkle?: boolean;
+  /** Пыль с концов волны. Нижней волне-кнопке — без частиц (Егор, 2026-09-27). */
+  particles?: boolean;
 }) {
   const wrapRef = useRef<HTMLSpanElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -316,7 +319,7 @@ export default function NanoWave({
         ctx.stroke();
       }
 
-      if (dust || sparkle) {
+      if (particles && (dust || sparkle)) {
         moteAcc += MOTES_PER_S * (0.6 + 0.4 * energy) * (1 + 1.6 * glowK) * Math.max(0, t - moteLast);
         moteLast = t;
         while (moteAcc >= 1) {
@@ -380,7 +383,7 @@ export default function NanoWave({
       window.removeEventListener("pointerdown", onDown);
       document.documentElement.removeEventListener("pointerleave", onOut);
     };
-  }, [width, height, padX, padY, dust, sparkle]);
+  }, [width, height, padX, padY, dust, sparkle, particles]);
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width, height }} aria-hidden="true">

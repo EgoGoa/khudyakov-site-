@@ -807,7 +807,7 @@ function VoiceWaveButton({ width, height, from, to }: { width: number; height: n
       style={{ "--g-from": from, "--g-to": to } as CSSProperties}
     >
       <span className="voice-sphere-core relative grid place-items-center">
-        <NanoWave width={width} height={height} from={from} to={to} hot={live} pulse={s.pulse} level={getVoiceLevel} />
+        <NanoWave width={width} height={height} from={from} to={to} hot={live} pulse={s.pulse} level={getVoiceLevel} particles={false} />
       </span>
     </button>
   );
