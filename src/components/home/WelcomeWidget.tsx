@@ -171,9 +171,9 @@ function useFrameFit(enabled: boolean) {
       const wide = window.innerWidth >= 768;
       // На компьютере — постоянный макет по ширине; на телефоне сцена
       // занимает всю ширину окна, масштаб задаёт только высота.
-      // На телефоне меню во весь экран, поэтому по бокам 14px воздуха —
-      // иначе карточки упираются в края экрана.
-      const gutter = wide ? 0 : 14;
+      // На телефоне меню во весь экран, поэтому по бокам 24px воздуха —
+      // иначе карточки и кнопки упираются в края экрана.
+      const gutter = wide ? 0 : 24;
       const scale = wide ? Math.min(1, bh / FRAME_H, bw / FRAME_W) : Math.min(1, bh / FRAME_H);
       const width = wide ? FRAME_W : (bw - gutter * 2) / scale;
       setFit({ scale, width, left: (bw - width * scale) / 2 });

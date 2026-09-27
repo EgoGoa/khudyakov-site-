@@ -5674,7 +5674,9 @@ html[data-overlay-open] body *:not(.vibe-mode, .vibe-mode *, .block-vibe, .block
 /* Плавающая волна ассистента не лезет поверх стартового окна (в меню есть
    своя, встроенная). Через :has — работает с первого кадра, до JS. */
 html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .voice-dock:not(.welcome-window .voice-dock),
-html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe-fan {
+html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe-fan,
+html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .mobile-scroll-rail,
+body:has(.vibe-mode) .mobile-scroll-rail {
   opacity: 0;
   pointer-events: none;
 }
@@ -5691,7 +5693,7 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe
 /* Телефон (Егор, 2026-09-27): стартовое меню на весь экран, без окошка —
    в узком окне края кнопок сливались с краями стекла. Стекло плотнее,
    потому что сайта вокруг уже не видно. */
-@media (max-width: 767px) {
+@media (max-width: 767px), (orientation: landscape) and (max-height: 520px) {
   .welcome-shell { padding: 0; }
   .welcome-window {
     width: 100%;
@@ -5699,8 +5701,7 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe
     border-radius: 0;
     background: rgba(8, 8, 14, 0.86);
     box-shadow: none;
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 }
 @keyframes welcome-fade-in { from { opacity: 0; } }
@@ -7281,6 +7282,31 @@ html[data-lite] .vibe-mode__wordmark { animation: none; }
     margin: 8px -20px 0;
     padding: 14px 20px 0;
     background: linear-gradient(to bottom, transparent, rgba(12, 12, 20, 0.85) 45%);
+  }
+}
+/* Телефон (стоя и боком): вайб-окно, как и стартовое меню, на весь экран
+   (Егор, 2026-09-27). Стекло плотнее — сайта вокруг уже не видно, а
+   кнопки и варианты держатся в 24px от краёв экрана, не впритык. */
+@media (max-width: 767px), (orientation: landscape) and (max-height: 520px) {
+  .vibe-mode { padding: 0 !important; }
+  .vibe-mode__window {
+    width: 100%;
+    border-radius: 0;
+    background: rgba(8, 8, 14, 0.88);
+    box-shadow: none;
+  }
+  .vibe-mode__window--fixed { height: 100dvh; }
+  .vibe-mode .vibe-mode__scroll {
+    max-height: 100dvh;
+    padding-top: calc(env(safe-area-inset-top) + 16px);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+    padding-left: max(24px, calc(env(safe-area-inset-left) + 16px));
+    padding-right: max(24px, calc(env(safe-area-inset-right) + 16px));
+  }
+  .vibe-mode .vibe-mode__nav {
+    width: calc(100% + 48px) !important;
+    margin-inline: -24px;
+    padding-inline: 24px;
   }
 }
 .vibe-mode__scroll {

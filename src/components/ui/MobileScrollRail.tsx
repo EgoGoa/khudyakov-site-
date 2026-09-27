@@ -10,7 +10,7 @@ export default function MobileScrollRail() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-auto fixed inset-y-0 right-0 z-20 w-[26px] touch-pan-y select-none sm:hidden"
+      className="mobile-scroll-rail pointer-events-auto fixed inset-y-0 right-0 z-20 w-[26px] touch-pan-y select-none sm:hidden"
     >
       <div className="absolute left-1/2 top-[30%] -translate-x-1/2 -translate-y-1/2">
         {CHEVRONS.map((i) => (
