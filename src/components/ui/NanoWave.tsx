@@ -132,95 +132,102 @@ export default function NanoWave({
       };
     };
 
-    // Курсор (Егор: «за мышкой следуют волны»): волна не ускоряется, а
-    // медленно тянется к нему — гребень смещается в его сторону, с той
-    // стороны выше размах и ярче свет, волны текут туда. bias — где курсор
-    // по горизонтали (-1 слева … 1 справа), near — насколько он близко.
-    let bias = 0;
-    let near = 0;
-    let biasS = 0;
-    let nearS = 0;
-    let pull = 0;
-    let ph1 = 0;
-    let ph2 = 0;
-    let lastT = 0;
+    // Курсор — локальный отклик, а не притяжение (Егор, 2026-09-27: «не
+    // тянется к курсору, по центру, спокойно; при наведении в том месте,
+    // где курсор, сразу активизация»). Как у интерактивных звуковых волн:
+    //   · в точке курсора волна сразу поднимается (гауссов горб размаха);
+    //   · каждое движение мыши пускает от этой точки «круги» — рябь,
+    //     которая расходится по ленте в обе стороны и затухает;
+    //   · там же — голова света.
+    // Скорость самой волны от курсора не меняется.
+    type Ripple = { u: number; born: number; amp: number };
+    const ripples: Ripple[] = [];
+    let inside = false;
+    let cu = 0.5; // где курсор вдоль ленты, 0..1
+    let cuS = 0.5;
     let hoverS = 0;
-    // Магнит: вся волна чуть смещается к курсору, как кнопка, которая
-    // тянется за мышкой (до 14px по горизонтали, 8px по вертикали).
-    let mx = 0;
-    let my = 0;
-    let magX = 0;
-    let magY = 0;
-    const onMove = (e: PointerEvent) => {
+    let lastT = 0;
+    let ph = 0;
+    let lastRipple = -1;
+    let lastX = 0;
+    let lastY = 0;
+    let nowT = 0;
+    const locate = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
-      const dx = e.clientX - (r.left + r.width / 2);
-      const dy = e.clientY - (r.top + r.height / 2);
-      bias = Math.max(-1, Math.min(1, dx / (r.width * 0.5 + 60)));
-      near = Math.max(0, Math.min(1, 1 - Math.hypot(dx, dy) / 900));
-      mx = dx;
-      my = dy;
+      const u = ((e.clientX - r.left) * (W / r.width) - x0) / len;
+      const dy = Math.abs(e.clientY - (r.top + r.height / 2));
+      return { u, hit: u > 0.04 && u < 0.96 && dy < Math.max(28, height * 0.85) };
+    };
+    const ripple = (u: number, amp: number) => {
+      ripples.push({ u, born: nowT, amp });
+      if (ripples.length > 14) ripples.shift();
+      lastRipple = nowT;
+    };
+    const onMove = (e: PointerEvent) => {
+      const { u, hit } = locate(e);
+      if (hit && !inside) ripple(u, 0.9); // вход в зону — сразу всплеск
+      inside = hit;
+      if (!hit) return;
+      cu = u;
+      // Движение рождает рябь: чем быстрее ведёшь, тем сильнее круги.
+      const moved = Math.hypot(e.clientX - lastX, e.clientY - lastY);
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (moved > 4 && nowT - lastRipple > 0.09) ripple(u, Math.min(1, 0.25 + moved / 60));
+    };
+    const onDown = (e: PointerEvent) => {
+      const { u, hit } = locate(e);
+      if (hit) ripple(u, 1);
     };
     const onOut = () => {
-      near = 0;
+      inside = false;
     };
     window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerdown", onDown, { passive: true });
     document.documentElement.addEventListener("pointerleave", onOut);
 
     let energy = 1;
-    // Всегда яркая, как при наведении (Егор) — наведение больше не нужно.
-    const hover = true;
     let seenPulse = pulseRef.current;
+    // Для искр — тянутся с той стороны, где курсор (spawnSpark читает pull).
+    let pull = 0;
 
     const draw = (t: number) => {
-      // Покой — тихое дыхание; наведение — чуть живее; разговор — в полную силу.
-      // В разговоре размах идёт за громкостью голоса: тишина — спокойная
-      // волна, слог — всплеск. Без источника громкости — ровно «горячая».
+      nowT = t;
+      // Покой — спокойное дыхание; разговор — размах за громкостью голоса.
       const lv = levelRef.current?.() ?? 0.55;
       const dt = Math.max(0, Math.min(0.05, t - lastT));
       lastT = t;
-      // Медленно, без рывков: курсор «притягивает», а не дёргает.
-      biasS += (bias - biasS) * 0.035;
-      nearS += (near - nearS) * 0.03;
-      pull = biasS * (0.55 + 0.45 * nearS);
-      const m = Math.max(0, 1 - Math.hypot(mx, my) / 420);
-      magX += (Math.max(-14, Math.min(14, mx * 0.06)) * m - magX) * 0.08;
-      magY += (Math.max(-8, Math.min(8, my * 0.06)) * m - magY) * 0.08;
-      canvas.style.transform = `translate(calc(-50% + ${magX.toFixed(2)}px), calc(-50% + ${magY.toFixed(2)}px))`;
-      const target = hotRef.current ? 1.2 + lv * 3.6 : hover ? 1.8 : 1 + 0.9 * nearS;
+      const target = hotRef.current ? 1.2 + lv * 3.6 : 1.15;
       if (pulseRef.current !== seenPulse) {
         seenPulse = pulseRef.current;
         energy = Math.max(energy, 4.2);
       }
-      // В разговоре откликается быстро (каждый слог), в покое — плавно.
       energy += (target - energy) * (hotRef.current ? 0.3 : 0.07);
-      const breath = 1 + 0.18 * Math.sin(t * 1.1) + 0.07 * Math.sin(t * 2.3);
+      const breath = 1 + 0.14 * Math.sin(t * 0.9) + 0.05 * Math.sin(t * 2.1);
       const e = energy * breath;
-      // Скорость меняет только разговор (речь). Наведение и курсор скорость
-      // не трогают (Егор: «скорость та же, но импульс больше и ярче») —
-      // от них растут размах, яркость и пыль.
-      const speed = hotRef.current ? 1 + (energy - 1) * 0.55 : 1;
-      hoverS += ((hover ? 1 : 0) - hoverS) * 0.06;
-      const glowK = Math.max(nearS, hoverS);
+      const speed = hotRef.current ? 1 + (energy - 1) * 0.55 : 0.8;
+      // Отклик моментальный: вход — быстро, уход — мягко.
+      hoverS += ((inside ? 1 : 0) - hoverS) * (inside ? 0.25 : 0.05);
+      cuS += (cu - cuS) * 0.35;
+      pull = (cuS - 0.5) * 2 * hoverS;
+      const glowK = 0.6 + 0.4 * hoverS;
 
       ctx.clearRect(0, 0, W, H);
       ctx.globalCompositeOperation = "lighter";
       ctx.globalAlpha = 1;
 
-      // Без ореола вокруг (Егор: свечение за волной читалось рамкой и
-      // «нехорошим фоном») — свет только в самих линиях.
-      // Перелив: по ленте слева направо бежит яркая голова света.
-      // Голова света стоит там, куда тянет курсор, и чуть пульсирует.
-      const head = Math.max(0.2, Math.min(0.8, 0.5 + 0.34 * pull + 0.03 * Math.sin(t * 0.8)));
-      const flare = 0.8 + 0.2 * glowK + 0.1 * Math.sin(t * 2.6) * glowK;
+      // Без ореола вокруг — свет только в самих линиях. Голова света стоит
+      // в центре и мягко плавает, а при наведении переезжает под курсор.
+      const head = Math.max(0.12, Math.min(0.88, 0.5 + 0.06 * Math.sin(t * 0.5) + (cuS - 0.5) * hoverS));
+      const flare = 0.85 + 0.15 * hoverS;
       const lift = (c: number) => Math.min(255, Math.round(c + 90 * glowK));
       const grad = ctx.createLinearGradient(x0, 0, x0 + len, 0);
-      // Концы каждой линии уходят в полную прозрачность — лента растворяется
-      // к краям сама, а не обрезается маской.
+      // Концы каждой линии уходят в полную прозрачность.
       const stops: [number, string][] = [
         [0, `rgba(${fr},${fg},${fb},0)`],
-        [0.16, `rgba(${fr},${fg},${fb},${0.45 + 0.4 * Math.max(0, -pull)})`],
+        [0.16, `rgba(${fr},${fg},${fb},0.55)`],
         [head, `rgba(${lift(tr)},${lift(tg)},${lift(tb)},${flare})`],
-        [0.84, `rgba(${tr},${tg},${tb},${0.45 + 0.4 * Math.max(0, pull)})`],
+        [0.84, `rgba(${tr},${tg},${tb},0.55)`],
         [1, `rgba(${tr},${tg},${tb},0)`],
       ];
       for (const [o, c] of stops.sort((a, b) => a[0] - b[0])) grad.addColorStop(Math.min(1, Math.max(0, o)), c);
@@ -229,15 +236,22 @@ export default function NanoWave({
       ctx.shadowBlur = 3 * dpr * k;
       ctx.shadowColor = `rgba(${fr},${fg},${fb},0.4)`;
 
-      // Волны текут к курсору: фаза набегает в его сторону. В разговоре
-      // добавляется собственное движение речи.
-      const drift = speed * (1.9 * pull + (hotRef.current ? 1.2 : 0.18) * (pull < 0 ? -1 : 1));
-      ph1 += dt * 2.1 * drift;
-      ph2 += dt * 3.3 * drift;
-      // Гребень смещается к курсору: середина огибающей едет в его сторону.
-      const u0 = 0.5 + 0.32 * pull;
-      const lean = Math.abs(pull);
-      const toward = pull < 0 ? -1 : 1;
+      ph += dt * 2 * speed;
+
+      // Рябь: фронт каждой волны уходит от точки рождения в обе стороны.
+      for (let i = ripples.length - 1; i >= 0; i--) if (t - ripples[i].born > 2.2) ripples.splice(i, 1);
+      const boost = new Float32Array(POINTS + 1);
+      for (let i = 0; i <= POINTS; i++) {
+        const u = i / POINTS;
+        const du = (u - cuS) / 0.09;
+        let b = 2.3 * hoverS * Math.exp(-du * du);
+        for (const r of ripples) {
+          const age = t - r.born;
+          const front = (Math.abs(u - r.u) - age * 0.5) / 0.05;
+          b += 2.4 * r.amp * Math.exp(-age * 1.8) * Math.exp(-front * front);
+        }
+        boost[i] = 1 + b;
+      }
 
       for (let j = 0; j < LINES; j++) {
         const phase = j * 0.42;
@@ -245,19 +259,16 @@ export default function NanoWave({
         for (let i = 0; i <= POINTS; i++) {
           const u = i / POINTS;
           // Сходится в точку на концах, громче всего в середине.
-          const uw = u < u0 ? (0.5 * u) / u0 : 0.5 + (0.5 * (u - u0)) / (1 - u0);
-          // Сторона курсора: гребни выше и чаще, дальняя сторона затихает.
-          const sideT = (u - 0.5) * 2 * toward;
-          const side = 1 + 1.3 * lean * Math.max(0, sideT) - 0.35 * lean * Math.max(0, -sideT);
-          const dense = 1 + 0.7 * lean * Math.max(0, sideT);
-          const env = Math.sin(Math.PI * uw) ** 2 * side;
+          const env = Math.sin(Math.PI * u) ** 2;
           const x = x0 + u * len;
           const w =
-            0.42 * Math.sin(u * 9 * dense - ph1 + phase) * (0.8 + 0.2 * Math.sin(t * 0.9 + phase)) +
-            0.3 * Math.sin(u * 15 * dense - ph2 + phase * 1.7) +
-            0.18 * Math.sin(u * 23 + t * 2.6 * speed - phase * 0.8);
+            0.42 * Math.sin(u * 9 - ph + phase) * (0.8 + 0.2 * Math.sin(t * 0.9 + phase)) +
+            0.3 * Math.sin(u * 15 + ph * 1.4 + phase * 1.7) +
+            0.18 * Math.sin(u * 23 + t * 2.2 * speed - phase * 0.8);
           const spread = (j - LINES / 2) * 0.032;
-          const y = cy + amp * env * (w * 0.22 * Math.min(e, 4.2) + spread * Math.min(e, 2));
+          // Горб и рябь поднимают и сами волны, и чуть раскрывают ленту.
+          const bst = boost[i];
+          const y = cy + amp * env * (w * 0.22 * Math.min(e, 4.2) * bst + spread * Math.min(e, 2) * (0.6 + 0.4 * bst));
           if (i === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
@@ -313,6 +324,7 @@ export default function NanoWave({
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerdown", onDown);
       document.documentElement.removeEventListener("pointerleave", onOut);
     };
   }, [width, height, from, to, padX, padY, dust, sparkle]);
