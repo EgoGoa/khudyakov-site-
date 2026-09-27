@@ -134,9 +134,10 @@ const DECOR = (instant: boolean): Variants => ({
 
 /** Глава не влезла по высоте над волной ассистента (у низа экрана оставлена
  *  полоса --voice-safe) — тело главы чуть ужимается через CSS zoom, но не
- *  меньше 85%. Так на невысоких ноутбуках ничего не обрезается и глава не
+ *  меньше 85% (у телефона боком — 70%). Так на невысоких ноутбуках ничего не обрезается и глава не
  *  начинает прокручиваться внутри себя (в колоде до такого низа не дойти).
  *  На высоких экранах zoom так и остаётся 1. */
+const LANDSCAPE_PHONE = "(orientation: landscape) and (max-height: 520px)";
 function useFitBodyToPane(enabled: boolean) {
   const paneRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -151,7 +152,10 @@ function useFitBodyToPane(enabled: boolean) {
         body.style.zoom = "";
         const over = pane.scrollHeight - pane.clientHeight;
         const h = body.offsetHeight;
-        const z = over > 0 && h > 0 ? Math.max(0.85, (h - over - 2) / h) : 1;
+        // Телефон боком — экран в ~390px высотой: там глава ужимается
+        // сильнее, иначе её низ уходил под стрелки страниц и волну.
+        const min = window.matchMedia(LANDSCAPE_PHONE).matches ? 0.7 : 0.85;
+        const z = over > 0 && h > 0 ? Math.max(min, (h - over - 2) / h) : 1;
         body.style.zoom = z < 1 ? z.toFixed(3) : "";
       });
     };

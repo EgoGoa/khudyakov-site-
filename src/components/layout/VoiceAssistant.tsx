@@ -857,13 +857,28 @@ function musicAct(a: Extract<VoiceAction, { type: "music" }>): { say?: string } 
 
 /** Волна-кнопка: полупрозрачная в покое, проявляется при наведении и
  *  когда голос включён; раскачивается сильнее, пока слушает или говорит. */
-function VoiceWaveButton({ width, height, from, to }: { width: number; height: number; from: string; to: string }) {
+function VoiceWaveButton({
+  width,
+  height,
+  from,
+  to,
+  onTap,
+  onPointerDown,
+}: {
+  width: number;
+  height: number;
+  from: string;
+  to: string;
+  onTap: () => void;
+  onPointerDown?: (e: React.PointerEvent) => void;
+}) {
   const s = useVoiceState();
   const live = s.status === "listening" || s.status === "speaking";
   return (
     <button
       type="button"
-      onClick={() => voice.tap()}
+      onClick={onTap}
+      onPointerDown={onPointerDown}
       aria-label={s.enabled ? "Открыть окно ассистента" : "Включить голосовое управление"}
       className={`voice-sphere ${live ? "is-listening" : ""} ${s.enabled ? "is-active" : ""}`}
       style={{ "--g-from": from, "--g-to": to } as CSSProperties}
@@ -875,8 +890,13 @@ function VoiceWaveButton({ width, height, from, to }: { width: number; height: n
   );
 }
 
-/** Волна с тем, что над ней: приглашение включить голос или короткая
- *  подпись — что услышано и что ответил ассистент (пока окно закрыто). */
+/** Волна с тем, что над ней: подписью разговора (что услышано и что
+ *  ответил ассистент, пока окно закрыто) и окошком подсказок.
+ *
+ *  Подсказки больше не всплывают сами (Егор, 2026-09-27: «не нужно, чтобы
+ *  налипали»): окошко появляется, только когда на волну навели мышь, а на
+ *  телефоне — по первому касанию. Второе касание (или «Включить голос» в
+ *  окошке) уже включает голос. */
 function VoiceDock({
   width,
   height,
@@ -888,9 +908,36 @@ function VoiceDock({
   height: number;
   from: string;
   to: string;
-  /** Только волна, без приглашения и подписей над ней (вайб-окно). */
+  /** Только волна, без подписей и подсказок над ней (вайб-окно). */
   waveOnly?: boolean;
 }) {
+  const s = useVoiceState();
+  const [peek, setPeek] = useState(false);
+  const pointer = useRef<string>("mouse");
+  const leaveTimer = useRef(0);
+  const dockRef = useRef<HTMLDivElement>(null);
+
+  // На телефоне окошко гаснет само через 7 с или по касанию мимо волны.
+  useEffect(() => {
+    if (!peek || pointer.current === "mouse") return;
+    const t = window.setTimeout(() => setPeek(false), 7000);
+    const away = (e: PointerEvent) => {
+      if (!dockRef.current?.contains(e.target as Node)) setPeek(false);
+    };
+    document.addEventListener("pointerdown", away);
+    return () => {
+      window.clearTimeout(t);
+      document.removeEventListener("pointerdown", away);
+    };
+  }, [peek]);
+  useEffect(() => () => window.clearTimeout(leaveTimer.current), []);
+
+  // Пока идёт разговор или открыто окно ассистента, подсказки не нужны.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- закрыть окошко, когда голос сам перешёл в разговор
+    if (s.panelOpen || s.tour || s.status === "speaking" || s.status === "thinking") setPeek(false);
+  }, [s.panelOpen, s.tour, s.status]);
+
   // На телефоне волна вдвое меньше (Егор, 2026-09-27): полноразмерная
   // закрывала низ экрана. Рисуем меньший холст, а не сжимаем CSS-ом, —
   // так линии остаются чёткими.
@@ -899,11 +946,50 @@ function VoiceDock({
     width = Math.round(width / 2);
     height = Math.round(height / 2);
   }
+
+  const onTap = () => {
+    // Касание пальцем по выключенной волне — сначала подсказки, потом голос.
+    if (!waveOnly && pointer.current !== "mouse" && !s.enabled && !peek) {
+      setPeek(true);
+      return;
+    }
+    setPeek(false);
+    voice.tap();
+  };
+
   return (
-    <div className="voice-dock" data-voice-ui style={{ "--g-from": from, "--g-to": to } as CSSProperties}>
-      {!waveOnly && <VoiceInvite />}
+    <div
+      ref={dockRef}
+      className="voice-dock"
+      data-voice-ui
+      style={{ "--g-from": from, "--g-to": to } as CSSProperties}
+      onPointerEnter={(e) => {
+        if (waveOnly || e.pointerType !== "mouse") return;
+        pointer.current = "mouse";
+        window.clearTimeout(leaveTimer.current);
+        setPeek(true);
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType !== "mouse") return;
+        leaveTimer.current = window.setTimeout(() => setPeek(false), 220);
+      }}
+    >
       {!waveOnly && <VoiceCaption />}
-      <VoiceWaveButton width={width} height={height} from={from} to={to} />
+      {!waveOnly && (
+        <AnimatePresence>
+          {peek && <VoiceHints key="hints" enabled={s.enabled} onEnable={onTap} />}
+        </AnimatePresence>
+      )}
+      <VoiceWaveButton
+        width={width}
+        height={height}
+        from={from}
+        to={to}
+        onTap={onTap}
+        onPointerDown={(e) => {
+          pointer.current = e.pointerType;
+        }}
+      />
     </div>
   );
 }
@@ -920,49 +1006,74 @@ function usePhone() {
   return phone;
 }
 
-function VoiceInvite() {
-  const s = useVoiceState();
+// Что можно сказать — фразы для окошка подсказок над волной.
+const DOCK_HINTS = [
+  "Следующий блок",
+  "Покажи цены на SMM",
+  "Открой лендинги",
+  "Напиши Саше",
+  "Нажми «подробнее»",
+  "Сколько стоит ролик?",
+  "Включи музыку",
+  "Отмени",
+  "Наверх страницы",
+];
+const HINTS_SHOWN = 3;
+
+/** Окошко подсказок в духе Apple: матовое стекло, мягкая пружина из-под
+ *  волны, три фразы-капсулы, которые по одной сменяются новыми. */
+function VoiceHints({ enabled, onEnable }: { enabled: boolean; onEnable: () => void }) {
+  const [start, setStart] = useState(0);
+  useEffect(() => {
+    const t = window.setInterval(() => setStart((n) => n + 1), 2400);
+    return () => window.clearInterval(t);
+  }, []);
+  const phrases = Array.from({ length: HINTS_SHOWN }, (_, i) => DOCK_HINTS[(start + i) % DOCK_HINTS.length]);
+
   return (
-    <AnimatePresence>
-      {s.invite && !s.enabled && (
-        <motion.div
-          key="invite"
-          className="voice-invite"
-          initial={{ opacity: 0, y: 8, filter: "blur(6px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: 6, filter: "blur(4px)" }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <span className="voice-invite-text">Управляй сайтом голосом</span>
-          <button type="button" className="voice-invite-on" onClick={() => voice.enable()}>
-            Включить
-          </button>
-          <button type="button" className="voice-invite-x" aria-label="Не сейчас" onClick={() => voice.dismissInvite()}>
-            <CloseIcon />
-          </button>
-        </motion.div>
+    <motion.div
+      className="voice-hints"
+      role="tooltip"
+      initial={{ opacity: 0, y: 10, scale: 0.9, filter: "blur(6px)" }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      exit={{ opacity: 0, y: 6, scale: 0.94, filter: "blur(4px)" }}
+      transition={{ type: "spring", stiffness: 420, damping: 32, mass: 0.8 }}
+    >
+      <p className="voice-hints__title">
+        <span className="voice-hints__dot" aria-hidden="true" />
+        {enabled ? "Скажи, например" : "Управляй сайтом голосом"}
+      </p>
+      <ul className="voice-hints__list">
+        <AnimatePresence mode="popLayout" initial={false}>
+          {phrases.map((p) => (
+            <motion.li
+              key={p}
+              layout
+              className="voice-hints__chip"
+              initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            >
+              «{p}»
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
+      {enabled ? (
+        <p className="voice-hints__foot">Просто говори — я слушаю</p>
+      ) : (
+        <button type="button" className="voice-hints__on" onClick={onEnable}>
+          Включить голос
+        </button>
       )}
-    </AnimatePresence>
+    </motion.div>
   );
 }
-
-// Подсказки над волной — иногда всплывают и тают, показывая, что умеет
-// ассистент (Егор: «стильные подсказки над волной: я могу то-то»).
-const DOCK_HINTS = [
-  "Скажи «следующий блок» — пролистаю",
-  "«Страница лендингов» — открою",
-  "«Напиши Саше» — открою чат",
-  "«Нажми подробнее» — нажму за тебя",
-  "«Покажи цены на SMM»",
-  "«Отмени» — верну, как было",
-  "«В шапку» — наверх страницы",
-  "Спроси: сколько стоит ролик?",
-];
 
 function VoiceCaption() {
   const s = useVoiceState();
   const [shown, setShown] = useState(false);
-  const [hint, setHint] = useState<string | null>(null);
   const last = s.turns.at(-1);
   const text = s.live || last?.text || "";
   const mine = Boolean(s.live) || last?.role === "user";
@@ -972,37 +1083,19 @@ function VoiceCaption() {
     if (!text) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- показ по внешнему событию (новая реплика), не производное состояние
     setShown(true);
-    setHint(null);
     if (s.status === "thinking" || s.status === "speaking") return;
     const t = window.setTimeout(() => setShown(false), 3000);
     return () => window.clearTimeout(t);
   }, [text, s.status]);
 
-  // В тишине раз в 16 с — одна подсказка на 3.5 с. Пока висит приглашение
-  // «Включить», подсказки молчат, чтобы не было двух плашек.
-  const quiet = !s.panelOpen && !s.invite && !shown;
-  useEffect(() => {
-    if (!quiet) return;
-    let i = 0;
-    let hide = 0;
-    const tick = window.setInterval(() => {
-      setHint(DOCK_HINTS[i++ % DOCK_HINTS.length]);
-      hide = window.setTimeout(() => setHint(null), 3500);
-    }, 16000);
-    return () => {
-      window.clearInterval(tick);
-      window.clearTimeout(hide);
-    };
-  }, [quiet]);
-
   const visible = s.enabled && !s.panelOpen && shown && Boolean(text);
-  const line = visible ? (s.status === "thinking" ? "Думаю…" : text) : quiet ? hint : null;
+  const line = visible ? (s.status === "thinking" ? "Думаю…" : text) : null;
   return (
     <AnimatePresence mode="wait">
       {line && (
         <motion.p
-          key={visible ? "caption" : line}
-          className={`voice-caption ${visible && mine ? "voice-caption--me" : ""} ${visible ? "" : "voice-caption--hint"}`}
+          key="caption"
+          className={`voice-caption ${mine ? "voice-caption--me" : ""}`}
           initial={{ opacity: 0, y: 6, filter: "blur(6px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, y: -4, filter: "blur(6px)" }}

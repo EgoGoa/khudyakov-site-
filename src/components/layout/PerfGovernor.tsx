@@ -16,6 +16,8 @@ import { getTier, setTier, type Tier } from "@/lib/perf-tier";
 //     step the tier down one level. A steady 30fps (iPhone Low Power Mode caps
 //     rAF there) is NOT a stutter and doesn't trigger it — only uneven,
 //     dropping frames do.
+//     On touch devices the watchdog needs three bad windows and never goes
+//     past mid — low would take the background video away entirely.
 //     Sampling in bursts, not with a permanent rAF loop, because a loop that
 //     never stops forces the browser to paint 60 frames a second forever —
 //     the very cost this is here to cut.
@@ -68,6 +70,7 @@ export default function PerfGovernor() {
     // вайб-режима замирала (Егор, 2026-09-27: «верни всю анимацию»).
     if (matchMedia("(pointer: fine)").matches && (navigator.hardwareConcurrency || 0) >= 8) return;
 
+    const touch = matchMedia("(pointer: coarse)").matches;
     let raf = 0;
     let timer = 0;
     let badStreak = 0;
@@ -103,11 +106,21 @@ export default function PerfGovernor() {
         const fps = (frames * 1000) / (now - start);
         const bad = frames > 0 && (long / frames >= 0.25 || fps < 20);
         badStreak = bad ? badStreak + 1 : 0;
-        if (badStreak >= 2) {
+        if (badStreak >= (touch ? 3 : 2)) {
           badStreak = 0;
           const tier = getTier();
+          // Телефон по кадрам опускается только до mid. На low пропадает
+          // видеофон целиком, а рывки кадров на среднем телефоне даёт не
+          // видео (его декодирует железо), а стекло и анимации поверх —
+          // их mid и так гасит. Так фон на телефоне средней мощности
+          // играет всегда (Егор, 2026-09-27). Совсем слабые телефоны
+          // (2 ядра / 2 ГБ, программная графика) по-прежнему идут в low.
+          if (touch && tier === "mid") {
+            stopped = true;
+            return;
+          }
           stepDown(tier === "high" ? "mid" : "low");
-          if (getTier() === "low") {
+          if (getTier() === "low" || touch) {
             stopped = true;
             return;
           }

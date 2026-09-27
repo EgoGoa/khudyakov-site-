@@ -4916,6 +4916,18 @@ html[data-lite] .deck-pose-blur {
   }
 }
 
+/* Телефон средней мощности (data-mid): стекло поверх играющего видеофона
+   размывается заново на каждом кадре ролика — это и отнимало кадры у фона.
+   Внутри сцены стекло здесь становится плотной матовой заливкой без
+   размытия: вид почти тот же, а видео идёт ровно (Егор, 2026-09-27). */
+@media (max-width: 1023px) {
+  html[data-mid] .stage-frame :is([class*="backdrop-blur"], .glass-panel) {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background-color: rgba(16, 16, 24, 0.66) !important;
+  }
+}
+
 /* ── "Lite" mode: weak phone / slow network (html[data-lite], lib/lite.ts) ──
    Strong devices never see this. Here the expensive, purely decorative work is
    dropped: no backdrop blur, no CSS blur/brightness filters, and endless
@@ -6892,6 +6904,21 @@ html[data-lite] .welcome-card-graphic svg circle {
    - мягкая тень под шапкой — лист висит над страницей.
    В облегчённом режиме размытие остаётся: шапка по решению Егора живая на
    всех устройствах, а один слой размытия телефоны тянут. */
+/* Телефон и планшет стоя: бар страниц — вторая строка шапки. Когда
+   страница ушла с первого экрана, он складывается, и шапка остаётся одной
+   строкой — не закрывает заголовки глав (Header, data-compact). Наверху
+   страницы бар возвращается. Телефон боком (land) не трогаем: там бар и так
+   в одной строке с логотипом. */
+@media (max-width: 1023px) and (orientation: portrait), (max-width: 1023px) and (min-height: 521px) {
+  [data-site-header] .page-bar {
+    transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+  }
+  [data-site-header][data-compact] .page-bar {
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
 .header-glass {
   background:
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
@@ -7817,47 +7844,113 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
 .voice-input button:disabled { opacity: 0.35; }
 .voice-input button svg { width: 1rem; height: 1rem; }
 
-/* Волна с приглашением / подписью над ней (VoiceDock). */
+/* Волна с подписью и окошком подсказок над ней (VoiceDock). */
 .voice-dock {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.35rem;
 }
-.voice-invite {
+/* Окошко подсказок — в духе всплывающих окон Apple: плотное матовое
+   стекло с тонкой светлой кромкой, мягкая тень и хвостик к волне. Стоит
+   над волной абсолютно, поэтому ни волна, ни страница под ним не
+   сдвигаются. Появляется только при наведении или касании (VoiceDock). */
+.voice-hints {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  width: min(264px, calc(100vw - 32px));
+  margin-left: calc(min(264px, calc(100vw - 32px)) / -2);
+  padding: 14px 14px 12px;
+  border-radius: 22px;
+  transform-origin: 50% 100%;
+  color: #fff;
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+    rgba(22, 22, 30, 0.72);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8);
+  backdrop-filter: blur(30px) saturate(1.8);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.35),
+    0 0 0 0.5px rgba(255, 255, 255, 0.12),
+    0 24px 60px -18px rgba(0, 0, 0, 0.8),
+    0 0 40px -18px color-mix(in srgb, var(--g-from) 60%, transparent);
+}
+.voice-hints::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 12px;
+  height: 12px;
+  translate: -50% 0;
+  rotate: 45deg;
+  border-radius: 0 0 3px 0;
+  background: rgba(30, 30, 38, 0.92);
+  box-shadow: 0.5px 0.5px 0 rgba(255, 255, 255, 0.12);
+}
+.voice-hints__title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.35rem 0.35rem 0.95rem;
-  border-radius: 9999px;
-  background: rgba(14, 13, 20, 0.82);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.09);
-  white-space: nowrap;
-}
-.voice-invite-text {
-  font-size: 0.8rem;
+  gap: 7px;
+  margin-bottom: 10px;
+  font-size: 12px;
   font-weight: 700;
-  color: #fff;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.92);
 }
-.voice-invite-on {
-  padding: 0.4rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.78rem;
+.voice-hints__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--g-from), var(--g-to));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--g-to) 70%, transparent);
+  animation: voice-hints-dot 1.8s ease-in-out infinite;
+}
+@keyframes voice-hints-dot {
+  50% { transform: scale(0.7); opacity: 0.6; }
+}
+.voice-hints__list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 102px;
+}
+.voice-hints__chip {
+  padding: 7px 12px;
+  border-radius: 14px 14px 14px 5px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.18);
+}
+.voice-hints__foot {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+}
+.voice-hints__on {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 9px 0;
+  border-radius: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #fff;
   background: linear-gradient(110deg, var(--g-from), var(--g-to));
+  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.35);
+  transition: transform 0.18s ease, filter 0.2s ease;
 }
-.voice-invite-x {
-  display: grid;
-  place-items: center;
-  width: 1.7rem;
-  height: 1.7rem;
-  border-radius: 9999px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-}
-.voice-invite-x svg { width: 0.8rem; height: 0.8rem; }
+.voice-hints__on:hover { filter: brightness(1.08); }
+.voice-hints__on:active { transform: scale(0.97); }
 .voice-caption {
   max-width: min(300px, calc(100vw - 2rem));
   padding: 0.5rem 0.85rem;
@@ -8004,11 +8097,6 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
 }
 @media (max-width: 1023px) {
   .voice-stage { right: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); }
-}
-.voice-caption--hint {
-  background: rgba(14, 13, 20, 0.62);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.8rem;
 }
 
 /* ---------- Vibe-блок: окошко у вайб-бара (BlockVibe.tsx) ----------
@@ -8435,19 +8523,17 @@ html[data-lite] .block-vibe__online::before { animation: none; }
   box-shadow: 0 0 16px -4px rgba(176, 124, 255, 0.9);
 }
 
-/* ── Вайб-бар на телефоне (VibeRail): сфера в углу и вылетающие кнопки ──
-   Сфера справа внизу; по тапу над ней пружиной вылетают кружки разделов,
-   верхний — Vibe-режим. Кружки 24px (в полтора раза мельче десктопных
-   28–34px), но строка-кнопка 36px высотой и шире за счёт подписи — пальцем
-   попадать удобно. */
+/* ── Вайб-бар на телефоне (VibeRail): сфера у правого края ────────────────
+   Сфера крупная (58px) и стоит у правого края чуть выше середины экрана —
+   там, куда сам ложится большой палец (Егор, 2026-09-27: в нижнем углу она
+   была мелкой и спорила с волной ассистента). По тапу слева от неё
+   пружиной вылетает столбик кружков разделов, по центру высоты сферы;
+   верхний — Vibe-режим. */
 .vibe-fan {
   position: fixed;
-  right: 8px;
-  bottom: calc(12px + env(safe-area-inset-bottom));
+  right: max(4px, env(safe-area-inset-right));
+  top: calc(42% - 29px);
   z-index: 66;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
 }
 /* Пока кнопки открыты, волна голоса внизу уходит — она ложилась поверх
    нижних кнопок. */
@@ -8490,15 +8576,26 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   pointer-events: none;
 }
 .vibe-fan__list {
+  position: absolute;
+  right: 50px;
+  top: 29px;
+  translate: 0 -50%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
-  margin-bottom: 4px;
+}
+/* Телефон боком: высоты мало — столбик встаёт по центру экрана и чуть
+   плотнее. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .vibe-fan { top: calc(50% - 29px); }
+  .vibe-fan__list { gap: 0; }
+  .vibe-fan__btn { height: 30px !important; }
+  .vibe-fan__dot { width: 27px !important; height: 27px !important; }
 }
 .vibe-fan__btn {
   display: flex;
-  height: 36px;
+  height: 40px;
   align-items: center;
   gap: 8px;
   padding-left: 10px;
@@ -8519,9 +8616,9 @@ body:has(.vibe-fan__list) .voice-dock-corner {
 }
 .vibe-fan__dot {
   display: grid;
-  width: 24px;
-  height: 24px;
-  margin: 0 12px;
+  width: 30px;
+  height: 30px;
+  margin: 0 8px;
   place-items: center;
   border-radius: 999px;
   color: #fff;
@@ -8529,7 +8626,7 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   backdrop-filter: blur(14px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 6px 16px -8px rgba(0, 0, 0, 0.8);
 }
-.vibe-fan__dot svg { width: 11px; height: 11px; }
+.vibe-fan__dot svg { width: 14px; height: 14px; }
 .vibe-fan__btn.is-active .vibe-fan__dot {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
@@ -8546,15 +8643,17 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   background: linear-gradient(135deg, #6f86ff, #b07cff 50%, #ff7a9c);
   box-shadow: 0 0 14px -2px rgba(169, 139, 255, 0.7);
 }
-.vibe-fan__spark { font-size: 11px; line-height: 1; }
+.vibe-fan__spark { font-size: 13px; line-height: 1; }
 .vibe-fan__orb {
   position: relative;
   display: grid;
-  width: 48px;
-  height: 48px;
-  margin-right: 0;
+  width: 58px;
+  height: 58px;
   place-items: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
+.vibe-fan__orb:active { transform: scale(0.92); }
 
 /* ── Плеер музыки (SoundStation) ───────────────────────────────────────────
    Раскладка Apple Music (обложка → название → полоса → кнопки → громкость),
@@ -8765,7 +8864,7 @@ html:not([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [da
    кнопки вайб-бара оставляют размытие по прежнему решению (их немного). */
 html[data-lite] :is(.liquid-glass, .btn-glass, .glass-tile, .c3-card, .glass-panel, .spotlight-tab,
   .welcome-window, .welcome-quiet, .team-pulse-card, .team-pulse-note, .cab-glass,
-  .vibe-mode__window, .vibe-mode__card, .offer-card, .offer-tier, .voice-invite, .voice-caption,
+  .vibe-mode__window, .vibe-mode__card, .offer-card, .offer-tier, .voice-hints, .voice-caption,
   .voice-stage, .voice-tour, .block-vibe, .tuned-block__card, .before-after, .music-player) {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;

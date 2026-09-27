@@ -295,6 +295,11 @@ export default function Header() {
     <header
       ref={headerRef}
       data-site-header
+      // На телефоне стоя шапка в две строки (логотип + бар страниц) съедала
+      // ~110px и закрывала заголовки глав. Как только страница сдвинулась с
+      // первого экрана, бар страниц складывается и остаётся одна строка;
+      // наверху страницы он снова на месте (globals.css, .page-bar).
+      data-compact={scrolled && !menuOpen ? "" : undefined}
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 land:pointer-events-none land:!border-transparent land:!bg-transparent land:!backdrop-blur-none land:before:pointer-events-none land:before:absolute land:before:inset-x-0 land:before:top-0 land:before:h-16 land:before:content-[''] land:before:bg-[linear-gradient(to_bottom,rgba(11,11,16,0.78),rgba(11,11,16,0.6)_30%,rgba(11,11,16,0.28)_65%,rgba(11,11,16,0))] ${
         "header-glass"
       }`}

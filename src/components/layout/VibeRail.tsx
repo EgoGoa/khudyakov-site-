@@ -92,9 +92,9 @@ function useActiveRailId(anchorIds: string[]): string {
 // floating CTA button it replaces.
 //
 // Mobile (<1024px): the rail's hover affordance has no touch equivalent, so
-// it collapses to a single round button in the same bottom-right corner the
-// old floating CTA used, opening a full-screen matte sheet with the same
-// rows instead of expanding in place.
+// it collapses to a single large sphere on the right edge, a little above
+// the middle of the screen (under the thumb), which fans the same rows out
+// to its left instead of expanding in place.
 
 // The rail's labels: plain white, set light and thin.
 //
@@ -771,13 +771,13 @@ export default function VibeRail() {
         ))}
       </nav>
 
-      {/* Телефон (Егор, 2026-09-27): сфера в правом нижнем углу. Тап — над
-          ней одна за другой вылетают круглые кнопки разделов, самая верхняя —
+      {/* Телефон (Егор, 2026-09-27): крупная сфера у правого края чуть
+          выше середины — под большим пальцем. Тап — слева от неё одна за
+          другой вылетают круглые кнопки разделов, самая верхняя —
           Vibe-режим (открывает вайб-окно по центру). Повторный тап по сфере
-          или тап мимо — кнопки складываются обратно в сферу. Кружки в
-          полтора раза мельче десктопных, но зона нажатия у каждого 40px.
-          Подписи скрыты: тап по кружку показывает его подпись, второй тап
-          по нему — переход (Егор, 2026-09-27). */}
+          или тап мимо — кнопки складываются обратно в сферу. Подписи
+          скрыты: тап по кружку показывает его подпись, второй тап по нему —
+          переход. */}
       <AnimatePresence>
         {sheetOpen && (
           <motion.div
@@ -806,21 +806,23 @@ export default function VibeRail() {
               animate="open"
               exit="closed"
               variants={{
-                open: { transition: { staggerChildren: 0.035, staggerDirection: -1 } },
-                closed: { transition: { staggerChildren: 0.02 } },
+                open: { transition: { staggerChildren: 0.03 } },
+                closed: { transition: { staggerChildren: 0.015, staggerDirection: -1 } },
               }}
             >
               {[
                 { id: "__vibe", label: "Vibe-режим", glyph: null, vibe: true } as const,
-                ...[...crossPageItems].reverse().map((item) => ({ ...item, vibe: false as const })),
-                ...[...pageItems].reverse().map((item) => ({ ...item, vibe: false as const })),
+                ...pageItems.map((item) => ({ ...item, vibe: false as const })),
+                ...crossPageItems.map((item) => ({ ...item, vibe: false as const })),
               ].map((item, i, all) => (
                 <motion.button
                   key={item.id}
                   type="button"
+                  // Кружки вылетают из сферы: от её центра по высоте и
+                  // справа, веером к своему месту в столбике.
                   variants={{
-                    closed: { opacity: 0, y: 26 + (all.length - i) * 4, scale: 0.4 },
-                    open: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 520, damping: 30 } },
+                    closed: { opacity: 0, x: 34, y: (all.length / 2 - i - 0.5) * 18, scale: 0.4 },
+                    open: { opacity: 1, x: 0, y: 0, scale: 1, transition: { type: "spring", stiffness: 520, damping: 30 } },
                   }}
                   onClick={() => {
                     if (armedId !== item.id) {
@@ -855,7 +857,7 @@ export default function VibeRail() {
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.span key={railPath} className="block" exit={{ opacity: 0, scale: 0.7, filter: "blur(4px)" }} transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1] }}>
-              {sphereOn && <NanoSphere size={34} from={accent.from} to={accent.to} sleepy hot={sheetOpen || vibeOpen || pickerOpen || !!blockItem} cloud intro="implode" />}
+              {sphereOn && <NanoSphere size={44} from={accent.from} to={accent.to} sleepy hot={sheetOpen || vibeOpen || pickerOpen || !!blockItem} cloud intro="implode" />}
             </motion.span>
           </AnimatePresence>
           {sphereOn && <SphereDust orbRef={fanOrbRef} sleepy bleed={60} density={0.12} speed={0.5} />}
