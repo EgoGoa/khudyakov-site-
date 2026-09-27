@@ -28,17 +28,26 @@
 // обычное дело (перезагрузил, походил по страницам), и раньше это молча
 // переводило вкладку в lite до её закрытия: видеофоны пропадали на всём
 // сайте (Егор, 2026-09-26: «фоны на страницах пропали с видео»).
+//
+// Мощный компьютер (мышь, 8+ ядер) всегда стартует на high: «3g» в оценке
+// сети (VPN) и заниженный deviceMemory больше не роняют его в mid —
+// Егор, 2026-09-27: на его мощном маке пропала вся анимация инфографики.
+// Запомненные тестовые ?mid=1 / ?lite=1 на нём действуют только в той
+// загрузке, где параметр стоит в адресе, — старая метка не прилипает.
 export const LITE_DETECT_SNIPPET = `(function(){try{
 var n=navigator,c=n.connection||{},d=document.documentElement;
 var ql=/[?&]lite=([01])/.exec(location.search),qm=/[?&]mid=([01])/.exec(location.search);
 if(ql)localStorage.setItem("lite",ql[1]);
 if(qm)localStorage.setItem("mid",qm[1]);
 var fl=localStorage.getItem("lite"),fm=localStorage.getItem("mid");
+var coarse=window.matchMedia&&matchMedia("(pointer: coarse)").matches;
+var strong=!coarse&&(n.hardwareConcurrency||0)>=8;
+if(strong&&!ql&&fl==="1")fl=null;
+if(strong&&!qm&&fm==="1")fm=null;
 if(fl==="1"){d.setAttribute("data-lite","1");return}
 if(fm==="1"){d.setAttribute("data-mid","1")}
 if(fl==="0"&&fm==="0")return;
 var ss=sessionStorage,t=Date.now();
-var coarse=window.matchMedia&&matchMedia("(pointer: coarse)").matches;
 if(coarse){
 var a=JSON.parse(ss.getItem("loads")||"[]").filter(function(x){return t-x<30000});
 a.push(t);ss.setItem("loads",JSON.stringify(a));
@@ -52,6 +61,6 @@ var lite=c.saveData===true||/^(slow-2g|2g)$/.test(c.effectiveType||"")||(n.devic
 if(lite){d.setAttribute("data-lite","1");return}
 if(fm==="0")return;
 if(d.hasAttribute("data-mid"))return;
-var mid=(coarse&&ss.getItem("midAuto")==="1")||/^3g$/.test(c.effectiveType||"")||(n.deviceMemory&&n.deviceMemory<=4)||(n.hardwareConcurrency&&n.hardwareConcurrency<=4);
+var mid=(coarse&&ss.getItem("midAuto")==="1")||(!strong&&(/^3g$/.test(c.effectiveType||"")||(n.deviceMemory&&n.deviceMemory<=4)||(n.hardwareConcurrency&&n.hardwareConcurrency<=4)));
 if(mid)d.setAttribute("data-mid","1")
 }catch(e){}})();(function(){var d=document.documentElement;d.setAttribute("data-tier",d.hasAttribute("data-lite")?"low":d.hasAttribute("data-mid")?"mid":"high")})();`;

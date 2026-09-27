@@ -54,6 +54,7 @@ export default function NanoSphere({
   pulse = 0,
   glow = 1,
   intro,
+  core = false,
 }: {
   size?: number;
   from: string;
@@ -66,6 +67,9 @@ export default function NanoSphere({
   glow?: number;
   /** Как сфера появляется при монтировании; без него — сразу целиком. */
   intro?: SphereIntro;
+  /** Пыль внутри кольца: крутится спиральными рукавами и понемногу
+   *  вылетает наружу (вайб-окно, Егор 2026-09-26). В баре выключено. */
+  core?: boolean;
 }) {
   // Холст шире знака; схлопыванию нужен запас — вихрь стартует широким.
   const boxK = intro === "implode" ? 2.6 : 1.7;
@@ -104,6 +108,23 @@ export default function NanoSphere({
     const html = document.documentElement;
     const light = html.hasAttribute("data-lite") || html.hasAttribute("data-mid");
     const LINES = light ? 11 : 18;
+    // Сколько пылинок в секунду выходит из центра в первый момент.
+    const CORE = light ? 26 : 48;
+    type Dust = { a: number; r0: number; reach: number; spin: number; born: number; life: number; size: number };
+    const coreSpawn = (now: number, r0: number): Dust => ({
+      a: Math.random() * Math.PI * 2,
+      r0,
+      // Докуда долетает: как дальние искры, за кольцо.
+      reach: 1.25 + Math.random() * 0.4,
+      spin: 0.3 + Math.random() * 0.6,
+      born: now,
+      life: 2 + Math.random() * 1.6,
+      size: (0.4 + Math.random() * 0.5) * dpr * k,
+    });
+    // На старте сфера уже полна пыли — она сразу начинает выходить.
+    const coreDust: Dust[] = core ? Array.from({ length: light ? 24 : 44 }, () => coreSpawn(-Math.random() * 0.8, Math.random() * 0.8)) : [];
+    let coreAcc = 0;
+    let coreLast = 0;
 
     // Искры: рождаются у кольца, улетают наружу, вспыхивают и гаснут, на их
     // месте появляются новые — вокруг всегда что-то живёт.
@@ -385,7 +406,9 @@ export default function NanoSphere({
         }
       }
       ctx.globalAlpha = ring;
-      for (let i = 0; i < sparks.length; i++) {
+      // С пылью из центра искры вокруг — это она же, вылетевшая за кольцо,
+      // поэтому отдельные искры у кольца не рождаются.
+      for (let i = 0; i < (core ? 0 : sparks.length); i++) {
         let p = sparks[i];
         let age = (t - p.born) / p.life;
         if (age >= 1) {
@@ -400,6 +423,43 @@ export default function NanoSphere({
         ctx.beginPath();
         ctx.arc(c + Math.cos(a) * d, c + Math.sin(a) * d, p.size * (0.6 + 0.4 * Math.sin(age * Math.PI)), 0, Math.PI * 2);
         ctx.fill();
+      }
+      // Пыль из центра (Егор, 2026-09-26): при появлении сферы внутри её
+      // много, она плавно выходит из центра по лёгкой спирали и за кольцом
+      // становится теми же тихими белыми искрами, что летают вокруг, — один
+      // поток. Рождается всё меньше, пока не останется ровный редкий ток,
+      // как у обычных искр.
+      if (core) {
+        const rate = CORE * Math.exp(-t / 2.4) + SPARKS / 2.2;
+        coreAcc += rate * Math.max(0, t - coreLast);
+        coreLast = t;
+        while (coreAcc >= 1) {
+          coreAcc -= 1;
+          coreDust.push(coreSpawn(t, Math.random() * 0.15));
+        }
+        for (let i = coreDust.length - 1; i >= 0; i--) {
+          const p = coreDust[i];
+          const age = (t - p.born) / p.life;
+          if (age >= 1) {
+            coreDust.splice(i, 1);
+            continue;
+          }
+          const e = 1 - (1 - age) ** 2;
+          const d = R * (p.r0 + (p.reach - p.r0) * e);
+          const a = p.a + p.spin * e;
+          // Внутри кольца — цвет сферы и ярче, снаружи — белая искра, как
+          // у обычных искр (альфа 0.22), и растворение к концу пути.
+          const out = Math.min(1, Math.max(0, (d / R - 0.85) / 0.35));
+          const alpha = Math.min(1, age * 6) * (0.6 * (1 - out) + 0.22 * out) * (age > 0.7 ? 1 - (age - 0.7) / 0.3 : 1);
+          const mix = Math.min(1, d / R);
+          const cr = fr + (tr - fr) * mix;
+          const cg = fg + (tg - fg) * mix;
+          const cb = fb + (tb - fb) * mix;
+          ctx.fillStyle = `rgba(${Math.round(cr + (255 - cr) * out)},${Math.round(cg + (255 - cg) * out)},${Math.round(cb + (255 - cb) * out)},${alpha})`;
+          ctx.beginPath();
+          ctx.arc(c + Math.cos(a) * d, c + Math.sin(a) * d, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
     };
 
@@ -427,7 +487,7 @@ export default function NanoSphere({
       host.removeEventListener("pointerenter", excite);
       host.removeEventListener("pointerleave", calm);
     };
-  }, [size, from, to, glow, intro, boxK]);
+  }, [size, from, to, glow, intro, boxK, core]);
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width: size, height: size }} aria-hidden="true">

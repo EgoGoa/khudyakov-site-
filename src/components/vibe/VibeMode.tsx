@@ -151,11 +151,14 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
   const total = questions.length;
   const progress = stage === "quiz" ? qi / (total + 1) : stage === "contact" ? total / (total + 1) : stage === "building" ? 1 : 0;
   const orbSize =
-    stage === "splash" ? (narrow ? 150 : 200) : stage === "hello" ? (narrow ? 96 : 120) : stage === "intro" ? (narrow ? 56 : 64) : stage === "building" ? (narrow ? 104 : 128) : narrow ? 54 : 64;
+    stage === "splash" ? (narrow ? 150 : 200) : stage === "hello" ? (narrow ? 96 : 120) : stage === "intro" ? (narrow ? 84 : 96) : stage === "building" ? (narrow ? 104 : 128) : narrow ? 54 : 64;
   // Отступ сферы сверху: на заставке и приветствии сфера с текстом стоят
   // в середине окна, дальше поднимаются к верху.
   const orbSlot = stage === "contact" ? "quiz" : stage;
   const orbTop = stage === "splash" ? (narrow ? 70 : 96) : stage === "hello" ? (narrow ? 90 : 120) : stage === "building" ? 60 : 0;
+  // Над слайдами сфера крупнее (64 → 96px) и поднята выше, по центру, но
+  // кольцо целиком остаётся внутри окна (Егор, 2026-09-26).
+  const orbLift = stage === "intro" ? (narrow ? -34 : -40) : 0;
 
   const finish = () => {
     setStage("building");
@@ -230,8 +233,10 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
                 animate={{ opacity: 1, filter: "blur(0px)" }}
                 exit={{ opacity: 0, filter: "blur(12px)" }}
                 transition={{ duration: 0.6, ease: SMOOTH }}
-                style={{ paddingTop: orbTop }}
-                className="vibe-mode__orb flex w-full justify-center"
+                style={{ paddingTop: orbTop, marginTop: orbLift }}
+                // Над слайдами сфера заходит в строку с крестиком — клики
+                // проходят сквозь её обёртку.
+                className={`vibe-mode__orb flex w-full justify-center${stage === "intro" ? " pointer-events-none" : ""}`}
               >
                 <NanoSphere
                   size={orbSize}
@@ -312,12 +317,12 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
   );
 }
 
-// Фон окна: мелкая пыль мягко исходит от сферы (Егор: «частиц больше,
-// детальнее, меньше, разной плотности и яркости — как будто они все от
-// сферы мягко идут»). Частица рождается у кольца, медленно уплывает наружу
-// с лёгким завихрением, тормозит и тает. Плотность по кругу неровная —
-// сгустки медленно поворачиваются. На слабых устройствах пыли нет, на
-// средних — меньше частиц и 30 кадров/с.
+// Фон окна (Егор, 2026-09-26): внутри сферы частиц нет. Когда окно
+// открывается, пыль начинает выходить с внешней стороны кольца — сначала
+// единицы, потом больше; каждая пылинка плавно отходит от сферы, тормозит
+// и дальше спокойно дрейфует по всему окну, мягко отскакивая от стенок.
+// Пылинки не исчезают — окно постепенно наполняется. На слабых устройствах
+// пыли нет, на средних — меньше частиц и 30 кадров/с.
 function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | null> }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -384,64 +389,31 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
       ctx.globalAlpha = al;
       ctx.drawImage(sprite(c), x - d / 2, y - d / 2, d, d);
     };
-    type P = { a: number; d: number; v: number; curl: number; born: number; life: number; r: number; b: number; c: string };
-    const MAX = mid ? 90 : 200;
-    const spawn = (t: number): P => {
-      // Сгустки: угол выбираем с весом, который медленно поворачивается.
-      let a = 0;
-      for (let k = 0; k < 4; k++) {
-        a = Math.random() * Math.PI * 2;
-        if (Math.random() < 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(3 * a + t * 0.15))) break;
-      }
+    type P = { x: number; y: number; vx: number; vy: number; drift: number; born: number; r: number; b: number; c: string; ph: number };
+    const MAX = mid ? 60 : 160;
+    const emit = (t: number): P => {
+      const a = Math.random() * Math.PI * 2;
       // Размеры разные: в основном мелкая пыль, реже средние и крупные
-      // светящиеся точки. Скорость с перекосом: большинство остаётся у
-      // сферы, немногие уходят далеко — чем дальше, тем реже.
+      // светящиеся точки.
       const roll = Math.random();
       const size = roll < 0.7 ? 0.2 + Math.random() * 0.3 : roll < 0.93 ? 0.5 + Math.random() * 0.35 : 0.85 + Math.random() * 0.5;
+      const sp = 22 + 60 * Math.random() ** 1.6;
       return {
-        a,
-        d: 0.85 + Math.random() * 0.3,
-        v: 5 + 60 * Math.random() ** 2.2,
-        curl: (Math.random() - 0.5) * 0.5,
-        born: t,
-        life: 5 + Math.random() * 8,
-        r: size,
-        b: 0.35 + Math.random() * 0.55,
-        c: tints[Math.floor(Math.random() * tints.length)],
-      };
-    };
-    const start = performance.now() / 1000;
-    // Сразу раскидываем часть по возрасту, чтобы фон не начинался с пустоты.
-    const ps: P[] = Array.from({ length: MAX }, () => {
-      const p = spawn(start);
-      p.born = start - Math.random() * p.life;
-      return p;
-    });
-
-    // Путешественницы (Егор: «некоторые разлетаются по всему окошку,
-    // ударяются о бока и возвращаются»): вылетают от сферы, мягко
-    // отскакивают от стенок окна и долго плавно дрейфуют, потом тают.
-    type Wd = { x: number; y: number; vx: number; vy: number; born: number; life: number; r: number; b: number; c: string; ph: number };
-    const launch = (t: number): Wd => {
-      const a = Math.random() * Math.PI * 2;
-      const sp = 26 + Math.random() * 34;
-      const tiny = Math.random() < 0.6;
-      return {
-        x: ox + Math.cos(a) * or,
-        y: oy + Math.sin(a) * or,
+        x: ox + Math.cos(a) * or * 1.08,
+        y: oy + Math.sin(a) * or * 1.08,
         vx: Math.cos(a) * sp,
         vy: Math.sin(a) * sp,
+        drift: 3 + Math.random() * 7,
         born: t,
-        life: 10 + Math.random() * 12,
-        r: tiny ? 0.25 + Math.random() * 0.3 : 0.55 + Math.random() * 0.5,
-        b: 0.4 + Math.random() * 0.5,
+        r: size,
+        b: 0.35 + Math.random() * 0.55,
         c: tints[Math.floor(Math.random() * tints.length)],
         ph: Math.random() * Math.PI * 2,
       };
     };
-    const WN = mid ? 8 : 18;
-    const wds: Wd[] = [];
-    let nextLaunch = start;
+    const start = performance.now() / 1000;
+    const ps: P[] = [];
+    let acc = 0;
     let prevT = start;
 
     let raf = 0;
@@ -459,31 +431,38 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
       ctx.clearRect(0, 0, w, h);
       ctx.globalCompositeOperation = "lighter";
 
-      // Выпускаем путешественниц по одной, чтобы они не вылетали залпом.
-      if (wds.length < WN && t >= nextLaunch) {
-        wds.push(launch(t));
-        nextLaunch = t + 0.35 + Math.random() * 0.5;
-      }
-      for (let i = wds.length - 1; i >= 0; i--) {
-        const p = wds[i];
-        const age = (t - p.born) / p.life;
-        if (age >= 1) {
-          wds.splice(i, 1);
-          continue;
+      // Выпуск: с нуля плавно разгоняется до ровного потока, пока окно не
+      // наполнится.
+      if (ps.length < MAX) {
+        const rate = (mid ? 9 : 18) * Math.min(1, (t - start) / 3);
+        acc += rate * dt;
+        while (acc >= 1 && ps.length < MAX) {
+          acc -= 1;
+          ps.push(emit(t));
         }
-        // Скорость плавно гаснет до «дрейфа», направление чуть гуляет.
+      }
+      const m = 6;
+      for (let i = 0; i < ps.length; i++) {
+        const p = ps[i];
+        // Скорость плавно гаснет до своего дрейфа, направление чуть гуляет.
         const sp = Math.hypot(p.vx, p.vy);
-        const target = 9;
-        const k = sp > target ? 1 - 0.35 * dt : 1;
-        const turn = Math.sin(t * 0.4 + p.ph) * 0.35 * dt;
+        const k = sp > p.drift ? 1 - 0.55 * dt : 1;
+        const turn = Math.sin(t * 0.35 + p.ph) * 0.4 * dt;
         const vx = (p.vx * Math.cos(turn) - p.vy * Math.sin(turn)) * k;
         const vy = (p.vx * Math.sin(turn) + p.vy * Math.cos(turn)) * k;
         p.vx = vx;
         p.vy = vy;
         p.x += p.vx * dt;
         p.y += p.vy * dt;
+        // Внутрь сферы пыль не возвращается — мягко отталкивается от кольца.
+        const dx = p.x - ox;
+        const dy = p.y - oy;
+        const dd = Math.hypot(dx, dy) || 1;
+        if (dd < or * 1.08) {
+          p.vx += (dx / dd) * 30 * dt;
+          p.vy += (dy / dd) * 30 * dt;
+        }
         // Мягкий отскок от стенок окна.
-        const m = 6;
         if (p.x < m || p.x > w - m) {
           p.x = Math.min(w - m, Math.max(m, p.x));
           p.vx = -p.vx * 0.85;
@@ -492,29 +471,8 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
           p.y = Math.min(h - m, Math.max(m, p.y));
           p.vy = -p.vy * 0.85;
         }
-        const al = p.b * Math.min(1, age * 8) * Math.min(1, (1 - age) * 4) * (0.75 + 0.25 * Math.sin(t * 1.6 + p.ph));
+        const al = p.b * Math.min(1, (t - p.born) * 1.5) * (0.7 + 0.3 * Math.sin(t * 1.6 + p.ph));
         star(p.x, p.y, p.r, al, p.c);
-      }
-
-      for (let i = 0; i < ps.length; i++) {
-        let p = ps[i];
-        let age = (t - p.born) / p.life;
-        if (age >= 1) {
-          p = ps[i] = spawn(t);
-          age = 0;
-        }
-        // Уплывает, замедляясь (путь ~ √возраста), и слегка закручивается.
-        const travel = p.v * p.life * Math.sqrt(age) * 0.55;
-        const ang = p.a + p.curl * age + 0.04 * Math.sin(t * 0.3 + p.a * 3);
-        const dist = or * p.d + travel;
-        const x = ox + Math.cos(ang) * dist;
-        const y = oy + Math.sin(ang) * dist;
-        if (x < -4 || y < -4 || x > w + 4 || y > h + 4) continue;
-        const fade = Math.min(1, age * 5) * (1 - age) ** 1.5;
-        const tw = 0.7 + 0.3 * Math.sin(t * 2 + i);
-        const al = p.b * fade * tw;
-        if (al < 0.02) continue;
-        star(x, y, p.r, al, p.c);
       }
     };
     raf = requestAnimationFrame(loop);
@@ -528,7 +486,7 @@ function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | n
 
 // «Vibe-режим» — словесный знак режима: «Vibe» фиолетовым, «режим» белым,
 // без частиц — только мягкая неспешная пульсация свечения (Егор).
-function VibeWordmark({ className = "", hero = false }: { className?: string; hero?: boolean }) {
+export function VibeWordmark({ className = "", hero = false }: { className?: string; hero?: boolean }) {
   return (
     <span className={`vibe-mode__wordmark ${hero ? "vibe-mode__wordmark--hero" : ""} ${className}`}>
       <span className="vibe-mode__wordmark-vibe">Vibe</span>-режим
@@ -646,15 +604,29 @@ function Intro({ slide, onSlide, onStart }: { slide: number; onSlide: (i: number
       <motion.h2 {...rise(0.05)} className="vibe-mode__title vibe-mode__title--sm mt-2">
         <Accent text={step.title} />
       </motion.h2>
-      {/* Схема сама прорисовывается по линиям (useDrawIn), подписи под
-          ней проявляются, когда она почти собралась. */}
+      {/* Сцена сама собирается из частиц (VibeInfographics): сначала
+          графика, последними — подписи внутри неё. */}
       <div className="mt-6 w-full">
         <step.Info />
       </div>
-      <motion.p {...rise(2.2)} className="vibe-mode__lead mt-5">
+      <motion.p {...rise(2.8)} className="vibe-mode__lead mt-5">
         <Accent text={step.lead} />
       </motion.p>
-      <motion.div {...rise(2.5)} className="mt-6 flex w-full justify-center">
+      {/* Стрелка назад — зеркало стрелки «Дальше/Начать»: тот же зазор
+          10px до слова (Егор, 2026-09-26). Ширины слева и справа от слова
+          равны, поэтому слово стоит ровно по центру; на первом слайде
+          стрелка невидима, но место держит. */}
+      <motion.div {...rise(3.1)} className="mt-6 flex w-full items-center justify-center gap-1">
+        <button
+          type="button"
+          onClick={() => onSlide(slide - 1)}
+          className="vibe-mode__prev"
+          aria-label="Назад"
+          disabled={slide === 0}
+          style={slide === 0 ? { visibility: "hidden" } : undefined}
+        >
+          <Arrow />
+        </button>
         <button type="button" onClick={last ? onStart : () => onSlide(slide + 1)} className="vibe-mode__next">
           {last ? "Начать" : "Дальше"}
           <Arrow />

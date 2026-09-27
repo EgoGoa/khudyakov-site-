@@ -62,6 +62,12 @@ export default function PerfGovernor() {
       return;
     }
 
+    // Мощный компьютер (мышь, 8+ ядер, настоящая видеокарта) не понижаем
+    // никогда: сторож кадров ловит просадки фоновой вкладки, dev-сборки и
+    // сборки тяжёлой сцены и уводил M1 Pro Егора до low — инфографика
+    // вайб-режима замирала (Егор, 2026-09-27: «верни всю анимацию»).
+    if (matchMedia("(pointer: fine)").matches && (navigator.hardwareConcurrency || 0) >= 8) return;
+
     let raf = 0;
     let timer = 0;
     let badStreak = 0;
