@@ -114,6 +114,15 @@ export default function RootLayout({
         {/* Marks weak devices / slow connections before first paint so the
             "lite" CSS (globals.css) applies with no flash — see lib/lite.ts. */}
         <script dangerouslySetInnerHTML={{ __html: LITE_DETECT_SNIPPET }} />
+        {/* Стартовое окно рендерится сервером и видно с первого кадра; если
+            посетитель недавно его закрыл, этот флаг прячет его ещё до
+            отрисовки — без вспышки окна (см. WelcomeOverlay). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var h=document.documentElement;if(Number(localStorage.getItem('hdkv_welcome_snoozed_until'))>Date.now())h.setAttribute('data-welcome-snoozed','');else if(/^\\/(content|ai|sites|smm)(\\/|\\.html|$)/.test(location.pathname))h.setAttribute('data-welcome-open','')}catch(e){}",
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }}

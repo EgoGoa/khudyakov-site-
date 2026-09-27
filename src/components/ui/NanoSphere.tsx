@@ -1,4 +1,5 @@
 "use client";
+import { isWelcomeOpen } from "@/lib/welcome-freeze";
 
 import { useEffect, useRef } from "react";
 
@@ -474,8 +475,11 @@ export default function NanoSphere({
       // На mid/low — 30 кадров/с вместо 60: движение то же, нагрузки вдвое меньше.
       const frameMs = light ? 33 : 0;
       let last = 0;
+      // Сфера за стартовым окном замирает, пока оно открыто (lib/welcome-freeze).
+      const behindWelcome = !canvas.closest(".welcome-shell");
       const loop = (now: number) => {
         raf = requestAnimationFrame(loop);
+        if (behindWelcome && isWelcomeOpen()) return;
         if (now - last < frameMs) return;
         last = now;
         draw((now - start) / 1000);

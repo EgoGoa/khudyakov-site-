@@ -20,11 +20,14 @@ type LeadPayload = {
     | "brief-hotel-video"
     | "team"
     | "vibe"
-    | "vibe-order";
+    | "vibe-order"
+    | "block-vibe";
   name: string;
   phone?: string;
   email?: string;
   fields?: Record<string, string>;
+  /** Скрины из окошка Vibe-блока: data-URL jpeg, до трёх штук. */
+  files?: { name: string; data: string }[];
 };
 
 const TYPE_LABEL: Record<LeadPayload["type"], string> = {
@@ -46,6 +49,8 @@ const TYPE_LABEL: Record<LeadPayload["type"], string> = {
   vibe: "Vibe-режим: клиент собрал КП",
   // Кнопка «Выбрать план» на странице-КП (/offer).
   "vibe-order": "Vibe-режим: заказ тарифа из КП",
+  // Окошко «персонализировать этот блок» у вайб-бара.
+  "block-vibe": "Vibe-блок: клиент собрал блок под себя",
 };
 
 const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
@@ -85,6 +90,13 @@ export async function POST(request: Request) {
     ...Object.entries(body.fields ?? {}).map(([label, value]) => `${label}: ${value || "—"}`),
   ];
 
+  const attachments = (Array.isArray(body.files) ? body.files : [])
+    .slice(0, 3)
+    .flatMap((f) => {
+      const m = typeof f?.data === "string" ? f.data.match(/^data:image\/[a-z+]+;base64,(.+)$/) : null;
+      return m && m[1].length < 4_000_000 ? [{ filename: str(f.name) || "screen.jpg", content: m[1] }] : [];
+    });
+
   const resend = new Resend(apiKey);
   const { error } = await resend.emails.send({
     // Resend's shared sending domain — swap for a verified hdkv.agency
@@ -94,6 +106,7 @@ export async function POST(request: Request) {
     replyTo: emailOk ? email : undefined,
     subject: `${Object.hasOwn(TYPE_LABEL, body.type) ? TYPE_LABEL[body.type] : "Заявка с сайта"} — ${name}`,
     text: lines.join("\n"),
+    attachments: attachments.length ? attachments : undefined,
   });
 
   if (error) {

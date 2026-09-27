@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { sound } from "@/lib/sound";
-import { createPortal } from "react-dom";
 import { MotionConfig, motion } from "framer-motion";
 
 // Заставка входа: логотип проявляется на запотевшем стекле, которым накрыта
@@ -57,20 +56,23 @@ const T_VANISH = T_SETTLED + HOLD;
  *  растворяясь, — а на его месте вспыхивает и медленно расходится мягкая
  *  дымка (размытая копия знака). Без дымового фильтра и побуквенного
  *  таяния: «очень дизайнерски, без дополнительных эффектов». */
-const D_ZOOM = 0.9;
+// Уход ускорен (Егор, 2026-09-27: «лого гаснет быстрее»): знак успевает
+// погаснуть до того, как под ним проявится меню, и не ложится на карточку.
+const D_ZOOM = 0.5;
 const ZOOM_TO = 1.8;
-const ZOOM_EASE = [0.6, 0, 0.85, 0.25] as const;
-const D_HAZE = 1.75;
+const ZOOM_EASE = [0.45, 0, 0.55, 1] as const;
+const D_HAZE = 0.9;
 /** Сколько длится весь уход — до последней капли дымки. */
 const D_DISSOLVE = D_HAZE;
 /** Меню открывается сразу, как знак полностью растворился — не раньше:
  *  на экране не должно быть одновременно и остатков знака, и уже открытого
  *  меню (просьба Егора после проверки живьём). Дымка — тоже остаток знака,
  *  поэтому ждём и её. */
-const T_REVEAL = T_VANISH + D_DISSOLVE;
+// Меню встаёт, как только знак улетел и погас (конец рывка D_ZOOM), — пауза
+// почти нулевая (Егор, 2026-09-27); дымка доживает уже над меню.
+const T_REVEAL = T_VANISH + D_ZOOM * 0.85;
 /** Стекло уходит вместе с появлением меню — меню проступает сквозь него. */
-const D_FADE = 0.6;
-const T_DONE_MS = (Math.max(T_VANISH + D_DISSOLVE, T_REVEAL + D_FADE) + 0.1) * 1000;
+const T_DONE_MS = (T_VANISH + D_DISSOLVE + 0.1) * 1000;
 
 /** Слово знака посимвольно. Градиент `.brand-word` идёт по всему слову
  *  сразу, а посимвольная анимация требует отдельного элемента на букву —
@@ -96,15 +98,6 @@ const CHARS = [
 // хранится, единственное, что решает, играть ли заставку, —
 // prefers-reduced-motion в эффекте ниже.
 
-/** Стекло заставки. Заливка почти прозрачная — работает именно блюр, как и
- *  на всех стеклянных поверхностях сайта; поверх него косой блик, который
- *  и читается как «запотевшее», плюс мягкая виньетка к внешнему краю. */
-const GLASS: React.CSSProperties = {
-  backdropFilter: "blur(34px) saturate(135%)",
-  WebkitBackdropFilter: "blur(34px) saturate(135%)",
-  background:
-    "linear-gradient(115deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 38%, rgba(12,14,20,0.30) 100%)",
-};
 
 export default function IntroSplash({
   onReveal,
@@ -145,7 +138,7 @@ export default function IntroSplash({
 
   if (!mounted || !playing) return null;
 
-  return createPortal(
+  return (
     // Заставка всегда играет полностью, на любом уровне устройства: в режиме
     // reducedMotion (MotionTier, mid/low) framer прыгает сразу в последний
     // кадр ключей — знак оказывался сдвинутым вверх, буквы — не на месте.
@@ -157,21 +150,11 @@ export default function IntroSplash({
       // T_VANISH), а не стоит рядом с ним несколько секунд — поэтому знаку
       // больше незачем подстраиваться под будущее место карточек, конфликта
       // с ними нет.
-      className="pointer-events-none fixed inset-0 z-[120] flex items-center justify-center overflow-hidden"
+      // Живёт внутри стеклянного стартового окна (WelcomeOverlay), а не на
+      // весь экран: стекло даёт само окно, своего слоя стекла тут больше нет.
+      className="pointer-events-none absolute inset-0 z-[2] flex items-center justify-center overflow-hidden"
       aria-hidden="true"
     >
-      {/* Стекло — отдельный слой под знаком, а не общий контейнер. Иначе его
-          прозрачность утягивала бы за собой и дым: хвост растворения (0.95с)
-          обрывался бы в момент, когда гаснет стекло (0.55с). Теперь стекло
-          уходит само по себе, а дым доживает свой век уже над открывшимся
-          меню. */}
-      <motion.div
-        className="absolute inset-0"
-        style={GLASS}
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 0 }}
-        transition={{ duration: D_FADE, ease: EASE, delay: T_REVEAL }}
-      />
       <div className="relative grid place-items-center">
         {/* Знак собирается на месте, поэтому вся сборка живёт в одном
             контейнере. Он же на выходе слегка поднимается целиком (тот же
@@ -185,7 +168,7 @@ export default function IntroSplash({
           className="pointer-events-none absolute flex items-center gap-[0.3em] text-[clamp(1.05rem,4.25vw,3.25rem)] sm:gap-[0.35em]"
           style={{ filter: "blur(16px)" }}
           initial={{ opacity: 0, scale: 1 }}
-          animate={{ opacity: [0, 0.5, 0], scale: [1, 1.45, 2.3] }}
+          animate={{ opacity: [0, 0.3, 0], scale: [1, 1.45, 2.3] }}
           transition={{ duration: D_HAZE, times: [0, 0.29, 1], ease: ["easeOut", "easeOut"], delay: T_VANISH + 0.08 }}
           aria-hidden="true"
         >
@@ -276,7 +259,6 @@ export default function IntroSplash({
         </motion.div>
       </div>
     </div>
-    </MotionConfig>,
-    document.body
+    </MotionConfig>
   );
 }

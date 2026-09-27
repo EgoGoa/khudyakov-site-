@@ -1,4 +1,5 @@
 "use client";
+import { isWelcomeOpen } from "@/lib/welcome-freeze";
 
 import { useEffect, useRef } from "react";
 import { getTier, isSlowNet, onTierChange } from "@/lib/perf-tier";
@@ -45,40 +46,43 @@ import { getTier, isSlowNet, onTierChange } from "@/lib/perf-tier";
 // (PerfGovernor) is picked up without a reload.
 
 // ── Fluid ────────────────────────────────────────────────────────────────
-const SIM_RESOLUTION = 256;
-const DYE_RESOLUTION = 900;
+const SIM_RESOLUTION = 200;
+const DYE_RESOLUTION = 680;
 // Mid tier: coarser grid, half-size canvas, fewer pressure passes, 30fps.
-const SIM_RESOLUTION_MID = 96;
-const DYE_RESOLUTION_MID = 384;
-const PRESSURE_ITERATIONS_MID = 8;
+const SIM_RESOLUTION_MID = 80;
+const DYE_RESOLUTION_MID = 300;
+const PRESSURE_ITERATIONS_MID = 6;
 const CANVAS_SCALE_MID = 0.5;
+// High tier: the smoke is soft enough that a 3/4-size canvas looks the same
+// and fills ~half the pixels.
+const CANVAS_SCALE_HIGH = 0.75;
 const FRAME_MS_MID = 1000 / 30;
 // How fast momentum dies. Low enough that eddies keep turning ~1.5s after
 // the cursor leaves them, high enough that they don't drift off on their own.
-const VELOCITY_DISSIPATION = 2.2;
+const VELOCITY_DISSIPATION = 3.8;
 // How fast the smoke itself fades.
-const DENSITY_DISSIPATION = 4.5;
+const DENSITY_DISSIPATION = 7.5;
 const PRESSURE = 0.8;
-const PRESSURE_ITERATIONS = 20;
+const PRESSURE_ITERATIONS = 12;
 // Vorticity confinement: keeps small curls from being smeared by the grid.
-const CURL = 14;
+const CURL = 22;
 // Gaussian radius of the push along the path (UV², before aspect fix).
 const SPLAT_RADIUS = 0.0004;
 // The cursor is a hand moving through smoke: it shoves the air in front of
 // it at close to its own speed, so the fresh smoke is driven AHEAD of the
 // cursor and rolls up at the front instead of being left behind as a tail.
-const FOLLOW = 0.9;
+const FOLLOW = 0.55;
 // Smoke appears this far ahead of the cursor along its direction of travel
 // (css px), further on a fast move.
 const LEAD = 10;
-const LEAD_FAST = 28;
+const LEAD_FAST = 16;
 // Cursor speed (css px/s) beyond which a flick stops getting stronger.
-const MAX_SPEED = 3000;
+const MAX_SPEED = 1800;
 const SPLAT_SPACING = 8;
 // Eddies: one every VORTEX_SPACING px of travel, just off the path,
 // alternating side and spin. Radius in css px grows with speed.
 const VORTEX_SPACING = 54;
-const VORTEX_GAIN = 0.8;
+const VORTEX_GAIN = 0.9;
 const VORTEX_RADIUS = 16;
 const VORTEX_RADIUS_FAST = 28;
 const VORTEX_OFFSET = 0.85;
@@ -87,16 +91,16 @@ const VORTEX_OFFSET = 0.85;
 // Parallel thin streams, css px apart, each with its own slow weave.
 const STREAMS = 3;
 const STREAM_GAP = 4;
-const STREAM_WOBBLE = 2.5;
+const STREAM_WOBBLE = 3.2;
 const EMIT_SPACING = 2;
 // Gaussian sigma of one dye sprite, css px — slow and fast.
 const EMIT_SIGMA = 4.4;
 const EMIT_SIGMA_FAST = 5.8;
-const EMIT_STRENGTH = 0.034;
+const EMIT_STRENGTH = 0.021;
 // Display: overall exposure, and how strongly the soft top light shapes
 // the smoke into volume (0 = flat).
 const EXPOSURE = 1.5;
-const SHADING = 0.35;
+const SHADING = 0.55;
 
 // ── Air ──────────────────────────────────────────────────────────────────
 // What keeps the smoke alive and unpredictable after the cursor has gone:
@@ -115,10 +119,10 @@ const STROKE_BREAK_MS = 220;
 // How quickly smoke softens as it ages (per second): fresh smoke is crisp
 // and bright, and within a fraction of a second it has blurred into haze
 // and faded — no long trail.
-const DIFFUSION = 6;
+const DIFFUSION = 4.2;
 // After the pointer goes quiet the field still needs time to fade; once it
 // has, the rAF loop parks itself instead of burning GPU on a black frame.
-const IDLE_GRACE_MS = 2400;
+const IDLE_GRACE_MS = 1300;
 
 const BASE_VERTEX = `
 precision highp float;
@@ -470,14 +474,14 @@ export default function FluidSmoke() {
     let simTarget = SIM_RESOLUTION;
     let dyeTarget = DYE_RESOLUTION;
     let pressureIterations = PRESSURE_ITERATIONS;
-    let canvasScale = 1;
+    let canvasScale = CANVAS_SCALE_HIGH;
     let frameMs = 0;
     const applyTier = () => {
       const mid = getTier() === "mid";
       simTarget = mid ? SIM_RESOLUTION_MID : SIM_RESOLUTION;
       dyeTarget = mid ? DYE_RESOLUTION_MID : DYE_RESOLUTION;
       pressureIterations = mid ? PRESSURE_ITERATIONS_MID : PRESSURE_ITERATIONS;
-      canvasScale = mid ? CANVAS_SCALE_MID : 1;
+      canvasScale = mid ? CANVAS_SCALE_MID : CANVAS_SCALE_HIGH;
       frameMs = mid ? FRAME_MS_MID : 0;
     };
     applyTier();
@@ -952,6 +956,14 @@ export default function FluidSmoke() {
     let lastTime = performance.now();
 
     function frame() {
+      // Пока открыто стартовое окно, дым спит (lib/welcome-freeze): разбудит
+      // первое движение мыши после закрытия.
+      if (isWelcomeOpen()) {
+        raf = 0;
+        running = false;
+        canvas!.style.visibility = "hidden";
+        return;
+      }
       const now = performance.now();
       // Mid tier: step at 30fps. Skipped vsyncs cost nothing — no GL work.
       if (frameMs && now - lastTime < frameMs - 2) {
@@ -983,7 +995,7 @@ export default function FluidSmoke() {
 
     function wake() {
       lastActivity = performance.now();
-      if (running || document.hidden) return;
+      if (running || document.hidden || isWelcomeOpen()) return;
       running = true;
       canvas!.style.visibility = "visible";
       lastTime = performance.now();

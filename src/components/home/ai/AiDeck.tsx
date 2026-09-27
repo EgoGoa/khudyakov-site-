@@ -268,7 +268,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
     <div
       onMouseEnter={() => setHeld(true)}
       onMouseLeave={() => setHeld(false)}
-      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[250px]"}`}
+      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[250px] [@media(max-height:940px)]:mt-2 lg:[@media(max-height:940px)]:h-[240px]"}`}
       style={
         {
           "--card-glow-rgb": "52, 211, 153",

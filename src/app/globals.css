@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 :root {
+  /* Полоса у низа экрана под волну ассистента: главы на всех страницах
+     заканчивают контент выше неё (CinematicSection), чтобы волна ни на
+     что не наезжала. Линии волны заканчиваются примерно в 64px от низа. */
+  --voice-safe: calc(4.5rem + env(safe-area-inset-bottom));
   --paper: #dcddef;
   --ink: #0b0b10;
   --rec: #f5310b;
@@ -4324,7 +4328,7 @@ html[data-mid] .guar-term-slide:first-of-type {
 @media (max-height: 940px) {
   [data-chapter-pane][data-active] {
     padding-top: 4.5rem;
-    padding-bottom: 1.5rem;
+    padding-bottom: var(--voice-safe); /* полоса под волну ассистента */
   }
 
   [data-chapter-pane] h2[class*="chapter-neon"] {
@@ -4337,7 +4341,7 @@ html[data-mid] .guar-term-slide:first-of-type {
 @media (max-height: 860px) {
   [data-chapter-pane][data-active] {
     padding-top: 4rem;
-    padding-bottom: 1rem;
+    padding-bottom: var(--voice-safe);
   }
 
   [data-chapter-pane] h2[class*="chapter-neon"] {
@@ -5567,6 +5571,116 @@ html:not([data-lite])[data-mid] .sp-pulse {
   backdrop-filter: blur(28px) saturate(115%);
 }
 
+/* ---------- Стартовое окно (WelcomeOverlay) ----------
+   Стеклянное окошко по центру, как у вайб-окна; сайт за ним виден и лишь
+   слегка притемнён. Проявляется CSS-анимацией с первого кадра, ещё до JS.
+   Прозрачность анимируется у затемнения (::before) и у самого окна, но не
+   у общего контейнера: прозрачность предка ломает backdrop-filter окна, и
+   стекло «щёлкало» бы в размытие в конце проявления. */
+[data-welcome-snoozed] .welcome-shell { display: none; }
+.welcome-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  outline: none;
+}
+.welcome-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Сайт за окном не размыт, а погашен вдвое — еле виден (Егор,
+     2026-09-27). Гаснет плавно. */
+  background: rgba(2, 2, 5, 0.55);
+  animation: welcome-fade-in 1s ease-out backwards;
+  transition: opacity 0.45s ease;
+}
+.welcome-window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* На компьютере окно компактнее (Егор): меню внутри ужимается под его
+     высоту целиком — карточки, кнопки и текст пропорционально. */
+  width: min(560px, 100%);
+  height: min(780px, calc(100dvh - 32px));
+  border-radius: 30px;
+  overflow: hidden;
+  overflow: clip;
+  background: rgba(12, 12, 20, 0.42);
+  /* Только без префикса: пару с -webkit- сборщик схлопывает в один
+     префиксный вариант, и Chrome размытие не рисует вовсе. */
+  backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 40px 120px -24px rgba(0, 0, 0, 0.85);
+  animation: welcome-window-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.45s ease;
+}
+.welcome-shell.is-leaving { pointer-events: none; }
+.welcome-shell.is-leaving::before { opacity: 0; }
+.welcome-shell.is-leaving .welcome-window {
+  opacity: 0;
+  transform: translateY(-8px);
+  filter: blur(14px);
+}
+/* Крестик — только значок, без круга и подложки (Егор: «минимализм
+   максимально»). Площадь нажатия остаётся 40px. */
+.welcome-window__close {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 3;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s;
+}
+.welcome-window__close:hover { color: #fff; }
+/* Тело окна: логотип у самого верха, всё меню ужимается под высоту окна
+   (useFitToHeight в WelcomeWidget меряет именно этот блок). */
+.welcome-window__body {
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+/* Сайт за стартовым окном замирает (lib/welcome-freeze): все CSS-анимации
+   вне окна на паузе и продолжатся с того же кадра после закрытия. */
+html[data-welcome-open]:not([data-welcome-snoozed]) body *:not(.welcome-shell, .welcome-shell *) {
+  animation-play-state: paused !important;
+}
+/* Плавающая волна ассистента не лезет поверх стартового окна (в меню есть
+   своя, встроенная). Через :has — работает с первого кадра, до JS. */
+html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .voice-dock:not(.welcome-window .voice-dock),
+html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe-fan {
+  opacity: 0;
+  pointer-events: none;
+}
+/* Постоянный макет сцены в стартовом окне (FRAME_H в WelcomeWidget):
+   логотип в своей полосе — ровно посередине между верхом окна и вопросом;
+   волна и «Перейти на сайт» прижаты к низу. */
+.welcome-scene.welcome-scene--framed {
+  max-width: none;
+  margin: 0;
+  padding: 0 0 26px;
+  transition: none;
+}
+.welcome-logo-band { height: 104px; flex-shrink: 0; }
+@keyframes welcome-fade-in { from { opacity: 0; } }
+@keyframes welcome-window-in { from { opacity: 0; transform: scale(0.97); } }
+@media (prefers-reduced-motion: reduce) {
+  .welcome-shell::before, .welcome-window { animation: none; }
+}
+
 /* ---------- Вступительная сцена (WelcomeWidget) ---------- */
 /* Сцена стоит на прозрачном: рамки окна у неё нет, стекло несут карточки.
    Поэтому и логотип, и заголовок держат читаемость собственной тенью, а не
@@ -5672,6 +5786,30 @@ html:not([data-lite])[data-mid] .sp-pulse {
   min-height: 98px;
 }
 
+/* Свечение карточек стартового меню — еле заметное в покое; неон
+   загорается только при наведении (Егор, 2026-09-27). Правило только для
+   этого меню: общий .deck-neon-pulse на сайте не трогается. */
+.welcome-card.deck-neon-pulse {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 12px 0 rgba(var(--card-glow-rgb), 0.1),
+    0 28px 70px -34px rgba(0, 0, 0, 0.95);
+}
+.welcome-card-vibe.deck-neon-pulse {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 16px 0 rgba(var(--card-glow-rgb), 0.2),
+    0 28px 70px -34px rgba(0, 0, 0, 0.95);
+}
+.welcome-card.deck-neon-pulse:hover,
+.welcome-card.deck-neon-pulse:focus-visible {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 26px 0 rgba(var(--card-glow-rgb), 0.5),
+    0 0 64px -6px rgba(var(--card-glow-rgb), 0.32),
+    0 28px 70px -34px rgba(0, 0, 0, 0.95);
+}
+
 /* Пятое окошко — вход в Vibe-режим. Тот же размер и стекло, что у
    направлений; справа на месте схемы — живая сфера. */
 .welcome-vibe-wrap {
@@ -5681,13 +5819,6 @@ html:not([data-lite])[data-mid] .sp-pulse {
   background:
     radial-gradient(120% 160% at 0% 50%, rgba(111, 134, 255, 0.2), transparent 55%),
     radial-gradient(90% 140% at 100% 50%, rgba(255, 122, 156, 0.16), transparent 60%);
-}
-.welcome-card-vibe-dust {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
 }
 .welcome-card-vibe-orb {
   position: relative;
@@ -5707,9 +5838,9 @@ html:not([data-lite])[data-mid] .sp-pulse {
   pointer-events: none;
   opacity: 0;
   box-shadow:
-    -18px 0 40px -10px rgba(111, 134, 255, 0.6),
-    18px 0 40px -10px rgba(255, 122, 156, 0.5),
-    0 0 24px 0 rgba(169, 139, 255, 0.35);
+    -14px 0 32px -12px rgba(111, 134, 255, 0.5),
+    14px 0 32px -12px rgba(255, 122, 156, 0.42),
+    0 0 18px 0 rgba(169, 139, 255, 0.25);
 }
 .welcome-vibe-halo.is-on {
   animation:
@@ -5718,12 +5849,12 @@ html:not([data-lite])[data-mid] .sp-pulse {
 }
 @keyframes welcome-vibe-flare {
   0% { opacity: 0; }
-  35% { opacity: 1; }
-  100% { opacity: 0.55; }
+  35% { opacity: 0.8; }
+  100% { opacity: 0.4; }
 }
 @keyframes welcome-vibe-blink {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.6; }
 }
 @media (prefers-reduced-motion: reduce) {
   .welcome-vibe-halo.is-on { animation: none; opacity: 0.7; }
@@ -7572,7 +7703,9 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
 .voice-dock-corner {
   left: 50%;
   translate: -50% 0;
-  bottom: max(0.5rem, env(safe-area-inset-bottom));
+  /* Приподнята над тремя стрелками «листай дальше» (они у самого низа,
+     CinematicStage) — волна и стрелки больше не накладываются. */
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
 }
 .voice-sphere { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 /* В покое волна на 20% меньше; включил голос — она медленно и
@@ -7775,4 +7908,482 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
   background: rgba(14, 13, 20, 0.62);
   color: rgba(255, 255, 255, 0.85);
   font-size: 0.8rem;
+}
+
+/* ---------- Vibe-блок: окошко у вайб-бара (BlockVibe.tsx) ----------
+   Те же цвета, шрифт и кнопки, что у большого вайб-окна, только узкое
+   окошко рядом с баром: блок за ним остаётся виден (Егор, вариант A). */
+.block-vibe {
+  --vm-a: #6f86ff;
+  --vm-b: #b07cff;
+  --vm-c: #ff7a9c;
+  --vm-d: #ffb07a;
+  position: fixed;
+  z-index: 66;
+  right: 64px;
+  top: 50%;
+  translate: 0 -50%;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  height: min(640px, calc(100dvh - 90px));
+  padding: 18px 20px 18px;
+  border-radius: 26px;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #fff;
+  /* Матовое стекло шапки (.header-glass), а не прозрачное вайб-окно —
+     Егор: «матовыми, как верхние окошки». Чуть плотнее заливка: окошко
+     висит над видео, а не над тёмной полосой шапки. */
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
+    rgba(16, 16, 24, 0.8);
+  /* Сильный блюр и плотная заливка: элементы сайта за окошком не должны
+     читаться (Егор: «очень важно»). */
+  backdrop-filter: blur(40px) saturate(1.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
+    0 30px 90px -24px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+}
+/* То же зерно, что у шапки — оно и делает стекло матовым на вид. */
+.block-vibe::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* Пока окошко открыто, сайт за ним приглушён (Егор: «очень важно»). Клики
+   проходят сквозь — страницу можно листать, бар работает. */
+.block-vibe-dim {
+  position: fixed;
+  inset: 0;
+  z-index: 64;
+  pointer-events: none;
+  background: rgba(3, 3, 6, 0.42);
+}
+@media (max-width: 1023px) {
+  .block-vibe {
+    right: 12px;
+    left: 12px;
+    top: auto;
+    bottom: 12px;
+    translate: none;
+    width: auto;
+    height: min(520px, calc(100dvh - 90px));
+  }
+}
+html[data-lite] .block-vibe {
+  backdrop-filter: blur(40px) saturate(1.5) !important;
+}
+/* Мягкое сияние палитры сферы в верхнем углу — окошко «живое», как
+   большое вайб-окно, но под матовым стеклом. */
+.block-vibe__aurora {
+  position: absolute;
+  inset: -40% -30% auto auto;
+  width: 320px;
+  height: 320px;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(176, 124, 255, 0.28), rgba(255, 122, 156, 0.1) 45%, transparent 70%);
+  filter: blur(20px);
+}
+.block-vibe__title {
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.12;
+  text-transform: uppercase;
+}
+.block-vibe__hint {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #fff;
+}
+.block-vibe__option { min-height: 38px; padding: 6px 12px; font-size: 12px; border-radius: 13px; }
+.block-vibe__option .vibe-mode__key { width: 24px; height: 24px; font-size: 11px; }
+.block-vibe__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  transition: background 0.2s, box-shadow 0.25s;
+}
+.block-vibe__icon:hover { background: rgba(255, 255, 255, 0.12); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 18px -6px rgba(176, 124, 255, 0.8); }
+.block-vibe__next {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 44px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background:
+    linear-gradient(rgba(20, 18, 32, 0.9), rgba(20, 18, 32, 0.9)) padding-box,
+    linear-gradient(120deg, var(--vm-a), var(--vm-b), var(--vm-c), var(--vm-d)) border-box;
+  border: 1.5px solid transparent;
+  box-shadow: 0 0 24px -8px rgba(176, 124, 255, 0.8);
+  transition: box-shadow 0.25s, opacity 0.2s;
+}
+.block-vibe__next svg { color: #b07cff; transition: transform 0.3s; }
+.block-vibe__next:hover { box-shadow: 0 0 30px -4px rgba(176, 124, 255, 1); }
+.block-vibe__next:hover svg { transform: translateX(3px); }
+.block-vibe__next:disabled { opacity: 0.35; box-shadow: none; cursor: default; }
+.block-vibe__cta { flex: 1; justify-content: center; height: 44px !important; font-size: 12px !important; }
+.block-vibe__field { height: 46px !important; font-size: 14px !important; }
+.block-vibe__link {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.block-vibe__link:hover { opacity: 1; }
+.block-vibe__preview {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.block-vibe__preview .vibe-mode__iris { font-weight: 700; }
+.block-vibe__brief {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  line-height: 1.3;
+}
+.block-vibe__brief li { display: flex; gap: 8px; }
+.block-vibe__brief li > span:first-child { color: #b07cff; }
+.block-vibe__brief b { display: block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #c9b4ff; }
+.block-vibe__tick {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: linear-gradient(135deg, var(--vm-a), var(--vm-c));
+}
+.block-vibe__drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1.5px dashed rgba(255, 255, 255, 0.25);
+  transition: border-color 0.2s, background 0.2s;
+}
+.block-vibe__drop:hover { border-color: #b07cff; background: rgba(176, 124, 255, 0.08); }
+.block-vibe .vibe-mode__chip { padding: 8px 12px; font-size: 11px; }
+.block-vibe__seg {
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background 0.4s;
+}
+.block-vibe__seg.is-on {
+  background: linear-gradient(90deg, var(--vm-a), var(--vm-c));
+  box-shadow: 0 0 8px rgba(176, 124, 255, 0.6);
+}
+.block-vibe__work {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  transition: transform 0.2s, box-shadow 0.25s;
+}
+.block-vibe__work img { width: 100%; height: 100%; object-fit: cover; }
+.block-vibe__work:hover { transform: scale(1.03); }
+.block-vibe__work.is-on {
+  border-color: #b07cff;
+  box-shadow: 0 0 18px -4px rgba(176, 124, 255, 0.9);
+}
+.block-vibe__shot {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.block-vibe__shot img { width: 100%; height: 100%; object-fit: cover; }
+.block-vibe__shot button {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Собранный блок на странице (TunedBlock.tsx). */
+.tuned-block__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-family: var(--font-bebas), system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(90deg, rgba(111, 134, 255, 0.5), rgba(255, 122, 156, 0.45));
+  box-shadow: 0 0 20px -6px rgba(176, 124, 255, 0.8);
+}
+.tuned-block__card {
+  padding: 14px;
+  border-radius: 18px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--g-from, #6f86ff) 18%, transparent), rgba(255, 255, 255, 0.03)), rgba(12, 12, 20, 0.45);
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+.tuned-block__reset {
+  font-family: var(--font-bebas), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+.tuned-block__reset:hover { opacity: 1; }
+.vibe-tip__cta { color: #a98bff; }
+
+/* Наведение на Vibe-режим: окошко стоит на месте — не растёт и не
+   сдвигается, только разгорается свечение (Егор, 2026-09-27). */
+.welcome-card.welcome-card-vibe:hover,
+.welcome-card.welcome-card-vibe:focus-visible {
+  transform: none;
+  scale: 1;
+  translate: none;
+}
+.welcome-card.welcome-card-vibe:hover .welcome-card-go,
+.welcome-card.welcome-card-vibe:focus-visible .welcome-card-go {
+  transform: none;
+}
+.welcome-vibe-halo { transition: filter 0.45s ease; }
+.welcome-vibe-wrap:hover .welcome-vibe-halo,
+.welcome-vibe-wrap:focus-within .welcome-vibe-halo {
+  filter: brightness(1.8);
+}
+
+/* Vibe-блок: ориентир цены и срока, продюсер и прогресс страницы. */
+.block-vibe__est {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+.block-vibe__est span:first-child {
+  background: linear-gradient(100deg, var(--vm-a), var(--vm-b) 45%, var(--vm-c));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.block-vibe__est--big { font-size: 16px; text-transform: uppercase; }
+.block-vibe__producer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.block-vibe__producer img {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px rgba(16, 16, 24, 1), 0 0 0 3.5px #b07cff;
+}
+.block-vibe__online {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.block-vibe__online::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #3ddc84;
+  box-shadow: 0 0 8px #3ddc84;
+  animation: block-vibe-online 2s ease-in-out infinite;
+}
+@keyframes block-vibe-online { 50% { opacity: 0.45; } }
+html[data-lite] .block-vibe__online::before { animation: none; }
+.block-vibe__progress {
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+/* Переключатель «Было / Стало» на собранном блоке. */
+.before-after {
+  position: absolute;
+  z-index: 25;
+  left: 50%;
+  top: 4.4rem;
+  translate: -50% 0;
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)), rgba(14, 14, 20, 0.7);
+  backdrop-filter: blur(24px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 30px -12px rgba(0, 0, 0, 0.7);
+}
+.before-after button {
+  position: relative;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-family: var(--font-bebas), system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.before-after button.is-on {
+  background: linear-gradient(90deg, rgba(111, 134, 255, 0.55), rgba(255, 122, 156, 0.5));
+  box-shadow: 0 0 16px -4px rgba(176, 124, 255, 0.9);
+}
+
+/* ── Вайб-бар на телефоне (VibeRail): сфера в углу и вылетающие кнопки ──
+   Сфера справа внизу; по тапу над ней пружиной вылетают кружки разделов,
+   верхний — Vibe-режим. Кружки 24px (в полтора раза мельче десктопных
+   28–34px), но строка-кнопка 36px высотой и шире за счёт подписи — пальцем
+   попадать удобно. */
+.vibe-fan {
+  position: fixed;
+  right: 8px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 66;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+/* Пока кнопки открыты, волна голоса внизу уходит — она ложилась поверх
+   нижних кнопок. */
+body:has(.vibe-fan-dim) .voice-dock {
+  opacity: 0;
+  pointer-events: none;
+}
+.vibe-fan-dim {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  background: rgba(3, 3, 6, 0.5);
+}
+.vibe-fan__list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.vibe-fan__btn {
+  display: flex;
+  height: 36px;
+  align-items: center;
+  gap: 8px;
+  padding-left: 10px;
+  transform-origin: right center;
+}
+.vibe-fan__label {
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(14, 14, 20, 0.62);
+  backdrop-filter: blur(14px);
+}
+.vibe-fan__dot {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  margin: 0 12px;
+  place-items: center;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)), rgba(14, 14, 20, 0.45);
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 6px 16px -8px rgba(0, 0, 0, 0.8);
+}
+.vibe-fan__dot svg { width: 11px; height: 11px; }
+.vibe-fan__btn.is-active .vibe-fan__dot {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px color-mix(in srgb, var(--g-to) 60%, transparent),
+    0 0 12px -2px color-mix(in srgb, var(--g-from) 70%, transparent);
+}
+.vibe-fan__btn--vibe .vibe-fan__label {
+  background:
+    linear-gradient(rgba(14, 14, 20, 0.7), rgba(14, 14, 20, 0.7)) padding-box,
+    linear-gradient(90deg, #6f86ff, #b07cff, #ff7a9c) border-box;
+  border: 1px solid transparent;
+}
+.vibe-fan__btn--vibe .vibe-fan__dot {
+  background: linear-gradient(135deg, #6f86ff, #b07cff 50%, #ff7a9c);
+  box-shadow: 0 0 14px -2px rgba(169, 139, 255, 0.7);
+}
+.vibe-fan__spark { font-size: 11px; line-height: 1; }
+.vibe-fan__orb {
+  position: relative;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin-right: 0;
+  place-items: center;
 }

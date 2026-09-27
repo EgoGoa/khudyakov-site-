@@ -1,10 +1,13 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { useStageActive, useIsStaged, useHasSeenChapter, useChapterReady } from "@/components/ui/CinematicStage";
 import { ChapterActiveProvider } from "@/components/ui/Appear";
 import { BEAT, DUR, EASE as MOTION_EASE } from "@/lib/motion";
+import { useCleanPathname } from "@/lib/use-clean-pathname";
+import { blockIdAt, blockKind, serviceOf, tuneBlock, useTunedBlock } from "@/lib/block-vibe";
+import TunedBlock from "@/components/vibe/TunedBlock";
 
 // A chapter in the pinned deck (see CinematicStage). It is absolutely
 // positioned over the film and is either on stage or off it — it never scrolls
@@ -128,6 +131,42 @@ const DECOR = (instant: boolean): Variants => ({
     transition: { duration: instant ? 0 : DUR.item, delay: instant ? 0 : BEAT.content, ease: MOTION_EASE },
   },
 });
+
+/** Глава не влезла по высоте над волной ассистента (у низа экрана оставлена
+ *  полоса --voice-safe) — тело главы чуть ужимается через CSS zoom, но не
+ *  меньше 85%. Так на невысоких ноутбуках ничего не обрезается и глава не
+ *  начинает прокручиваться внутри себя (в колоде до такого низа не дойти).
+ *  На высоких экранах zoom так и остаётся 1. */
+function useFitBodyToPane(enabled: boolean) {
+  const paneRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const pane = paneRef.current;
+    const body = bodyRef.current;
+    if (!enabled || !pane || !body) return;
+    let raf = 0;
+    const fit = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        body.style.zoom = "";
+        const over = pane.scrollHeight - pane.clientHeight;
+        const h = body.offsetHeight;
+        const z = over > 0 && h > 0 ? Math.max(0.85, (h - over - 2) / h) : 1;
+        body.style.zoom = z < 1 ? z.toFixed(3) : "";
+      });
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(pane);
+    for (const el of Array.from(body.children)) ro.observe(el);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      body.style.zoom = "";
+    };
+  }, [enabled]);
+  return { paneRef, bodyRef };
+}
 
 export default function CinematicSection({
   index,
@@ -272,13 +311,25 @@ export default function CinematicSection({
   // `spacious` chapters (01, 03, 04, 06) are all fixed at once and the prop
   // keeps working unchanged on the plain-scroll pages that still pass it.
   const roomy = spacious && !staged;
+  const { paneRef, bodyRef } = useFitBodyToPane(staged && ready);
   const reduced = useReducedMotion();
   const alignRight = side === "right";
   const alignCenter = side === "center";
   const kind: EntranceKind = entrance ?? (alignRight ? "slide-right" : alignCenter ? "rise" : "slide-left");
+  // Vibe-блок: если посетитель собрал эту главу под себя через вайб-бар,
+  // вместо её шапки и тела встаёт собранная версия (см. lib/block-vibe).
+  const path = useCleanPathname();
+  const blockId = blockIdAt(path, index);
+  const tunedAnswers = useTunedBlock(path, blockId);
+  const tunedKind = blockId ? blockKind(path, blockId) : null;
+  const tunedCopy = tunedAnswers && tunedKind && blockId ? tuneBlock(tunedKind, serviceOf(path), tunedAnswers) : null;
+  // «Было / Стало» (Егор): собранный блок можно сравнить с исходным.
+  const [showOriginal, setShowOriginal] = useState(false);
+  const tuned = tunedCopy && !showOriginal ? tunedCopy : null;
 
   return (
     <motion.div
+      ref={paneRef}
       id={!staged ? id : undefined}
       initial={false}
       animate={!staged || reduced ? { opacity: active ? 1 : 0 } : entranceFor(kind, active)}
@@ -306,8 +357,8 @@ export default function CinematicSection({
           // при ней уже не нужно в прежнем размере — иначе плотные главы
           // (04, 05) начинают прокручиваться внутри себя.
           ? `absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 ${
-              footer ? "pb-3 pt-[4.5rem] lg:pb-3 lg:pt-[4.75rem]" : "pb-12 pt-[5.5rem] lg:pb-12 lg:pt-[5.5rem]"
-            } lg:px-10 land:pb-10 land:pt-8 land:pl-[max(2rem,calc(env(safe-area-inset-left)+1rem))] land:pr-[max(2rem,calc(env(safe-area-inset-right)+1rem))] ${
+              footer ? "pb-[var(--voice-safe)] pt-[4.5rem] lg:pt-[4.75rem]" : "pb-[var(--voice-safe)] pt-[5.5rem] lg:pt-[5.5rem]"
+            } lg:px-10 land:pb-[var(--voice-safe)] land:pt-8 land:pl-[max(2rem,calc(env(safe-area-inset-left)+1rem))] land:pr-[max(2rem,calc(env(safe-area-inset-right)+1rem))] ${
               active ? "" : "pointer-events-none"
             }`
           : roomy
@@ -344,7 +395,24 @@ export default function CinematicSection({
           light veil over the whole pane closes it. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-ink/40 lg:hidden" />
 
-      {!headless && (
+      {tunedCopy && ready && (
+        <div className="before-after" role="group" aria-label="Сравнить блок">
+          <button type="button" className={showOriginal ? "is-on" : ""} aria-pressed={showOriginal} onClick={() => setShowOriginal(true)}>
+            Было
+          </button>
+          <button type="button" className={!showOriginal ? "is-on" : ""} aria-pressed={!showOriginal} onClick={() => setShowOriginal(false)}>
+            Стало
+          </button>
+        </div>
+      )}
+
+      {tuned && blockId && (
+        <div className="relative mx-auto my-auto w-full max-w-7xl py-2">
+          {ready && <TunedBlock copy={tuned} path={path} id={blockId} active={active} side={side} />}
+        </div>
+      )}
+
+      {!tuned && !headless && (
       <header
         className={`relative mx-auto w-full max-w-7xl shrink-0 ${
           roomy ? "flex flex-col justify-center min-h-[20svh]" : ""
@@ -408,7 +476,7 @@ export default function CinematicSection({
       </header>
       )}
 
-      {children && (
+      {!tuned && children && (
         <div
           // `my-auto` also when headless: with the header gone this is the
           // section's only flex child, so auto margins are what centre the
@@ -417,6 +485,7 @@ export default function CinematicSection({
           className={`relative mx-auto w-full max-w-7xl py-2 ${roomy && !headless ? "" : "my-auto"} ${
             distribute && staged ? "max-lg:my-0 max-lg:flex max-lg:flex-1 max-lg:flex-col" : ""
           }`}
+          ref={bodyRef}
           style={footerGap ? { paddingBottom: footerGap } : undefined}
         >
           {ready && bodyDecor && (
@@ -430,7 +499,7 @@ export default function CinematicSection({
         </div>
       )}
 
-      {ready && footer && (
+      {!tuned && ready && footer && (
         // В ПОТОКЕ, а не поверх главы.
         //
         // Сначала окошко услуги было абсолютным слоем: так оно ничего не

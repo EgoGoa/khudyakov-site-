@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import NanoSphere, { type SphereIntro } from "@/components/ui/NanoSphere";
+import SphereDust from "@/components/ui/SphereDust";
 import { InfoHow, InfoInside, InfoWhat } from "@/components/vibe/VibeInfographics";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
@@ -195,7 +196,9 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
         className="vibe-mode__window vibe-mode__window--fixed"
       >
       <div aria-hidden="true" className="vibe-mode__aurora" />
-      <VibeDust originRef={orbRef} />
+      {/* Частицы от сферы — та же механика и интенсивность, что в стартовом
+          окошке (ui/SphereDust, Егор 2026-09-27). */}
+      <SphereDust orbRef={orbRef} />
 
       {/* Тонкая полоса прогресса по верхнему краю окна — в анкете. */}
       <div aria-hidden="true" className="absolute inset-x-0 top-0 z-[2] h-[2px]">
@@ -317,172 +320,6 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
   );
 }
 
-// Фон окна (Егор, 2026-09-26): внутри сферы частиц нет. Когда окно
-// открывается, пыль начинает выходить с внешней стороны кольца — сначала
-// единицы, потом больше; каждая пылинка плавно отходит от сферы, тормозит
-// и дальше спокойно дрейфует по всему окну, мягко отскакивая от стенок.
-// Пылинки не исчезают — окно постепенно наполняется. На слабых устройствах
-// пыли нет, на средних — меньше частиц и 30 кадров/с.
-function VibeDust({ originRef }: { originRef: React.RefObject<HTMLDivElement | null> }) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-    const html = document.documentElement;
-    if (html.hasAttribute("data-lite") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const mid = html.hasAttribute("data-mid");
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let w = 0;
-    let h = 0;
-    const resize = () => {
-      w = canvas.clientWidth;
-      h = canvas.clientHeight;
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
-
-    // Центр и радиус сферы в координатах окна — берём с её обёртки.
-    let ox = w / 2;
-    let oy = h * 0.35;
-    let or = 60;
-    const locate = () => {
-      // Корень NanoSphere — первый span внутри обёртки сферы.
-      const el = originRef.current?.querySelector("span") as HTMLElement | null;
-      if (!el) return;
-      const a = el.getBoundingClientRect();
-      const b = canvas.getBoundingClientRect();
-      ox = a.left + a.width / 2 - b.left;
-      oy = a.top + a.height / 2 - b.top;
-      or = a.width * 0.4;
-    };
-
-    // Космическая пыль (Егор: «естественно, без обводок, мелко, аккуратно»):
-    // в основном почти белые звёздочки с лёгким оттенком палитры. Каждая —
-    // заранее нарисованный мягкий спрайт с плавным затуханием краёв, без
-    // видимого кружка вокруг.
-    const tints = ["235,238,255", "245,240,255", "255,255,255", "255,255,255", "200,205,255", "225,200,255", "255,215,225"];
-    const sprites = new Map<string, HTMLCanvasElement>();
-    const sprite = (c: string) => {
-      let sp = sprites.get(c);
-      if (!sp) {
-        sp = document.createElement("canvas");
-        sp.width = sp.height = 32;
-        const g = sp.getContext("2d")!;
-        const gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
-        gr.addColorStop(0, `rgba(${c},1)`);
-        gr.addColorStop(0.18, `rgba(${c},0.85)`);
-        gr.addColorStop(0.45, `rgba(${c},0.18)`);
-        gr.addColorStop(1, `rgba(${c},0)`);
-        g.fillStyle = gr;
-        g.fillRect(0, 0, 32, 32);
-        sprites.set(c, sp);
-      }
-      return sp;
-    };
-    const star = (x: number, y: number, r: number, al: number, c: string) => {
-      const d = r * 5;
-      ctx.globalAlpha = al;
-      ctx.drawImage(sprite(c), x - d / 2, y - d / 2, d, d);
-    };
-    type P = { x: number; y: number; vx: number; vy: number; drift: number; born: number; r: number; b: number; c: string; ph: number };
-    const MAX = mid ? 60 : 160;
-    const emit = (t: number): P => {
-      const a = Math.random() * Math.PI * 2;
-      // Размеры разные: в основном мелкая пыль, реже средние и крупные
-      // светящиеся точки.
-      const roll = Math.random();
-      const size = roll < 0.7 ? 0.2 + Math.random() * 0.3 : roll < 0.93 ? 0.5 + Math.random() * 0.35 : 0.85 + Math.random() * 0.5;
-      const sp = 22 + 60 * Math.random() ** 1.6;
-      return {
-        x: ox + Math.cos(a) * or * 1.08,
-        y: oy + Math.sin(a) * or * 1.08,
-        vx: Math.cos(a) * sp,
-        vy: Math.sin(a) * sp,
-        drift: 3 + Math.random() * 7,
-        born: t,
-        r: size,
-        b: 0.35 + Math.random() * 0.55,
-        c: tints[Math.floor(Math.random() * tints.length)],
-        ph: Math.random() * Math.PI * 2,
-      };
-    };
-    const start = performance.now() / 1000;
-    const ps: P[] = [];
-    let acc = 0;
-    let prevT = start;
-
-    let raf = 0;
-    let last = 0;
-    let frame = 0;
-    const loop = (now: number) => {
-      raf = requestAnimationFrame(loop);
-      if (mid && now - last < 33) return;
-      last = now;
-      if (frame++ % 6 === 0) locate();
-      const t = now / 1000;
-      const dt = Math.min(0.05, t - prevT);
-      prevT = t;
-      ctx.globalAlpha = 1;
-      ctx.clearRect(0, 0, w, h);
-      ctx.globalCompositeOperation = "lighter";
-
-      // Выпуск: с нуля плавно разгоняется до ровного потока, пока окно не
-      // наполнится.
-      if (ps.length < MAX) {
-        const rate = (mid ? 9 : 18) * Math.min(1, (t - start) / 3);
-        acc += rate * dt;
-        while (acc >= 1 && ps.length < MAX) {
-          acc -= 1;
-          ps.push(emit(t));
-        }
-      }
-      const m = 6;
-      for (let i = 0; i < ps.length; i++) {
-        const p = ps[i];
-        // Скорость плавно гаснет до своего дрейфа, направление чуть гуляет.
-        const sp = Math.hypot(p.vx, p.vy);
-        const k = sp > p.drift ? 1 - 0.55 * dt : 1;
-        const turn = Math.sin(t * 0.35 + p.ph) * 0.4 * dt;
-        const vx = (p.vx * Math.cos(turn) - p.vy * Math.sin(turn)) * k;
-        const vy = (p.vx * Math.sin(turn) + p.vy * Math.cos(turn)) * k;
-        p.vx = vx;
-        p.vy = vy;
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        // Внутрь сферы пыль не возвращается — мягко отталкивается от кольца.
-        const dx = p.x - ox;
-        const dy = p.y - oy;
-        const dd = Math.hypot(dx, dy) || 1;
-        if (dd < or * 1.08) {
-          p.vx += (dx / dd) * 30 * dt;
-          p.vy += (dy / dd) * 30 * dt;
-        }
-        // Мягкий отскок от стенок окна.
-        if (p.x < m || p.x > w - m) {
-          p.x = Math.min(w - m, Math.max(m, p.x));
-          p.vx = -p.vx * 0.85;
-        }
-        if (p.y < m || p.y > h - m) {
-          p.y = Math.min(h - m, Math.max(m, p.y));
-          p.vy = -p.vy * 0.85;
-        }
-        const al = p.b * Math.min(1, (t - p.born) * 1.5) * (0.7 + 0.3 * Math.sin(t * 1.6 + p.ph));
-        star(p.x, p.y, p.r, al, p.c);
-      }
-    };
-    raf = requestAnimationFrame(loop);
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-    };
-  }, [originRef]);
-  return <canvas ref={ref} aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full" />;
-}
 
 // «Vibe-режим» — словесный знак режима: «Vibe» фиолетовым, «режим» белым,
 // без частиц — только мягкая неспешная пульсация свечения (Егор).

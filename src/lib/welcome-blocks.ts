@@ -20,9 +20,10 @@ export type DirectionCard = {
   key: ServiceKey;
   label: string;
   tagline: string;
-  /** Десктопный файл. Лёгкий «-mobile» вариант подставляет общесайтовый
-   *  MediaGovernor на узких экранах — здесь он не перечисляется, чтобы
-   *  порог «что считать телефоном» жил в одном месте на весь сайт. */
+  /** Лёгкая «-card» версия ролика страницы (Егор, 2026-09-27): в карточке
+   *  видна только полоса по центру кадра под затемнением, поэтому файл —
+   *  ровно эта полоса, 640×188, 20 кадров/с, без звука, ~0.8 МБ вместо
+   *  5–8 МБ у полного ролика. Одна версия на все экраны. */
   video: string;
   poster: string;
 };
@@ -32,29 +33,29 @@ export const directionCards: DirectionCard[] = [
     key: "content",
     label: serviceMeta.content.label,
     tagline: "Съёмка, монтаж и графика под площадку",
-    video: "/video/content-reel.mp4",
-    poster: "/images/content-reel-poster.jpg",
+    video: "/video/content-reel-card.mp4",
+    poster: "/images/content-reel-card-poster.jpg",
   },
   {
     key: "ai",
     label: serviceMeta.ai.label,
     tagline: "Внедряем ИИ туда, где он ускоряет результат",
-    video: "/video/ai-reel.mp4",
-    poster: "/images/ai-reel-poster.jpg",
+    video: "/video/ai-reel-card.mp4",
+    poster: "/images/ai-reel-card-poster.jpg",
   },
   {
     key: "sites",
     label: serviceMeta.sites.label,
     tagline: "Сайты на AI — дни, а не месяцы",
-    video: "/video/sites-reel.mp4",
-    poster: "/images/sites-reel-poster.jpg",
+    video: "/video/sites-reel-card.mp4",
+    poster: "/images/sites-reel-card-poster.jpg",
   },
   {
     key: "smm",
     label: serviceMeta.smm.label,
     tagline: "Ведение и продвижение силами продакшена",
-    video: "/video/smm-reel.mp4",
-    poster: "/images/smm-reel-poster.jpg",
+    video: "/video/smm-reel-card.mp4",
+    poster: "/images/smm-reel-card-poster.jpg",
   },
 ];
 

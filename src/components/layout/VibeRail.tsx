@@ -1,7 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import Link from "next/link";
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
@@ -10,8 +9,12 @@ import { useCinematicGoTo } from "@/lib/cinematic-nav";
 import WelcomeWidget from "@/components/home/WelcomeWidget";
 import CenterModal from "@/components/ui/CenterModal";
 import NanoSphere from "@/components/ui/NanoSphere";
+import SphereDust from "@/components/ui/SphereDust";
 import { OPEN_VIBE_EVENT } from "@/lib/voice/store";
 import VibeMode from "@/components/vibe/VibeMode";
+import BlockVibe from "@/components/vibe/BlockVibe";
+import { OPEN_BLOCK_VIBE_EVENT } from "@/lib/block-vibe";
+import { useRouter } from "next/navigation";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { homeOf } from "@/components/layout/PageBar";
 import { serviceOrder } from "@/lib/service-content";
@@ -72,14 +75,11 @@ function useActiveRailId(anchorIds: string[]): string {
 // this rail instead of floating alone.
 //
 // Below it, one row per top-level section of the site (the same set Header's
-// desktop nav and burger menu already link to). Clicking a row does not
-// navigate directly — it opens a small "Vibe режим" window offering four ways
-// to engage with that block: an AI agent, a live creative session, personal
-// tailoring, or just the section as it exists today ("Обычная страница",
-// the only one of the four that's wired to a real destination right now).
-// The other three are an honest, clearly-labelled preview of where this is
-// headed, not a dead button — each names itself "скоро" and explains the
-// idea in a line instead of pretending to work.
+// desktop nav and burger menu already link to). Clicking a row of this
+// page's own blocks glides to that block and opens BlockVibe next to the
+// rail — five quick steps that rebuild that one block for the visitor's task
+// (see lib/block-vibe). The shared rows (works, calculator, brief) just
+// navigate.
 //
 // Desktop (>=1024px, matching every other lg: breakpoint in the codebase):
 // a slim icon-only rail sits on screen at all times; hovering it (or
@@ -144,7 +144,6 @@ const RAIL_LABEL_CLASS =
 const RAIL_LABEL_HOVER =
   "group-hover:[text-shadow:0_0_1px_rgba(255,255,255,1),0_0_3px_rgba(255,255,255,0.95),0_0_7px_rgba(255,255,255,0.7)]";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
 type RailItem = {
   id: string;
   label: string;
@@ -609,185 +608,6 @@ function useRailItems(): { pageItems: RailItem[]; crossPageItems: RailItem[]; an
   return { pageItems, crossPageItems: CROSS_PAGE_ITEMS, anchorIds: blocks.map((b) => b.id) };
 }
 
-type ModeKey = "agent" | "session" | "personalize";
-
-const MODES: { key: ModeKey; label: string; pitch: string; glyph: ReactNode }[] = [
-  {
-    key: "agent",
-    label: "AI-агент",
-    pitch: "Агент разбирает задачу и сам собирает КП по этому блоку — без брифа и созвона.",
-    glyph: (
-      <Glyph>
-        <rect x="5" y="7" width="14" height="12" rx="3" />
-        <path d="M9 7V4.5h6V7M9 13h.01M15 13h.01" />
-        <path d="M3.5 12h1.5M19 12h1.5" />
-      </Glyph>
-    ),
-  },
-  {
-    key: "session",
-    label: "Креатив-сессия",
-    pitch: "Живой разбор идеи с командой в реальном времени, по этому конкретному блоку.",
-    glyph: (
-      <Glyph>
-        <path d="M4 6.5h13a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2H10l-4 3.5V16H6a2 2 0 0 1-2-2V8.5a2 2 0 0 1 2-2z" />
-      </Glyph>
-    ),
-  },
-  {
-    key: "personalize",
-    label: "Персонализировать",
-    pitch: "Настраиваете вид и содержание блока под свой бренд — сами, без правок сервиса.",
-    glyph: (
-      <Glyph>
-        <path d="M4 7h9M4 12h5M4 17h9" />
-        <circle cx="17" cy="7" r="2.2" />
-        <circle cx="12" cy="17" r="2.2" />
-      </Glyph>
-    ),
-  },
-];
-
-function VibeModeWindow({ item, onClose }: { item: RailItem; onClose: () => void }) {
-  const [revealed, setRevealed] = useState<ModeKey | null>(null);
-  const cinematicGoTo = useCinematicGoTo();
-
-  // Same bridge Header's own nav uses (see cinematic-nav.tsx): on a
-  // CinematicStage page a plain `#id` anchor's native scroll-jump gets
-  // misread by the deck's own scroll listener as trackpad-momentum overshoot
-  // and clamped to one chapter away from the click. Stepping through the
-  // registered deck directly lands exactly on the chapter clicked, with the
-  // same eased glide (and blur hold) the deck's own gestures use — which is
-  // the "switches together with the blocks" behaviour asked for. Falls
-  // through to the plain anchor href on a page with no deck registered
-  // (nothing to intercept there).
-  const goToItem = (e: React.MouseEvent) => {
-    onClose();
-    if (cinematicGoTo(item.id)) e.preventDefault();
-  };
-
-  return (
-    <div>
-      <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
-        Vibe режим
-      </span>
-
-      <h2 className="mt-4 font-display text-[1.35rem] uppercase leading-[1.21] tracking-tight text-paper sm:text-[1.688rem]">
-        {item.label}
-      </h2>
-      <p className="mt-2 max-w-md text-sm leading-relaxed text-paper/60 sm:text-base">
-        {item.description}
-      </p>
-
-      <div className="mt-8 grid gap-3 sm:grid-cols-2">
-        {MODES.map((mode) => (
-          <div
-            key={mode.key}
-            className="relative overflow-hidden rounded-2xl bg-paper/[0.05] p-4"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-paper/10 text-paper/80">
-                {mode.glyph}
-              </span>
-              <span className="rounded-full bg-paper/10 px-2 py-0.5 font-display text-[9px] uppercase tracking-[0.14em] text-paper/45">
-                Скоро
-              </span>
-            </div>
-            <div className="mt-3 font-sans text-sm font-semibold text-paper">{mode.label}</div>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.p
-                key={revealed === mode.key ? "note" : "teaser"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.2 }}
-                className="mt-1.5 text-xs leading-relaxed text-paper/50"
-              >
-                {revealed === mode.key
-                  ? "Записали интерес — эта функция в разработке, включим одной из первых."
-                  : mode.pitch}
-              </motion.p>
-            </AnimatePresence>
-            <button
-              type="button"
-              onClick={() => setRevealed(mode.key)}
-              className="btn-neon mt-3 w-full justify-center !py-2 !text-[10px]"
-            >
-              Хочу так
-            </button>
-          </div>
-        ))}
-
-        <Link
-          href={item.href}
-          onClick={goToItem}
-          className="group relative overflow-hidden rounded-2xl p-4"
-          style={{ background: "linear-gradient(155deg, rgba(255,106,61,0.32), rgba(245,49,11,0.18))" }}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange/20 text-orange">
-              <Glyph>
-                <path d="M7 17 17 7M9 7h8v8" />
-              </Glyph>
-            </span>
-            <span className="rounded-full bg-orange/25 px-2 py-0.5 font-display text-[9px] uppercase tracking-[0.14em] text-orange">
-              Готово сейчас
-            </span>
-          </div>
-          <div className="mt-3 font-sans text-sm font-semibold text-white">Обычная страница</div>
-          <p className="mt-1.5 text-xs leading-relaxed text-paper/70">
-            Смотреть блок как он есть на сайте — без персонализации.
-          </p>
-          <span className="btn-neon btn-warm mt-3 flex w-full justify-center !py-2 !text-[10px]">
-            Перейти
-          </span>
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-/** One row of the mobile sheet. Labels always show there (no hover state to
- *  reveal them), so it carries the same white/thin treatment plus the active
- *  glow rather than the desktop row's expand logic. */
-function SheetRow({
-  item,
-  active,
-  onClick,
-}: {
-  item: RailItem;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-current={active ? "true" : undefined}
-      className={`group flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left transition-opacity ${
-        active ? "opacity-100" : "opacity-70"
-      }`}
-    >
-      <span
-        className={`flex h-6 w-6 shrink-0 items-center justify-center text-white transition-transform duration-300 ${
-          active ? "scale-[1.2] [&_svg]:stroke-[2.35]" : ""
-        }`}
-        style={
-          active
-            ? {
-                filter:
-                  "drop-shadow(0 0 3px rgba(255,255,255,1)) drop-shadow(0 0 9px rgba(255,255,255,0.9)) drop-shadow(0 0 22px rgba(255,255,255,0.6))",
-              }
-            : undefined
-        }
-      >
-        {item.glyph}
-      </span>
-      <span className={`${RAIL_LABEL_CLASS} ${RAIL_LABEL_HOVER} text-[13px]`}>{item.label}</span>
-    </button>
-  );
-}
 
 export default function VibeRail() {
   const { pageItems, crossPageItems, anchorIds } = useRailItems();
@@ -807,7 +627,13 @@ export default function VibeRail() {
     return () => window.removeEventListener(OPEN_VIBE_EVENT, open);
   }, []);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState<RailItem | null>(null);
+  const crownRef = useRef<HTMLButtonElement>(null);
+  const fanOrbRef = useRef<HTMLButtonElement>(null);
+  // Vibe-блок (Егор, 2026-09-27): клик по разделу страницы едет к блоку и
+  // открывает рядом с баром окошко «персонализировать этот блок».
+  const [blockItem, setBlockItem] = useState<RailItem | null>(null);
+  const cinematicGoTo = useCinematicGoTo();
+  const router = useRouter();
   // Header's desktop burger dropdown lives in roughly the same top-right
   // corner of the screen — stepping the rail out of the way while it's open
   // is simpler and more robust than trying to keep two floating panels from
@@ -817,12 +643,39 @@ export default function VibeRail() {
   const railPath = useCleanPathname();
   const accent = PAGE_GRADIENT[serviceOrder[Math.max(homeOf(railPath), 0)]];
 
-  useBodyScrollLock(pickerOpen || sheetOpen || !!activeItem);
+  useBodyScrollLock(pickerOpen || sheetOpen);
 
+  // Общие страницы (работы, калькулятор, бриф) — просто переход. Блок
+  // страницы — переезд к нему тем же мостом, что у навигации шапки (иначе
+  // колода глав читает прыжок якоря как инерцию и промахивается на главу),
+  // и окошко персонализации рядом с баром.
   const openItem = (item: RailItem) => {
     setSheetOpen(false);
-    setActiveItem(item);
+    if (!pageItems.some((p) => p.id === item.id)) {
+      setBlockItem(null);
+      router.push(item.href);
+      return;
+    }
+    if (!cinematicGoTo(item.id)) document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
+    setBlockItem(item);
   };
+
+  // «Обсудить этот блок» в собранном блоке.
+  useEffect(() => {
+    const open = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      const item = pageItems.find((p) => p.id === id);
+      if (item) setBlockItem(item);
+    };
+    window.addEventListener(OPEN_BLOCK_VIBE_EVENT, open);
+    return () => window.removeEventListener(OPEN_BLOCK_VIBE_EVENT, open);
+  }, [pageItems]);
+
+  // Окошко принадлежит странице: при переходе на другую оно закрывается.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- сброс при смене страницы
+    setBlockItem(null);
+  }, [railPath]);
 
   return (
     <>
@@ -867,8 +720,12 @@ export default function VibeRail() {
           aria-label="Vibe-режим"
           aria-haspopup="dialog"
           className="vibe-bubble vibe-bubble--crown mb-1"
+          ref={crownRef}
         >
           <NanoSphere size={36} from={accent.from} to={accent.to} />
+          {/* Частицы от сферы — та же механика, что в стартовом окошке и
+              вайб-окне, но реже и медленнее: сфера маленькая. */}
+          <SphereDust orbRef={crownRef} bleed={70} density={0.3} speed={0.5} />
           <span className="vibe-tip font-display">Vibe</span>
         </button>
         {[...pageItems, ...crossPageItems].map((item, i) => (
@@ -882,111 +739,120 @@ export default function VibeRail() {
               className={`vibe-bubble ${item.id === activeRailId ? "is-active" : ""}`}
             >
               {item.glyph}
-              <span className="vibe-tip font-display">{item.label}</span>
+              <span className="vibe-tip font-display">
+                {item.label}
+                {i < pageItems.length && <span className="vibe-tip__cta"> · ✦ Персонализировать</span>}
+              </span>
             </button>
           </Fragment>
         ))}
       </nav>
 
-      {/* Mobile entry point — the old floating "VIBE САЙТ" button's slot and
-          role, same static round style as the desktop rail's trigger rather
-          than the old button's constant animated glow. */}
-      <div className="fixed bottom-6 right-6 z-[65] hidden">
-        <button
-          type="button"
-          onClick={() => setSheetOpen(true)}
-          aria-haspopup="dialog"
-          aria-expanded={sheetOpen}
-          aria-label="Vibe меню"
-          // No disc behind it: the orb *is* the button here, so the mark keeps
-          // the transparent background it's drawn for instead of sitting on a
-          // gradient pill that would mute its own glow.
-          className="vibe-orb-trigger flex h-12 w-12 items-center justify-center rounded-full"
-        >
-          <NanoSphere size={40} from={accent.from} to={accent.to} />
-        </button>
-      </div>
-
-      {/* Mobile sheet — same rows, full-screen matte list instead of a hover-expanding rail */}
+      {/* Телефон (Егор, 2026-09-27): сфера в правом нижнем углу. Тап — над
+          ней одна за другой вылетают круглые кнопки разделов, самая верхняя —
+          Vibe-режим (открывает вайб-окно по центру). Повторный тап по сфере
+          или тап мимо — кнопки складываются обратно в сферу. Кружки в
+          полтора раза мельче десктопных, но зона нажатия у каждого 40px. */}
       <AnimatePresence>
         {sheetOpen && (
           <motion.div
-            key="vibe-sheet"
+            key="vibe-fan-dim"
+            aria-hidden="true"
+            className="vibe-fan-dim lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Vibe меню"
-            className="fixed inset-0 z-[65] bg-ink/60 lg:hidden"
+            transition={{ duration: 0.3 }}
             onClick={() => setSheetOpen(false)}
-          >
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.45, ease: EASE }}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: "rgba(11,11,16,0.55)",
-                backdropFilter: "blur(28px)",
-                WebkitBackdropFilter: "blur(28px)",
-              }}
-              className="absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-[1.75rem] px-5 pb-8 pt-5"
-            >
-              <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-paper/20" />
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSheetOpen(false);
-                  setVibeOpen(true);
-                }}
-                className="vibe-orb-trigger flex w-full items-center gap-3 rounded-xl px-2 py-3"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center">
-                  <NanoSphere size={28} from={accent.from} to={accent.to} />
-                </span>
-                <span className="font-display text-xs uppercase tracking-[0.16em] text-paper">
-                  Vibe-режим — сайт под тебя
-                </span>
-              </button>
-
-              <div className="my-2 h-px bg-paper/10" />
-
-              <div className="px-2 pb-1 font-display text-[9px] uppercase tracking-[0.16em] text-paper/35">
-                Vibe-режим
-              </div>
-              {/* Same white/thin label treatment as the desktop rail, and
-                  the same active-section cue — the sheet used to render every
-                  row identically, so on a phone there was no way to tell
-                  which section you were actually standing on. */}
-              <nav className="flex flex-col gap-0.5">
-                {[...pageItems, null, ...crossPageItems].map((item, i) =>
-                  item === null ? (
-                    pageItems.length > 0 ? (
-                      <div key="sep" className="mx-2 my-1.5 h-px bg-paper/10" />
-                    ) : null
-                  ) : (
-                    <SheetRow
-                      key={`${item.id}-${i}`}
-                      item={item}
-                      active={item.id === activeRailId}
-                      onClick={() => openItem(item)}
-                    />
-                  )
-                )}
-              </nav>
-            </motion.div>
-          </motion.div>
+          />
         )}
       </AnimatePresence>
+      <div
+        className="vibe-fan lg:hidden"
+        style={{ "--g-from": accent.from, "--g-to": accent.to } as CSSProperties}
+      >
+        <AnimatePresence>
+          {sheetOpen && (
+            <motion.nav
+              key="vibe-fan-list"
+              aria-label="Vibe меню"
+              className="vibe-fan__list"
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={{
+                open: { transition: { staggerChildren: 0.035, staggerDirection: -1 } },
+                closed: { transition: { staggerChildren: 0.02 } },
+              }}
+            >
+              {[
+                { id: "__vibe", label: "Vibe-режим", glyph: null, vibe: true } as const,
+                ...[...crossPageItems].reverse().map((item) => ({ ...item, vibe: false as const })),
+                ...[...pageItems].reverse().map((item) => ({ ...item, vibe: false as const })),
+              ].map((item, i, all) => (
+                <motion.button
+                  key={item.id}
+                  type="button"
+                  variants={{
+                    closed: { opacity: 0, y: 26 + (all.length - i) * 4, scale: 0.4 },
+                    open: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 520, damping: 30 } },
+                  }}
+                  onClick={() => {
+                    setSheetOpen(false);
+                    if (item.vibe) setVibeOpen(true);
+                    else openItem(item as RailItem);
+                  }}
+                  aria-label={item.label}
+                  aria-current={!item.vibe && item.id === activeRailId ? "true" : undefined}
+                  className={`vibe-fan__btn${item.vibe ? " vibe-fan__btn--vibe" : ""}${
+                    !item.vibe && item.id === activeRailId ? " is-active" : ""
+                  }`}
+                >
+                  <span className="vibe-fan__label font-display">{item.label}</span>
+                  <span className="vibe-fan__dot">{item.vibe ? <span className="vibe-fan__spark">✦</span> : item.glyph}</span>
+                </motion.button>
+              ))}
+            </motion.nav>
+          )}
+        </AnimatePresence>
+        <button
+          type="button"
+          onClick={() => setSheetOpen((o) => !o)}
+          aria-haspopup="true"
+          aria-expanded={sheetOpen}
+          aria-label={sheetOpen ? "Свернуть меню" : "Vibe меню"}
+          className="vibe-fan__orb"
+          ref={fanOrbRef}
+        >
+          <NanoSphere size={34} from={accent.from} to={accent.to} hot={sheetOpen} />
+          <SphereDust orbRef={fanOrbRef} bleed={60} density={0.3} speed={0.5} />
+        </button>
+      </div>
 
-      {/* Vibe-mode window for one block */}
-      <CenterModal open={!!activeItem} onClose={() => setActiveItem(null)} ariaLabel="Vibe режим">
-        {activeItem && <VibeModeWindow item={activeItem} onClose={() => setActiveItem(null)} />}
-      </CenterModal>
+      {/* Окошко «персонализировать этот блок» рядом с баром */}
+      <AnimatePresence>
+        {blockItem && (
+          <motion.div
+            key="block-vibe-dim"
+            aria-hidden="true"
+            className="block-vibe-dim"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          />
+        )}
+        {blockItem && (
+          <BlockVibe
+            key={blockItem.id}
+            path={railPath}
+            blockId={blockItem.id}
+            label={blockItem.label}
+            onClose={() => setBlockItem(null)}
+            onShowBlock={() => cinematicGoTo(blockItem.id)}
+          />
+        )}
+      </AnimatePresence>
 
       <VibeMode open={vibeOpen} onClose={() => setVibeOpen(false)} onPickDirection={() => setPickerOpen(true)} />
 

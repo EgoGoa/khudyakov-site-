@@ -124,7 +124,7 @@ export default function Offer({
           /smm, which was sized for the old `items-start` baseline. */}
       <div
         className={`relative z-10 lg:flex lg:gap-16 ${
-          interactive ? `${footer && active === "content" ? "lg:min-h-[58svh]" : "lg:min-h-[68svh]"} lg:items-stretch` : "lg:items-start"
+          interactive ? `${footer && active === "content" ? "lg:min-h-[58svh]" : footer ? "lg:min-h-[68svh] lg:[@media(max-height:940px)]:min-h-[58svh]" : "lg:min-h-[68svh]"} lg:items-stretch` : "lg:items-start"
         }`}
       >
         {services.length === 0 ? (
@@ -172,8 +172,9 @@ export default function Offer({
                       interactive
                         ? // /content: 10 строк + окошко внизу не влезали в 900px
                           // по высоте — строки чуть плотнее (только там, /ai
-                          // остаётся как было).
-                          `cursor-pointer ${footer && active === "content" ? "py-2" : "py-3"}`
+                          // остаётся как было). На невысоких экранах /ai
+                          // тоже плотнее: низ экрана занят волной ассистента.
+                          `cursor-pointer ${footer && active === "content" ? "py-2" : footer ? "py-3 [@media(max-height:940px)]:py-2" : "py-3"}`
                         : "cursor-default py-4 [@media(max-height:860px)]:py-2.5"
                     }`}
                   >

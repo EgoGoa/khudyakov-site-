@@ -1245,7 +1245,7 @@ export default function CinematicStage({
               page below, which scrolls normally anyway. */}
           {activeIndex < chapters.length - 1 && (
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-6 flex items-center justify-center gap-2 text-paper/60 sm:bottom-9"
+            className="pointer-events-none absolute inset-x-0 bottom-[max(0.375rem,env(safe-area-inset-bottom))] flex items-center justify-center gap-2 text-paper/60"
             aria-hidden="true"
           >
             {/* The "Листайте дальше" caption is gone — three chevrons in a

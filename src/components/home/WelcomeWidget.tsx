@@ -9,6 +9,9 @@ import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import WelcomeBlockGraphic, { WelcomeDirectionGraphic } from "@/components/home/WelcomeBlockGraphic";
 import { blockHref, blocksFor, directionCards, type BlockCard } from "@/lib/welcome-blocks";
 import { InlineVoiceSphere } from "@/components/layout/VoiceAssistant";
+import NanoSphere from "@/components/ui/NanoSphere";
+import SphereDust from "@/components/ui/SphereDust";
+import { ORB_FROM, ORB_TO } from "@/components/vibe/VibeMode";
 
 // Вступительная сцена: логотип → «Привет, с чего начнём?» → четыре карточки
 // направлений → карточки блоков выбранного направления.
@@ -147,6 +150,39 @@ function useFitToHeight(deps: unknown[]) {
   return [ref, fit.scale, fit.height] as const;
 }
 
+/** Стартовое окно (WelcomeOverlay): сцена свёрстана в постоянном макете
+ *  FRAME_W × FRAME_H и ужимается одним масштабом, который зависит ТОЛЬКО от
+ *  размера окна — не от содержимого. Прежняя подгонка по высоте содержимого
+ *  пересчитывалась, когда появлялась карточка или подсказка над волной, и
+ *  меню то увеличивалось, то уменьшалось (Егор: «всё в окошке статично»). */
+const FRAME_W = 640;
+const FRAME_H = 1040;
+
+function useFrameFit(enabled: boolean) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState({ scale: 0, width: FRAME_W, left: 0 });
+  useEffect(() => {
+    const scene = ref.current;
+    const box = scene?.closest(".welcome-window__body") as HTMLElement | null;
+    if (!enabled || !box) return;
+    const measure = () => {
+      const bw = box.clientWidth;
+      const bh = box.clientHeight;
+      const wide = window.innerWidth >= 768;
+      // На компьютере — постоянный макет по ширине; на телефоне сцена
+      // занимает всю ширину окна, масштаб задаёт только высота.
+      const scale = wide ? Math.min(1, bh / FRAME_H, bw / FRAME_W) : Math.min(1, bh / FRAME_H);
+      const width = wide ? FRAME_W : bw / scale;
+      setFit({ scale, width, left: (bw - width * scale) / 2 });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, [enabled]);
+  return [ref, fit] as const;
+}
+
 function hexToRgb(hex: string) {
   const v = hex.replace("#", "");
   const n = parseInt(v.length === 3 ? v.split("").map((c) => c + c).join("") : v, 16);
@@ -239,11 +275,105 @@ function CardVideo({ src, poster }: { src: string; poster: string }) {
   );
 }
 
+/** В названиях направлений градиентом набрано одно слово, остальное белое —
+ *  иначе пять цветных названий подряд перенасыщают меню (Егор). */
+const LABEL_ACCENT: Record<ServiceKey, string> = {
+  content: "контента",
+  ai: "AI",
+  sites: "Vibe",
+  smm: "SMM",
+};
+
+function AccentLabel({ label, word }: { label: string; word: string }) {
+  const at = label.indexOf(word);
+  if (at < 0) return <>{label}</>;
+  return (
+    <>
+      {label.slice(0, at)}
+      <span className="spotlight-accent">{word}</span>
+      {label.slice(at + word.length)}
+    </>
+  );
+}
+
+/** Пятое окошко — вход в Vibe-режим (Егор, 2026-09-27). Встаёт над четырьмя
+ *  направлениями последним и заметнее их: сначала четыре окошка, потом
+ *  пятое выплывает из глубины (крупнее → на место) со вспышкой света по
+ *  бокам, после чего свет остаётся и тихо мигает. Раскладка та же, что у
+ *  соседей: название слева, справа на месте схемы — сфера (та же сборка
+ *  «implode», что в самом вайб-окне). Место под окошко есть с самого
+ *  начала — колода ниже не сдвигается, когда оно появляется.
+ *
+ *  Свет — отдельный слой за карточкой, мигает только прозрачностью:
+ *  анимированный box-shadow на стекле с блюром тормозит на телефонах (см.
+ *  .deck-neon-pulse). Слой стоит снаружи карточки, потому что её
+ *  overflow: hidden обрезал бы свечение по краю. */
+function VibeCard({ show, instant, onOpen }: { show: boolean; instant: boolean; onOpen: () => void }) {
+  const orbRef = useRef<HTMLSpanElement>(null);
+  const [inner, setInner] = useState(instant);
+  useEffect(() => {
+    if (!show || inner) return;
+    const t = window.setTimeout(() => setInner(true), 550);
+    return () => window.clearTimeout(t);
+  }, [show, inner]);
+
+  const hidden = { opacity: 0, scale: 0.86, y: 10, filter: "blur(22px)" };
+  return (
+    <motion.div
+      className="welcome-vibe-wrap"
+      initial={instant ? false : hidden}
+      animate={show ? { opacity: 1, scale: 1, y: 0, filter: "blur(0px)" } : hidden}
+      transition={{ duration: 1.05, ease: [0.16, 1, 0.3, 1] }}
+      style={{ pointerEvents: show ? undefined : "none" }}
+    >
+      <span className={`welcome-vibe-halo${show ? " is-on" : ""}`} aria-hidden="true" />
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label="Vibe-режим — персонализируй наш сервис для себя"
+        style={
+          {
+            "--sp-from": ORB_FROM,
+            "--sp-to": ORB_TO,
+            "--card-glow-rgb": hexToRgb("#a98bff"),
+          } as CSSProperties
+        }
+        className="welcome-card welcome-card-vibe glass-panel deck-neon-pulse"
+      >
+        <motion.span
+          className="welcome-card-body"
+          initial={false}
+          animate={inner ? { opacity: 1, filter: "blur(0px)", x: 0 } : { opacity: 0, filter: "blur(12px)", x: -10 }}
+          transition={{ duration: 0.8, ease: GENTLE_EASE, delay: instant ? 0 : 0.9 }}
+        >
+          <span className="welcome-card-title">
+            <span className="spotlight-accent">Vibe</span>-режим
+          </span>
+          <span className="welcome-card-sub">Персонализируй наш сервис для себя</span>
+        </motion.span>
+        <span ref={orbRef} className="welcome-card-vibe-orb" aria-hidden="true">
+          {inner && <NanoSphere size={68} from={ORB_FROM} to={ORB_TO} glow={0.35} hot intro={instant ? undefined : "implode"} />}
+        </span>
+        <GoArrow />
+      </button>
+      {/* Частицы от сферы — общая механика (ui/SphereDust); холст выступает
+          за окошко на 34px, разлёт растянут по ширине окошка. */}
+      <SphereDust run={inner} orbRef={orbRef} bleed={34} stretch={[1.7, 0.7]} />
+    </motion.div>
+  );
+}
+
 export default function WelcomeWidget({
   onClose,
   onSkip,
+  onVibe,
   skipGreeting = false,
+  framed = false,
 }: {
+  /** Сцена внутри стартового окна: постоянный макет и статичный масштаб. */
+  framed?: boolean;
+  /** Пятое окошко: закрыть сцену и открыть Vibe-режим. */
+  onVibe?: () => void;
   /** Посетитель закончил со сценой: выбрал блок или закрыл её. */
   onClose: () => void;
   /** Только «Перейти на сайт →» — когда вызывающему нечего делать отдельно,
@@ -303,23 +433,38 @@ export default function WelcomeWidget({
 
   const blocks: BlockCard[] = picked ? blocksFor(picked) : [];
   const [fitRef, fitScale, fitHeight] = useFitToHeight([picked]);
+  const [frameRef, frame] = useFrameFit(framed);
 
   return (
     <motion.div
-      className="w-full"
+      className={framed ? "relative h-full w-full" : "w-full"}
       initial={false}
-      animate={{ height: fitHeight ? fitHeight * fitScale : "auto" }}
+      animate={framed ? undefined : { height: fitHeight ? fitHeight * fitScale : "auto" }}
       transition={{ duration: 0.45, ease: EASE }}
     >
       <div
-        ref={fitRef}
-        className="welcome-scene flex h-fit w-full flex-col items-center text-center"
+        ref={framed ? frameRef : fitRef}
+        className={`welcome-scene flex w-full flex-col items-center text-center ${framed ? "welcome-scene--framed" : "h-fit"}`}
         style={{
-          ...(fitScale < 1 ? { transform: `scale(${fitScale})`, transformOrigin: "top center" } : undefined),
+          ...(framed
+            ? {
+                position: "absolute",
+                top: 0,
+                left: frame.left,
+                width: frame.width,
+                height: FRAME_H,
+                transform: `scale(${frame.scale})`,
+                transformOrigin: "top left",
+                // до первого замера сцены не видно — никакого скачка масштаба
+                visibility: frame.scale ? undefined : "hidden",
+              }
+            : fitScale < 1
+              ? { transform: `scale(${fitScale})`, transformOrigin: "top center" }
+              : undefined),
           // Второй шаг (выбрано направление) поднимает лого к самому верху
           // страницы — там уже не нужен запас под шапку сайта, экран занят
           // списком блоков, и Егор попросил не терять на этом высоту.
-          ...(picked ? { paddingTop: "0.75rem" } : undefined),
+          ...(picked && !framed ? { paddingTop: "0.75rem" } : undefined),
         }}
       >
         {/* Логотип стоит первым в разметке (визуально сверху), но по времени
@@ -331,7 +476,7 @@ export default function WelcomeWidget({
             уже готов — не перезаходит, а просто стоит выше (см. paddingTop
             ниже). */}
         <motion.div
-          className="mb-4 flex items-center gap-2.5"
+          className={framed ? "welcome-logo-band flex items-center justify-center gap-2.5" : "mb-4 flex items-center gap-2.5"}
           initial={{ opacity: 0, filter: "blur(14px)" }}
           animate={logoReady ? { opacity: 1, filter: "blur(0px)" } : { opacity: 0, filter: "blur(14px)" }}
           transition={{ duration: REVEAL_DURATION * 0.85, ease: GENTLE_EASE }}
@@ -418,6 +563,8 @@ export default function WelcomeWidget({
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             className="welcome-deck"
           >
+            {!picked && onVibe && <VibeCard show={logoReady} instant={instant} onOpen={onVibe} />}
+
             {!picked &&
               directionCards.map((card, i) => (
                 <motion.button
@@ -455,7 +602,7 @@ export default function WelcomeWidget({
                         одном элементе он просто затирал бы прозрачную
                         заливку под градиентом. */}
                     <span className="welcome-card-title">
-                      <span className="spotlight-accent">{card.label}</span>
+                      <AccentLabel label={card.label} word={LABEL_ACCENT[card.key]} />
                     </span>
                     <span className="welcome-card-sub">{card.tagline}</span>
                   </span>
@@ -507,7 +654,8 @@ export default function WelcomeWidget({
             в потоке сцены, а не поверх неё, — подгонка сцены под высоту
             экрана учитывает её и ничего не перекрывает. */}
         <motion.div
-          className="mt-4 flex justify-center"
+          // Волна ниже, отдельно от колоды (Егор, 2026-09-27).
+          className={framed ? "mt-auto flex justify-center" : "mt-9 flex justify-center"}
           initial={{ opacity: 0, filter: "blur(10px)" }}
           animate={picked || logoReady ? { opacity: 1, filter: "blur(0px)" } : { opacity: 0, filter: "blur(10px)" }}
           transition={{ duration: 0.6, ease: GENTLE_EASE }}

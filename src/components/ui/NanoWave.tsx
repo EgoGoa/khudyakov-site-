@@ -1,4 +1,5 @@
 "use client";
+import { isWelcomeOpen } from "@/lib/welcome-freeze";
 
 import { useEffect, useRef } from "react";
 
@@ -357,10 +358,13 @@ export default function NanoWave({
       const start = performance.now();
       const frameMs = light ? 33 : 0;
       let last = 0;
+      const behindWelcome = !wrap.closest(".welcome-shell");
       const loop = (now: number) => {
         raf = requestAnimationFrame(loop);
         // Вне экрана и в фоновой вкладке не рисуем вовсе.
         if (!onScreen || document.hidden) return;
+        // За стартовым окном волна замирает, пока оно открыто.
+        if (behindWelcome && isWelcomeOpen()) return;
         if (now - last < frameMs) return;
         last = now;
         draw(Math.max(0, now - start) / 1000);

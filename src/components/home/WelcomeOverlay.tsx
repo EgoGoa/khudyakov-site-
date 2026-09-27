@@ -6,10 +6,13 @@ import { motion } from "framer-motion";
 import { MicIcon } from "@/components/ui/Icons";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useWelcomeGate } from "@/lib/welcome-gate";
-import CenterModal from "@/components/ui/CenterModal";
+import { CloseIcon } from "@/components/ui/Icons";
+import { playUi } from "@/lib/sound";
+import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { WELCOME_OPEN_ATTR } from "@/lib/welcome-freeze";
 import WelcomeWidget from "./WelcomeWidget";
 import IntroSplash from "./IntroSplash";
-import { VOICE_NAV_EVENT } from "@/lib/voice/store";
+import { OPEN_VIBE_EVENT, VOICE_NAV_EVENT } from "@/lib/voice/store";
 
 // shared easing across every motion in this overlay, so entrances/exits read
 // as one authored sequence instead of mismatched curves
@@ -379,22 +382,104 @@ export default function WelcomeOverlay() {
     }, 200);
   };
 
+  // Пятое окошко: сцена уходит, и когда она доиграла исчезновение, поверх
+  // сайта открывается Vibe-режим (его держит VibeRail по общему событию).
+  const openVibe = () => {
+    setSkippedToSite(true);
+    close();
+    setTimeout(() => window.dispatchEvent(new Event(OPEN_VIBE_EVENT)), 450);
+  };
+
+  // Окно держится в дереве, пока доигрывает уход, и только потом снимается.
+  const [present, setPresent] = useState(true);
+  useEffect(() => {
+    if (visible) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- собственный жизненный цикл окна
+      setPresent(true);
+      return;
+    }
+    const id = window.setTimeout(() => setPresent(false), 500);
+    return () => window.clearTimeout(id);
+  }, [visible]);
+
+  useEffect(() => {
+    if (!visible) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") goToSite();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  // Сайт за окном замирает, пока оно открыто (lib/welcome-freeze): флаг на
+  // <html> гасит CSS-анимации и покадровые холсты, а видео сайта ставятся
+  // на паузу и после закрытия продолжают с того же кадра.
+  useEffect(() => {
+    const html = document.documentElement;
+    if (!visible) {
+      html.removeAttribute(WELCOME_OPEN_ATTR);
+      return;
+    }
+    html.setAttribute(WELCOME_OPEN_ATTR, "");
+    const held = new Set<HTMLVideoElement>();
+    const hold = (v: HTMLVideoElement) => {
+      if (v.closest(".welcome-shell") || v.paused) return;
+      v.pause();
+      held.add(v);
+    };
+    document.querySelectorAll("video").forEach(hold);
+    const onPlay = (e: Event) => {
+      if (e.target instanceof HTMLVideoElement) hold(e.target);
+    };
+    document.addEventListener("play", onPlay, true);
+    return () => {
+      document.removeEventListener("play", onPlay, true);
+      html.removeAttribute(WELCOME_OPEN_ATTR);
+      held.forEach((v) => void v.play().catch(() => {}));
+    };
+  }, [visible]);
+
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(visible && revealed, dialogRef);
+
+  const reveal = () => {
+    setRevealed(true);
+    playUi("windows");
+  };
+
+  if (!present) return null;
+
+  // Стартовое окно (Егор, 2026-09-27): стеклянное окошко по центру, как у
+  // вайб-окна, а за ним виден сайт. Внутри — сначала заставка со знаком,
+  // затем почти без паузы меню.
+  //
+  // Окно рендерится сервером и стоит на экране с первого кадра: раньше оно
+  // монтировалось порталом только после гидратации, и при каждой загрузке
+  // сначала резко мелькал сайт, а потом так же резко выскакивало окно.
+  // Проявление окна — CSS-анимация, она идёт ещё до загрузки JS. Если окно
+  // недавно закрывали, его прячет флаг data-welcome-snoozed, выставленный
+  // скриптом в <head> до отрисовки (см. app/layout.tsx).
   return (
-    <>
-      {/* Заставка стоит ПЕРЕД окном, а не внутри него: её стекло должно
-          накрывать всю страницу целиком, включая затемнение оверлея, иначе
-          створки разъезжаются внутри уже открытого окна и эффект теряется.
-          Меню монтируется в момент, когда створки пошли врозь (onReveal), —
-          оно собирается в открывающемся проёме, а не появляется после. */}
-      {visible && <IntroSplash onReveal={() => setRevealed(true)} />}
-      <CenterModal
-        open={visible && revealed}
-        onClose={goToSite}
-        ariaLabel="Приветствие HUD SERVICE"
-        bare
-      >
-        <WelcomeWidget onClose={selectService} onSkip={goToSite} />
-      </CenterModal>
-    </>
+    <div
+      ref={dialogRef}
+      tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Приветствие HUD SERVICE"
+      className={`welcome-shell${visible ? "" : " is-leaving"}`}
+      onClick={goToSite}
+    >
+      <div className="welcome-window" onClick={(e) => e.stopPropagation()}>
+        <button type="button" onClick={goToSite} aria-label="Закрыть" className="welcome-window__close">
+          <CloseIcon />
+        </button>
+        {visible && <IntroSplash onReveal={reveal} />}
+        {revealed && (
+          <div className="welcome-window__body">
+            <WelcomeWidget onClose={selectService} onSkip={goToSite} onVibe={openVibe} framed />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
