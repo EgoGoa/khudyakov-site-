@@ -52,11 +52,15 @@ export default function NanoWave({
   const hotRef = useRef(hot);
   const pulseRef = useRef(pulse);
   const levelRef = useRef(level);
+  // Цвета — цель, к которой волна плавно перетекает (смена страницы не
+  // перезапускает холст и не даёт скачка цвета).
+  const colorRef = useRef({ from, to });
   useEffect(() => {
     hotRef.current = hot;
     pulseRef.current = pulse;
     levelRef.current = level;
-  }, [hot, pulse, level]);
+    colorRef.current = { from, to };
+  }, [hot, pulse, level, from, to]);
 
   // Холст шире знака — ореолу и размытию нужно место за краем ленты.
   const padX = dust ? width * 0.3 : height * 0.5;
@@ -81,8 +85,22 @@ export default function NanoWave({
     const cy = H / 2;
     const amp = (height / 2) * dpr;
     const k = Math.max(1, height / 28) ** 0.55;
-    const [fr, fg, fb] = hexToRgb(from);
-    const [tr, tg, tb] = hexToRgb(to);
+    // Текущие цвета плавно догоняют целевые (~1.5 с) — между страницами
+    // градиент перетекает, а не переключается.
+    const curFrom = [...hexToRgb(colorRef.current.from)];
+    const curTo = [...hexToRgb(colorRef.current.to)];
+    let fr = 0, fg = 0, fb = 0, tr = 0, tg = 0, tb = 0;
+    const blendColors = () => {
+      const a = hexToRgb(colorRef.current.from);
+      const b = hexToRgb(colorRef.current.to);
+      for (let i = 0; i < 3; i++) {
+        curFrom[i] += (a[i] - curFrom[i]) * 0.035;
+        curTo[i] += (b[i] - curTo[i]) * 0.035;
+      }
+      [fr, fg, fb] = curFrom.map(Math.round);
+      [tr, tg, tb] = curTo.map(Math.round);
+    };
+    blendColors();
 
     const html = document.documentElement;
     const light = html.hasAttribute("data-lite") || html.hasAttribute("data-mid");
@@ -204,6 +222,7 @@ export default function NanoWave({
 
     let rectAt = 0;
     const draw = (t: number) => {
+      blendColors();
       nowT = t;
       // Окно может выезжать с анимацией — прямоугольник освежаем раз в 0.5 с.
       if (t - rectAt > 0.5) {
@@ -357,13 +376,13 @@ export default function NanoWave({
       window.removeEventListener("pointerdown", onDown);
       document.documentElement.removeEventListener("pointerleave", onOut);
     };
-  }, [width, height, from, to, padX, padY, dust, sparkle]);
+  }, [width, height, padX, padY, dust, sparkle]);
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width, height }} aria-hidden="true">
       <canvas
         ref={canvasRef}
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="nano-wave-canvas pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{
           width: width + padX * 2,
           height: height + padY * 2,

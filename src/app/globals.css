@@ -7575,16 +7575,26 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
   bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 .voice-sphere { cursor: pointer; -webkit-tap-highlight-color: transparent; }
-/* Волна всегда яркая, как при наведении (Егор). Без подсветки вокруг. */
+/* В покое волна на 20% меньше; включил голос — она медленно и
+   кинематографично раскрывается до полного размера. Никаких скачков:
+   размер, свет и появление — только плавными переходами. */
 .voice-sphere-core {
-  opacity: 1;
-  transition: opacity 0.45s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: scale(0.8);
+  filter: brightness(0.92);
+  transition:
+    transform 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.voice-sphere:hover .voice-sphere-core,
-.voice-sphere:focus-visible .voice-sphere-core,
-.voice-sphere:active .voice-sphere-core,
-.voice-sphere.is-active .voice-sphere-core { opacity: 1; }
-.voice-sphere:hover .voice-sphere-core { transform: scale(1.05); }
+.voice-sphere:hover .voice-sphere-core { transform: scale(0.84); }
+.voice-sphere.is-active .voice-sphere-core { transform: scale(1); filter: brightness(1.05); }
+.voice-sphere.is-active:hover .voice-sphere-core { transform: scale(1.02); }
+.voice-stage .voice-sphere-core { transform: none; filter: none; }
+/* Появление при загрузке страницы — мягкое проступание из размытия. */
+.nano-wave-canvas { animation: nano-wave-in 1.6s cubic-bezier(0.45, 0, 0.15, 1) both; }
+@keyframes nano-wave-in {
+  from { opacity: 0; filter: blur(8px); }
+  to { opacity: 1; filter: blur(0); }
+}
 .voice-contact {
   align-self: flex-start;
   display: inline-flex;
