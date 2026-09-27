@@ -27,6 +27,8 @@ export default function SphereDust({
   density = 1,
   stretch = [1, 1],
   speed = 1,
+  brightness = 1,
+  scale = 1,
   className = "",
 }: {
   /** Элемент сферы (или обёртка, внутри которой первый span — сама сфера). */
@@ -40,6 +42,10 @@ export default function SphereDust({
   stretch?: [number, number];
   /** Множитель скорости вылета: маленькой сфере в баре — меньше. */
   speed?: number;
+  /** Множитель яркости частиц. */
+  brightness?: number;
+  /** Множитель размера частиц. */
+  scale?: number;
   className?: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -117,7 +123,7 @@ export default function SphereDust({
         drift: (9 + Math.random() * 14) * speed,
         born: t,
         r: size,
-        b: 0.75 + Math.random() * 0.25,
+        b: (0.75 + Math.random() * 0.25) * brightness,
         c: TINTS[Math.floor(Math.random() * TINTS.length)],
         ph: Math.random() * Math.PI * 2,
         // Большинство — недалеко (степень сжимает к нулю), единицы — через
@@ -171,7 +177,7 @@ export default function SphereDust({
         // Проявляется у кольца, гаснет на краю своего пути и у края холста.
         const fade = Math.min(1, (t - p.born) * 2) * Math.min(1, edge / edgeFade) * Math.min(1, left / 30);
         const al = p.b * fade * (0.7 + 0.3 * Math.sin(t * 1.6 + p.ph));
-        const d = p.r * 5;
+        const d = p.r * 5 * scale;
         ctx.globalAlpha = al;
         ctx.drawImage(sprite(p.c), p.x - d / 2, p.y - d / 2, d, d);
       }
@@ -181,7 +187,7 @@ export default function SphereDust({
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, [run, orbRef, bleed, density, sx, sy, speed]);
+  }, [run, orbRef, bleed, density, sx, sy, speed, brightness, scale]);
 
   return (
     <canvas

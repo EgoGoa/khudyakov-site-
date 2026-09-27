@@ -722,10 +722,11 @@ export default function VibeRail() {
           className="vibe-bubble vibe-bubble--crown mb-1"
           ref={crownRef}
         >
-          <NanoSphere size={36} from={accent.from} to={accent.to} />
+          <NanoSphere size={36} from={accent.from} to={accent.to} soft />
           {/* Частицы от сферы — та же механика, что в стартовом окошке и
-              вайб-окне, но реже и медленнее: сфера маленькая. */}
-          <SphereDust orbRef={crownRef} bleed={70} density={0.3} speed={0.5} />
+              вайб-окне, но реже, медленнее, мельче, тусклее и держатся
+              ближе к сфере (Егор, 2026-09-27). */}
+          <SphereDust orbRef={crownRef} bleed={42} density={0.24} speed={0.35} brightness={0.6} scale={0.8} />
           <span className="vibe-tip font-display">Vibe</span>
         </button>
         {[...pageItems, ...crossPageItems].map((item, i) => (

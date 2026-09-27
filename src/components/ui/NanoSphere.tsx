@@ -56,6 +56,7 @@ export default function NanoSphere({
   glow = 1,
   intro,
   core = false,
+  soft = false,
 }: {
   size?: number;
   from: string;
@@ -71,6 +72,10 @@ export default function NanoSphere({
   /** Пыль внутри кольца: крутится спиральными рукавами и понемногу
    *  вылетает наружу (вайб-окно, Егор 2026-09-26). В баре выключено. */
   core?: boolean;
+  /** Тихая сфера вайб-бара (Егор, 2026-09-27): свечение только снаружи
+   *  кольца и очень мягкое, перелив без ярких бегущих бликов, линии
+   *  прозрачнее, всё чуть медленнее. */
+  soft?: boolean;
 }) {
   // Холст шире знака; схлопыванию нужен запас — вихрь стартует широким.
   const boxK = intro === "implode" ? 2.6 : 1.7;
@@ -234,23 +239,33 @@ export default function NanoSphere({
       ctx.globalAlpha = ring;
 
       // Мягкое общее свечение за кольцом.
-      const halo = ctx.createRadialGradient(c, c, R * 0.5, c, c, R * 2.05);
+      // В тихом режиме оно начинается от самого кольца — внутри темно.
+      const halo = soft
+        ? ctx.createRadialGradient(c, c, R * 1.05, c, c, R * 2.3)
+        : ctx.createRadialGradient(c, c, R * 0.5, c, c, R * 2.05);
       halo.addColorStop(0, `rgba(${fr},${fg},${fb},0)`);
-      halo.addColorStop(0.4, `rgba(${fr},${fg},${fb},${(0.06 + 0.035 * breath * energy) * glow})`);
+      halo.addColorStop(soft ? 0.3 : 0.4, `rgba(${fr},${fg},${fb},${(soft ? 0.03 + 0.012 * breath * energy : 0.06 + 0.035 * breath * energy) * glow})`);
       halo.addColorStop(1, `rgba(${tr},${tg},${tb},0)`);
       ctx.fillStyle = halo;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.lineWidth = 0.55 * dpr * k;
-      ctx.shadowBlur = 10 * dpr * k * glow * blurBoost;
+      ctx.shadowBlur = (soft ? 5 : 10) * dpr * k * glow * blurBoost;
       // Перелив по часовой стрелке (Егор: «по кругу плавно течёт»): по
       // кольцу бежит яркая голова света с длинным хвостом, напротив — вторая,
       // слабее. Конический градиент поворачивается каждый кадр; в canvas угол
       // растёт по часовой, поэтому flow просто увеличивается. Один градиент
       // на все линии — перелив ничего не стоит по нагрузке.
-      const flow = t * 1.35;
+      const flow = t * (soft ? 0.8 : 1.35);
       const conic = typeof ctx.createConicGradient === "function" ? ctx.createConicGradient(flow, c, c) : null;
-      if (conic) {
+      if (conic && soft) {
+        // Перелив без бликов: разница между светлой и тёмной частью мала,
+        // переходы длинные — цвет течёт, но ничего не вспыхивает.
+        conic.addColorStop(0, `rgba(${tr},${tg},${tb},0.5)`);
+        conic.addColorStop(0.35, `rgba(${fr},${fg},${fb},0.32)`);
+        conic.addColorStop(0.65, `rgba(${tr},${tg},${tb},0.4)`);
+        conic.addColorStop(1, `rgba(${tr},${tg},${tb},0.5)`);
+      } else if (conic) {
         conic.addColorStop(0, `rgba(${tr},${tg},${tb},0.95)`);
         conic.addColorStop(0.1, `rgba(${fr},${fg},${fb},0.55)`);
         conic.addColorStop(0.3, `rgba(${fr},${fg},${fb},0.2)`);
@@ -260,7 +275,7 @@ export default function NanoSphere({
         conic.addColorStop(1, `rgba(${tr},${tg},${tb},0.95)`);
       }
       ctx.strokeStyle = conic ?? `rgba(${fr},${fg},${fb},0.34)`;
-      ctx.shadowColor = `rgba(${fr},${fg},${fb},0.35)`;
+      ctx.shadowColor = `rgba(${fr},${fg},${fb},${soft ? 0.18 : 0.35})`;
       const staged = introOn && intro === "implode";
       for (let j = 0; j < LINES; j++) {
         // Схлопывание: каждая линия появляется своей дугой по очереди.
@@ -282,11 +297,12 @@ export default function NanoSphere({
           const u = (i / pts) * lv;
           const a = a0 + u * Math.PI * 2 * (1 + turns) + rot + j * 0.035 * (1 - p);
           // Узор волн ещё и медленно вращается (a + t·0.25).
-          const aa = a + t * 0.25;
+          const tw = soft ? t * 0.7 : t;
+          const aa = a + tw * 0.25;
           const wave =
-            0.055 * Math.sin(3 * aa + t * 1.1 + j * 0.17) +
-            0.04 * Math.sin(5 * aa - t * 1.6 + j * 0.31) +
-            0.025 * Math.sin(2 * aa + t * 0.7 - j * 0.12);
+            0.055 * Math.sin(3 * aa + tw * 1.1 + j * 0.17) +
+            0.04 * Math.sin(5 * aa - tw * 1.6 + j * 0.31) +
+            0.025 * Math.sin(2 * aa + tw * 0.7 - j * 0.12);
           // Для вихря радиус растёт вдоль ленты (спираль); при p=1 — кольцо R.
           const base = R * grow * (u + (1 - u) * p);
           const off = (j - LINES / 2) * 0.28 * dpr * k * spread * Math.min(1, u * 4 + p);
@@ -491,7 +507,7 @@ export default function NanoSphere({
       host.removeEventListener("pointerenter", excite);
       host.removeEventListener("pointerleave", calm);
     };
-  }, [size, from, to, glow, intro, boxK, core]);
+  }, [size, from, to, glow, intro, boxK, core, soft]);
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width: size, height: size }} aria-hidden="true">
