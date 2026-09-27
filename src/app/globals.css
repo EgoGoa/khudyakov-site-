@@ -7761,3 +7761,8 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
 @media (max-width: 1023px) {
   .voice-stage { right: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); }
 }
+.voice-caption--hint {
+  background: rgba(14, 13, 20, 0.62);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+}

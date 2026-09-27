@@ -37,6 +37,8 @@ export type VoiceState = {
   pulse: number;
   /** Показать приглашение «Управляй сайтом голосом». */
   invite: boolean;
+  /** Открыто окно «Написать …» человека команды (id из lib/team). */
+  team: string | null;
 };
 
 let state: VoiceState = {
@@ -51,6 +53,7 @@ let state: VoiceState = {
   inlineCount: 0,
   pulse: 0,
   invite: false,
+  team: null,
 };
 
 /** Громкость голоса прямо сейчас, 0..1: твоего, пока ассистент слушает,

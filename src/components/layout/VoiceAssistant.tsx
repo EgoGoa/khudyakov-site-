@@ -11,7 +11,9 @@ import { useCinematicCurrent, useCinematicFirstId, useCinematicGoTo, useCinemati
 import { useHeaderMenu } from "@/lib/header-menu";
 import { serviceMeta, serviceOrder } from "@/lib/service-content";
 import { blocksFor } from "@/lib/welcome-blocks";
-import { CONTACTS, parseCommand, serviceFromPath, type VoiceAction } from "@/lib/voice/intents";
+import { CONTACTS, normalize, parseCommand, serviceFromPath, type VoiceAction } from "@/lib/voice/intents";
+import TeamConsultModal from "@/components/home/TeamConsultModal";
+import { TEAM } from "@/lib/team";
 import {
   OPEN_VIBE_EVENT,
   VOICE_NAV_EVENT,
@@ -115,6 +117,55 @@ function pickVoice(): SpeechSynthesisVoice | null {
 }
 
 type Snapshot = { path: string; chapter: string | null; scrollY: number };
+
+// «Нажми узнать больше на графике», «обсудить формат в подкастах»: ищем на
+// странице кнопку или ссылку, которая лучше всего совпадает со словами
+// фразы — по своей надписи (вес 2) и по карточке, в которой стоит (вес 1),
+// с небольшим бонусом за то, что она на экране. Так голосом можно нажать
+// любую кнопку сайта, не перечисляя их заранее.
+const PRESS_STOP = new Set([
+  "нажми", "нажать", "кликни", "жми", "кнопку", "кнопка", "пожалуйста", "давай", "мне", "это", "вот", "эту", "этот",
+  "про", "для", "что", "там", "тут",
+]);
+const stems = (text: string) =>
+  normalize(text)
+    .trim()
+    .split(" ")
+    .filter((w) => w.length >= 3 && !PRESS_STOP.has(w))
+    .map((w) => w.slice(0, Math.min(w.length, 5)));
+
+function pressOnScreen(query: string): boolean {
+  const qs = stems(query);
+  if (!qs.length) return false;
+  let best: HTMLElement | null = null;
+  let bestScore = 0;
+  let bestInView = false;
+  for (const el of document.querySelectorAll<HTMLElement>('a[href], button, [role="button"]')) {
+    if (el.closest("[data-voice-ui], [aria-hidden='true']")) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width < 4 || r.height < 4) continue;
+    const own = normalize(`${el.innerText} ${el.getAttribute("aria-label") ?? ""} ${el.title}`);
+    const card = el.closest<HTMLElement>("article, li, [class*='card'], [class*='glass'], [class*='tile'], section");
+    const ctx = card ? normalize(card.innerText.slice(0, 500)) : "";
+    let score = 0;
+    for (const q of qs) {
+      if (own.includes(q)) score += 2;
+      else if (ctx.includes(q)) score += 1;
+    }
+    const inView = r.bottom > 0 && r.top < window.innerHeight;
+    if (inView) score += 0.5;
+    if (score > bestScore) {
+      bestScore = score;
+      best = el;
+      bestInView = inView;
+    }
+  }
+  if (!best || bestScore < 2.5) return false;
+  const target = best;
+  target.scrollIntoView({ block: "center", behavior: "smooth" });
+  window.setTimeout(() => target.click(), bestInView ? 60 : 500);
+  return true;
+}
 
 export default function VoiceAssistant() {
   const router = useRouter();
@@ -472,6 +523,10 @@ export default function VoiceAssistant() {
           window.dispatchEvent(new Event(VOICE_NAV_EVENT));
           window.dispatchEvent(new Event(OPEN_VIBE_EVENT));
           return {};
+        case "team":
+          window.dispatchEvent(new Event(VOICE_NAV_EVENT));
+          setVoiceState({ team: a.id, panelOpen: false });
+          return {};
         case "close":
           setVoiceState({ panelOpen: false });
           return {};
@@ -495,29 +550,42 @@ export default function VoiceAssistant() {
       }
     };
 
-    const respond = (say: string, action: VoiceAction) => {
+    // Действия выполняются молча (Егор: «не надо отвечать, просто реагируй») —
+    // фраза только мелькает подписью над волной. Вслух — ответы на вопросы,
+    // подсказки, «не поняла» и «выключаю».
+    const SPOKEN = new Set(["none", "repeat", "stop"]);
+    const respond = (say: string, action: VoiceAction, answer = false) => {
       const { say: override, after } = act(action);
       const text = override ?? say;
+      const aloud = answer || SPOKEN.has(action.type) || Boolean(override);
       if (text) {
         if (action.type !== "repeat") lastSay = text;
         setVoiceState((st) => ({ turns: [...st.turns, { role: "assistant" as const, text }].slice(-10), pulse: st.pulse + 1 }));
       } else {
         setVoiceState((st) => ({ pulse: st.pulse + 1 }));
       }
-      speak(text, () => {
+      speak(aloud ? text : "", () => {
         after?.();
         if (action.type === "stop") {
           disable();
           return;
         }
-        if (getVoiceState().enabled) scheduleListen(120);
+        if (getVoiceState().enabled) scheduleListen(aloud ? 120 : 40);
       });
     };
 
     const handle = async (text: string) => {
       setVoiceState((st) => ({ turns: [...st.turns, { role: "user" as const, text }].slice(-10), live: "", contact: null, notice: null }));
       const path = live.current.pathname;
-      const local = parseCommand(text, path);
+      let local = parseCommand(text, path);
+      // «Нажми …»: не нашли такой кнопки — разбираем фразу как обычную команду.
+      if (local?.action.type === "click") {
+        if (pressOnScreen(local.action.query)) {
+          respond("", { type: "click", query: local.action.query });
+          return;
+        }
+        local = parseCommand(text, path, false, true);
+      }
       if (local) {
         respond(local.say, local.action);
         return;
@@ -549,7 +617,7 @@ export default function VoiceAssistant() {
             ? { type: "route", href: data.action.href }
             : ({ type: data.action.type } as VoiceAction)
           : { type: "none" };
-        respond(data.say, action);
+        respond(data.say, action, true);
       } catch {
         aiFails += 1;
         setVoiceState({ status: "idle" });
@@ -717,6 +785,10 @@ export default function VoiceAssistant() {
       <AnimatePresence>
         {s.panelOpen && <VoicePanel key="voice-panel" from={accent.from} to={accent.to} />}
       </AnimatePresence>
+
+      {s.team && TEAM[s.team] && (
+        <TeamConsultModal open onClose={() => setVoiceState({ team: null })} member={TEAM[s.team]} />
+      )}
     </>
   );
 }
@@ -745,7 +817,7 @@ function VoiceWaveButton({ width, height, from, to }: { width: number; height: n
  *  подпись — что услышано и что ответил ассистент (пока окно закрыто). */
 function VoiceDock({ width, height, from, to }: { width: number; height: number; from: string; to: string }) {
   return (
-    <div className="voice-dock" style={{ "--g-from": from, "--g-to": to } as CSSProperties}>
+    <div className="voice-dock" data-voice-ui style={{ "--g-from": from, "--g-to": to } as CSSProperties}>
       <VoiceInvite />
       <VoiceCaption />
       <VoiceWaveButton width={width} height={height} from={from} to={to} />
@@ -779,37 +851,70 @@ function VoiceInvite() {
   );
 }
 
+// Подсказки над волной — иногда всплывают и тают, показывая, что умеет
+// ассистент (Егор: «стильные подсказки над волной: я могу то-то»).
+const DOCK_HINTS = [
+  "Скажи «следующий блок» — пролистаю",
+  "«Страница лендингов» — открою",
+  "«Напиши Саше» — открою чат",
+  "«Нажми подробнее» — нажму за тебя",
+  "«Покажи цены на SMM»",
+  "«Отмени» — верну, как было",
+  "«В шапку» — наверх страницы",
+  "Спроси: сколько стоит ролик?",
+];
+
 function VoiceCaption() {
   const s = useVoiceState();
   const [shown, setShown] = useState(false);
+  const [hint, setHint] = useState<string | null>(null);
   const last = s.turns.at(-1);
   const text = s.live || last?.text || "";
   const mine = Boolean(s.live) || last?.role === "user";
 
-  // Подпись живёт, пока идёт разговор, и гаснет через 4 с тишины.
+  // Подпись живёт, пока идёт разговор, и гаснет через 3 с тишины.
   useEffect(() => {
     if (!text) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- показ по внешнему событию (новая реплика), не производное состояние
     setShown(true);
+    setHint(null);
     if (s.status === "thinking" || s.status === "speaking") return;
-    const t = window.setTimeout(() => setShown(false), 4000);
+    const t = window.setTimeout(() => setShown(false), 3000);
     return () => window.clearTimeout(t);
   }, [text, s.status]);
 
+  // В тишине раз в 16 с — одна подсказка на 3.5 с. Пока висит приглашение
+  // «Включить», подсказки молчат, чтобы не было двух плашек.
+  const quiet = !s.panelOpen && !s.invite && !shown;
+  useEffect(() => {
+    if (!quiet) return;
+    let i = 0;
+    let hide = 0;
+    const tick = window.setInterval(() => {
+      setHint(DOCK_HINTS[i++ % DOCK_HINTS.length]);
+      hide = window.setTimeout(() => setHint(null), 3500);
+    }, 16000);
+    return () => {
+      window.clearInterval(tick);
+      window.clearTimeout(hide);
+    };
+  }, [quiet]);
+
   const visible = s.enabled && !s.panelOpen && shown && Boolean(text);
+  const line = visible ? (s.status === "thinking" ? "Думаю…" : text) : quiet ? hint : null;
   return (
-    <AnimatePresence>
-      {visible && (
+    <AnimatePresence mode="wait">
+      {line && (
         <motion.p
-          key="caption"
-          className={`voice-caption ${mine ? "voice-caption--me" : ""}`}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 4 }}
-          transition={{ duration: 0.3 }}
+          key={visible ? "caption" : line}
+          className={`voice-caption ${visible && mine ? "voice-caption--me" : ""} ${visible ? "" : "voice-caption--hint"}`}
+          initial={{ opacity: 0, y: 6, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -4, filter: "blur(6px)" }}
+          transition={{ duration: 0.5, ease: [0.45, 0, 0.15, 1] }}
           aria-live="polite"
         >
-          {s.status === "thinking" ? "Думаю…" : text}
+          {line}
         </motion.p>
       )}
     </AnimatePresence>
@@ -849,6 +954,7 @@ function VoicePanel({ from, to }: { from: string; to: string }) {
       role="dialog"
       aria-label="Голосовой ассистент"
       className="voice-stage fixed z-[110]"
+      data-voice-ui
       style={{ "--g-from": from, "--g-to": to } as CSSProperties}
       initial={{ opacity: 0, scale: 0.96, filter: "blur(10px)" }}
       animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}

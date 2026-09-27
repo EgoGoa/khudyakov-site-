@@ -1,5 +1,7 @@
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 import { blocksFor, type BlockCard, type BlockRole } from "@/lib/welcome-blocks";
+import { ringOf } from "@/components/home/direction/siblings";
+import { TEAM } from "@/lib/team";
 
 // Голосовой ассистент: понимание фразы на месте, без сети и мгновенно.
 //
@@ -26,6 +28,10 @@ export type VoiceAction =
   | { type: "vibe" }
   | { type: "menu" }
   | { type: "close" }
+  /** Открыть окно «Написать …» человека команды. */
+  | { type: "team"; id: string }
+  /** Нажать кнопку/ссылку на экране, которая лучше всего подходит под фразу. */
+  | { type: "click"; query: string }
   | { type: "stop" }
   | { type: "none" };
 
@@ -79,14 +85,16 @@ const T = {
   whatsapp: ["ватсап", "вотсап", "whatsapp", "вацап", "ватсапп"],
   telegram: ["телеграм", "телег", "telegram", "напиш", "написат", "личк", "в чат", "сообщени"],
   brief: ["заявк", "бриф", "заказат", "закажу", "оформ", "оставит", "хочу заказ", "обсудить проект", "начать проект"],
-  vibe: ["подбер", "анкет", "персональн", "вайб", "vibe", "под меня", "под мою", "индивидуальн", "предложени"],
+  vibe: ["подбер", "анкет", "персональн", "вайб", "vibe", "=айп", "айп-", "вайп", "под меня", "под мою", "индивидуальн", "предложени"],
   menu: ["=меню", "навигац", "все раздел", "список раздел", "содержани"],
-  top: ["наверх", "в начало", "к началу", "самый верх", "первый экран", "на главн"],
+  top: ["наверх", "в начало", "к началу", "самый верх", "первый экран", "на главн", "шапк", "в самое начало"],
   bottom: ["в конец", "самый низ", "в самый конец", "до конца", "к концу"],
   next: ["дальш", "далее", "вперед", "следующ", "листа", "листни", "=вниз", "продолж", "=еще", "мотай", "крути", "ниже", "потом"],
   prev: ["назад", "предыдущ", "вернись", "=вверх", "выше", "прошл", "раньше", "обратн"],
   pageWord: ["страниц", "раздел", "направлени", "услуг"],
   blockWord: ["блок", "глав", "слайд", "экран", "пункт", "номер", "част"],
+  press: ["нажм", "=нажать", "кликн", "=жми", "тыкн", "выбер", "обсуд", "узнать больше", "узнать подробн", "подробн", "активир", "запуст"],
+  team: ["напиш", "написат", "связ", "спрос", "обсуд", "свяжи", "позов", "чат с", "сообщени", "задать вопрос"],
   nav: ["откр", "покаж", "показ", "перейд", "переход", "перейти", "пойд", "пошли", "давай", "хочу", "веди", "включ", "зайд", "глян", "посмотр", "интерес", "где ", "найд", "расскаж про", "отведи", "перекин"],
   question: [
     "=как", "=что", "=чем", "=почему", "=зачем", "можно ли", "=можете", "=умеете", "=сколько", "=какой", "=какие", "=какая",
@@ -97,7 +105,7 @@ const T = {
 // Разделы сайта — по смыслу, а не по названию страницы.
 const SERVICE_TAGS: Record<ServiceKey, string[]> = {
   content: ["контент", "видео", "съемк", "=снять", "сним", "ролик", "продакшн", "продакшен", "фильм", "монтаж", "клип", "реклам", "фото"],
-  ai: ["=ии", "=ai", "=аи", "эйай", "искусствен", "нейросет", "нейронк", "аватар", "автоматиз", "бот", "gpt", "чатбот"],
+  ai: ["=ии", "=ai", "=аи", "ai-", "ии-", "эйай", "искусствен", "нейросет", "нейронк", "аватар", "автоматиз", "бот", "gpt", "чатбот"],
   sites: ["сайт", "лендинг", "=веб", "визитк", "интернет-магазин", "магазин", "страничк"],
   smm: ["=смм", "=smm", "соцсет", "социальн", "инстаграм", "инст", "продвижен", "рилс", "reels", "=ведение", "аккаунт", "таргет", "блогер", "вконтакт"],
 };
@@ -113,6 +121,73 @@ const ROLE_TAGS: Record<BlockRole, string[]> = {
   guarantees: ["гаранти", "договор", "что входит", "обязательств"],
   close: ["цен", "стоимост", "стоит", "тариф", "пакет", "услови", "прайс", "смет", "расчет", "бюджет", "оплат", "деньг", "=сколько"],
 };
+
+// Подстраницы разделов — из того же кольца, что и стрелки на страницах
+// (siblings.ts). Теги — корни слов подписи плюс разговорные синонимы.
+const SUB_SYNONYMS: Record<string, string[]> = {
+  "/content/presentation": ["презентац"],
+  "/content/advertising": ["рекламн ролик", "реклам видео"],
+  "/content/image": ["имидж"],
+  "/content/ai-video": ["ai-видео", "ии видео", "нейровидео", "видео на ии", "ai видео"],
+  "/content/graphics": ["моушн", "3d", "=3д", "графи", "анимац"],
+  "/sites/landing": ["лендинг"],
+  "/sites/card": ["визитк"],
+  "/sites/turnkey": ["под ключ"],
+  "/sites/assistant": ["ассистент", "чат-бот", "чатбот"],
+  "/sites/redesign": ["редизайн"],
+  "/smm/reels": ["рилс", "reels"],
+  "/smm/stories": ["сторис", "stories"],
+  "/smm/carousel": ["карусел"],
+  "/smm/ads": ["таргет"],
+  "/smm/bloggers": ["блогер"],
+};
+const SUBPAGES: { href: string; label: string; tags: string[] }[] = serviceOrder.flatMap((key) =>
+  ringOf(serviceMeta[key].slug).map((sp) => {
+    // Слова подписи (и части через дефис), кроме тех, что называют сам
+    // раздел: «Карточки и контент» не должна перехватывать «создание
+    // контента», а «Сайт под ключ» — просто «сайты».
+    const own = normalize(sp.label.replace(/-/g, " "))
+      .trim()
+      .split(" ")
+      .filter((w) => w.length >= 4 && w !== "для")
+      .map((w) => w.slice(0, Math.min(w.length, 5)))
+      .filter(
+        (w) =>
+          !serviceOrder.some((k) =>
+            SERVICE_TAGS[k].some((t) => {
+              const bare = t.replace(/^=/, "").trim();
+              return bare.startsWith(w) || w.startsWith(bare);
+            })
+          )
+      );
+    return { href: sp.href, label: sp.label, tags: [...(SUB_SYNONYMS[sp.href] ?? []), ...own] };
+  })
+);
+
+function findSubpage(p: Phrase): { sub: (typeof SUBPAGES)[number] | null; score: number } {
+  let best: (typeof SUBPAGES)[number] | null = null;
+  let score = 0;
+  for (const sp of SUBPAGES) {
+    const n = count(p, sp.tags);
+    if (n > score) {
+      score = n;
+      best = sp;
+    }
+  }
+  return { sub: best, score };
+}
+
+// Люди команды: «напиши Саше», «спроси Вадима», «написать продюсеру».
+const TEAM_TAGS: Record<string, string[]> = {
+  egor: ["егор", "продюсер"],
+  dima: ["вадим", "=вадику", "=вадику", "монтажер", "моушн-дизайнер"],
+  max: ["=макс", "максу", "максим", "креативн"],
+  sasha: ["=саша", "саше", "сашей", "саши", "дизайнер"],
+};
+function findTeam(p: Phrase): string | null {
+  for (const [id, tags] of Object.entries(TEAM_TAGS)) if (TEAM[id] && any(p, tags)) return id;
+  return null;
+}
 
 // Порядковые числа: «третий блок», «к пятому», «глава 4», «номер два».
 const ORDINALS: [string[], number][] = [
@@ -177,7 +252,7 @@ const blockHref = (svc: ServiceKey, b: BlockCard) => `/${serviceMeta[svc].slug}#
 /** Разбор фразы. null — не команда, а вопрос для ИИ.
  *  loose — ИИ недоступен: вопрос «сколько стоит сайт?» тогда тоже ведёт
  *  на подходящий блок, а не остаётся без ответа. */
-export function parseCommand(raw: string, pathname: string, loose = false): VoiceReply | null {
+export function parseCommand(raw: string, pathname: string, loose = false, noPress = false): VoiceReply | null {
   const p = phrase(raw);
   if (p.words.length === 0) return null;
   const here = serviceFromPath(pathname);
@@ -194,7 +269,21 @@ export function parseCommand(raw: string, pathname: string, loose = false): Voic
   // 2. Связь: «позвони насчёт сайта» — это звонок.
   if (any(p, T.call)) return { say: "Набираю продюсера.", action: { type: "call" } };
   if (any(p, T.whatsapp)) return { say: "Открываю WhatsApp.", action: { type: "whatsapp" } };
-  if (any(p, T.telegram) && !any(p, ["канал"])) return { say: "Открываю Телеграм продюсера.", action: { type: "telegram" } };
+  if (any(p, ["телеграм", "телег", "telegram"]) && !any(p, ["канал"])) {
+    return { say: "Открываю Телеграм продюсера.", action: { type: "telegram" } };
+  }
+  // Человек команды: «напиши Саше» → окно «Написать Саше».
+  const member = findTeam(p);
+  if (member && (any(p, T.team) || p.words.length <= 2)) {
+    return { say: `Пишем ${TEAM[member].nameDative}.`, action: { type: "team", id: member } };
+  }
+
+  // «Страница вниз / вверх» — это листание, а не соседняя страница.
+  if (any(p, ["=вниз", "ниже"]) && !any(p, T.nav)) return { say: "", action: { type: "step", delta: 1 } };
+  if (any(p, ["=вверх", "выше"]) && !any(p, T.nav)) return { say: "", action: { type: "step", delta: -1 } };
+
+  // Нажать кнопку на экране: «нажми узнать больше на графике».
+  if (!noPress && any(p, T.press)) return { say: "", action: { type: "click", query: raw } };
 
   const svc = findService(p);
   const ordinal = findOrdinal(p);
@@ -205,6 +294,10 @@ export function parseCommand(raw: string, pathname: string, loose = false): Voic
   // 3. Вопрос без глагола перехода — честнее ответить, чем молча листать.
   //    «Сколько стоит сайт?» уходит к ИИ; «покажи, сколько стоит сайт» — нет.
   if (!loose && any(p, T.question) && !navVerb && !ordinal) return null;
+
+  // Подстраница с сильным совпадением («агент по заявкам») важнее брифа.
+  const { sub, score: subScore } = findSubpage(p);
+  if (sub && subScore >= 2 && !ordinal) return { say: `${sub.label}.`, action: { type: "route", href: sub.href } };
 
   // 4. Заявка и подбор — до разделов: «заявка на сайт» — это бриф.
   if (any(p, T.brief)) {
@@ -218,6 +311,13 @@ export function parseCommand(raw: string, pathname: string, loose = false): Voic
   if (any(p, T.pageWord) && !svc && !block) {
     if (any(p, T.next)) return { say: "", action: { type: "page", delta: 1 } };
     if (any(p, T.prev)) return { say: "", action: { type: "page", delta: -1 } };
+  }
+
+  if (any(p, T.top)) return { say: "", action: { type: "top" } };
+
+  // 5б. Подстраница: «страница лендингов», «покажи рилс», «AI-аналитика».
+  if (sub && !block && !ordinal) {
+    return { say: `${sub.label}.`, action: { type: "route", href: sub.href } };
   }
 
   // 6. Номер главы: «покажи третий блок», «глава пять».
