@@ -1,7 +1,11 @@
 "use client";
-import { isWelcomeOpen } from "@/lib/welcome-freeze";
+import { frozenFor } from "@/lib/welcome-freeze";
 
 import { useEffect, useRef } from "react";
+
+// Спящий режим (prop `sleepy`): скорость времени и шаг кадра в покое.
+const SLEEP_RATE = 0.5;
+const SLEEP_FRAME_MS = 50;
 
 // Знак голосового ассистента (Егор, 2026-09-26): «в стиле нашей сферы, но
 // другая иконка — полоса частот, горизонтальная, вибрирует, а когда
@@ -33,6 +37,7 @@ export default function NanoWave({
   level,
   sparkle = false,
   particles = true,
+  sleepy = false,
 }: {
   width?: number;
   height?: number;
@@ -50,6 +55,9 @@ export default function NanoWave({
   sparkle?: boolean;
   /** Пыль с концов волны. Нижней волне-кнопке — без частиц (Егор, 2026-09-27). */
   particles?: boolean;
+  /** Спящий режим (нижняя волна): в покое вдвое медленнее и 20 кадров/с,
+   *  при наведении, голосе и всплеске — полная скорость. */
+  sleepy?: boolean;
 }) {
   const wrapRef = useRef<HTMLSpanElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -358,19 +366,28 @@ export default function NanoWave({
     if (still) {
       draw(1.3);
     } else {
-      const start = performance.now();
       const frameMs = light ? 33 : 0;
       let last = 0;
-      const behindWelcome = !wrap.closest(".welcome-shell");
+      // Собственные часы волны: стоят, пока она не рисуется, и в спящем
+      // режиме идут медленнее.
+      let clock = 0;
+      let rate = 1;
+      const frozen = frozenFor(wrap);
       const loop = (now: number) => {
         raf = requestAnimationFrame(loop);
         // Вне экрана и в фоновой вкладке не рисуем вовсе.
-        if (!onScreen || document.hidden) return;
-        // За стартовым окном волна замирает, пока оно открыто.
-        if (behindWelcome && isWelcomeOpen()) return;
-        if (now - last < frameMs) return;
+        if (!onScreen || document.hidden || frozen()) {
+          last = 0;
+          return;
+        }
+        // Спящий режим: без наведения, голоса и всплеска волна течёт
+        // медленно и рисуется реже; курсор рядом будит её сразу.
+        const awake = !sleepy || hotRef.current || inside || hoverS > 0.02 || energy > 1.25;
+        rate += ((awake ? 1 : SLEEP_RATE) - rate) * 0.15;
+        if (now - last < (awake ? frameMs : Math.max(frameMs, SLEEP_FRAME_MS))) return;
+        if (last) clock += Math.min(now - last, 100) * rate;
         last = now;
-        draw(Math.max(0, now - start) / 1000);
+        draw(clock / 1000);
       };
       raf = requestAnimationFrame(loop);
     }
@@ -383,7 +400,7 @@ export default function NanoWave({
       window.removeEventListener("pointerdown", onDown);
       document.documentElement.removeEventListener("pointerleave", onOut);
     };
-  }, [width, height, padX, padY, dust, sparkle, particles]);
+  }, [width, height, padX, padY, dust, sparkle, particles, sleepy]);
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width, height }} aria-hidden="true">

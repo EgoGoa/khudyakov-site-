@@ -1,5 +1,6 @@
 "use client";
 
+import { useBootPreload } from "@/lib/boot-sequence";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import LeadModal from "@/components/home/LeadModal";
@@ -75,6 +76,7 @@ export default function PromoCard({
    *  background rather than something floating over the copy. */
   decor?: ReactNode;
 }) {
+  const bootPreload = useBootPreload();
   const [open, setOpen] = useState(false);
   const cyan = palette === "cyan";
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -152,7 +154,7 @@ export default function PromoCard({
               muted
               loop
               playsInline
-              preload="metadata"
+              preload={bootPreload}
               style={{ objectPosition: imageAlign }}
               className="promo-card-image promo-card-video pointer-events-none absolute inset-0 h-full w-full object-cover"
             />

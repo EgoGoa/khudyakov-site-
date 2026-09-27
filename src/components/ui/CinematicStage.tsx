@@ -1,5 +1,6 @@
 "use client";
 
+import { useBootPreload } from "@/lib/boot-sequence";
 import {
   createContext,
   useContext,
@@ -216,6 +217,7 @@ export default function CinematicStage({
   rail?: ReactNode;
   children: ReactNode;
 }) {
+  const bootPreload = useBootPreload();
   const videoRef = useRef<HTMLVideoElement>(null);
   // Blur and the push-zoom transform land on this wrapper, not on the
   // <video> element itself. Safari composites a hardware-decoded <video>
@@ -1185,7 +1187,7 @@ export default function CinematicStage({
               // до дека вообще не долистывал. `auto` всё же нужен, но
               // позже: глава перематывает ролик по фазам, и без полной
               // буферизации переход между главами ловит паузу на подгрузку.
-              preload={started ? "auto" : "metadata"}
+              preload={started ? "auto" : bootPreload}
               aria-hidden="true"
               onLoadedMetadata={() => {
                 const video = videoRef.current;

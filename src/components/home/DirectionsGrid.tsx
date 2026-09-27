@@ -1,5 +1,6 @@
 "use client";
 
+import { useBootPreload } from "@/lib/boot-sequence";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import Appear from "@/components/ui/Appear";
@@ -41,6 +42,7 @@ function pickWorks(directions: ContentDirection[]): (Work | undefined)[] {
 // uses on ServicePicker for its one background video); at rest it shows the
 // poster frame instead of decoding anything.
 function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolean }) {
+  const bootPreload = useBootPreload();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // The `autoPlay` attribute only fires the moment a <video> starts loading
@@ -68,7 +70,7 @@ function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolea
       muted
       loop
       playsInline
-      preload="metadata"
+      preload={bootPreload}
     />
   );
 }
@@ -93,6 +95,7 @@ function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolea
 // hover colour "Подробнее ↗" already used on this exact link before this
 // change folded it into the whole card.
 function DirectionCard({ direction, work, active }: { direction: ContentDirection; work?: Work; active: boolean }) {
+  const bootPreload = useBootPreload();
   return (
     <div
       className="deck-card-glow relative flex h-full min-h-0 max-sm:gap-4 sm:min-h-[190px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
@@ -141,7 +144,7 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
               muted
               loop
               playsInline
-              preload="metadata"
+              preload={bootPreload}
               autoPlay={active}
               className="h-full w-full object-cover"
             />

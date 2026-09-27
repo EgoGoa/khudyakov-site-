@@ -2,9 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { WIN_SIDE } from "@/lib/motion";
 import NanoSphere from "@/components/ui/NanoSphere";
+import { DustyOrb } from "@/components/ui/SphereDust";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { playUi } from "@/lib/sound";
+import { useSiteFreeze } from "@/lib/use-site-freeze";
 import { TEAM } from "@/lib/team";
 import { OPEN_VIBE_EVENT } from "@/lib/voice/store";
 import { CONTACT_KEY, ORB_FROM, ORB_TO, TELEGRAM } from "@/components/vibe/VibeMode";
@@ -13,14 +16,13 @@ import {
   blockKind,
   blockQuestions,
   estimateBlock,
-  exampleWorks,
+  blockExamples,
   lastSphere,
   serviceOf,
   setTunedBlock,
   tuneBlock,
   useTunedBlock,
   useTunedProgress,
-  workThumb,
   type BlockAnswers,
 } from "@/lib/block-vibe";
 
@@ -100,6 +102,10 @@ export default function BlockVibe({
   const [pulse, setPulse] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // Пока окошко открыто, сайт за ним замирает (Егор, 2026-09-27: «сайт за
+  // окошками вайб-режима подвисает») — живёт только само окошко.
+  useSiteFreeze();
+
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(CONTACT_KEY) ?? "null") as { name?: string; contact?: string } | null;
@@ -147,7 +153,7 @@ export default function BlockVibe({
   };
   const answered = q ? (Array.isArray(current) ? current.length > 0 : Boolean(current)) : true;
 
-  const examples = exampleWorks(typeof answers.sphere === "string" ? answers.sphere : undefined);
+  const examples = blockExamples(service, answers);
   const pickedWorks = Array.isArray(answers.works) ? answers.works : [];
   const toggleWork = (id: string) => {
     setAnswers((prev) => {
@@ -222,10 +228,10 @@ export default function BlockVibe({
       aria-label={`Персонализировать блок «${label}»`}
       // Без filter на самом окошке: любой filter (даже blur(0)) выключает
       // его backdrop-filter, и стекло становится прозрачным.
-      initial={{ opacity: 0, x: 28, scale: 0.97 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 28, scale: 0.97 }}
-      transition={{ duration: 0.5, ease: EASE }}
+      // Общая анимация окон сайта, боковой вариант (WIN_SIDE, lib/motion).
+      initial={WIN_SIDE.initial}
+      animate={WIN_SIDE.animate}
+      exit={WIN_SIDE.exit}
       className="block-vibe"
     >
       <div aria-hidden="true" className="block-vibe__aurora" />
@@ -233,7 +239,7 @@ export default function BlockVibe({
       {/* Шапка без крестика (Егор: крестик вниз, к «Дальше») — место
           отдано крупной сфере и названию блока. */}
       <header className="relative flex items-center gap-4 pl-1">
-        <NanoSphere size={50} from={ORB_FROM} to={ORB_TO} hot pulse={pulse} glow={0.35} />
+        <DustyOrb><NanoSphere size={50} from={ORB_FROM} to={ORB_TO} hot pulse={pulse} glow={0.35} /></DustyOrb>
         <div className="min-w-0 flex-1">
           <div className="text-[10px] uppercase tracking-[0.16em]">
             <span className="vibe-mode__wordmark-vibe">Vibe</span>-блок
@@ -294,7 +300,7 @@ export default function BlockVibe({
                 <h3 className="block-vibe__title">
                   Покажи, что <Accent text="*нравится*" />
                 </h3>
-                <p className="block-vibe__hint">Отметь до 3 работ или прикрепи свои скрины</p>
+                <p className="block-vibe__hint">Отметь до 3 вариантов или прикрепи свои скрины</p>
                 <div className="mt-4 grid grid-cols-3 gap-1.5">
                   {examples.map((w) => (
                     <button
@@ -306,7 +312,8 @@ export default function BlockVibe({
                       className={`block-vibe__work ${pickedWorks.includes(w.id) ? "is-on" : ""}`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element -- готовые обложки из public */}
-                      <img src={workThumb(w)} alt={w.title} loading="lazy" />
+                      <img src={w.image} alt="" loading="lazy" />
+                      <span className="block-vibe__work-name">{w.title}</span>
                       {pickedWorks.includes(w.id) && <span className="block-vibe__tick">✓</span>}
                     </button>
                   ))}
@@ -360,7 +367,7 @@ export default function BlockVibe({
 
             {step === questions.length + 2 && (
               <div className="flex flex-col items-center pt-12 text-center">
-                <NanoSphere size={84} from={ORB_FROM} to={ORB_TO} hot pulse={pulse} glow={0.35} />
+                <DustyOrb><NanoSphere size={84} from={ORB_FROM} to={ORB_TO} hot pulse={pulse} glow={0.35} /></DustyOrb>
                 <h3 className="block-vibe__title mt-6">
                   Собираю <Accent text="*блок*" />…
                 </h3>

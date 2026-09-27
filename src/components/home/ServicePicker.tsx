@@ -1,5 +1,6 @@
 "use client";
 
+import { useBootPreload } from "@/lib/boot-sequence";
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -168,14 +169,18 @@ export function NeonChevron({
 // slide is actually the visible one (not just opacity:0'd behind the others)
 // keeps the other three plain <img> slides free of any decode/CPU cost.
 function SlideVideo({ src, poster, active }: { src: string; poster: string; active: boolean }) {
+  const bootPreload = useBootPreload();
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Играть — только когда очередь загрузки дошла до блоков: play() качает
+  // ролик в обход preload="none".
+  const ready = bootPreload !== "none";
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (active) video.play().catch(() => {});
+    if (active && ready) video.play().catch(() => {});
     else video.pause();
-  }, [active]);
+  }, [active, ready]);
 
   return (
     <video
@@ -185,7 +190,7 @@ function SlideVideo({ src, poster, active }: { src: string; poster: string; acti
       muted
       loop
       playsInline
-      preload="metadata"
+      preload={bootPreload}
       aria-hidden="true"
       className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out"
       style={{ opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(1.06)" }}

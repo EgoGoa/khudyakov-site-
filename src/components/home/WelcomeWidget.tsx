@@ -171,8 +171,11 @@ function useFrameFit(enabled: boolean) {
       const wide = window.innerWidth >= 768;
       // На компьютере — постоянный макет по ширине; на телефоне сцена
       // занимает всю ширину окна, масштаб задаёт только высота.
+      // На телефоне меню во весь экран, поэтому по бокам 14px воздуха —
+      // иначе карточки упираются в края экрана.
+      const gutter = wide ? 0 : 14;
       const scale = wide ? Math.min(1, bh / FRAME_H, bw / FRAME_W) : Math.min(1, bh / FRAME_H);
-      const width = wide ? FRAME_W : bw / scale;
+      const width = wide ? FRAME_W : (bw - gutter * 2) / scale;
       setFit({ scale, width, left: (bw - width * scale) / 2 });
     };
     measure();
@@ -358,7 +361,9 @@ function VibeCard({ show, instant, onOpen }: { show: boolean; instant: boolean; 
       </button>
       {/* Частицы от сферы — общая механика (ui/SphereDust); холст выступает
           за окошко на 34px, разлёт растянут по ширине окошка. */}
-      <SphereDust run={inner} orbRef={orbRef} bleed={34} stretch={[1.7, 0.7]} />
+      {/* Втрое меньше частиц и короткий разлёт — облако только вокруг сферы
+          (Егор, 2026-09-27). */}
+      <SphereDust run={inner} orbRef={orbRef} bleed={34} stretch={[1.7, 0.7]} density={0.33} spread={0.35} />
     </motion.div>
   );
 }

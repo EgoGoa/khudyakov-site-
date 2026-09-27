@@ -1,5 +1,6 @@
 "use client";
 
+import { useBootPreload } from "@/lib/boot-sequence";
 import { useEffect, useRef, useState } from "react";
 import { useChapterActive } from "@/components/ui/Appear";
 import type { BlockMediaSpec } from "./types";
@@ -100,6 +101,7 @@ const SCRIM = {
 } as const;
 
 export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
+  const bootPreload = useBootPreload();
   const videoRef = useRef<HTMLVideoElement>(null);
   const active = useChapterActive();
   // `<video>` paints an opaque black rectangle for every frame it hasn't
@@ -241,7 +243,7 @@ export default function BlockMedia({ media }: { media: BlockMediaSpec }) {
               // decode and hold a real frame immediately, at a small fraction
               // of "auto"'s full-file cost — cheap enough to do for every
               // block's clip up front instead of only once scrolled to.
-              preload="metadata"
+              preload={bootPreload}
               onLoadedData={() => setVideoReady(true)}
               onPlaying={() => setVideoReady(true)}
               className="relative h-full w-full object-cover transition-opacity duration-300 ease-out"

@@ -1,8 +1,10 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { BOOT, useBootStage } from "@/lib/boot-sequence";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { AnimatePresence, motion } from "framer-motion";
+import { WIN_DIM } from "@/lib/motion";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useHeaderMenu } from "@/lib/header-menu";
 import { useCinematicGoTo } from "@/lib/cinematic-nav";
@@ -627,6 +629,15 @@ export default function VibeRail() {
     return () => window.removeEventListener(OPEN_VIBE_EVENT, open);
   }, []);
   const [sheetOpen, setSheetOpen] = useState(false);
+  // Кружок веера, у которого показана подпись: первый тап по кружку её
+  // открывает, второй — ведёт на страницу.
+  const [armedId, setArmedId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!sheetOpen) setArmedId(null);
+  }, [sheetOpen]);
+  // Сфера и её частицы — этап `sphere` очереди загрузки (lib/boot-sequence):
+  // собираются после первого экрана и блоков, меню под ней — следом.
+  const sphereOn = useBootStage(BOOT.sphere);
   const crownRef = useRef<HTMLButtonElement>(null);
   const fanOrbRef = useRef<HTMLButtonElement>(null);
   // Vibe-блок (Егор, 2026-09-27): клик по разделу страницы едет к блоку и
@@ -719,25 +730,36 @@ export default function VibeRail() {
           onClick={() => setVibeOpen(true)}
           aria-label="Vibe-режим"
           aria-haspopup="dialog"
-          className="vibe-bubble vibe-bubble--crown mb-1"
+          className="boot-sphere vibe-bubble vibe-bubble--crown vibe-live mb-1"
           ref={crownRef}
         >
-          <NanoSphere size={36} from={accent.from} to={accent.to} soft />
+          {/* Сфера собирается той же анимацией, что в вайб-окне (Егор,
+              2026-09-27): при загрузке, после стартового окна и на каждой
+              новой странице — старая растворяется, новая собирается в цвете
+              новой страницы. */}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span key={railPath} className="block" exit={{ opacity: 0, scale: 0.7, filter: "blur(4px)" }} transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1] }}>
+              {sphereOn && <NanoSphere size={36} from={accent.from} to={accent.to} soft cloud sleepy intro="implode" hot={vibeOpen || pickerOpen || !!blockItem} />}
+            </motion.span>
+          </AnimatePresence>
           {/* Частицы от сферы — та же механика, что в стартовом окошке и
               вайб-окне, но реже, медленнее, мельче, тусклее и держатся
               ближе к сфере (Егор, 2026-09-27). */}
-          <SphereDust orbRef={crownRef} bleed={42} density={0.24} speed={0.35} brightness={0.6} scale={0.8} />
+          {sphereOn && <SphereDust orbRef={crownRef} sleepy bleed={42} density={0.1} speed={0.35} brightness={0.6} scale={0.8} />}
           <span className="vibe-tip font-display">Vibe</span>
         </button>
         {[...pageItems, ...crossPageItems].map((item, i) => (
           <Fragment key={item.id}>
-            {i === pageItems.length && pageItems.length > 0 && <span aria-hidden="true" className="my-0.5 h-px w-4 bg-paper/20" />}
+            {i === pageItems.length && pageItems.length > 0 && <span aria-hidden="true" className="boot-rail my-0.5 h-px w-4 bg-paper/20" style={{ "--boot-i": i } as CSSProperties} />}
             <button
               type="button"
               onClick={() => openItem(item)}
               aria-label={item.label}
               aria-current={item.id === activeRailId ? "true" : undefined}
-              className={`vibe-bubble ${item.id === activeRailId ? "is-active" : ""}`}
+              // Меню опускается из-под сферы по одной кнопке — этап `rail`
+              // очереди загрузки (globals.css, .boot-rail).
+              className={`boot-rail vibe-bubble ${item.id === activeRailId ? "is-active" : ""}`}
+              style={{ "--boot-i": i } as CSSProperties}
             >
               {item.glyph}
               <span className="vibe-tip font-display">
@@ -753,7 +775,9 @@ export default function VibeRail() {
           ней одна за другой вылетают круглые кнопки разделов, самая верхняя —
           Vibe-режим (открывает вайб-окно по центру). Повторный тап по сфере
           или тап мимо — кнопки складываются обратно в сферу. Кружки в
-          полтора раза мельче десктопных, но зона нажатия у каждого 40px. */}
+          полтора раза мельче десктопных, но зона нажатия у каждого 40px.
+          Подписи скрыты: тап по кружку показывает его подпись, второй тап
+          по нему — переход (Егор, 2026-09-27). */}
       <AnimatePresence>
         {sheetOpen && (
           <motion.div
@@ -799,6 +823,10 @@ export default function VibeRail() {
                     open: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 520, damping: 30 } },
                   }}
                   onClick={() => {
+                    if (armedId !== item.id) {
+                      setArmedId(item.id);
+                      return;
+                    }
                     setSheetOpen(false);
                     if (item.vibe) setVibeOpen(true);
                     else openItem(item as RailItem);
@@ -807,7 +835,7 @@ export default function VibeRail() {
                   aria-current={!item.vibe && item.id === activeRailId ? "true" : undefined}
                   className={`vibe-fan__btn${item.vibe ? " vibe-fan__btn--vibe" : ""}${
                     !item.vibe && item.id === activeRailId ? " is-active" : ""
-                  }`}
+                  }${armedId === item.id ? " is-armed" : ""}`}
                 >
                   <span className="vibe-fan__label font-display">{item.label}</span>
                   <span className="vibe-fan__dot">{item.vibe ? <span className="vibe-fan__spark">✦</span> : item.glyph}</span>
@@ -822,11 +850,15 @@ export default function VibeRail() {
           aria-haspopup="true"
           aria-expanded={sheetOpen}
           aria-label={sheetOpen ? "Свернуть меню" : "Vibe меню"}
-          className="vibe-fan__orb"
+          className="boot-sphere vibe-fan__orb vibe-live"
           ref={fanOrbRef}
         >
-          <NanoSphere size={34} from={accent.from} to={accent.to} hot={sheetOpen} />
-          <SphereDust orbRef={fanOrbRef} bleed={60} density={0.3} speed={0.5} />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span key={railPath} className="block" exit={{ opacity: 0, scale: 0.7, filter: "blur(4px)" }} transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1] }}>
+              {sphereOn && <NanoSphere size={34} from={accent.from} to={accent.to} sleepy hot={sheetOpen || vibeOpen || pickerOpen || !!blockItem} cloud intro="implode" />}
+            </motion.span>
+          </AnimatePresence>
+          {sphereOn && <SphereDust orbRef={fanOrbRef} sleepy bleed={60} density={0.12} speed={0.5} />}
         </button>
       </div>
 
@@ -837,10 +869,11 @@ export default function VibeRail() {
             key="block-vibe-dim"
             aria-hidden="true"
             className="block-vibe-dim"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            initial={WIN_DIM.initial}
+            animate={WIN_DIM.animate}
+            exit={WIN_DIM.exit}
+            // Клик по сайту за окошком закрывает его, как у всех окон.
+            onClick={() => setBlockItem(null)}
           />
         )}
         {blockItem && (

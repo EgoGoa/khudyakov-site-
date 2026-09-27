@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { BOOT, useBootStage } from "@/lib/boot-sequence";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import NanoWave from "@/components/ui/NanoWave";
+import { MOODS, sound } from "@/lib/sound";
 import { CloseIcon, PhoneIcon, SendIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
@@ -13,9 +15,11 @@ import { serviceMeta, serviceOrder } from "@/lib/service-content";
 import { blocksFor } from "@/lib/welcome-blocks";
 import { CONTACTS, normalize, parseCommand, serviceFromPath, type VoiceAction } from "@/lib/voice/intents";
 import TeamConsultModal from "@/components/home/TeamConsultModal";
+import VoiceTour from "@/components/layout/VoiceTour";
 import { TEAM } from "@/lib/team";
 import {
   OPEN_VIBE_EVENT,
+  TOUR_KEY,
   VOICE_NAV_EVENT,
   getVoiceState,
   registerVoiceEngine,
@@ -545,6 +549,8 @@ export default function VoiceAssistant() {
         case "whatsapp":
           setVoiceState({ contact: "whatsapp" });
           return { after: () => void window.open(CONTACTS.whatsapp, "_blank", "noopener") };
+        case "music":
+          return musicAct(a);
         default:
           return {};
       }
@@ -700,6 +706,12 @@ export default function VoiceAssistant() {
       tap: (inStage?: boolean) => {
         const st = getVoiceState();
         if (!st.enabled) {
+          // Первое нажатие — сначала знакомство: что умеет голос и короткая
+          // тренировка (Егор, 2026-09-27). Голос включается внутри него.
+          if (!inStage && !readFlag(TOUR_KEY)) {
+            setVoiceState({ tour: true, invite: false });
+            return;
+          }
           enable();
           return;
         }
@@ -761,9 +773,21 @@ export default function VoiceAssistant() {
     };
   }, []);
 
+  // Музыка уступает голосу: пока человек говорит (идёт распознавание),
+  // ассистент думает или отвечает, плеер плавно тише, потом возвращается —
+  // как музыка в машине под навигатор. Просто включённое «слушание» без
+  // речи музыку не трогает, иначе с голосом она была бы тихой всегда.
+  const talking = s.status === "speaking" || s.status === "thinking" || (s.status === "listening" && !!s.live);
+  useEffect(() => {
+    sound()?.duck(talking);
+  }, [talking]);
+
   const svc = serviceFromPath(pathname);
   const accent = PAGE_GRADIENT[svc ?? "content"];
-  const showFloating = s.inlineCount === 0 && !s.panelOpen;
+  // Волна внизу — этап `voice` очереди загрузки (lib/boot-sequence): после
+  // первого экрана и сферы вайб-бара.
+  const voiceOn = useBootStage(BOOT.voice);
+  const showFloating = voiceOn && s.inlineCount === 0 && !s.panelOpen && !s.tour;
 
   return (
     <>
@@ -786,11 +810,49 @@ export default function VoiceAssistant() {
         {s.panelOpen && <VoicePanel key="voice-panel" from={accent.from} to={accent.to} />}
       </AnimatePresence>
 
+      <AnimatePresence>{s.tour && <VoiceTour key="voice-tour" from={accent.from} to={accent.to} />}</AnimatePresence>
+
       {s.team && TEAM[s.team] && (
         <TeamConsultModal open onClose={() => setVoiceState({ team: null })} member={TEAM[s.team]} />
       )}
     </>
   );
+}
+
+/** Голосовые команды плееру (lib/sound). Выполняются молча, как и
+ *  навигация; вслух — только «что играет» и «здесь пока нет треков». */
+function musicAct(a: Extract<VoiceAction, { type: "music" }>): { say?: string } {
+  const s = sound();
+  if (!s) return {};
+  switch (a.op) {
+    case "play": {
+      if (a.mood) {
+        const m = MOODS.find((x) => x.id === a.mood);
+        if (!m?.tracks.length) return { say: `Треки для настроения «${m?.label}» ещё подбираем.` };
+        s.moodPicked = true;
+        s.setMood(a.mood);
+      }
+      if (!s.musicPlaying) s.toggleMusic(true);
+      return {};
+    }
+    case "pause":
+      s.toggleMusic(false);
+      return {};
+    case "next":
+    case "prev":
+      if (!s.musicPlaying) s.toggleMusic(true);
+      s.skip(a.op === "next" ? 1 : -1);
+      return {};
+    case "louder":
+    case "quieter":
+      s.setVolume(s.settings.volume + (a.op === "louder" ? 0.15 : -0.15));
+      return {};
+    case "what": {
+      const t = s.track;
+      if (!s.musicPlaying || !t) return { say: "Сейчас музыка не играет. Скажи «включи музыку»." };
+      return { say: `Играет «${t.title}», ${t.artist}. Настроение — ${s.mood.label}.` };
+    }
+  }
 }
 
 /** Волна-кнопка: полупрозрачная в покое, проявляется при наведении и
@@ -807,7 +869,7 @@ function VoiceWaveButton({ width, height, from, to }: { width: number; height: n
       style={{ "--g-from": from, "--g-to": to } as CSSProperties}
     >
       <span className="voice-sphere-core relative grid place-items-center">
-        <NanoWave width={width} height={height} from={from} to={to} hot={live} pulse={s.pulse} level={getVoiceLevel} particles={false} />
+        <NanoWave width={width} height={height} from={from} to={to} hot={live} pulse={s.pulse} level={getVoiceLevel} particles={false} sleepy />
       </span>
     </button>
   );
@@ -815,14 +877,47 @@ function VoiceWaveButton({ width, height, from, to }: { width: number; height: n
 
 /** Волна с тем, что над ней: приглашение включить голос или короткая
  *  подпись — что услышано и что ответил ассистент (пока окно закрыто). */
-function VoiceDock({ width, height, from, to }: { width: number; height: number; from: string; to: string }) {
+function VoiceDock({
+  width,
+  height,
+  from,
+  to,
+  waveOnly = false,
+}: {
+  width: number;
+  height: number;
+  from: string;
+  to: string;
+  /** Только волна, без приглашения и подписей над ней (вайб-окно). */
+  waveOnly?: boolean;
+}) {
+  // На телефоне волна вдвое меньше (Егор, 2026-09-27): полноразмерная
+  // закрывала низ экрана. Рисуем меньший холст, а не сжимаем CSS-ом, —
+  // так линии остаются чёткими.
+  const phone = usePhone();
+  if (phone) {
+    width = Math.round(width / 2);
+    height = Math.round(height / 2);
+  }
   return (
     <div className="voice-dock" data-voice-ui style={{ "--g-from": from, "--g-to": to } as CSSProperties}>
-      <VoiceInvite />
-      <VoiceCaption />
+      {!waveOnly && <VoiceInvite />}
+      {!waveOnly && <VoiceCaption />}
       <VoiceWaveButton width={width} height={height} from={from} to={to} />
     </div>
   );
+}
+
+function usePhone() {
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const sync = () => setPhone(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return phone;
 }
 
 function VoiceInvite() {
@@ -923,12 +1018,24 @@ function VoiceCaption() {
 
 /** Встроенная волна для стартовой сцены: пока она на экране, плавающая
  *  прячется. */
-export function InlineVoiceSphere({ from, to }: { from: string; to: string }) {
+export function InlineVoiceSphere({
+  from,
+  to,
+  width = 240,
+  height = 56,
+  waveOnly = false,
+}: {
+  from: string;
+  to: string;
+  width?: number;
+  height?: number;
+  waveOnly?: boolean;
+}) {
   useEffect(() => {
     setVoiceState((st) => ({ inlineCount: st.inlineCount + 1 }));
     return () => setVoiceState((st) => ({ inlineCount: Math.max(0, st.inlineCount - 1) }));
   }, []);
-  return <VoiceDock width={240} height={56} from={from} to={to} />;
+  return <VoiceDock width={width} height={height} from={from} to={to} waveOnly={waveOnly} />;
 }
 
 /** Окно ассистента по центру экрана (Егор: «никаких чатов, никаких слов —

@@ -18,37 +18,35 @@
 // петля не обрывается, а уходит в очень тихий фон и крутится, пока человек
 // в этой главе; следующая глава — петли перетекают одна в другую.
 
-export type MoodId = "focus" | "confident" | "jazzhop" | "nightdrive" | "tokyo" | "classic";
+export type MoodId = "focus" | "chill" | "jazzhop" | "nightdrive" | "tokyo" | "soul";
+
+export type Track = { src: string; title: string; artist: string };
 
 export type Mood = {
   id: MoodId;
   label: string;
   genre: string;
   /** Треки настроения, по кругу. Пустой список — «скоро». */
-  tracks: string[];
+  tracks: Track[];
 };
 
 // Треки — Pixabay (Pixabay Content License, можно на сайт без указания
 // автора), подобраны под референсы Егора. Лежат на своём домене в
 // public/audio/music, выровнены по громкости к −16 LUFS, 128 кбит/с.
 // Грузятся только когда человек сам включил музыку (preload="none").
-const M = (f: string) => `/audio/music/${f}.mp3`;
+const M = (f: string, title: string, artist: string): Track => ({ src: `/audio/music/${f}.mp3`, title, artist });
 
 // Названия — только настроения, в одном ключе (Егор: «фокус, расслабление,
 // драйв…»), жанр идёт мелкой подписью справа.
 export const MOODS: Mood[] = [
-  // leberch — Deep Concentration; alex-morgan — Focus Music
-  { id: "focus", label: "Фокус", genre: "deep flow", tracks: [M("focus-1"), M("focus-2")] },
-  // NickPanek — Mocking; MoonpetalMedia — Moonshine & Magnolia
-  { id: "confident", label: "Уверенность", genre: "тёмный блюз", tracks: [M("confident-1"), M("confident-2")] },
-  // VibeCroft — Jazzy Boom Bap Hip-Hop; Rockot — Luxurious Layer
-  { id: "jazzhop", label: "Расслабление", genre: "джаз-хипхоп", tracks: [M("jazzhop-1"), M("jazzhop-2")] },
-  // AlexGrohl — Night Drive; 9JackJack8 — City Lights
-  { id: "nightdrive", label: "Драйв", genre: "дип-хаус", tracks: [M("nightdrive-1"), M("nightdrive-2")] },
-  // vjgalaxy — Dark Melodic Techno 01, Melodic Techno 04
-  { id: "tokyo", label: "Энергия", genre: "техно", tracks: [M("tokyo-1"), M("tokyo-2")] },
-  // JuliusH — String Adagio; FluxSound — Soft Cinematic Strings
-  { id: "classic", label: "Вдохновение", genre: "классика", tracks: [M("classic-1"), M("classic-2")] },
+  { id: "focus", label: "Фокус", genre: "deep flow", tracks: [M("focus-1", "Deep Concentration", "leberch"), M("focus-2", "Focus Music", "Alex Morgan")] },
+  // Чил — замена «Уверенности» (блюз убран, Егор 2026-09-27). Треки подбираются.
+  { id: "chill", label: "Чил", genre: "чилаут", tracks: [] },
+  { id: "jazzhop", label: "Расслабление", genre: "джаз-хипхоп", tracks: [M("jazzhop-1", "Jazzy Boom Bap", "VibeCroft"), M("jazzhop-2", "Luxurious Layer", "Rockot")] },
+  { id: "nightdrive", label: "Драйв", genre: "дип-хаус", tracks: [M("nightdrive-1", "Night Drive", "AlexGrohl"), M("nightdrive-2", "City Lights", "9JackJack8")] },
+  { id: "tokyo", label: "Энергия", genre: "техно", tracks: [M("tokyo-1", "Dark Melodic Techno", "vjgalaxy"), M("tokyo-2", "Melodic Techno 04", "vjgalaxy")] },
+  // Соул — вместо «Вдохновения» (классика убрана, Егор 2026-09-27). Треки подбираются.
+  { id: "soul", label: "Соул", genre: "соул", tracks: [] },
 ];
 
 export type UiSound = "hover" | "click" | "open" | "close" | "swipe" | "chapter" | "windows" | "toggle";
@@ -77,17 +75,8 @@ const SCENES: Record<string, Scene[]> = {
     { loop: S("evening-cicadas") },
     { loop: S("evening-cicadas"), shots: [{ file: S("garage-car-start"), at: 1.2 }] },
   ],
-  // посадка в машину, дорога, гепард, ночная вилла, приезд. Мотор —
-  // спортивный оппозитник, и он живёт вместе с кадром: машина едет —
-  // мотор слышен, кадр замер — мотор уходит почти в тишину (motion).
-  sites: [
-    { loop: S("sports-car-cruise"), motion: true, shots: [{ file: S("sports-car-start"), at: 0.1, gain: 0.8 }] },
-    { loop: S("sports-car-cruise"), motion: true },
-    { loop: S("sports-car-cruise"), motion: true, shots: [{ file: S("sports-car-flyby"), at: 0.6, gain: 0.8 }] },
-    { loop: S("sports-car-cruise"), motion: true },
-    { loop: S("evening-cicadas") },
-    { loop: S("evening-cicadas"), shots: [{ file: S("car-door"), at: 0.6 }] },
-  ],
+  // /sites — без окружения (Егор, 2026-09-27: звуки мотора и сцен
+  // «не те»). Остаются только звуки интерфейса, как на /content.
   // ночная терраса → вечеринка → бассейн и звездопад → танцы → рассвет
   smm: [
     { loop: S("evening-cicadas") },
@@ -122,6 +111,8 @@ const LEVEL = {
 const FADE_IN = 1.6;
 const FADE_TO_HOLD = 2.8;
 const FADE_OUT = 1.4;
+/** Сколько секунд треки перетекают друг в друга. */
+const XFADE = 2.5;
 
 type Settings = { sfx: boolean; music: boolean; mood: MoodId; volume: number };
 const KEY = "hdkv-sound-v1";
@@ -161,13 +152,21 @@ class SoundEngine {
   private loop: Loop | null = null;
   private shotTimers: number[] = [];
   private sceneWanted: { page: string; index: number; hold: boolean } | null = null;
-  private audioEl: HTMLAudioElement | null = null;
+  // Две «деки», как у диджея: пока одна доигрывает, вторая плавно
+  // вступает — треки перетекают друг в друга без обрыва и тишины.
+  private decks: { el: HTMLAudioElement; gain: GainNode }[] = [];
+  private deck = 0;
+  private crossing = false;
+  private musicDuck!: GainNode;
   private trackIndex = 0;
   private listeners = new Set<() => void>();
   private lastHover = 0;
   settings: Settings = DEFAULTS;
   unlocked = false;
   musicPlaying = false;
+  /** Человек сам выбрал настроение за этот визит — плеер больше не
+   *  подставляет настроение под страницу. */
+  moodPicked = false;
 
   init() {
     this.settings = readSettings();
@@ -228,6 +227,10 @@ class SoundEngine {
       this.sceneTone.connect(this.sceneEcho);
       this.sceneEcho.connect(this.space);
       this.musicBus = this.bus(LEVEL.music);
+      // Приглушение под голос ассистента — отдельный узел, чтобы не
+      // спорить с плавным включением и выключением музыки на musicBus.
+      this.musicDuck = this.ctx.createGain();
+      this.musicDuck.connect(this.musicBus);
       // Анализатор на музыкальной шине — по нему дорожка в шапке пульсирует
       // в такт настоящему треку, а не по заготовленной анимации.
       this.analyser = this.ctx.createAnalyser();
@@ -587,10 +590,20 @@ class SoundEngine {
   }
 
   setMood(id: MoodId) {
+    if (id === this.settings.mood) return;
     this.settings = { ...this.settings, mood: id };
     this.trackIndex = 0;
-    if (this.musicPlaying) this.startMusic();
+    if (this.musicPlaying) this.crossTo(0);
     this.emit();
+  }
+
+  /** Музыка уступает голосу: пока ассистент слушает или говорит, она
+   *  плавно тише, потом так же плавно возвращается. */
+  duck(on: boolean) {
+    if (!this.ctx || !this.musicDuck) return;
+    const g = this.musicDuck.gain;
+    g.cancelScheduledValues(this.ctx.currentTime);
+    g.setTargetAtTime(on ? 0.3 : 1, this.ctx.currentTime, on ? 0.12 : 0.5);
   }
 
   toggleMusic(on = !this.musicPlaying) {
@@ -599,6 +612,54 @@ class SoundEngine {
     if (on) this.startMusic();
     else this.stopMusic();
     this.emit();
+  }
+
+  /** Трек, который сейчас стоит в плеере. */
+  get track(): Track | null {
+    const tracks = this.mood.tracks;
+    return tracks.length ? tracks[this.trackIndex % tracks.length] : null;
+  }
+
+  private get el(): HTMLAudioElement | null {
+    return this.decks[this.deck]?.el ?? null;
+  }
+
+  /** Позиция и длина текущего трека в секундах — для полосы прогресса. */
+  progress() {
+    const el = this.el;
+    const d = el?.duration;
+    return { time: el?.currentTime ?? 0, duration: d && Number.isFinite(d) ? d : 0 };
+  }
+
+  seek(sec: number) {
+    const el = this.el;
+    if (el && Number.isFinite(el.duration)) el.currentTime = Math.min(el.duration, Math.max(0, sec));
+  }
+
+  /** Следующий (1) или предыдущий (-1) трек в настроении, как в Apple Music:
+   *  «назад» после третьей секунды — в начало этого же трека. */
+  skip(dir: 1 | -1) {
+    const tracks = this.mood.tracks;
+    if (!tracks.length) return;
+    const el = this.el;
+    if (dir === -1 && el && el.currentTime > 3) {
+      el.currentTime = 0;
+      return;
+    }
+    this.crossTo((this.trackIndex + dir + tracks.length) % tracks.length);
+    this.emit();
+  }
+
+  /** Общая громкость музыки сейчас 0…1 — для волны в плеере. */
+  musicLevel() {
+    const a = this.analyser;
+    const f = this.freq;
+    if (!a || !f || !this.musicPlaying) return 0;
+    a.getByteFrequencyData(f);
+    let sum = 0;
+    const n = Math.min(f.length, 96); // низы и середина — там ритм
+    for (let k = 0; k < n; k++) sum += f[k];
+    return Math.min(1, (sum / n / 255) * 1.6);
   }
 
   /** Уровни музыки по полосам 0…1 (низы слева) — для дорожки в шапке. */
@@ -627,47 +688,90 @@ class SoundEngine {
     return MOODS.find((m) => m.id === this.settings.mood) ?? MOODS[0];
   }
 
-  private ensureAudioEl() {
-    if (this.audioEl || !this.ctx) return this.audioEl;
-    const el = new Audio();
-    el.preload = "none";
-    el.addEventListener("ended", () => {
-      const tracks = this.mood.tracks;
-      if (!tracks.length) return;
-      this.trackIndex = (this.trackIndex + 1) % tracks.length;
-      el.src = tracks[this.trackIndex];
-      void el.play().catch(() => {});
-    });
-    // Через Web Audio, а не el.volume: на iPhone volume у <audio> игнорируется.
-    this.ctx.createMediaElementSource(el).connect(this.musicBus);
-    this.audioEl = el;
-    return el;
+  private ensureDecks() {
+    if (this.decks.length || !this.ctx) return this.decks.length > 0;
+    for (let i = 0; i < 2; i++) {
+      const el = new Audio();
+      el.preload = "none";
+      const gain = this.ctx.createGain();
+      gain.gain.value = i === 0 ? 1 : 0;
+      // Через Web Audio, а не el.volume: на iPhone volume у <audio> игнорируется.
+      this.ctx.createMediaElementSource(el).connect(gain).connect(this.musicDuck);
+      // Плееру нужны длительность трека и смена названия — оповещаем.
+      el.addEventListener("loadedmetadata", () => this.emit());
+      // Незадолго до конца трека следующий начинает вступать.
+      el.addEventListener("timeupdate", () => {
+        if (i !== this.deck || this.crossing || !this.musicPlaying) return;
+        if (Number.isFinite(el.duration) && el.duration - el.currentTime < XFADE + 0.3) this.skip(1);
+      });
+      el.addEventListener("ended", () => {
+        if (i === this.deck && !this.crossing) this.skip(1);
+      });
+      this.decks.push({ el, gain });
+    }
+    return true;
+  }
+
+  /** Перейти к треку index текущего настроения. Когда музыка играет —
+   *  плавным перетеканием с деки на деку; на паузе — просто сменить трек. */
+  private crossTo(index: number) {
+    const tracks = this.mood.tracks;
+    this.trackIndex = index;
+    if (!tracks.length || !this.ensureDecks()) return;
+    const src = tracks[index % tracks.length].src;
+    const cur = this.decks[this.deck];
+    if (!this.musicPlaying) {
+      cur.el.src = src;
+      return;
+    }
+    const nextI = 1 - this.deck;
+    const next = this.decks[nextI];
+    const now = this.ctx!.currentTime;
+    next.el.src = src;
+    next.el.currentTime = 0;
+    next.gain.gain.cancelScheduledValues(now);
+    next.gain.gain.setValueAtTime(0, now);
+    next.gain.gain.linearRampToValueAtTime(1, now + XFADE);
+    cur.gain.gain.cancelScheduledValues(now);
+    cur.gain.gain.setValueAtTime(cur.gain.gain.value, now);
+    cur.gain.gain.linearRampToValueAtTime(0, now + XFADE);
+    void next.el.play().catch(() => {});
+    this.deck = nextI;
+    this.crossing = true;
+    window.setTimeout(() => {
+      this.crossing = false;
+      // Старая дека молчит — ставим на паузу, если она не стала снова текущей.
+      if (this.decks[this.deck] !== cur) cur.el.pause();
+    }, XFADE * 1000 + 100);
+    this.emit();
   }
 
   private startMusic() {
     const tracks = this.mood.tracks;
-    const el = this.ensureAudioEl();
-    if (!el || !tracks.length) {
+    if (!this.ensureDecks() || !tracks.length) {
       this.musicPlaying = false;
-      if (el) el.pause();
+      this.decks.forEach((d) => d.el.pause());
       return;
     }
-    const src = tracks[this.trackIndex % tracks.length];
+    const { el, gain } = this.decks[this.deck];
+    const src = tracks[this.trackIndex % tracks.length].src;
     if (!el.src.endsWith(src)) el.src = src;
-    this.musicBus.gain.cancelScheduledValues(this.ctx!.currentTime);
-    this.musicBus.gain.setValueAtTime(0, this.ctx!.currentTime);
-    this.musicBus.gain.linearRampToValueAtTime(LEVEL.music, this.ctx!.currentTime + 1.2);
+    const now = this.ctx!.currentTime;
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(1, now);
+    this.musicBus.gain.cancelScheduledValues(now);
+    this.musicBus.gain.setValueAtTime(0, now);
+    this.musicBus.gain.linearRampToValueAtTime(LEVEL.music, now + 1.2);
     void el.play().catch(() => {});
     this.musicPlaying = true;
   }
 
   private stopMusic() {
     this.musicPlaying = false;
-    const el = this.audioEl;
-    if (!el || !this.ctx) return;
+    if (!this.decks.length || !this.ctx) return;
     this.ramp(this.musicBus, 0, 0.6);
     window.setTimeout(() => {
-      if (!this.musicPlaying) el.pause();
+      if (!this.musicPlaying) this.decks.forEach((d) => d.el.pause());
     }, 650);
   }
 }

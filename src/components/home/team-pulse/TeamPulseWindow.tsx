@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { WIN, WIN_DIM } from "@/lib/motion";
 import { CloseIcon } from "@/components/ui/Icons";
 import { accentVars, type TeamPulseChatVisual, type TeamPulseData } from "./types";
 import TeamPulseScenes, { SCENE_MS, TeamPulseChatScene } from "./TeamPulseScenes";
@@ -79,9 +80,9 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
         <motion.div
           key="team-pulse-window"
           className="fixed inset-0 z-[80] flex items-end justify-center px-3 pb-3 pt-[4.5rem] sm:items-center sm:px-10 sm:pb-6 sm:pt-24"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.3, delay: 0.1 } }}
+          initial={WIN_DIM.initial}
+          animate={WIN_DIM.animate}
+          exit={WIN_DIM.exit}
         >
           <div className="absolute inset-0 bg-ink/75" onClick={onClose} aria-hidden="true" />
 
@@ -93,10 +94,10 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
             aria-label={`${data.member.name}: ${data.windowCta}`}
             className="relative outline-none h-[min(640px,calc(100dvh-6.5rem))] w-full max-w-[1200px] sm:h-[min(580px,calc(100dvh-9rem))]"
             style={accentVars(data.accent)}
-            initial={reduced ? false : { opacity: 0, y: 28, scale: 0.98, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-            exit={reduced ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.98, filter: "blur(10px)" }}
-            transition={{ duration: 0.46, ease: EASE }}
+            // Общая анимация окон сайта (WIN, lib/motion).
+            initial={reduced ? false : WIN.initial}
+            animate={WIN.animate}
+            exit={reduced ? { opacity: 0 } : WIN.exit}
             onMouseEnter={() => setHold(true)}
             onMouseLeave={() => setHold(false)}
           >

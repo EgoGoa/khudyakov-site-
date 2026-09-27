@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { WIN, WIN_DIM } from "@/lib/motion";
 import Cabinet from "./Cabinet";
 import { useCabinet } from "./store";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
@@ -41,7 +42,7 @@ export default function CabinetWindow() {
   return createPortal(
     <AnimatePresence>
       {open && (
-        <motion.div key="cab" className="cab-scope fixed inset-0 z-[90] flex items-center justify-center p-3 sm:p-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <motion.div key="cab" className="cab-scope fixed inset-0 z-[90] flex items-center justify-center p-3 sm:p-8" initial={WIN_DIM.initial} animate={WIN_DIM.animate} exit={WIN_DIM.exit}>
           {/* Сайт за кабинетом темнеет и мягко размывается — Егор просил,
               чтобы фокус был только на окне. */}
           <div className="absolute inset-0 bg-ink/75 backdrop-blur-md" onClick={() => setOpen(false)} aria-hidden="true" />
@@ -55,10 +56,10 @@ export default function CabinetWindow() {
             layout
             // Без filter в анимации: filter на предке ломает backdrop-filter
             // стекла кабинета — оно перестаёт размывать страницу под собой.
-            initial={{ opacity: 0, y: 24, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.98 }}
-            transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
+            // Общая анимация окон сайта (WIN, lib/motion).
+            initial={WIN.initial}
+            animate={WIN.animate}
+            exit={WIN.exit}
           >
             <Cabinet onClose={() => setOpen(false)} />
           </motion.div>

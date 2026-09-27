@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { RefObject } from "react";
-import { isWelcomeOpen } from "@/lib/welcome-freeze";
+import type { ReactNode, RefObject } from "react";
+import { frozenFor } from "@/lib/welcome-freeze";
 
 // Частицы от сферы Vibe-режима — одна механика на весь сайт (Егор,
 // 2026-09-27: «по этой же логике, с этой же интенсивностью»): пятое окошко
@@ -29,6 +29,8 @@ export default function SphereDust({
   speed = 1,
   brightness = 1,
   scale = 1,
+  spread = 1,
+  sleepy = false,
   className = "",
 }: {
   /** Элемент сферы (или обёртка, внутри которой первый span — сама сфера). */
@@ -46,6 +48,11 @@ export default function SphereDust({
   brightness?: number;
   /** Множитель размера частиц. */
   scale?: number;
+  /** Насколько далеко уходят дальние частицы: 1 — через всю площадь,
+   *  меньше — облако держится у сферы. */
+  spread?: number;
+  /** Спящий режим (сфера вайб-бара): в покое медленнее и реже кадры. */
+  sleepy?: boolean;
   className?: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -58,7 +65,7 @@ export default function SphereDust({
     const html = document.documentElement;
     if (html.hasAttribute("data-lite") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const mid = html.hasAttribute("data-mid");
-    const behindWelcome = !canvas.closest(".welcome-shell");
+    const frozen = frozenFor(canvas);
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let w = 0, h = 0, ox = 0, oy = 0, or = 26;
     const measure = () => {
@@ -107,14 +114,17 @@ export default function SphereDust({
     };
 
     type P = { x: number; y: number; vx: number; vy: number; drift: number; born: number; r: number; b: number; c: string; ph: number; reach: number };
-    // В полтора раза меньше прежнего (Егор, 2026-09-27): 140 → 93 частицы.
-    const MAX = Math.round((mid ? 40 : 93) * density);
-    const RATE = (mid ? 8 : 17) * density;
+    // Егор, 2026-09-27: частиц больше, чем было (93 → 220), но они мельче
+    // и держатся у сферы — у кольца густо, дальше всё реже.
+    const MAX = Math.round((mid ? 80 : 220) * density);
+    const RATE = (mid ? 20 : 46) * density;
     const emit = (t: number): P => {
       const a = Math.random() * Math.PI * 2;
       const roll = Math.random();
-      const size = roll < 0.7 ? 0.35 + Math.random() * 0.35 : roll < 0.93 ? 0.7 + Math.random() * 0.35 : 1.05 + Math.random() * 0.4;
-      const sp = (22 + 55 * Math.random() ** 1.5) * speed;
+      // Почти вся пыль — мелкая-мелкая, крупнее лишь редкие искры.
+      const size = roll < 0.82 ? 0.28 + Math.random() * 0.27 : roll < 0.97 ? 0.55 + Math.random() * 0.3 : 0.85 + Math.random() * 0.35;
+      // Медленнее на вылете, чтобы у кольца стояло облачко пыли.
+      const sp = (9 + 44 * Math.random() ** 2.4) * speed;
       return {
         x: ox + Math.cos(a) * or * 1.1,
         y: oy + Math.sin(a) * or * 1.1,
@@ -128,23 +138,42 @@ export default function SphereDust({
         ph: Math.random() * Math.PI * 2,
         // Большинство — недалеко (степень сжимает к нулю), единицы — через
         // всю площадь и за край.
-        reach: or * 1.3 + Math.max(w, h) * Math.random() ** 2.6,
+        // Степень 3.4 (было 2.6) — ещё сильнее прижимает пыль к сфере.
+        reach: or * 1.15 + Math.max(w, h) * spread * Math.random() ** 4.4,
       };
     };
 
     const ps: P[] = [];
     let acc = 0;
-    let prevT = performance.now() / 1000;
+    let prevT = 0;
     let raf = 0;
     let last = 0;
     let frame = 0;
+    // Спящий режим: пока сфера не под курсором и вайб-окно закрыто, пыль
+    // летит вдвое медленнее и рисуется 20 раз в секунду.
+    let hover = false;
+    const orb = orbRef.current;
+    const wake = () => (hover = true);
+    const rest = () => (hover = false);
+    orb?.addEventListener("pointerenter", wake);
+    orb?.addEventListener("pointerleave", rest);
+    let clock = 0;
+    let rate = 1;
+    let tick = 0;
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
-      if (behindWelcome && isWelcomeOpen()) return;
-      if (mid && now - last < 33) return;
+      if (frozen()) {
+        tick = 0;
+        return;
+      }
+      const awake = !sleepy || hover || html.hasAttribute("data-overlay-open");
+      rate += ((awake ? 1 : 0.5) - rate) * 0.15;
+      if (now - last < (awake ? (mid ? 33 : 0) : 50)) return;
       last = now;
       if (frame++ % 6 === 0) locate();
-      const t = now / 1000;
+      if (tick) clock += (Math.min(now - tick, 100) / 1000) * rate;
+      tick = now;
+      const t = clock;
       const dt = Math.min(0.05, t - prevT);
       prevT = t;
       ctx.globalAlpha = 1;
@@ -175,7 +204,7 @@ export default function SphereDust({
           continue;
         }
         // Проявляется у кольца, гаснет на краю своего пути и у края холста.
-        const fade = Math.min(1, (t - p.born) * 2) * Math.min(1, edge / edgeFade) * Math.min(1, left / 30);
+        const fade = Math.min(1, (t - p.born) * 4) * Math.min(1, edge / edgeFade) * Math.min(1, left / 30);
         const al = p.b * fade * (0.7 + 0.3 * Math.sin(t * 1.6 + p.ph));
         const d = p.r * 5 * scale;
         ctx.globalAlpha = al;
@@ -186,8 +215,10 @@ export default function SphereDust({
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      orb?.removeEventListener("pointerenter", wake);
+      orb?.removeEventListener("pointerleave", rest);
     };
-  }, [run, orbRef, bleed, density, sx, sy, speed, brightness, scale]);
+  }, [run, orbRef, bleed, density, sx, sy, speed, brightness, scale, spread, sleepy]);
 
   return (
     <canvas
@@ -196,5 +227,17 @@ export default function SphereDust({
       className={`pointer-events-none absolute ${className}`}
       style={{ inset: -bleed, width: `calc(100% + ${bleed * 2}px)`, height: `calc(100% + ${bleed * 2}px)` }}
     />
+  );
+}
+
+/** Сфера с пылью вокруг — для мест, где сфера стоит сама по себе
+ *  (Vibe-блок, персональная страница). Пыль выступает за сферу на `bleed`. */
+export function DustyOrb({ children, bleed = 90, density = 0.45 }: { children: ReactNode; bleed?: number; density?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  return (
+    <span ref={ref} className="relative inline-block">
+      {children}
+      <SphereDust orbRef={ref} bleed={bleed} density={density} speed={0.6} />
+    </span>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
-import { isWelcomeOpen } from "@/lib/welcome-freeze";
+import { isSiteFrozen } from "@/lib/welcome-freeze";
+import { BOOT, useBootStage } from "@/lib/boot-sequence";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getTier, isSlowNet, onTierChange } from "@/lib/perf-tier";
 
 // Pointer-driven smoke: soft like the real thing, but with every curl
@@ -460,7 +461,28 @@ type Sample = { x: number; y: number; t: number };
 // Max dye sprites per frame; a huge jump beyond this just keeps the tail.
 const MAX_SPRITES = 6000;
 
+// Дым — последний этап очереди загрузки (lib/boot-sequence): самый тяжёлый
+// и чисто декоративный, поэтому холст и WebGL заводятся, когда всё остальное
+// уже на месте.
+// На средних устройствах (data-mid) и этого мало: сборка WebGL — короткий
+// пик нагрузки, поэтому там дым заводится только с первым движением мыши.
 export default function FluidSmoke() {
+  const on = useBootStage(BOOT.smoke);
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!on) return;
+    const arm = () => setArmed(true);
+    if (getTier() !== "mid") {
+      const id = requestAnimationFrame(arm);
+      return () => cancelAnimationFrame(id);
+    }
+    window.addEventListener("pointermove", arm, { once: true, passive: true });
+    return () => window.removeEventListener("pointermove", arm);
+  }, [on]);
+  return on && armed ? <FluidSmokeCanvas /> : null;
+}
+
+function FluidSmokeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -958,7 +980,7 @@ export default function FluidSmoke() {
     function frame() {
       // Пока открыто стартовое окно, дым спит (lib/welcome-freeze): разбудит
       // первое движение мыши после закрытия.
-      if (isWelcomeOpen()) {
+      if (isSiteFrozen()) {
         raf = 0;
         running = false;
         canvas!.style.visibility = "hidden";
@@ -995,7 +1017,7 @@ export default function FluidSmoke() {
 
     function wake() {
       lastActivity = performance.now();
-      if (running || document.hidden || isWelcomeOpen()) return;
+      if (running || document.hidden || isSiteFrozen()) return;
       running = true;
       canvas!.style.visibility = "visible";
       lastTime = performance.now();

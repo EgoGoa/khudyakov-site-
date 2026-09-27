@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { WIN, WIN_DIM } from "@/lib/motion";
 import SpotlightScene from "@/components/home/ai/SpotlightScene";
 import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
 import { directionDeep } from "@/components/home/ai/spotlightDirections";
@@ -77,10 +78,9 @@ export default function ServiceDeepDive({ slug }: { slug: string }) {
             {open && (
               <motion.div
                 key="dive"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: reduced ? 0 : 0.35 }}
+                initial={WIN_DIM.initial}
+                animate={WIN_DIM.animate}
+                exit={WIN_DIM.exit}
                 ref={dialogRef}
                 tabIndex={-1}
                 className="fixed inset-0 z-[120] flex items-end justify-center bg-ink/80 outline-none backdrop-blur-md sm:items-center sm:p-6"
@@ -90,10 +90,10 @@ export default function ServiceDeepDive({ slug }: { slug: string }) {
                 aria-label={data.title}
               >
                 <motion.div
-                  initial={{ opacity: 0, y: 40, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 24 }}
-                  transition={{ duration: reduced ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  // Общая анимация окон сайта (WIN, lib/motion).
+                  initial={reduced ? false : WIN.initial}
+                  animate={WIN.animate}
+                  exit={reduced ? { opacity: 0 } : WIN.exit}
                   onClick={(e) => e.stopPropagation()}
                   onMouseEnter={() => setHeld(true)}
                   onMouseLeave={() => setHeld(false)}

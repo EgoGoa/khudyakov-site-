@@ -9,6 +9,7 @@ import MagneticChars from "@/components/ui/MagneticChars";
 import HeroHeadline from "@/components/home/HeroHeadline";
 import { PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import { HERO_LEAD } from "@/lib/typography";
+import { BOOT, markMediaReady, useBootStage } from "@/lib/boot-sequence";
 
 
 // Same numbers as Stats.tsx, but a plain inline row here — no border, no
@@ -24,28 +25,25 @@ export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const titleWrapRef = useRef<HTMLDivElement>(null);
 
-  // Self-hosted now (was a YouTube embed) — one less third-party origin to
-  // connect to on the very first screen. Still deferred a beat so the
-  // headline/CTAs settle first: a static frame from the reel covers the
-  // spot immediately, and the <video> fades in once it's ready.
+  // Self-hosted now (was a YouTube embed). Видео — первое в очереди загрузки
+  // (lib/boot-sequence): качается сразу после гидрации, а заголовок, кнопки
+  // и цифры ждут, пока оно не будет готово играть (не дольше 2,5 с). До
+  // этого место держит статичный кадр из ролика.
   const [loadReel, setLoadReel] = useState(false);
   // Phones (and anyone with Data Saver on) get a 640px, 1.9 MB cut of the same
-  // reel instead of the 9.4 MB full-HD one — the picture is blurred and
+  // reel instead of the 4.3 MB full-HD one (пережат 2026-09-27 из 9.9 МБ, 650 кбит/с) — the picture is blurred and
   // scaled behind the headline anyway, so nothing visible is lost, and it
   // starts far sooner on a mobile connection.
   const [reelSrc, setReelSrc] = useState("/video/showreel-hero.mp4");
   useEffect(() => {
     const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
     if (window.innerWidth < 900 || saveData) setReelSrc("/video/showreel-hero-mobile.mp4");
+    setLoadReel(true);
   }, []);
-  useEffect(() => {
-    if (typeof window.requestIdleCallback === "function") {
-      const id = window.requestIdleCallback(() => setLoadReel(true), { timeout: 1500 });
-      return () => window.cancelIdleCallback(id);
-    }
-    const id = window.setTimeout(() => setLoadReel(true), 400);
-    return () => window.clearTimeout(id);
-  }, []);
+  // Каскад первого экрана: заголовок → подзаголовок → кнопки → цифры, шаг
+  // 0,2 с, стартует этапом `content` очереди.
+  const go = useBootStage(BOOT.content);
+  const shown = go ? { opacity: 1, y: 0 } : undefined;
 
   // Track the cursor as CSS custom properties (not React state) so the
   // glow can follow the mouse every frame without triggering re-renders.
@@ -97,6 +95,8 @@ export default function Hero() {
             loop
             playsInline
             aria-label="Шоурил HUD.SERVICE"
+            onCanPlay={markMediaReady}
+            onError={markMediaReady}
           />
         )}
         <div
@@ -139,8 +139,8 @@ export default function Hero() {
             <div className="hero-monolith" style={{ transform: "none" }}>
               <motion.h1
                 initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 }}
+                animate={shown}
+                transition={{ duration: 0.7, delay: 0 }}
                 // No text-*/leading-*/tracking-* here on purpose: size,
                 // line-height and letter-spacing come from .hero-monolith
                 // so they stay exactly the mockup's values.
@@ -168,8 +168,8 @@ export default function Hero() {
             alignment with the headline's own left edge. */}
         <motion.p
           initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.25 }}
+          animate={shown}
+          transition={{ duration: 0.7, delay: 0.2 }}
           className={`mt-2 max-w-[70%] text-left ${HERO_LEAD}`}
         >
           <span className="kw">Команда</span>, а AI-технологии мы подключили как инструмент — чтобы делать <span className="kw">глубже и эффективнее</span>.
@@ -177,8 +177,8 @@ export default function Hero() {
 
         <motion.div
           initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
+          animate={shown}
+          transition={{ duration: 0.7, delay: 0.4 }}
           className="mt-8 flex flex-wrap items-center gap-3"
         >
           <a
@@ -219,8 +219,8 @@ export default function Hero() {
           across the full width instead of clustering left like the CTAs. */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.35 }}
+        animate={shown}
+        transition={{ duration: 0.7, delay: 0.6 }}
         className="relative mt-10 shrink-0"
       >
         {/* pb-24 — место под волну голосового

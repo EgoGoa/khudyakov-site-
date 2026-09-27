@@ -83,3 +83,35 @@ export const DIRECTION_BEAT = {
   controls: 1.05,
   cta: 1.3,
 } as const;
+
+/** Одна анимация для всех окон сайта (Егор, 2026-09-27: «плавно, в стиле
+ *  Apple, как на макбуках»). Как окно в macOS: появляется мягкой пружиной
+ *  из чуть уменьшенного состояния — без отскока, но с живым дотягиванием, —
+ *  а уходит быстрее, коротким «вдохом» внутрь с растворением. Уход всегда
+ *  короче появления: закрытие должно ощущаться мгновенным ответом на клик.
+ *
+ *  Без filter: любой filter на предке выключает backdrop-filter стекла
+ *  окна, и оно перестаёт размывать сайт под собой. */
+const WIN_SPRING = { type: "spring", visualDuration: 0.45, bounce: 0.14 } as const;
+const WIN_OUT = { duration: 0.26, ease: [0.4, 0, 0.6, 1] } as const;
+
+export const WIN = {
+  initial: { opacity: 0, scale: 0.94, y: 12 },
+  animate: { opacity: 1, scale: 1, y: 0, transition: { ...WIN_SPRING, opacity: { duration: 0.28, ease: EASE } } },
+  exit: { opacity: 0, scale: 0.96, y: 6, transition: WIN_OUT },
+} as const;
+
+/** Боковая панель (персонализация блока): тот же характер, но въезжает сбоку. */
+export const WIN_SIDE = {
+  initial: { opacity: 0, scale: 0.96, x: 24 },
+  animate: { opacity: 1, scale: 1, x: 0, transition: { ...WIN_SPRING, opacity: { duration: 0.28, ease: EASE } } },
+  exit: { opacity: 0, scale: 0.97, x: 16, transition: WIN_OUT },
+} as const;
+
+/** Затемнение сайта за окном: проявляется вместе с окном и гаснет чуть
+ *  позже него — сайт «возвращается», когда окно уже ушло. */
+export const WIN_DIM = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.35, ease: EASE } },
+  exit: { opacity: 0, transition: { duration: 0.32, ease: EASE, delay: 0.06 } },
+} as const;
