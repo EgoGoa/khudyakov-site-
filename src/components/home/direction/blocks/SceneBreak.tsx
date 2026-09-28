@@ -7,7 +7,6 @@ import Appear, { useChapterActive } from "@/components/ui/Appear";
 import TeamConsultModal from "@/components/home/TeamConsultModal";
 import { TEAM } from "@/lib/team";
 import { DIRECTION_BEAT, STAGGER } from "@/lib/motion";
-import { EYEBROW } from "@/lib/typography";
 import { BareCtx } from "@/components/home/ai/sceneKit";
 import { CONTENT_SCENES, SCENE_FIGURES } from "@/components/home/ai/SpotlightScenesContent";
 import { directionSpotlight } from "@/components/home/ai/spotlightDirections";
@@ -87,7 +86,6 @@ function Scene({ slug, index }: { slug: string; index: number }) {
 export default function SceneBreak({
   slug,
   index,
-  total: totalProp,
   spec,
   backdrop,
 }: {
@@ -107,7 +105,6 @@ export default function SceneBreak({
   const benefit = own ? { label: own.label, text: own.text, accent: own.accent } : data?.benefits[index];
   if (!figure || !benefit) return null;
   const accent = data?.accent ?? backdrop;
-  const total = own ? totalProp : data?.benefits.length ?? totalProp;
 
   return (
     <SectionStage className="relative py-10 sm:py-14">
@@ -123,6 +120,11 @@ export default function SceneBreak({
                 телефоне держит пропорцию сцены 400×380. */}
             {/* У AI-сцен на телефоне графика без внутренних полей и чуть
                 шире колонки: вьюбокс сжимается меньше, подписи крупнее. */}
+            {/* Заголовок окошка — о чём оно (Егор): вместо счётчика
+                «02 / 04 · …», который он убрал со всех табличек. */}
+            <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl lg:col-span-2">
+              <span className="spotlight-accent spotlight-sheen">{benefit.label}</span>
+            </h3>
             <div
               className={`relative aspect-[400/380] overflow-hidden rounded-2xl bg-white/[0.025] ring-1 ring-white/10 lg:aspect-auto lg:min-h-[28rem] ${
                 spec.own ? "-mx-2 w-[calc(100%+1rem)] sm:mx-0 sm:w-full" : "w-full"
@@ -132,13 +134,6 @@ export default function SceneBreak({
             </div>
 
             <div className="flex min-w-0 flex-col justify-center py-1">
-              <Appear from="right" delay={DIRECTION_BEAT.title}>
-                <span className={`${EYEBROW} flex items-center gap-2 text-sm text-rec sm:text-base`}>
-                  <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full bg-rec" />
-                  {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")} · {benefit.label}
-                </span>
-              </Appear>
-
               <Appear from="right" delay={DIRECTION_BEAT.intro}>
                 {/* Короткие цифры («60%», «450+») получают крупный кегль —
                     акцент, которого Егор попросил больше; длинные («до
@@ -146,7 +141,7 @@ export default function SceneBreak({
                     строкой (его же более ранняя правка — тут это не
                     отменяется, а сосуществует). */}
                 <div
-                  className={`spotlight-accent spotlight-sheen mt-3 whitespace-nowrap font-display uppercase leading-[1.04] tracking-tight ${
+                  className={`spotlight-accent spotlight-sheen whitespace-nowrap font-display uppercase leading-[1.04] tracking-tight ${
                     figure.value.length > 6
                       ? "text-[1.7rem] sm:text-[2.05rem] xl:text-[2.4rem]"
                       : "text-[2.7rem] sm:text-[3.4rem] xl:text-[3.9rem]"
@@ -160,7 +155,7 @@ export default function SceneBreak({
               </Appear>
 
               <Appear from="up" delay={DIRECTION_BEAT.content}>
-                <p className="mt-4 max-w-[34em] text-[15px] leading-relaxed text-white sm:text-base">
+                <p className="mt-4 max-w-[34em] font-display text-[13px] leading-snug tracking-tight text-white/65 sm:text-sm">
                   {withAccent(benefit.text, benefit.accent)}
                 </p>
               </Appear>

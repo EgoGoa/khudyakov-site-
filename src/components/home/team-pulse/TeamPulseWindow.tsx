@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import OrderMenu from "./OrderMenu";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { WIN, WIN_DIM } from "@/lib/motion";
@@ -25,7 +26,15 @@ import { useDialogFocus } from "@/lib/use-dialog-focus";
 // остаётся, чтобы было видно, о чём разговор.
 const EASE = [0.32, 0.72, 0, 1] as const;
 
-export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPulseData; open: boolean; onClose: () => void }) {
+export default function TeamPulseWindow({
+  data,
+  open,
+  onClose,
+}: {
+  data: TeamPulseData;
+  open: boolean;
+  onClose: () => void;
+}) {
   const reduced = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState(0);
@@ -39,6 +48,12 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- портал можно строить только после гидратации
   useEffect(() => setMounted(true), []);
+
+  const [orderOpen, setOrderOpen] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- меню выбора закрыто при каждом открытии окна
+    setOrderOpen(false);
+  }, [open]);
 
   useEffect(() => {
     if (!open || chat || hold || reduced) return;
@@ -124,6 +139,30 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
                 <span className="absolute inset-0 bg-[linear-gradient(270deg,rgba(10,12,16,0.92)_0%,rgba(10,12,16,0.7)_55%,rgba(10,12,16,0.5)_100%)]" />
               </span>
 
+              {/* «Заказать» на каждом этапе рассказа (Егор): бриф, созвон или
+                  креатив-сессия в один клик. В чате её нет — туда ведёт
+                  верхняя кнопка «Начать чат». */}
+              {!chat && (
+              <button
+                type="button"
+                onClick={() => setOrderOpen(true)}
+                className="team-pulse-cta team-pulse-cta-loud absolute right-16 top-3 z-20 !text-[15px] sm:right-20 sm:top-5"
+              >
+                <u>Заказать</u>
+                <i aria-hidden="true">→</i>
+              </button>
+              )}
+              <div className="pointer-events-none absolute inset-0 z-30 grid place-items-center p-4">
+                <div className="pointer-events-auto relative w-full max-w-sm empty:hidden">
+                  <OrderMenu
+                    open={orderOpen && !chat}
+                    onClose={() => setOrderOpen(false)}
+                    data={data}
+                    showStory={false}
+                    className="relative"
+                  />
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={onClose}

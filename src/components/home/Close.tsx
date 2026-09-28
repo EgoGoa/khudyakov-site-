@@ -122,7 +122,7 @@ export default function Close({
     >
       <>
         {interactiveTiers ? (
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-3 sm:items-end">
             {interactiveTiers.map((tier, i) => (
               <InteractiveTierCard key={tier.name} tier={tier} index={i} spacious={spacious} />
             ))}
@@ -134,8 +134,12 @@ export default function Close({
             filled button rather than by a badge. An earlier pass cut these
             down to one feature and no button to force the chapter into a
             single screen; now that a tall chapter scrolls internally (see
-            CinematicStage) that compromise is unnecessary. */
-        <div className="grid gap-6 sm:grid-cols-3">
+            CinematicStage) that compromise is unnecessary.
+
+            dense (/content): карточки по высоте своего списка, выровнены по
+            низу — «лесенка»: Стартовый ниже, Премиальный выше, тезисы
+            в каждой помещаются свободно (просьба Егора). */
+        <div className={`grid gap-6 sm:grid-cols-3 ${dense ? "sm:items-end" : ""}`}>
           {tiers.length === 0 ? (
             <p className="text-sm leading-relaxed text-paper/50">
               Тарифы по этому направлению скоро появятся здесь.
@@ -164,7 +168,8 @@ export default function Close({
                     rest of the site rather than sizing it uniquely. */}
                 {/* !text-sm in dense (was !text-lg) — 20px → 14px is the
                     ~30% shrink Egor asked for on /content's tariff cards. */}
-                <div className={`c3-tier-large relative ${dense ? "!text-sm" : "!text-xl"}`}>{tier.name}</div>
+                {/* dense: название крупнее и в градиенте страницы (.kw) — Егор. */}
+                <div className={`c3-tier-large relative ${dense ? "kw !text-base lg:!text-lg xl:!text-[1.35rem]" : "!text-xl"}`}>{tier.name}</div>
                 <div
                   className={`relative font-semibold text-paper tier-glow-price ${dense ? "text-xs" : "text-base"}`}
                 >
@@ -232,7 +237,9 @@ export default function Close({
             resize, when height is tight. */}
         <Appear from="up" delay={BEAT.controls}>
           <div className="mt-6 [@media(max-height:820px)]:hidden">
-            <TeamRow members={PAGE_TEAM[active]} page={active} />
+            {/* Окошки команды тянутся по краям карточек тарифов на всех
+                страницах — просьба Егора, так в них помещается больше. */}
+            <TeamRow members={PAGE_TEAM[active]} page={active} className="!max-w-none sm:gap-6" />
           </div>
         </Appear>
 

@@ -4,6 +4,8 @@
 // .content-deco-icon-N classes in globals.css). Positioned via `className`
 // from the call site rather than computed here, since each chapter's header
 // has its own layout.
+const HIDDEN = true;
+
 export default function ContentDecoIcon({
   src,
   size,
@@ -25,6 +27,10 @@ export default function ContentDecoIcon({
   variant?: 1 | 2 | 3 | 4;
   z?: number;
 }) {
+  // Егор убрал стеклянные иконки со страницы «Создание контента» целиком —
+  // за заголовками они читались лишним шумом. Вызовы оставлены, чтобы
+  // вернуть их одной строкой.
+  if (HIDDEN) return null;
   return (
     <div
       className={`pointer-events-none absolute hidden lg:block ${className}`}

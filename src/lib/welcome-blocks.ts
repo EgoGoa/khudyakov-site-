@@ -82,7 +82,7 @@ const BLOCKS: Record<ServiceKey, BlockCard[]> = {
     { id: "opening", num: "01", title: "Основные направления", keyword: "направления", subtitle: "Пять форматов съёмки — от презентационного фильма до 3D", role: "intro", image: "/images/blocks/stock-clapper.jpg" },
     { id: "works", num: "02", title: "Наши работы", keyword: "работы", subtitle: "Кейсы с производств, отелей и брендов", role: "works", image: "/images/blocks/stock-directing.jpg" },
     { id: "why", num: "03", title: "Именно мы", keyword: "мы", subtitle: "Команда художников вместо большого сервиса", role: "why", image: "/images/blocks/stock-crew.jpg" },
-    { id: "services", num: "04", title: "Лучшие в этом", keyword: "этом", subtitle: "Что входит в работу и чем она отличается", role: "offer", image: "/images/blocks/stock-lights.jpg" },
+    { id: "services", num: "04", title: "Сильные в этом", keyword: "этом", subtitle: "Что входит в работу и чем она отличается", role: "offer", image: "/images/blocks/stock-lights.jpg" },
     { id: "process", num: "05", title: "PRO хронология", keyword: "хронология", subtitle: "Путь от брифа до готового ролика по шагам", role: "process", image: "/images/blocks/stock-briefing.jpg" },
     { id: "contact", num: "06", title: "Персональные условия", keyword: "условия", subtitle: "Смета под задачу и ответ в течение дня", role: "close", image: "/images/blocks/stock-papers.jpg" },
   ],

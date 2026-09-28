@@ -58,10 +58,10 @@ export default function CompactToolPage({
   };
   return (
     <DirectionTaskProvider tasks={content.tasks} title={content.hero.eyebrow}>
-      <div className={`${resolvedHeadingClass} relative [overflow-x:clip]`}>
+      <div className={`${resolvedHeadingClass} relative [overflow-x:clip]`} data-tight-top="">
         <DirectionBackdrop from={content.backdrop.from} to={content.backdrop.to} />
 
-        <DirectionHero hero={content.hero} stats={content.stats} />
+        <DirectionHero hero={content.hero} stats={content.stats} slug={content.slug} />
 
         <TaskPicker
           prompt={content.taskPrompt}

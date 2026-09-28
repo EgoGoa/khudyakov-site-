@@ -213,18 +213,6 @@ function accentVars(key: ServiceKey): CSSProperties {
   } as CSSProperties;
 }
 
-/** Стрелка «перейти» у правого края карточки — тот же кружок со стрелкой,
- *  что у призыва в табличках услуг. */
-function GoArrow() {
-  return (
-    <span className="welcome-card-go" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none">
-        <path d="M5 12h13M12 5l7 7-7 7" />
-      </svg>
-    </span>
-  );
-}
-
 /** Фон карточки направления: ролик страницы, куда она ведёт.
  *
  *  Играет всегда и на всех четырёх карточках, включая телефон — прямое
@@ -357,7 +345,6 @@ function VibeCard({ show, instant, onOpen }: { show: boolean; instant: boolean; 
         <span ref={orbRef} className="welcome-card-vibe-orb" aria-hidden="true">
           {inner && <NanoSphere size={68} from={ORB_FROM} to={ORB_TO} glow={0.35} hot intro={instant ? undefined : "implode"} />}
         </span>
-        <GoArrow />
       </button>
       {/* Частицы от сферы — общая механика (ui/SphereDust); холст выступает
           за окошко на 34px, разлёт растянут по ширине окошка. */}
@@ -614,7 +601,6 @@ export default function WelcomeWidget({
                   <span className="welcome-card-graphic" aria-hidden="true">
                     <WelcomeDirectionGraphic serviceKey={card.key} gid={`wdg-${card.key}`} />
                   </span>
-                  <GoArrow />
                 </motion.button>
               ))}
 
@@ -648,7 +634,6 @@ export default function WelcomeWidget({
                   <span className="welcome-card-graphic" aria-hidden="true">
                     <WelcomeBlockGraphic role={block.role} gid={`wbg-${picked}-${block.id}`} />
                   </span>
-                  <GoArrow />
                 </motion.button>
               ))}
           </motion.div>

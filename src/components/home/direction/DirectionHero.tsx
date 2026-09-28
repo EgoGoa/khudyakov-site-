@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { EASE } from "@/lib/motion";
@@ -11,7 +12,11 @@ import { TELEGRAM_URL } from "./contacts";
 import TeamAskCard from "@/components/home/TeamAskCard";
 import { TEAM } from "@/lib/team";
 import ServiceDeepDive from "./ServiceDeepDive";
+import HeroDeepInline from "./HeroDeepInline";
+import TeamPulse from "@/components/home/team-pulse/TeamPulse";
+import { findPulse } from "@/components/home/team-pulse/registry";
 import { directionDeep } from "@/components/home/ai/spotlightDirections";
+import { spotlightFor } from "@/components/home/ai/spotlightData";
 import type { DirectionContent } from "./types";
 
 // Первый экран страницы направления.
@@ -39,12 +44,13 @@ export default function DirectionHero({
    *  — ничего в их вёрстке не меняется. */
   stats?: DirectionContent["stats"];
 }) {
+  const pathname = usePathname() ?? "";
   return (
     // Без overflow-hidden на самой секции: кадр героя должен вылезать вниз и
     // растворяться в фоне следующего блока. С обрезкой по краю секции между
     // героем и полосой цифр оставалась широкая чёрная полоса — Егор показал
     // её скриншотом и просил вывести такие стыки везде.
-    <section className="relative flex min-h-[88svh] items-end pb-16 pt-32 sm:pb-24">
+    <section className="dir-hero relative flex min-h-[88svh] items-end pb-16 pt-32 sm:pb-24">
       <div
         className="absolute inset-x-0 -top-px -z-10 overflow-hidden"
         style={{
@@ -85,6 +91,7 @@ export default function DirectionHero({
             preload="metadata"
             aria-hidden="true"
             className="h-full w-full object-cover"
+            style={hero.videoBlur ? { filter: `blur(${hero.videoBlur}px)`, transform: "scale(1.03)" } : undefined}
           />
         )}
         {/* Два слоя вместо одного ровного грейда.
@@ -124,7 +131,7 @@ export default function DirectionHero({
           {/* Ссылка «← Раздел» и строка-метка над заголовком убраны: путь
               и возврат теперь в общих хлебных крошках под шапкой
               (Breadcrumbs.tsx), Егор назвал их лишними. */}
-          <h1 className="chapter-neon-warm break-words font-display text-[1.89rem] uppercase leading-[1.09] tracking-tight sm:text-[3.24rem] lg:text-[3.96rem]">
+          <h1 className="chapter-neon-warm break-words font-display text-[1.51rem] uppercase leading-[1.09] tracking-tight sm:text-[2.59rem] lg:text-[3.17rem]">
             {/* Если направление отдало `typed`, заголовок печатается. Ровно
                 одна такая точка на страницу — либо здесь, либо в блоке
                 процесса, никогда в обоих. */}
@@ -146,7 +153,24 @@ export default function DirectionHero({
               кнопок под лидом. Егор попросил свести оба действия в одно
               окошко с Егором — «присоединиться» и Telegram теперь одна
               карточка, а не карточка плюс дублирующие её кнопки рядом. */}
-          {hero.teamAsk ? (
+          {(hero.deepInline ?? true) && slug && (directionDeep(slug) ?? spotlightFor(slug)) && hero.teamAsk ? (
+            // Сцены «почему это работает» развёрнуты прямо здесь (слева), а
+            // рядом — окошко Егора с кнопкой «Заказать» (просьба Егора для
+            // «Презентационных фильмов»).
+            <div className="mt-8 grid max-w-[880px] items-stretch gap-4 sm:grid-cols-[1.3fr_1fr]">
+              {/* Окошко с графикой на 30% шире окошка человека, чтобы сцена
+                  помещалась свободно; окошко человека прежней ширины (Егор). */}
+              <HeroDeepInline slug={slug} />
+              {(() => {
+                const seg = pathname.split("/")[1];
+                const page = seg === "ai" || seg === "sites" || seg === "smm" ? seg : "content";
+                const pulse = findPulse(hero.teamAsk.memberId, page);
+                return pulse ? (
+                  <TeamPulse data={pulse} compact fill ctaLabel="Заказать" source={`/${page}/${slug} · шапка`} />
+                ) : null;
+              })()}
+            </div>
+          ) : hero.teamAsk ? (
             <div className="mt-10 max-w-sm">
               <TeamAskCard
                 compact
@@ -172,7 +196,7 @@ export default function DirectionHero({
               </a>
             </div>
           )}
-          {slug && directionDeep(slug) ? (
+          {hero.deepInline === false && slug && directionDeep(slug) ? (
             <div className="mt-5">
               <ServiceDeepDive slug={slug} />
             </div>

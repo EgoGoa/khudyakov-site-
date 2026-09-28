@@ -73,7 +73,7 @@ export function PersonaShell({
 }) {
   const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
   return (
-    <SectionStage className="relative py-20 sm:py-24">
+    <SectionStage className={`persona-step-${step} relative py-20 sm:py-24`}>
       {media ? <BlockMedia media={media} /> : null}
 
       <Container className={`text-center ${MEDIA_TEXT}`}>

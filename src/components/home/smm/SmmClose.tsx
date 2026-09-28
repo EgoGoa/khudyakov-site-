@@ -83,7 +83,9 @@ export default function SmmClose() {
           /smm's own sky/violet/fuchsia set (see .smm-violet-headings in
           globals.css) instead of building a second, page-local version of
           the same idea. */}
-      <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3 [@media(max-height:820px)]:max-w-4xl">
+      {/* Лесенка как на /content: карточки по высоте своего списка,
+            выровнены по низу (Егор). */}
+        <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3 sm:items-end [@media(max-height:820px)]:max-w-4xl">
         {TIERS.map((tier, i) => (
           <Appear
             key={tier.name}
@@ -93,10 +95,10 @@ export default function SmmClose() {
             duration={DUR.row}
             blur
             blurPx={14}
-            className={`c3-card smm-tier tier-glow-${i} ${tier.pro ? "c3-card-pro" : ""}`}
+            className={`c3-card !min-h-0 c3-card-dense smm-tier tier-glow-${i} ${tier.pro ? "c3-card-pro" : ""}`}
           >
             <span className="c3-tier-small relative">{tier.tagline}</span>
-            <div className="c3-tier-large relative !text-xl">{tier.name}</div>
+            <div className="c3-tier-large relative kw !text-base lg:!text-lg xl:!text-[1.35rem]">{tier.name}</div>
             <div className="relative tier-glow-price">{tier.price}</div>
             <div className="c3-team relative mb-5">{tier.team}</div>
 
@@ -136,7 +138,7 @@ export default function SmmClose() {
           follows the deck — see shared/SeoLongRead. */}
       <Appear from="up" delay={BEAT.cta}>
         <div className="mt-6 [@media(max-height:820px)]:hidden">
-          <TeamRow members={PAGE_TEAM.smm} page="smm" />
+          <TeamRow members={PAGE_TEAM.smm} page="smm" className="!max-w-5xl [@media(max-height:820px)]:!max-w-4xl" />
         </div>
       </Appear>
 

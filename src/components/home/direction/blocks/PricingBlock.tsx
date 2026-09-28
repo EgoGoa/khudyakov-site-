@@ -92,7 +92,9 @@ export default function PricingBlock({
       <Container>
         <SectionHead head={pricing} />
 
-        <div className="mt-16 grid gap-6 sm:grid-cols-3">
+        {/* Как тарифы /content: карточки по высоте своего списка, выровнены
+            по низу — лесенка (Егор). */}
+        <div className="mt-16 grid gap-6 sm:grid-cols-3 sm:items-end">
           {pricing.tiers.map((tier, i) => {
             const on = tier.id === highlightId;
             return (
@@ -112,7 +114,7 @@ export default function PricingBlock({
                 key={tier.id}
                 from={i === 0 ? "left" : i === 2 ? "right" : "scale"}
                 delay={DIRECTION_BEAT.content + i * STAGGER.normal}
-                className={`c3-card tier-glow-${i} relative !min-h-0 !rounded-3xl !p-7 transition-transform ${
+                className={`c3-card c3-card-dense tier-glow-${i} relative !min-h-0 !rounded-3xl !p-7 transition-transform ${
                   tier.pro ? "c3-card-pro" : ""
                 } ${on ? "lg:-translate-y-2" : ""}`}
               >
@@ -131,7 +133,7 @@ export default function PricingBlock({
                 </AnimatePresence>
 
                 <span className={`${EYEBROW} c3-tier-small relative text-white`}>{tier.tagline}</span>
-                <h3 className="c3-tier-large relative font-display uppercase leading-none tracking-tight">
+                <h3 className="c3-tier-large kw relative font-display uppercase leading-none tracking-tight !text-lg lg:!text-xl xl:!text-[1.6rem]">
                   {tier.name}
                 </h3>
                 <div className="tier-glow-price relative font-semibold text-paper text-2xl leading-none">
@@ -141,7 +143,7 @@ export default function PricingBlock({
                 <ul className="c3-list relative mt-8 flex-1">
                   {tier.features.map((feature) => (
                     <li key={feature}>
-                      <span className="c3-check text-paper" />
+                      <span className="c3-check c3-check-green" />
                       {feature}
                     </li>
                   ))}
@@ -163,7 +165,8 @@ export default function PricingBlock({
             вопросом и кнопкой у каждого, а не просто именем и стрелкой.
             Стоит выше сноски: это следующий шаг, а не мелкий текст внизу. */}
         <Appear from="up" delay={DIRECTION_BEAT.cta}>
-          <div className="mx-auto mt-10 grid max-w-2xl gap-3 sm:grid-cols-2">
+          {/* На всю ширину карточек тарифов, как на /content (Егор). */}
+          <div className="mt-10 grid gap-6 sm:grid-cols-2">
             <TeamAskCard
               compact
               member={primaryMember}

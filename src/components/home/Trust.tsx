@@ -40,6 +40,7 @@ const REASON_EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function Trust({
   footer,
+  teamSwap,
   index = 2,
   chapter = "03",
   title = "Именно мы",
@@ -48,12 +49,22 @@ export default function Trust({
   /** Окошко услуги внизу главы — см. ToolSpotlight. Необязательно:
    *  эту главу используют несколько страниц, и окошко есть не у всех. */
   footer?: ReactNode;
+  /** Окошки услуг на месте карточки человека (под FAQ); сам человек
+   *  тогда встаёт под список причин, на место `footer`. */
+  teamSwap?: ReactNode;
   index?: number;
   chapter?: string;
   title?: ReactNode;
   intro?: ReactNode;
 }) {
   const { active } = useService();
+  // Человек как сервис (TeamPulse): Макс на /content, Вадим на /ai.
+  const teamCard =
+    active === "ai" ? (
+      <TeamPulse data={DIMA_AI} compact source="/ai · глава «Продюсерский центр»" />
+    ) : (
+      <TeamPulse data={MAX_CONTENT} compact source="/content · глава «Именно мы»" />
+    );
   const why = whyByCategory[active];
   const [openReason, setOpenReason] = useState<number | null>(null);
 
@@ -83,7 +94,7 @@ export default function Trust({
           this wrapper's width is exactly their sum, and the search bar
           (`ml-auto` in BlockAssistant.tsx, was `mx-auto`) right-aligns
           inside the same width instead of centring short of it. */}
-      <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:mx-auto lg:w-[850px] xl:w-[890px]">
+      <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:mx-auto lg:w-[1000px] xl:w-[1080px]">
       <div className="mb-2 lg:flex lg:items-stretch lg:gap-3">
         <Appear from="left" delay={BEAT.content} className="hidden lg:flex lg:shrink-0">
           <span className="inline-flex h-full items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-4 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
@@ -108,7 +119,7 @@ export default function Trust({
           short of the search bar's right edge above. Fixed columns make
           this grid's own width exactly 850/890px, matching the wrapper
           above pixel for pixel. */}
-      <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:grid lg:grid-cols-[300px_470px] lg:gap-x-20 xl:grid-cols-[340px_470px]">
+      <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:grid lg:grid-cols-[380px_540px] lg:gap-x-20 xl:grid-cols-[420px_580px]">
         {/* Row 1 (FAQ, reasons) opts out of the grid's default stretch —
             row 2 (Promo, Telegram) needs it: with no lg:self-start, both
             of those cells stretch to match the row's own tallest cell, so
@@ -142,7 +153,7 @@ export default function Trust({
             more breathing room per row is what makes the block "dышать",
             and left-aligning keeps it flush with the Telegram/Promo pair
             underneath instead of centered off from them. */}
-        <div className="lg:mt-8 lg:max-w-[470px] lg:self-start">
+        <div className="lg:mt-8 lg:max-w-[540px] xl:max-w-[580px] lg:self-start">
           {/* Five separate cards, one shared accent (orange, the same one
               FaqAside's own pills and "+" use right next to this) instead
               of a rainbow per card — Egor's call after the multicolour pass
@@ -220,7 +231,12 @@ export default function Trust({
               той же колонке 470px, над промо-карточкой. Так кнопка не
               приставлена к блоку снизу, а живёт в его сетке как ещё один
               её элемент. */}
-          {footer && <div className="hidden lg:block">{footer}</div>}
+          {teamSwap ? (
+            // Отступ — чтобы окошко человека не сливалось с пятым пунктом.
+            <div className="hidden lg:mt-5 lg:block">{teamCard}</div>
+          ) : (
+            footer && <div className="hidden lg:block">{footer}</div>
+          )}
         </div>
 
         {/* Swapped with PromoCard below — Egor's ask. Now sits under FAQ in
@@ -236,15 +252,8 @@ export default function Trust({
             посмотрел и попросил именно уменьшить это окно, а не растягивать
             его содержимое — self-start отпускает карточку на её собственную
             высоту, Promo рядом по-прежнему тянется на всю строку сам. */}
-        <Appear from="up" delay={BEAT.cta} className="mt-2 lg:self-start lg:max-w-[300px] xl:max-w-[340px]">
-          {(() => {
-            // Человек как сервис (TeamPulse): Макс на /content, Вадим на /ai.
-            return active === "ai" ? (
-              <TeamPulse data={DIMA_AI} compact source="/ai · глава «Продюсерский центр»" />
-            ) : (
-              <TeamPulse data={MAX_CONTENT} compact source="/content · глава «Именно мы»" />
-            );
-          })()}
+        <Appear from="up" delay={BEAT.cta} className="mt-2 lg:self-start lg:max-w-[380px] xl:max-w-[420px]">
+          {teamSwap ?? teamCard}
         </Appear>
 
         {/* Swapped with the Telegram card above — Egor's ask. Now sits under
@@ -254,7 +263,7 @@ export default function Trust({
             adds the same slow breathing glow BlockAssistant's search bar
             has, in the card's own magenta→orange pair, since Egor asked
             for this card specifically to pulse the way that bar does. */}
-        <Appear from="up" delay={BEAT.cta} className="hidden lg:mt-2 lg:block lg:h-full lg:max-w-[470px]">
+        <Appear from="up" delay={BEAT.cta} className="hidden lg:mt-2 lg:block lg:h-full lg:max-w-[540px] xl:max-w-[580px]">
           {active === "content" && (
             <PromoCard
               glow
@@ -263,6 +272,7 @@ export default function Trust({
               badge="Акция только в сентябре"
               title="AI-видеоконтент"
               subtitle="Что входит в акцию — 10 секунд, которые работают на заявки:"
+              short="AI Reels со сценарием, зацепом в первую секунду и призывом в финале"
               details={[
                 { lead: "AI Reels", rest: "на актуальных моделях генерации" },
                 { lead: "Сценарий + маркетинг", rest: "внутри ролика, не просто красивый кадр" },

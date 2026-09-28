@@ -26,6 +26,7 @@ export const MOBILE_VIDEOS = new Set<string>([
   "/video/works/showreel-2018-hero.mp4",
   "/video/works/showreel-2021-hero.mp4",
   "/video/works/showreel-2024-mood-hero.mp4",
+  "/video/works/showreel-2024-crimea-hero.mp4",
   "/video/works/showreel-2024-motion-hero.mp4",
   "/video/works/showreel-2026-hero.mp4",
   "/video/works/showreel24.mp4",

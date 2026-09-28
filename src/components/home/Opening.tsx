@@ -30,7 +30,7 @@ export default function Opening() {
     <CinematicSection
       index={0}
       chapter="01"
-      title={<>Основные <span className="kw">направления</span></>}
+      title={<><span className="chapter-plain">Основные</span> <span className="kw">направления</span></>}
       // Not serviceMeta.description any more. That line — "Съёмка и монтаж
       // роликов под ваш формат и площадку" — is what the ServicePicker
       // directly above this chapter already says, so the two stacked and

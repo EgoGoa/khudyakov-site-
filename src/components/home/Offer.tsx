@@ -8,7 +8,6 @@ import CinematicSection from "@/components/ui/CinematicSection";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import Appear from "@/components/ui/Appear";
 import BlockAssistant from "@/components/home/BlockAssistant";
-import { DocumentIcon, UserIcon, ClockIcon, RubleIcon } from "@/components/ui/Icons";
 import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
 import { servicesByCategory } from "@/lib/service-content";
@@ -26,9 +25,10 @@ import TeamAskCard from "@/components/home/TeamAskCard";
 
 export default function Offer({
   footer,
+  listAside,
   index = 3,
   chapter = "04",
-  title = "Лучшие в этом",
+  title = "Сильные в этом",
   intro = "Съёмка, монтаж, графика и AI-продакшн — под формат и площадку.",
   spacious = false,
   decor,
@@ -38,6 +38,9 @@ export default function Offer({
   /** Окошко услуги внизу главы — см. ToolSpotlight. Необязательно:
    *  эту главу используют несколько страниц, и окошко есть не у всех. */
   footer?: ReactNode;
+  /** Окошки услуг под левым списком, друг под другом (/content). Низ
+   *  последнего окошка встаёт вровень с низом правой панели. */
+  listAside?: ReactNode;
   /** Размер заголовка главы — для страниц, где глава делит высоту с окошком. */
   titleClassName?: string;
   index?: number;
@@ -127,12 +130,13 @@ export default function Offer({
           interactive ? `${footer && active === "content" ? "lg:min-h-[58svh]" : footer ? "lg:min-h-[68svh] lg:[@media(max-height:940px)]:min-h-[58svh]" : "lg:min-h-[68svh]"} lg:items-stretch` : "lg:items-start"
         }`}
       >
+        <div className={listAside ? "lg:flex lg:flex-1 lg:flex-col" : "contents"}>
         {services.length === 0 ? (
           <p className="text-sm leading-relaxed text-paper/60">
             Список услуг по этому направлению скоро появится здесь.
           </p>
         ) : (
-          <ul className={interactive ? "lg:flex-1 lg:self-start" : "lg:flex-1"}>
+          <ul className={listAside ? "" : interactive ? "lg:flex-1 lg:self-start" : "lg:flex-1"}>
             {services.map((service, i) => {
               const isSelected = interactive && selected === i;
               // Interactive rows are real buttons (select the service for
@@ -174,7 +178,7 @@ export default function Offer({
                           // по высоте — строки чуть плотнее (только там, /ai
                           // остаётся как было). На невысоких экранах /ai
                           // тоже плотнее: низ экрана занят волной ассистента.
-                          `cursor-pointer ${footer && active === "content" ? "py-2" : footer ? "py-3 [@media(max-height:940px)]:py-2" : "py-3"}`
+                          `cursor-pointer ${(footer || listAside) && active === "content" ? "py-2" : footer ? "py-3 [@media(max-height:940px)]:py-2" : "py-3"}`
                         : "cursor-default py-4 [@media(max-height:860px)]:py-2.5"
                     }`}
                   >
@@ -198,6 +202,13 @@ export default function Offer({
             })}
           </ul>
         )}
+        {listAside ? (
+          // mt-auto прижимает окошки к низу колонки: колонка тянется на
+          // высоту правой панели (items-stretch), и низ второго окошка
+          // совпадает с низом панели.
+          <div className="mt-6 flex flex-col gap-3 lg:mt-auto lg:pt-5">{listAside}</div>
+        ) : null}
+        </div>
 
         {/* Vertical card beside the list rather than under it — ten rows
             would push a card underneath off the bottom of the screen.
@@ -210,7 +221,7 @@ export default function Offer({
           from="right"
           delay={BEAT.content + STAGGER.normal}
           className={`mt-10 rounded-2xl bg-ink/45 backdrop-blur-md lg:mt-0 lg:shrink-0 ${
-            interactive ? `flex flex-col p-6 lg:h-full lg:w-1/2 ${footer && active === "content" ? "lg:p-3" : ""}` : "p-6 lg:w-[300px] xl:w-[320px]"
+            interactive ? `flex flex-col p-6 ${listAside ? "lg:self-stretch" : "lg:h-full"} lg:w-1/2 ${footer && active === "content" ? "lg:p-3" : ""}` : "p-6 lg:w-[300px] xl:w-[320px]"
           }`}
         >
           {interactive && selectedService ? (
@@ -219,7 +230,7 @@ export default function Offer({
                   it — on a phone the panel sits below the list and, scrolled
                   past, nothing said what it described. */}
               <div className={footer && active === "content" ? "mb-2" : "mb-4"}>
-                <p className="font-display text-[10px] font-bold uppercase tracking-[0.16em] text-glow/80">
+                <p className="font-display text-[10px] font-bold uppercase tracking-[0.16em] text-white">
                   Выбранная услуга
                 </p>
                 <h3 className="mt-1 font-display text-base uppercase leading-tight tracking-tight text-white sm:text-lg">
@@ -246,43 +257,39 @@ export default function Offer({
                   too even though these values sit inside a quieter card. */}
               <div className={`mt-6 flex-1 space-y-6 overflow-y-auto border-t border-paper/15 pt-6 ${footer ? (active === "content" ? "lg:mt-1 lg:space-y-1.5 lg:pt-2" : "lg:mt-2 lg:space-y-3 lg:pt-3") : ""}`}>
                 <div>
-                  <div className="flex items-center gap-2.5 text-glow">
-                    <DocumentIcon className="h-5 w-5 shrink-0" />
+                  <div className="flex items-center">
                     <span className="font-display text-base uppercase leading-tight tracking-tight text-white sm:text-lg">
                       Что это
                     </span>
                   </div>
-                  <p className={`pl-[30px] text-sm text-paper ${footer ? "mt-1" : "mt-2"} ${footer && active === "content" ? "lg:text-[13px] lg:leading-snug" : "leading-relaxed"}`}>{selectedService.description}</p>
+                  <p className={`body-small ${footer ? "mt-1" : "mt-2"}`}>{selectedService.description}</p>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2.5 text-glow">
-                    <UserIcon className="h-5 w-5 shrink-0" />
+                  <div className="flex items-center">
                     <span className="font-display text-base uppercase leading-tight tracking-tight text-white sm:text-lg">
                       Для кого
                     </span>
                   </div>
-                  <p className={`pl-[30px] text-sm text-paper ${footer ? "mt-1" : "mt-2"} ${footer && active === "content" ? "lg:text-[13px] lg:leading-snug" : "leading-relaxed"}`}>{selectedService.audience}</p>
+                  <p className={`body-small ${footer ? "mt-1" : "mt-2"}`}>{selectedService.audience}</p>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2.5 text-glow">
-                    <ClockIcon className="h-5 w-5 shrink-0" />
+                  <div className="flex items-center">
                     <span className="font-display text-base uppercase leading-tight tracking-tight text-white sm:text-lg">
                       Сроки
                     </span>
                   </div>
-                  <p className={`pl-[30px] text-sm font-medium text-paper ${footer ? "mt-1" : "mt-2"}`}>{selectedService.timeline}</p>
+                  <p className={`body-small ${footer ? "mt-1" : "mt-2"}`}>{selectedService.timeline}</p>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2.5 text-glow">
-                    <RubleIcon className="h-5 w-5 shrink-0" />
+                  <div className="flex items-center">
                     <span className="font-display text-base uppercase leading-tight tracking-tight text-white sm:text-lg">
                       Бюджет
                     </span>
                   </div>
-                  <p className={`pl-[30px] text-sm font-medium text-paper ${footer ? "mt-1" : "mt-2"}`}>{selectedService.budget}</p>
+                  <p className={`body-small ${footer ? "mt-1" : "mt-2"}`}>{selectedService.budget}</p>
                 </div>
               </div>
 

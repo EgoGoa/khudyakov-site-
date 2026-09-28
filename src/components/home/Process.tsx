@@ -306,6 +306,7 @@ export default function Process({
           <Appear from="up" delay={BEAT.cta} className="h-full">
             <PromoCard
               palette="cyan"
+              short="Ролик по вашему сценарию, вертикаль и горизонталь, 2 круга правок"
               image="/images/service-video.jpg"
               badge="Акция только в сентябре"
               title="Имиджевое видео"

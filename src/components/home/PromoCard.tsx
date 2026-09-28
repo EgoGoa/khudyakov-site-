@@ -48,6 +48,8 @@ export default function PromoCard({
   href,
   leadPrefill,
   decor,
+  poster = "a",
+  short,
 }: {
   glow?: boolean;
   palette?: PromoCardPalette;
@@ -75,6 +77,14 @@ export default function PromoCard({
    *  tint but below the text/price/buttons, so it reads as part of the
    *  background rather than something floating over the copy. */
   decor?: ReactNode;
+  /** «Постер» — гибрид вариантов B и C, который Егор утвердил 2026-09-28
+   *  для ВСЕХ окошек акций: притушенный кадр работы вместо синей заливки,
+   *  крупная скидка в градиенте страницы, одна строка текста вместо списка.
+   *  "a" (по умолчанию) — скидка сверху, "b" — всё прижато к низу. Прежняя
+   *  синяя карточка со списком осталась только как запасной код. */
+  poster?: "a" | "b";
+  /** Одна строка «что входит» для постера. */
+  short?: string;
 }) {
   const bootPreload = useBootPreload();
   const [open, setOpen] = useState(false);
@@ -110,6 +120,69 @@ export default function PromoCard({
   useEffect(() => {
     videoRef.current?.play().catch(() => {});
   }, []);
+
+  if (poster) {
+    const toNum = (v: string) => Number(v.replace(/\D/g, ""));
+    const off = toNum(oldPrice) ? Math.round((1 - toNum(price) / toNum(oldPrice)) * 100) : 0;
+    const discount = off > 0 ? <span className="kw font-display font-bold leading-none tracking-tight">−{off}%</span> : null;
+    const prices = (
+      <span className="flex flex-col">
+        <span className="font-display text-lg leading-none text-white">{price}</span>
+        <span className="mt-1 font-display text-[10px] leading-none text-white/50 line-through">{oldPrice}</span>
+      </span>
+    );
+    const buttons = (
+      <span className="flex flex-wrap items-center gap-2">
+        <Link href={href} className="btn-neon !px-3.5 !py-1.5 !text-[9px]">Подробнее</Link>
+        <button type="button" onClick={() => setOpen(true)} className="btn-neon !px-3.5 !py-1.5 !text-[9px]" style={{ "--btn-neon-delay": "1.8s" } as CSSProperties}>
+          Заказать <span aria-hidden="true">→</span>
+        </button>
+      </span>
+    );
+    return (
+      <>
+        <div className="relative h-full w-full">
+          <span className="promo-card-badge-lift absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white" aria-hidden="true">
+            <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
+            {badge}
+          </span>
+          <div className="promo-card promo-card-poster group relative flex h-full w-full flex-col overflow-hidden rounded-2xl p-4 pt-5 text-left">
+            <span className="promo-card-border pointer-events-none absolute inset-0 rounded-2xl" aria-hidden="true" />
+            {video ? (
+              <video ref={videoRef} src={video} poster={image} autoPlay muted loop playsInline preload={bootPreload} style={{ objectPosition: imageAlign }} className="promo-card-image pointer-events-none absolute inset-0 h-full w-full object-cover" />
+            ) : (
+              <img src={image} alt="" aria-hidden="true" loading="lazy" style={{ objectPosition: imageAlign }} className="promo-card-image pointer-events-none absolute inset-0 h-full w-full object-cover" />
+            )}
+            <span className="promo-card-tint pointer-events-none absolute inset-0" aria-hidden="true" />
+            {poster === "a" ? (
+              <span className="relative z-10 flex h-full flex-col">
+                <span className="font-display text-sm uppercase leading-tight tracking-tight text-white">{title}</span>
+                <span className="mt-3 flex items-center gap-3">
+                  <span className="text-[2.6rem]">{discount}</span>
+                  {prices}
+                </span>
+                <span className="body-small mt-2 !text-white/80">{short ?? subtitle}</span>
+                <span className="mt-auto pt-3">{buttons}</span>
+              </span>
+            ) : (
+              <span className="relative z-10 mt-auto flex flex-col">
+                <span className="flex items-end justify-between gap-3">
+                  <span className="font-display text-base uppercase leading-[1.05] tracking-tight text-white">{title}</span>
+                  <span className="shrink-0 text-[1.9rem]">{discount}</span>
+                </span>
+                <span className="body-small mt-1.5 !text-white/80">{short ?? subtitle}</span>
+                <span className="mt-3 flex items-center justify-between gap-3">
+                  {prices}
+                  {buttons}
+                </span>
+              </span>
+            )}
+          </div>
+        </div>
+        <LeadModal open={open} onClose={() => setOpen(false)} prefill={leadPrefill} />
+      </>
+    );
+  }
 
   return (
     <>

@@ -91,6 +91,50 @@ export type WorkStats = {
 // значения по конкретной работе, и они идут вместо формулы для неё одной.
 // Не выносится в lib/data.ts: это цифры для витрины, а не паспорт работы.
 const OVERRIDES: Record<string, Partial<WorkStats>> = {
+  // «Презентационные фильмы» — реальные цифры от Егора (2026-09-28).
+  U4eC0MxLHe8: {
+    // Презентационный ролик · ОАО «УралТрубоДеталь»
+    shootLabel: "Съёмка",
+    shootValue: "3 смены",
+    timeline: "2 недели",
+    budget: "570 000 ₽",
+    resultLabel: "Рост доверия на встречах",
+    resultValue: "+28%",
+  },
+  qCMME_ZRnu0: {
+    // Имиджевый фильм «Ивелла»
+    shootLabel: "Съёмка",
+    shootValue: "3 смены",
+    timeline: "2 недели",
+    budget: "345 000 ₽",
+  },
+  Jk4FLI212Fg: {
+    // Имиджевый фильм · Первый гипермаркет мебели
+    shootLabel: "Съёмка",
+    shootValue: "4 смены",
+    timeline: "3 недели",
+    budget: "380 000 ₽",
+  },
+  eitwwderUxs: {
+    // Институт агротехники — бюджет прежний
+    shootLabel: "Съёмка",
+    shootValue: "1 смена",
+    timeline: "2 недели",
+  },
+  "04cOzeUw3A4": {
+    // Имиджевый фильм · отель ELOVOE
+    shootLabel: "Съёмка",
+    shootValue: "3 смены",
+    timeline: "2 недели",
+    budget: "420 000 ₽",
+  },
+  "cHp-k-aBAgE": {
+    // Фильм для Ani d. Zop
+    shootLabel: "Съёмка",
+    shootValue: "2 смены",
+    timeline: "2 недели",
+    budget: "220 000 ₽",
+  },
   xnb_uuddJpA: {
     // Анимационный ролик · Школа сметчиков — реальные цифры от Егора.
     shootLabel: "Рендер",

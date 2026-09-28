@@ -468,7 +468,7 @@ function Intro({ slide, onSlide, onStart }: { slide: number; onSlide: (i: number
           10px до слова (Егор, 2026-09-26). Ширины слева и справа от слова
           равны, поэтому слово стоит ровно по центру; на первом слайде
           стрелка невидима, но место держит. */}
-      <motion.div {...rise(3.1)} className="mt-6 flex w-full items-center justify-center gap-1">
+      <motion.div {...rise(3.1)} className="mt-10 flex w-full items-center justify-center gap-1">
         <button
           type="button"
           onClick={() => onSlide(slide - 1)}

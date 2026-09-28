@@ -306,8 +306,8 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
   content: [
     {
       name: "Стартовый",
-      price: "от 35 000 ₽",
-      oldPrice: "75 000 ₽",
+      price: "от 34 000 ₽",
+      oldPrice: "45 000 ₽",
       benefits: [
         "Самый доступный вход в профессиональное видео",
         "2 круга правок без доплаты",

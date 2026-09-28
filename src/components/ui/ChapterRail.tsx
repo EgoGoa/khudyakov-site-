@@ -111,6 +111,8 @@ function lift(c: RGB, target = 0.88): RGB {
   ];
 }
 
+const HIDDEN = true;
+
 export default function ChapterRail({
   count,
   from,
@@ -124,6 +126,10 @@ export default function ChapterRail({
   to: string;
 }) {
   const { activeIndex, started } = useContext(StageContext);
+  // Егор убрал точки слева на всём сайте (2026-09-28): они дублировали
+  // правую панель навигации. Вызовы на страницах оставлены — вернуть можно,
+  // убрав эту строку.
+  if (HIDDEN) return null;
   const a = hexToRgb(from);
   const b = hexToRgb(to);
   // Two colours for the lit dot, on purpose: `glowRgb` is the saturated hue

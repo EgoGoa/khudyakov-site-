@@ -70,7 +70,9 @@ export default function SitesClose() {
       </Appear>
 
       <Appear from="up" delay={BEAT.content}>
-        <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3 [@media(max-height:820px)]:max-w-4xl">
+        {/* Лесенка как на /content: карточки по высоте своего списка,
+            выровнены по низу (Егор). */}
+        <div className="mx-auto grid w-full max-w-5xl gap-4 sm:grid-cols-3 sm:items-end [@media(max-height:820px)]:max-w-4xl">
           {/* tier-glow-{i} / tier-glow-price / .btn-neon: the same per-card
               neon treatment /content's own Close.tsx cards use, recoloured
               into /sites' own orange/magenta/cyan set (see
@@ -79,10 +81,10 @@ export default function SitesClose() {
           {TIERS.map((tier, i) => (
             <article
               key={tier.name}
-              className={`c3-card sites-tier tier-glow-${i} ${tier.pro ? "c3-card-pro" : ""}`}
+              className={`c3-card !min-h-0 c3-card-dense sites-tier tier-glow-${i} ${tier.pro ? "c3-card-pro" : ""}`}
             >
               <span className="c3-tier-small relative">{tier.tagline}</span>
-              <div className="c3-tier-large relative !text-xl">{tier.name}</div>
+              <div className="c3-tier-large relative kw !text-base lg:!text-lg xl:!text-[1.35rem]">{tier.name}</div>
               <div className="relative tier-glow-price">{tier.price}</div>
               <div className="c3-team relative mb-5">{tier.team}</div>
 
@@ -117,7 +119,7 @@ export default function SitesClose() {
 
       <Appear from="up" delay={BEAT.content + 0.1}>
         <div className="mt-6 [@media(max-height:820px)]:hidden">
-          <TeamRow members={PAGE_TEAM.sites} page="sites" />
+          <TeamRow members={PAGE_TEAM.sites} page="sites" className="!max-w-5xl [@media(max-height:820px)]:!max-w-4xl" />
         </div>
       </Appear>
 

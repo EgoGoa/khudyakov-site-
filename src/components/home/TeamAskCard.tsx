@@ -113,7 +113,7 @@ export default function TeamAskCard({
             </span>
             <div className="min-w-0">
               <span className="block font-display text-[9px] uppercase tracking-[0.16em] text-orange">
-                {member.name} · {member.role}
+                {member.name} — {member.role}
               </span>
               <span className="mt-1 block font-display text-sm uppercase leading-tight tracking-tight text-white">
                 {question}
@@ -157,7 +157,7 @@ export default function TeamAskCard({
         </span>
         <div className="min-w-0">
           <span className="block font-display text-[9px] uppercase tracking-[0.16em] text-orange">
-            {member.name} · {member.role}
+            {member.name} — {member.role}
           </span>
           <span className="mt-1 block font-display text-sm uppercase leading-tight tracking-tight text-white">
             {question}

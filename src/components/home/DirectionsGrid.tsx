@@ -1,12 +1,10 @@
 "use client";
 
-import { useBootPreload } from "@/lib/boot-sequence";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import { useStageActive, useStageStarted } from "@/components/ui/CinematicStage";
-import { contentDirections, serviceMeta, type ContentDirection } from "@/lib/service-content";
+import { contentDirections, type ContentDirection } from "@/lib/service-content";
 import { works } from "@/lib/data";
 import type { Work } from "@/lib/types";
 import TeamAskCard from "@/components/home/TeamAskCard";
@@ -41,39 +39,6 @@ function pickWorks(directions: ContentDirection[]): (Work | undefined)[] {
 // the visitor has actually scrolled to this chapter (same gate SlideVideo
 // uses on ServicePicker for its one background video); at rest it shows the
 // poster frame instead of decoding anything.
-function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolean }) {
-  const bootPreload = useBootPreload();
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  // The `autoPlay` attribute only fires the moment a <video> starts loading
-  // — flipping it true after the element already exists (which is exactly
-  // what happens here as `active` turns on once this chapter is scrolled
-  // into view) does not retroactively start playback in any browser. This
-  // element never unmounts (see the file header note on why), so play/pause
-  // has to be driven imperatively off `active` instead.
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (active) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-    }
-  }, [active]);
-
-  return (
-    <video
-      ref={videoRef}
-      src={`/video/directions/${youtubeId}.mp4`}
-      poster={`/images/directions/${youtubeId}.jpg`}
-      className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-      muted
-      loop
-      playsInline
-      preload={bootPreload}
-    />
-  );
-}
 
 // A fixed-size circle in the top-right corner, not a full-height media
 // panel: stretching the circle to the card's own height made its width grow
@@ -94,13 +59,27 @@ function DirectionOrb({ youtubeId, active }: { youtubeId: string; active: boolea
 // glow (`--card-glow-rgb`, see .deck-card-glow in globals.css) matches the
 // hover colour "Подробнее ↗" already used on this exact link before this
 // change folded it into the whole card.
-function DirectionCard({ direction, work, active }: { direction: ContentDirection; work?: Work; active: boolean }) {
-  const bootPreload = useBootPreload();
+const DIRECTION_BG: Record<string, string> = {
+  presentation: "/images/stock/businesswoman-office.webp",
+  advertising: "/images/stock/smm-collage-megaphone.webp",
+  image: "/images/stock/uv-paint-face.webp",
+  "ai-video": "/images/stock/ai-wireframe-face.webp",
+  graphics: "/images/stock/arch-3d-hand.webp",
+};
+
+function DirectionCard({ direction }: { direction: ContentDirection; work?: Work; active: boolean }) {
   return (
     <div
       className="deck-card-glow relative flex h-full min-h-0 max-sm:gap-4 sm:min-h-[190px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
       style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
     >
+      {/* Фон окошка — стоковый кадр по смыслу направления вместо круглого
+          видео-превью (Егор): кадр виден, но плотное затемнение не даёт ему
+          перебить текст. */}
+      <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl">
+        <img src={DIRECTION_BG[direction.slug] ?? "/images/stock/night-lights.webp"} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-45" />
+        <span className="absolute inset-0 bg-[linear-gradient(100deg,rgba(11,11,16,0.9)_0%,rgba(11,11,16,0.7)_55%,rgba(11,11,16,0.45)_100%)]" />
+      </span>
       <Link
         href={`/content/${direction.slug}`}
         aria-label={`Подробнее: ${direction.title}`}
@@ -121,35 +100,6 @@ function DirectionCard({ direction, work, active }: { direction: ContentDirectio
           </p>
         </div>
 
-        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-ink ring-1 ring-paper/15 sm:h-14 sm:w-14">
-          {/* AI-видео has no matching works[] category (no AI-generated
-              piece in the portfolio to point at), so its circle plays the
-              AI direction's own background loop instead — a real, local,
-              already-encoded clip rather than another YouTube embed. */}
-          {work?.youtubeId ? (
-            <DirectionOrb youtubeId={work.youtubeId} active={active} />
-          ) : (
-            <video
-              src="/video/bg-ai.mp4"
-              // Without a poster and with preload="none", the browser has
-              // nothing to paint until the visitor scrolls this chapter into
-              // view and `active` flips true — a real black circle, not a
-              // still frame, for however long the fetch then takes. The same
-              // still image /ai's own hero already uses as this reel's
-              // poster elsewhere (serviceMeta.ai.image) covers that gap, and
-              // preload="metadata" lets the browser paint a real decoded
-              // frame the moment it can, without downloading the whole clip
-              // up front like "auto" would.
-              poster={serviceMeta.ai.image}
-              muted
-              loop
-              playsInline
-              preload={bootPreload}
-              autoPlay={active}
-              className="h-full w-full object-cover"
-            />
-          )}
-        </div>
       </div>
 
       <div className="pointer-events-none relative z-10 mt-2 flex items-center gap-3">

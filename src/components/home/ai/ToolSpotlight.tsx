@@ -35,8 +35,8 @@ import { spotlightFor } from "@/components/home/ai/spotlightData";
  *  Значение ходило туда-сюда по просьбам Егора: 8.2с («медленно, как в
  *  тизере») → 3.4с («динамичнее и чаще») → 5.2с после просмотра живьём
  *  («медленнее везде»). 5.2с — середина: кадр не мельтешит, но и не
- *  застывает. */
-const BEAT_MS = 3400;
+ *  застывает. Потом +1.5с: Егор попросил сбавить смену сцен и текстов. */
+const BEAT_MS = 4900;
 
 /** Высота закрытой кнопки. Числом, а не по содержимому: высота окна
  *  анимируется числом (см. ниже), и второй конец этой анимации тоже
@@ -76,6 +76,7 @@ export default function ToolSpotlight({
   shape = "pill",
   className = "",
   fill = false,
+  noPreview = false,
 }: {
   slug: string;
   accent?: { from: string; to: string };
@@ -91,6 +92,9 @@ export default function ToolSpotlight({
   /** Закрытая кнопка занимает всю высоту ячейки, в которую её положили
    *  (нижний ряд карточек главы 05 /content), а не фиксированные 80px. */
   fill?: boolean;
+  /** Закрытая кнопка без мини-превью сцены — для узких колонок, где
+   *  название иначе ломается по буквам. */
+  noPreview?: boolean;
 }) {
   const side = place !== "bottom";
   const top = place === "top-right" || place === "top-left";
@@ -127,6 +131,17 @@ export default function ToolSpotlight({
   }, [open]);
 
   const close = useCallback(() => setOpen(false), []);
+
+  // Открыто только одно окошко на странице: когда окошки стоят рядом
+  // (глава «Сильные в этом» — два друг под другом), клик по соседнему
+  // закрывает текущее, а не открывает второе поверх.
+  useEffect(() => {
+    const onOther = (e: Event) => {
+      if ((e as CustomEvent<string>).detail !== slug) setOpen(false);
+    };
+    window.addEventListener("spotlight-open", onOther);
+    return () => window.removeEventListener("spotlight-open", onOther);
+  }, [slug]);
 
   // Высота раскрытого окна — «примерно треть экрана», но посчитанная, а не
   // заданная классом.
@@ -251,7 +266,9 @@ export default function ToolSpotlight({
           /smm). */}
       <div
         ref={wrapRef}
-        className="relative z-50 w-full"
+        // Открытое окно — на слой выше соседних: пока соседнее ещё
+        // схлопывается (0.46с), новое уже растёт поверх, а не сквозь него.
+        className={`relative w-full ${open ? "z-[55]" : "z-50"}`}
         style={{ height: fill ? "100%" : STRIP_HEIGHT, minHeight: fill ? STRIP_HEIGHT : undefined }}
       >
         <motion.div
@@ -302,7 +319,7 @@ export default function ToolSpotlight({
             open ? "spotlight-open" : "spotlight-strip cursor-pointer"
           }`}
           style={{ "--card-glow-rgb": hexToRgb(accent.to) } as React.CSSProperties}
-          onClick={open ? undefined : () => { measure(); setOpen(true); }}
+          onClick={open ? undefined : () => { measure(); setOpen(true); window.dispatchEvent(new CustomEvent("spotlight-open", { detail: slug })); }}
         >
           {/* Тот же кадр, что на карточке карусели и в шапке страницы
               инструмента: окно читается как выросшая карточка, а не как
@@ -470,6 +487,7 @@ export default function ToolSpotlight({
                     `aspect-[340/210]` держит коробку в пропорциях самого
                     холста, поэтому вписанная картинка заполняет её
                     целиком, без полей, на любой ширине строки. */}
+                {!noPreview && (
                 <span
                   className={`relative shrink-0 overflow-hidden rounded-xl ring-1 ring-white/15 ${
                     side ? "h-16 w-[38%]" : "hidden h-[70px] aspect-[340/210] sm:block"
@@ -477,6 +495,7 @@ export default function ToolSpotlight({
                 >
                   <SpotlightScene slug={data.slug} step={step} mini />
                 </span>
+                )}
                 {/* В `fill`-режиме название и тезис уже стоят своей строкой
                     над этим рядом (см. выше) — здесь остаётся только
                     картинка и стрелка, эта колонка целиком лишняя. */}

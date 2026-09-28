@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Magnetic from "@/components/ui/Magnetic";
 import MagneticChars from "@/components/ui/MagneticChars";
+import HeroWordmark from "@/components/home/HeroWordmark";
 import HeroHeadline from "@/components/home/HeroHeadline";
 import { PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import { HERO_LEAD } from "@/lib/typography";
@@ -82,12 +83,12 @@ export default function Hero() {
           src="/images/showreel-frame.jpg"
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[3px] brightness-[0.85] sm:w-[200%] md:w-[147%] lg:w-[127%]"
+          className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] sm:w-[200%] md:w-[147%] lg:w-[127%]"
         />
         {loadReel && (
           <video
             ref={videoRef}
-            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[3px] brightness-[0.85] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]"
+            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]"
             src={reelSrc}
             poster="/images/showreel-frame.jpg"
             autoPlay
@@ -109,6 +110,14 @@ export default function Hero() {
       </div>
 
       <Container className="flex flex-1 flex-col justify-center">
+        {/* Слева — бренд-столбик «Digital / AI / Creative», справа за
+            градиентной чертой — меняющийся заголовок услуг, строка
+            «Команда…» и кнопки (вариант B + A, выбор Егора 2026-09-28).
+            Слова столбика раз в несколько секунд перетекают в тонкий
+            контур и обратно. На телефоне столбик стоит над заголовком. */}
+        <div className="hero-split">
+        <HeroWordmark shown={shown} />
+        <div className="hero-split-main">
         <div
           ref={titleWrapRef}
           onMouseMove={handleTitleMouseMove}
@@ -152,7 +161,11 @@ export default function Hero() {
                 // paragraph) jumped every 4.2s as HeroHeadline cycled.
                 // em-based so it scales with .hero-monolith's own
                 // responsive font-size.
-                style={{ minHeight: "3.2em" }}
+                // Заголовок прижат к низу своего места (flex-end): слоган
+                // стоит на одной и той же строке при любом названии, длинное
+                // название растёт вверх, а строка «Команда…» под ним не
+                // двигается (Егор, 2026-09-28).
+                style={{ minHeight: "3.2em", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}
               >
                 <HeroHeadline />
               </motion.h1>
@@ -170,9 +183,9 @@ export default function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={shown}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className={`mt-2 max-w-[70%] text-left ${HERO_LEAD}`}
+          className={`mt-3 max-w-[70%] text-left ${HERO_LEAD}`}
         >
-          <span className="kw">Команда</span>, а AI-технологии мы подключили как инструмент — чтобы делать <span className="kw">глубже и эффективнее</span>.
+          <span className="kw">Команда</span>, AI-технологии мы подключили как инструмент — чтобы делать <span className="kw">глубже и эффективнее</span>.
         </motion.p>
 
         <motion.div
@@ -210,6 +223,8 @@ export default function Hero() {
             Написать в WhatsApp
           </a>
         </motion.div>
+        </div>
+        </div>
       </Container>
 
       {/* Anchored to the hero's own bottom, above the menu strip — Container

@@ -26,7 +26,6 @@ export default function SpotlightCopy({
   step,
   setStep,
   onClose,
-  showSub = true,
   showTitle = true,
   compact = false,
 }: {
@@ -81,7 +80,9 @@ export default function SpotlightCopy({
               </motion.p>
             )}
           </AnimatePresence>
-          {showSub && <p className="mt-1 max-w-[46em] text-[12.5px] leading-snug text-white/80">{data.sub}</p>}
+          {/* Мелкая строка-описание (data.sub) убрана во всех окошках: она
+              пересказывала подзаголовок и слайд — Егор назвал это тавтологией.
+              Проп showSub оставлен, чтобы не трогать вызовы. */}
         </div>
         {onClose && (
         <button

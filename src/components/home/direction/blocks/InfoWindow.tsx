@@ -35,7 +35,7 @@ import { withAccent } from "../Accent";
 // globals.css — здесь то же самое правило: сама смена тезисов
 // останавливается, окошко замирает на первом кадре, сцена остаётся, лишнего
 // движения нет.
-const BEAT_MS = 6400;
+const BEAT_MS = 7900;
 
 export default function InfoWindow({
   slug,
@@ -117,7 +117,7 @@ export default function InfoWindow({
                 <h3 className="mt-3 break-words font-display text-xl uppercase leading-tight tracking-tight text-white sm:text-2xl">
                   {benefit.punch}
                 </h3>
-                <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/85">
+                <p className="mt-4 max-w-xl font-display text-[13px] leading-snug tracking-tight text-white/65 sm:text-sm">
                   {withAccent(benefit.text, benefit.accent)}
                 </p>
               </motion.div>

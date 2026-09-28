@@ -24,7 +24,7 @@ export default function StatsBand({
   media?: BlockMediaSpec;
 }) {
   return (
-    <SectionStage className="relative py-16 sm:py-20">
+    <SectionStage className="dir-stats relative py-16 sm:py-20">
       {media ? <BlockMedia media={media} /> : null}
 
       {/* Тихая стеклянная полоса на всю ширину, а не карточка вокруг

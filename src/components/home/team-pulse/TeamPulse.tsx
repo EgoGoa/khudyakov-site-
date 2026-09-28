@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { accentVars, type TeamPulseData } from "./types";
 import TeamPulseWindow from "./TeamPulseWindow";
+import OrderMenu from "./OrderMenu";
 import { marks, plain } from "./marks";
 import { fitValue, useRefit } from "@/lib/use-fit-text";
 
@@ -125,6 +126,7 @@ export default function TeamPulse({
   compact = false,
   fill = false,
   source,
+  ctaLabel = "Пообщаться",
 }: {
   data: TeamPulseData;
   className?: string;
@@ -139,6 +141,8 @@ export default function TeamPulse({
   fill?: boolean;
   /** Подпись «откуда» в заявке, если этот человек стоит в другом блоке. */
   source?: string;
+  /** Подпись кнопки в режиме fill («Заказать» в герое «Презентаций»). */
+  ctaLabel?: string;
 }) {
   const data = source ? { ...base, source } : base;
   const ref = useRef<HTMLDivElement>(null);
@@ -227,10 +231,19 @@ export default function TeamPulse({
     setPeek(true);
   };
 
+  const [orderOpen, setOrderOpen] = useState(false);
   const openWindow = () => {
     setOpen(true);
     setSeen(true);
   };
+  // Любая кнопка «Пообщаться» / «Заказать» сначала раскрывает выбор: бриф,
+  // созвон, креатив-сессия или «подробнее» (большое окно) — Егор, для всей
+  // команды.
+  const openOrder = () => {
+    setOrderOpen(true);
+    setSeen(true);
+  };
+  const ordering = ctaLabel !== "Пообщаться";
 
   const { member } = data;
 
@@ -253,7 +266,7 @@ export default function TeamPulse({
           <motion.button
             key="card"
             type="button"
-            onClick={openWindow}
+            onClick={openOrder}
             className={`team-pulse-card group absolute flex items-center gap-4 rounded-[24px] px-4 text-left sm:gap-5 sm:px-5 ${
               fill ? "inset-0 py-4" : compact ? "inset-x-0 bottom-0 z-30 min-h-[9.5rem] py-4" : "inset-0"
             }`}
@@ -273,7 +286,7 @@ export default function TeamPulse({
             <span className={`min-w-0 flex-1 ${fill ? "flex h-full flex-col" : ""}`}>
               <span className="flex items-center gap-2 font-display text-[9.5px] uppercase tracking-[0.14em] sm:text-[10.5px]">
                 <span className="team-pulse-acc">
-                  {member.name} · {data.role}
+                  {member.name} — {data.role}
                 </span>
                 <span className="text-[#30d158]">● пишет…</span>
               </span>
@@ -290,7 +303,7 @@ export default function TeamPulse({
               )}
               <span className="mt-1.5 flex items-center gap-3">
                 <span className="team-pulse-cta">
-                  <u>Пообщаться</u>
+                  <u>{ctaLabel}</u>
                   <i aria-hidden="true">→</i>
                 </span>
                 <span className="ml-auto flex gap-1" aria-hidden="true">
@@ -333,10 +346,9 @@ export default function TeamPulse({
                   </span>
                   <span className="flex h-full min-w-0 flex-1 flex-col">
                     <span className="flex items-baseline gap-2 font-display text-[9.5px] uppercase tracking-[0.14em] sm:text-[10.5px]">
-                      <span className="team-pulse-acc">
-                        {member.name} · {data.role}
+                      <span className="text-white">
+                        {member.name} — {data.role}
                       </span>
-                      <span className="font-sans text-[11px] font-semibold normal-case tracking-normal text-white">сейчас</span>
                     </span>
                     <FitArea texts={messages.map(plain)} min={11} max={24} className="mt-1.5 flex items-center" probeClassName={FIT_TEXT}>
                       <AnimatePresence mode="wait" initial={false}>
@@ -356,11 +368,11 @@ export default function TeamPulse({
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        openWindow();
+                        openOrder();
                       }}
-                      className="team-pulse-cta mt-1.5 self-start"
+                      className={`team-pulse-cta mt-1.5 self-start ${ordering ? "team-pulse-cta-loud" : ""}`}
                     >
-                      <u>Пообщаться</u>
+                      <u>{ctaLabel}</u>
                       <i aria-hidden="true">→</i>
                     </button>
                   </span>
@@ -375,8 +387,11 @@ export default function TeamPulse({
               </span>
               <span className="min-w-0 flex-1 overflow-hidden">
                 <span className="flex items-baseline gap-2">
-                  <span className="team-pulse-acc font-display text-[11px] uppercase tracking-[0.1em]">{member.name}</span>
-                  <span className="font-sans text-[11px] font-semibold text-white">сейчас</span>
+                  {/* Имя белым, рядом — кто это (Егор: слово «сейчас» и
+                      градиентное имя смотрелись некрасиво). */}
+                  <span className="font-display text-[11px] uppercase tracking-[0.1em] text-white">{member.name}</span>
+                  <span aria-hidden="true" className="font-display text-[11px] text-white">—</span>
+                  <span className="truncate font-display text-[10px] uppercase tracking-[0.1em] text-white">{member.role}</span>
                 </span>
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
@@ -397,7 +412,7 @@ export default function TeamPulse({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  openWindow();
+                  openOrder();
                 }}
                 aria-label={`Пообщаться: ${member.name}`}
                 className="team-pulse-cta shrink-0"
@@ -412,6 +427,15 @@ export default function TeamPulse({
         )}
       </AnimatePresence>
 
+      <OrderMenu
+        open={orderOpen}
+        onClose={() => setOrderOpen(false)}
+        onPick={() => {
+          setOrderOpen(false);
+          openWindow();
+        }}
+        data={data}
+      />
       <TeamPulseWindow data={data} open={open} onClose={() => setOpen(false)} />
     </div>
   );

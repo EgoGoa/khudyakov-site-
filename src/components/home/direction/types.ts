@@ -202,6 +202,9 @@ export type DirectionSectionHead = {
 };
 
 export type DirectionContent = {
+  /** Устарело: сжатые промежутки теперь включены на всех страницах услуг
+   *  (data-tight-top в DirectionPage/CompactToolPage). */
+  tightTop?: boolean;
   /** Сегмент URL внутри /content. */
   slug: string;
 
@@ -222,6 +225,12 @@ export type DirectionContent = {
      *  подряд открывались одинаковым экраном. */
     video?: string;
     poster?: string;
+    /** Размытие ролика шапки в px. По умолчанию ролик резкий; Егор просил
+     *  лёгкую дымку (4px ≈ «20%») на «Презентационных фильмах». */
+    videoBlur?: number;
+    /** Сцены «Почему это работает» развёрнуты в герое рядом с окошком
+     *  человека, вместо кнопки, открывающей окно. */
+    deepInline?: boolean;
     /** Стоковый кадр вместо ролика — на всю шапку, без размытия. */
     photo?: string;
     /** object-position кадра шапки: текст стоит слева, поэтому кадр

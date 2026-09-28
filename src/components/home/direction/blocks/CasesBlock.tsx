@@ -226,7 +226,7 @@ export default function CasesBlock({ cases }: { cases: NonNullable<DirectionCont
                 href="/works"
                 className="mt-8 inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-white transition hover:text-orange"
               >
-                Весь каталог — 78 работ
+                Весь каталог
                 <span aria-hidden="true">↗</span>
               </Link>
             </Appear>

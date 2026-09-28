@@ -87,8 +87,7 @@ export default function ContentServicePage() {
           chapter="02"
           title={<>Наши <span className="kw">работы</span></>}
           side="right"
-          footer={<ToolSpotlight slug="advertising" accent={CONTENT_ACCENT} />}
-          intro={<><span className="kw">78 работ</span> в открытом доступе: реклама, шоурилы, 3D и моушн. Остальное — под NDA.</>}
+          intro={<>Все работы <span className="kw">в открытом доступе</span> — приятного просмотра</>}
           // A 2×2 grid of video tiles under the default text-8xl title was
           // tall enough to clip its own bottom row on short/wide viewports
           // (the deck can't scroll a chapter internally on desktop — see
@@ -121,7 +120,7 @@ export default function ContentServicePage() {
                 href="/works"
                 className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-paper/80 transition hover:text-glow"
               >
-                Весь каталог — 78 работ
+                Весь каталог
                 <span aria-hidden="true">→</span>
               </Link>
             }
@@ -130,7 +129,16 @@ export default function ContentServicePage() {
 
         <Trust
           title={<>Именно <span className="kw">мы</span></>}
-          footer={<ToolSpotlight slug="image" accent={CONTENT_ACCENT} shape="card" />}
+          // Окошки «Имиджевые видео» и «Рекламные ролики» — под FAQ, на
+          // месте Макса; Макс — под пятью причинами (просьба Егора).
+          teamSwap={
+            <div className="flex flex-col gap-3">
+              {/* Без мини-превью: в колонке 300px рядом с ним название
+                  ломалось по буквам. */}
+              <ToolSpotlight slug="image" accent={CONTENT_ACCENT} shape="card" noPreview className="!pt-0" />
+              <ToolSpotlight slug="advertising" accent={CONTENT_ACCENT} shape="card" noPreview className="!pt-0" />
+            </div>
+          }
           intro={<>Продюсерский центр полного цикла: от первого созвона до файлов в вашей папке. <span className="kw">Шесть из десяти заказов</span> — от клиентов, которые уже работали с нами.</>}
         />
         {/* Not "…под формат и площадку" any more: the ServicePicker above the
@@ -138,19 +146,17 @@ export default function ContentServicePage() {
             three times on the way down one page. This line says what the ten
             rows below it actually are instead. */}
         <Offer
-          // Два окошка услуг в одной строке — graphics слева, ai-video
-          // (перенесено сюда с блока тарифов) справа. Каждое ToolSpotlight
-          // само себя выравнивает по своему `place`, поэтому пара безопасно
-          // делит одну полосу шириной в главу.
-          footer={
-            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <ToolSpotlight slug="graphics" accent={CONTENT_ACCENT} place="left" className="sm:w-1/2" />
-              <ToolSpotlight slug="ai-video" accent={CONTENT_ACCENT} place="right" className="sm:w-1/2" />
-            </div>
+          // Два окошка услуг друг под другом под левым списком (просьба
+          // Егора): правая панель получает всю высоту главы и больше воздуха.
+          listAside={
+            <>
+              <ToolSpotlight slug="graphics" accent={CONTENT_ACCENT} place="left" className="!pt-0" />
+              <ToolSpotlight slug="ai-video" accent={CONTENT_ACCENT} place="left" className="!pt-0" />
+            </>
           }
           // Десять строк + виджет + окошко делят одну высоту экрана.
           titleClassName="text-[1.575rem] sm:text-[2.1rem] lg:text-[2.625rem] xl:text-[2.625rem]"
-          title={<>Лучшие в <span className="kw">этом</span></>}
+          title={<>Сильные в <span className="kw">этом</span></>}
           intro={<>Десять задач, которые закрываем своей командой — от рекламного ролика до 3D-графики и <span className="kw">AI-контента</span>.</>}
         />
         <Process

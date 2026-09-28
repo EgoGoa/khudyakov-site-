@@ -461,7 +461,7 @@ export default function Works({
                           // scroll internally on desktop). Wider/shorter on
                           // lg+ keeps both rows on screen without shrinking
                           // the grid itself.
-                          `aspect-[4/3] sm:aspect-video ${tight ? "lg:aspect-auto lg:h-[max(200px,calc((100svh-490px)/2))]" : "lg:aspect-[16/7]"}`
+                          `aspect-[4/3] sm:aspect-video ${tight ? "lg:aspect-auto lg:h-[max(200px,calc((100svh-400px)/2))]" : "lg:aspect-[16/7]"}`
                         : "aspect-[16/10] cursor-pointer"
                     }`}
                   >
@@ -474,7 +474,7 @@ export default function Works({
                       // itself. pointer-events-none so the click still
                       // reaches "Смотреть"/"Хочу так же" underneath.
                       <video
-                        className="pointer-events-none absolute inset-0 h-full w-full scale-[1.35] object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.42]"
+                        className="pointer-events-none absolute inset-0 h-full w-full scale-[1.35] object-cover brightness-50 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.42]"
                         src={workVideo(work.id)!}
                         poster={workThumb(work.youtubeId)}
                         autoPlay
@@ -490,7 +490,9 @@ export default function Works({
                         src={work.youtubeId ? workThumb(work.youtubeId) : ""}
                         alt=""
                         loading="lazy"
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
+                        // В главе «Наши работы» кадры притушены вдвое (просьба Егора), чтобы
+                        // названия и кнопки поверх читались; в каталоге /works — как были.
+                        className={`absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05] ${limit ? "brightness-50" : ""}`}
                       />
                     )}
                     {/* Подписи лежат прямо на кадре, как в референсе, поэтому

@@ -84,7 +84,7 @@ export default function DirectionPage({
           в отличие от hidden, не создаёт скролл-контейнер, поэтому липкие
           заголовки блоков (lg:sticky в «под чью задачу», sticky в FAQ)
           продолжают работать. */}
-      <div className={`${headingClass} relative [overflow-x:clip]`}>
+      <div className={`${headingClass} relative [overflow-x:clip]`} data-tight-top="">
         <DirectionBackdrop from={content.backdrop.from} to={content.backdrop.to} />
 
         <DirectionHero hero={content.hero} slug={content.slug} />

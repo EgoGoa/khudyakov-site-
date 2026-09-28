@@ -57,35 +57,32 @@ export function ServiceLabel({
   const accent = LABEL_ACCENT[serviceKey];
   if (!accent) return <>{meta.label}</>;
 
-  // The gradient now runs across the whole label ("Создание контента"), not
-  // just the one accent word — Egor's correction: picking out a single word
-  // read as if the rest of the phrase had been forgotten. It has to be one
-  // <span> around the full, unsplit text: background-clip:text paints its
-  // gradient across whatever text that element actually contains, so a
-  // single element spanning the whole phrase gives one continuous sweep
-  // start-to-finish. Splitting the phrase into separate spans (one per word,
-  // or worse, one per letter) would instead restart the same 0%→100% ramp
-  // inside each piece — a repeating stripe rather than one gradient.
+  // Градиент — только на ключевом слове («контента», «AI», «Vibe»), остальное
+  // белым (Егор, 2026-09-28: «Создание», «решения», «сайты» — белым).
+  const i = meta.label.indexOf(accent.word);
+  const before = i >= 0 ? meta.label.slice(0, i) : "";
+  const after = i >= 0 ? meta.label.slice(i + accent.word.length) : meta.label;
+  const plain = { color: "#fff", textShadow: "none" } as const;
   return (
-    <span
-      style={{
-        backgroundImage: accent.via
-          ? `linear-gradient(90deg, ${accent.from} 0%, ${accent.via} 55%, ${accent.to} 100%)`
-          : `linear-gradient(90deg, ${accent.from} 0%, ${accent.to} 100%)`,
-        WebkitBackgroundClip: "text",
-        backgroundClip: "text",
-        color: "transparent",
-        // .service-label-glow's text-shadow on the parent <h3> would
-        // otherwise paint as a solid slab in the shape of this transparent
-        // glyph (same issue the site-wide .kw class works around) — killed
-        // here and replaced with a drop-shadow in the word's own colour(s),
-        // which follows the painted gradient instead of the glyph fill.
-        textShadow: "none",
-        filter: `drop-shadow(0 0 10px ${accent.from}66) drop-shadow(0 0 26px ${accent.to}66)`,
-        fontSize: accent.scale ? `${accent.scale}em` : undefined,
-      }}
-    >
-      {meta.label}
+    <span style={{ fontSize: accent.scale ? `${accent.scale}em` : undefined }}>
+      {before && <span style={plain}>{before}</span>}
+      <span
+        style={{
+          backgroundImage: accent.via
+            ? `linear-gradient(90deg, ${accent.from} 0%, ${accent.via} 55%, ${accent.to} 100%)`
+            : `linear-gradient(90deg, ${accent.from} 0%, ${accent.to} 100%)`,
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          color: "transparent",
+          // text-shadow родителя (.service-label-glow) залил бы прозрачную
+          // букву сплошным пятном — вместо него свечение в цвет слова.
+          textShadow: "none",
+          filter: `drop-shadow(0 0 10px ${accent.from}66) drop-shadow(0 0 26px ${accent.to}66)`,
+        }}
+      >
+        {i >= 0 ? accent.word : ""}
+      </span>
+      {after && <span style={plain}>{after}</span>}
     </span>
   );
 }

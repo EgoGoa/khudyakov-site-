@@ -32,7 +32,7 @@ export default function InteractiveTierCard({
       } ${tier.pro ? "c3-card-pro" : ""}`}
     >
       <span className="c3-tier-small relative">{tier.tagline}</span>
-      <div className="c3-tier-large relative !text-lg">{tier.name}</div>
+      <div className="c3-tier-large relative kw !text-base lg:!text-lg xl:!text-[1.35rem]">{tier.name}</div>
 
       {/* Same tier-glow-price treatment /content's own cards use (see
           globals.css), recoloured per index into /ai's lime→emerald→teal
