@@ -17,7 +17,9 @@ import { WELCOME_OPEN_ATTR } from "@/lib/welcome-freeze";
 //   5. rail    — меню вайб-бара плавно опускается из-под сферы по кнопке;
 //   6. voice   — волна голосового ассистента внизу;
 //   7. smoke   — дым за курсором (самый тяжёлый и чисто декоративный).
-// Видео ждём, пока оно не будет готово играть, но не дольше 2,5 с. Если
+// Сначала ~2 с на экране только видео (Егор, 2026-09-28: иначе видео
+// готово за доли секунды и последовательность не читается глазом), потом
+// блоки. Если видео грузится дольше — ждём его, но не больше 3 с. Если
 // открыто стартовое окно, видео качается под ним, а этап 2 и дальше
 // начинаются только после его закрытия — окну достаётся весь процессор.
 // Очередь идёт один раз за загрузку: при переходах внутри сайта всё уже
@@ -33,7 +35,9 @@ const STEPS: [number, number][] = [
   [BOOT.voice, 900], // меню опустилось
   [BOOT.smoke, 700], // волна появилась
 ];
-const MEDIA_MAX_MS = 2500;
+// От начала загрузки страницы: не раньше MIN и не позже MAX.
+const MEDIA_MIN_MS = 2000;
+const MEDIA_MAX_MS = 3000;
 // Страницы с фоновым видео в первом экране (Hero). Адрес с .html — статика
 // на hdkv-ai.ru.
 const MEDIA_PAGES = /^\/(content|ai|sites|smm)(\/|\.html)?$/;
@@ -41,6 +45,7 @@ const MEDIA_PAGES = /^\/(content|ai|sites|smm)(\/|\.html)?$/;
 let stage = 0;
 let started = false;
 let mediaReady = false;
+let minPassed = false;
 const listeners = new Set<() => void>();
 
 function setStage(n: number) {
@@ -68,7 +73,7 @@ function welcomeBlocking() {
 let observer: MutationObserver | null = null;
 
 function tryContent() {
-  if (stage >= BOOT.content || !mediaReady || welcomeBlocking()) return;
+  if (stage >= BOOT.content || !mediaReady || !minPassed || welcomeBlocking()) return;
   observer?.disconnect();
   setStage(BOOT.content);
   const next = (i: number) => {
@@ -89,11 +94,17 @@ function start() {
   // MediaGovernor видео не грузит вовсе, остаётся кадр-заставка).
   if (!MEDIA_PAGES.test(window.location.pathname) || document.documentElement.hasAttribute("data-lite")) {
     mediaReady = true;
+    minPassed = true;
   }
+  const since = performance.now();
   window.setTimeout(() => {
     mediaReady = true;
     tryContent();
-  }, MEDIA_MAX_MS);
+  }, Math.max(0, MEDIA_MAX_MS - since));
+  window.setTimeout(() => {
+    minPassed = true;
+    tryContent();
+  }, Math.max(0, MEDIA_MIN_MS - since));
   observer = new MutationObserver(tryContent);
   observer.observe(document.documentElement, { attributes: true, attributeFilter: [WELCOME_OPEN_ATTR] });
   tryContent();
