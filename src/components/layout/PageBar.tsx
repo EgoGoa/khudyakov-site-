@@ -1,5 +1,6 @@
 "use client";
 
+import { queueFirstChapter, scrollToDeckStart } from "@/lib/page-hop";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
@@ -155,7 +156,8 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
     if (chosen === home || dragging || (home < 0 && !touched.current)) return;
     const t = window.setTimeout(() => {
       pushed.current = chosen;
-      router.push(`/${serviceMeta[serviceOrder[chosen]].slug}`);
+      queueFirstChapter();
+      router.push(`/${serviceMeta[serviceOrder[chosen]].slug}`, { scroll: false });
     }, NAV_DELAY_MS);
     return () => window.clearTimeout(t);
   }, [chosen, home, dragging, router]);
@@ -263,9 +265,11 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                       touched.current = true;
                       goTo(i);
                     } else if (onTop) {
-                      window.scrollTo({ top: 0, behavior: "instant" });
+                      // Название текущей страницы — тоже к её первому блоку.
+                      scrollToDeckStart();
                     } else {
                       // С подстраницы или общей страницы — на главную этой услуги.
+                      queueFirstChapter();
                       router.push(`/${serviceMeta[pageKey].slug}`);
                     }
                   }}

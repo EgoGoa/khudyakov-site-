@@ -103,7 +103,7 @@ export default function ServiceDeepDive({ slug }: { slug: string }) {
                       "--sp-to": data.accent.to,
                     } as React.CSSProperties
                   }
-                  className="relative flex max-h-[94svh] w-full max-w-6xl flex-col overflow-y-auto rounded-t-3xl border border-white/15 bg-[rgba(12,13,18,0.94)] p-4 shadow-[0_0_80px_-20px_var(--sp-from)] sm:max-h-[90svh] sm:rounded-3xl sm:p-6 lg:flex-row lg:gap-8 lg:p-8"
+                  className="win-shell relative flex max-h-[94svh] w-full max-w-6xl flex-col overflow-y-auto rounded-t-3xl border border-white/15 bg-[rgba(12,13,18,0.94)] p-4 shadow-[0_0_80px_-20px_var(--sp-from)] sm:max-h-[90svh] sm:rounded-3xl sm:p-6 lg:flex-row lg:gap-8 lg:p-8"
                 >
                   {/* Сцена: на телефоне сверху во всю ширину, на десктопе —
                       колонка слева. Пропорция сцены (340×210) держится

@@ -1,4 +1,5 @@
 "use client";
+import { settleAt } from "@/lib/motion";
 import { frozenFor } from "@/lib/welcome-freeze";
 
 import { useEffect, useRef } from "react";
@@ -373,8 +374,11 @@ export default function NanoWave({
       let clock = 0;
       let rate = 1;
       const frozen = frozenFor(wrap);
+      const settle = settleAt(wrap);
       const loop = (now: number) => {
         raf = requestAnimationFrame(loop);
+      // Внутри окна — только после его раскрытия (окно в два шага).
+        if (now < settle) return;
         // Вне экрана и в фоновой вкладке не рисуем вовсе.
         if (!onScreen || document.hidden || frozen()) {
           last = 0;

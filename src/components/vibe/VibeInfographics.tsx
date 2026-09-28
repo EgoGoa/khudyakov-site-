@@ -1,5 +1,6 @@
 "use client";
 
+import { settleAt } from "@/lib/motion";
 import { useEffect, useRef, useState } from "react";
 import { getTier, onTierChange } from "@/lib/perf-tier";
 
@@ -670,10 +671,14 @@ function runScene(canvas: HTMLCanvasElement, items: Item[], vw = VIEW_W, vh = VI
   });
 
   if (!still) {
-    const start = performance.now();
+    // В окне — только после его раскрытия или смены слайда (окно в два
+    // шага, lib/motion): сначала меняется окошко, потом оживает сцена.
+    const settle = settleAt(canvas);
+    const start = Math.max(performance.now(), settle);
     let last = 0;
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
+      if (now < settle) return;
       // На mid/low — 30 кадров/с: движение то же, нагрузка вдвое меньше.
       if (lite && now - last < 33) return;
       last = now;

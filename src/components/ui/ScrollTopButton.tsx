@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useFullpage } from "@/lib/fullpage";
-import { useCinematicFirstId, useCinematicGoTo } from "@/lib/cinematic-nav";
+import { useCinematicFirstId } from "@/lib/cinematic-nav";
 
 // Круглая кнопка «наверх» — правый верхний угол, на каждой странице сайта.
 //
@@ -24,12 +24,9 @@ import { useCinematicFirstId, useCinematicGoTo } from "@/lib/cinematic-nav";
 export default function ScrollTopButton() {
   const [scrolled, setScrolled] = useState(false);
   const fullpage = useFullpage();
-  // Основные разделы (/content, /ai, /sites, /smm) листаются не fullpage, а
-  // своим кинематографическим деком, и обычный scrollTo(0) уводил там в
-  // самый верх документа — в общий герой сайта. Егор поймал это сразу:
-  // кнопка должна вести в первый блок страницы, «в СММ это блок 01».
+  // Основные разделы (/content, /ai, /sites, /smm) листаются своим
+  // кинематографическим деком — по нему узнаём, что мы на такой странице.
   const cinematicFirstId = useCinematicFirstId();
-  const cinematicGoTo = useCinematicGoTo();
   // `ready` — на странице действительно зарегистрированы слайды. Провайдер
   // стоит в layout всегда, поэтому сам факт контекста ещё не значит, что
   // страница листается экранами.
@@ -56,10 +53,14 @@ export default function ScrollTopButton() {
       slides.goToIndex(0);
       return;
     }
-    // Страница с деком: просим сам дек встать на нулевую главу. Это и есть
-    // «первый блок страницы» — верх документа выше него занят общим героем
-    // сайта, а не содержимым раздела.
-    if (cinematicFirstId && cinematicGoTo(cinematicFirstId)) return;
+    // Страница с деком (основные разделы): в самый верх документа, к
+    // общему герою с видео. Раньше кнопка вставала на первую главу и
+    // посетитель застревал на блоке выбора услуг под героем — Егор
+    // передумал (2026-09-28): «вверх» значит к видео, как на любом сайте.
+    if (cinematicFirstId) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
 
     // Обычная длинная страница: не в абсолютный ноль, а под приклеенную
     // шапку — иначе она накрывает первую строку первого блока.

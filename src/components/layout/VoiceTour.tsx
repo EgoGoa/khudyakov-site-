@@ -111,6 +111,11 @@ export default function VoiceTour({ from, to }: { from: string; to: string }) {
               <motion.p {...rise(2.6)} className="vibe-mode__lead mt-4">
                 <Accent text={slide.lead} />
               </motion.p>
+              {/* Волна ассистента в пустом месте под текстом — та же, что
+                  внизу сайта: сразу видно, кого именно просят «сказать». */}
+              <motion.div {...rise(2.8)} className="voice-tour__wave mt-2 flex-1 justify-center">
+                <NanoWave width={107} height={32} from={from} to={to} hot={hot} pulse={s.pulse} level={getVoiceLevel} particles={false} />
+              </motion.div>
             </>
           ) : (
             <>

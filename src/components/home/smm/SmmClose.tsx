@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
-import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
@@ -167,9 +165,6 @@ export default function SmmClose() {
             </Link>
           </div>
         </Appear>
-        <div className="mt-4 lg:absolute lg:bottom-0 lg:right-0 lg:mt-0 lg:w-[330px]">
-          <ToolSpotlight slug="smm-bloggers" accent={SMM_ACCENT} place="right" className="!pt-0" />
-        </div>
       </div>
 
       <Appear from="up" delay={BEAT.cta + 2 * STAGGER.normal}>

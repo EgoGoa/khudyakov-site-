@@ -200,7 +200,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
         animate={WIN.animate}
         exit={WIN.exit}
         onClick={(e) => e.stopPropagation()}
-        className="vibe-mode__window vibe-mode__window--fixed"
+        className="win-shell vibe-mode__window vibe-mode__window--fixed"
       >
       <div aria-hidden="true" className="vibe-mode__aurora" />
       {/* Частиц вокруг сферы нет (Егор, 2026-09-27): пыль живёт только в

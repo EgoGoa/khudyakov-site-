@@ -91,6 +91,7 @@ function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: Ser
     // edge and takes nothing away from the page.
     <Link
       href={`/${meta.slug}`}
+      scroll={false}
       onClick={() => queueChapterHop(pathname.slice(1), meta.slug)}
       aria-label={`${isLeft ? "Предыдущая" : "Следующая"} страница: ${meta.label}`}
       className={`boot-late touch-slop group fixed bottom-24 z-30 land:bottom-1 flex h-10 w-10 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${

@@ -195,31 +195,38 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
   const { lag, moving } = useDeckSpring(active, drag, dragging);
   const live = dragging || moving;
 
+  // Смена карточки в два шага (Егор, 2026-09-28): пока колода едет, текст
+  // под ней и сцена на передней карточке стоят; меняются и оживают, когда
+  // карточка встала в центр, — в один момент меньше работы и нет рывков.
+  const [shownIdx, setShownIdx] = useState(idx);
+  if (!live && shownIdx !== idx) setShownIdx(idx);
+  const settled = !live && shownIdx === idx;
+
   // Номер сцены/тезиса передней карточки — общий для картинки на карточке и
   // текста в панели под каруселью (тот же приём, что в AiDeck): графика и
   // слова меняются строго вместе. На новой карточке всегда начинается с
   // первой сцены.
   const [sceneStep, setSceneStep] = useState(0);
   const [held, setHeld] = useState(false);
-  const data = spotlightFor(`${SITE_SPOTLIGHT_PREFIX}${SERVICES[idx].id}`);
+  const data = spotlightFor(`${SITE_SPOTLIGHT_PREFIX}${SERVICES[shownIdx].id}`);
   const beats = data?.benefits.length ?? 0;
 
   // Сброс при смене карточки прямо во время рендера (приём React для
   // состояния, производного от пропса): эффект дал бы один кадр со старым
   // номером сцены на новой карточке.
-  const [stepFor, setStepFor] = useState(idx);
-  if (stepFor !== idx) {
-    setStepFor(idx);
+  const [stepFor, setStepFor] = useState(shownIdx);
+  if (stepFor !== shownIdx) {
+    setStepFor(shownIdx);
     setSceneStep(0);
   }
 
   // Темп как на /ai (4.2с) — Егор просил одну механику на всех страницах.
   // Пауза, пока курсор над панелью: тезис можно дочитать до смены.
   useEffect(() => {
-    if (held || beats < 2) return;
+    if (held || !settled || beats < 2) return;
     const id = window.setInterval(() => setSceneStep((v) => (v + 1) % beats), DECK_BEAT_MS);
     return () => window.clearInterval(id);
-  }, [held, beats, idx]);
+  }, [held, settled, beats, shownIdx]);
 
   const panel = (
     <div
@@ -250,6 +257,19 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
       {/* No `onSwipe` any more: the pointer drag below replaces FanFit's
           own swipe-at-the-end gesture, and running both would page the deck
           twice for one flick. */}
+      {/* Стрелки — по центру колоды по высоте, без рамки и приглушённые:
+          Егор попросил убрать их из-под карусели. */}
+      <div className="relative">
+      <button type="button" onClick={() => step(-1)} aria-label="Предыдущая услуга" className="deck-side-arrow deck-side-arrow-prev">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+      <button type="button" onClick={() => step(1)} aria-label="Следующая услуга" className="deck-side-arrow deck-side-arrow-next">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
       <FanFit designWidth={380} height={320}>
       <div
         className="deck-rail relative h-full"
@@ -409,7 +429,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                   className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL_FRONT}`}
                   style={service.hit ? CARD_GLOW_STYLE_HIT : CARD_GLOW_STYLE}
                 >
-                  <SitesCardFace id={service.id} image={service.image} step={sceneStep} />
+                  <SitesCardFace id={service.id} image={service.image} step={settled ? sceneStep : 0} />
                   {caption}
                   {counter}
                 </Link>
@@ -424,7 +444,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                     isFront ? `${CARD_SHELL_FRONT} cursor-default` : `${CARD_SHELL} cursor-pointer`
                   }`}
                 >
-                  <SitesCardFace id={service.id} image={service.image} step={isFront ? sceneStep : 0} />
+                  <SitesCardFace id={service.id} image={service.image} step={isFront && settled ? sceneStep : 0} />
                   {caption}
                   {isFront && counter}
                 </button>
@@ -451,24 +471,13 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
             puts its own back-arrow over the rail. */}
       </div>
       </FanFit>
+      </div>
 
       {/* The lit track: one node per category, the active one flaring the
           same orange as the chapter rail down the left edge. The rail
           navigates chapters, this navigates services — they look alike on
           purpose but never share state. */}
-      <div className="mx-auto mt-6 flex max-w-[460px] items-center gap-3">
-        {/* Стрелки под колодой, по краям дорожки, как у каруселей Apple —
-            поверх карточек они закрывали боковые подписи. */}
-        <button
-          type="button"
-          onClick={() => step(-1)}
-          aria-label="Предыдущая услуга"
-          className={`relative z-10 shrink-0 ${ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
+      <div className="mx-auto mt-6 flex max-w-[360px] items-center gap-3">
         <div className="relative flex flex-1 items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
@@ -500,16 +509,6 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           );
         })}
       </div>
-        <button
-          type="button"
-          onClick={() => step(1)}
-          aria-label="Следующая услуга"
-          className={`relative z-10 shrink-0 ${ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
 
       {/* Окошко под деком — тот же приём, что и на /ai (AiDeck.tsx): стекло

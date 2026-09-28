@@ -223,30 +223,37 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
   const { lag, moving } = useDeckSpring(active, drag, dragging);
   const live = dragging || moving;
 
+  // Смена карточки в два шага (Егор, 2026-09-28): пока колода едет, текст
+  // под ней и сцена на передней карточке стоят; меняются и оживают, когда
+  // карточка встала в центр, — в один момент меньше работы и нет рывков.
+  const [shownIdx, setShownIdx] = useState(idx);
+  if (!live && shownIdx !== idx) setShownIdx(idx);
+  const settled = !live && shownIdx === idx;
+
   // Номер сцены/тезиса передней карточки — общий для картинки на карточке и
   // текста в панели под каруселью (тот же приём, что в AiDeck/SitesDeck):
   // графика и слова меняются строго вместе. На новой карточке всегда
   // начинается с первой сцены.
   const [sceneStep, setSceneStep] = useState(0);
   const [held, setHeld] = useState(false);
-  const data = spotlightFor(`${SMM_SPOTLIGHT_PREFIX}${FORMATS[idx].id}`);
+  const data = spotlightFor(`${SMM_SPOTLIGHT_PREFIX}${FORMATS[shownIdx].id}`);
   const beats = data?.benefits.length ?? 0;
 
   // Сброс при смене карточки прямо во время рендера (React-приём для
   // состояния, производного от пропса) — эффект дал бы один кадр со старым
   // номером сцены на новой карточке.
-  const [stepFor, setStepFor] = useState(idx);
-  if (stepFor !== idx) {
-    setStepFor(idx);
+  const [stepFor, setStepFor] = useState(shownIdx);
+  if (stepFor !== shownIdx) {
+    setStepFor(shownIdx);
     setSceneStep(0);
   }
 
   // Пауза, пока курсор над панелью: тезис можно дочитать до смены.
   useEffect(() => {
-    if (held || beats < 2) return;
+    if (held || !settled || beats < 2) return;
     const id = window.setInterval(() => setSceneStep((v) => (v + 1) % beats), DECK_BEAT_MS);
     return () => window.clearInterval(id);
-  }, [held, beats, idx]);
+  }, [held, settled, beats, shownIdx]);
 
   const panel = (
     <div
@@ -276,6 +283,19 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           new +30% size (250px tall × 1.3 = 325px) plus its upward y-nudge. */}
       {/* Paging by pointer drag (useDeckDrag) instead of FanFit's own
           swipe, so a flick isn't counted twice. */}
+      {/* Стрелки — по центру колоды по высоте, без рамки и приглушённые
+          (как на /sites): из-под карусели их убрали по просьбе Егора. */}
+      <div className="relative">
+      <button type="button" onClick={() => step(-1)} aria-label="Предыдущий формат" className="deck-side-arrow deck-side-arrow-prev">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+      <button type="button" onClick={() => step(1)} aria-label="Следующий формат" className="deck-side-arrow deck-side-arrow-next">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
       <FanFit designWidth={295} height={310}>
       <div
         className="deck-rail relative h-full"
@@ -415,7 +435,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                   className={`deck-card-glow absolute inset-0 overflow-hidden text-left ${CARD_SHELL_FRONT}`}
                   style={CARD_GLOW_STYLE}
                 >
-                  <SmmCardFace id={format.id} image={format.image} step={sceneStep} />
+                  <SmmCardFace id={format.id} image={format.image} step={settled ? sceneStep : 0} />
                   {caption}
                   {counter}
                 </Link>
@@ -430,7 +450,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                     isFront ? `${CARD_SHELL_FRONT} cursor-default` : `${CARD_SHELL} cursor-pointer`
                   }`}
                 >
-                  <SmmCardFace id={format.id} image={format.image} step={isFront ? sceneStep : 0} />
+                  <SmmCardFace id={format.id} image={format.image} step={isFront && settled ? sceneStep : 0} />
                   {caption}
                   {isFront && counter}
                 </button>
@@ -454,24 +474,13 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
 
       </div>
       </FanFit>
+      </div>
 
       {/* The lit track: one node per format, the active one flaring the page's
           violet. It looks like the chapter rail down the left edge on purpose,
           but the two never share state — that one walks chapters, this one
           walks formats. */}
-      {/* Стрелки — под колодой, по краям дорожки, как у каруселей Apple:
-          поверх карточек они закрывали боковые подписи. */}
-      <div className="mx-auto mt-6 flex max-w-[420px] items-center gap-3">
-        <button
-          type="button"
-          onClick={() => step(-1)}
-          aria-label="Предыдущий формат"
-          className={`relative z-10 shrink-0 ${ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
+      <div className="mx-auto mt-6 flex max-w-[340px] items-center gap-3">
       <div className="relative flex flex-1 items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
@@ -503,16 +512,6 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           );
         })}
       </div>
-        <button
-          type="button"
-          onClick={() => step(1)}
-          aria-label="Следующий формат"
-          className={`relative z-10 shrink-0 ${ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
 
       {/* Окошко под деком — тот же приём, что и на /ai (AiDeck.tsx) и /sites

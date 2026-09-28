@@ -2,6 +2,13 @@
 
 Лог ежедневной проверки my-site-copy-draft.md (задача copy-draft-check). Не грузится в сессии Claude автоматически.
 
+### 2026-09-28 11:29
+- Agency name: Filled ("HDKV.AGENCY")
+- Deadline: Unfilled
+- CTA channel: Filled ("khudyakov.yegor@gmail.com / +7 992 511-18-12")
+- Founder bio: Unfilled
+- Overall: 2 of 4 fields filled
+
 ### 2026-09-21 10:01
 - Agency name: Filled ("HDKV.AGENCY")
 - Deadline: Unfilled

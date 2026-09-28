@@ -641,7 +641,7 @@ export default function Works({
               animate={WIN.animate}
               exit={WIN.exit}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-3xl"
+              className="win-shell w-full max-w-3xl"
             >
               <div className="aspect-video w-full overflow-hidden rounded-xl bg-ink-soft">
                 <iframe

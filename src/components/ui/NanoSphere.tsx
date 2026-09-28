@@ -1,4 +1,5 @@
 "use client";
+import { settleAt } from "@/lib/motion";
 import { frozenFor } from "@/lib/welcome-freeze";
 
 import { useEffect, useRef } from "react";
@@ -635,8 +636,11 @@ export default function NanoSphere({
       let rate = 1;
       // Сфера за стартовым окном замирает, пока оно открыто (lib/welcome-freeze).
       const frozen = frozenFor(canvas);
+      const settle = settleAt(canvas);
       const loop = (now: number) => {
         raf = requestAnimationFrame(loop);
+      // Внутри окна — только после его раскрытия (окно в два шага).
+        if (now < settle) return;
         if (frozen()) {
           last = now;
           return;

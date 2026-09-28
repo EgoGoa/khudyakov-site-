@@ -69,11 +69,11 @@ export default function SitesPitch() {
       column
       headless
     >
-      <div className="flex flex-col lg:flex-row lg:items-center lg:gap-10 xl:gap-14 land:grid land:grid-cols-[40%_1fr] land:items-start land:gap-x-6 land:gap-y-2">
+      <div className="flex flex-col lg:flex-row lg:items-stretch lg:gap-10 xl:gap-14 land:grid land:grid-cols-[40%_1fr] land:items-start land:gap-x-6 land:gap-y-2">
         {/* Left column: the chapter's whole stack, so it centres against the
             carousel rather than against itself. */}
-        <div className="contents lg:block lg:w-[46%] lg:shrink-0 land:block land:w-auto land:shrink-0">
-          <div className="order-1 lg:order-none land:order-none">
+        <div className="contents lg:flex lg:w-[46%] lg:shrink-0 lg:flex-col land:block land:w-auto land:shrink-0">
+          <div className="order-1 lg:order-none lg:pt-10 land:order-none">
 
           <Appear from="up" delay={BEAT.title}>
             <h2 className="chapter-neon-warm max-w-[6.7em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.24rem] xl:text-[3.6rem]">
@@ -83,17 +83,20 @@ export default function SitesPitch() {
           </Appear>
 
           </div>
-          <div className="order-3 lg:order-none land:order-none">
+          <div className="order-3 lg:order-none lg:flex lg:flex-1 lg:flex-col land:order-none">
           <Appear from="up" delay={BEAT.intro}>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
-              Уникальный дизайн и вёрстка вместо шаблонов. Собираем AI-инструментами под контролем
-              команды.
+              <span className="kw">Уникальный дизайн</span> и вёрстка вместо шаблонов. Собираем AI-инструментами{" "}
+              <span className="kw">под контролем команды</span>.
             </p>
           </Appear>
 
-          <Appear from="up" delay={BEAT.cta}>
-{/* Егор как сервис — уведомление на месте прежней карточки. */}
-            <div className="mt-4">
+          {/* Егор как сервис — уведомление на месте прежней карточки. На
+              широком экране прижат вниз колонки на высоту окошка под
+              каруселью (210px), так что его верх стоит вровень с верхом
+              этого окошка справа — просьба Егора. */}
+          <Appear from="up" delay={BEAT.cta} className="lg:mt-auto lg:h-[210px]">
+            <div className="mt-4 lg:mt-0">
               <TeamPulse data={EGOR_SITES} compact source="/sites · глава «Сайты на AI»" />
             </div>
           </Appear>

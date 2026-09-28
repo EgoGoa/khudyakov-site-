@@ -30,36 +30,36 @@ const ACC = "linear-gradient(135deg, var(--sp-from), var(--sp-to))";
  *  тогда, когда сцена доиграла, — один цикл и сразу следующая (ритм,
  *  который Егор попросил держать везде в окнах команды). */
 export const SCENE_MS: Record<TeamPulseScene, number> = {
-  concepts: 6000,
-  lead: 5200,
-  catalog: 4600,
-  rebrand: 5000,
-  timeline: 5600,
-  calendar: 5200,
-  contact: 5200,
-  team: 5200,
-  aiPilot: 5600,
-  aiSavings: 5200,
-  aiPrompts: 5600,
-  aiCrew: 5200,
-  contentTimeline: 5600,
-  contentContact: 5200,
-  contentCrew: 5200,
-  maxHooks: 5600,
-  maxStoryboard: 5200,
-  maxConcepts: 5200,
-  maxCreative: 5000,
-  dimaPhotoToVideo: 5200,
-  dimaFormats: 4800,
-  dimaAvatar: 5000,
-  dimaModels: 5200,
-  smmTimeline: 5600,
-  smmContact: 5200,
-  smmCrew: 5200,
-  tanyaGrid: 5000,
-  tanyaReach: 5200,
-  tanyaPlan: 5200,
-  tanyaReport: 5000,
+  concepts: 3600,
+  lead: 3120,
+  catalog: 2760,
+  rebrand: 3000,
+  timeline: 3360,
+  calendar: 3120,
+  contact: 3120,
+  team: 3120,
+  aiPilot: 3360,
+  aiSavings: 3120,
+  aiPrompts: 3360,
+  aiCrew: 3120,
+  contentTimeline: 3360,
+  contentContact: 3120,
+  contentCrew: 3120,
+  maxHooks: 3360,
+  maxStoryboard: 3120,
+  maxConcepts: 3120,
+  maxCreative: 3000,
+  dimaPhotoToVideo: 3120,
+  dimaFormats: 2880,
+  dimaAvatar: 3000,
+  dimaModels: 3120,
+  smmTimeline: 3360,
+  smmContact: 3120,
+  smmCrew: 3120,
+  tanyaGrid: 3000,
+  tanyaReach: 3120,
+  tanyaPlan: 3120,
+  tanyaReport: 3000,
 };
 
 function Stage({ children }: { children: ReactNode }) {
@@ -165,7 +165,7 @@ function MiniSite({ s, active }: { s: (typeof SITES)[number]; active: boolean })
 }
 
 function ConceptsFan({ variant, once = false }: { variant?: number; once?: boolean }) {
-  const tick = useTick(1900, (variant === undefined || variant < 0));
+  const tick = useTick(1140, (variant === undefined || variant < 0));
   const auto = once ? Math.min(tick, 2) : tick % 3;
   const front = variant !== undefined && variant >= 0 ? variant : auto;
   const place = (i: number) => {
@@ -221,7 +221,7 @@ function Typed({ text, delay }: { text: string; delay: number }) {
   return (
     <span className="inline-flex">
       {text.split("").map((ch, k) => (
-        <motion.span key={k} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: delay + k * 0.07, duration: 0.01 }}>
+        <motion.span key={k} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: delay + k * 0.04, duration: 0.01 }}>
           {ch === " " ? " " : ch}
         </motion.span>
       ))}
@@ -256,7 +256,7 @@ function Lead() {
                 className="mt-1.5 grid h-[38px] place-items-center rounded-full font-display text-[11px] font-bold uppercase text-[#0b0b10]"
                 style={{ background: ACC }}
                 animate={{ scale: [1, 1, 0.92, 1] }}
-                transition={{ times: [0, 0.85, 0.92, 1], duration: 2.6 }}
+                transition={{ times: [0, 0.85, 0.92, 1], duration: 1.56 }}
               >
                 Отправить
               </motion.div>
@@ -266,7 +266,7 @@ function Lead() {
             className="absolute left-[200px] top-[18px] z-10 flex w-[250px] items-center gap-3 rounded-[18px] bg-[rgba(58,58,66,0.8)] px-3.5 py-3 shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl"
             initial={{ y: -30, opacity: 0, scale: 0.94 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
-            transition={{ ...SPRING, delay: 2.8 }}
+            transition={{ ...SPRING, delay: 1.68 }}
           >
             <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-[10px] font-display text-[11px] font-bold text-[#0b0b10]" style={{ background: ACC }}>
               HD
@@ -277,7 +277,7 @@ function Lead() {
               <span className="team-pulse-acc">Анна · сейчас</span>
             </span>
           </motion.div>
-          <motion.div className="absolute left-[262px] top-[130px] w-[190px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.2 }}>
+          <motion.div className="absolute left-[262px] top-[130px] w-[190px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.92 }}>
             <p className="font-display text-[40px] font-bold leading-none text-white">×2,4</p>
             <p className="mb-3 mt-1 font-display text-[11px] font-bold uppercase text-white">заявок за месяц</p>
             <div className="flex h-[110px] items-end gap-1.5">
@@ -288,7 +288,7 @@ function Lead() {
                   style={{ background: k > 3 ? "linear-gradient(0deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,.14)" }}
                   initial={{ height: 0 }}
                   animate={{ height: `${h}%` }}
-                  transition={{ ...SPRING, delay: 3.3 + k * 0.08 }}
+                  transition={{ ...SPRING, delay: 1.98 + k * 0.05 }}
                 />
               ))}
             </div>
@@ -325,12 +325,12 @@ function Catalog() {
                 style={{ background: "linear-gradient(180deg, transparent, rgba(var(--tp-to-rgb),.6), transparent)" }}
                 initial={{ top: -40 }}
                 animate={{ top: 240 }}
-                transition={{ duration: 1.2, delay: 0.6, ease: "easeInOut" }}
+                transition={{ duration: 0.72, delay: 0.36, ease: "easeInOut" }}
               />
             </div>
             <p className="mt-3 text-center font-display text-[11px] font-bold uppercase text-white">Было</p>
           </motion.div>
-          <motion.span className="absolute left-[190px] top-[140px] font-display text-[30px] font-bold" style={{ color: "var(--sp-to)" }} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.6 }}>
+          <motion.span className="absolute left-[190px] top-[140px] font-display text-[30px] font-bold" style={{ color: "var(--sp-to)" }} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.96 }}>
             →
           </motion.span>
           <motion.div
@@ -338,17 +338,17 @@ function Catalog() {
             style={{ boxShadow: "0 30px 60px rgba(0,0,0,.6), 0 0 44px rgba(var(--tp-from-rgb),.35)" }}
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ ...SPRING, delay: 1.9 }}
+            transition={{ ...SPRING, delay: 1.14 }}
           >
             <div className="relative grid h-[180px] place-items-center bg-[radial-gradient(70%_70%_at_50%_40%,#fff,#e6dfd3)]">
-              <motion.span initial={{ scale: 0.7, rotate: -8 }} animate={{ scale: 1, rotate: 0 }} transition={{ ...SPRING, delay: 2.2 }}>
+              <motion.span initial={{ scale: 0.7, rotate: -8 }} animate={{ scale: 1, rotate: 0 }} transition={{ ...SPRING, delay: 1.32 }}>
                 <Mug />
               </motion.span>
-              <motion.span className="absolute left-3 top-3 rounded-full bg-[#111] px-2.5 py-1 font-display text-[10px] font-bold uppercase text-white" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.6 }}>
+              <motion.span className="absolute left-3 top-3 rounded-full bg-[#111] px-2.5 py-1 font-display text-[10px] font-bold uppercase text-white" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.56 }}>
                 новинка
               </motion.span>
             </div>
-            <motion.div className="p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.8 }}>
+            <motion.div className="p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.68 }}>
               <p className="font-display text-[15px] font-bold uppercase text-[#161616]">Кружка «Утро»</p>
               <div className="mt-2 h-[7px] w-[80%] rounded-full bg-black/10" />
               <div className="mt-3 grid h-9 place-items-center rounded-full bg-[#111] font-display text-[11px] font-bold uppercase text-white">В корзину</div>
@@ -361,7 +361,7 @@ function Catalog() {
 }
 
 function Rebrand() {
-  const tick = useTick(2200);
+  const tick = useTick(1320);
   const after = tick >= 1;
   return (
     <Stage>
@@ -383,7 +383,7 @@ function Rebrand() {
               ? "0 30px 70px rgba(0,0,0,.6), 0 0 0 1.5px rgba(var(--tp-to-rgb),.8), 0 0 50px rgba(var(--tp-from-rgb),.4)"
               : "0 24px 50px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.1)",
           }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.36 }}
         >
           <div className="flex h-[22px] items-center gap-[5px] px-[9px]" style={{ background: after ? "#1a141d" : "#d9d9d9" }}>
             <Dots light={!after} />
@@ -404,7 +404,7 @@ function Rebrand() {
             <motion.div
               className="mt-4 flex h-[110px] items-end rounded-[12px] p-4"
               animate={{ background: after ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "linear-gradient(135deg, #cfcfcf, #bdbdbd)" }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.36 }}
             >
               <span className={`whitespace-pre-line text-[20px] font-bold leading-[1] ${after ? "font-display uppercase text-[#0b0b10]" : "font-serif text-[#666]"}`}>
                 {after ? "Кофе, который\nбудит город" : "Добро пожаловать"}
@@ -412,7 +412,7 @@ function Rebrand() {
             </motion.div>
             <div className="mt-4 flex gap-1.5">
               {(after ? ["var(--sp-from)", "var(--sp-to)", "#f5f2ec", "#1a1a22"] : ["#8a8a8a", "#b0b0b0", "#cfcfcf"]).map((c, i) => (
-                <motion.i key={`${after}-${i}`} className="h-6 w-10 rounded-[6px] ring-1 ring-white/15" style={{ background: c }} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING, delay: i * 0.08 }} />
+                <motion.i key={`${after}-${i}`} className="h-6 w-10 rounded-[6px] ring-1 ring-white/15" style={{ background: c }} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING, delay: i * 0.05 }} />
               ))}
             </div>
           </div>
@@ -428,7 +428,7 @@ function Rebrand() {
 const SITE_STAGES = ["Бриф", "Концепция", "Сборка", "Правки", "Запуск"];
 
 function Timeline({ stages: STAGES = SITE_STAGES, doneLabel = "Сайт запущен 🚀", title = "*Каждый этап* ^с твоего «ок»^", sub = "Дальше идём ^только после согласования^" }: { stages?: string[]; doneLabel?: string; title?: string; sub?: string } = {}) {
-  const tick = useTick(950);
+  const tick = useTick(570);
   const done = Math.min(tick, STAGES.length);
   return (
     <Stage>
@@ -510,7 +510,7 @@ function Calendar() {
               style={{ left: 44 + col * cell + 4, top: 4 + row * cell + 26, background: b.c, transformOrigin: "left center" }}
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: b.len * cell - 12, opacity: 1 }}
-              transition={{ ...SPRING, delay: 0.3 + i * 0.6 }}
+              transition={{ ...SPRING, delay: 0.18 + i * 0.36 }}
             >
               <span className="whitespace-nowrap">{b.label}</span>
             </motion.div>
@@ -521,7 +521,7 @@ function Calendar() {
           style={{ left: 44 + 3 * cell - 10, top: 4 + 2 * cell + 60, background: ACC, boxShadow: "0 0 26px rgba(var(--tp-from-rgb),.6)" }}
           initial={{ opacity: 0, y: 10, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ ...SPRING, delay: 3 }}
+          transition={{ ...SPRING, delay: 1.8 }}
         >
           🚩 Запуск · 18-е · день в день
         </motion.div>
@@ -557,7 +557,7 @@ function Contact({ msgs = SITE_MSGS }: { msgs?: { me: boolean; t: string }[] } =
                 style={m.me ? { background: "linear-gradient(90deg, rgba(var(--tp-from-rgb),.45), rgba(var(--tp-to-rgb),.35))" } : undefined}
                 initial={{ opacity: 0, y: 12, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ ...SPRING, delay: 0.3 + i * 0.9 }}
+                transition={{ ...SPRING, delay: 0.18 + i * 0.54 }}
               >
                 {m.t}
               </motion.div>
@@ -592,7 +592,7 @@ function TeamAssemble({ crew: people = SITE_CREW, center = "Твой сайт", 
             [390, 80],
             [240, 270],
           ].map(([x, y], i) => (
-            <motion.path key={i} d={`M 240 150 L ${x} ${y}`} stroke="url(#tp-line)" strokeWidth="2" strokeDasharray="6 6" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 1 + i * 0.4 }} />
+            <motion.path key={i} d={`M 240 150 L ${x} ${y}`} stroke="url(#tp-line)" strokeWidth="2" strokeDasharray="6 6" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.48, delay: 0.6 + i * 0.24 }} />
           ))}
           <defs>
             <linearGradient id="tp-line" x1="0" y1="0" x2="1" y2="1">
@@ -617,7 +617,7 @@ function TeamAssemble({ crew: people = SITE_CREW, center = "Твой сайт", 
             style={{ x: "-50%", left: c.x, top: c.y }}
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ ...SPRING, delay: 0.4 + i * 0.4 }}
+            transition={{ ...SPRING, delay: 0.24 + i * 0.24 }}
           >
             <img src={c.m.photo} alt="" className="h-[64px] w-[64px] rounded-full object-cover" style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 24px rgba(var(--tp-from-rgb),.5)" }} />
             <span className="mt-2 font-display text-[12px] font-bold uppercase text-white">{c.m.name}</span>
@@ -638,7 +638,7 @@ function TeamAssemble({ crew: people = SITE_CREW, center = "Твой сайт", 
 const AI_STEPS = ["Задача", "Пилот", "Твоё «ок»", "Масштаб"];
 
 function AiPilot() {
-  const tick = useTick(1000);
+  const tick = useTick(600);
   const done = Math.min(tick, AI_STEPS.length);
   return (
     <Stage>
@@ -717,7 +717,7 @@ function AiSavings() {
                   className="absolute inset-y-0 left-0 flex items-center justify-end rounded-[10px] bg-white/[0.16] pr-3 font-display text-[11px] font-bold uppercase text-white"
                   initial={{ width: "0%" }}
                   animate={{ width: `${r.was * 100}%` }}
-                  transition={{ ...SPRING, delay: 0.2 + i * 0.35 }}
+                  transition={{ ...SPRING, delay: 0.12 + i * 0.21 }}
                 >
                   {r.wasT}
                 </motion.div>
@@ -726,7 +726,7 @@ function AiSavings() {
                   style={{ background: ACC, boxShadow: "0 0 22px rgba(var(--tp-from-rgb),.5)" }}
                   initial={{ width: "0%", opacity: 0 }}
                   animate={{ width: `${r.now * 100}%`, opacity: 1 }}
-                  transition={{ ...SPRING, delay: 1.8 + i * 0.45 }}
+                  transition={{ ...SPRING, delay: 1.08 + i * 0.27 }}
                 >
                   {r.nowT}
                 </motion.div>
@@ -739,7 +739,7 @@ function AiSavings() {
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ ...SPRING, delay: 3.4 }}
+          transition={{ ...SPRING, delay: 2.04 }}
         >
           Расчёт — за 15 минут созвона
         </motion.div>
@@ -759,7 +759,7 @@ function AiPrompts() {
           style={{ background: "linear-gradient(90deg, rgba(var(--tp-from-rgb),.45), rgba(var(--tp-to-rgb),.35))" }}
           initial={{ opacity: 0, y: 12, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ ...SPRING, delay: 0.2 }}
+          transition={{ ...SPRING, delay: 0.12 }}
         >
           Нужны ролики для кофейни на месяц ☕
         </motion.div>
@@ -770,7 +770,7 @@ function AiPrompts() {
           style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 30px rgba(var(--tp-from-rgb),.55)" }}
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ ...SPRING, delay: 1 }}
+          transition={{ ...SPRING, delay: 0.6 }}
         />
         <div className="absolute inset-x-0 top-[200px] flex justify-center gap-2.5">
           {tools.map((t, i) => (
@@ -779,7 +779,7 @@ function AiPrompts() {
               className="rounded-full bg-white/[0.08] px-3.5 py-2 font-display text-[11px] font-bold uppercase text-white ring-1 ring-white/15"
               initial={{ opacity: 0, y: -14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ ...SPRING, delay: 1.7 + i * 0.25 }}
+              transition={{ ...SPRING, delay: 1.02 + i * 0.15 }}
             >
               {t}
             </motion.span>
@@ -793,7 +793,7 @@ function AiPrompts() {
               style={{ background: ACC, boxShadow: "0 0 20px rgba(var(--tp-from-rgb),.45)" }}
               initial={{ opacity: 0, y: 20, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ ...SPRING, delay: 3 + k * 0.3 }}
+              transition={{ ...SPRING, delay: 1.8 + k * 0.18 }}
             >
               ▶
             </motion.span>
@@ -820,7 +820,7 @@ function AiCrew() {
             [368, 72],
             [240, 222],
           ].map(([x, y], i) => (
-            <motion.path key={i} d={`M 240 146 L ${x} ${y}`} stroke="url(#tp-ai-line)" strokeWidth="2" strokeDasharray="6 6" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 1 + i * 0.4 }} />
+            <motion.path key={i} d={`M 240 146 L ${x} ${y}`} stroke="url(#tp-ai-line)" strokeWidth="2" strokeDasharray="6 6" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.48, delay: 0.6 + i * 0.24 }} />
           ))}
           <defs>
             <linearGradient id="tp-ai-line" x1="0" y1="0" x2="1" y2="1">
@@ -845,7 +845,7 @@ function AiCrew() {
             style={{ x: "-50%", left: c.x, top: c.y }}
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ ...SPRING, delay: 0.4 + i * 0.4 }}
+            transition={{ ...SPRING, delay: 0.24 + i * 0.24 }}
           >
             <img src={c.m.photo} alt="" className="h-[64px] w-[64px] rounded-full object-cover" style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 24px rgba(var(--tp-from-rgb),.5)" }} />
             <span className="mt-2 font-display text-[12px] font-bold uppercase text-white">{c.m.name}</span>
@@ -874,7 +874,7 @@ const SHOOT_CREW = [
 
 function MaxHooks() {
   const hooks = ["«Ты тоже так делаешь?»", "«3 секунды — и ты купишь»", "«Никто не говорит об этом»"];
-  const tick = useTick(1100);
+  const tick = useTick(660);
   const pick = tick >= 3 ? 1 : -1;
   return (
     <Stage>
@@ -932,14 +932,14 @@ function MaxStoryboard() {
               className="relative h-[120px] overflow-hidden rounded-[16px] bg-white/[0.05] shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]"
               initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ ...SPRING, delay: 0.3 + i * 0.7 }}
+              transition={{ ...SPRING, delay: 0.18 + i * 0.42 }}
             >
               <motion.div
                 className="absolute inset-0 grid place-items-center text-[44px]"
                 style={{ background: "linear-gradient(135deg, rgba(var(--tp-from-rgb),.35), rgba(var(--tp-to-rgb),.25))" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.7 + i * 0.7 }}
+                transition={{ duration: 0.3, delay: 0.42 + i * 0.42 }}
               >
                 {f.e}
               </motion.div>
@@ -959,7 +959,7 @@ function MaxConcepts() {
     { t: "Дорого", e: "✨", r: 0, x: 170 },
     { t: "Честно", e: "🤝", r: 8, x: 280 },
   ];
-  const tick = useTick(1400);
+  const tick = useTick(840);
   const pick = tick >= 2 ? 1 : -1;
   return (
     <Stage>
@@ -978,7 +978,7 @@ function MaxConcepts() {
               scale: pick === i ? 1.1 : 1,
               background: pick === i ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.07)",
             }}
-            transition={{ ...SPRING, delay: pick >= 0 ? 0 : 0.3 + i * 0.35 }}
+            transition={{ ...SPRING, delay: pick >= 0 ? 0 : 0.18 + i * 0.21 }}
           >
             <span className="text-[44px]">{c.e}</span>
             <span className={`font-display text-[15px] font-bold uppercase ${pick === i ? "text-[#0b0b10]" : "text-white"}`}>{c.t}</span>
@@ -1011,7 +1011,7 @@ function MaxCreative() {
               className={`font-display text-[20px] font-bold uppercase leading-tight ${i === 2 ? "team-pulse-acc" : "text-white"}`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ ...SPRING, delay: 0.3 + i * 0.6 }}
+              transition={{ ...SPRING, delay: 0.18 + i * 0.36 }}
             >
               {l}
             </motion.p>
@@ -1027,7 +1027,7 @@ function MaxCreative() {
               className="flex flex-col items-center"
               initial={{ opacity: 0, scale: 0.6 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ ...SPRING, delay: 2.4 + i * 0.4 }}
+              transition={{ ...SPRING, delay: 1.44 + i * 0.24 }}
             >
               <span className="team-pulse-warm font-display text-[40px] font-bold leading-none">{m.v}</span>
               <span className="mt-1 font-display text-[12px] font-bold uppercase text-white">{m.t}</span>
@@ -1042,7 +1042,7 @@ function MaxCreative() {
 /* ─── Вадим на /ai: генерации, форматы, аватар, подбор модели ────────── */
 
 function DimaPhotoToVideo() {
-  const tick = useTick(900);
+  const tick = useTick(540);
   const phase = Math.min(tick, 4); // 0 фото · 1 скан · 2 кадры · 3 видео · 4 готово
   return (
     <Stage>
@@ -1059,7 +1059,7 @@ function DimaPhotoToVideo() {
             style={{ background: ACC, boxShadow: "0 0 18px rgba(var(--tp-from-rgb),.9)" }}
             initial={{ top: 0, opacity: 0 }}
             animate={phase === 1 ? { top: ["0%", "100%"], opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.9, ease: "linear" }}
+            transition={{ duration: 0.54, ease: "linear" }}
           />
           <span className="absolute bottom-2 left-3 font-display text-[11px] font-bold uppercase text-black/70">Фото</span>
         </motion.div>
@@ -1080,13 +1080,13 @@ function DimaPhotoToVideo() {
             className="absolute inset-0 grid place-items-center text-[60px]"
             style={{ background: "linear-gradient(160deg, rgba(var(--tp-from-rgb),.55), rgba(var(--tp-to-rgb),.55))" }}
             animate={{ scale: phase >= 3 ? [1, 1.12, 1] : 1, rotate: phase >= 3 ? [0, 8, -4, 0] : 0 }}
-            transition={{ duration: 2.4, repeat: phase >= 3 ? Infinity : 0 }}
+            transition={{ duration: 1.44, repeat: phase >= 3 ? Infinity : 0 }}
           >
             🧴
           </motion.div>
           <span className="absolute left-3 top-2 font-display text-[11px] font-bold uppercase text-white">Reels · 9:16</span>
           <div className="absolute inset-x-3 bottom-3 h-[5px] rounded-full bg-white/20">
-            <motion.div className="h-full rounded-full bg-white" animate={{ width: phase >= 3 ? "100%" : "0%" }} transition={{ duration: 1.8, ease: "linear" }} />
+            <motion.div className="h-full rounded-full bg-white" animate={{ width: phase >= 3 ? "100%" : "0%" }} transition={{ duration: 1.08, ease: "linear" }} />
           </div>
         </motion.div>
         <motion.div
@@ -1129,7 +1129,7 @@ function DimaFormats() {
             style={{ left: f.x, top: 120 }}
             initial={{ opacity: 0, y: -60, scale: 0.4 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ ...SPRING, delay: 0.9 + i * 0.6 }}
+            transition={{ ...SPRING, delay: 0.54 + i * 0.36 }}
           >
             <div className="grid place-items-center rounded-[12px] bg-white/[0.07] text-[22px] shadow-[inset_0_0_0_2px_rgba(var(--tp-to-rgb),.7)]" style={{ width: f.w, height: f.h }}>
               ▶
@@ -1145,7 +1145,7 @@ function DimaFormats() {
 
 function DimaAvatar() {
   const langs = ["RU", "EN", "KZ", "ES"];
-  const tick = useTick(1000);
+  const tick = useTick(600);
   const lang = tick % langs.length;
   const lines = ["Привет! Я ведущий вашего бренда", "Hi! I host your brand", "Сәлем! Мен брендтің жүргізушісімін", "¡Hola! Presento tu marca"];
   return (
@@ -1157,7 +1157,7 @@ function DimaAvatar() {
             className="grid h-[120px] w-[120px] place-items-center rounded-full text-[64px]"
             style={{ background: ACC, boxShadow: "0 0 40px rgba(var(--tp-from-rgb),.55)" }}
             animate={{ scale: [1, 1.04, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
+            transition={{ duration: 0.6, repeat: Infinity }}
           >
             🧑‍💼
           </motion.div>
@@ -1169,7 +1169,7 @@ function DimaAvatar() {
               className="w-[6px] rounded-full"
               style={{ background: ACC }}
               animate={{ height: [8, 12 + ((k * 7) % 26), 8] }}
-              transition={{ duration: 0.6 + (k % 4) * 0.15, repeat: Infinity, delay: k * 0.05 }}
+              transition={{ duration: 0.36 + (k % 2.4) * 0.09, repeat: Infinity, delay: k * 0.03 }}
             />
           ))}
         </div>
@@ -1212,7 +1212,7 @@ function DimaModels() {
     { e: "✍️", t: "Тексты" },
     { e: "🧑‍💼", t: "Аватар" },
   ];
-  const tick = useTick(450);
+  const tick = useTick(270);
   const done = tick >= 8;
   const cur = done ? 0 : tick % models.length;
   return (
@@ -1229,7 +1229,7 @@ function DimaModels() {
                 scale: i === cur ? 1.06 : 1,
                 opacity: done && i !== cur ? 0.35 : 1,
               }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.15 }}
             >
               <span className="text-[30px]">{m.e}</span>
               <span className={`font-display text-[12px] font-bold uppercase ${i === cur ? "text-[#0b0b10]" : "text-white"}`}>{m.t}</span>
@@ -1283,7 +1283,7 @@ const SMM_CREW = [
 ];
 
 function TanyaGrid() {
-  const tick = useTick(420);
+  const tick = useTick(252);
   const filled = Math.min(tick, 9);
   const tiles = ["🎬", "☕", "✨", "📦", "😍", "🎬", "🔥", "💬", "🎬"];
   const followers = 1200 + filled * 380;
@@ -1311,7 +1311,7 @@ function TanyaGrid() {
                 background: i < filled ? "linear-gradient(135deg, rgba(var(--tp-from-rgb),.55), rgba(var(--tp-to-rgb),.45))" : "rgba(255,255,255,0.05)",
                 scale: i === filled - 1 ? [0.8, 1.06, 1] : 1,
               }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.24 }}
             >
               {i < filled ? t : ""}
             </motion.div>
@@ -1323,7 +1323,7 @@ function TanyaGrid() {
 }
 
 function TanyaReach() {
-  const tick = useTick(500);
+  const tick = useTick(300);
   const views = Math.min(tick * 3100, 24800);
   const hearts = Array.from({ length: 8 }, (_, k) => k);
   return (
@@ -1339,7 +1339,7 @@ function TanyaReach() {
               className="absolute right-3 text-[20px]"
               initial={{ bottom: 20, opacity: 0 }}
               animate={{ bottom: [20, 240], opacity: [0, 1, 0], x: [0, k % 2 ? -14 : 10, 0] }}
-              transition={{ duration: 2.2, repeat: Infinity, delay: k * 0.35 }}
+              transition={{ duration: 1.32, repeat: Infinity, delay: k * 0.21 }}
             >
               ❤️
             </motion.span>
@@ -1356,7 +1356,7 @@ function TanyaReach() {
               className="rounded-[16px] bg-white/[0.06] px-4 py-3"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ ...SPRING, delay: 0.8 + i * 0.7 }}
+              transition={{ ...SPRING, delay: 0.48 + i * 0.42 }}
             >
               <p className="team-pulse-acc font-display text-[28px] font-bold leading-none">{m.v}</p>
               <p className="mt-1 font-display text-[11px] font-bold uppercase text-white">{m.t}</p>
@@ -1399,7 +1399,7 @@ function TanyaPlan() {
             style={{ left: 22 + p.d * (col + 6) + 4, width: col - 8, background: ACC, boxShadow: "0 0 16px rgba(var(--tp-from-rgb),.45)" }}
             initial={{ top: -40, opacity: 0 }}
             animate={{ top: 50 + (i % 2) * 60, opacity: 1 }}
-            transition={{ ...SPRING, delay: 0.3 + i * 0.35 }}
+            transition={{ ...SPRING, delay: 0.18 + i * 0.21 }}
           >
             {kinds[p.k].i}
           </motion.span>
@@ -1417,7 +1417,7 @@ function TanyaPlan() {
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ ...SPRING, delay: 3.2 }}
+          transition={{ ...SPRING, delay: 1.92 }}
         >
           План согласован ✓
         </motion.div>
@@ -1444,8 +1444,8 @@ function TanyaReport() {
             {bars.map((b, i) => (
               <div key={b.t} className="flex flex-col items-center">
                 <div className="flex h-[140px] items-end gap-2">
-                  <motion.i className="block w-[26px] rounded-t-[8px] bg-white/20" initial={{ height: 0 }} animate={{ height: b.was * 140 }} transition={{ ...SPRING, delay: 0.3 + i * 0.2 }} />
-                  <motion.i className="block w-[26px] rounded-t-[8px]" style={{ background: ACC, boxShadow: "0 0 18px rgba(var(--tp-from-rgb),.5)" }} initial={{ height: 0 }} animate={{ height: b.now * 140 }} transition={{ ...SPRING, delay: 1.4 + i * 0.35 }} />
+                  <motion.i className="block w-[26px] rounded-t-[8px] bg-white/20" initial={{ height: 0 }} animate={{ height: b.was * 140 }} transition={{ ...SPRING, delay: 0.18 + i * 0.12 }} />
+                  <motion.i className="block w-[26px] rounded-t-[8px]" style={{ background: ACC, boxShadow: "0 0 18px rgba(var(--tp-from-rgb),.5)" }} initial={{ height: 0 }} animate={{ height: b.now * 140 }} transition={{ ...SPRING, delay: 0.84 + i * 0.21 }} />
                 </div>
                 <span className="mt-2 font-display text-[11px] font-bold uppercase text-white">{b.t}</span>
               </div>
@@ -1502,7 +1502,7 @@ export default function TeamPulseScenes({ scene }: { scene: TeamPulseScene }) {
       className="absolute inset-0"
       initial={reduced ? false : { opacity: 0, scale: 0.97, filter: "blur(8px)" }}
       animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
     >
       {scene === "concepts" && <Concepts />}
       {scene === "lead" && <Lead />}

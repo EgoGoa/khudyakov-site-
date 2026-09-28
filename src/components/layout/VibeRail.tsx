@@ -1,5 +1,6 @@
 "use client";
 
+import { CHAPTER_EVENT, currentChapterId } from "@/lib/page-hop";
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { BOOT, useBootStage } from "@/lib/boot-sequence";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
@@ -49,22 +50,28 @@ function useActiveRailId(anchorIds: string[]): string {
       setActiveId(pageMatch);
       return;
     }
-    setActiveId("");
-    const elements = anchorIds
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => Boolean(el));
-    if (elements.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveId(entry.target.id);
-        });
-      },
-      { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
-    );
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    // Текущая глава — от самой колоды (lib/page-hop), а не по слежке за
+    // видимостью блоков: при перелёте через несколько глав слежка
+    // подсвечивала все промежуточные, и бар «прыгал» не по порядку (Егор,
+    // 2026-09-28). Пока колода не на экране (посетитель на общем герое или
+    // блоке с рукой), не подсвечено ничего.
+    const deckOnScreen = () => {
+      const wrap = document.querySelector<HTMLElement>("[data-stage-wrap]");
+      if (!wrap) return false;
+      const r = wrap.getBoundingClientRect();
+      return r.top <= window.innerHeight * 0.5 && r.bottom >= window.innerHeight * 0.5;
+    };
+    const sync = () => {
+      const id = currentChapterId();
+      setActiveId(id && anchorIds.includes(id) && deckOnScreen() ? id : "");
+    };
+    sync();
+    window.addEventListener(CHAPTER_EVENT, sync);
+    window.addEventListener("scroll", sync, { passive: true });
+    return () => {
+      window.removeEventListener(CHAPTER_EVENT, sync);
+      window.removeEventListener("scroll", sync);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- anchorKey is anchorIds' stable identity
   }, [pathname, anchorKey]);
 

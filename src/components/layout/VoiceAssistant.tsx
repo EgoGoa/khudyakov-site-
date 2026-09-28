@@ -1081,8 +1081,10 @@ function VoicePanel({ from, to }: { from: string; to: string }) {
             className="voice-sphere"
           >
             <NanoWave
-              width={Math.round(w * 0.6)}
-              height={Math.round(Math.min(130, w * 0.3))}
+              // Вдвое меньше прежнего (Егор, 2026-09-28): волна в окне
+              // ассистента не должна заполнять всё окно.
+              width={Math.round(w * 0.3)}
+              height={Math.round(Math.min(65, w * 0.15))}
               from={from}
               to={to}
               hot={hot}

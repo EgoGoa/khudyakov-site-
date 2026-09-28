@@ -232,7 +232,7 @@ export default function BlockVibe({
       initial={WIN_SIDE.initial}
       animate={WIN_SIDE.animate}
       exit={WIN_SIDE.exit}
-      className="block-vibe"
+      className="win-shell block-vibe"
     >
       <div aria-hidden="true" className="block-vibe__aurora" />
 

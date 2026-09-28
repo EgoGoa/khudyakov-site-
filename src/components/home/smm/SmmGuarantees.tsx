@@ -123,13 +123,18 @@ export default function SmmGuarantees() {
             </p>
           </Appear>
 
+          {/* Порядок Егора (2026-09-28): «Блогеры» (перенесены из главы
+              тарифов) → «Таргет» → карточка Егора под ними. */}
+          <div className="mt-4">
+            <ToolSpotlight slug="smm-bloggers" accent={SMM_ACCENT} place="left" className="!pt-0" />
+          </div>
+          <ToolSpotlight slug="smm-ads" accent={SMM_ACCENT} place="left" />
           <Appear from="up" delay={BEAT.cta}>
             <div className="mt-4">
               {/* Егор как сервис — уведомление на месте прежней карточки. */}
               <TeamPulse data={EGOR_SMM} compact source="/smm · глава «Гарантии»" />
             </div>
           </Appear>
-          <ToolSpotlight slug="smm-ads" accent={SMM_ACCENT} place="left" />
         </div>
 
         <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8 land:mt-0 land:min-w-0 land:flex-1">

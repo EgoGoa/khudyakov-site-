@@ -223,6 +223,13 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
   const { lag, moving } = useDeckSpring(active, drag, dragging);
   const live = dragging || moving;
 
+  // Смена карточки в два шага (Егор, 2026-09-28): пока колода едет, текст
+  // под ней и сцена на передней карточке стоят; меняются и оживают, когда
+  // карточка встала в центр, — в один момент меньше работы и нет рывков.
+  const [shownIdx, setShownIdx] = useState(idx);
+  if (!live && shownIdx !== idx) setShownIdx(idx);
+  const settled = !live && shownIdx === idx;
+
   // Arrow keys, but only while the rail itself has focus inside it — the
   // page's own left/right gestures stay untouched everywhere else.
   useEffect(() => {
@@ -243,15 +250,15 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
   // начала, а не с середины чужого сюжета.
   const [sceneStep, setSceneStep] = useState(0);
   const [held, setHeld] = useState(false);
-  const data = spotlightFor(slugOf(CARDS[idx]));
+  const data = spotlightFor(slugOf(CARDS[shownIdx]));
   const beats = data?.benefits.length ?? 0;
 
   // Сброс при смене карточки — прямо во время рендера (документированный
   // приём React для состояния, производного от пропса), а не в эффекте:
   // эффект дал бы один лишний кадр со старым номером сцены на новой карточке.
-  const [stepFor, setStepFor] = useState(idx);
-  if (stepFor !== idx) {
-    setStepFor(idx);
+  const [stepFor, setStepFor] = useState(shownIdx);
+  if (stepFor !== shownIdx) {
+    setStepFor(shownIdx);
     setSceneStep(0);
   }
 
@@ -259,10 +266,10 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
   // тут блоки и графика менялись живее. Пауза, пока курсор над окошком —
   // прочитать тезис до смены.
   useEffect(() => {
-    if (held || beats < 2) return;
+    if (held || !settled || beats < 2) return;
     const id = window.setInterval(() => setSceneStep((v) => (v + 1) % beats), DECK_BEAT_MS);
     return () => window.clearInterval(id);
-  }, [held, beats, idx]);
+  }, [held, settled, beats, shownIdx]);
 
   const panel = (
     <div
@@ -288,6 +295,19 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
       {/* Paging runs off the pointer drag now (useDeckDrag), so FanFit's
           own swipe handler is left unwired — otherwise one flick paged the
           rail twice. */}
+      {/* Стрелки — по центру колоды по высоте, без рамки и приглушённые
+          (как на /sites): из-под карусели их убрали по просьбе Егора. */}
+      <div className="relative">
+      <button type="button" onClick={() => step(-1)} onMouseDown={(e) => e.preventDefault()} aria-label="Предыдущая услуга" className="deck-side-arrow deck-side-arrow-prev">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+      <button type="button" onClick={() => step(1)} onMouseDown={(e) => e.preventDefault()} aria-label="Следующая услуга" className="deck-side-arrow deck-side-arrow-next">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
       <FanFit designWidth={396} height={416}>
       <div
         className="deck-rail relative h-full"
@@ -527,7 +547,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   className="deck-card-glow deck-neon-pulse absolute inset-0 overflow-hidden rounded-[26px] text-left"
                   style={{ "--card-glow-rgb": card.hit ? "255, 106, 61" : "16, 185, 129" } as React.CSSProperties}
                 >
-                  <AiCardFace slug={slugOf(card)} image={card.image} hit={card.hit} step={sceneStep} />
+                  <AiCardFace slug={slugOf(card)} image={card.image} hit={card.hit} step={settled ? sceneStep : 0} />
 
                   {caption}
                   {counter}
@@ -584,30 +604,12 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
 
       </div>
       </FanFit>
+      </div>
 
       {/* The lit track. Ten nodes would crowd at 32px each, so these are bare
           dots with the active one stretched into a capsule — same idea as
           /sites' numbered rail, sized for twice as many items. */}
-      <div className="mx-auto mt-6 flex max-w-[460px] items-center gap-3">
-        {/* Стрелки под колодой, по краям дорожки, как у каруселей Apple —
-            поверх карточек они закрывали боковые подписи. */}
-        <button
-          type="button"
-          onClick={(e) => {
-            step(-1);
-            e.currentTarget.focus({ preventScroll: true });
-          }}
-          // See the matching comment on the card button above — same
-          // focus-triggered scroll-jump risk, since this sits inside the
-          // rail's own `perspective` context too.
-          onMouseDown={(e) => e.preventDefault()}
-          aria-label="Предыдущая услуга"
-          className={`relative z-10 shrink-0 ${AI_ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
+      <div className="mx-auto mt-6 flex max-w-[360px] items-center gap-3">
         <div className="relative flex flex-1 items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
@@ -643,20 +645,6 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           );
         })}
       </div>
-        <button
-          type="button"
-          onClick={(e) => {
-            step(1);
-            e.currentTarget.focus({ preventScroll: true });
-          }}
-          onMouseDown={(e) => e.preventDefault()}
-          aria-label="Следующая услуга"
-          className={`relative z-10 shrink-0 ${AI_ROUND}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
 
       {/* The reference's pill toolbar: the full name and, below it, three

@@ -6611,15 +6611,32 @@ html[data-lite] .welcome-card-graphic svg circle {
 .team-pulse-card:hover .team-pulse-cta i {
   transform: translateX(4px);
 }
-.team-pulse-arrow {
-  font-size: 44px;
-  line-height: 1;
-  color: var(--sp-to);
-  text-shadow: 0 0 14px rgba(var(--tp-to-rgb), 0.7);
-  transition: transform 0.2s ease;
+/* Стрелки листания сцен — в нижних углах окошка со сценой, чтобы не
+   перекрывать саму картинку (SceneArrows). */
+.scene-arrow {
+  position: absolute;
+  bottom: 10px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: #fff;
+  opacity: 0.45;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.85));
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
-.team-pulse-arrow:hover {
-  transform: translateY(-50%) scale(1.15);
+.scene-arrow-prev { left: 12px; }
+.scene-arrow-next { right: 12px; }
+.scene-arrow:hover {
+  opacity: 1;
+  transform: scale(1.12);
+}
+.scene-arrow:active { transform: scale(0.94); }
+@media (max-width: 639px) {
+  .scene-arrow { bottom: 8px; }
+  .scene-arrow-prev { left: 8px; }
+  .scene-arrow-next { right: 8px; }
 }
 .team-pulse-me {
   background: linear-gradient(90deg, rgba(var(--tp-from-rgb), 0.42), rgba(var(--tp-to-rgb), 0.32));
@@ -8791,4 +8808,96 @@ html[data-lite] .welcome-backdrop {
   line-height: 1.2;
   color: #0b0b10;
   background: linear-gradient(90deg, var(--a), var(--b));
+}
+
+/* Окна в два шага (Егор, 2026-09-28): сначала раскрывается само окно
+   (WIN, lib/motion, ~0,45 с), а его содержимое проявляется следом лёгким
+   каскадом — в момент открытия видеокарта занята только окном. :where()
+   держит специфичность нулевой: у кого внутри окна своя анимация (сияние,
+   пульс), та и остаётся. `translate` и заливка `backwards` не мешают
+   собственным transform элементов после проявления. Холсты внутри окна
+   ждут того же момента сами (WIN_SETTLE_MS, lib/motion). */
+:where(.win-shell) > * {
+  animation: win-body-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.3s backwards;
+}
+:where(.win-shell) > :nth-child(2) { animation-delay: 0.36s; }
+:where(.win-shell) > :nth-child(3) { animation-delay: 0.42s; }
+:where(.win-shell) > :nth-child(4) { animation-delay: 0.48s; }
+:where(.win-shell) > :nth-child(n + 5) { animation-delay: 0.54s; }
+@keyframes win-body-in {
+  from { opacity: 0; translate: 0 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.win-shell) > * { animation: none; }
+}
+
+/* Хлебные крошки под шапкой (Breadcrumbs.tsx): круглая стрелка «на уровень
+   выше» + путь. Жирный фирменный шрифт, без серого — текущая страница в
+   акценте. */
+.crumbs ol {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+/* После прокрутки остаётся только стрелка — путь плавно уходит. */
+.crumbs-step {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.crumbs.is-scrolled .crumbs-step {
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+}
+/* Навели на стрелку — путь снова выезжает вбок, шаг за шагом. */
+.crumbs.is-scrolled ol:hover .crumbs-step,
+.crumbs.is-scrolled ol:focus-within .crumbs-step {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.crumbs.is-scrolled ol:hover .crumbs-step:nth-child(3) { transition-delay: 0.06s; }
+.crumbs.is-scrolled ol:hover .crumbs-step:nth-child(4) { transition-delay: 0.12s; }
+.crumbs-back {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  color: #0b0b10;
+  background: linear-gradient(135deg, var(--sp-from, #34d399), var(--sp-to, #22d3ee));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--sp-to, #22d3ee) 55%, transparent);
+  transition: transform 0.2s ease;
+}
+.crumbs-back:hover { transform: translateX(-2px) scale(1.08); }
+.crumbs-link { color: #fff; transition: color 0.2s ease; }
+.crumbs-link:hover { color: var(--sp-to, #22d3ee); }
+.crumbs-sep { color: var(--sp-to, #22d3ee); }
+.crumbs-current {
+  background: linear-gradient(90deg, var(--sp-from, #34d399), var(--sp-to, #22d3ee));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Боковые стрелки колод /ai, /sites, /smm — по центру карусели, без
+   рамки и подложки, приглушённые; ярче только при наведении. */
+.deck-side-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: #fff;
+  opacity: 0.35;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.8));
+  transform: translateY(-50%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+/* Поверх крайних карточек веера, а не у края колонки: так стрелка
+   читается как часть карусели (просьба Егора). */
+.deck-side-arrow-prev { left: 12%; }
+.deck-side-arrow-next { right: 12%; }
+.deck-side-arrow:hover {
+  opacity: 0.9;
+  transform: translateY(-50%) scale(1.1);
 }

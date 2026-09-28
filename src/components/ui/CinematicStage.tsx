@@ -479,10 +479,17 @@ export default function CinematicStage({
       return settling;
     };
 
+    // Начало колоды от верха документа. Не offsetTop: сразу после смены
+    // страницы колода лежит в анимированном контейнере PageSlide, и её
+    // offsetTop на миг считается от него (0 вместо ~1500px) — колода
+    // решала, что проехала две главы, и открывала третью («Кому подходит»
+    // вместо первого блока при переходе из шапки).
+    const deckTop = (wrap: HTMLElement) => wrap.getBoundingClientRect().top + window.scrollY;
+
     const indexNow = () => {
       const wrap = wrapRef.current;
       if (!wrap) return 0;
-      const travelled = (window.scrollY - wrap.offsetTop) / window.innerHeight;
+      const travelled = (window.scrollY - deckTop(wrap)) / window.innerHeight;
       return Math.max(0, Math.min(chapters.length - 1, Math.round(travelled)));
     };
 
@@ -493,7 +500,7 @@ export default function CinematicStage({
       const wrap = wrapRef.current;
       if (!wrap) return false;
       const from = window.scrollY;
-      const to = wrap.offsetTop + index * window.innerHeight;
+      const to = deckTop(wrap) + index * window.innerHeight;
       if (Math.abs(to - from) < 1) return false;
       // The glide always runs a full STEP_MS regardless of who called it —
       // armEntry only arms a much shorter MOMENTUM_MS lock of its own (see
@@ -620,12 +627,16 @@ export default function CinematicStage({
     if (hopIndex >= 0) {
       const jump = () => {
         const wrap = wrapRef.current;
-        if (wrap) window.scrollTo(0, wrap.offsetTop + hopIndex * window.innerHeight);
+        if (wrap) window.scrollTo(0, deckTop(wrap) + hopIndex * window.innerHeight);
       };
       directionRef.current = 1;
       setActiveIndex(hopIndex);
       jump();
       requestAnimationFrame(jump);
+      // Next сбрасывает прокрутку наверх после смены страницы, иногда позже
+      // первого кадра, — повторяем прыжок, пока новая страница не устоится
+      // (переход стрелками и из шапки всегда ведёт в первую главу).
+      for (const ms of [120, 300, 600]) window.setTimeout(jump, ms);
     }
 
     const onWheel = (e: WheelEvent) => {
@@ -1151,7 +1162,7 @@ export default function CinematicStage({
 
   return (
     <StageContext.Provider value={api}>
-      <div ref={wrapRef} className="relative">
+      <div ref={wrapRef} data-stage-wrap className="relative">
         <div className="stage-frame sticky top-0 w-full overflow-hidden">
           <div ref={frameRef} className="absolute inset-0 h-full w-full">
             {/* The reel's own still, permanently underneath the <video> —

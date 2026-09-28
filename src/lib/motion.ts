@@ -115,3 +115,14 @@ export const WIN_DIM = {
   animate: { opacity: 1, transition: { duration: 0.35, ease: EASE } },
   exit: { opacity: 0, transition: { duration: 0.32, ease: EASE, delay: 0.06 } },
 } as const;
+
+/** Окно в два шага: холсты внутри окна (`.win-shell`) начинают рисовать
+ *  только после того, как окно раскрылось, — не делят кадры с его
+ *  появлением. Совпадает с задержкой каскада содержимого в globals.css. */
+export const WIN_SETTLE_MS = 380;
+
+/** Момент (performance.now), с которого холсту можно рисовать: для холста
+ *  внутри окна — через WIN_SETTLE_MS после монтирования, иначе сразу. */
+export function settleAt(el: Element): number {
+  return el.closest(".win-shell") ? performance.now() + WIN_SETTLE_MS : 0;
+}

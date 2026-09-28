@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Unbounded, Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/layout/Header";
+import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import PageBarSpacer from "@/components/layout/PageBarSpacer";
 import SoundSystem from "@/components/layout/SoundSystem";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
@@ -154,6 +155,7 @@ export default function RootLayout({
               <div className="relative z-10">
                 <Header />
                 <main>
+                  <Breadcrumbs />
                   <PageBarSpacer />
                   {children}
                 </main>

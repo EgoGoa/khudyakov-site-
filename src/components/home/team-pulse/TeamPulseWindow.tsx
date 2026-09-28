@@ -8,6 +8,7 @@ import { WIN, WIN_DIM } from "@/lib/motion";
 import { CloseIcon } from "@/components/ui/Icons";
 import { accentVars, type TeamPulseChatVisual, type TeamPulseData } from "./types";
 import TeamPulseScenes, { SCENE_MS, TeamPulseChatScene } from "./TeamPulseScenes";
+import SceneArrows from "@/components/ui/SceneArrows";
 import TeamPulseChat, { type Phase } from "./TeamPulseChat";
 import { marks } from "./marks";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
@@ -92,7 +93,7 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
             role="dialog"
             aria-modal="true"
             aria-label={`${data.member.name}: ${data.windowCta}`}
-            className="relative outline-none h-[min(640px,calc(100dvh-6.5rem))] w-full max-w-[1200px] sm:h-[min(580px,calc(100dvh-9rem))]"
+            className="win-shell relative outline-none h-[min(640px,calc(100dvh-6.5rem))] w-full max-w-[1200px] sm:h-[min(580px,calc(100dvh-9rem))]"
             style={accentVars(data.accent)}
             // Общая анимация окон сайта (WIN, lib/motion).
             initial={reduced ? false : WIN.initial}
@@ -143,7 +144,10 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
                     {chat ? (
                       <TeamPulseChatScene visual={view.visual} chosen={view.chosen} phase={view.phase} answers={view.answers} who={data.member.nameGenitive} />
                     ) : (
-                      <TeamPulseScenes scene={t.scene} />
+                      <>
+                        <TeamPulseScenes scene={t.scene} />
+                        <SceneArrows onPrev={() => go(-1)} onNext={() => go(1)} />
+                      </>
                     )}
                   </div>
 
@@ -222,26 +226,6 @@ export default function TeamPulseWindow({ data, open, onClose }: { data: TeamPul
               </div>
             </div>
 
-            {!chat && (
-              <>
-                <button
-                  type="button"
-                  aria-label="Предыдущий тезис"
-                  onClick={() => go(-1)}
-                  className="team-pulse-arrow absolute -left-9 top-1/2 hidden -translate-y-1/2 sm:block"
-                >
-                  ‹
-                </button>
-                <button
-                  type="button"
-                  aria-label="Следующий тезис"
-                  onClick={() => go(1)}
-                  className="team-pulse-arrow absolute -right-9 top-1/2 hidden -translate-y-1/2 sm:block"
-                >
-                  ›
-                </button>
-              </>
-            )}
           </motion.div>
         </motion.div>
       )}

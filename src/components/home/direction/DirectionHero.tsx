@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { EASE } from "@/lib/motion";
-import { HERO_LEAD, EYEBROW } from "@/lib/typography";
+import { HERO_LEAD } from "@/lib/typography";
 import Typewriter from "./Typewriter";
 import { TelegramIcon } from "@/components/ui/Icons";
 import { TELEGRAM_URL } from "./contacts";
@@ -121,20 +121,10 @@ export default function DirectionHero({
           transition={{ duration: 1.05, ease: EASE }}
           className="max-w-4xl [text-shadow:0_2px_28px_rgba(11,11,16,0.95)]"
         >
-          <Link
-            href={hero.parent?.href ?? "/content"}
-            className={`${EYEBROW} inline-flex items-center gap-2 text-white transition-colors hover:text-glow`}
-          >
-            <span aria-hidden="true">←</span>
-            {hero.parent?.label ?? "Создание контента"}
-          </Link>
-
-          <span className={`${EYEBROW} mt-6 flex items-center gap-2 text-rec`}>
-            <span className="h-1.5 w-1.5 rounded-full bg-rec" />
-            {hero.eyebrow}
-          </span>
-
-          <h1 className="chapter-neon-warm mt-5 break-words font-display text-[1.89rem] uppercase leading-[1.09] tracking-tight sm:text-[3.24rem] lg:text-[3.96rem]">
+          {/* Ссылка «← Раздел» и строка-метка над заголовком убраны: путь
+              и возврат теперь в общих хлебных крошках под шапкой
+              (Breadcrumbs.tsx), Егор назвал их лишними. */}
+          <h1 className="chapter-neon-warm break-words font-display text-[1.89rem] uppercase leading-[1.09] tracking-tight sm:text-[3.24rem] lg:text-[3.96rem]">
             {/* Если направление отдало `typed`, заголовок печатается. Ровно
                 одна такая точка на страницу — либо здесь, либо в блоке
                 процесса, никогда в обоих. */}

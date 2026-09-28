@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SpotlightScene from "@/components/home/ai/SpotlightScene";
 import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
+import SceneArrows from "@/components/ui/SceneArrows";
 import { spotlightFor } from "@/components/home/ai/spotlightData";
 
 // Развёрнутая табличка услуги внизу блока — «подсказка, что об этой услуге
@@ -35,7 +36,7 @@ import { spotlightFor } from "@/components/home/ai/spotlightData";
  *  тизере») → 3.4с («динамичнее и чаще») → 5.2с после просмотра живьём
  *  («медленнее везде»). 5.2с — середина: кадр не мельтешит, но и не
  *  застывает. */
-const BEAT_MS = 5200;
+const BEAT_MS = 3400;
 
 /** Высота закрытой кнопки. Числом, а не по содержимому: высота окна
  *  анимируется числом (см. ниже), и второй конец этой анимации тоже
@@ -109,9 +110,11 @@ export default function ToolSpotlight({
   // внутри есть кино, а не одна застывшая иконка.
   useEffect(() => {
     if (held || steps < 2 || reduced) return;
-    const id = window.setInterval(() => setStep((s) => (s + 1) % steps), BEAT_MS);
-    return () => window.clearInterval(id);
-  }, [held, steps, reduced]);
+    // Таймер перезапускается на каждом шаге: после клика по стрелке новая
+    // сцена стоит полный такт, а не сменяется через долю секунды.
+    const id = window.setTimeout(() => setStep((s) => (s + 1) % steps), BEAT_MS);
+    return () => window.clearTimeout(id);
+  }, [held, steps, reduced, step]);
 
   // Esc закрывает — то же, чего ждут от любого окна поверх содержимого.
   useEffect(() => {
@@ -374,6 +377,9 @@ export default function ToolSpotlight({
                       цифры внутри неё нечитаемы, поэтому только фигуры (mini), а
                       слова несёт текст ниже. */}
                   <SpotlightScene slug={data.slug} step={step} mini={phone} />
+                  {steps > 1 && (
+                    <SceneArrows onPrev={() => setStep((s) => (s - 1 + steps) % steps)} onNext={() => setStep((s) => (s + 1) % steps)} />
+                  )}
                 </div>
 
                 <SpotlightCopy data={data} step={step} setStep={setStep} onClose={close} compact={phone} showSub={!phone} />

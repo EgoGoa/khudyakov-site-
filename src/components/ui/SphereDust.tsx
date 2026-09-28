@@ -1,5 +1,6 @@
 "use client";
 
+import { settleAt } from "@/lib/motion";
 import { useEffect, useRef } from "react";
 import type { ReactNode, RefObject } from "react";
 import { frozenFor } from "@/lib/welcome-freeze";
@@ -66,6 +67,7 @@ export default function SphereDust({
     if (html.hasAttribute("data-lite") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const mid = html.hasAttribute("data-mid");
     const frozen = frozenFor(canvas);
+    const settle = settleAt(canvas);
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let w = 0, h = 0, ox = 0, oy = 0, or = 26;
     const measure = () => {
@@ -162,6 +164,8 @@ export default function SphereDust({
     let tick = 0;
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
+      // Внутри окна — только после его раскрытия (окно в два шага).
+        if (now < settle) return;
       if (frozen()) {
         tick = 0;
         return;

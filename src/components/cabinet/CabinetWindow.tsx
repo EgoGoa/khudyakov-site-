@@ -52,7 +52,7 @@ export default function CabinetWindow() {
             role="dialog"
             aria-modal="true"
             aria-label="Личный кабинет"
-            className={gate ? "relative w-full outline-none max-w-[440px]" : "relative h-[min(820px,calc(100dvh-1.5rem))] w-full max-w-[1320px] outline-none"}
+            className={gate ? "win-shell relative w-full outline-none max-w-[440px]" : "win-shell relative h-[min(820px,calc(100dvh-1.5rem))] w-full max-w-[1320px] outline-none"}
             layout
             // Без filter в анимации: filter на предке ломает backdrop-filter
             // стекла кабинета — оно перестаёт размывать страницу под собой.

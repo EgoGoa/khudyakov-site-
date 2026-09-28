@@ -217,7 +217,7 @@ export default function CenterModal({
                 ? "0 0 50px rgba(236,72,153,0.16), 0 0 80px rgba(56,189,248,0.14)"
                 : "0 0 70px rgba(236,72,153,0.22), 0 0 100px rgba(56,189,248,0.19)",
             }}
-            className={bare ? "relative w-full max-w-3xl px-2 pt-1 pb-4 sm:px-4" : `relative w-full rounded-[2rem] ${
+            className={bare ? "relative w-full max-w-3xl px-2 pt-1 pb-4 sm:px-4" : `win-shell relative w-full rounded-[2rem] ${
               // Вайб-окно не прокручивается ни при каком размере экрана —
               // прямое требование Егора. Оно для этого и худеет само (см.
               // .vibe-window в globals.css): на низких экранах сжимаются волна
