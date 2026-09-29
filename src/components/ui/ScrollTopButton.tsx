@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useFullpage } from "@/lib/fullpage";
 import { useCinematicFirstId } from "@/lib/cinematic-nav";
+import { useHeaderMenu } from "@/lib/header-menu";
 
 // Круглая кнопка «наверх» — правый верхний угол, на каждой странице сайта.
 //
@@ -46,7 +47,9 @@ export default function ScrollTopButton() {
   // Видимость считается на рендере, а не складывается в состояние из
   // эффекта: для fullpage это чистая производная от активного слайда, и
   // лишнее состояние здесь дало бы каскад перерисовок на каждом переходе.
-  const shown = slides ? slides.activeIndex > 0 : scrolled;
+  // Пока открыта шторка меню, стрелка не висит поверх её пунктов.
+  const { menuOpen } = useHeaderMenu();
+  const shown = !menuOpen && (slides ? slides.activeIndex > 0 : scrolled);
 
   const toTop = () => {
     if (slides) {

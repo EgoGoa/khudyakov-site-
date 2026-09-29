@@ -83,13 +83,17 @@ export default function SitesPitch() {
           </Appear>
 
           </div>
-          <div className="order-3 lg:order-none lg:flex lg:flex-1 lg:flex-col land:order-none">
+          <div className="order-2 lg:order-none land:order-none">
+          {/* На телефоне подзаголовок сразу под заголовком, над каруселью
+              (Егор, 2026-09-29), а не под ней. */}
           <Appear from="up" delay={BEAT.intro}>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
               <span className="kw">Уникальный дизайн</span> и вёрстка вместо шаблонов. Собираем AI-инструментами{" "}
               <span className="kw">под контролем команды</span>.
             </p>
           </Appear>
+          </div>
+          <div className="order-4 lg:order-none lg:flex lg:flex-1 lg:flex-col land:order-none">
 
           {/* Егор как сервис — уведомление на месте прежней карточки. На
               широком экране прижат вниз колонки на высоту окошка под
@@ -108,7 +112,7 @@ export default function SitesPitch() {
             puts the carousel straight under the title, copy after it. From lg
             up the column is a real block and the deck sits beside it. FanFit
             (inside SitesDeck) scales the fan to the phone. */}
-        <Appear from="right" delay={BEAT.content} className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:min-w-0">
+        <Appear from="right" delay={BEAT.content} className="order-3 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:min-w-0">
           <SitesDeck panelTarget={land ? slot : null} />
         </Appear>
         <div ref={setSlot} className="hidden land:col-span-2 land:block" />

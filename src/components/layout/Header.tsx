@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import CabinetButton from "@/components/cabinet/CabinetButton";
-import CabinetWindow from "@/components/cabinet/CabinetWindow";
+import CabinetWindow, { openCabinet } from "@/components/cabinet/CabinetWindow";
 import LiveBrandWord from "@/components/layout/LiveBrandWord";
-import SoundStation from "@/components/layout/SoundStation";
+import SoundStation, { openSoundStation } from "@/components/layout/SoundStation";
 import PageBar from "@/components/layout/PageBar";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -151,7 +151,9 @@ function BrandLockup() {
     <span className="flex items-center gap-2 sm:gap-2.5">
       <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot sm:h-2.5 sm:w-2.5" />
       <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] land:!text-[0.9rem] uppercase tracking-tight">
-        HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
+        {/* На телефоне — только «HUD» (Егор, 2026-09-29): место в строке
+            шапки отдано названию страницы со стрелками. */}
+        HUD<span className="hidden sm:inline land:!inline"><LiveBrandWord>.SERVICE</LiveBrandWord></span>
       </span>
     </span>
   );
@@ -324,9 +326,12 @@ export default function Header() {
               само окно кабинета смонтировано здесь же, чтобы открываться
               с любой страницы. */}
           {/* Станция HDKV: звук сайта и музыка по настроению (lib/sound). */}
-          <SoundStation />
-
-          <CabinetButton />
+          {/* На телефоне плеер и кабинет живут в меню (строки сверху
+              шторки), в шапке остаются только три палочки. */}
+          <div className="hidden items-center gap-3 sm:flex sm:gap-4 land:!flex">
+            <SoundStation />
+            <CabinetButton />
+          </div>
           <CabinetWindow />
 
           <div className="relative land:ml-auto land:pointer-events-auto">
@@ -379,6 +384,37 @@ export default function Header() {
             style={{ top: headerH, maxHeight: `calc(100dvh - ${headerH}px - 1rem)`, "--g-from": accent.from, "--g-to": accent.to } as React.CSSProperties}
           >
             <Container className="grid gap-8 py-7 sm:py-8 lg:grid-cols-[1.25fr_1fr_1fr] lg:gap-14">
+              <div className="-mb-3 grid grid-cols-2 gap-2.5 sm:hidden land:!hidden">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    openSoundStation();
+                  }}
+                  className="menu-tile font-display"
+                >
+                  <NavGlyph>
+                    <path d="M9 18V5.5l11-2V16" />
+                    <circle cx="6.5" cy="18" r="2.5" />
+                    <circle cx="17.5" cy="16" r="2.5" />
+                  </NavGlyph>
+                  Музыка
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    openCabinet();
+                  }}
+                  className="menu-tile font-display"
+                >
+                  <NavGlyph>
+                    <circle cx="12" cy="8.5" r="3.8" />
+                    <path d="M4.5 20c1.4-3.6 4.2-5.4 7.5-5.4s6.1 1.8 7.5 5.4" />
+                  </NavGlyph>
+                  Кабинет
+                </button>
+              </div>
               <div>
                 <p className="menu-kicker font-display">На этой странице</p>
                 <div className="grid sm:grid-cols-2 sm:gap-x-8">

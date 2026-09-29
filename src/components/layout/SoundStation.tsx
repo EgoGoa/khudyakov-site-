@@ -353,6 +353,13 @@ function TransportIcon({ kind }: { kind: "play" | "pause" | "prev" | "next" }) {
   );
 }
 
+// Открыть плеер снаружи — из строки «Музыка» в меню на телефоне, где
+// кнопки в шапке нет.
+const OPEN_EVENT = "hdkv:open-sound";
+export function openSoundStation() {
+  window.dispatchEvent(new Event(OPEN_EVENT));
+}
+
 export default function SoundStation() {
   const state = useSoundState();
   const [sfxOn, musicOn, moodId, vol] = state.split("|") as ["true" | "false", "true" | "false", MoodId, string, string];
@@ -377,7 +384,9 @@ export default function SoundStation() {
   useLayoutEffect(() => {
     if (!open) return;
     const place = () => {
-      const r = wrapRef.current?.getBoundingClientRect();
+      let r = wrapRef.current?.getBoundingClientRect();
+      // Кнопка скрыта (телефон, плеер открыли из меню) — окно под шапкой.
+      if (!r || r.height === 0) r = document.querySelector("[data-site-header]")?.getBoundingClientRect();
       if (!r) return;
       const right = window.innerWidth < 640 ? 12 : Math.max(12, window.innerWidth - r.right - 8);
       setPos({ top: r.bottom + 12, right });
@@ -413,6 +422,14 @@ export default function SoundStation() {
     setOpen((v) => !v);
     sound()?.play(open ? "close" : "open");
   };
+
+  useEffect(() => {
+    const onOpen = () => {
+      if (!open) toggleOpen();
+    };
+    window.addEventListener(OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_EVENT, onOpen);
+  });
 
   const pickMood = (id: MoodId) => {
     const s = sound();

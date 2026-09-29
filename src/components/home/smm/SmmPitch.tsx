@@ -82,20 +82,26 @@ export default function SmmPitch() {
             <h2 className="chapter-neon-violet max-w-[7.3em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.24rem] xl:text-[3.6rem]">
               SMM силами
               <br />
-              <span className="kw" style={{ fontSize: "0.72em" }}>
+              {/* На телефоне слово влезает целиком — все слова одного размера
+                  (Егор, 2026-09-29); уменьшено только на lg, где колонка узкая. */}
+              <span className="kw lg:text-[0.72em]">
                 продакшена
               </span>
             </h2>
           </Appear>
 
           </div>
-          <div className="order-3 lg:order-none land:order-none">
+          <div className="order-2 lg:order-none land:order-none">
+          {/* На телефоне подзаголовок сразу под заголовком, над каруселью
+              (Егор, 2026-09-29), а не под ней. */}
           <Appear from="up" delay={BEAT.intro}>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
               Съёмка, монтаж и ведение соцсетей — <span className="smm-accent">одна команда</span>,
               без подрядчиков со стороны.
             </p>
           </Appear>
+          </div>
+          <div className="order-4 lg:order-none land:order-none">
 
           <Appear from="up" delay={BEAT.cta}>
             <div className="mt-4">
@@ -114,7 +120,7 @@ export default function SmmPitch() {
             arriving with the chapter's own slide-in — the copy establishes
             what this is first, then the thing itself comes into focus a beat
             later, which is the "последовательно" part of the brief. */}
-        <div className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:min-w-0">
+        <div className="order-3 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:min-w-0">
           <Appear from="right" delay={BEAT.content} blurPx={18}>
             <SmmDeck panelTarget={land ? slot : null} />
           </Appear>

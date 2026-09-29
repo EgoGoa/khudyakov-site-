@@ -77,12 +77,16 @@ export default function AiPitch() {
           </Appear>
 
           </div>
-          <div className="order-3 lg:order-none land:order-none">
+          <div className="order-2 lg:order-none land:order-none">
+          {/* На телефоне подзаголовок сразу под заголовком, над каруселью
+              (Егор, 2026-09-29), а не под ней. */}
           <Appear from="up" delay={BEAT.intro}>
             <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>
               Внедряем ИИ там, где это <span className="kw">ускоряет результат</span>, а не для галочки.
             </p>
           </Appear>
+          </div>
+          <div className="order-4 lg:order-none land:order-none">
 
           {/* The pain line, kept from the previous build (the copy brief asks
               for named pains before the pitch resumes) but trimmed to two
@@ -119,7 +123,7 @@ export default function AiPitch() {
         {/* Below lg the left column is `display: contents`, so `order` puts the
             coverflow straight under the title on a phone (FanFit inside AiDeck
             scales it to fit). */}
-        <Appear from="right" delay={BEAT.content} className="order-2 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:min-w-0">
+        <Appear from="right" delay={BEAT.content} className="order-3 mt-6 lg:order-none lg:mt-0 lg:flex-1 land:order-none land:mt-0 land:min-w-0">
           <AiDeck panelTarget={land ? slot : null} />
         </Appear>
         <div ref={setSlot} className="hidden land:col-span-2 land:block" />

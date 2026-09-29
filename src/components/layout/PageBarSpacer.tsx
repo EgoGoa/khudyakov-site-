@@ -2,7 +2,7 @@
 
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 
-// На телефоне и планшете бар страниц стоит второй строкой под логотипом и
+// На планшете бар (на телефоне с 2026-09-29 он в строке шапки) страниц стоит второй строкой под логотипом и
 // делает фиксированную шапку выше на 3.5rem. На подстраницах и общих
 // страницах это закрывало начало текста — прокладка сдвигает страницу на
 // высоту бара. На четырёх главных страницах не нужна: первый экран там
@@ -13,5 +13,5 @@ const TOP = new Set(["/content", "/ai", "/sites", "/smm"]);
 export default function PageBarSpacer() {
   const pathname = useCleanPathname();
   if (TOP.has(pathname) || pathname.startsWith("/admin")) return null;
-  return <div aria-hidden="true" className="h-14 lg:hidden land:hidden" />;
+  return <div aria-hidden="true" className="hidden h-14 sm:block lg:hidden land:!hidden" />;
 }

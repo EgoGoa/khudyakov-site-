@@ -229,7 +229,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        <div className="flex w-full flex-1 flex-col items-center pt-1">
+        <div className="vibe-mode__body flex w-full flex-1 flex-col items-center pt-1">
           {/* Сфера не переезжает (Егор: «плавно затухает и там плавно
               появляется»): у каждого вида экрана своё место и размер, при
               смене вида она гаснет через размытие и проявляется на новом

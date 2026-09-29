@@ -208,11 +208,21 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
     // нельзя было листать.
     <nav
       aria-label="Страницы услуг"
-      className={`pointer-events-auto relative z-20 flex h-14 w-full items-center justify-center transition-opacity duration-300 lg:absolute lg:left-1/2 lg:top-0 lg:h-[70px] lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
+      // На телефоне (Егор, 2026-09-29) бар встаёт в ту же строку, что логотип
+      // и меню: вместо колоды — одно название со стрелочками по бокам, чтобы
+      // шапка стала в одну строку и заголовки страниц снова были видны.
+      className={`pointer-events-auto absolute left-1/2 top-0 z-20 flex h-14 w-max -translate-x-1/2 items-center justify-center transition-opacity duration-300 sm:relative sm:left-auto sm:w-full sm:translate-x-0 lg:absolute lg:left-1/2 lg:top-0 lg:h-[70px] lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      <div ref={wrapRef} className="w-[480px] shrink-0 scale-[0.78] sm:scale-100 land:!scale-[0.8]">
+      <CompactSwitch index={chosen} underline={home >= 0} onStep={step} onFront={() => {
+        if (onTop) scrollToDeckStart();
+        else {
+          queueFirstChapter();
+          router.push(`/${serviceMeta[serviceOrder[chosen]].slug}`);
+        }
+      }} />
+      <div ref={wrapRef} className="hidden w-[480px] shrink-0 sm:block sm:scale-100 land:!block land:!scale-[0.8]">
         <div
           {...bind}
           tabIndex={0}
@@ -365,5 +375,77 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
         </div>
       </div>
     </nav>
+  );
+}
+
+// Телефонный вид бара: название выбранной страницы и мини-стрелки ‹ › по
+// бокам — видно, что страницы листаются. Свайп по названию тоже листает.
+function CompactSwitch({
+  index,
+  underline,
+  onStep,
+  onFront,
+}: {
+  index: number;
+  underline: boolean;
+  onStep: (delta: number) => void;
+  onFront: () => void;
+}) {
+  const key = serviceOrder[index];
+  const g = PAGE_GRADIENT[key];
+  const pageGrad = `linear-gradient(90deg, ${g.from}, ${g.to})`;
+  const startX = useRef<number | null>(null);
+  const arrow = (dir: -1 | 1) => (
+    <button
+      type="button"
+      onClick={() => onStep(dir)}
+      aria-label={dir < 0 ? "Предыдущая страница" : "Следующая страница"}
+      className="grid h-10 w-7 shrink-0 place-items-center text-paper/80 transition active:scale-90"
+    >
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path
+          d={dir < 0 ? "M7.5 2.5 4 6l3.5 3.5" : "M4.5 2.5 8 6l-3.5 3.5"}
+          stroke={`url(#cs-${dir < 0 ? "l" : "r"})`}
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <defs>
+          <linearGradient id={`cs-${dir < 0 ? "l" : "r"}`} x1="0" x2="12" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+            <stop stopColor={g.from} />
+            <stop offset="1" stopColor={g.to} />
+          </linearGradient>
+        </defs>
+      </svg>
+    </button>
+  );
+  return (
+    <div
+      className="flex items-center sm:hidden land:!hidden"
+      style={{ touchAction: "pan-y" }}
+      onTouchStart={(e) => (startX.current = e.touches[0].clientX)}
+      onTouchEnd={(e) => {
+        if (startX.current == null) return;
+        const dx = e.changedTouches[0].clientX - startX.current;
+        startX.current = null;
+        if (Math.abs(dx) > 36) onStep(dx < 0 ? 1 : -1);
+      }}
+    >
+      {arrow(-1)}
+      <button
+        type="button"
+        onClick={onFront}
+        aria-current={underline ? "page" : undefined}
+        className="relative whitespace-nowrap px-1 font-display text-[12px] uppercase leading-none tracking-tight text-white"
+      >
+        {LABEL[key][0]} {LABEL[key][1]}
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute -inset-x-1 top-[calc(100%+4px)] h-[1.5px] ${underline ? "opacity-100" : "opacity-0"}`}
+          style={{ background: pageGrad, WebkitMaskImage: LINE_MASK, maskImage: LINE_MASK }}
+        />
+      </button>
+      {arrow(1)}
+    </div>
   );
 }
