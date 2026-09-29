@@ -9,7 +9,6 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
-import { EYEBROW } from "@/lib/typography";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { EGOR_SITES } from "@/components/home/team-pulse/content/egor-sites";
 
@@ -30,49 +29,37 @@ import { EGOR_SITES } from "@/components/home/team-pulse/content/egor-sites";
 // panel on the right, the same material as chapter 01's cards and chapter
 // 02's comparison table.
 
+// Тексты ужаты, чтобы блок «дышал» (Егор, 2026-09-29). Вопросы, которые
+// повторяли гарантии («чем отличается от конструктора», «что если не
+// понравится»), убраны; смыслы бывшего SEO-блока «Подробнее о сайтах на AI»
+// из финальной главы переехали сюда вопросами.
 const REASONS = [
-  {
-    title: "Фиксированные сроки",
-    description: "Точно знаете дату запуска, без «плавающих» дедлайнов классической разработки.",
-  },
-  {
-    title: "Гарантия возврата",
-    description: "Не понравится результат — вернём деньги. Риск на нас, а не на вас.",
-  },
-  {
-    title: "AI ускоряет, люди отвечают за качество",
-    description: "Контроль на каждом этапе, не автогенерация «как получится».",
-  },
-  {
-    title: "Сайт — ваш",
-    description: "Код на React/HTML, без привязки к чужому конструктору.",
-  },
+  { title: "Фиксированные сроки", description: "Дата запуска известна с первого дня." },
+  { title: "Гарантия возврата", description: "Не понравится результат — вернём деньги." },
+  { title: "AI ускоряет, люди отвечают", description: "Контроль на каждом этапе, а не «как получится»." },
+  { title: "Сайт — ваш", description: "Свой код, без привязки к конструктору." },
 ];
 
 const FAQ = [
   {
-    q: "Чем сайт на AI отличается от сайта на конструкторе?",
-    a: "Это не шаблон — уникальный код (React/HTML), который целиком принадлежит вам и не привязан к чужой платформе.",
+    q: "Когда сайт на AI, а когда — классическая разработка?",
+    a: "Лендинг, визитка, проверка гипотезы — AI: быстро и в понятный бюджет. Сложная логика и продукт на годы вперёд — честно посоветуем классическую студию.",
   },
   {
     q: "Насколько быстро вы делаете сайт?",
-    a: "От нескольких рабочих дней на лендинг до пары недель на сайт под ключ — за счёт AI на этапе черновика сроки короче, чем в классической разработке.",
-  },
-  {
-    q: "Что если результат не понравится?",
-    a: "Возвращаем деньги — это наша гарантия.",
+    a: "Лендинг — несколько рабочих дней, сайт под ключ — до пары недель: черновик собирает AI.",
   },
   {
     q: "Кто отвечает за качество — AI или люди?",
-    a: "AI ускоряет черновик — тексты, структуру, первый вариант вёрстки. Финальное качество, доработку и деплой контролирует команда.",
+    a: "AI собирает черновик за часы, люди проверяют каждую деталь и отвечают за результат.",
   },
   {
     q: "На чём технически собран сайт?",
-    a: "Claude Code превращает прототип в файловый проект (HTML/React), хостится на Vercel или Netlify — быстро и без затрат на серверы.",
+    a: "Код на React/HTML, хостинг на Vercel или Netlify — быстро и без затрат на серверы.",
   },
   {
-    q: "Что с формами и AI-ассистентом на сайте — это безопасно?",
-    a: "Формы работают через готовый сервис (Formspree и аналоги) без своего backend. AI-ассистент на сайте — отдельная опция через защищённую serverless-функцию, ключи API никогда не хранятся в коде браузера.",
+    q: "Формы и AI-ассистент — это безопасно?",
+    a: "Формы работают через готовый сервис, ассистент — через защищённую функцию. Ключи API не лежат в коде браузера.",
   },
 ];
 
@@ -130,62 +117,66 @@ export default function SitesGuarantees() {
           <ToolSpotlight slug="site-assistant" accent={SITES_ACCENT} place="left" />
         </div>
 
-      <div className="mt-10 lg:mt-0 lg:flex-1 lg:flex lg:items-start lg:gap-8 land:mt-0 land:min-w-0 land:flex-1">
-        <ul className="lg:max-w-md lg:flex-1">
+      {/* Гарантии и FAQ — друг под другом в едином стиле (Егор, 2026-09-29):
+          одинаковые подписи, линии, фирменный шрифт и белый текст. */}
+      <div className="mt-10 lg:mt-0 lg:min-w-0 lg:flex-1 land:mt-0 land:min-w-0 land:flex-1">
+        <Appear from="up" delay={BEAT.content} className="font-display text-[13px] uppercase tracking-[0.14em] sm:text-[15px]">
+          <span className="kw">Гарантии</span>
+        </Appear>
+        <ul className="mt-2 grid gap-x-8 sm:grid-cols-2">
           {REASONS.map((reason, i) => (
             <Appear
               key={reason.title}
               as="li"
               from="up"
               delay={BEAT.content + i * STAGGER.tight}
-              className="border-t border-paper/20 py-3"
+              className="border-t border-paper/15 py-2.5"
             >
               <div className="flex items-baseline gap-3">
-                <span className="font-display text-[10px] text-paper/40">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-display text-[11px] text-white">{String(i + 1).padStart(2, "0")}</span>
                 <div>
-                  <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
+                  <h3 className="font-display text-[12.5px] uppercase leading-tight tracking-tight text-white">
                     {reason.title}
                   </h3>
-                  <p className="body-small mt-1">{reason.description}</p>
+                  <p className="mt-0.5 font-display text-[12px] leading-snug tracking-tight text-white">{reason.description}</p>
                 </div>
               </div>
             </Appear>
           ))}
         </ul>
 
-        <div className="mt-8 lg:mt-0 lg:w-[320px] lg:shrink-0 xl:w-[360px]">
-          <Appear from="up" delay={BEAT.cta} className={`${EYEBROW} text-paper/45`}>
-            FAQ
-          </Appear>
-          <Appear from="up" delay={BEAT.cta} className="mt-3 border-t border-paper/10">
-            {FAQ.map((item, i) => {
-              const isOpen = open === i;
-              return (
-                <div key={item.q} className="border-b border-paper/10">
-                  <button
-                    type="button"
-                    onClick={() => setOpen(isOpen ? null : i)}
-                    aria-expanded={isOpen}
-                    className="flex w-full items-center justify-between gap-3 py-3 text-left"
+        <Appear from="up" delay={BEAT.cta} className="mt-7 font-display text-[13px] uppercase tracking-[0.14em] sm:text-[15px]">
+          <span className="kw">Частые вопросы</span>
+        </Appear>
+        <Appear from="up" delay={BEAT.cta} className="mt-2">
+          {FAQ.map((item, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={item.q} className="border-t border-paper/15">
+                <button
+                  type="button"
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  aria-expanded={isOpen}
+                  className="flex w-full items-baseline gap-3 py-2.5 text-left"
+                >
+                  <span className="font-display text-[11px] text-white">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="flex-1 font-display text-[12.5px] uppercase leading-tight tracking-tight text-white">{item.q}</span>
+                  <span
+                    className={`flex h-5 w-5 shrink-0 text-[12px] items-center justify-center self-center rounded-full border border-paper/25 text-white transition-transform duration-200 ${
+                      isOpen ? "rotate-45 border-orange/60 text-orange" : ""
+                    }`}
+                    aria-hidden="true"
                   >
-                    <span className="text-sm font-medium leading-snug text-paper">{item.q}</span>
-                    <span
-                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-paper/20 text-paper/60 transition-transform duration-200 ${
-                        isOpen ? "rotate-45 border-orange/50 text-orange" : ""
-                      }`}
-                      aria-hidden="true"
-                    >
-                      +
-                    </span>
-                  </button>
-                  {isOpen && (
-                    <p className="body-small max-w-sm pb-3.5">{item.a}</p>
-                  )}
-                </div>
-              );
-            })}
-          </Appear>
-        </div>
+                    +
+                  </span>
+                </button>
+                {/* Ответы всегда в разметке (для поисковиков — бывший SEO-текст),
+                    закрытые просто скрыты. */}
+                <p hidden={!isOpen} className="-mt-1 max-w-[46em] pb-3 pl-[1.9rem] font-display text-[12px] leading-snug tracking-tight text-white">{item.a}</p>
+              </div>
+            );
+          })}
+        </Appear>
       </div>
       </div>
     </CinematicSection>

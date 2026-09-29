@@ -28,6 +28,7 @@ export default function OrderMenu({
   onPick,
   data,
   showStory = true,
+  startView = "menu",
   className = "absolute inset-x-0 bottom-0 z-50",
 }: {
   open: boolean;
@@ -36,6 +37,9 @@ export default function OrderMenu({
   data: TeamPulseData;
   /** «Подробнее» не показывается внутри большого окна — оно уже открыто. */
   showStory?: boolean;
+  /** С чего открыть: общий выбор или сразу форма созвона / креатив-сессии
+   *  (кнопки внизу раскрытой карточки ведут прямо в форму). */
+  startView?: "menu" | "call" | "session";
   className?: string;
 }) {
   const reduced = useReducedMotion();
@@ -48,9 +52,11 @@ export default function OrderMenu({
   const [consent, setConsent] = useState(false);
 
   useEffect(() => {
+    if (!open) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- каждое открытие начинается с выбора
-    if (open) setView("menu");
-  }, [open]);
+    setView(startView);
+    if (startView !== "menu") setKind(startView);
+  }, [open, startView]);
 
   const send = async () => {
     setView("sending");
@@ -107,11 +113,11 @@ export default function OrderMenu({
             </span>
             <button
               type="button"
-              onClick={view === "call" || view === "session" ? () => setView("menu") : onClose}
-              aria-label={view === "call" || view === "session" ? "Назад" : "Закрыть"}
+              onClick={(view === "call" || view === "session") && startView === "menu" ? () => setView("menu") : onClose}
+              aria-label={(view === "call" || view === "session") && startView === "menu" ? "Назад" : "Закрыть"}
               className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/20 hover:bg-white/20"
             >
-              {view === "call" || view === "session" ? "←" : "×"}
+              {(view === "call" || view === "session") && startView === "menu" ? "←" : "×"}
             </button>
           </div>
 

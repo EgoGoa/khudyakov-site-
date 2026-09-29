@@ -143,7 +143,7 @@ export default function Trust({
               plus a few px of headroom; overflow-hidden clips the rare
               case that isn't accounted for instead of growing past it. */}
           <div className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md sm:p-5 lg:h-[380px] lg:overflow-hidden">
-            <FaqAside />
+            <FaqAside set={active === "ai" ? "ai" : "content"} />
           </div>
         </Appear>
 

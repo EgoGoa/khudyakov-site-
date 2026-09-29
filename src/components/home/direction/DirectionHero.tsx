@@ -45,6 +45,12 @@ export default function DirectionHero({
   stats?: DirectionContent["stats"];
 }) {
   const pathname = usePathname() ?? "";
+  // У подстраниц /sites и /smm графика заведена с приставкой раздела
+  // («site-landing», «smm-reels»), у /content и /ai — по самому slug. Без
+  // приставки шапка /sites и /smm не находила сцены и показывала старую
+  // карточку вместо «графика + окошко Егора» (Егор, 2026-09-29).
+  const section = pathname.split("/")[1];
+  const spotKey = slug && (section === "sites" ? `site-${slug}` : section === "smm" ? `smm-${slug}` : slug);
   return (
     // Без overflow-hidden на самой секции: кадр героя должен вылезать вниз и
     // растворяться в фоне следующего блока. С обрезкой по краю секции между
@@ -153,14 +159,14 @@ export default function DirectionHero({
               кнопок под лидом. Егор попросил свести оба действия в одно
               окошко с Егором — «присоединиться» и Telegram теперь одна
               карточка, а не карточка плюс дублирующие её кнопки рядом. */}
-          {(hero.deepInline ?? true) && slug && (directionDeep(slug) ?? spotlightFor(slug)) && hero.teamAsk ? (
+          {(hero.deepInline ?? true) && spotKey && (directionDeep(spotKey) ?? spotlightFor(spotKey)) && hero.teamAsk ? (
             // Сцены «почему это работает» развёрнуты прямо здесь (слева), а
             // рядом — окошко Егора с кнопкой «Заказать» (просьба Егора для
             // «Презентационных фильмов»).
             <div className="mt-8 grid max-w-[880px] items-stretch gap-4 sm:grid-cols-[1.3fr_1fr]">
               {/* Окошко с графикой на 30% шире окошка человека, чтобы сцена
                   помещалась свободно; окошко человека прежней ширины (Егор). */}
-              <HeroDeepInline slug={slug} />
+              <HeroDeepInline slug={spotKey!} />
               {(() => {
                 const seg = pathname.split("/")[1];
                 const page = seg === "ai" || seg === "sites" || seg === "smm" ? seg : "content";

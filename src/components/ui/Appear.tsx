@@ -150,7 +150,7 @@ export default function Appear({
 
   if (reduced) {
     const Plain = PLAIN_TAGS[as];
-    return <Plain className={className}>{children}</Plain>;
+    return <Plain data-appear="" className={className}>{children}</Plain>;
   }
 
   const MotionTag = MOTION_TAGS[as];
@@ -184,6 +184,7 @@ export default function Appear({
       onAnimationComplete={() => {
         if (active && blur) ref.current?.style.removeProperty("filter");
       }}
+      data-appear=""
       className={className}
     >
       {children}

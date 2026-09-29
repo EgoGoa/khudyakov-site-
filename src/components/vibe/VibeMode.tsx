@@ -342,6 +342,8 @@ export function VibeWordmark({ className = "", hero = false }: { className?: str
   return (
     <span className={`vibe-mode__wordmark ${hero ? "vibe-mode__wordmark--hero" : ""} ${className}`}>
       <span className="vibe-mode__wordmark-vibe">Vibe</span>-режим
+      {/* Вайб-режим пока в бете (Егор, 2026-09-29). */}
+      <span className="beta-badge">Beta</span>
     </span>
   );
 }

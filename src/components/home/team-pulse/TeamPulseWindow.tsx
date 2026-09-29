@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import OrderMenu from "./OrderMenu";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -50,6 +51,11 @@ export default function TeamPulseWindow({
   useEffect(() => setMounted(true), []);
 
   const [orderOpen, setOrderOpen] = useState(false);
+  const [orderStart, setOrderStart] = useState<"call" | "session">("call");
+  const startOrder = (v: "call" | "session") => {
+    setOrderStart(v);
+    setOrderOpen(true);
+  };
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- меню выбора закрыто при каждом открытии окна
     setOrderOpen(false);
@@ -139,19 +145,6 @@ export default function TeamPulseWindow({
                 <span className="absolute inset-0 bg-[linear-gradient(270deg,rgba(10,12,16,0.92)_0%,rgba(10,12,16,0.7)_55%,rgba(10,12,16,0.5)_100%)]" />
               </span>
 
-              {/* «Заказать» на каждом этапе рассказа (Егор): бриф, созвон или
-                  креатив-сессия в один клик. В чате её нет — туда ведёт
-                  верхняя кнопка «Начать чат». */}
-              {!chat && (
-              <button
-                type="button"
-                onClick={() => setOrderOpen(true)}
-                className="team-pulse-cta team-pulse-cta-loud absolute right-16 top-3 z-20 !text-[15px] sm:right-20 sm:top-5"
-              >
-                <u>Заказать</u>
-                <i aria-hidden="true">→</i>
-              </button>
-              )}
               <div className="pointer-events-none absolute inset-0 z-30 grid place-items-center p-4">
                 <div className="pointer-events-auto relative w-full max-w-sm empty:hidden">
                   <OrderMenu
@@ -159,6 +152,7 @@ export default function TeamPulseWindow({
                     onClose={() => setOrderOpen(false)}
                     data={data}
                     showStory={false}
+                    startView={orderStart}
                     className="relative"
                   />
                 </div>
@@ -242,7 +236,7 @@ export default function TeamPulseWindow({
                 </div>
 
                 {!chat && (
-                  <div className="mt-4 flex items-center gap-5 border-t border-white/10 pt-4 sm:gap-10">
+                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:gap-x-10">
                     <div className="flex items-center gap-1.5">
                       {data.theses.map((_, k) => (
                         <button
@@ -260,6 +254,24 @@ export default function TeamPulseWindow({
                         <p className="mt-1 font-display text-[9px] uppercase tracking-[0.1em] text-white sm:text-[10px]">{s.label}</p>
                       </div>
                     ))}
+                    {/* Как связаться — статично внизу окна (Егор, 2026-09-29),
+                        вместо всплывающего выбора по кнопке «Заказать». На
+                        телефоне короткие подписи без стрелок — три полные не
+                        влезали в строку и налезали друг на друга. */}
+                    <div className="grid w-full grid-cols-3 gap-1.5 lg:ml-auto lg:w-auto lg:gap-2">
+                      <Link href={data.briefHref} className="team-pulse-pick">
+                        <span className="sm:hidden">Бриф</span>
+                        <span className="hidden sm:inline">Заполнить бриф</span> <i aria-hidden="true">→</i>
+                      </Link>
+                      <button type="button" className="team-pulse-pick" onClick={() => startOrder("call")}>
+                        <span className="sm:hidden">Созвон</span>
+                        <span className="hidden sm:inline">Созвон 15 мин</span> <i aria-hidden="true">→</i>
+                      </button>
+                      <button type="button" className="team-pulse-pick" onClick={() => startOrder("session")}>
+                        <span className="sm:hidden">Сессия</span>
+                        <span className="hidden sm:inline">Креатив-сессия</span> <i aria-hidden="true">→</i>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

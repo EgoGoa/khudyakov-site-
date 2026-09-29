@@ -118,7 +118,8 @@ export default function SmmProcess() {
                 <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
                   {step.title}
                 </h3>
-                <p className="mt-1 text-xs leading-relaxed text-paper/55">{step.description}</p>
+                {/* Фирменным шрифтом и чуть крупнее (Егор, 2026-09-29). */}
+                <p className="mt-1 font-display text-[13px] leading-snug tracking-tight text-paper/60">{step.description}</p>
               </div>
             </Appear>
           ))}

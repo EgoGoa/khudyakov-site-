@@ -4,12 +4,9 @@ import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
-import { PILL, ROUND } from "@/components/home/smm/SmmDeck";
 import { pricingByCategory } from "@/lib/service-content";
 import TeamRow from "@/components/home/TeamRow";
 import { PAGE_TEAM } from "@/lib/team";
-import SeoAccordion from "@/components/ui/SeoAccordion";
-import { SMM_SEO_SECTIONS } from "@/components/home/smm/smmSeoSections";
 
 // Chapter 06 of /smm — the closing chapter: three monthly packages, the last
 // call to action, and the SEO long-read.
@@ -139,39 +136,6 @@ export default function SmmClose() {
       <Appear from="up" delay={BEAT.cta}>
         <div className="mt-6 [@media(max-height:820px)]:hidden">
           <TeamRow members={PAGE_TEAM.smm} page="smm" className="!max-w-5xl [@media(max-height:820px)]:!max-w-4xl" />
-        </div>
-      </Appear>
-
-      {/* Окошко — плитка справа от кнопки «Начать вести соцсети», поверх
-          вёрстки, тот же приём, что на /sites (SitesClose). */}
-      <div className="relative mt-7 [@media(max-height:860px)]:mt-4">
-        <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
-          <div className="flex items-center justify-center gap-4">
-            <Link href="/brief/smm" className={PILL}>
-              Начать вести соцсети
-            </Link>
-            <Link href="/smm/pricing" aria-label="Смотреть цены" className={ROUND}>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M7 17 17 7M9 7h8v8" />
-              </svg>
-            </Link>
-          </div>
-        </Appear>
-      </div>
-
-      <Appear from="up" delay={BEAT.cta + 2 * STAGGER.normal}>
-        <div className="mx-auto mt-10 w-full max-w-3xl [@media(max-height:860px)]:hidden">
-          <SeoAccordion eyebrow="Подробнее о SMM" sections={SMM_SEO_SECTIONS} />
         </div>
       </Appear>
 

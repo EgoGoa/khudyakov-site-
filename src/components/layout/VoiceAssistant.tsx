@@ -933,7 +933,11 @@ function VoiceInvite() {
           exit={{ opacity: 0, y: 6, filter: "blur(4px)" }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="voice-invite-text">Управляй сайтом голосом</span>
+          <span className="voice-invite-text">
+            Управляй сайтом голосом
+            {/* Голосовое управление пока в бете (Егор, 2026-09-29). */}
+            <span className="beta-badge">Beta</span>
+          </span>
           <button type="button" className="voice-invite-on" onClick={() => voice.enable()}>
             Включить
           </button>
@@ -1068,6 +1072,7 @@ function VoicePanel({ from, to }: { from: string; to: string }) {
       exit={{ opacity: 0, scale: 0.97, filter: "blur(8px)" }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
+      <span className="beta-badge voice-stage-beta">Beta</span>
       <button type="button" onClick={() => voice.closePanel()} aria-label="Закрыть" className="voice-stage-close">
         <CloseIcon />
       </button>

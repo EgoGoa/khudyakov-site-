@@ -88,16 +88,8 @@ export default function AiPitch() {
           </div>
           <div className="order-4 lg:order-none land:order-none">
 
-          {/* The pain line, kept from the previous build (the copy brief asks
-              for named pains before the pitch resumes) but trimmed to two
-              sentences so the column still ends above the fold beside the
-              carousel. */}
-          <Appear from="up" delay={BEAT.intro} className="land:hidden">
-            <p className="mt-4 max-w-[32em] text-sm leading-relaxed text-white">
-              Заявки теряются, пока менеджер занят. Конкурент отвечает клиенту{" "}
-              <span className="kw">через минуту</span>, вы — через два часа.
-            </p>
-          </Appear>
+          {/* Строку про потерянные заявки Егор убрал (2026-09-29): мелко и
+              повторяет подзаголовок. */}
 
           <Appear from="up" delay={BEAT.cta}>
 {/* Вадим как сервис — уведомление на месте прежней карточки. */}

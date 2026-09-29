@@ -5,7 +5,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { accentVars, type TeamPulseData } from "./types";
 import TeamPulseWindow from "./TeamPulseWindow";
-import OrderMenu from "./OrderMenu";
 import { marks, plain } from "./marks";
 import { fitValue, useRefit } from "@/lib/use-fit-text";
 
@@ -231,7 +230,6 @@ export default function TeamPulse({
     setPeek(true);
   };
 
-  const [orderOpen, setOrderOpen] = useState(false);
   const openWindow = () => {
     setOpen(true);
     setSeen(true);
@@ -239,10 +237,9 @@ export default function TeamPulse({
   // Любая кнопка «Пообщаться» / «Заказать» сначала раскрывает выбор: бриф,
   // созвон, креатив-сессия или «подробнее» (большое окно) — Егор, для всей
   // команды.
-  const openOrder = () => {
-    setOrderOpen(true);
-    setSeen(true);
-  };
+  // С 2026-09-29 варианты «как удобнее» стоят внизу большого окна
+  // человека (Егор), поэтому любая кнопка карточки сразу открывает его.
+  const openOrder = openWindow;
   const ordering = ctaLabel !== "Пообщаться";
 
   const { member } = data;
@@ -250,6 +247,8 @@ export default function TeamPulse({
   return (
     <div
       ref={ref}
+      // Раскрытое окошко — поверх соседних ячеек.
+      data-raise={compact && showCard ? "" : undefined}
       className={`relative ${fill ? "h-full min-h-[9.5rem]" : compact ? "h-[4.9rem]" : "h-[9.5rem] sm:h-[8.75rem]"} ${className}`}
       style={accentVars(data.accent)}
       onMouseEnter={() => {
@@ -427,15 +426,6 @@ export default function TeamPulse({
         )}
       </AnimatePresence>
 
-      <OrderMenu
-        open={orderOpen}
-        onClose={() => setOrderOpen(false)}
-        onPick={() => {
-          setOrderOpen(false);
-          openWindow();
-        }}
-        data={data}
-      />
       <TeamPulseWindow data={data} open={open} onClose={() => setOpen(false)} />
     </div>
   );

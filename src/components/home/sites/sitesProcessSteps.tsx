@@ -6,7 +6,7 @@ import { StepIcon, type ProcessStepItem } from "@/components/home/Process";
 export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
   {
     title: "Бриф",
-    description: "Заполняете форму, рассказываете о бизнесе и целях.",
+    description: "Заполняете короткую форму или созваниваемся на 15 минут: рассказываете о бизнесе, клиентах и целях сайта. На выходе — понятное ТЗ и смета по строкам.",
     icon: (
       <StepIcon>
         <path d="M6 3.5h9l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
@@ -21,7 +21,7 @@ export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
   },
   {
     title: "Концепция",
-    description: "Согласовываем структуру страниц и визуальный стиль.",
+    description: "Собираем структуру страниц и визуальный стиль под вашу аудиторию. Показываем главный экран и согласовываем его до начала сборки.",
     icon: (
       <StepIcon>
         <circle cx="7" cy="7" r="3" />
@@ -36,7 +36,7 @@ export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
   },
   {
     title: "Сборка",
-    description: "AI генерирует черновик, команда дорабатывает вручную.",
+    description: "AI генерирует черновик страниц и текстов, команда вручную доводит дизайн, вёрстку и анимации. Сайт виден по ссылке уже в процессе.",
     icon: (
       <StepIcon>
         <path d="M8.5 8L3.5 12.5 8.5 17M15.5 8l5 4.5-5 4.5" />
@@ -51,7 +51,7 @@ export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
   },
   {
     title: "Правки",
-    description: "Согласованное число итераций правок включено в стоимость.",
+    description: "Согласованное число кругов правок уже включено в стоимость. Правки собираем одним списком по ссылке на сайт — без бесконечной переписки.",
     icon: (
       <StepIcon>
         <path d="M4 20 15.5 8.5l3.8-3.8a1.4 1.4 0 0 1 2 2L17.5 10.5 6 22H4v-2z" />
@@ -66,7 +66,7 @@ export const SITES_PROCESS_STEPS: ProcessStepItem[] = [
   },
   {
     title: "Запуск",
-    description: "Деплой на Vercel/Netlify, подключение домена, передача вам.",
+    description: "Публикуем сайт, подключаем домен, формы заявок и аналитику, проверяем скорость на телефоне. Передаём все доступы и показываем, как менять тексты самим.",
     icon: (
       <StepIcon>
         <path d="M12 3c3 3 5 7 5 10.5a5 5 0 0 1-10 0C7 10 9 6 12 3z" />

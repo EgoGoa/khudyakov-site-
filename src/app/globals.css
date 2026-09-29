@@ -6648,6 +6648,54 @@ html[data-lite] .welcome-card-graphic svg circle {
   border-radius: inherit;
   pointer-events: none;
 }
+/* Открытое окно (окошко услуги, раскрытая карточка команды) поднимается над
+   соседними ячейками по всему сайту. Обёртка появления Appear заводит свой
+   слой (transform/opacity), и z-index окна внутри неё не выходил наружу —
+   соседняя ячейка рисовалась поверх открытого окна (Егор, 2026-09-29). */
+[data-appear]:has([data-raise]) {
+  position: relative;
+  z-index: 60;
+}
+/* Окошко услуги выше раскрытой карточки команды: оно больше и открыто кликом. */
+[data-appear]:has([data-raise="top"]) { z-index: 70; }
+/* Кнопки «как удобнее» внизу раскрытого окошка команды (Егор, 2026-09-29):
+   плоские таблетки, белый жирный текст, стрелка в цвете человека. */
+.team-pulse-pick {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+  border-radius: 999px;
+  padding: 0.55rem 0.85rem;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.team-pulse-pick i {
+  font-style: normal;
+  background: linear-gradient(90deg, rgb(var(--tp-from-rgb)), rgb(var(--tp-to-rgb)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.team-pulse-pick:hover {
+  background: rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 0 0 1px rgba(var(--tp-from-rgb), 0.7);
+}
+.team-pulse-pick:active { transform: scale(0.97); }
+@media (max-width: 639px) {
+  .team-pulse-pick { justify-content: center; padding: 0.6rem 0.5rem; font-size: 11px; }
+  .team-pulse-pick i { display: none; }
+}
 .team-pulse-card:hover::after {
   animation-duration: 2.4s;
 }
@@ -7339,6 +7387,32 @@ html[data-lite] .vibe-tip {
   animation: vibe-wordmark-glow 4.5s ease-in-out infinite;
 }
 .vibe-mode__wordmark-vibe { color: #a98bff; }
+/* Метка «BETA» у вайб-режима и голосового управления (Егор, 2026-09-29):
+   тихо — маленькое жирное слово в градиенте, без таблетки и обводки. */
+.beta-badge {
+  display: inline-block;
+  margin-left: 0.55em;
+  vertical-align: super;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: none;
+  background: linear-gradient(90deg, #6f86ff, #b07cff, #ff7a9c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.vibe-mode__wordmark--hero .beta-badge { font-size: 10px; }
+.voice-stage-beta {
+  position: absolute;
+  top: 1.35rem;
+  left: 1.1rem;
+  margin-left: 0;
+}
 .vibe-mode__wordmark--hero { font-size: clamp(26px, 5.6vw, 38px); font-weight: 600; letter-spacing: -0.01em; }
 @keyframes vibe-wordmark-glow {
   0%, 100% { text-shadow: 0 0 6px rgba(169, 139, 255, 0.15), 0 0 18px rgba(169, 139, 255, 0.08); }

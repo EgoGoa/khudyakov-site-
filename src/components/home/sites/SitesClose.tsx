@@ -3,13 +3,11 @@
 import Link from "next/link";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT, STAGGER } from "@/lib/motion";
+import { BEAT } from "@/lib/motion";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import { pricingByCategory } from "@/lib/service-content";
 import TeamRow from "@/components/home/TeamRow";
 import { PAGE_TEAM } from "@/lib/team";
-import SeoAccordion from "@/components/ui/SeoAccordion";
-import { SITES_SEO_SECTIONS } from "@/components/home/sites/sitesSeoSections";
 
 // Chapter 06 of /sites — the closing chapter: three price tiers and the last
 // call to action.
@@ -149,11 +147,6 @@ export default function SitesClose() {
         </div>
       </Appear>
 
-      <Appear from="up" delay={BEAT.cta + STAGGER.normal}>
-        <div className="mx-auto mt-10 w-full max-w-3xl [@media(max-height:860px)]:hidden">
-          <SeoAccordion eyebrow="Подробнее о сайтах на AI" sections={SITES_SEO_SECTIONS} />
-        </div>
-      </Appear>
     </CinematicSection>
   );
 }

@@ -39,7 +39,9 @@ export default function SitesProcess() {
       <SitesChapterLayout
         number="04"
         columnClassName="lg:w-[44%]"
-        rightFooter={<ToolSpotlight slug="site-redesign" accent={SITES_ACCENT} shape="card" />}
+        // Егор 2026-09-29: акция и окошко «Редизайн» — слева сразу под
+        // подзаголовком, а окно продюсера — справа под этапами.
+        rightFooter={<div className="mt-4"><TeamPulse data={EGOR_SITES} /></div>}
         title={
           <>
             Как
@@ -62,22 +64,7 @@ export default function SitesProcess() {
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
         askCard={
           <>
-            {/* Егор как сервис — окно линейного продюсера (TeamPulse) на
-                месте прежней компактной карточки; тексты согласованы Егором. */}
-            <TeamPulse data={EGOR_SITES} />
-            {/* /sites' second September offer — sits under Егор's card
-                (Egor's ask, same fix as /smm's chapter 02). Gap bumped to
-                mt-8 and the photo swapped for the site's own stock library
-                — an overhead desk shot with a "Contact us" page open on
-                screen, closer to "сайт-визитка" than the generic
-                service-sites.jpg (Egor's ask, applied site-wide). Priced
-                off this service's OWN tier in pricingByCategory.sites
-                ("Сайт-визитка", от 120 000 ₽ — not the cheaper "Лендинг"
-                tier chapter 02's offer uses) with a flat 20% off:
-                120 000 → 96 000 ₽. Egor's correction: every offer discounts
-                its own service's real price, never the page's cheapest
-                unrelated tariff. */}
-            <div className="mt-8">
+            <div>
               <PromoCard
                 image="/images/stock/desk-aerial.webp"
                 badge="Акция сентября"
@@ -88,6 +75,9 @@ export default function SitesProcess() {
                 href="/brief/sites"
                 leadPrefill={{ format: "Сайт-визитка", wishes: "Акция сентября — от 120 000 до 96 000 ₽" }}
               />
+            </div>
+            <div className="mt-4">
+              <ToolSpotlight slug="site-redesign" accent={SITES_ACCENT} shape="card" />
             </div>
           </>
         }
@@ -118,7 +108,9 @@ export default function SitesProcess() {
                 <h3 className="font-display text-sm uppercase leading-tight tracking-tight text-white">
                   {step.title}
                 </h3>
-                <p className="mt-1 text-xs leading-relaxed text-paper/55">{step.description}</p>
+                {/* Пояснение шага развёрнуто, фирменным шрифтом — мельче и серым,
+                    как ответы в других блоках (Егор, 2026-09-29). */}
+                <p className="mt-1 font-display text-[11.5px] leading-snug tracking-tight text-paper/60">{step.description}</p>
               </div>
             </Appear>
           ))}

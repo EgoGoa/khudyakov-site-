@@ -266,6 +266,7 @@ export default function ToolSpotlight({
           /smm). */}
       <div
         ref={wrapRef}
+        data-raise={open ? "top" : undefined}
         // Открытое окно — на слой выше соседних: пока соседнее ещё
         // схлопывается (0.46с), новое уже растёт поверх, а не сквозь него.
         className={`relative w-full ${open ? "z-[55]" : "z-50"}`}
