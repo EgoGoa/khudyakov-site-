@@ -218,7 +218,7 @@ function Orders({ state, compact }: { state: CabinetState; compact?: boolean }) 
       <div>
         <Sect>Заказы</Sect>
         <Card className="p-5 text-[14px] font-semibold text-white">
-          Пока пусто. Напиши Саше или Егору на странице — заявка из чата сразу появится здесь.
+          Пока пусто. Напиши Алисе или Егору на странице — заявка из чата сразу появится здесь.
         </Card>
       </div>
     );

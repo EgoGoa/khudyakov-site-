@@ -37,7 +37,7 @@ export const TEAM: Record<string, TeamMember> = {
     nameGenitive: "Артёма",
     role: "моушн и монтаж",
     helpsWith: "AI-генерациями, монтажом и моушн-графикой",
-    photo: "/team/dima.jpg",
+    photo: "/team/dima.jpg?v=2",
   },
   max: {
     id: "max",
@@ -46,7 +46,7 @@ export const TEAM: Record<string, TeamMember> = {
     nameGenitive: "Кирилла",
     role: "креативный продюсер",
     helpsWith: "сценарием и концепцией ролика",
-    photo: "/team/max.jpg",
+    photo: "/team/max.jpg?v=2",
   },
   sasha: {
     id: "sasha",
@@ -55,7 +55,7 @@ export const TEAM: Record<string, TeamMember> = {
     nameGenitive: "Алисы",
     role: "визуальный дизайнер",
     helpsWith: "стилем, вёрсткой и дизайном сайта",
-    photo: "/team/sasha.jpg",
+    photo: "/team/sasha.jpg?v=2",
   },
   tanya: {
     id: "tanya",
@@ -64,7 +64,7 @@ export const TEAM: Record<string, TeamMember> = {
     nameGenitive: "Веры",
     role: "SMM-специалист",
     helpsWith: "продвижением и рекламой в соцсетях",
-    photo: "/team/tanya.jpg",
+    photo: "/team/tanya.jpg?v=2",
   },
 };
 
