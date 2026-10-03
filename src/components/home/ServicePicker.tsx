@@ -1,6 +1,7 @@
 "use client";
 
 import { useBootPreload } from "@/lib/boot-sequence";
+import { isSiteFrozen } from "@/lib/welcome-freeze";
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -162,36 +163,98 @@ export function NeonChevron({
   );
 }
 
-// Only the "sites" slide has a video background — playing it only while its
-// slide is actually the visible one (not just opacity:0'd behind the others)
-// keeps the other three plain <img> slides free of any decode/CPU cost.
+// Фон направления: ролик играет только у активного слайда, остальные ждут
+// готовыми под ним. Что здесь важно на телефоне (Егор, 2026-10-03: «всегда
+// видео сразу, а не заглушка», «ровная линия посередине блока»):
+//  * заглушка — не постер из другой картинки, а ПЕРВЫЙ КАДР самого ролика
+//    (public/images/bg-<ключ>-first.jpg), и лежит она под видео постоянно, а
+//    не как атрибут poster, который браузер роняет при первом кадре. Если
+//    слой видео на секунду ничего не рисует, под ним тот же кадр, а не скачок;
+//  * ролик при каждом выходе на экран встаёт в начало и играет сразу: все
+//    четыре подгружены заранее (preload auto, как только очередь дошла до
+//    блоков), так что смена направления не ждёт сети;
+//  * проявление и лёгкий масштаб стоят на обёртке, а не на самом <video>:
+//    Safari собирает аппаратное видео в отдельный слой и при transform/opacity
+//    прямо на нём рисует горизонтальный шов посередине блока;
+//  * воспроизведением управляет сам слайд (data-self-driven — MediaGovernor
+//    его не трогает): пока MediaGovernor был хозяином, на средних устройствах
+//    он ставил зацикленные ролики на паузу и не будил их без autoplay —
+//    блок вставал на заглушке и больше не оживал.
 function SlideVideo({ src, poster, active }: { src: string; poster: string; active: boolean }) {
   const bootPreload = useBootPreload();
+  const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Играть — только когда очередь загрузки дошла до блоков: play() качает
-  // ролик в обход preload="none".
+  const [onScreen, setOnScreen] = useState(true);
+  // play() качает ролик в обход preload="none" — до блоков не запускаем.
   const ready = bootPreload !== "none";
+
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (active && ready) video.play().catch(() => {});
-    else video.pause();
-  }, [active, ready]);
+    const el = wrapRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting), { rootMargin: "120px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const wasActive = useRef(false);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (!active) {
+      // Паузим уже после ухода слайда (проявление 800 мс), чтобы он не замирал
+      // на глазах.
+      wasActive.current = false;
+      const id = window.setTimeout(() => v.pause(), 900);
+      return () => window.clearTimeout(id);
+    }
+    if (!ready) return;
+    if (!onScreen) {
+      v.pause();
+      return;
+    }
+    if (!wasActive.current) {
+      wasActive.current = true;
+      try {
+        v.currentTime = 0;
+      } catch {
+        /* метаданные ещё не готовы — начнёт с нуля сам */
+      }
+    }
+    const kick = () => {
+      if (v.paused && v.getAttribute("src") && !document.hidden && !isSiteFrozen()) v.play().catch(() => {});
+    };
+    kick();
+    // Сторож: iOS может отказать в запуске, пока не было касания, или снять
+    // ролик с паузы не мы — пробуем снова, касание тоже считается разрешением.
+    const watchdog = window.setInterval(kick, 500);
+    document.addEventListener("touchend", kick, { passive: true });
+    document.addEventListener("visibilitychange", kick);
+    return () => {
+      window.clearInterval(watchdog);
+      document.removeEventListener("touchend", kick);
+      document.removeEventListener("visibilitychange", kick);
+    };
+  }, [active, ready, onScreen]);
 
   return (
-    <video
-      ref={videoRef}
-      src={src}
-      poster={poster}
-      muted
-      loop
-      playsInline
-      preload={bootPreload}
-      aria-hidden="true"
-      className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out"
+    <div
+      ref={wrapRef}
+      className="absolute inset-0 transition-[opacity,transform] duration-[800ms] ease-out"
       style={{ opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(1.06)" }}
-    />
+    >
+      <img src={poster} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+      <video
+        ref={videoRef}
+        src={src}
+        data-self-driven=""
+        muted
+        loop
+        playsInline
+        preload={ready ? "auto" : "none"}
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    </div>
   );
 }
 
@@ -246,7 +309,7 @@ export default function ServicePicker() {
             <SlideVideo
               key={key}
               src={serviceMeta[key].video!}
-              poster={serviceMeta[key].image}
+              poster={`/images/bg-${key}-first.jpg`}
               active={key === previewKey}
             />
           ) : (

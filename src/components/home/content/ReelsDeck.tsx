@@ -25,8 +25,6 @@ const POSE: Record<number, { x: number; scale: number; opacity: number }> = {
 
 /** Ход руки на одну карточку, px. */
 const SPACING = 115;
-/** Как часто колода сама перелистывается, мс. Смена идёт пружиной ~0.5 с. */
-const AUTO_MS = 3200;
 
 export default function ReelsDeck({ running }: { running: boolean }) {
   const count = REELS.length;
@@ -44,13 +42,23 @@ export default function ReelsDeck({ running }: { running: boolean }) {
   const live = dragging || moving;
   const idx = modIndex(active, count);
 
-  // Само листается, пока блок на экране; рука или курсор на колоде — пауза.
-  // На слабых устройствах (data-lite) не листается и не играет видео.
-  useEffect(() => {
-    if (!running || held || lite) return;
-    const id = window.setInterval(() => setActive((p) => p + 1), AUTO_MS);
-    return () => window.clearInterval(id);
-  }, [running, held, lite]);
+  // Каждый рилс доигрывает до конца, и только потом колода сама переходит
+  // к следующему (он стартует сначала). Если рилс перелистали рукой —
+  // следующий тоже начинается с начала и доигрывается до конца. Пока курсор
+  // на колоде, рилс крутится по кругу и не уходит. На слабых устройствах
+  // (data-lite) видео нет и колода не листается.
+  const onEnded = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (held) {
+      e.currentTarget.currentTime = 0;
+      void e.currentTarget.play();
+    } else {
+      setActive((p) => p + 1);
+    }
+  };
+  // Если видео не загрузилось, колода не застревает на нём.
+  const onFail = () => {
+    window.setTimeout(() => setActive((p) => p + 1), 3200);
+  };
 
   return (
     <div
@@ -59,7 +67,7 @@ export default function ReelsDeck({ running }: { running: boolean }) {
       onMouseLeave={() => setHeld(false)}
     >
       <h3 className="pointer-events-none absolute inset-x-0 top-0 z-[200] text-center font-display text-lg uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-xl">
-        Рилсы, <span className="kw">как мы снимаем</span>
+        AI-контент <span className="kw">для вас</span>
       </h3>
       <div
         className="deck-rail absolute inset-x-0 bottom-12 top-8 select-none"
@@ -106,8 +114,9 @@ export default function ReelsDeck({ running }: { running: boolean }) {
                     poster={`/video/reels/r${REELS[i]}.jpg`}
                     autoPlay
                     muted
-                    loop
                     playsInline
+                    onEnded={onEnded}
+                    onError={onFail}
                     preload="auto"
                     className="absolute inset-0 h-full w-full object-cover"
                   />

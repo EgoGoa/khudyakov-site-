@@ -7,6 +7,8 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import SitesChapterLayout, { SITES_PANEL } from "@/components/home/sites/SitesChapterLayout";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
+import Link from "next/link";
+import SitesWorksDeck from "@/components/home/sites/SitesWorksDeck";
 import { servicesByCategory } from "@/lib/service-content";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { SASHA_SITES } from "@/components/home/team-pulse/content/sasha-sites";
@@ -19,6 +21,20 @@ import { SASHA_SITES } from "@/components/home/team-pulse/content/sasha-sites";
 // list are the same data Offer reads (servicesByCategory.sites); only the
 // composition is this page's.
 const SERVICES = servicesByCategory.sites;
+
+// Куда ведёт каждый из восьми пунктов. Отдельных страниц форматов пять
+// (landing, card, turnkey, assistant, redesign); у CRM, SEO и адаптива своей
+// страницы нет — они входят в «Сайт под ключ», туда и отправляем.
+const HREFS = [
+  "/sites/landing",
+  "/sites/card",
+  "/sites/turnkey",
+  "/sites/assistant",
+  "/sites/turnkey",
+  "/sites/turnkey",
+  "/sites/turnkey",
+  "/sites/redesign",
+];
 
 export default function SitesOffer() {
   return (
@@ -51,11 +67,14 @@ export default function SitesOffer() {
           </>
         }
         sub="От одностраничного лендинга до сайта под ключ с интеграциями — вёрстка на React/HTML, без привязки к конструктору."
-        leftFooter={<ToolSpotlight slug="site-turnkey" accent={SITES_ACCENT} place="left" />}
+        leftFooter={<SitesWorksDeck />}
         primary={{ href: "/brief/sites", label: "Обсудить проект" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
-        askCard={
-          <TeamPulse data={SASHA_SITES} compact source="/sites · глава «Что мы делаем»" />
+        rightFooter={
+          <div className="mt-4 space-y-3">
+            <TeamPulse data={SASHA_SITES} compact source="/sites · глава «Что мы делаем»" />
+            <ToolSpotlight slug="site-turnkey" accent={SITES_ACCENT} place="left" />
+          </div>
         }
       >
         {/* The glass panel (SITES_PANEL) used to render statically and pop in
@@ -70,8 +89,12 @@ export default function SitesOffer() {
               as="li"
               from="right"
               delay={BEAT.content + i * STAGGER.tight}
-              className="group flex items-baseline gap-3 py-3"
+              className="group"
             >
+              <Link
+                href={HREFS[i]}
+                className="flex items-baseline gap-3 py-3 transition-colors hover:bg-white/[0.04]"
+              >
               <span className="font-display text-[10px] text-paper/40">
                 {String(i + 1).padStart(2, "0")}
               </span>
@@ -83,6 +106,7 @@ export default function SitesOffer() {
                   {service.description}
                 </p>
               </div>
+              </Link>
             </Appear>
           ))}
         </ul>

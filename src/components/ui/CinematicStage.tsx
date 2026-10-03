@@ -1322,6 +1322,15 @@ export default function CinematicStage({
       /* метаданные ещё не готовы */
     }
     el.play().catch(() => {});
+    // Сторож: клип главы на экране обязан играть. Если iOS отказал в запуске,
+    // клип ещё не догрузился или его сняли с паузы не мы — пробуем снова, пока
+    // он не доиграет (дальше он стоит на последнем кадре) или не закроется
+    // окно, под которым сайт заморожен.
+    const watchdog = window.setInterval(() => {
+      const v = clipRefs.current.get(activeIndexRef.current);
+      if (v && v.paused && !v.ended && !document.hidden && !isSiteFrozen()) v.play().catch(() => {});
+    }, 500);
+    return () => window.clearInterval(watchdog);
   }, [phone, started, activeIndex, soundPage]);
   useEffect(() => () => window.clearTimeout(underTimer.current), []);
   useEffect(() => {
@@ -1440,6 +1449,12 @@ export default function CinematicStage({
                     aria-hidden="true"
                     preload={started && i >= activeIndex - 1 && i <= activeIndex + 1 ? "auto" : bootPreload}
                     onPlaying={() => promoteClip(i)}
+                    onCanPlay={(e) => {
+                      const v = e.currentTarget;
+                      if (started && i === activeIndexRef.current && v.paused && !v.ended && !isSiteFrozen()) {
+                        v.play().catch(() => {});
+                      }
+                    }}
                     onEnded={() => {
                       if (i === activeIndexRef.current) sound()?.holdChapter();
                     }}

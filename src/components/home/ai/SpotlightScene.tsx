@@ -162,7 +162,7 @@ function SceneChannels({ mini }: SceneProps) {
 function SceneHandoff({ mini }: SceneProps) {
   return (
     <Frame>
-      <Headline value="0 повторов" note="клиент не объясняет заново" mini={mini} />
+      <Headline value="Ноль повторов" note="клиент не объясняет заново" mini={mini} />
       <In at={1}>
         <rect x="14" y="66" width="120" height="96" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)" />
       </In>
@@ -284,45 +284,44 @@ function AgentChannels({ mini }: SceneProps) {
 
 /** 02 · Знания. Ответ собирается из вашего прайса, а не придумывается. */
 function AgentKnowledge({ mini }: SceneProps) {
+  // Короткие названия и цены в одну строку помещаются в плашку на любом
+  // экране: текст и цифры не наезжают друг на друга (Егор, 2026-10-03).
   const rows = [
-    ["Монтаж под ключ", "от 60 000 ₽"],
-    ["Съёмочный день", "от 90 000 ₽"],
-    ["Пакет Reels ×8", "от 120 000 ₽"],
+    ["Монтаж", "от 60 000 ₽"],
+    ["Съёмка", "от 90 000 ₽"],
+    ["Reels ×8", "от 120 000 ₽"],
   ];
   return (
     <Frame>
-      <Headline value="0 выдумок" note="цены только из вашего прайса" mini={mini} />
+      <Headline value="Ноль выдумок" note="цены только из вашего прайса" mini={mini} size={28} />
       <In at={1}>
-        <rect x="14" y="62" width="150" height="96" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)" />
+        <rect x="14" y="62" width="156" height="96" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)" />
         <text x="26" y="78" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.2" fontFamily="inherit">
           ВАШ ПРАЙС
         </text>
       </In>
       {rows.map(([name, price], i) => (
         <In key={name} at={2 + i}>
-          <rect x="24" y={86 + i * 22} width="130" height="18" rx="6" fill={i === 1 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.05)"} />
-          <text x="32" y={98 + i * 22} fill="rgba(255,255,255,0.8)" fontSize="11.6" fontFamily="inherit">
+          <rect x="22" y={86 + i * 22} width="140" height="18" rx="6" fill={i === 1 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.05)"} />
+          <text x="30" y={98 + i * 22} fill="rgba(255,255,255,0.8)" fontSize="11" fontFamily="inherit">
             {name}
           </text>
-          <text x="148" y={98 + i * 22} textAnchor="end" fill={i === 1 ? "var(--sp-from)" : "rgba(255,255,255,0.55)"} fontSize="11.6" fontFamily="inherit">
+          <text x="156" y={98 + i * 22} textAnchor="end" fill={i === 1 ? "var(--sp-from)" : "rgba(255,255,255,0.55)"} fontSize="11" fontFamily="inherit">
             {price}
           </text>
         </In>
       ))}
       <In at={5}>
-        <path d="M 166 108 C 190 108 194 96 214 96" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
-        <rect x="214" y="70" width="126" height="64" rx="12" fill="rgba(255,255,255,0.07)" stroke="var(--sp-to)" strokeOpacity="0.55" />
-        <text x="224" y="90" fill="#fff" fontSize="11.6" fontFamily="inherit">
-          «Съёмочный день
+        <path d="M 172 108 C 188 108 190 98 204 98" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
+        <rect x="204" y="70" width="122" height="64" rx="12" fill="rgba(255,255,255,0.07)" stroke="var(--sp-to)" strokeOpacity="0.55" />
+        <text x="214" y="90" fill="#fff" fontSize="11" fontFamily="inherit">
+          «Съёмка — от
         </text>
-        <text x="224" y="102" fill="#fff" fontSize="11.6" fontFamily="inherit">
-          — от 90 000 ₽,
+        <text x="214" y="102" fill="#fff" fontSize="11" fontFamily="inherit">
+          90 000 ₽, в цену
         </text>
-        <text x="224" y="114" fill="#fff" fontSize="11.6" fontFamily="inherit">
-          в цену входит
-        </text>
-        <text x="224" y="126" fill="#fff" fontSize="11.6" fontFamily="inherit">
-          монтаж»
+        <text x="214" y="114" fill="#fff" fontSize="11" fontFamily="inherit">
+          входит монтаж»
         </text>
       </In>
       <BeforeAfter before="Модель фантазирует" after="Ответ строкой из вашего прайса" mini={mini} />
@@ -531,12 +530,12 @@ function VideoVersions({ mini }: SceneProps) {
       </In>
       {cuts.map(([ratio, label, w, h], i) => (
         <In key={ratio as string} at={2 + i}>
-          <path d={`M 92 100 C 116 100 120 ${64 + i * 40} 140 ${64 + i * 40}`} stroke="var(--sp-to)" strokeOpacity="0.6" strokeWidth="1.2" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
-          <rect x="146" y={(64 + i * 40) - (h as number) / 2} width={w as number} height={h as number} rx="7" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.16)" />
-          <text x={150 + (w as number) + 10} y={(64 + i * 40) - 2} fill="#fff" fontSize="12.4" fontFamily="inherit">
+          <path d={`M 92 100 C 116 100 120 ${82 + i * 36} 140 ${82 + i * 36}`} stroke="var(--sp-to)" strokeOpacity="0.6" strokeWidth="1.2" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
+          <rect x="146" y={(82 + i * 36) - (h as number) / 2} width={w as number} height={h as number} rx="7" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.16)" />
+          <text x={150 + (w as number) + 10} y={(82 + i * 36) - 2} fill="#fff" fontSize="12.4" fontFamily="inherit">
             {ratio as string}
           </text>
-          <text x={150 + (w as number) + 10} y={(64 + i * 40) + 10} fill="rgba(255,255,255,0.5)" fontSize="10.9" fontFamily="inherit">
+          <text x={150 + (w as number) + 10} y={(82 + i * 36) + 10} fill="rgba(255,255,255,0.5)" fontSize="10.9" fontFamily="inherit">
             {label as string}
           </text>
         </In>
@@ -990,7 +989,7 @@ const OPS = [OpsInput, OpsSource, OpsAccess, OpsOutput];
 
 /** Реестр сцен по инструменту. Новый инструмент — новая четвёрка здесь, и
  *  больше ничего трогать не нужно. */
-const SCENES: Record<string, ((p: SceneProps) => React.ReactElement)[]> = {
+export const SCENES: Record<string, ((p: SceneProps) => React.ReactElement)[]> = {
   "chat-hub": CHAT_HUB,
   agent: AGENT,
   video: VIDEO,

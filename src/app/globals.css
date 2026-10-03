@@ -6801,7 +6801,6 @@ html[data-lite] .welcome-card-graphic svg circle {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: spotlight-sheen 9s ease-in-out infinite;
 }
 .team-pulse-em {
   font-style: normal;
@@ -9745,4 +9744,26 @@ html[data-mid] .hero-promo { transition: none; }
   .deck-rail .deck-pose-blur > button {
     filter: none !important;
   }
+}
+
+/* Смена оффера/реплики в окошках команды и услуг — только прозрачность и
+   лёгкий сдвиг (без blur и побуквенной печати: они грузили процессор). */
+@keyframes offer-fade {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: none; }
+}
+.offer-fade {
+  display: block;
+  animation: offer-fade 0.5s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .offer-fade { animation: none; }
+}
+
+/* Закрытые плитки услуг — лёгкие: бесконечные циклы внутри мини-сцены и
+   «блик» по тексту не крутятся, сцена проигрывает вход один раз и
+   замирает до следующей смены. Раскрытое окно живёт как раньше. */
+.spotlight-strip .tool-scene *,
+.spotlight-strip .spotlight-sheen {
+  animation-iteration-count: 1 !important;
 }

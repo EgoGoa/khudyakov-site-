@@ -104,6 +104,50 @@ function fitSceneText(svg: SVGSVGElement) {
       t.setAttribute("font-size", (size * scale).toFixed(2));
     });
   });
+  separateTexts(svg);
+}
+
+/** Подписи в одной группе не наезжают друг на друга: «Монтаж» слева и
+ *  цена справа в одной строке плашки могли сойтись вплотную и слиться в
+ *  кашу (Егор, телефон, 2026-10-03). Если рамки двух подписей на одной
+ *  строке пересекаются, обе ужимаются, пока между ними не появится зазор
+ *  (не меньше 50% исходного кегля). */
+function separateTexts(svg: SVGSVGElement) {
+  const byParent = new Map<Node, SVGTextElement[]>();
+  svg.querySelectorAll("text").forEach((t) => {
+    const list = byParent.get(t.parentNode as Node) ?? [];
+    list.push(t);
+    byParent.set(t.parentNode as Node, list);
+  });
+  const GAP = 3;
+  byParent.forEach((texts) => {
+    if (texts.length < 2) return;
+    for (let pass = 0; pass < 14; pass++) {
+      let touched = false;
+      for (let i = 0; i < texts.length; i++) {
+        for (let j = i + 1; j < texts.length; j++) {
+          let a: DOMRect, b: DOMRect;
+          try {
+            a = texts[i].getBBox();
+            b = texts[j].getBBox();
+          } catch {
+            continue;
+          }
+          const sameLine = Math.abs(a.y + a.height / 2 - (b.y + b.height / 2)) < Math.min(a.height, b.height) * 0.7;
+          const overlapX = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) + GAP;
+          if (!sameLine || overlapX <= 0) continue;
+          for (const t of [texts[i], texts[j]]) {
+            const base = parseFloat(t.dataset.fitBase || "") || parseFloat(t.getAttribute("font-size") || "") || 12;
+            const cur = parseFloat(t.getAttribute("font-size") || "") || base;
+            if (cur <= base * 0.5) continue;
+            t.setAttribute("font-size", (cur * 0.94).toFixed(2));
+            touched = true;
+          }
+        }
+      }
+      if (!touched) break;
+    }
+  });
 }
 
 export function Frame({ children }: { children: React.ReactNode }) {
@@ -144,12 +188,12 @@ export function Frame({ children }: { children: React.ReactNode }) {
  *  жирным и крупно — раньше это была блёклая серая капслок-строка 8px,
  *  которая физически не читалась рядом с крупной цифрой (правило сайта:
  *  основной текст белый с акцентами, никогда приглушённо-серый). */
-export function Headline({ value, note, mini }: { value: string; note: string; mini?: boolean }) {
+export function Headline({ value, note, mini, size = 34 }: { value: string; note: string; mini?: boolean; size?: number }) {
   const bare = useContext(BareCtx);
   if (mini || bare) return null;
   return (
     <In at={0}>
-      <text x="16" y="34" className="sp-figure" fill="url(#sp-ramp)" fontSize="34">
+      <text x="16" y="34" className="sp-figure" fill="url(#sp-ramp)" fontSize={size}>
         {value}
       </text>
       <text x="16" y="54" fill="rgba(255,255,255,0.94)" fontSize="14" fontWeight="700" letterSpacing="0.3" fontFamily="inherit">

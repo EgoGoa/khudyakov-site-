@@ -19,14 +19,15 @@ export const metadata: Metadata = {
 // DirectionsGrid), transcoded the same way as /ai's reel: 1280×720, ~1.18
 // Mbps, one keyframe per second, audio dropped.
 //
-// It is not the delivered file untouched: one half-second, 15.5–16.05, is
-// slowed 2.5x in the file (ffmpeg trim/setpts/concat). That is the whip-pan
-// as the cheetah launches — at source speed it is 13 frames of unreadable
-// smear that looked like a decode fault. Stretched it plays as motion blur,
-// which is what it always was. The re-encode makes the reel 37.50s instead
-// of 36.625s, and every timestamp after 16.05 therefore sits +0.875s later
-// than in the original — the boundaries below are already in the new file's
-// timebase, so don't cross-check them against the delivered .mov.
+// It is not the delivered file untouched: the cheetah's launch has a hard
+// cut. Frames 374–382 (the generated smear between "sitting" and "running")
+// are removed, so the last sitting frame (373, head already leaning forward)
+// is followed directly by the first sharp running frame (383) — no slow-down,
+// no blur, no speed ramp. The file is therefore 36.25s (870 frames) instead
+// of the delivered 36.625s, and every timestamp after 15.6 sits 0.375s
+// earlier than in the original — the boundaries below are already in the new
+// file's timebase. (An earlier version stretched that smear 2.5x instead;
+// Egor rejected it as an ugly seam.) sites-reel-mobile.mp4 is re-cut the same.
 //
 // The reel is a compilation-style cut (a person getting into a car, driving,
 // arriving at a house) rather than one unbroken shot like /content's or
@@ -43,10 +44,10 @@ export const metadata: Metadata = {
 //
 //   01  0      → 3.00   SitesPitch          (garage exit, cabin)
 //   02  3.00   → 13.42  SitesMethodAudience (drive through, arrival)
-//   03  13.42  → 20.09  Offer               (the whole cheetah scene)
-//   04  20.09  → 28.01  Process             (night drive, interior)
-//   05  28.01  → 34.30  SitesGuarantees     (the house, arriving)
-//   06  34.30  → end    Close               (out of the car, at the house)
+//   03  13.42  → 18.84  Offer               (the whole cheetah scene)
+//   04  18.84  → 26.76  Process             (night drive, interior)
+//   05  26.76  → 33.05  SitesGuarantees     (the house, arriving)
+//   06  33.05  → end    Close               (out of the car, at the house)
 // Chapter 01 ends at 3.00, not at the 8.10 cut and not at the 4.40 that was
 // tried before it.
 //
@@ -79,16 +80,12 @@ const PHASES: Phase[] = [
   // showed only the run, dropping the sitting shot the scene opens on. The
   // scene is meant to be seen whole.
   //
-  // Showing the scene whole meant the 15.5–16.05 whip-pan played in the
-  // open, and at 24fps it was pure smear — it read as a broken file rather
-  // than as a camera move. Rather than hide it behind a boundary (tried, and
-  // it cost the scene), that half second was slowed 2.5x in the file itself,
-  // so it now lasts long enough to be read as motion blur on a launching
-  // animal. See the reel note at the top for the re-encode.
-  { start: 13.42, end: 20.085 },
-  { start: 20.085, end: 28.005 },
-  { start: 28.005, end: 34.295 },
-  { start: 34.295, end: 37.35 },
+  // The sit→run seam is a plain cut in the file itself; see the reel note
+  // at the top. The chapter is 0.375s shorter than before because of it.
+  { start: 13.42, end: 18.835 },
+  { start: 18.835, end: 26.755 },
+  { start: 26.755, end: 33.045 },
+  { start: 33.045, end: 36.1 },
 ];
 
 const CHAPTERS: ChapterMeta[] = [

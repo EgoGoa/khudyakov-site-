@@ -24,8 +24,8 @@ import { fitValue, useRefit } from "@/lib/use-fit-text";
 // всё, что стоит под ним (акция, таблица), не должно подпрыгивать.
 const COLLAPSE_MS = 5000;
 const TYPE_MS = 28;
-const HOLD_MS = 2200;
-const NOTE_MS = 4200;
+const HOLD_MS = 4800;
+const NOTE_MS = 5200;
 const SPRING = { type: "spring", stiffness: 340, damping: 30, mass: 0.9 } as const;
 
 /** Печатает строку с цветовой разметкой (*градиент* ^тёплый^ ~серый~, см.
@@ -46,22 +46,19 @@ function segments(text: string) {
   return out;
 }
 
-function TypedOffer({ text, count }: { text: string; count: number }) {
+function TypedOffer({ text }: { text: string; count?: number }) {
+  // Раньше текст печатался по букве (перерисовка раз в 28 мс) — теперь он
+  // появляется целиком мягким проявлением: то же ощущение «пришло сообщение»
+  // без постоянной нагрузки на процессор.
   const parts = segments(text);
-  const starts = parts.map((_, k) => parts.slice(0, k).reduce((n, p) => n + p.text.length, 0));
   return (
-    <>
-      {parts.map((part, k) => {
-        const shown = part.text.slice(0, Math.max(0, count - starts[k]));
-        if (!shown) return null;
-        return (
-          <span key={k} className={part.cls}>
-            {shown}
-          </span>
-        );
-      })}
-      <span className="team-pulse-caret" aria-hidden="true" />
-    </>
+    <span key={text} className="offer-fade">
+      {parts.map((part, k) => (
+        <span key={k} className={part.cls}>
+          {part.text}
+        </span>
+      ))}
+    </span>
   );
 }
 
@@ -179,24 +176,15 @@ export default function TeamPulse({
   const text = data.offers[offer];
   const full = plain(text).length;
 
-  // Печать: буква за буквой, потом пауза и следующий оффер. Пока окошко
-  // свёрнуто, печать стоит — при раскрытии Саша начинает новый оффер.
+  // Офферы меняются целиком, без побуквенной печати: пока окошко видно —
+  // пауза, потом следующий оффер. Пока свёрнуто, смена стоит.
   useEffect(() => {
-    if (!showCard || !inView) return;
-    if (reduced) {
-      const t = setTimeout(() => setCount(full), 0);
-      return () => clearTimeout(t);
-    }
-    if (count < full) {
-      const t = setTimeout(() => setCount((c) => c + 1), TYPE_MS);
-      return () => clearTimeout(t);
-    }
+    if (!showCard || !inView || reduced) return;
     const t = setTimeout(() => {
       setOffer((o) => (o + 1) % data.offers.length);
-      setCount(0);
     }, HOLD_MS);
     return () => clearTimeout(t);
-  }, [showCard, inView, reduced, count, full, data.offers.length]);
+  }, [showCard, inView, reduced, offer, data.offers.length]);
 
   // Тап на телефоне раскрывает окошко без наведения — оно само сворачивается
   // обратно через те же 5 секунд.
@@ -269,11 +257,11 @@ export default function TeamPulse({
             className={`team-pulse-card group absolute flex items-center gap-4 rounded-[24px] px-4 text-left sm:gap-5 sm:px-5 ${
               fill ? "inset-0 py-4" : compact ? "inset-x-0 bottom-0 z-30 min-h-[9.5rem] py-4" : "inset-0"
             }`}
-            initial={reduced ? false : { opacity: 0, scale: 0.92, y: 8, filter: "blur(10px)" }}
+            initial={reduced ? false : { opacity: 0, scale: 0.95, y: 6 }}
             // filter снимается после входа: даже blur(0px) отрезает
             // backdrop-filter от страницы, и сайт просвечивает сквозь окошко.
-            animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
-            exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.9, filter: "blur(10px)", transition: { duration: 0.28 } }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.9, transition: { duration: 0.28 } }}
             transition={SPRING}
           >
             <span className="relative h-14 w-14 shrink-0 sm:h-16 sm:w-16">
@@ -319,7 +307,7 @@ export default function TeamPulse({
             className="absolute inset-0 flex items-center"
             initial={reduced ? false : { opacity: 0, y: -14, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.97, filter: "blur(8px)", transition: { duration: 0.22 } }}
+            exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.97, transition: { duration: 0.22 } }}
             transition={SPRING}
           >
             {/* Клик по карточке — удобство для мыши; для клавиатуры и читалок
@@ -354,9 +342,9 @@ export default function TeamPulse({
                         <motion.span
                           key={note}
                           className={`block text-white ${FIT_TEXT}`}
-                          initial={reduced ? false : { opacity: 0, y: -10, filter: "blur(4px)" }}
-                          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                          exit={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+                          initial={reduced ? false : { opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 8 }}
                           transition={SPRING}
                         >
                           {marks(messages[note % messages.length])}
@@ -396,9 +384,9 @@ export default function TeamPulse({
                   <motion.span
                     key={note}
                     className="mt-1 line-clamp-2 font-display text-[12px] uppercase leading-snug tracking-tight text-white sm:text-[13px]"
-                    initial={reduced ? false : { opacity: 0, y: -10, filter: "blur(4px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+                    initial={reduced ? false : { opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
                     transition={SPRING}
                   >
                     {marks(messages[note % messages.length])}

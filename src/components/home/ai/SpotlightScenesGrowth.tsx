@@ -92,14 +92,14 @@ function PersTest({ mini }: SceneProps) {
       <Headline value="+41%" note="дохода от персонализации рассылок" mini={mini} />
       {[["A", 38, false], ["B", 52, false], ["C", 96, true]].map(([k, h, win], i) => (
         <In key={k as string} at={1 + i}>
-          <rect x={40 + i * 90} y={160 - (h as number)} width="56" height={h as number} rx="8" fill="url(#sp-ramp)" fillOpacity={win ? 0.75 : 0.2} stroke={win ? "var(--sp-from)" : "rgba(255,255,255,0.15)"} />
+          <rect x={40 + i * 90} y={160 - (h as number) * 0.78} width="56" height={(h as number) * 0.78} rx="8" fill="url(#sp-ramp)" fillOpacity={win ? 0.75 : 0.2} stroke={win ? "var(--sp-from)" : "rgba(255,255,255,0.15)"} />
           <text x={68 + i * 90} y="172" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="12.4" fontFamily="inherit">Версия {k as string}</text>
-          <text x={68 + i * 90} y={154 - (h as number)} textAnchor="middle" fill={win ? "var(--sp-from)" : "rgba(255,255,255,0.5)"} fontSize="14.0" fontWeight="700" fontFamily="inherit">{`${(h as number) / 10}%`}</text>
+          <text x={68 + i * 90} y={154 - (h as number) * 0.78} textAnchor="middle" fill={win ? "var(--sp-from)" : "rgba(255,255,255,0.5)"} fontSize="14.0" fontWeight="700" fontFamily="inherit">{`${(h as number) / 10}%`}</text>
         </In>
       ))}
       <In at={5}>
-        <rect x="222" y="60" width="104" height="20" rx="10" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
-        <text x="274" y="74" textAnchor="middle" fill="#fff" fontSize="11.6" fontFamily="inherit">Побеждает C</text>
+        <rect x="226" y="10" width="100" height="20" rx="10" fill="rgba(255,255,255,0.08)" stroke="var(--sp-from)" strokeOpacity="0.6" />
+        <text x="276" y="24" textAnchor="middle" fill="#fff" fontSize="11.6" fontFamily="inherit">Побеждает C</text>
       </In>
       <BeforeAfter before="Выбираем на глаз" after="Решают цифры на вашем трафике" mini={mini} />
     </Frame>

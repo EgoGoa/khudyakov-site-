@@ -207,7 +207,7 @@ function AdPlatform({ mini }: SceneProps) {
       <Headline value={AD_FIG[1].value} note={AD_FIG[1].note} mini={mini} />
       {rows.map((r, i) => {
         const y = 66 + i * 34;
-        const step = 236 / r.cuts;
+        const step = 204 / r.cuts;
         return (
           <In key={r.name} at={1 + i}>
             <rect x="14" y={y} width="312" height="26" rx="13" {...SOFT} />
@@ -232,7 +232,7 @@ function AdFormats({ mini }: SceneProps) {
     { w: 62, h: 36, l: "16:9" },
     { w: 34, h: 42, l: "4:5" },
   ];
-  let x = 132;
+  let x = 124;
   return (
     <Frame>
       <Headline value={AD_FIG[2].value} note={AD_FIG[2].note} mini={mini} />
@@ -243,7 +243,7 @@ function AdFormats({ mini }: SceneProps) {
       </In>
       {outs.map((o, i) => {
         const px = x;
-        x += o.w + 16;
+        x += o.w + 12;
         return (
           <In key={o.l} at={2 + i}>
             <path d={`M 92 110 C 110 110 ${px - 14} ${100 + i * 4} ${px} ${110}`} stroke="var(--sp-from)" strokeOpacity="0.45" strokeWidth="1" className="sp-flow" style={{ animationDelay: `${i * 0.25}s` }} />

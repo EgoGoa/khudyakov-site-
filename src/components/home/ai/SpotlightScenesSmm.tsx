@@ -488,7 +488,7 @@ const ADS = [AdsPlatforms, AdsCreatives, AdsFunnel, AdsBudget];
 function BloggersFit({ mini }: SceneProps) {
   return (
     <Frame>
-      <Headline value="94%" note="блогеров РФ работают с бюджетом до 100 тыс. ₽" mini={mini} />
+      <Headline value="94%" note="блогеров РФ — с бюджетом до 100 тыс. ₽" mini={mini} />
       <In at={1}>
         <circle cx="66" cy="106" r="34" fill="url(#sp-glow)" />
         <circle cx="66" cy="106" r="22" fill="rgba(10,13,16,0.92)" stroke="url(#sp-ramp)" strokeWidth="1.5" />

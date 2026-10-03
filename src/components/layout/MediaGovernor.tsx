@@ -55,6 +55,8 @@ export default function MediaGovernor() {
 
     function settle(v: HTMLVideoElement) {
       if (!v.loop) return;
+      // Фон блока выбора направлений сам решает, когда играть (ServicePicker).
+      if (v.hasAttribute("data-self-driven")) return;
       // Принудительно играющие ролики (окошки стартового меню, Егор,
       // 2026-10-03: «видео должно играть в любом случае»): никаких пауз по
       // видимости, ни lite, ни mid — только вкладка в фоне.
@@ -65,7 +67,10 @@ export default function MediaGovernor() {
         return;
       }
       if (v.hasAttribute("data-force-play")) {
-        if (!document.hidden && v.paused) v.play().catch(() => {});
+        // Играет всегда — но не в скрытой главе и не в фоновой вкладке.
+        if (!document.hidden && onStage(v)) {
+          if (v.paused) v.play().catch(() => {});
+        } else if (!v.paused) v.pause();
         return;
       }
       if (lite && !v.hasAttribute("data-hero-reel")) {
@@ -108,6 +113,10 @@ export default function MediaGovernor() {
         }
         return;
       }
+      // Фон блока выбора направлений: ~1 МБ, играет один слайд из четырёх и
+      // сам себя ведёт (ServicePicker) — в lite его не выгружаем, иначе блок
+      // навсегда остаётся заглушкой (Егор, 2026-10-03).
+      if (v.hasAttribute("data-self-driven")) return;
       if (lite) {
         if (src) {
           v.removeAttribute("src");
@@ -153,6 +162,11 @@ export default function MediaGovernor() {
 
     const onVis = () => document.querySelectorAll("video").forEach((v) => settle(v));
     document.addEventListener("visibilitychange", onVis);
+    // Касание — разрешение iOS на запуск видео: на его конце будим все
+    // принудительно играющие ролики, которым отказали в автозапуске.
+    const onTouch = () =>
+      document.querySelectorAll<HTMLVideoElement>("video[data-force-play]").forEach((v) => settle(v));
+    document.addEventListener("touchend", onTouch, { passive: true });
 
     // A live downgrade: already-loaded clips are paused (lite) or thinned to
     // one at a time (mid) rather than unloaded — their bytes are spent.
@@ -167,6 +181,7 @@ export default function MediaGovernor() {
       io.disconnect();
       mo.disconnect();
       document.removeEventListener("visibilitychange", onVis);
+      document.removeEventListener("touchend", onTouch);
       stopTierWatch();
     };
   }, []);
