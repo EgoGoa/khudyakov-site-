@@ -10,6 +10,7 @@ import { SITES_PROCESS_STEPS } from "@/components/home/sites/sitesProcessSteps";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { EGOR_SITES } from "@/components/home/team-pulse/content/egor-sites";
 import PromoCard from "@/components/home/PromoCard";
+import { promo } from "@/lib/promos";
 
 // Chapter 04 of /sites — the five steps from brief to launch.
 //
@@ -66,14 +67,7 @@ export default function SitesProcess() {
           <>
             <div>
               <PromoCard
-                image="/images/stock/desk-aerial.webp"
-                badge="Акция сентября"
-                title="Сайт-визитка"
-                subtitle="Несколько страниц: о компании, услуги, контакты — без раздутого бюджета."
-                price="96 000 ₽"
-                oldPrice="120 000 ₽"
-                href="/brief/sites"
-                leadPrefill={{ format: "Сайт-визитка", wishes: "Акция сентября — от 120 000 до 96 000 ₽" }}
+                {...promo("site-card")}
               />
             </div>
             <div className="mt-4">

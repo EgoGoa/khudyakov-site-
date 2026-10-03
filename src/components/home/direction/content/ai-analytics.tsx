@@ -140,7 +140,7 @@ export const aiAnalyticsContent: CompactToolContent = {
       memberId: "max",
       question: "Какие отчёты сейчас собираются вручную?",
       pitch: "Подскажу, что автоматизировать в первую очередь.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -195,7 +195,7 @@ export const aiAnalyticsContent: CompactToolContent = {
       memberId: "max",
       question: "Как AI находит аномалию в данных?",
       pitch: "Объясню механику простыми словами.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -295,7 +295,7 @@ export const aiAnalyticsContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам настройки дашборда?",
       pitch: "Отвечу, сколько займёт подключение источников.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

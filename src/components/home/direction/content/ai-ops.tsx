@@ -148,7 +148,7 @@ export const aiOpsContent: DirectionContent = {
       memberId: "max",
       question: "Какой процесс отнимает больше всего времени?",
       pitch: "Подскажу, с чего начать внедрение.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -203,7 +203,7 @@ export const aiOpsContent: DirectionContent = {
       memberId: "max",
       question: "Как AI работает с вашими документами?",
       pitch: "Объясню механику простыми словами.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -355,7 +355,7 @@ export const aiOpsContent: DirectionContent = {
       memberId: "max",
       question: "Есть вопрос по срокам внедрения?",
       pitch: "Отвечу, сколько займёт первый процесс.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

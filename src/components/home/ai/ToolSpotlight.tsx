@@ -46,6 +46,9 @@ const BEAT_MS = 4900;
  *  стояли вплотную. Высоту, которую она на это забрала, вернули, ужав
  *  собственный вертикальный ритм двух самых плотных глав (04 и 05). */
 const STRIP_HEIGHT = 80;
+// Телефон: полоса выше, чтобы название, тезис и стрелка помещались целиком,
+// а превью сцены читалось (Егор, 2026-10-03).
+const STRIP_HEIGHT_PHONE = 108;
 
 
 /** Акцент страницы /ai — лайм→изумруд, тот же, что у заголовков глав и
@@ -164,22 +167,28 @@ export default function ToolSpotlight({
   const [geom, setGeom] = useState({ left: 0, width: 0, height: 0, y0: 0, y1: 0, vw: 1200, vh: 900 });
   const measure = useCallback(() => {
     const r = wrapRef.current?.getBoundingClientRect();
-    if (r) setGeom({ left: r.left, width: r.width, height: r.height, y0: r.top, y1: r.bottom, vw: window.innerWidth, vh: window.innerHeight });
+    // Ширина и высота — по раскладке (offset*), а не по getBoundingClientRect:
+    // глава на телефоне въезжает с 3D-наклоном (rotateX в stage-frame), и
+    // в этот момент прямоугольник сжат — кнопка запоминала ~85% ширины и
+    // навсегда оставалась уже соседних окошек (Егор, 2026-10-03).
+    const el = wrapRef.current;
+    if (r && el) setGeom({ left: r.left, width: el.offsetWidth, height: el.offsetHeight, y0: r.top, y1: r.bottom, vw: window.innerWidth, vh: window.innerHeight });
   }, []);
   useEffect(() => {
     measure();
     window.addEventListener("resize", measure);
-    // В режиме fill высота кнопки — это высота соседней карточки ряда, а она
-    // устаканивается уже после появления главы.
-    const ro = fill && wrapRef.current ? new ResizeObserver(measure) : null;
+    // Ширина колонки устаканивается уже после монтирования (глава въезжает,
+    // подгружаются шрифты), а в режиме fill так же ведёт себя и высота —
+    // без наблюдателя кнопка навсегда оставалась на ширине первого замера
+    // и была уже соседних окошек (Егор, 2026-10-03).
+    const ro = wrapRef.current ? new ResizeObserver(measure) : null;
     if (ro && wrapRef.current) ro.observe(wrapRef.current);
     return () => {
       window.removeEventListener("resize", measure);
       ro?.disconnect();
     };
-  }, [measure, fill]);
+  }, [measure]);
 
-  const stripH = fill && geom.height ? geom.height : STRIP_HEIGHT;
   // Телефон — отдельная раскладка, а не сжатая настольная. «Треть экрана»
   // (300–420px) на десктопе несёт сцену слева и текст справа; на 375px
   // те же 300px должны были вместить и заголовок, и слайд, и цифры — всё
@@ -187,6 +196,8 @@ export default function ToolSpotlight({
   // выше (почти весь экран за вычетом шапки и язычка), сцена ложится
   // полосой сверху, а текст мельче.
   const phone = geom.vw < 640;
+  const baseH = phone ? STRIP_HEIGHT_PHONE : STRIP_HEIGHT;
+  const stripH = fill && geom.height ? geom.height : baseH;
   const openHeight = phone
     ? Math.max(380, Math.min(460, geom.vh - 150))
     : Math.min(460, Math.max(330, Math.round(geom.vh * 0.38)));
@@ -270,7 +281,7 @@ export default function ToolSpotlight({
         // Открытое окно — на слой выше соседних: пока соседнее ещё
         // схлопывается (0.46с), новое уже растёт поверх, а не сквозь него.
         className={`relative w-full ${open ? "z-[55]" : "z-50"}`}
-        style={{ height: fill ? "100%" : STRIP_HEIGHT, minHeight: fill ? STRIP_HEIGHT : undefined }}
+        style={{ height: fill ? "100%" : baseH, minHeight: fill ? baseH : undefined }}
       >
         <motion.div
           initial={false}
@@ -491,7 +502,7 @@ export default function ToolSpotlight({
                 {!noPreview && (
                 <span
                   className={`relative shrink-0 overflow-hidden rounded-xl ring-1 ring-white/15 ${
-                    side ? "h-16 w-[38%]" : "hidden h-[70px] aspect-[340/210] sm:block"
+                    side ? "h-[84px] w-[136px] sm:h-16 sm:w-[38%]" : "hidden h-[70px] aspect-[340/210] sm:block"
                   }`}
                 >
                   <SpotlightScene slug={data.slug} step={step} mini />

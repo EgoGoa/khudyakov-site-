@@ -58,6 +58,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Цвет полосы браузера сверху — как у сайта: над шапкой не видно ничего
+  // постороннего.
+  themeColor: "#0b0b10",
 };
 
 export const metadata: Metadata = {

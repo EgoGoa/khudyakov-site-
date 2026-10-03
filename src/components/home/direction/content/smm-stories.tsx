@@ -154,7 +154,7 @@ export const smmStoriesContent: CompactToolContent = {
       memberId: "max",
       question: "Сколько историй в неделю выходит сейчас?",
       pitch: "Подскажу, какой ритм закроет разрыв.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -199,7 +199,7 @@ export const smmStoriesContent: CompactToolContent = {
       memberId: "max",
       question: "Нужна отдельная команда под сторис?",
       pitch: "Объясню, почему нет.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -265,7 +265,7 @@ export const smmStoriesContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по ежедневному ритму?",
       pitch: "Отвечу, как это встроить в график.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

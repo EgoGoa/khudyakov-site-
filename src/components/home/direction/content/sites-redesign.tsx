@@ -152,7 +152,7 @@ export const sitesRedesignContent: CompactToolContent = {
       memberId: "max",
       question: "Сайт правда устарел или просто разонравился?",
       pitch: "Подскажу, что смотреть на аудите.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -197,7 +197,7 @@ export const sitesRedesignContent: CompactToolContent = {
       memberId: "max",
       question: "Боитесь потерять позиции в поиске?",
       pitch: "Объясню, как проходит SEO-миграция.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -263,7 +263,7 @@ export const sitesRedesignContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам редизайна?",
       pitch: "Отвечу, сколько займёт аудит и запуск.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

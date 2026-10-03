@@ -24,14 +24,18 @@ export const EASE = [0.22, 1, 0.36, 1] as const;
  *  they always had, just carried on the shorter gap. */
 export const BEAT = {
   eyebrow: 0.1, // chapter number + icon — "where am I"
+  // Ритм «хронология» (Егор, 2026-10-03): заголовок → через секунду
+  // подзаголовок → через полторы секунды после него первый блок, дальше
+  // карточки по одной (STAGGER.normal = 0.5 с), и только в самом конце
+  // окошки услуг, акций и команды. Первые секунды на экране лишь заголовок
+  // над фоновым фрагментом — его успевают разглядеть.
   title: 0.35, // "what is this"
-  intro: 0.65, // "what does it mean" — heading + this line hold alone briefly
-  content: 1.25, // the substance: tiles, cards, lists
+  intro: 1.35, // секунда после заголовка
+  content: 2.85, // первый блок — через 1.5 с после подзаголовка
   // Filters and catalogue links act *on* the substance, so they arrive after
-  // it rather than a hair before it — same 0.3s gap this always had after
-  // `content`, so the two don't read as one simultaneous slab.
-  controls: 1.55,
-  cta: 1.8, // the ask, last — after the reason for it has landed
+  // it rather than a hair before it.
+  controls: 4.6,
+  cta: 5.3, // the ask, last — окошки услуг, акций и команды
 } as const;
 
 /** How long each kind of element takes to settle.
@@ -60,8 +64,8 @@ export const DUR = {
  *  ripple, and narrow enough that the list finishes revealing itself before
  *  BEAT.cta asks the reader to act on it. */
 export const STAGGER = {
-  tight: 0.09, // long lists — process steps, ten service rows, FAQ
-  normal: 0.15, // a handful of cards, tiles or pills
+  tight: 0.3, // long lists — process steps, ten service rows, FAQ
+  normal: 0.5, // окошки: тарифы, карточки, плитки — по одному в полсекунды
 } as const;
 
 /** Тот же ритм появления, но для страниц направлений (/content/presentation

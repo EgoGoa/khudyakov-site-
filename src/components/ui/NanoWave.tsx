@@ -4,9 +4,11 @@ import { frozenFor } from "@/lib/welcome-freeze";
 
 import { useEffect, useRef } from "react";
 
-// Спящий режим (prop `sleepy`): скорость времени и шаг кадра в покое.
-const SLEEP_RATE = 0.5;
-const SLEEP_FRAME_MS = 50;
+// Спящий режим (prop `sleepy`, нижняя волна): в покое волна полностью
+// застывает — плавно тормозит до неподвижного кадра и перестаёт рисоваться
+// вовсе, процессор не тратится (Егор, 2026-10-03). Оживает от курсора
+// рядом, голоса и всплеска ответа.
+const SLEEP_CLOCK_S = 1.3; // первый кадр — красивая спокойная форма
 
 // Знак голосового ассистента (Егор, 2026-09-26): «в стиле нашей сферы, но
 // другая иконка — полоса частот, горизонтальная, вибрирует, а когда
@@ -56,8 +58,8 @@ export default function NanoWave({
   sparkle?: boolean;
   /** Пыль с концов волны. Нижней волне-кнопке — без частиц (Егор, 2026-09-27). */
   particles?: boolean;
-  /** Спящий режим (нижняя волна): в покое вдвое медленнее и 20 кадров/с,
-   *  при наведении, голосе и всплеске — полная скорость. */
+  /** Спящий режим (нижняя волна): в покое застывший кадр без перерисовки,
+   *  при наведении, голосе и всплеске — живая волна. */
   sleepy?: boolean;
 }) {
   const wrapRef = useRef<HTMLSpanElement>(null);
@@ -68,11 +70,14 @@ export default function NanoWave({
   // Цвета — цель, к которой волна плавно перетекает (смена страницы не
   // перезапускает холст и не даёт скачка цвета).
   const colorRef = useRef({ from, to });
+  // Будильник спящей волны: перезапускает цикл кадров.
+  const wakeRef = useRef<() => void>(() => {});
   useEffect(() => {
     hotRef.current = hot;
     pulseRef.current = pulse;
     levelRef.current = level;
     colorRef.current = { from, to };
+    wakeRef.current();
   }, [hot, pulse, level, from, to]);
 
   // Холст шире знака — ореолу и размытию нужно место за краем ленты.
@@ -103,10 +108,14 @@ export default function NanoWave({
     const curFrom = [...hexToRgb(colorRef.current.from)];
     const curTo = [...hexToRgb(colorRef.current.to)];
     let fr = 0, fg = 0, fb = 0, tr = 0, tg = 0, tb = 0;
+    // Цвет ещё перетекает — спящая волна не застывает, пока не дойдёт.
+    let blending = false;
     const blendColors = () => {
       const a = hexToRgb(colorRef.current.from);
       const b = hexToRgb(colorRef.current.to);
+      blending = false;
       for (let i = 0; i < 3; i++) {
+        if (Math.abs(a[i] - curFrom[i]) > 1 || Math.abs(b[i] - curTo[i]) > 1) blending = true;
         curFrom[i] += (a[i] - curFrom[i]) * 0.035;
         curTo[i] += (b[i] - curTo[i]) * 0.035;
       }
@@ -207,7 +216,10 @@ export default function NanoWave({
     };
     const onMove = (e: PointerEvent) => {
       const { u, hit } = locate(e);
-      if (hit && !inside) ripple(u, 0.7); // вход в зону — сразу всплеск
+      if (hit && !inside) {
+        ripple(u, 0.4); // вход в зону — мягкий всплеск
+        wakeRef.current();
+      }
       inside = hit;
       if (!hit) return;
       cu = u;
@@ -215,11 +227,14 @@ export default function NanoWave({
       const moved = Math.hypot(e.clientX - lastX, e.clientY - lastY);
       lastX = e.clientX;
       lastY = e.clientY;
-      if (moved > 6 && nowT - lastRipple > 0.14) ripple(u, Math.min(0.8, 0.2 + moved / 90));
+      if (moved > 8 && nowT - lastRipple > 0.22) ripple(u, Math.min(0.5, 0.12 + moved / 140));
     };
     const onDown = (e: PointerEvent) => {
       const { u, hit } = locate(e);
-      if (hit) ripple(u, 1);
+      if (hit) {
+        ripple(u, 1);
+        wakeRef.current();
+      }
     };
     const onOut = () => {
       inside = false;
@@ -256,8 +271,10 @@ export default function NanoWave({
       const e = energy * breath;
       const speed = hotRef.current ? 1 + (energy - 1) * 0.55 : 0.8;
       // Отклик моментальный: вход — быстро, уход — мягко.
-      hoverS += ((inside ? 1 : 0) - hoverS) * (inside ? 0.12 : 0.04);
-      cuS += (cu - cuS) * 0.14;
+      // Мягкий отклик без рывков (Егор, 2026-10-03): вход и ход за курсором
+      // плавнее.
+      hoverS += ((inside ? 1 : 0) - hoverS) * (inside ? 0.06 : 0.035);
+      cuS += (cu - cuS) * 0.06;
       pull = (cuS - 0.5) * 2 * hoverS;
       const glowK = 0.6 + 0.4 * hoverS;
 
@@ -267,7 +284,10 @@ export default function NanoWave({
 
       // Без ореола вокруг — свет только в самих линиях. Голова света стоит
       // в центре и мягко плавает, а при наведении переезжает под курсор.
-      const head = Math.max(0.12, Math.min(0.88, 0.5 + 0.06 * Math.sin(t * 0.5) + (cuS - 0.5) * hoverS));
+      // Голова не подходит к краям ближе 0.3/0.7: иначе она перескакивала
+      // опорные точки 0.17/0.83 и цвет у краёв менялся рывком (Егор,
+      // 2026-10-03). За курсором идёт вполсилы — мягко.
+      const head = Math.max(0.3, Math.min(0.7, 0.5 + 0.05 * Math.sin(t * 0.5) + (cuS - 0.5) * 0.6 * hoverS));
       const flare = 0.85 + 0.15 * hoverS;
       const lift = (c: number) => Math.min(255, Math.round(c + 90 * glowK));
       const grad = ctx.createLinearGradient(x0, 0, x0 + len, 0);
@@ -299,15 +319,15 @@ export default function NanoWave({
       const boost = boostBuf;
       for (let i = 0; i <= POINTS; i++) {
         const u = i / POINTS;
-        const du = (u - cuS) / 0.12;
-        let b = 1.9 * hoverS * Math.exp(-du * du);
+        const du = (u - cuS) / 0.18;
+        let b = 1.1 * hoverS * Math.exp(-du * du);
         for (const r of ripples) {
           const age = t - r.born;
-          // Круг набирает силу за 0.15 с (без щелчка), расходится медленно и
+          // Круг набирает силу за 0.3 с (без щелчка), расходится медленно и
           // широким мягким фронтом.
           const front = (Math.abs(u - r.u) - age * 0.32) / 0.085;
-          const rise = Math.min(1, age / 0.15);
-          b += 1.6 * r.amp * rise * Math.exp(-age * 1.3) * Math.exp(-front * front);
+          const rise = Math.min(1, age / 0.3);
+          b += 0.9 * r.amp * rise * Math.exp(-age * 1.3) * Math.exp(-front * front);
         }
         boost[i] = 1 + b;
       }
@@ -367,6 +387,7 @@ export default function NanoWave({
     let onScreen = true;
     const io = new IntersectionObserver(([en]) => {
       onScreen = en.isIntersecting;
+      if (onScreen) wakeRef.current();
     });
     io.observe(wrap);
     let raf = 0;
@@ -375,10 +396,10 @@ export default function NanoWave({
     } else {
       const frameMs = light ? 33 : 0;
       let last = 0;
-      // Собственные часы волны: стоят, пока она не рисуется, и в спящем
-      // режиме идут медленнее.
-      let clock = 0;
-      let rate = 1;
+      // Собственные часы волны: стоят, пока она не рисуется. Спящая волна
+      // начинает с готовой спокойной формы и сразу застывает.
+      let clock = sleepy ? SLEEP_CLOCK_S * 1000 : 0;
+      let rate = sleepy ? 0 : 1;
       const frozen = frozenFor(wrap);
       const settle = settleAt(wrap);
       const loop = (now: number) => {
@@ -390,19 +411,29 @@ export default function NanoWave({
           last = 0;
           return;
         }
-        // Спящий режим: без наведения, голоса и всплеска волна течёт
-        // медленно и рисуется реже; курсор рядом будит её сразу.
-        const awake = !sleepy || hotRef.current || inside || hoverS > 0.02 || energy > 1.25;
-        rate += ((awake ? 1 : SLEEP_RATE) - rate) * 0.15;
-        if (now - last < (awake ? frameMs : Math.max(frameMs, SLEEP_FRAME_MS))) return;
+        // Спящий режим: без наведения, голоса и всплеска волна плавно
+        // тормозит и застывает; тогда цикл кадров выключается совсем.
+        const awake = !sleepy || hotRef.current || inside || hoverS > 0.02 || energy > 1.2 || ripples.length > 0;
+        rate += ((awake ? 1 : 0) - rate) * (awake ? 0.15 : 0.06);
+        if (now - last < frameMs) return;
         if (last) clock += Math.min(now - last, 100) * rate;
         last = now;
         draw(clock / 1000);
+        if (sleepy && !awake && rate < 0.01 && !blending) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+          last = 0;
+          rate = 0;
+        }
+      };
+      wakeRef.current = () => {
+        if (!raf) raf = requestAnimationFrame(loop);
       };
       raf = requestAnimationFrame(loop);
     }
     return () => {
       cancelAnimationFrame(raf);
+      wakeRef.current = () => {};
       io.disconnect();
       window.removeEventListener("scroll", dropRect, { capture: true });
       window.removeEventListener("resize", dropRect);

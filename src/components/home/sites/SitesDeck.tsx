@@ -395,8 +395,8 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                 style={{ opacity: halo }}
               >
                 <span
-                  className="deck-halo absolute inset-0 rounded-[28px]"
-                  style={{ "--card-glow-rgb": service.hit ? "255, 106, 61" : "0, 210, 255" } as CSSProperties}
+                  className="deck-halo absolute inset-0"
+                  style={{ "--card-glow-rgb": service.hit ? "255, 106, 61" : "0, 210, 255", "--halo-r": "20px" } as CSSProperties}
                 />
               </span>
               {/* "Хит месяца" — same badge language as AiDeck's own flagship

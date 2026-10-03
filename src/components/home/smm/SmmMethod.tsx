@@ -10,6 +10,7 @@ import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { TANYA_SMM } from "@/components/home/team-pulse/content/tanya-smm";
 import PromoCard from "@/components/home/PromoCard";
+import { promo } from "@/lib/promos";
 
 // Chapter 02 of /smm — "продюсерский центр, не подрядчик".
 //
@@ -146,14 +147,7 @@ export default function SmmMethod() {
                 cheapest-tariff placeholder pending Egor's real number. */}
             <div className="mt-8">
               <PromoCard
-                image="/images/blocks/stock-clapper.jpg"
-                badge="Акция сентября"
-                title="Съёмка и монтаж контента"
-                subtitle="Reels, сторис, карусели снимаем и монтируем сами."
-                price="36 000 ₽/мес"
-                oldPrice="45 000 ₽/мес"
-                href="/brief/smm"
-                leadPrefill={{ format: "Съёмка и монтаж контента", wishes: "Акция сентября — от 45 000 до 36 000 ₽/мес" }}
+                {...promo("smm-shooting")}
               />
             </div>
           </>

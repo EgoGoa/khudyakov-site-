@@ -140,7 +140,7 @@ export const aiCrmContent: CompactToolContent = {
       memberId: "max",
       question: "Сколько заявок в месяц проходит через CRM?",
       pitch: "Подскажу, где скоринг даст быстрый эффект.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -194,7 +194,7 @@ export const aiCrmContent: CompactToolContent = {
       memberId: "max",
       question: "Как разметка встраивается в нашу CRM?",
       pitch: "Объясню механику простыми словами.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -294,7 +294,7 @@ export const aiCrmContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам внедрения скоринга?",
       pitch: "Отвечу, сколько займёт пилот.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

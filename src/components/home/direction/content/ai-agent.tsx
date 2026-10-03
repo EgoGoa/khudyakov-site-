@@ -165,7 +165,7 @@ export const aiAgentContent: DirectionContent = {
       memberId: "max",
       question: "Какие заявки чаще всего теряются?",
       pitch: "Расскажу, как агент их подхватит.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -220,7 +220,7 @@ export const aiAgentContent: DirectionContent = {
       memberId: "max",
       question: "Как агент передаёт заявку менеджеру?",
       pitch: "Объясню механику простыми словами.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -373,7 +373,7 @@ export const aiAgentContent: DirectionContent = {
       memberId: "max",
       question: "Сколько займёт внедрение?",
       pitch: "Отвечу по срокам и что нужно от вас.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

@@ -413,8 +413,8 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                 style={{ opacity: halo }}
               >
                 <span
-                  className="deck-halo absolute inset-0 rounded-[28px]"
-                  style={{ "--card-glow-rgb": "168, 85, 247" } as CSSProperties}
+                  className="deck-halo absolute inset-0"
+                  style={{ "--card-glow-rgb": "168, 85, 247", "--halo-r": "20px" } as CSSProperties}
                 />
               </span>
               {/* Once a format is front AND has its own page, the whole

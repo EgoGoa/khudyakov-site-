@@ -151,7 +151,7 @@ export const graphicsContent: DirectionContent = {
       memberId: "max",
       question: "Где именно нужна графика?",
       pitch: "Расскажу, какой формат подойдёт под вашу задачу.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -190,7 +190,7 @@ export const graphicsContent: DirectionContent = {
       memberId: "max",
       question: "Какая работа ближе к вашей задаче?",
       pitch: "Подберу похожий пример из портфолио.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -356,7 +356,7 @@ export const graphicsContent: DirectionContent = {
       memberId: "max",
       question: "Есть вопрос по срокам рендера?",
       pitch: "Отвечу, сколько займёт каждый этап.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

@@ -23,6 +23,10 @@
 
 html {
   scroll-behavior: smooth;
+  /* Без «резинки» у верха страницы: на айфоне она оттягивала всю страницу
+     вместе с шапкой вниз, и над шапкой открывалась пустота (Егор,
+     2026-10-03). */
+  overscroll-behavior-y: none;
 }
 
 /* Site-wide fix for ugly heading line-breaks (Egor's ask, found across
@@ -220,7 +224,6 @@ body {
     transparent 72%
   );
   filter: blur(32px);
-  will-change: opacity;
 }
 
 .hero-title-wrap:hover .hero-title-glow {
@@ -260,7 +263,9 @@ body {
   background-image: linear-gradient(180deg, #ffffff 0%, #cfe9ff 40%, #6fd4f5 75%, #00d2ff 100%);
   filter: saturate(1) brightness(1);
   transition: filter 0.7s ease;
-  animation: hero-heading-pulse 5s ease-in-out infinite;
+  /* Было дыхание text-shadow раз в 5 с — перерисовка крупного текста каждый
+     кадр. Теперь статичное мягкое свечение (Егор, 2026-10-03: меньше нагрузки). */
+  text-shadow: 0 0 14px rgba(0, 210, 255, 0.26), 0 0 36px rgba(0, 210, 255, 0.14);
 }
 
 .hero-title-wrap:hover .hero-gradient-text {
@@ -275,7 +280,9 @@ body {
   background-image: linear-gradient(180deg, #ffffff 0%, #cfe9ff 40%, #6fd4f5 75%, #00d2ff 100%);
   filter: saturate(1) brightness(1);
   transition: filter 0.7s ease;
-  animation: hero-heading-pulse 5s ease-in-out infinite;
+  /* Было дыхание text-shadow раз в 5 с — перерисовка крупного текста каждый
+     кадр. Теперь статичное мягкое свечение (Егор, 2026-10-03: меньше нагрузки). */
+  text-shadow: 0 0 14px rgba(0, 210, 255, 0.26), 0 0 36px rgba(0, 210, 255, 0.14);
   /* Same loop as .hero-gradient-text but offset half a cycle — "DIGITAL"
      and "который быстрее рынка" breathe out of phase with each other so the
      whole headline reads as one continuous shimmer passing through it
@@ -1787,7 +1794,7 @@ body {
   }
 }
 
-/* "Акция только в сентябре" — the same magenta→orange gradient as the
+/* «Акция месяца» — the same magenta→orange gradient as the
    headline, shifting slowly across the pill instead of sitting flat, so
    the badge reads as lit rather than just a label. */
 .promo-card-badge {
@@ -2291,7 +2298,14 @@ body {
   50% { opacity: var(--flicker-max, 0.5); }
 }
 
+/* Свет карточки /ai — тоже теневое свечение по форме карточки (см. .deck-halo):
+   цвета приходят как --g1/--g2 (R,G,B), блок по размеру карточки. */
 .ai-deck-glow {
+  inset: 0.75rem !important;
+  border-radius: 26px !important;
+  box-shadow:
+    0 0 26px 5px rgba(var(--g1), 0.6),
+    0 0 64px 14px rgba(var(--g2), 0.32);
   animation: ai-deck-flicker var(--flicker-duration, 3.8s) cubic-bezier(0.45, 0, 0.55, 1) infinite;
   animation-delay: var(--flicker-delay, 0s);
 }
@@ -4505,7 +4519,10 @@ html[data-mid] .guar-term-slide:first-of-type {
   }
 
   [data-chapter-pane] h2[class*="chapter-neon"] {
-    font-size: clamp(1.71rem, 3.24vw, 2.93rem);
+    /* Заголовки глав в полтора раза крупнее (Егор, 2026-10-03: «сильно
+       маленькие стали»); на телефоне чуть скромнее, иначе длинные слова
+       («ПЕРСОНАЛЬНЫЕ») не влезают в ширину. */
+    font-size: clamp(2.15rem, 4.4vw, 3.9rem);
   }
 }
 
@@ -4518,7 +4535,7 @@ html[data-mid] .guar-term-slide:first-of-type {
   }
 
   [data-chapter-pane] h2[class*="chapter-neon"] {
-    font-size: clamp(1.58rem, 2.88vw, 2.48rem);
+    font-size: clamp(2rem, 3.9vw, 3.3rem);
   }
 }
 
@@ -5009,23 +5026,20 @@ html[data-lite] .deck-pose-blur {
 }
 
 .deck-halo {
-  /* `ellipse farthest-side`, not `circle`. A circle sized to the farthest
-     CORNER of a tall, narrow box is still bright when it reaches the left
-     and right sides, so the element's own rectangle cut the light and the
-     glow read as a box with edges — Egor: «свечение должно быть без
-     границ». An ellipse measured to the nearest sides reaches zero on every
-     edge at once, so nothing is ever clipped. */
-  background: radial-gradient(
-    ellipse farthest-side at center,
-    /* The card covers the middle of this, so only the rim ever shows: the
-       stops that decide how bright the glow READS are the outer ones. */
-    rgba(var(--card-glow-rgb), 1) 0%,
-    rgba(var(--card-glow-rgb), 0.85) 42%,
-    rgba(var(--card-glow-rgb), 0.45) 64%,
-    rgba(var(--card-glow-rgb), 0.12) 84%,
-    rgba(var(--card-glow-rgb), 0) 100%
-  );
-  filter: blur(22px);
+  /* Свет — теневое свечение по форме самой карточки, а не размытый
+     градиент в прямоугольнике (Егор, 2026-10-03: «углы на свечении, обрыв
+     по краям, на мобильном и в браузере»). Раньше светился отдельный
+     блок с filter: blur; на телефоне размытие снимали, и свет упирался в
+     края блока видимыми углами, а при смене карточки Safari и Chrome
+     обрезали размытие по границам слоя. box-shadow сам плавно гаснет вокруг
+     карточки и не зависит ни от blur, ни от границ блока. Блок точно по
+     размеру карточки (inset 1rem гасит внешний -inset-4), анимируется
+     только opacity. */
+  inset: 1rem !important;
+  border-radius: var(--halo-r, 22px) !important;
+  box-shadow:
+    0 0 22px 3px rgba(var(--card-glow-rgb), 0.55),
+    0 0 64px 10px rgba(var(--card-glow-rgb), 0.28);
   opacity: 0.92;
   animation: deck-halo-breathe 5.2s ease-in-out infinite;
 }
@@ -5171,12 +5185,6 @@ html:not([data-lite])[data-mid] .sp-pulse {
      phone; the radial gradients are already soft, so the blur goes and only
      the flicker stays. The big info panels keep a still glow instead of a
      repainting pulse; the front card still breathes. */
-  .ai-deck-glow {
-    filter: none !important;
-  }
-  .deck-halo {
-    filter: blur(16px);
-  }
 }
 
 /* Phones: the service-picker footage melts into the page colour (#0b0b10,
@@ -9243,6 +9251,28 @@ html[data-mid] .vibe-mode .vibe-mode__caret:not(.is-done) {
   animation-iteration-count: infinite !important;
 }
 
+/* Истории этапов («Как мы работаем» и похожие): общие правила mid/low
+   проигрывали цикл один раз, и последний кадр ai-seq прозрачный — через
+   5.6 с карточки оставались пустыми, видны были только чёрточки. Здесь
+   цикл возвращён (Егор, 2026-10-03: «на телефоне анимации этапов не
+   работают»): только opacity/transform у горстки значков, а за экраном
+   их ставит на паузу OffscreenAnimationPause. */
+html[data-lite] .step-story-chip,
+html[data-mid] .step-story-chip,
+html[data-lite] .step-story-line,
+html[data-mid] .step-story-line,
+html[data-lite] .step-story-check,
+html[data-mid] .step-story-check,
+html[data-lite] .ai-thumb-live .ai-a-seq,
+html[data-mid] .ai-thumb-live .ai-a-seq,
+html[data-lite] .ai-thumb-live .ai-a-progress,
+html[data-mid] .ai-thumb-live .ai-a-progress,
+html[data-lite] .ai-thumb-live .ai-a-blink,
+html[data-mid] .ai-thumb-live .ai-a-blink,
+html[data-mid] .process-step-card {
+  animation-iteration-count: infinite !important;
+}
+
 /* Строка над волной в вайб-окне: как ответить голосом и что услышано
    (Егор, 2026-09-29). Одна строка, не толкает вёрстку. */
 .vibe-mode__voice-hint {
@@ -9256,6 +9286,298 @@ html[data-mid] .vibe-mode .vibe-mode__caret:not(.is-done) {
   font-weight: 700;
   color: #fff;
 }
+
+/* ── Акции в шапке главной (HeroPromoStack.tsx, Егор 2026-10-03) ─────────
+   Лента-карусель по центру внизу шапки: крупная карточка в центре, соседи
+   меньше и чуть развёрнуты (референс Егора — плеер с обложками). Положение
+   карточки целиком задаёт --o (смещение от центра), анимируются только
+   transform и opacity. */
+.hero-promo {
+  --hp-w: 230px;
+  --hp-h: 130px;
+  --hp-k: 1;
+  width: 100%;
+  max-width: 367px;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.hero-promo.is-ready { opacity: 1; }
+@media (max-width: 767px) {
+  .hero-promo { --hp-w: 230px; --hp-h: 130px; --hp-k: 0.95; }
+}
+.hero-promo-stage {
+  position: relative;
+  height: calc(var(--hp-h) + 30px);
+  perspective: 1100px;
+  /* Края не обрезаются резко: боковые карточки плавно гаснут к границам
+     блока (Егор, 2026-10-03: «резкий обрыв по краям»). */
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+}
+.hero-promo-slot {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: var(--hp-w);
+  height: var(--hp-h);
+  margin-left: calc(var(--hp-w) / -2);
+  transform: translateX(calc(var(--x) * var(--hp-k) * 1px)) rotateY(var(--r)) scale(var(--sc));
+  opacity: var(--op);
+  filter: blur(var(--bl, 0px));
+  z-index: var(--z);
+  transition:
+    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Дальние — невидимы: ждут своей очереди заехать. */
+.hero-promo-slot[data-offset="3"],
+.hero-promo-slot[data-offset="4"],
+.hero-promo-slot[data-offset="-3"],
+.hero-promo-slot[data-offset="-4"] {
+  pointer-events: none;
+  /* Невидимые карточки вообще не рисуются и не держат слой. */
+  visibility: hidden;
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 1.1s;
+}
+.hero-promo-card {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  border-radius: 1rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.85rem;
+}
+.hero-promo-badge {
+  position: absolute;
+  top: -7px;
+  left: 10px;
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.16rem 0.55rem;
+  border-radius: 9999px;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 6.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+}
+/* Мигает и бежит только у центральной — остальным анимации не нужны. */
+/* Плашка «Акция месяца» в шапке статична: мигание box-shadow — перерисовка
+   каждый кадр. */
+.hero-promo-badge { animation: none !important; }
+/* Размытие боковых — только на мощных устройствах и без анимации самого
+   размытия: оно меняется вместе с позицией, но не плавно (фильтр дорогой). */
+html[data-mid] .hero-promo-slot,
+html[data-lite] .hero-promo-slot { filter: none; }
+/* Значок раздела — в цвете своей страницы. */
+.hero-promo-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--hp-from), var(--hp-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-promo-section-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--hp-from), var(--hp-to));
+}
+.hero-promo-cta {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+}
+.hero-promo-slot[data-offset="0"]:hover .hero-promo-cta { text-decoration: underline; text-underline-offset: 3px; }
+.hero-promo-title {
+  margin-top: 0.3rem;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.hero-promo-disc {
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.hero-promo-price {
+  display: block;
+  white-space: nowrap;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+}
+.hero-promo-old {
+  display: block;
+  margin-top: 4px;
+  white-space: nowrap;
+  font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-decoration: line-through;
+  text-decoration-color: rgba(255, 255, 255, 0.7);
+}
+.hero-promo-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  margin: 0.45rem 0 0;
+  width: 100%;
+}
+.hero-promo-track {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+.hero-promo-timer {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #ff4fd8, #ff6a3d);
+  animation: hero-promo-timer 5s linear both;
+}
+@keyframes hero-promo-timer {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+/* Наведение, фокус, шапка вне экрана — таймер стоит. */
+.hero-promo:hover .hero-promo-timer,
+.hero-promo:focus-within .hero-promo-timer,
+.hero-promo.is-paused .hero-promo-timer { animation-play-state: paused; }
+.hero-promo-dots { display: flex; align-items: center; gap: 5px; }
+.hero-promo-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.4);
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+.hero-promo-dot.is-on { width: 16px; background: #fff; }
+/* Слабые устройства и «уменьшить движение»: смена мгновенная, таймер идёт. */
+html[data-lite] .hero-promo-slot,
+html[data-lite] .hero-promo,
+html[data-mid] .hero-promo-slot,
+html[data-mid] .hero-promo { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-promo-slot,
+  .hero-promo { transition: none; }
+}
+
+/* Без цветной обводки (Егор, 2026-10-03): только карточка и мягкая тень. */
+.hero-promo-noborder { box-shadow: 0 14px 34px -16px rgba(0, 0, 0, 0.8); }
+.hero-promo-badge-dot {
+  width: 4px;
+  height: 4px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: #fff;
+}
+/* Плашка аккуратнее: мягче свечение, без резкого ореола. */
+.hero-promo-badge { box-shadow: 0 2px 8px -2px rgba(255, 79, 216, 0.5); }
+
+/* Окна-обучения и вайб-анкета на телефоне (Егор, 2026-10-03): сквозь стекло
+   читались цены и заголовки сайта. Заливка плотнее, размытие сильнее —
+   сайт за окном виден лишь цветными пятнами. Только до 767px: на
+   компьютере прозрачность остаётся прежней. */
+@media (max-width: 767px) {
+  .voice-tour,
+  .vibe-mode__window,
+  .win-shell > .glass-panel {
+    background: rgba(12, 12, 20, 0.92);
+    -webkit-backdrop-filter: blur(28px) saturate(1.3);
+    backdrop-filter: blur(28px) saturate(1.3);
+  }
+}
+
+/* Шапка на телефоне (Егор, 2026-10-03): в Safari на айфоне страница
+   продолжается под полосой браузера, и над шапкой читался текст сайта.
+   Плотная плашка над шапкой закрывает эту область; за краем экрана её не
+   видно, а цвет совпадает с полосой браузера (theme-color). */
+.header-top-mask { display: none; }
+@media (max-width: 767px) and (orientation: portrait) {
+  .header-top-mask {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 400px;
+    background: var(--ink);
+    pointer-events: none;
+  }
+}
+
+/* «Заказать» внизу окна команды (Егор, 2026-10-03, вариант А): одна
+   яркая кнопка на всю ширину, плоская градиентная пилюля; три способа
+   связи встают на её место по клику. */
+.team-pulse-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 2rem;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(90deg, rgb(var(--tp-from-rgb)), rgb(var(--tp-to-rgb)));
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.team-pulse-order:hover { filter: brightness(1.1); }
+.team-pulse-order:active { transform: scale(0.97); }
+@media (min-width: 1024px) { .team-pulse-order { width: auto; } }
+
+/* Язычок «Начать чат» над окном команды — вдвое меньше и без «обратных
+   уголков» (Егор, 2026-10-03): уголки на стыке с рамкой окна рисовались
+   ступенькой. Теперь это простая плоская вкладка с той же матовой заливкой,
+   что у окна, она на 1px заходит на рамку и срастается с ней. */
+.spotlight-tab--mini {
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem 0.36rem;
+  border-radius: 12px 12px 0 0;
+  margin-bottom: -1px;
+  background: rgba(12, 12, 20, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.spotlight-tab--mini::before,
+.spotlight-tab--mini::after { display: none; }
+.spotlight-tab--mini:hover,
+.spotlight-tab--mini:focus-visible { transform: none; filter: brightness(1.15); }
 
 /* Телефон, стартовое меню (Егор, 2026-10-03): карточки обоих шагов на 90%
    ширины колоды, зазоры подобраны по скрину — на первом шаге 24px, на
@@ -9275,4 +9597,20 @@ html[data-mid] .vibe-mode .vibe-mode__caret:not(.is-done) {
   .welcome-deck--root .welcome-card {
     min-height: 128px;
   }
+}
+
+/* Окошки акций, плашки команды и «Заказать» приходят после основных блоков
+   главы (Егор, 2026-10-03): сначала заголовок с подзаголовком над фоном, потом
+   блоки по очереди и только потом окошки. Метку data-late ставит
+   CinematicSection лишь на первом заходе в главу, поэтому при возврате
+   окошки стоят сразу и анимация не повторяется. */
+[data-chapter-pane][data-late] .late-window {
+  animation: late-window-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 5.3s both;
+}
+@keyframes late-window-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-chapter-pane][data-late] .late-window { animation: none; }
 }

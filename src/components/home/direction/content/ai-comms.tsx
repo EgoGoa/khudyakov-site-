@@ -142,7 +142,7 @@ export const aiCommsContent: CompactToolContent = {
       memberId: "max",
       question: "Сколько спама реально доходит до менеджера?",
       pitch: "Подскажу, что фильтр отсеет в первую очередь.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -197,7 +197,7 @@ export const aiCommsContent: CompactToolContent = {
       memberId: "max",
       question: "Как фильтр отличает спам от обычной заявки?",
       pitch: "Объясню механику простыми словами.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -297,7 +297,7 @@ export const aiCommsContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам запуска фильтра?",
       pitch: "Отвечу, сколько займёт настройка.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

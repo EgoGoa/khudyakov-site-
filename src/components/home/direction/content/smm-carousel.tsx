@@ -151,7 +151,7 @@ export const smmCarouselContent: CompactToolContent = {
       memberId: "max",
       question: "Аудитория сохраняет ваши посты?",
       pitch: "Подскажу, как это проверить.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -196,7 +196,7 @@ export const smmCarouselContent: CompactToolContent = {
       memberId: "max",
       question: "Нужна отдельная съёмка под карусель?",
       pitch: "Объясню, когда она нужна, а когда нет.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -262,7 +262,7 @@ export const smmCarouselContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам первой карусели?",
       pitch: "Отвечу, сколько займёт сборка.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

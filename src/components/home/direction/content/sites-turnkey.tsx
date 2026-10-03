@@ -151,7 +151,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
       memberId: "max",
       question: "С какой CRM нужна интеграция?",
       pitch: "Подскажу, что войдёт в пакет.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -196,7 +196,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
       memberId: "max",
       question: "Нужен ли AI-ассистент сразу или можно позже?",
       pitch: "Объясню, как это влияет на смету.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -261,7 +261,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам сайта под ключ?",
       pitch: "Отвечу, что войдёт в 14 дней.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

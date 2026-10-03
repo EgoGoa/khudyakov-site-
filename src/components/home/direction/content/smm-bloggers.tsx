@@ -152,7 +152,7 @@ export const smmBloggersContent: CompactToolContent = {
       memberId: "max",
       question: "Работали раньше с блогерами?",
       pitch: "Подскажу, с чего начать подбор.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -197,7 +197,7 @@ export const smmBloggersContent: CompactToolContent = {
       memberId: "max",
       question: "Как выбираете, с кем сотрудничать?",
       pitch: "Объясню, на что смотрим при подборе.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -262,7 +262,7 @@ export const smmBloggersContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам подбора?",
       pitch: "Отвечу, сколько займёт первая интеграция.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

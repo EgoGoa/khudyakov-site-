@@ -158,7 +158,7 @@ export const aiVideoContent: DirectionContent = {
       memberId: "max",
       question: "Для какой задачи нужен AI-аватар или генерация?",
       pitch: "Расскажу, что уже работает, а что рано пробовать.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -190,7 +190,7 @@ export const aiVideoContent: DirectionContent = {
       memberId: "max",
       question: "Какой пример AI-видео ближе к вашей задаче?",
       pitch: "Покажу похожий кейс и как он был снят.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -349,7 +349,7 @@ export const aiVideoContent: DirectionContent = {
       memberId: "max",
       question: "Есть вопрос по срокам генерации?",
       pitch: "Отвечу, сколько занимает каждый этап.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

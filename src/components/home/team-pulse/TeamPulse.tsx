@@ -249,7 +249,7 @@ export default function TeamPulse({
       ref={ref}
       // Раскрытое окошко — поверх соседних ячеек.
       data-raise={compact && showCard ? "" : undefined}
-      className={`relative ${fill ? "h-full min-h-[9.5rem]" : compact ? "h-[4.9rem]" : "h-[9.5rem] sm:h-[8.75rem]"} ${className}`}
+      className={`late-window relative ${fill ? "h-full min-h-[9.5rem]" : compact ? "h-[4.9rem]" : "h-[9.5rem] sm:h-[8.75rem]"} ${className}`}
       style={accentVars(data.accent)}
       onMouseEnter={() => {
         hovering.current = true;

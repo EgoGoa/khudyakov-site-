@@ -8,6 +8,7 @@ import CinematicSection from "@/components/ui/CinematicSection";
 import TeamAskCard from "@/components/home/TeamAskCard";
 import Appear from "@/components/ui/Appear";
 import PromoCard from "@/components/home/PromoCard";
+import { promo } from "@/lib/promos";
 import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
 import { briefHrefFor } from "@/lib/brief";
@@ -306,24 +307,7 @@ export default function Process({
           <Appear from="up" delay={BEAT.cta} className="h-full">
             <PromoCard
               palette="cyan"
-              short="Ролик по вашему сценарию, вертикаль и горизонталь, 2 круга правок"
-              image="/images/service-video.jpg"
-              badge="Акция только в сентябре"
-              title="Имиджевое видео"
-              subtitle="Что входит в акцию сентября:"
-              details={[
-                "— имиджевое видео по вашему сценарию;",
-                "— адаптация под вертикаль и горизонталь;",
-                "— 2 круга правок без доплаты;",
-                "— обложки и нарезки под Reels, сразу готовые к публикации.",
-              ]}
-              price="42 000 ₽"
-              oldPrice="60 000 ₽"
-              href="/content/image"
-              leadPrefill={{
-                format: "Имиджевое видео",
-                wishes: "Акция сентября — 30-секундный имиджевый ролик за 42 000 ₽",
-              }}
+              {...promo("image-video")}
               decor={
                 <span className="process-promo-deco pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden="true">
                   <span className="process-promo-deco-icon process-promo-deco-1">✋</span>
@@ -371,14 +355,7 @@ export default function Process({
           </Appear>
           <Appear from="up" delay={BEAT.cta} className="h-full">
             <PromoCard
-              image="/images/stock/hologram-laptop.webp"
-              badge="Акция сентября"
-              title="AI-генерация видео и фото"
-              subtitle="Контент под бренд без съёмочной группы: продуктовые ролики, аватары, визуалы для соцсетей."
-              price="60 000 ₽"
-              oldPrice="75 000 ₽"
-              href={briefHrefFor(active)}
-              leadPrefill={{ format: "AI-генерация видео и фото", wishes: "Акция сентября — пилот за 60 000 ₽ вместо 75 000 ₽" }}
+              {...promo("ai-generation")}
             />
           </Appear>
         </div>

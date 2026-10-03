@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import Link from "next/link";
 import LeadModal from "@/components/home/LeadModal";
 import { fitValue, useRefit } from "@/lib/use-fit-text";
+import { discountOf } from "@/lib/promos";
 
 // The one loud, sale-poster-styled card on the page — every other surface
 // on /content is quiet glass-on-film, so this is meant to read as a
@@ -122,8 +123,7 @@ export default function PromoCard({
   }, []);
 
   if (poster) {
-    const toNum = (v: string) => Number(v.replace(/\D/g, ""));
-    const off = toNum(oldPrice) ? Math.round((1 - toNum(price) / toNum(oldPrice)) * 100) : 0;
+    const off = discountOf(price, oldPrice);
     const discount = off > 0 ? <span className="kw font-display font-bold leading-none tracking-tight">−{off}%</span> : null;
     const prices = (
       <span className="flex flex-col">
@@ -141,7 +141,7 @@ export default function PromoCard({
     );
     return (
       <>
-        <div className="relative h-full w-full">
+        <div className="late-window relative h-full w-full">
           <span className="promo-card-badge-lift absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white" aria-hidden="true">
             <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
             {badge}
@@ -192,7 +192,7 @@ export default function PromoCard({
           plain (non-clipping) positioning context for it; the actual
           "poster" surface below keeps its own overflow-hidden so the photo/
           video and border-flow animation still clip to the rounded corners. */}
-      <div className="relative h-full w-full">
+      <div className="late-window relative h-full w-full">
         <span
           className="promo-card-badge-lift absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
           aria-hidden="true"

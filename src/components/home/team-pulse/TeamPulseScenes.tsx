@@ -534,7 +534,7 @@ const SITE_MSGS = [
   { me: true, t: "Когда будет готово?" },
   { me: false, t: "В пятницу, как договорились ✓" },
   { me: true, t: "А можно ещё блок с отзывами?" },
-  { me: false, t: "Да, передал Саше — покажу завтра" },
+  { me: false, t: "Да, передал Алисе — покажу завтра" },
 ];
 
 function Contact({ msgs = SITE_MSGS }: { msgs?: { me: boolean; t: string }[] } = {}) {
@@ -864,7 +864,7 @@ const SHOOT_MSGS = [
   { me: true, t: "Когда будет ролик?" },
   { me: false, t: "Монтаж в четверг, в пятницу у тебя ✓" },
   { me: true, t: "А можно версию для рилсов?" },
-  { me: false, t: "Да, передал Вадиму — нарежет 9:16" },
+  { me: false, t: "Да, передал Артёму — нарежет 9:16" },
 ];
 const SHOOT_CREW = [
   { m: TEAM.max, role: "Идея · сценарий" },
@@ -1274,7 +1274,7 @@ const SMM_MSGS = [
   { me: true, t: "Что выходит на этой неделе?" },
   { me: false, t: "3 рилса и 2 карусели, план уже у тебя ✓" },
   { me: true, t: "А можно ролик про новинку?" },
-  { me: false, t: "Да, передал Тане — снимем в четверг" },
+  { me: false, t: "Да, передал Вере — снимем в четверг" },
 ];
 const SMM_CREW = [
   { m: TEAM.tanya, role: "Ведение · таргет" },
@@ -1669,7 +1669,7 @@ function ChatRef({ chosen }: { chosen?: number }) {
             {chosen === 1 ? (
               <motion.div className="flex flex-col items-center gap-3" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING}>
                 <span className="team-pulse-acc font-display text-[46px] font-bold leading-none">✦</span>
-                <span className="font-display text-[15px] font-bold uppercase text-white">Саша подберёт стиль сама</span>
+                <span className="font-display text-[15px] font-bold uppercase text-white">Алиса подберёт стиль сама</span>
               </motion.div>
             ) : (
               <>

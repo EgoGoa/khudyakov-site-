@@ -58,7 +58,7 @@ export const EGOR_CONTENT: TeamPulseData = {
       ),
       chip: "команда",
       chipWord: "*3 человека*",
-      chipText: "Макс — идея и сценарий, Вадим — монтаж и AI, Саша — графика.",
+      chipText: "Кирилл — идея и сценарий, Артём — монтаж и AI, Алиса — графика.",
       scene: "contentCrew",
     },
   ],

@@ -917,14 +917,22 @@ function VoiceDock({
   // закрывала низ экрана. Рисуем меньший холст, а не сжимаем CSS-ом, —
   // так линии остаются чёткими.
   const phone = usePhone();
+  // Наведение на волну — над ней по очереди всплывают варианты вопросов.
+  const [hover, setHover] = useState(false);
   if (phone) {
     width = Math.round(width / 2);
     height = Math.round(height / 2);
   }
   return (
-    <div className="voice-dock" data-voice-ui style={{ "--g-from": from, "--g-to": to } as CSSProperties}>
+    <div
+      className="voice-dock"
+      data-voice-ui
+      style={{ "--g-from": from, "--g-to": to } as CSSProperties}
+      onPointerEnter={(e) => e.pointerType === "mouse" && setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
       {!waveOnly && <VoiceInvite />}
-      {!waveOnly && <VoiceCaption />}
+      {!waveOnly && <VoiceCaption hover={hover} />}
       <VoiceWaveButton width={width} height={height} from={from} to={to} inStage={waveOnly} />
     </div>
   );
@@ -972,12 +980,12 @@ function VoiceInvite() {
   );
 }
 
-// Подсказки над волной — иногда всплывают и тают, показывая, что умеет
-// ассистент (Егор: «стильные подсказки над волной: я могу то-то»).
+// Подсказки над волной — что можно спросить у ассистента. Только при
+// наведении на волну; в покое над ней пусто (Егор, 2026-10-03).
 const DOCK_HINTS = [
   "Скажи «следующий блок» — пролистаю",
   "«Страница лендингов» — открою",
-  "«Напиши Саше» — открою чат",
+  "«Напиши Алисе» — открою чат",
   "«Нажми подробнее» — нажму за тебя",
   "«Покажи цены на SMM»",
   "«Отмени» — верну, как было",
@@ -985,7 +993,7 @@ const DOCK_HINTS = [
   "Спроси: сколько стоит ролик?",
 ];
 
-function VoiceCaption() {
+function VoiceCaption({ hover }: { hover: boolean }) {
   const s = useVoiceState();
   const [shown, setShown] = useState(false);
   const [hint, setHint] = useState<string | null>(null);
@@ -1004,21 +1012,21 @@ function VoiceCaption() {
     return () => window.clearTimeout(t);
   }, [text, s.status]);
 
-  // В тишине раз в 16 с — одна подсказка на 3.5 с. Пока висит приглашение
-  // «Включить», подсказки молчат, чтобы не было двух плашек.
-  const quiet = !s.panelOpen && !s.invite && !shown;
+  // Пока курсор на волне — подсказки сменяют друг друга каждые 2.6 с,
+  // с новой при каждом наведении. Пока висит приглашение «Включить»,
+  // подсказки молчат, чтобы не было двух плашек.
+  const quiet = hover && !s.panelOpen && !s.invite && !shown;
+  const hintAt = useRef(0);
   useEffect(() => {
-    if (!quiet) return;
-    let i = 0;
-    let hide = 0;
-    const tick = window.setInterval(() => {
-      setHint(DOCK_HINTS[i++ % DOCK_HINTS.length]);
-      hide = window.setTimeout(() => setHint(null), 3500);
-    }, 16000);
-    return () => {
-      window.clearInterval(tick);
-      window.clearTimeout(hide);
-    };
+    if (!quiet) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- подсказка гаснет вместе с наведением
+      setHint(null);
+      return;
+    }
+    const next = () => setHint(DOCK_HINTS[hintAt.current++ % DOCK_HINTS.length]);
+    next();
+    const tick = window.setInterval(next, 2600);
+    return () => window.clearInterval(tick);
   }, [quiet]);
 
   const visible = s.enabled && !s.panelOpen && shown && Boolean(text);

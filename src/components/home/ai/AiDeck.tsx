@@ -460,19 +460,17 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   тянут рукой. */}
               <span
                 aria-hidden="true"
-                className={`pointer-events-none absolute -inset-3 -z-10 rounded-[30px] ${
+                className={`pointer-events-none absolute -inset-3 -z-10 ${
                   live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: 1 - halo }}
               >
                 <span
-                  className="ai-deck-glow absolute inset-0 rounded-[30px]"
+                  className="ai-deck-glow absolute inset-0"
                   style={
                     {
-                      filter: "blur(24px)",
-                      background: card.hit
-                        ? `radial-gradient(ellipse farthest-side at center, rgba(255,106,61,${dist <= 1 ? 0.45 : 0.24}) 0%, rgba(255,106,61,${dist <= 1 ? 0.18 : 0.1}) 62%, rgba(255,79,216,0) 100%)`
-                        : `radial-gradient(ellipse farthest-side at center, rgba(52,211,153,${dist <= 1 ? 0.4 : 0.2}) 0%, rgba(52,211,153,${dist <= 1 ? 0.16 : 0.08}) 62%, rgba(52,211,153,0) 100%)`,
+                      "--g1": card.hit ? "255, 106, 61" : "52, 211, 153",
+                      "--g2": card.hit ? "255, 106, 61" : "52, 211, 153",
                       "--flicker-min": dist <= 1 ? 0.25 : 0.12,
                       "--flicker-max": dist <= 1 ? 0.5 : 0.3,
                       "--flicker-duration": "3.8s",
@@ -483,19 +481,17 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
               </span>
               <span
                 aria-hidden="true"
-                className={`pointer-events-none absolute -inset-3 -z-10 rounded-[30px] ${
+                className={`pointer-events-none absolute -inset-3 -z-10 ${
                   live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: halo }}
               >
                 <span
-                  className="ai-deck-glow absolute inset-0 rounded-[30px]"
+                  className="ai-deck-glow absolute inset-0"
                   style={
                     {
-                      filter: "blur(24px)",
-                      background: card.hit
-                        ? "radial-gradient(ellipse farthest-side at center, rgba(255,79,216,0.95) 0%, rgba(255,106,61,0.6) 52%, rgba(255,106,61,0.2) 80%, rgba(255,106,61,0) 100%)"
-                        : "radial-gradient(ellipse farthest-side at center, rgba(167,139,250,0.95) 0%, rgba(56,189,248,0.55) 52%, rgba(56,189,248,0.2) 80%, rgba(56,189,248,0) 100%)",
+                      "--g1": card.hit ? "255, 79, 216" : "167, 139, 250",
+                      "--g2": card.hit ? "255, 106, 61" : "56, 189, 248",
                       "--flicker-min": 0.65,
                       "--flicker-max": 1,
                       "--flicker-duration": "3.2s",

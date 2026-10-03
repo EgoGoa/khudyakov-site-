@@ -151,7 +151,7 @@ export const smmAdsContent: CompactToolContent = {
       memberId: "max",
       question: "Куда сейчас идёт клик с рекламы?",
       pitch: "Подскажу, где теряется аудитория.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -196,7 +196,7 @@ export const smmAdsContent: CompactToolContent = {
       memberId: "max",
       question: "Почему не вести рекламу сразу на сайт?",
       pitch: "Объясню логику воронки внутри площадки.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -262,7 +262,7 @@ export const smmAdsContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам запуска кампании?",
       pitch: "Отвечу, сколько займёт первый тест.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

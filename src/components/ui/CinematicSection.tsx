@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { useStageActive, useIsStaged, useHasSeenChapter, useChapterReady } from "@/components/ui/CinematicStage";
-import { ChapterActiveProvider } from "@/components/ui/Appear";
+import Appear, { ChapterActiveProvider } from "@/components/ui/Appear";
 import { BEAT, DUR, EASE as MOTION_EASE } from "@/lib/motion";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { blockIdAt, blockKind, serviceOf, tuneBlock, useTunedBlock } from "@/lib/block-vibe";
@@ -313,6 +313,16 @@ export default function CinematicSection({
   const roomy = spacious && !staged;
   const { paneRef, bodyRef } = useFitBodyToPane(staged && ready);
   const reduced = useReducedMotion();
+  // «Первый заход в главу»: запоминаем в момент, когда она встала на сцену, и
+  // держим до ухода. Сама `instant` включается уже во время показа (глава
+  // помечается увиденной), и метка data-late гасла бы посреди первой сборки.
+  const lateRun = useRef(false);
+  const wasActive = useRef(false);
+  /* eslint-disable react-hooks/refs -- флаг первого захода должен жить между рендерами, но не вызывать их */
+  if (active && !wasActive.current) lateRun.current = !instant;
+  if (!active) lateRun.current = false;
+  wasActive.current = active;
+  /* eslint-enable react-hooks/refs */
   const alignRight = side === "right";
   const alignCenter = side === "center";
   const kind: EntranceKind = entrance ?? (alignRight ? "slide-right" : alignCenter ? "rise" : "slide-left");
@@ -327,7 +337,47 @@ export default function CinematicSection({
   const [showOriginal, setShowOriginal] = useState(false);
   const tuned = tunedCopy && !showOriginal ? tunedCopy : null;
 
+  // Затемнение под текстом главы. В колоде (staged) глава — это окно с
+  // собственной прокруткой, а слой `absolute inset-0` внутри него покрывал
+  // только первый экран содержимого и на длинной главе обрывался резкой
+  // линией посреди блока (Егор, 2026-10-03). Поэтому в колоде слои стоят
+  // соседями окна и не прокручиваются; на обычной странице они внутри
+  // секции и тянутся на всю её высоту.
+  const z = staged ? "" : "-z-10";
+  const scrims = (
+    <>
+      {/* Feathered scrim rather than a card: it has no edge to see, so the
+          chapter still reads as type on film, but the copy keeps its contrast
+          over the bright parts of the frame (faces, highlights). */}
+      <div
+        className={`pointer-events-none absolute inset-0 ${z}`}
+        style={{
+          background: alignCenter
+            ? "radial-gradient(120% 85% at 50% 40%, rgba(11,11,16,0.86) 0%, rgba(11,11,16,0.5) 45%, transparent 78%)"
+            : alignRight
+            ? "radial-gradient(115% 85% at 88% 45%, rgba(11,11,16,0.86) 0%, rgba(11,11,16,0.5) 40%, transparent 74%)"
+            : "radial-gradient(115% 85% at 12% 45%, rgba(11,11,16,0.86) 0%, rgba(11,11,16,0.5) 40%, transparent 74%)",
+        }}
+      />
+      {/* Phones/tablets: the radial scrim above is centred on one side and
+          fades out before it reaches the opposite edge of a narrow screen,
+          leaving a bright strip of raw footage down that edge. A flat,
+          light veil over the whole pane closes it. */}
+      <div aria-hidden="true" className={`pointer-events-none absolute inset-0 ${z} bg-ink/40 lg:hidden`} />
+    </>
+  );
+
   return (
+    <>
+    {staged && (
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+        style={{ opacity: active ? 1 : 0 }}
+      >
+        {scrims}
+      </div>
+    )}
     <motion.div
       ref={paneRef}
       id={!staged ? id : undefined}
@@ -340,6 +390,7 @@ export default function CinematicSection({
       aria-hidden={!active}
       data-chapter-pane={staged ? "" : undefined}
       data-active={active ? "true" : "false"}
+      data-late={staged && lateRun.current ? "" : undefined}
       className={
         staged
           // overflow-x-hidden, not just overflow-y-auto: `overflow-y-auto`
@@ -375,25 +426,7 @@ export default function CinematicSection({
           : undefined
       }
     >
-      {/* Feathered scrim rather than a card: it has no edge to see, so the
-          chapter still reads as type on film, but the copy keeps its contrast
-          over the bright parts of the frame (faces, highlights). */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background: alignCenter
-            ? "radial-gradient(120% 85% at 50% 40%, rgba(11,11,16,0.86) 0%, rgba(11,11,16,0.5) 45%, transparent 78%)"
-            : alignRight
-            ? "radial-gradient(115% 85% at 88% 45%, rgba(11,11,16,0.86) 0%, rgba(11,11,16,0.5) 40%, transparent 74%)"
-            : "radial-gradient(115% 85% at 12% 45%, rgba(11,11,16,0.86) 0%, rgba(11,11,16,0.5) 40%, transparent 74%)",
-        }}
-      />
-
-      {/* Phones/tablets: the radial scrim above is centred on one side and
-          fades out before it reaches the opposite edge of a narrow screen,
-          leaving a bright strip of raw footage down that edge. A flat,
-          light veil over the whole pane closes it. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-ink/40 lg:hidden" />
+      {!staged && scrims}
 
       {tunedCopy && ready && (
         <div className="before-after" role="group" aria-label="Сравнить блок">
@@ -451,7 +484,7 @@ export default function CinematicSection({
             // the exact 30% he asked for, not whatever the nearest size
             // token happens to land on.
             className={`chapter-neon font-display uppercase leading-[1.09] tracking-tight land:!text-[1.44rem] ${
-              titleClassName || "text-[1.417rem] sm:text-[2.363rem] lg:text-[2.363rem] xl:text-[2.835rem]"
+              titleClassName || "text-[2.15rem] sm:text-[3.5rem] lg:text-[3.5rem] xl:text-[4.25rem]"
             }`}
           >
             {title}
@@ -477,7 +510,7 @@ export default function CinematicSection({
       )}
 
       {!tuned && children && (
-        <div
+        <motion.div
           // `my-auto` also when headless: with the header gone this is the
           // section's only flex child, so auto margins are what centre the
           // chapter's whole stack in the viewport instead of leaving it
@@ -487,6 +520,21 @@ export default function CinematicSection({
           }`}
           ref={bodyRef}
           style={footerGap ? { paddingBottom: footerGap } : undefined}
+          // Общий затвор тела главы (Егор, 2026-10-03): первые ~2 с на
+          // экране только заголовок с подзаголовком над фоном, ВСЁ остальное
+          // — карточки, карусели, линии, плашки — проявляется после паузы.
+          // Затвор стоит здесь, а не в каждом блоке: часть глав (карусели
+          // работ, колоды) вообще не использует <Appear> и появлялась сразу.
+          // Только на колоде и только у глав с обычной шапкой: у headless
+          // заголовок живёт в самом теле. Шапка с «Digital / AI / Creative» и
+          // карусель акций — не глава колоды, затвор их не трогает.
+          initial={false}
+          animate={staged && !reduced && !headless ? { opacity: active ? 1 : 0 } : undefined}
+          transition={{
+            duration: instant ? 0 : 0.4,
+            delay: active && !instant ? BEAT.content - 0.15 : 0,
+            ease: MOTION_EASE,
+          }}
         >
           {ready && bodyDecor && (
             <motion.div initial={false} animate={active ? "on" : "off"} variants={reduced ? undefined : DECOR(instant)}>
@@ -496,7 +544,7 @@ export default function CinematicSection({
           {/* Children use <Appear> to arrive on their own beat and from their
               own direction; this is what tells them the chapter is on stage. */}
           <ChapterActiveProvider active={active} instant={instant}>{ready ? children : null}</ChapterActiveProvider>
-        </div>
+        </motion.div>
       )}
 
       {!tuned && ready && footer && (
@@ -509,9 +557,15 @@ export default function CinematicSection({
         // последний блок главы и занимает своё место честно; поверх
         // всплывает только развёрнутое окно.
         <div className="relative z-20 mx-auto w-full max-w-7xl shrink-0">
-          <ChapterActiveProvider active={active} instant={instant}>{footer}</ChapterActiveProvider>
+          {/* Плашка внизу главы приходит последней, вместе с призывом
+              (Егор, 2026-10-03): раньше она стояла на экране раньше
+              заголовка и портила паузу, в которой виден только фон. */}
+          <ChapterActiveProvider active={active} instant={instant}>
+            <Appear from="fade" blur={false} delay={BEAT.cta}>{footer}</Appear>
+          </ChapterActiveProvider>
         </div>
       )}
     </motion.div>
+    </>
   );
 }

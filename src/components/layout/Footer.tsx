@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import FlareBackground from "@/components/ui/FlareBackground";
-import { services } from "@/lib/data";
+import FooterDirections from "@/components/layout/FooterDirections";
 import { EditIcon, InstagramIcon, PhoneIcon, TelegramIcon } from "@/components/ui/Icons";
 
 const navLinks = [
@@ -12,8 +12,6 @@ const navLinks = [
   { href: "/brief", label: "Заполнить бриф" },
   { href: "/#contact", label: "Контакты" },
 ];
-
-const directions = services.slice(0, 6).map((s) => s.title);
 
 const TELEGRAM_URL = "https://t.me/hdkv";
 const CALL_TEL = "tel:+79925111812";
@@ -117,20 +115,7 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
           </ul>
         </div>
 
-        <div>
-          <div className="font-display text-xs uppercase tracking-[0.2em] text-paper/40">
-            Направления
-          </div>
-          <ul className="mt-4 space-y-3 text-sm">
-            {directions.map((title) => (
-              <li key={title}>
-                <Link className="text-paper/60 transition-colors hover:text-glow" href="/#services">
-                  {title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <FooterDirections />
       </Container>
 
       <Container className="pb-10">

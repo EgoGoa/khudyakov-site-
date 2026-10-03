@@ -141,7 +141,7 @@ export const aiPersonalizationContent: CompactToolContent = {
       memberId: "max",
       question: "Чем реально отличаются ваши сегменты?",
       pitch: "Подскажу, с какого сегмента начать.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -196,7 +196,7 @@ export const aiPersonalizationContent: CompactToolContent = {
       memberId: "max",
       question: "Как версии не расходятся с голосом бренда?",
       pitch: "Объясню механику простыми словами.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -296,7 +296,7 @@ export const aiPersonalizationContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам первой волны?",
       pitch: "Отвечу, сколько займёт настройка сегментов.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

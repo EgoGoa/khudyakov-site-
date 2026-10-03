@@ -157,7 +157,7 @@ export const sitesLandingContent: CompactToolContent = {
       memberId: "max",
       question: "Куда сейчас идёт трафик с рекламы?",
       pitch: "Подскажу, что можно закрыть за 5 дней.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -202,7 +202,7 @@ export const sitesLandingContent: CompactToolContent = {
       memberId: "max",
       question: "Что важнее — скорость или полнота страницы?",
       pitch: "Объясню, где здесь баланс.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -267,7 +267,7 @@ export const sitesLandingContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам запуска?",
       pitch: "Отвечу, что войдёт в 5 дней.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

@@ -301,6 +301,7 @@ export default function Header() {
         "header-glass"
       }`}
     >
+      <span className="header-top-mask" aria-hidden="true" />
       <Container className="relative z-10 flex h-14 items-center justify-between sm:h-[70px] land:h-10">
         <Link
           href="/"

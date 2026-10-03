@@ -8,6 +8,7 @@ import { contentDirections, type ContentDirection } from "@/lib/service-content"
 import { works } from "@/lib/data";
 import type { Work } from "@/lib/types";
 import TeamAskCard from "@/components/home/TeamAskCard";
+import ReelsDeck from "@/components/home/content/ReelsDeck";
 import { TEAM } from "@/lib/team";
 
 // Picks one work per direction, greedily excluding whatever an earlier
@@ -235,6 +236,7 @@ function ConsultCard() {
       className="h-full"
       backgroundImage="/images/blocks/stock-brainstorm.jpg"
       classic
+      row
     />
   );
 }
@@ -270,10 +272,13 @@ export default function DirectionsGrid() {
     )),
     <SpecialFormatCard key="special" />,
     <ConsultCard key="consult" />,
+    // Карусель рилсов на месте высокого окошка Егора (правая колонка, две
+    // строки); сам Егор встал рядом с «Подкастом» обычной плиткой.
+    <ReelsDeck key="reels" running={active} />,
   ];
 
   return (
-    <div className="grid gap-8 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+    <div className="grid gap-8 sm:grid-cols-2 sm:gap-5 lg:grid-cols-[1fr_1fr_1.5fr]">
       {cards.map((card, i) => (
         // `as="article"` so each card stays a direct child of the CSS grid:
         // a plain wrapping <div> would still be the grid cell, but article
@@ -296,11 +301,15 @@ export default function DirectionsGrid() {
           delay={BEAT.content + i * STAGGER.normal}
           duration={DUR.row}
           className={
-            card.key === "consult"
-              ? "h-full lg:col-start-3 lg:row-start-2 lg:row-span-2"
-              : card.key === "special"
-                ? "self-start lg:col-start-1 lg:col-span-2 lg:row-start-3"
-                : "self-start"
+            card.key === "reels"
+              ? "h-full sm:col-span-2 lg:col-span-1 lg:col-start-3 lg:row-start-2 lg:row-span-2"
+              : card.key === "consult"
+                ? "h-full lg:col-start-3 lg:row-start-1"
+                : card.key === "image"
+                  ? "self-start lg:col-start-1 lg:row-start-3"
+                  : card.key === "special"
+                    ? "self-start lg:col-start-2 lg:row-start-3"
+                    : "self-start"
           }
         >
           {card}

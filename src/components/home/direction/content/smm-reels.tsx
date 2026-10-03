@@ -150,7 +150,7 @@ export const smmReelsContent: CompactToolContent = {
       memberId: "max",
       question: "Сколько Reels сейчас выходит в месяц?",
       pitch: "Подскажу, какой ритм нужен для роста.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -195,7 +195,7 @@ export const smmReelsContent: CompactToolContent = {
       memberId: "max",
       question: "Чем ваша съёмка отличается от фрилансера?",
       pitch: "Объясню, как устроена команда.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -268,7 +268,7 @@ export const smmReelsContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам первой съёмки?",
       pitch: "Отвечу, когда выйдут первые ролики.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

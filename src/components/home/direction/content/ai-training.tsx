@@ -140,7 +140,7 @@ export const aiTrainingContent: CompactToolContent = {
       memberId: "max",
       question: "Сколько человек в команде нужно обучить?",
       pitch: "Подскажу формат программы под размер команды.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -195,7 +195,7 @@ export const aiTrainingContent: CompactToolContent = {
       memberId: "max",
       question: "Как проверяете, что обучение сработало?",
       pitch: "Объясню механику контроля простыми словами.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -295,7 +295,7 @@ export const aiTrainingContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по формату сессии?",
       pitch: "Отвечу, как проходит обучение.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

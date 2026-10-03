@@ -152,7 +152,7 @@ export const sitesAssistantContent: CompactToolContent = {
       memberId: "max",
       question: "Сколько обращений в день сейчас пропускаете?",
       pitch: "Подскажу, что закроет ассистент.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -197,7 +197,7 @@ export const sitesAssistantContent: CompactToolContent = {
       memberId: "max",
       question: "Как ассистент понимает, когда позвать менеджера?",
       pitch: "Объясню механику простыми словами.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -263,7 +263,7 @@ export const sitesAssistantContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам настройки ассистента?",
       pitch: "Отвечу, сколько займёт пилот.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

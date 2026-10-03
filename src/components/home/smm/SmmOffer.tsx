@@ -11,6 +11,7 @@ import { servicesByCategory } from "@/lib/service-content";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { TANYA_SMM } from "@/components/home/team-pulse/content/tanya-smm";
 import PromoCard from "@/components/home/PromoCard";
+import { promo } from "@/lib/promos";
 
 // Chapter 03 of /smm — "что делаем".
 //
@@ -83,14 +84,7 @@ export default function SmmOffer() {
                 real number. */}
             <div className="mt-8">
               <PromoCard
-                image="/images/stock/smm-collage-phone.webp"
-                badge="Акция сентября"
-                title="Комьюнити-менеджмент"
-                subtitle="Отвечаем в директ и комментарии от лица бренда."
-                price="36 000 ₽/мес"
-                oldPrice="45 000 ₽/мес"
-                href="/brief/smm"
-                leadPrefill={{ format: "Комьюнити-менеджмент", wishes: "Акция сентября — от 45 000 до 36 000 ₽/мес" }}
+                {...promo("community")}
               />
             </div>
           </>

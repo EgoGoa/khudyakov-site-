@@ -160,7 +160,7 @@ export const advertisingContent: DirectionContent = {
       memberId: "max",
       question: "Какой канал у вас в приоритете?",
       pitch: "TV, digital или соцсети — расскажу, что решает эту задачу.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -196,7 +196,7 @@ export const advertisingContent: DirectionContent = {
       memberId: "max",
       question: "Какой ролик ближе к вашей задаче?",
       pitch: "Подберу похожий пример из портфолио.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -361,7 +361,7 @@ export const advertisingContent: DirectionContent = {
       memberId: "max",
       question: "Есть вопрос по срокам съёмки?",
       pitch: "Отвечу, сколько займёт монтаж и согласование.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

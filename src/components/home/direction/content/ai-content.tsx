@@ -156,7 +156,7 @@ export const aiContentContent: DirectionContent = {
       memberId: "max",
       question: "Сколько карточек или постов нужно в месяц?",
       pitch: "Подскажу, как считать объём и смету.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -211,7 +211,7 @@ export const aiContentContent: DirectionContent = {
       memberId: "max",
       question: "Как AI-контент выглядит на практике?",
       pitch: "Покажу примеры под ваш формат.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -362,7 +362,7 @@ export const aiContentContent: DirectionContent = {
       memberId: "max",
       question: "Есть вопрос по срокам партии?",
       pitch: "Отвечу, сколько займёт первая поставка.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

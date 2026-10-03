@@ -164,7 +164,7 @@ export const presentationContent: DirectionContent = {
       memberId: "max",
       question: "Тендер, переговоры или найм?",
       pitch: "Расскажите, какая задача у вас — подскажу формат и хронометраж.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -205,7 +205,7 @@ export const presentationContent: DirectionContent = {
       memberId: "max",
       question: "Какой кейс ближе к вашей задаче?",
       pitch: "Покажу похожую работу и распишу, как решали именно её.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -329,7 +329,7 @@ export const presentationContent: DirectionContent = {
       memberId: "max",
       question: "Есть вопрос по этапам съёмки?",
       pitch: "Отвечу, что именно происходит на каждом шаге и сколько это займёт.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

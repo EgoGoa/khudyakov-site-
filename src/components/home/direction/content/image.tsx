@@ -151,7 +151,7 @@ export const imageContent: DirectionContent = {
       memberId: "max",
       question: "Кому в компании нужен этот фильм?",
       pitch: "Расскажу, какой формат решает именно вашу задачу.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -182,7 +182,7 @@ export const imageContent: DirectionContent = {
       memberId: "max",
       question: "Какая работа ближе к вашему бренду?",
       pitch: "Подберу похожий пример из портфолио.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -296,7 +296,7 @@ export const imageContent: DirectionContent = {
       memberId: "max",
       question: "Есть вопрос по этапам съёмки?",
       pitch: "Отвечу, что происходит на каждом шаге.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

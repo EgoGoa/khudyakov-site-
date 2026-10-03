@@ -143,7 +143,7 @@ export const aiVoiceContent: DirectionContent = {
       memberId: "max",
       question: "На сколько языков нужна локализация?",
       pitch: "Подскажу, что учесть при переводе и озвучке.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -198,7 +198,7 @@ export const aiVoiceContent: DirectionContent = {
       memberId: "max",
       question: "Голос сохраняется при переводе?",
       pitch: "Объясню, как это работает.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -349,7 +349,7 @@ export const aiVoiceContent: DirectionContent = {
       memberId: "max",
       question: "Есть вопрос по срокам дубляжа?",
       pitch: "Отвечу, сколько займёт локализация.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

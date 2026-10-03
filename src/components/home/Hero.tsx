@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Magnetic from "@/components/ui/Magnetic";
 import MagneticChars from "@/components/ui/MagneticChars";
+import HeroPromoStack from "@/components/home/HeroPromoStack";
 import HeroWordmark from "@/components/home/HeroWordmark";
 import HeroHeadline from "@/components/home/HeroHeadline";
 import { PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
@@ -225,6 +226,12 @@ export default function Hero() {
         </motion.div>
         </div>
         </div>
+      </Container>
+
+      {/* Акции месяца — лента-карусель по центру внизу шапки (Егор,
+          2026-10-03, референс: плеер с обложками). */}
+      <Container className="shrink-0">
+        <HeroPromoStack className="mt-6" />
       </Container>
 
       {/* Anchored to the hero's own bottom, above the menu strip — Container

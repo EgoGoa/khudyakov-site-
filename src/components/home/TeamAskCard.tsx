@@ -61,6 +61,9 @@ export default function TeamAskCard({
    *  окошка Егора в первом блоке /content (выбор категории): Егор попросил
    *  его не менять. */
   classic = false,
+  /** Full-variant only: фото слева, текст справа и без абзаца-«pitch» — то же
+   *  окошко (фон, шрифты, кнопка), но размером с обычную плитку сетки. */
+  row = false,
 }: {
   member: TeamMember;
   question: ReactNode;
@@ -75,6 +78,7 @@ export default function TeamAskCard({
   secondaryIcon?: ReactNode;
   dense?: boolean;
   classic?: boolean;
+  row?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   // Весь сайт переведён на окна «человек как сервис» (TeamPulse): если для
@@ -103,7 +107,7 @@ export default function TeamAskCard({
     return (
       <>
         <div
-          className={`team-ask-window group relative flex h-full flex-col justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-orange/15 via-ink/80 to-ink p-4 text-left sm:p-5 ${glow ? "consult-card-pulse" : ""} ${className}`}
+          className={`late-window team-ask-window group relative flex h-full flex-col justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-orange/15 via-ink/80 to-ink p-4 text-left sm:p-5 ${glow ? "consult-card-pulse" : ""} ${className}`}
         >
           <div className="flex items-start gap-3">
             <span className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
@@ -147,7 +151,7 @@ export default function TeamAskCard({
 
   const card = compact ? (
     <div
-      className={`team-ask-window group relative flex h-full flex-col justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-orange/15 via-ink/80 to-ink p-4 text-left sm:p-5 ${glow ? "consult-card-pulse" : ""} ${className}`}
+      className={`late-window team-ask-window group relative flex h-full flex-col justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-orange/15 via-ink/80 to-ink p-4 text-left sm:p-5 ${glow ? "consult-card-pulse" : ""} ${className}`}
     >
       <div className="flex items-start gap-3">
         <span className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
@@ -170,7 +174,7 @@ export default function TeamAskCard({
     </div>
   ) : (
     <div
-      className={`team-ask-window group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-orange/20 via-ink/85 to-ink text-center ${dense ? "p-5" : "p-6 sm:p-8"} ${glow ? "consult-card-pulse" : ""} ${className}`}
+      className={`late-window team-ask-window group relative overflow-hidden ${row ? "flex flex-col rounded-2xl p-4 text-left sm:p-5" : `rounded-[1.75rem] text-center ${dense ? "p-5" : "p-6 sm:p-8"}`} bg-gradient-to-br from-orange/20 via-ink/85 to-ink ${glow ? "consult-card-pulse" : ""} ${className}`}
     >
       {backgroundImage && (
         <>
@@ -195,40 +199,64 @@ export default function TeamAskCard({
           absolutely-positioned background image/tint above regardless of
           DOM order (that's how CSS stacking works: positioned elements with
           z-index:auto always sit above non-positioned in-flow content). */}
-      <div className="relative z-10">
-        <span className={`relative mx-auto block ${dense ? "h-14 w-14" : "h-24 w-24 sm:h-28 sm:w-28"}`}>
-          <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-4 ring-paper/95">
-            <Image unoptimized src={member.photo} alt={member.name} fill sizes="112px" className="object-cover" />
+      {row ? (
+        <div className="relative z-10 flex flex-1 items-stretch gap-4">
+          <span className="relative block h-16 w-16 shrink-0 self-center sm:h-20 sm:w-20">
+            <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-4 ring-paper/95">
+              <Image unoptimized src={member.photo} alt={member.name} fill sizes="80px" className="object-cover" />
+            </span>
           </span>
-        </span>
-
-        <p className={`font-display uppercase tracking-tight text-paper/70 ${dense ? "mt-2 text-[11px]" : "mt-3 text-[13px]"}`}>
-          {member.name} <span className="text-paper/40">· {member.role}</span>
-        </p>
-
-        <h3
-          className={`mx-auto font-display uppercase leading-[1.15] tracking-tight text-white ${
-            dense ? "mt-1.5 max-w-[22em] text-sm" : "mt-3 max-w-sm text-xl sm:text-[1.35rem]"
-          }`}
-        >
-          {question}
-        </h3>
-        <p
-          className={`mx-auto max-w-sm leading-relaxed text-paper/70 ${
-            dense ? "mt-2 max-w-[24em] text-xs" : "mt-3 text-sm sm:text-[15px]"
-          }`}
-        >
-          {pitch}
-        </p>
-
-        <span
-          className={`btn-neon btn-warm inline-flex transition group-hover:brightness-110 ${
-            dense ? "mt-3 !px-4 !py-2 !text-[10px]" : "mt-5"
-          }`}
-        >
-          {actionLabel} →
-        </span>
-      </div>
+          {/* Три ярусa, как в соседних плитках: подпись сверху, вопрос по
+              центру, кнопка внизу — а не всё в одной куче. */}
+          <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
+            <p className="font-display text-[10px] uppercase leading-tight tracking-[0.14em]">
+              <span className="text-orange">{member.name}</span>
+              <span className="text-paper/55"> · {member.role}</span>
+            </p>
+            <h3 className="font-display text-sm uppercase leading-[1.15] tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-base">
+              {question}
+            </h3>
+            <span className="btn-neon w-fit !px-3.5 !py-1.5 !text-[10px] transition group-hover:brightness-110">
+              {actionLabel} <span aria-hidden="true">→</span>
+            </span>
+          </div>
+        </div>
+      ) : (
+      <div className="relative z-10">
+          <span className={`relative mx-auto block ${dense ? "h-14 w-14" : "h-24 w-24 sm:h-28 sm:w-28"}`}>
+            <span className="team-photo-pulse relative block h-full w-full overflow-hidden rounded-full ring-4 ring-paper/95">
+              <Image unoptimized src={member.photo} alt={member.name} fill sizes="112px" className="object-cover" />
+            </span>
+          </span>
+  
+          <p className={`font-display uppercase tracking-tight text-paper/70 ${dense ? "mt-2 text-[11px]" : "mt-3 text-[13px]"}`}>
+            {member.name} <span className="text-paper/40">· {member.role}</span>
+          </p>
+  
+          <h3
+            className={`mx-auto font-display uppercase leading-[1.15] tracking-tight text-white ${
+              dense ? "mt-1.5 max-w-[22em] text-sm" : "mt-3 max-w-sm text-xl sm:text-[1.35rem]"
+            }`}
+          >
+            {question}
+          </h3>
+          <p
+            className={`mx-auto max-w-sm leading-relaxed text-paper/70 ${
+              dense ? "mt-2 max-w-[24em] text-xs" : "mt-3 text-sm sm:text-[15px]"
+            }`}
+          >
+            {pitch}
+          </p>
+  
+          <span
+            className={`btn-neon btn-warm inline-flex transition group-hover:brightness-110 ${
+              dense ? "mt-3 !px-4 !py-2 !text-[10px]" : "mt-5"
+            }`}
+          >
+            {actionLabel} →
+          </span>
+        </div>
+      )}
     </div>
   );
 

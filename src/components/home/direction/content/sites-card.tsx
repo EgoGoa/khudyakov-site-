@@ -149,7 +149,7 @@ export const sitesCardContent: CompactToolContent = {
       memberId: "max",
       question: "Что сейчас есть у компании в сети?",
       pitch: "Подскажу, какая структура подойдёт.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -194,7 +194,7 @@ export const sitesCardContent: CompactToolContent = {
       memberId: "max",
       question: "Сколько разделов реально нужно?",
       pitch: "Объясню, как выбрать структуру.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -260,7 +260,7 @@ export const sitesCardContent: CompactToolContent = {
       memberId: "max",
       question: "Есть вопрос по срокам запуска визитки?",
       pitch: "Отвечу, сколько займёт сборка.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

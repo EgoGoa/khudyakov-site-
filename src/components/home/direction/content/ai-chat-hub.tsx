@@ -151,7 +151,7 @@ export const aiChatHubContent: CompactToolContent = {
       memberId: "max",
       question: "Сколько сообщений в день приходит сейчас?",
       pitch: "Подскажу, какой формат ассистента подойдёт.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -206,7 +206,7 @@ export const aiChatHubContent: CompactToolContent = {
       memberId: "max",
       question: "Какие каналы у вас уже есть?",
       pitch: "Объясню, как быстро их объединить.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -306,7 +306,7 @@ export const aiChatHubContent: CompactToolContent = {
       memberId: "max",
       question: "Сколько времени займёт запуск?",
       pitch: "Отвечу по срокам для ваших каналов.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

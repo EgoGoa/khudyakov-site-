@@ -216,12 +216,12 @@ function findSubpage(p: Phrase): { sub: (typeof SUBPAGES)[number] | null; score:
   return { sub: best, score };
 }
 
-// Люди команды: «напиши Саше», «спроси Вадима», «написать продюсеру».
+// Люди команды: «напиши Алисе», «спроси Артёма», «написать продюсеру».
 const TEAM_TAGS: Record<string, string[]> = {
   egor: ["егор", "продюсер"],
-  dima: ["вадим", "=вадику", "=вадику", "монтажер", "моушн-дизайнер"],
-  max: ["=макс", "максу", "максим", "креативн"],
-  sasha: ["=саша", "саше", "сашей", "саши", "дизайнер"],
+  dima: ["артем", "артём", "=теме", "монтажер", "моушн-дизайнер"],
+  max: ["кирилл", "=кирюше", "креативн"],
+  sasha: ["=алиса", "алисе", "алисой", "алисы", "дизайнер"],
 };
 function findTeam(p: Phrase): string | null {
   for (const [id, tags] of Object.entries(TEAM_TAGS)) if (TEAM[id] && any(p, tags)) return id;

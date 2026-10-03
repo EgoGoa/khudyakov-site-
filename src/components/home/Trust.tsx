@@ -8,11 +8,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import CinematicSection from "@/components/ui/CinematicSection";
 import FaqAside from "@/components/home/FaqAside";
 import PromoCard from "@/components/home/PromoCard";
+import { promo } from "@/lib/promos";
 import BlockAssistant from "@/components/home/BlockAssistant";
 import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import { useService } from "@/lib/service-context";
-import { briefHrefFor } from "@/lib/brief";
 import { whyByCategory } from "@/lib/service-content";
 
 // Chapter 03 on /content (the deck position `index`/`chapter` default to) —
@@ -267,22 +267,7 @@ export default function Trust({
           {active === "content" && (
             <PromoCard
               glow
-              image="/images/works/aishowreel.jpg"
-              video="/video/works/aishowreel.mp4"
-              badge="Акция только в сентябре"
-              title="AI-видеоконтент"
-              subtitle="Что входит в акцию — 10 секунд, которые работают на заявки:"
-              short="AI Reels со сценарием, зацепом в первую секунду и призывом в финале"
-              details={[
-                { lead: "AI Reels", rest: "на актуальных моделях генерации" },
-                { lead: "Сценарий + маркетинг", rest: "внутри ролика, не просто красивый кадр" },
-                { lead: "Зацеп в 1-ю секунду", rest: "и удержание до конца" },
-                { lead: "Призыв в финале", rest: "— понятное действие" },
-              ]}
-              price="9 500 ₽"
-              oldPrice="17 500 ₽"
-              href="/content/ai-video"
-              leadPrefill={{ format: "AI-видео", wishes: "Акция сентября — 10-секундный ролик за 9 500 ₽" }}
+              {...promo("ai-video")}
             />
           )}
           {/* /ai's own September offer. Photo swapped for a stock shot of
@@ -297,14 +282,7 @@ export default function Trust({
           {active === "ai" && (
             <PromoCard
               glow
-              image="/images/stock/ai-desk-ui.webp"
-              badge="Акция сентября"
-              title="AI-чат для мессенджеров"
-              subtitle="Telegram, WhatsApp, Instagram и сайт — один ассистент отвечает везде и сводит переписку в одну ленту."
-              price="40 000 ₽"
-              oldPrice="50 000 ₽"
-              href={briefHrefFor(active)}
-              leadPrefill={{ format: "AI-чат для мессенджеров", wishes: "Акция сентября — пилот за 40 000 ₽ вместо 50 000 ₽" }}
+              {...promo("ai-chat")}
             />
           )}
         </Appear>

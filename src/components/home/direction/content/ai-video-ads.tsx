@@ -143,7 +143,7 @@ export const aiVideoAdsContent: DirectionContent = {
       memberId: "max",
       question: "Для какой площадки нужны креативы?",
       pitch: "Подскажу, что сработает лучше — аватар или AI-ролик.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -198,7 +198,7 @@ export const aiVideoAdsContent: DirectionContent = {
       memberId: "max",
       question: "Как AI-аватар говорит на разных языках?",
       pitch: "Объясню механику простыми словами.",
-      actionLabel: "Написать Максу",
+      actionLabel: "Написать Кириллу",
     },
   },
 
@@ -349,7 +349,7 @@ export const aiVideoAdsContent: DirectionContent = {
       memberId: "max",
       question: "Есть вопрос по срокам линейки?",
       pitch: "Отвечу, сколько займёт партия креативов.",
-      actionLabel: "Связаться с Максимом",
+      actionLabel: "Связаться с Кириллом",
     },
   },
 

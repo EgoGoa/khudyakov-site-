@@ -11,6 +11,7 @@ import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { SASHA_SITES } from "@/components/home/team-pulse/content/sasha-sites";
 import PromoCard from "@/components/home/PromoCard";
+import { promo } from "@/lib/promos";
 
 // Chapter 02 — merges the former SitesMethod and SitesAudience chapters into
 // one screen. sites-reel.mp4 (Egor's second delivery for /sites) only cuts
@@ -131,14 +132,7 @@ export default function SitesMethodAudience() {
               service before Egor's correction, so the number is unchanged. */}
           <Appear from="up" delay={BEAT.cta} className="mt-8">
             <PromoCard
-              image="/images/stock/design-tablet.webp"
-              badge="Акция сентября"
-              title="Лендинг под продукт"
-              subtitle="Одна страница, которая доводит трафик до заявки."
-              price="48 000 ₽"
-              oldPrice="60 000 ₽"
-              href="/brief/sites"
-              leadPrefill={{ format: "Лендинг", wishes: "Акция сентября — от 60 000 до 48 000 ₽" }}
+              {...promo("landing")}
             />
           </Appear>
         </div>

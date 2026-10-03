@@ -51,6 +51,8 @@ export default function TeamPulseWindow({
   useEffect(() => setMounted(true), []);
 
   const [orderOpen, setOrderOpen] = useState(false);
+  // «Заказать» внизу окна: по клику на её месте встают три способа связи.
+  const [picking, setPicking] = useState(false);
   const [orderStart, setOrderStart] = useState<"call" | "session">("call");
   const startOrder = (v: "call" | "session") => {
     setOrderStart(v);
@@ -59,6 +61,7 @@ export default function TeamPulseWindow({
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- меню выбора закрыто при каждом открытии окна
     setOrderOpen(false);
+    setPicking(false);
   }, [open]);
 
   useEffect(() => {
@@ -124,15 +127,24 @@ export default function TeamPulseWindow({
             onMouseLeave={() => setHold(false)}
           >
             <div className="spotlight-tab-wrap">
-              <button type="button" className="spotlight-tab" onClick={() => setChat((c) => !c)}>
-                <span className="font-display text-[12px] uppercase tracking-[0.08em] sm:text-[14px]">
+              <button type="button" className="spotlight-tab spotlight-tab--mini" onClick={() => setChat((c) => !c)}>
+                <span className="font-display text-[8px] uppercase tracking-[0.1em] sm:text-[9px]">
                   {chat ? "Назад к рассказу" : data.windowCta}
                 </span>
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-[15px] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
-                  {chat ? "←" : "→"}
-                </span>
+                <span className="text-[10px] leading-none opacity-80">{chat ? "←" : "→"}</span>
               </button>
             </div>
+
+            {/* Крестик — только знак, без рамки и подложки, за краем окна
+                (Егор, 2026-10-03): не забирает ни места, ни внимания. */}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Закрыть"
+              className="absolute -top-11 right-0 z-40 grid h-11 w-11 place-items-center text-white/80 transition hover:text-white sm:-right-11 sm:top-0"
+            >
+              <CloseIcon />
+            </button>
 
             {/* Свечение живёт отдельным слоем под стеклом: у панели
                 overflow-hidden, и собственную тень она бы обрезала. Пульс —
@@ -157,14 +169,6 @@ export default function TeamPulseWindow({
                   />
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Закрыть"
-                className="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/[0.06] text-white ring-1 ring-white/20 transition hover:bg-white/15 sm:right-5 sm:top-5"
-              >
-                <CloseIcon />
-              </button>
 
               <div className="relative flex h-full flex-col p-4 sm:p-6 lg:p-8">
                 <div className="flex min-h-0 flex-1 flex-col gap-4 sm:flex-row sm:gap-6 lg:gap-8">
@@ -258,19 +262,27 @@ export default function TeamPulseWindow({
                         вместо всплывающего выбора по кнопке «Заказать». На
                         телефоне короткие подписи без стрелок — три полные не
                         влезали в строку и налезали друг на друга. */}
-                    <div className="grid w-full grid-cols-3 gap-1.5 lg:ml-auto lg:w-auto lg:gap-2">
-                      <Link href={data.briefHref} className="team-pulse-pick">
-                        <span className="sm:hidden">Бриф</span>
-                        <span className="hidden sm:inline">Заполнить бриф</span> <i aria-hidden="true">→</i>
-                      </Link>
-                      <button type="button" className="team-pulse-pick" onClick={() => startOrder("call")}>
-                        <span className="sm:hidden">Созвон</span>
-                        <span className="hidden sm:inline">Созвон 15 мин</span> <i aria-hidden="true">→</i>
-                      </button>
-                      <button type="button" className="team-pulse-pick" onClick={() => startOrder("session")}>
-                        <span className="sm:hidden">Сессия</span>
-                        <span className="hidden sm:inline">Креатив-сессия</span> <i aria-hidden="true">→</i>
-                      </button>
+                    <div className="w-full lg:ml-auto lg:w-auto">
+                      {picking ? (
+                        <div className="grid grid-cols-3 gap-1.5 lg:gap-2">
+                          <Link href={data.briefHref} className="team-pulse-pick">
+                            <span className="sm:hidden">Бриф</span>
+                            <span className="hidden sm:inline">Заполнить бриф</span> <i aria-hidden="true">→</i>
+                          </Link>
+                          <button type="button" className="team-pulse-pick" onClick={() => startOrder("call")}>
+                            <span className="sm:hidden">Созвон</span>
+                            <span className="hidden sm:inline">Созвон 15 мин</span> <i aria-hidden="true">→</i>
+                          </button>
+                          <button type="button" className="team-pulse-pick" onClick={() => startOrder("session")}>
+                            <span className="sm:hidden">Сессия</span>
+                            <span className="hidden sm:inline">Креатив-сессия</span> <i aria-hidden="true">→</i>
+                          </button>
+                        </div>
+                      ) : (
+                        <button type="button" className="team-pulse-order font-display" onClick={() => setPicking(true)}>
+                          Заказать <i aria-hidden="true">→</i>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
