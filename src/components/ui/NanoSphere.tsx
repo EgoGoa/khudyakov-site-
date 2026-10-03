@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 
 // Спящий режим (prop `sleepy`): скорость времени и шаг кадра в покое.
 const SLEEP_RATE = 0.5;
-const SLEEP_FRAME_MS = 50;
+const SLEEP_FRAME_MS = 36;
 
 // «Сердце умного меню» — знак вайб-панели (Егор, 2026-09-26, по референсу:
 // светящееся энергетическое кольцо с тёмным центром). Рисуется на canvas:
@@ -116,7 +116,9 @@ export default function NanoSphere({
 
     // Холст шире знака: свечению и пыли нужно место за краем кольца.
     const box = size * boxK;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Маленькая сфера (знак бара, ≤60px) — крошечный холст: даём ей dpr до 3,
+    // чтобы кольцо было чётким на ретине без заметной нагрузки.
+    const dpr = Math.min(window.devicePixelRatio || 1, size <= 60 ? 3 : 2);
     canvas.width = Math.round(box * dpr);
     canvas.height = Math.round(box * dpr);
     const c = (box * dpr) / 2;
@@ -130,7 +132,8 @@ export default function NanoSphere({
 
     const html = document.documentElement;
     const light = html.hasAttribute("data-lite") || html.hasAttribute("data-mid");
-    const LINES = light ? 11 : 18;
+    const small = size <= 60;
+    const LINES = small ? (light ? 14 : 22) : light ? 11 : 18;
     // Сколько пылинок в секунду выходит из центра в первый момент.
     const CORE = light ? 26 : 48;
     type Dust = { a: number; r0: number; reach: number; spin: number; born: number; life: number; size: number };

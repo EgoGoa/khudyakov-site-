@@ -14,8 +14,8 @@ import { useEffect, useRef } from "react";
 // живую волну.
 const SLEEP_CLOCK_S = 1.3; // первый кадр — красивая спокойная форма
 const IDLE_RATE = 0.22; // скорость часов в покое
-const IDLE_FRAME_MS = 55; // кадры в покое на компьютере
-const IDLE_FRAME_MS_LITE = 80; // и на средних/слабых устройствах
+const IDLE_FRAME_MS = 40; // кадры в покое на компьютере (~25/с)
+const IDLE_FRAME_MS_LITE = 55; // и на средних/слабых устройствах (~18/с)
 
 // Знак голосового ассистента (Егор, 2026-09-26): «в стиле нашей сферы, но
 // другая иконка — полоса частот, горизонтальная, вибрирует, а когда
@@ -29,7 +29,8 @@ const IDLE_FRAME_MS_LITE = 80; // и на средних/слабых устро
 //
 // Плоско, без бликов. На mid/low — меньше линий и 30 кадров/с; при
 // «уменьшить движение» — один неподвижный кадр.
-const POINTS = 64;
+// 96 точек на линию: на 64 лента читалась ломаной, особенно на ретине.
+const POINTS = 96;
 
 function hexToRgb(hex: string) {
   const n = parseInt(hex.slice(1), 16);
@@ -99,7 +100,10 @@ export default function NanoWave({
     if (!ctx) return;
 
     const lite0 = document.documentElement.hasAttribute("data-lite") || document.documentElement.hasAttribute("data-mid");
-    const dpr = sleepy && lite0 ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+    // Нижняя волна — крошечный холст, поэтому чёткость (dpr до 2) ей почти
+    // ничего не стоит даже на телефоне (Егор, 2026-10-03: «качество плохое»).
+    void lite0;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const W = (width + padX * 2) * dpr;
     const H = (height + padY * 2) * dpr;
     canvas.width = Math.round(W);
@@ -137,7 +141,7 @@ export default function NanoWave({
     // Не слишком плотно (Егор): лента из 13 линий, а не 20.
     // Большая волна (окно) — больше линий, чтобы не терять детализацию.
     const LINES = sleepy
-      ? light ? 6 : 9
+      ? light ? 9 : 13
       : Math.round((light ? 9 : 13) * Math.min(1.5, Math.max(1, height / 60)));
 
     // Пыль на концах (Егор: «чтобы по краям она распылялась»): мелкие искры
@@ -320,7 +324,7 @@ export default function NanoWave({
       // Тонкие линии при любом размере: толщина не растёт с волной, иначе
       // в большом окне рисунок терял детализацию. Без shadowBlur — он
       // самый дорогой шаг canvas; свечение дают сами линии «lighter».
-      ctx.lineWidth = 0.8 * dpr * Math.min(k, 1.15);
+      ctx.lineWidth = 0.95 * dpr * Math.min(k, 1.15);
 
       ph += dt * 2 * speed;
 
