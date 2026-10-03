@@ -12,7 +12,7 @@ import {
 } from "react";
 import { makeDeckGuard } from "@/lib/deck-gesture";
 import { useCinematicNavRegister } from "@/lib/cinematic-nav";
-import { reportActiveChapter, takePendingChapter } from "@/lib/page-hop";
+import { FIRST_CHAPTER_EVENT, reportActiveChapter, takePendingChapter } from "@/lib/page-hop";
 import { playUi, sound } from "@/lib/sound";
 import { isSiteFrozen } from "@/lib/welcome-freeze";
 
@@ -667,6 +667,11 @@ export default function CinematicStage({
     };
     const voiceCurrent = () => (engaged() ? (chapters[activeIndexRef.current]?.id ?? null) : null);
     registerGoTo(goToId, firstChapterId, voiceStep, voiceCurrent);
+    // Стрелка вверх и название страницы в шапке (см. scrollToDeckStart).
+    const onFirstChapter = () => {
+      if (firstChapterId) goToId(firstChapterId);
+    };
+    window.addEventListener(FIRST_CHAPTER_EVENT, onFirstChapter);
     if (phone) {
       // Ссылка с #главой: на телефоне рельсов нет, якорь прокрутить некуда.
       const hashIndex = chapters.findIndex((c) => c.id === window.location.hash.slice(1));
@@ -972,6 +977,7 @@ export default function CinematicStage({
       }
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      window.removeEventListener(FIRST_CHAPTER_EVENT, onFirstChapter);
       registerGoTo(null, null);
     };
   }, [chapters.length, firstChapterId, registerGoTo, phone]);

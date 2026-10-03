@@ -75,7 +75,13 @@ export function scrollToDeckStart(behavior: ScrollBehavior = "instant") {
   const headerH = phone ? document.querySelector("header")?.getBoundingClientRect().height ?? 0 : 0;
   const top = wrap.getBoundingClientRect().top + window.scrollY - headerH;
   window.scrollTo({ top: Math.max(top, 0), behavior });
+  // Телефон: колода — одна экранная сцена, главы листаются внутри неё, и
+  // прокрутка окна активную главу не меняет. Без этого стрелка вверх и
+  // название страницы возвращали к сцене, но она так и стояла на той главе,
+  // где посетитель был (Егор, 2026-10-03: «не работает»).
+  if (phone) window.dispatchEvent(new CustomEvent(FIRST_CHAPTER_EVENT));
 }
+export const FIRST_CHAPTER_EVENT = "hdkv:first-chapter";
 const FIRST = "\u0000first";
 
 /** Боковые стрелки: на соседней странице — тот же по смыслу блок (стоял
