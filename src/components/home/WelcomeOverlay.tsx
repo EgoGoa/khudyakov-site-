@@ -13,6 +13,7 @@ import { WELCOME_OPEN_ATTR } from "@/lib/welcome-freeze";
 import WelcomeWidget from "./WelcomeWidget";
 import IntroSplash from "./IntroSplash";
 import { OPEN_VIBE_EVENT, VOICE_NAV_EVENT } from "@/lib/voice/store";
+import { isBareClick, skipIntros } from "@/lib/skip-intro";
 
 // shared easing across every motion in this overlay, so entrances/exits read
 // as one authored sequence instead of mismatched curves
@@ -309,6 +310,10 @@ export function snooze() {
 export default function WelcomeOverlay() {
   // Заставка: пока створки стекла не пошли врозь, окна на экране нет.
   const [revealed, setRevealed] = useState(false);
+  // Клик в окно, пока идёт вступление, — «не ждать»: заставка гаснет, меню
+  // встаёт сразу целиком (Егор, 2026-10-03). settled — вступление кончилось.
+  const [skipped, setSkipped] = useState(false);
+  const [settled, setSettled] = useState(false);
 
   // Starts true on the server (and for the very first client render, to
   // match it and avoid a hydration mismatch) so a first-time visitor still
@@ -450,6 +455,19 @@ export default function WelcomeOverlay() {
     playUi("windows");
   };
 
+  useEffect(() => {
+    if (!revealed || settled) return;
+    const t = window.setTimeout(() => setSettled(true), 2800);
+    return () => window.clearTimeout(t);
+  }, [revealed, settled]);
+
+  const rush = (e: React.PointerEvent) => {
+    if (settled || skipped || !isBareClick(e.target)) return;
+    setSkipped(true);
+    setSettled(true);
+    skipIntros();
+  };
+
   if (!present) return null;
 
   // Стартовое окно (Егор, 2026-09-27): стеклянное окошко по центру, как у
@@ -472,15 +490,21 @@ export default function WelcomeOverlay() {
       className={`welcome-shell${visible ? "" : " is-leaving"}`}
       onClick={goToSite}
     >
-      <div className="welcome-window" onClick={(e) => e.stopPropagation()}>
+      <div className="welcome-window" onClick={(e) => e.stopPropagation()} onPointerDown={rush}>
         <button type="button" onClick={goToSite} aria-label="Закрыть" className="welcome-window__close">
           <CloseIcon />
         </button>
-        {visible && <IntroSplash onReveal={reveal} />}
+        {visible && <IntroSplash onReveal={reveal} skip={skipped} />}
         {revealed && (
-          <div className="welcome-window__body">
-            <WelcomeWidget onClose={selectService} onSkip={goToSite} onVibe={openVibe} framed />
-          </div>
+          <motion.div
+            key={skipped ? "rushed" : "intro"}
+            className="welcome-window__body"
+            initial={skipped ? { opacity: 0 } : false}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <WelcomeWidget onClose={selectService} onSkip={goToSite} onVibe={openVibe} framed rushed={skipped} />
+          </motion.div>
         )}
       </div>
     </div>

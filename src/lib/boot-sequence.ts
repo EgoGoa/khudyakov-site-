@@ -110,6 +110,16 @@ function start() {
   tryContent();
 }
 
+/** Клик «не ждать»: все этапы очереди — сразу (кроме случая, когда открыто
+ *  стартовое окно: под ним сайт и так стоит). */
+export function rushBoot() {
+  if (!started || stage >= BOOT.smoke || welcomeBlocking()) return;
+  observer?.disconnect();
+  mediaReady = true;
+  minPassed = true;
+  setStage(BOOT.smoke);
+}
+
 /** Фоновое видео первого экрана готово играть (или не загрузилось). */
 export function markMediaReady() {
   mediaReady = true;

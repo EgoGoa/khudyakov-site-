@@ -101,24 +101,30 @@ const CHARS = [
 
 export default function IntroSplash({
   onReveal,
+  skip = false,
 }: {
   /** Створки пошли врозь — самое время начать собирать меню под ними. */
   onReveal: () => void;
+  /** Клик «не ждать» (Егор, 2026-10-03): знак мягко гаснет за 0.3с, меню
+   *  открывается сразу. */
+  skip?: boolean;
 }) {
   const [mounted, setMounted] = useState(false);
   const [playing, setPlaying] = useState(true);
+  const timers = useRef<number[]>([]);
+  const revealed = useRef(false);
 
   // Колбэки в ref: сцена заводится один раз по таймерам, и перерисовка
   // родителя (а она тут будет — меню начинает собираться) не должна
   // перезапускать таймеры с нуля.
+  // onReveal у окна всегда делает одно и то же — хватает первого.
   const cb = useRef({ onReveal });
-  cb.current = { onReveal };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- разовая отметка монтирования
     setMounted(true);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- разовая проверка на монтировании
       setPlaying(false);
       cb.current.onReveal();
       return;
@@ -127,14 +133,25 @@ export default function IntroSplash({
     // пропустит (звук разрешается только после клика), зато слышно при
     // повторном показе заставки в той же вкладке.
     const wind = window.setTimeout(() => sound()?.introWind(), T_DOT * 1000);
-    const a = window.setTimeout(() => cb.current.onReveal(), T_REVEAL * 1000);
+    const a = window.setTimeout(() => {
+      revealed.current = true;
+      cb.current.onReveal();
+    }, T_REVEAL * 1000);
     const b = window.setTimeout(() => setPlaying(false), T_DONE_MS);
-    return () => {
-      window.clearTimeout(wind);
-      window.clearTimeout(a);
-      window.clearTimeout(b);
-    };
+    timers.current = [wind, a, b];
+    return () => timers.current.forEach((t) => window.clearTimeout(t));
   }, []);
+
+  useEffect(() => {
+    if (!skip) return;
+    timers.current.forEach((t) => window.clearTimeout(t));
+    if (!revealed.current) {
+      revealed.current = true;
+      cb.current.onReveal();
+    }
+    const t = window.setTimeout(() => setPlaying(false), 320);
+    return () => window.clearTimeout(t);
+  }, [skip]);
 
   if (!mounted || !playing) return null;
 
@@ -144,7 +161,9 @@ export default function IntroSplash({
     // кадр ключей — знак оказывался сдвинутым вверх, буквы — не на месте.
     // Она идёт 1.5с, это дёшево даже для слабого железа.
     <MotionConfig reducedMotion="never">
-    <div
+    <motion.div
+      animate={{ opacity: skip ? 0 : 1, filter: skip ? "blur(10px)" : "blur(0px)" }}
+      transition={{ duration: 0.3, ease: EASE }}
       // По центру экрана — финальное ТЗ Егора. Меню теперь начинает
       // открываться только в момент, когда знак уже начал таять (T_REVEAL =
       // T_VANISH), а не стоит рядом с ним несколько секунд — поэтому знаку
@@ -258,7 +277,7 @@ export default function IntroSplash({
         </div>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
     </MotionConfig>
   );
 }

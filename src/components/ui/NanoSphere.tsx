@@ -1,4 +1,5 @@
 "use client";
+import { SKIP_INTRO_EVENT } from "@/lib/skip-intro";
 import { settleAt } from "@/lib/motion";
 import { frozenFor } from "@/lib/welcome-freeze";
 
@@ -626,6 +627,7 @@ export default function NanoSphere({
     const introOn = !!intro && !still;
 
     let raf = 0;
+    let cleanupSkip = () => {};
     if (still) {
       draw(1.3);
     } else {
@@ -640,6 +642,12 @@ export default function NanoSphere({
       // Сфера за стартовым окном замирает, пока оно открыто (lib/welcome-freeze).
       const frozen = frozenFor(canvas);
       const settle = settleAt(canvas);
+      // Клик «не ждать» (lib/skip-intro): сборка доигрывает в 6 раз быстрее.
+      const introEnd = intro ? (INTRO_S[intro] + 0.4) * 1000 : 0;
+      let rush = 1;
+      const onSkip = () => (rush = 6);
+      window.addEventListener(SKIP_INTRO_EVENT, onSkip);
+      cleanupSkip = () => window.removeEventListener(SKIP_INTRO_EVENT, onSkip);
       const loop = (now: number) => {
         raf = requestAnimationFrame(loop);
       // Внутри окна — только после его раскрытия (окно в два шага).
@@ -654,7 +662,7 @@ export default function NanoSphere({
         const awake = !sleepy || hover || hotRef.current || energy > 1.1 || clock < 4000;
         rate += ((awake ? 1 : SLEEP_RATE) - rate) * 0.15;
         if (now - last < (awake ? frameMs : Math.max(frameMs, SLEEP_FRAME_MS))) return;
-        if (last) clock += Math.min(now - last, 100) * rate;
+        if (last) clock += Math.min(now - last, 100) * rate * (clock < introEnd ? rush : 1);
         last = now;
         draw(clock / 1000);
       };
@@ -662,6 +670,7 @@ export default function NanoSphere({
     }
     return () => {
       cancelAnimationFrame(raf);
+      cleanupSkip();
       host.removeEventListener("pointerenter", excite);
       host.removeEventListener("pointerleave", calm);
     };

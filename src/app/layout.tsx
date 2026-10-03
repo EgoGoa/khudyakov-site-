@@ -9,6 +9,7 @@ import SoundSystem from "@/components/layout/SoundSystem";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
 import GlobalLead from "@/components/layout/GlobalLead";
+import SkipIntro from "@/components/layout/SkipIntro";
 import VoiceAssistant from "@/components/layout/VoiceAssistant";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import BackgroundFX from "@/components/layout/BackgroundFX";
@@ -170,6 +171,7 @@ export default function RootLayout({
               <VibeRail />
               <VoiceAssistant />
               <GlobalLead />
+              <SkipIntro />
               {/* Лишние стрелки вверх-вниз у края на телефоне убраны (Егор, 2026-10-03). */}
               {/* Кнопка «наверх» — здесь, а не в шаблонах страниц: она
                   нужна на каждой странице сайта, и один экземпляр в layout

@@ -407,6 +407,7 @@ export default function WelcomeWidget({
   onSkip,
   onVibe,
   skipGreeting = false,
+  rushed = false,
   framed = false,
 }: {
   /** Сцена внутри стартового окна: постоянный макет и статичный масштаб. */
@@ -422,6 +423,8 @@ export default function WelcomeWidget({
    *  при входе на сайт; когда её же открывают с боковой панели, чтобы
    *  куда-то перейти, ждать сборку заново незачем. */
   skipGreeting?: boolean;
+  /** Клик «не ждать» в стартовом окне: всё меню сразу на месте, без каскада. */
+  rushed?: boolean;
 }) {
   const router = useRouter();
   const [reduced, setReduced] = useState(false);
@@ -439,7 +442,7 @@ export default function WelcomeWidget({
   // свой вход (см. onAnimationComplete на ней ниже). skipGreeting и
   // reduced-motion пропускают всю сборку — сцена в этих случаях должна
   // стоять на месте сразу, без повторной анимации при каждом ре-рендере.
-  const instant = skipGreeting || reduced;
+  const instant = skipGreeting || reduced || rushed;
   const [logoReady, setLogoReady] = useState(instant);
   useEffect(() => {
     if (instant) setLogoReady(true);
@@ -543,7 +546,7 @@ export default function WelcomeWidget({
         <AnimatePresence mode={picked ? "sync" : "wait"}>
           <motion.h2
             key={picked ?? "root"}
-            initial={picked ? false : { opacity: 0, y: -14, filter: "blur(16px)" }}
+            initial={picked || rushed ? false : { opacity: 0, y: -14, filter: "blur(16px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, filter: "blur(8px)", transition: { duration: 0.2, ease: EASE } }}
             transition={{ duration: REVEAL_DURATION, ease: GENTLE_EASE }}
@@ -597,7 +600,7 @@ export default function WelcomeWidget({
           <motion.div
             key={picked ?? "directions"}
             variants={picked || reduced ? undefined : deckVariants}
-            initial={picked ? { opacity: 0 } : "hidden"}
+            initial={picked ? { opacity: 0 } : rushed ? false : "hidden"}
             animate={picked ? { opacity: 1 } : "show"}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             className={`welcome-deck ${picked ? "" : "welcome-deck--root"}`}

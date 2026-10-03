@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { useSiteFreeze } from "@/lib/use-site-freeze";
+import { skipIntros } from "@/lib/skip-intro";
 import { InlineVoiceSphere } from "@/components/layout/VoiceAssistant";
 import { WIN, WIN_DIM } from "@/lib/motion";
 import NanoSphere, { type SphereIntro } from "@/components/ui/NanoSphere";
@@ -313,6 +314,8 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
         animate={WIN.animate}
         exit={WIN.exit}
         onClick={(e) => e.stopPropagation()}
+        // Клик в окно — сфера и прочие вступления доигрывают быстро (lib/skip-intro).
+        onPointerDown={skipIntros}
         className="win-shell vibe-mode__window vibe-mode__window--fixed"
       >
       <div aria-hidden="true" className="vibe-mode__aurora" />
