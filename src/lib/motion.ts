@@ -22,28 +22,48 @@ export const EASE = [0.22, 1, 0.36, 1] as const;
  *  to register as its own moment, short enough that the chapter doesn't
  *  feel stalled. `controls`/`cta` keep the same spacing *after* `content`
  *  they always had, just carried on the shorter gap. */
+/** Пауза, в которую виден только заголовок с подзаголовком над фоновым
+ *  роликом, — отсчитывается ОТ МОМЕНТА, КОГДА ПОДЗАГОЛОВОК ДОЯВИЛСЯ, а не от
+ *  старта главы (Егор, 2026-10-03: «заголовок, подзаголовок, потом полторы
+ *  секунды смотрим видео, и потом плавно всё остальное»). Раньше «+1,5 с»
+ *  стояло от задержки подзаголовка, а сам он ещё секунду проявлялся — на
+ *  деле видео смотрели полсекунды. Теперь блок = задержка подзаголовка +
+ *  время его проявления + эта пауза, и при смене любого из чисел пауза не
+ *  уедет. */
+const INTRO_DUR = 1.05; // = DUR.text, ниже
+const WATCH_VIDEO = 1.5;
+
+// Ритм «хронология»: заголовок → через секунду подзаголовок → пауза на ролик
+// → первый блок, дальше карточки по одной (STAGGER.normal = 0.5 с) и сразу
+// следом окошки услуг, акций и команды — по очереди, не разом.
+const TIMELINE = { title: 0.35, intro: 1.35 };
+const content = TIMELINE.intro + INTRO_DUR + WATCH_VIDEO;
+
 export const BEAT = {
   eyebrow: 0.1, // chapter number + icon — "where am I"
-  // Ритм «хронология» (Егор, 2026-10-03): заголовок → через секунду
-  // подзаголовок → через полторы секунды после него первый блок, дальше
-  // карточки по одной (STAGGER.normal = 0.5 с), и сразу следом, без
-  // больших пауз, окошки услуг, акций и команды — по очереди, не разом. Первые секунды на экране лишь заголовок
-  // над фоновым фрагментом — его успевают разглядеть.
-  title: 0.35, // "what is this"
-  intro: 1.35, // секунда после заголовка
-  content: 2.85, // первый блок — через 1.5 с после подзаголовка
+  title: TIMELINE.title, // "what is this"
+  intro: TIMELINE.intro,
+  content, // первый блок — через WATCH_VIDEO после того, как доявился подзаголовок
   // Filters and catalogue links act *on* the substance, so they arrive after
   // it rather than a hair before it.
-  controls: 3.35,
-  cta: 3.85, // окошки услуг, акций и команды — сразу за блоком, друг за другом (Егор, 2026-10-03)
-} as const;
+  controls: content + 0.5,
+  cta: content + 1, // окошки услуг, акций и команды — сразу за блоком, друг за другом
+} as { -readonly [K in "eyebrow" | "title" | "intro" | "content" | "controls" | "cta"]: number };
 
-// Телефон (Егор, 2026-10-03): листаем блок — сразу появляются заголовок и
-// подзаголовок вместе с запуском фонового фрагмента, ~1,5 с виден только он,
-// потом плавно проявляется всё остальное. Значения подменяются один раз при
-// загрузке модуля в браузере (до первого рендера любого блока).
+// Телефон: листаем блок — заголовок и подзаголовок появляются сразу, вместе
+// с запуском фонового фрагмента; та же пауза на ролик, потом всё остальное.
+// Значения подменяются один раз при загрузке модуля в браузере (до первого
+// рендера любого блока).
 if (typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches) {
-  Object.assign(BEAT, { eyebrow: 0.05, title: 0.1, intro: 0.1, content: 1.65, controls: 2.15, cta: 2.65 });
+  const phoneContent = 0.1 + INTRO_DUR + WATCH_VIDEO;
+  Object.assign(BEAT, {
+    eyebrow: 0.05,
+    title: 0.1,
+    intro: 0.1,
+    content: phoneContent,
+    controls: phoneContent + 0.5,
+    cta: phoneContent + 1,
+  });
 }
 
 /** How long each kind of element takes to settle.
