@@ -4973,11 +4973,21 @@ html[data-mid] .guar-term-slide:first-of-type {
      transition list lives on the element itself now, filter included. */
 }
 
-/* Depth blur, fed per card as a custom property (see blurAt). It sits on its
-   own class so the sharp card in front carries no `filter` at all — even
-   `blur(0px)` is a filter, and a filter on the one card that also has a
-   backdrop blur is the layer this deck can least afford. */
-.deck-pose-blur {
+/* Depth blur, fed per card as a custom property (see blurAt). The filter
+   sits on the card's own clipped element (the <button>/<a> that already
+   carries overflow-hidden + its rounded radius) and NOT on the plain
+   `.deck-pose` wrapper above it (Егор, 2026-10-03: «угол, граница» behind
+   the front card). A `filter` always opens its own stacking context, and
+   when that context sits on an element OTHER than the one doing the
+   rounded `overflow: hidden` clip, Safari stops honouring that clip for
+   the filtered subtree — the card's corner then paints square behind the
+   rounded card in front of it. Putting filter and the clip on the SAME
+   element is the actual fix; no mask-image trick needed. The front card
+   carries no `filter` at all — even `blur(0px)` opens a stacking context,
+   and a filter on the one card that also has a backdrop blur is the layer
+   this deck can least afford. */
+.deck-pose-blur > a,
+.deck-pose-blur > button {
   filter: blur(var(--deck-blur, 0px));
 }
 
@@ -4985,13 +4995,15 @@ html[data-mid] .guar-term-slide:first-of-type {
    reads, and heavy blur on several moving layers is what iOS Safari chokes
    on. */
 @media (max-width: 1023px) {
-  .deck-pose-blur {
+  .deck-pose-blur > a,
+  .deck-pose-blur > button {
     filter: blur(calc(var(--deck-blur, 0px) * 0.6));
   }
 }
 
 /* Genuinely weak devices (lite mode) keep depth as dimming alone. */
-html[data-lite] .deck-pose-blur {
+html[data-lite] .deck-pose-blur > a,
+html[data-lite] .deck-pose-blur > button {
   filter: none;
 }
 
@@ -9664,28 +9676,15 @@ html[data-mid] .hero-promo { transition: none; }
   .deck-rail .ai-deck-glow {
     display: none !important;
   }
-  .deck-rail .deck-pose-blur {
-    filter: none !important;
-  }
-  /* Лёгкое размытие боковых карточек — на содержимом ВНУТРИ скруглённой
-     рамки, а не на обёртке: размытие обрезается скруглением и не может
-     выйти наружу прямоугольником. Маска возвращает Safari скругление
-     клипа, которое он теряет у детей с filter. */
-  .deck-rail .deck-pose-blur > button,
-  .deck-rail .deck-pose-blur > a {
-    isolation: isolate;
-    -webkit-mask-image: -webkit-radial-gradient(white, black);
-  }
-  .deck-rail .deck-pose-blur > button > *,
-  .deck-rail .deck-pose-blur > a > * {
-    filter: blur(calc(var(--deck-blur, 0px) * 0.5));
-  }
+  /* Боковых карточек размытие теперь считает общее правило выше (filter
+     сидит на самом окошке карточки, не на обёртке) — здесь трогать больше
+     нечего, кроме самого света. */
   .deck-rail .deck-card-glow:not(:hover):not(:focus-visible),
   .deck-rail .deck-neon-pulse:not(:hover):not(:focus-visible) {
     transform: none !important;
     box-shadow:
-      inset 0 0 0 1px rgba(var(--card-glow-rgb, 52, 211, 153), 0.55),
-      inset 0 0 22px 0 rgba(var(--card-glow-rgb, 52, 211, 153), 0.3),
+      inset 0 0 0 1px rgba(var(--card-glow-rgb, 52, 211, 153), 0.2),
+      inset 0 0 34px 0 rgba(var(--card-glow-rgb, 52, 211, 153), 0.2),
       0 18px 40px -24px rgba(0, 0, 0, 0.85) !important;
   }
 }
