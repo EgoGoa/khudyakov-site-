@@ -63,7 +63,7 @@ export default function FanFit({
   return (
     <div
       ref={ref}
-      className="pointer-events-none relative w-full overflow-x-clip [touch-action:pan-y]"
+      className="pointer-events-none relative w-full overflow-clip [touch-action:pan-y]"
       style={{
         // Vertical breathing room: the edge mask (and overflow clip) cut
         // everything outside this box, so without it the cards' glow and the
