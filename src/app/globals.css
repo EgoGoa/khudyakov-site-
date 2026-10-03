@@ -9614,3 +9614,51 @@ html[data-mid] .hero-promo { transition: none; }
 @media (prefers-reduced-motion: reduce) {
   [data-chapter-pane][data-late] .late-window { animation: none; }
 }
+
+/* ── Телефон: углы и края окошек (Егор, 2026-10-03) ──────────────────────
+   На iPhone за скруглёнными окошками и карточками виднелись квадратные
+   «углы» в цвет подсветки и обрывистые рамки сбоку. Причина — блюр стекла
+   (backdrop-filter): Safari применяет его по прямоугольнику окошка, а не по
+   его скруглению, и в углах блюр вместе с насыщением вытягивает цвет
+   соседних свечений. Поэтому на телефоне блюр у окошек снят совсем: вместо
+   него плотнее заливка, которая и так держит читаемость поверх кадра.
+   Свечения вдвое слабее и компактнее, а тонкая градиентная кромка
+   (.glass-panel::before) убрана — край окошка ровный, без окантовки. */
+@media (max-width: 1023px) {
+  [class*="backdrop-blur"],
+  .glass-panel {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  [class*="backdrop-blur"][class*="bg-ink/4"],
+  [class*="backdrop-blur"][class*="bg-ink/5"] {
+    background-color: rgba(11, 11, 16, 0.72) !important;
+  }
+  .glass-panel {
+    background:
+      linear-gradient(155deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.012) 55%),
+      rgba(11, 11, 16, 0.86);
+  }
+  .glass-panel::before {
+    display: none;
+  }
+  .deck-neon-pulse {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 9px 0 rgba(var(--card-glow-rgb), 0.15),
+      0 0 22px -6px rgba(var(--card-glow-rgb), 0.09);
+  }
+  .deck-halo {
+    box-shadow:
+      0 0 14px 1px rgba(var(--card-glow-rgb), 0.28),
+      0 0 38px 5px rgba(var(--card-glow-rgb), 0.14);
+  }
+  .ai-deck-glow {
+    box-shadow:
+      0 0 14px 2px rgba(var(--g1), 0.3),
+      0 0 36px 6px rgba(var(--g2), 0.16);
+  }
+  .ai-deck-ambient-glow {
+    opacity: 0.5;
+  }
+}
