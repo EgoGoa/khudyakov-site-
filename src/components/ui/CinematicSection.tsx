@@ -572,10 +572,10 @@ export default function CinematicSection({
         // всплывает только развёрнутое окно.
         <div className="relative z-20 mx-auto w-full max-w-7xl shrink-0">
           {/* Плашка внизу главы приходит последней, вместе с призывом
-              (Егор, 2026-10-03): раньше она стояла на экране раньше
-              заголовка и портила паузу, в которой виден только фон. */}
+              (Егор, 2026-10-03): свой вход по BEAT.cta у неё внутри
+              (ToolSpotlight), чтобы так же вели себя плашки в слотах. */}
           <ChapterActiveProvider active={active} instant={instant}>
-            <Appear from="fade" blur={false} delay={BEAT.cta}>{footer}</Appear>
+            {footer}
           </ChapterActiveProvider>
         </div>
       )}

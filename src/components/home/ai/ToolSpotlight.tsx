@@ -6,6 +6,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import SpotlightScene from "@/components/home/ai/SpotlightScene";
 import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
 import SceneArrows from "@/components/ui/SceneArrows";
+import { useChapterEntrance } from "@/components/ui/Appear";
+import { BEAT } from "@/lib/motion";
 import { spotlightFor } from "@/components/home/ai/spotlightData";
 
 // Развёрнутая табличка услуги внизу блока — «подсказка, что об этой услуге
@@ -36,7 +38,7 @@ import { spotlightFor } from "@/components/home/ai/spotlightData";
  *  тизере») → 3.4с («динамичнее и чаще») → 5.2с после просмотра живьём
  *  («медленнее везде»). 5.2с — середина: кадр не мельтешит, но и не
  *  застывает. Потом +1.5с: Егор попросил сбавить смену сцен и текстов. */
-const BEAT_MS = 4900;
+const BEAT_MS = 6000;
 
 /** Высота закрытой кнопки. Числом, а не по содержимому: высота окна
  *  анимируется числом (см. ниже), и второй конец этой анимации тоже
@@ -106,7 +108,12 @@ export default function ToolSpotlight({
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [held, setHeld] = useState(false);
+  const [inView, setInView] = useState(false);
   const reduced = useReducedMotion();
+  // Кнопки услуг приходят вместе с остальными блоками главы, а не вместе с
+  // заголовком (Егор, 2026-10-03): появление по тому же ритму BEAT.cta, что и
+  // у остальных окошек, и без повтора при возврате на главу.
+  const { active, instant } = useChapterEntrance();
 
   const steps = data?.benefits.length ?? 0;
 
@@ -116,12 +123,21 @@ export default function ToolSpotlight({
   // как развёрнутое окно (просьба Егора) — полоса заранее показывает, что
   // внутри есть кино, а не одна застывшая иконка.
   useEffect(() => {
-    if (held || steps < 2 || reduced) return;
+    if (held || steps < 2 || reduced || !inView) return;
     // Таймер перезапускается на каждом шаге: после клика по стрелке новая
     // сцена стоит полный такт, а не сменяется через долю секунды.
     const id = window.setTimeout(() => setStep((s) => (s + 1) % steps), BEAT_MS);
     return () => window.clearTimeout(id);
-  }, [held, steps, reduced, step]);
+  }, [held, steps, reduced, step, inView]);
+
+  // Вне экрана смена сцен стоит: невидимые окна не должны греть процессор.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // Esc закрывает — то же, чего ждут от любого окна поверх содержимого.
   useEffect(() => {
@@ -232,7 +248,10 @@ export default function ToolSpotlight({
   const benefit = data.benefits[step] ?? data.benefits[0];
 
   return (
-    <div
+    <motion.div
+      initial={instant ? false : { opacity: 0 }}
+      animate={{ opacity: active || instant ? 1 : 0 }}
+      transition={{ duration: instant || reduced ? 0 : 0.8, delay: instant || reduced || !active ? 0 : BEAT.cta, ease: [0.22, 1, 0.36, 1] }}
       // Корень живёт в потоке главы: это её последний блок, а не слой
       // поверх неё. Место и форма кнопки задаются здесь же — отсюда и
       // разное выравнивание на разных блоках.
@@ -426,7 +445,7 @@ export default function ToolSpotlight({
                   <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10, filter: "blur(8px)" }}
+                    exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: reduced ? 0 : 0.35, delay: reduced ? 0 : 0.2 }}
                   >
                     <Link href={data.href} className="spotlight-tab">
@@ -470,9 +489,9 @@ export default function ToolSpotlight({
                     <AnimatePresence mode="wait" initial={false}>
                       <motion.span
                         key={step}
-                        initial={{ opacity: 0, filter: "blur(5px)" }}
-                        animate={{ opacity: 1, filter: "blur(0px)" }}
-                        exit={{ opacity: 0, filter: "blur(5px)" }}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
                         transition={{ duration: reduced ? 0 : 0.7 }}
                         className="spotlight-accent spotlight-sheen mt-0.5 block font-display text-[15px] uppercase leading-snug tracking-[0.06em]"
                       >
@@ -527,9 +546,9 @@ export default function ToolSpotlight({
                     <AnimatePresence mode="wait" initial={false}>
                       <motion.span
                         key={step}
-                        initial={{ opacity: 0, filter: "blur(5px)" }}
-                        animate={{ opacity: 1, filter: "blur(0px)" }}
-                        exit={{ opacity: 0, filter: "blur(5px)" }}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
                         transition={{ duration: reduced ? 0 : 0.7 }}
                         className="spotlight-accent spotlight-sheen mt-1 block font-display text-[15px] uppercase leading-snug tracking-[0.06em]"
                       >
@@ -559,7 +578,7 @@ export default function ToolSpotlight({
           </AnimatePresence>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

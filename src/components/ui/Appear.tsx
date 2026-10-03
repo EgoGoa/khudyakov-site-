@@ -47,6 +47,12 @@ export function useChapterActive() {
   return useContext(ChapterActive).active;
 }
 
+/** Состояние выхода главы на сцену для элементов, которым нужен свой вход без
+ *  обёртки <Appear> (она добавляет div и ломает h-full/flex-вёрстку). */
+export function useChapterEntrance() {
+  return useContext(ChapterActive);
+}
+
 export type AppearFrom = "left" | "right" | "up" | "down" | "scale" | "fade";
 
 const HIDDEN: Record<AppearFrom, Record<string, number>> = {
