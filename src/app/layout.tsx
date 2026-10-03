@@ -10,7 +10,6 @@ import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
 import VoiceAssistant from "@/components/layout/VoiceAssistant";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
-import MobileScrollRail from "@/components/ui/MobileScrollRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import MediaGovernor from "@/components/layout/MediaGovernor";
 import HeadingFit from "@/components/layout/HeadingFit";
@@ -169,7 +168,7 @@ export default function RootLayout({
               </div>
               <VibeRail />
               <VoiceAssistant />
-              <MobileScrollRail />
+              {/* Лишние стрелки вверх-вниз у края на телефоне убраны (Егор, 2026-10-03). */}
               {/* Кнопка «наверх» — здесь, а не в шаблонах страниц: она
                   нужна на каждой странице сайта, и один экземпляр в layout
                   закрывает и разделы, и подстраницы, и служебные. */}

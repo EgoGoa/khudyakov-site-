@@ -275,15 +275,15 @@ export default function NanoWave({
       const lv = levelRef.current?.() ?? 0.55;
       const dt = Math.max(0, Math.min(0.05, t - lastT));
       lastT = t;
-      const target = hotRef.current ? 1.2 + lv * 3.6 : 1.15;
+      const target = hotRef.current ? 1.2 + lv * 1.9 : 1.15;
       if (pulseRef.current !== seenPulse) {
         seenPulse = pulseRef.current;
-        energy = Math.max(energy, 2.6);
+        energy = Math.max(energy, 1.9);
       }
-      energy += (target - energy) * (hotRef.current ? 0.16 : 0.05);
+      energy += (target - energy) * (hotRef.current ? 0.045 : 0.05);
       const breath = 1 + 0.14 * Math.sin(t * 0.9) + 0.05 * Math.sin(t * 2.1);
       const e = energy * breath;
-      const speed = hotRef.current ? 1 + (energy - 1) * 0.55 : 0.8;
+      const speed = hotRef.current ? 0.85 + (energy - 1) * 0.25 : 0.8;
       // Отклик моментальный: вход — быстро, уход — мягко.
       // Мягкий отклик без рывков (Егор, 2026-10-03): вход и ход за курсором
       // плавнее.

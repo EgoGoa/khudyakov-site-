@@ -168,7 +168,7 @@ export default function CenterModal({
             // items-start вместо items-center только у вступительной сцены
             // (bare) — Егор попросил поднять лого выше; остальные окна
             // (бриф, вайб-режим блока) остаются вертикально по центру.
-            bare ? "welcome-backdrop bg-ink/45 items-start" : "bg-ink/50 items-center"
+            bare ? "welcome-backdrop bg-ink/30 items-start" : "bg-ink/50 items-center"
           }`}
           onClick={onClose}
         >

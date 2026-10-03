@@ -262,7 +262,7 @@ export default function VoiceAssistant() {
             interim += res[0].transcript;
           }
         }
-        micPulse = 1;
+        micPulse = 0.7;
         setVoiceState({ live: interim.trim() });
       };
       r.onerror = (e) => {
@@ -348,14 +348,16 @@ export default function VoiceAssistant() {
       if (st === "speaking") {
         target =
           browserSpeaking || !outAn
-            ? 0.35 + 0.45 * Math.abs(Math.sin(now / 137) * Math.sin(now / 419))
-            : Math.min(1, rms(outAn) * 5);
+            ? 0.4 + 0.3 * (0.5 + 0.5 * Math.sin(now / 520)) * (0.6 + 0.4 * Math.sin(now / 1300))
+            : Math.min(1, Math.sqrt(rms(outAn) * 3.2));
       } else if (st === "listening") {
-        micPulse *= 0.92;
-        target = micAn ? Math.min(1, rms(micAn) * 7) : micPulse;
+        micPulse *= 0.97;
+        target = micAn ? Math.min(1, Math.sqrt(rms(micAn) * 4)) : micPulse;
       }
       const cur = voiceLevel.value;
-      voiceLevel.value = target > cur ? cur + (target - cur) * 0.55 : cur * 0.88 + target * 0.12;
+      // Кинематографично: вход мягкий, спад ещё мягче — волна дышит в такт голосу,
+      // а не дёргается за каждым слогом (Егор, 2026-10-03).
+      voiceLevel.value = target > cur ? cur + (target - cur) * 0.14 : cur + (target - cur) * 0.04;
     };
     levelRaf = requestAnimationFrame(levelLoop);
 
