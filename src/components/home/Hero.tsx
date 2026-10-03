@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useRef, type CSSProperties } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
@@ -9,9 +9,10 @@ import MagneticChars from "@/components/ui/MagneticChars";
 import HeroPromoStack from "@/components/home/HeroPromoStack";
 import HeroWordmark from "@/components/home/HeroWordmark";
 import HeroHeadline from "@/components/home/HeroHeadline";
+import HeroReel from "@/components/home/HeroReel";
 import { PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import { HERO_LEAD } from "@/lib/typography";
-import { BOOT, markMediaReady, useBootStage } from "@/lib/boot-sequence";
+import { BOOT, useBootStage } from "@/lib/boot-sequence";
 
 
 // Same numbers as Stats.tsx, but a plain inline row here — no border, no
@@ -24,24 +25,13 @@ const heroStats = [
 ];
 
 export default function Hero() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const titleWrapRef = useRef<HTMLDivElement>(null);
 
-  // Self-hosted now (was a YouTube embed). Видео — первое в очереди загрузки
-  // (lib/boot-sequence): качается сразу после гидрации, а заголовок, кнопки
-  // и цифры ждут, пока оно не будет готово играть (не дольше 2,5 с). До
-  // этого место держит статичный кадр из ролика.
-  const [loadReel, setLoadReel] = useState(false);
-  // Phones (and anyone with Data Saver on) get a 640px, 1.9 MB cut of the same
-  // reel instead of the 4.3 MB full-HD one (пережат 2026-09-27 из 9.9 МБ, 650 кбит/с) — the picture is blurred and
-  // scaled behind the headline anyway, so nothing visible is lost, and it
-  // starts far sooner on a mobile connection.
-  const [reelSrc, setReelSrc] = useState("/video/showreel-hero.mp4");
-  useEffect(() => {
-    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-    if (window.innerWidth < 900 || saveData) setReelSrc("/video/showreel-hero-mobile.mp4");
-    setLoadReel(true);
-  }, []);
+  // Шоурил — на самом сайте (раньше YouTube) и в HTML с первой секунды, см.
+  // HeroReel: лёгкая нарезка играет сразу при любой связи, на широком
+  // экране потом подменяется полной. Видео — первое в очереди загрузки
+  // (lib/boot-sequence): заголовок, кнопки и цифры ждут, пока оно не будет
+  // готово играть (не дольше 2,5 с). До этого место держит кадр из ролика.
   // Каскад первого экрана: заголовок → подзаголовок → кнопки → цифры, шаг
   // 0,2 с, стартует этапом `content` очереди.
   const go = useBootStage(BOOT.content);
@@ -86,21 +76,7 @@ export default function Hero() {
           aria-hidden="true"
           className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] sm:w-[200%] md:w-[147%] lg:w-[127%]"
         />
-        {loadReel && (
-          <video
-            ref={videoRef}
-            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]"
-            src={reelSrc}
-            poster="/images/showreel-frame.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-label="Шоурил HUD.SERVICE"
-            onCanPlay={markMediaReady}
-            onError={markMediaReady}
-          />
-        )}
+        <HeroReel className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]" />
         <div
           className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-60"
           style={{

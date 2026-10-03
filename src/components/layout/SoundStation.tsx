@@ -8,8 +8,9 @@ import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceFromPath } from "@/lib/voice/intents";
 import type { ServiceKey } from "@/lib/service-content";
 
-// «Станция HDKV» в шапке: одна нота открывает плеер (музыка, настроения,
-// громкость, звуки сайта). Пока играет трек, нота пульсирует в ритм самой
+// «Станция HDKV» в шапке: значок звука. Наведение раскрывает плеер прямо
+// под ним, нажатие включает/выключает звук (выключенный — перечёркнут;
+// по умолчанию звука нет). Пока играет трек, значок пульсирует в ритм самой
 // музыки (анализатор в lib/sound), а не по заготовленной анимации.
 //
 // Иконки монохромные линии, как у остального меню шапки; цвет — только
@@ -22,9 +23,9 @@ function useSoundState() {
       const s = sound();
       return s
         ? `${s.settings.sfx}|${s.musicPlaying}|${s.settings.mood}|${s.settings.volume}|${s.track?.src ?? ""}`
-        : "true|false|focus|0.8|";
+        : "false|false|focus|0.8|";
     },
-    () => "true|false|focus|0.8|",
+    () => "false|false|focus|0.8|",
   );
 }
 
@@ -109,7 +110,7 @@ function VolumeSlider({ value, className = "", from = "#38e1ff", to = "#a36bff" 
 /** Нота в шапке, которая пульсирует в ритм музыки: масштаб берём от
  *  басов (бочка), с быстрой атакой и мягким спадом. Рисуется через
  *  style.transform по кадрам — без ререндеров React. */
-function PulseNote({ playing }: { playing: boolean }) {
+function PulseNote({ playing, muted }: { playing: boolean; muted: boolean }) {
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -146,10 +147,15 @@ function PulseNote({ playing }: { playing: boolean }) {
   return (
     <span ref={ref} className="grid place-items-center will-change-transform">
       <Glyph>
-        <path d="M9 17.5V6.2l10-2.2v11.3" />
-        <path d="M9 9.6l10-2.2" />
-        <ellipse cx="6.6" cy="17.6" rx="2.4" ry="2" />
-        <ellipse cx="16.6" cy="15.4" rx="2.4" ry="2" />
+        <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" />
+        {muted ? (
+          <path d="M16 9.5l5 5M21 9.5l-5 5" />
+        ) : (
+          <>
+            <path d="M15.5 9a4.2 4.2 0 0 1 0 6" />
+            <path d="M18 6.5a8 8 0 0 1 0 11" />
+          </>
+        )}
       </Glyph>
     </span>
   );
@@ -413,6 +419,48 @@ export default function SoundStation() {
     };
   }, [open]);
 
+  const openPlayer = () => {
+    if (open) return;
+    const s = sound();
+    if (s && pageMood && !s.moodPicked && !s.musicPlaying) {
+      const m = MOODS.find((x) => x.id === pageMood);
+      if (m?.tracks.length) s.setMood(pageMood);
+    }
+    setOpen(true);
+    sound()?.play("open");
+  };
+
+  // Наведение раскрывает плеер под значком, уход курсора (с небольшой
+  // задержкой, чтобы успеть перейти в окно) закрывает.
+  const closeTimer = useRef<number | null>(null);
+  const canHover = () => window.matchMedia("(hover: hover)").matches;
+  const hoverIn = () => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    if (canHover()) openPlayer();
+  };
+  const hoverOut = () => {
+    if (!canHover()) return;
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => setOpen(false), 280);
+  };
+
+  const onIconClick = () => {
+    const s = sound();
+    if (!s) return;
+    // Есть наведение — клик включает/выключает звук; на сенсорных экранах
+    // клик открывает плеер, а звук включается переключателем в нём.
+    if (!canHover()) {
+      toggleOpen();
+      return;
+    }
+    if (s.settings.sfx || s.musicPlaying) {
+      s.toggleMusic(false);
+      s.setSfx(false);
+    } else {
+      s.setSfx(true);
+    }
+  };
+
   const toggleOpen = () => {
     const s = sound();
     if (!open && s && pageMood && !s.moodPicked && !s.musicPlaying) {
@@ -438,6 +486,7 @@ export default function SoundStation() {
     if (!m?.tracks.length) return;
     s.moodPicked = true;
     s.setMood(id);
+    if (!s.settings.sfx) s.setSfx(true);
     if (!s.musicPlaying) s.toggleMusic(true);
     s.play("click");
   };
@@ -470,6 +519,8 @@ export default function SoundStation() {
             className="music-player"
             style={{ top: pos.top, right: pos.right, "--m-from": from, "--m-to": to } as CSSProperties}
             data-sound="off"
+            onMouseEnter={hoverIn}
+            onMouseLeave={hoverOut}
           >
             {/* Подсветка окна цветом обложки — как фон плеера Apple Music. */}
             <div className="music-player__ambient" aria-hidden="true" />
@@ -531,8 +582,10 @@ export default function SoundStation() {
                 <button
                   type="button"
                   onClick={() => {
-                    sound()?.toggleMusic();
-                    sound()?.play("click");
+                    const s = sound();
+                    if (s && !s.musicPlaying && !s.settings.sfx) s.setSfx(true);
+                    s?.toggleMusic();
+                    s?.play("click");
                   }}
                   disabled={!hasTracks}
                   aria-label={playing ? "Пауза" : "Играть"}
@@ -615,26 +668,31 @@ export default function SoundStation() {
   );
 
   return (
-    <div ref={wrapRef} className="relative flex items-center land:pointer-events-auto" data-sound="off">
+    <div
+      ref={wrapRef}
+      className="relative flex items-center land:pointer-events-auto"
+      data-sound="off"
+      onMouseEnter={hoverIn}
+      onMouseLeave={hoverOut}
+    >
       {/* Одна кнопка на звук и музыку: динамик открывает плеер. Пока играет
           музыка, рядом бежит дорожка в такт; на компьютере при наведении
           выезжает громкость. */}
       <div className="group/vol flex items-center">
         <button
           type="button"
-          onClick={toggleOpen}
-          aria-label="Звук и музыка сайта"
+          onClick={onIconClick}
+          aria-label={sfx || playing ? "Выключить звук" : "Включить звук"}
           aria-expanded={open}
-          title={sfx || playing ? "Звук и музыка" : "Звук выключен"}
+          title={sfx || playing ? "Звук включён" : "Звук выключен"}
           className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-300 sm:h-11 sm:w-11 ${
             playing ? "text-glow" : sfx ? "text-paper/80 hover:text-paper" : "text-paper/45 hover:text-paper/80"
           }`}
         >
-          {/* Знак музыки в духе Apple Music — сдвоенная нота, линией, как
-              остальные иконки шапки. По нажатию сразу открывается плеер, а
-              пока играет музыка, нота пульсирует в ритм (дорожку рядом
-              Егор убрал, 2026-09-27). */}
-          <PulseNote playing={playing} />
+          {/* Значок звука линией, как остальные иконки шапки: наведение
+              раскрывает плеер, клик включает/выключает звук (выключенный
+              перечёркнут). Пока играет музыка, пульсирует в ритм. */}
+          <PulseNote playing={playing} muted={!sfx && !playing} />
         </button>
         <div className="hidden w-0 overflow-hidden opacity-0 transition-[width,opacity] duration-300 ease-out group-hover/vol:w-[76px] group-hover/vol:opacity-100 group-focus-within/vol:w-[76px] group-focus-within/vol:opacity-100 lg:flex">
           <VolumeSlider value={volume} className="mx-1 w-[68px]" />

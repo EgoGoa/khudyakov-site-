@@ -9599,21 +9599,9 @@ html[data-mid] .hero-promo { transition: none; }
   }
 }
 
-/* Окошки акций, плашки команды и «Заказать» приходят после основных блоков
-   главы (Егор, 2026-10-03): сначала заголовок с подзаголовком над фоном, потом
-   блоки по очереди и только потом окошки. Метку data-late ставит
-   CinematicSection лишь на первом заходе в главу, поэтому при возврате
-   окошки стоят сразу и анимация не повторяется. */
-[data-chapter-pane][data-late] .late-window {
-  animation: late-window-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 5.3s both;
-}
-@keyframes late-window-in {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  [data-chapter-pane][data-late] .late-window { animation: none; }
-}
+/* Окошки акций и команды больше не ждут отдельной задержки: их очередь
+   задаёт <Appear> (BEAT/STAGGER в lib/motion.ts), а прежние 5,3 с поверх
+   неё оставляли окошко с Егором одно после большой паузы (Егор, 2026-10-03). */
 
 /* ── Телефон: углы и края окошек (Егор, 2026-10-03) ──────────────────────
    На iPhone за скруглёнными окошками и карточками виднелись квадратные
@@ -9660,5 +9648,44 @@ html[data-mid] .hero-promo { transition: none; }
   }
   .ai-deck-ambient-glow {
     opacity: 0.5;
+  }
+}
+
+/* ── Телефон: свет карточек каруселей — внутри карточки (Егор, 2026-10-03) ──
+   Внешнее свечение (отдельные слои за карточкой + blur-фильтр + поворот в 3D)
+   Safari на iPhone обрезает по прямоугольнику слоя: по краям были прямые
+   обрывы и острые углы. Править размеры теней не помогло — дело в самом
+   слое. Поэтому на телефоне внешние слои света сняты, фильтр размытия у
+   боковых карточек снят (глубину держит затемнение), а свет нарисован
+   ВНУТРИ карточки тенью inset: она обрезается её же скруглением, углам
+   острыми взяться неоткуда. */
+@media (max-width: 1023px) {
+  .deck-rail .deck-halo-fade,
+  .deck-rail .ai-deck-glow {
+    display: none !important;
+  }
+  .deck-rail .deck-pose-blur {
+    filter: none !important;
+  }
+  /* Лёгкое размытие боковых карточек — на содержимом ВНУТРИ скруглённой
+     рамки, а не на обёртке: размытие обрезается скруглением и не может
+     выйти наружу прямоугольником. Маска возвращает Safari скругление
+     клипа, которое он теряет у детей с filter. */
+  .deck-rail .deck-pose-blur > button,
+  .deck-rail .deck-pose-blur > a {
+    isolation: isolate;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+  }
+  .deck-rail .deck-pose-blur > button > *,
+  .deck-rail .deck-pose-blur > a > * {
+    filter: blur(calc(var(--deck-blur, 0px) * 0.5));
+  }
+  .deck-rail .deck-card-glow:not(:hover):not(:focus-visible),
+  .deck-rail .deck-neon-pulse:not(:hover):not(:focus-visible) {
+    transform: none !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--card-glow-rgb, 52, 211, 153), 0.55),
+      inset 0 0 22px 0 rgba(var(--card-glow-rgb, 52, 211, 153), 0.3),
+      0 18px 40px -24px rgba(0, 0, 0, 0.85) !important;
   }
 }

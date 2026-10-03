@@ -54,7 +54,7 @@ export default function MediaGovernor() {
 
     function settle(v: HTMLVideoElement) {
       if (!v.loop) return;
-      if (lite) {
+      if (lite && !v.hasAttribute("data-hero-reel")) {
         if (!v.paused) v.pause();
         return;
       }
@@ -74,6 +74,18 @@ export default function MediaGovernor() {
     const seen = new WeakSet<HTMLVideoElement>();
     const adopt = (v: HTMLVideoElement) => {
       const src = v.getAttribute("src");
+      // Шоурил шапки (HeroReel) сам выбирает лёгкую или полную версию и
+      // обязан играть при любой связи и на любом устройстве (Егор,
+      // 2026-10-03): в lite-режиме у него и так сняты фильтры, а файл —
+      // 640px/290 кбит/с, так что выгружать его незачем. Диспетчер только
+      // следит, чтобы он стоял на паузе вне экрана.
+      if (v.hasAttribute("data-hero-reel")) {
+        if (!seen.has(v)) {
+          seen.add(v);
+          io.observe(v);
+        }
+        return;
+      }
       if (lite) {
         if (src) {
           v.removeAttribute("src");

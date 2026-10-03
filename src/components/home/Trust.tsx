@@ -263,7 +263,7 @@ export default function Trust({
             adds the same slow breathing glow BlockAssistant's search bar
             has, in the card's own magenta→orange pair, since Egor asked
             for this card specifically to pulse the way that bar does. */}
-        <Appear from="up" delay={BEAT.cta} className="hidden lg:mt-2 lg:block lg:h-full lg:max-w-[540px] xl:max-w-[580px]">
+        <Appear from="up" delay={BEAT.cta + STAGGER.normal} className="hidden lg:mt-2 lg:block lg:h-full lg:max-w-[540px] xl:max-w-[580px]">
           {active === "content" && (
             <PromoCard
               glow

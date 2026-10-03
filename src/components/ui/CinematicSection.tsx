@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { useStageActive, useIsStaged, useHasSeenChapter, useChapterReady } from "@/components/ui/CinematicStage";
+import { useStageActive, useStageStarted, useIsStaged, useHasSeenChapter, useChapterReady } from "@/components/ui/CinematicStage";
 import Appear, { ChapterActiveProvider } from "@/components/ui/Appear";
 import { BEAT, DUR, EASE as MOTION_EASE } from "@/lib/motion";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
@@ -290,7 +290,21 @@ export default function CinematicSection({
   // this renders as a normal, always-visible, static-flow section instead.
   const staged = useIsStaged();
   const stageActive = useStageActive(index);
-  const active = staged ? stageActive : true;
+  // Первая глава колоды «активна» с самой загрузки страницы, пока человек
+  // ещё в шапке, поэтому её вход проигрывался за кадром, а при подъезде всё
+  // стояло готовым сразу. Держим её выключенной, пока колода не доехала до
+  // экрана, и один раз проигрываем вход по очереди (Егор, 2026-10-03).
+  const deckStarted = useStageStarted();
+  const zero = staged && index === 0;
+  const startedEver = useRef(false);
+  const leftAfterStart = useRef(false);
+  /* eslint-disable react-hooks/refs -- флаги «колода уже подъезжала» живут между рендерами */
+  if (deckStarted) startedEver.current = true;
+  if (zero && startedEver.current && !stageActive) leftAfterStart.current = true;
+  const gatedZero = zero && !startedEver.current;
+  const zeroFirstRun = zero && !leftAfterStart.current;
+  /* eslint-enable react-hooks/refs */
+  const active = staged ? stageActive && !gatedZero : true;
   // Once this chapter has taken the stage before this page load, every later
   // return to it (scrolling back up, then down again) renders instantly
   // instead of replaying its entrance — see CinematicStage's `seen` state.
@@ -298,7 +312,7 @@ export default function CinematicSection({
   // Заголовок глав рисуется сразу, а тяжёлое (тело, декор) — только когда
   // глава открыта или догрета в простое: так страница открывается быстро.
   const ready = useChapterReady(index);
-  const instant = staged && alreadySeen;
+  const instant = staged && alreadySeen && !zeroFirstRun;
   // `spacious` exists to give a chapter a full screen of room on a page that
   // has no deck — see the prop's own note. Inside a deck every pane already
   // *is* exactly one screen (`absolute inset-0`), so applying it there did

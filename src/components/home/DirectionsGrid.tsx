@@ -277,6 +277,18 @@ export default function DirectionsGrid() {
     <ReelsDeck key="reels" running={active} />,
   ];
 
+  // Окошки появляются по очереди в порядке чтения сетки (ряд за рядом,
+  // слева направо), включая окошко Егора и карусель рилсов; пауза только
+  // между заголовком и первым окошком (Егор, 2026-10-03). Раньше порядок
+  // шёл по массиву, и Егор с каруселью приходили последними, через 6 секунд.
+  const keys = cards.map((c) => String(c.key));
+  const rest = keys.filter((k) => !["image", "special", "consult", "reels"].includes(k));
+  const order = [rest[0], rest[1], "consult", rest[2], rest[3], "reels", "image", "special"];
+  const rankOf = (k: string) => {
+    const r = order.indexOf(k);
+    return r < 0 ? order.length : r;
+  };
+
   return (
     <div className="grid gap-8 sm:grid-cols-2 sm:gap-5 lg:grid-cols-[1fr_1fr_1.5fr]">
       {cards.map((card, i) => (
@@ -298,7 +310,7 @@ export default function DirectionsGrid() {
           key={card.key}
           as="article"
           from="up"
-          delay={BEAT.content + i * STAGGER.normal}
+          delay={BEAT.content + rankOf(keys[i]) * STAGGER.tight}
           duration={DUR.row}
           className={
             card.key === "reels"

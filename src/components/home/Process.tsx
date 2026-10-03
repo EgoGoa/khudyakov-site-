@@ -317,7 +317,7 @@ export default function Process({
               }
             />
           </Appear>
-          <Appear from="up" delay={BEAT.cta} className="h-full">
+          <Appear from="up" delay={BEAT.cta + 1 * STAGGER.normal} className="h-full">
             {middleSlot ?? <TeamAskCard
               member={processPerson}
               // Compact variant only shows `question`, not `pitch` — the
@@ -331,7 +331,7 @@ export default function Process({
               className="h-full"
             />}
           </Appear>
-          <Appear from="up" delay={BEAT.cta} className="h-full">
+          <Appear from="up" delay={BEAT.cta + 2 * STAGGER.normal} className="h-full">
             {/* Егор как сервис (TeamPulse) вместо карточки. */}
             <TeamPulse data={EGOR_CONTENT} compact fill source="/content · глава «PRO хронология»" />
           </Appear>
@@ -353,7 +353,7 @@ export default function Process({
             {/* Макс как сервис (TeamPulse) вместо карточки. */}
             <TeamPulse data={MAX_AI} compact fill source="/ai · глава «Как проходит внедрение»" />
           </Appear>
-          <Appear from="up" delay={BEAT.cta} className="h-full">
+          <Appear from="up" delay={BEAT.cta + 1 * STAGGER.normal} className="h-full">
             <PromoCard
               {...promo("ai-generation")}
             />

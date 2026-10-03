@@ -116,7 +116,7 @@ const XFADE = 2.5;
 
 type Settings = { sfx: boolean; music: boolean; mood: MoodId; volume: number };
 const KEY = "hdkv-sound-v1";
-const DEFAULTS: Settings = { sfx: true, music: false, mood: "focus", volume: 0.8 };
+const DEFAULTS: Settings = { sfx: false, music: false, mood: "focus", volume: 0.8 };
 
 function readSettings(): Settings {
   try {
@@ -124,7 +124,9 @@ function readSettings(): Settings {
     if (!raw) return DEFAULTS;
     const parsed = JSON.parse(raw) as Partial<Settings>;
     return {
-      sfx: parsed.sfx ?? DEFAULTS.sfx,
+      // Звука нет, пока человек сам не включил его значком в шапке — на
+      // каждом новом заходе, как и музыка (Егор, 2026-10-03).
+      sfx: false,
       // Музыка не заводится сама на новом заходе — только по кнопке.
       music: false,
       mood: MOODS.some((m) => m.id === parsed.mood) ? (parsed.mood as MoodId) : DEFAULTS.mood,

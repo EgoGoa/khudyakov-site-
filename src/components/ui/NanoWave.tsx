@@ -4,11 +4,18 @@ import { frozenFor } from "@/lib/welcome-freeze";
 
 import { useEffect, useRef } from "react";
 
-// Спящий режим (prop `sleepy`, нижняя волна): в покое волна полностью
-// застывает — плавно тормозит до неподвижного кадра и перестаёт рисоваться
-// вовсе, процессор не тратится (Егор, 2026-10-03). Оживает от курсора
-// рядом, голоса и всплеска ответа.
+// Спящий режим (prop `sleepy`, нижняя волна): в покое волна очень медленно
+// переливается (Егор, 2026-10-03: «плавно, очень медленно, лёгкое
+// переливание, без нагрузки на процессор»). Нагрузку держим малой тремя
+// способами: часы волны идут в 4–5 раз медленнее, кадры в покое
+// перерисовываются редко (≈18 в секунду, на телефоне ≈12), линий меньше, а на
+// телефоне холст в 1x. Вне экрана, в фоновой вкладке и под окнами не
+// рисуется вовсе. Курсор рядом, голос и всплеск ответа возвращают полную
+// живую волну.
 const SLEEP_CLOCK_S = 1.3; // первый кадр — красивая спокойная форма
+const IDLE_RATE = 0.22; // скорость часов в покое
+const IDLE_FRAME_MS = 55; // кадры в покое на компьютере
+const IDLE_FRAME_MS_LITE = 80; // и на средних/слабых устройствах
 
 // Знак голосового ассистента (Егор, 2026-09-26): «в стиле нашей сферы, но
 // другая иконка — полоса частот, горизонтальная, вибрирует, а когда
@@ -91,7 +98,8 @@ export default function NanoWave({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const lite0 = document.documentElement.hasAttribute("data-lite") || document.documentElement.hasAttribute("data-mid");
+    const dpr = sleepy && lite0 ? 1 : Math.min(window.devicePixelRatio || 1, 2);
     const W = (width + padX * 2) * dpr;
     const H = (height + padY * 2) * dpr;
     canvas.width = Math.round(W);
@@ -128,7 +136,9 @@ export default function NanoWave({
     const light = html.hasAttribute("data-lite") || html.hasAttribute("data-mid");
     // Не слишком плотно (Егор): лента из 13 линий, а не 20.
     // Большая волна (окно) — больше линий, чтобы не терять детализацию.
-    const LINES = Math.round((light ? 9 : 13) * Math.min(1.5, Math.max(1, height / 60)));
+    const LINES = sleepy
+      ? light ? 6 : 9
+      : Math.round((light ? 9 : 13) * Math.min(1.5, Math.max(1, height / 60)));
 
     // Пыль на концах (Егор: «чтобы по краям она распылялась»): мелкие искры
     // рождаются у обоих концов ленты и улетают наружу, растворяясь. В
@@ -399,7 +409,7 @@ export default function NanoWave({
       // Собственные часы волны: стоят, пока она не рисуется. Спящая волна
       // начинает с готовой спокойной формы и сразу застывает.
       let clock = sleepy ? SLEEP_CLOCK_S * 1000 : 0;
-      let rate = sleepy ? 0 : 1;
+      let rate = sleepy ? IDLE_RATE : 1;
       const frozen = frozenFor(wrap);
       const settle = settleAt(wrap);
       const loop = (now: number) => {
@@ -414,17 +424,12 @@ export default function NanoWave({
         // Спящий режим: без наведения, голоса и всплеска волна плавно
         // тормозит и застывает; тогда цикл кадров выключается совсем.
         const awake = !sleepy || hotRef.current || inside || hoverS > 0.02 || energy > 1.2 || ripples.length > 0;
-        rate += ((awake ? 1 : 0) - rate) * (awake ? 0.15 : 0.06);
-        if (now - last < frameMs) return;
+        rate += ((awake ? 1 : IDLE_RATE) - rate) * (awake ? 0.15 : 0.04);
+        const gap = sleepy && !awake ? (light ? IDLE_FRAME_MS_LITE : IDLE_FRAME_MS) : frameMs;
+        if (now - last < gap) return;
         if (last) clock += Math.min(now - last, 100) * rate;
         last = now;
         draw(clock / 1000);
-        if (sleepy && !awake && rate < 0.01 && !blending) {
-          cancelAnimationFrame(raf);
-          raf = 0;
-          last = 0;
-          rate = 0;
-        }
       };
       wakeRef.current = () => {
         if (!raf) raf = requestAnimationFrame(loop);
