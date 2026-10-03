@@ -47,15 +47,8 @@ export default function SitesProcess() {
           <>
             Как
             <br />
-            {/* "проходит" alone still didn't fit the column at the exact
-                viewport width where the lg breakpoint's bigger heading
-                font meets its narrower lg column (~1024–1279px) — the box
-                itself, not the heading's own max-width, was the real
-                constraint there, so widening max-width alone (tried first)
-                did nothing. Scaling just this one word down 15% is what
-                actually keeps it on one line at that width without
-                touching "Как"/"работа" or any other heading on the site. */}
-            <span style={{ fontSize: "0.85em" }}>проходит</span>
+            {/* Все слова одного размера; не влезает — ужимает весь заголовок HeadingFit. */}
+            проходит
             <br />
             <span className="kw">работа</span>
           </>

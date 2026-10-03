@@ -68,23 +68,14 @@ export default function SmmPitch() {
           <div className="order-1 lg:order-none land:order-none">
 
           <Appear from="up" delay={BEAT.title}>
-            {/* The explicit break is what puts "продакшена" on its own line as
-                the keyword; no automatic wrap does it at every step of the
-                responsive type scale, and the measure is in `em` so the shape
-                survives all of them.
-                "продакшена" (10 letters) still didn't fit its own line at
-                the width around the lg breakpoint, where the column narrows
-                and the heading font jumps at the same time — `.font-display`'s
-                site-wide `overflow-wrap: break-word` then force-broke the
-                word itself ("ПРОДАКШ"/"ЕНА"). Scaling just this word down
-                keeps it on one line there without touching "SMM силами" or
-                any other heading's size. */}
-            <h2 className="chapter-neon-violet max-w-[7.3em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.24rem] xl:text-[3.6rem]">
+            {/* Явный перенос ставит «продакшена» на свою строку ключевым словом.
+                Размер у всех слов один: если слово не влезает в колонку,
+                уменьшает весь заголовок целиком общий HeadingFit
+                (components/layout), а не отдельный span. */}
+            <h2 className="chapter-neon-violet font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] land:text-[1.89rem] lg:text-[3.24rem] xl:text-[3.6rem]">
               SMM силами
               <br />
-              {/* На телефоне слово влезает целиком — все слова одного размера
-                  (Егор, 2026-09-29); уменьшено только на lg, где колонка узкая. */}
-              <span className="kw lg:text-[0.72em]">
+              <span className="kw">
                 продакшена
               </span>
             </h2>

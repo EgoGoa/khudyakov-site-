@@ -67,11 +67,8 @@ export default function SmmProcess() {
           <>
             Как
             <br />
-            {/* Same fix as SitesProcess — see that file's comment. Widening
-                max-width alone (tried first) did nothing, because at this
-                breakpoint the column itself, not the heading's max-width,
-                was the actual constraint. */}
-            <span style={{ fontSize: "0.85em" }}>проходит</span>
+            {/* Все слова одного размера; не влезает — ужимает весь заголовок HeadingFit. */}
+            проходит
             <br />
             <span className="kw">работа</span>
           </>

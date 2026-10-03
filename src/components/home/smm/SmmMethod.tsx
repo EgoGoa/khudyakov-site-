@@ -111,11 +111,8 @@ export default function SmmMethod() {
           <>
             Не
             <br />
-            {/* "подрядчик" alone force-broke mid-word ("ПОДРЯДЧ"/"ИК") at
-                the same lg-breakpoint pinch as SitesProcess/SmmProcess's
-                "проходит" — same fix: scale just this word down, the box
-                itself (not max-width) is the real constraint there. */}
-            <span className="kw" style={{ fontSize: "0.72em" }}>
+            {/* Все слова заголовка одного размера; не влезает — ужимает весь заголовок HeadingFit. */}
+            <span className="kw">
               подрядчик
             </span>
           </>

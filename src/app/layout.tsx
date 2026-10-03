@@ -13,6 +13,7 @@ import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import MobileScrollRail from "@/components/ui/MobileScrollRail";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import MediaGovernor from "@/components/layout/MediaGovernor";
+import HeadingFit from "@/components/layout/HeadingFit";
 import PerfGovernor from "@/components/layout/PerfGovernor";
 import MotionTier from "@/components/layout/MotionTier";
 import { LITE_DETECT_SNIPPET } from "@/lib/lite";
@@ -140,6 +141,7 @@ export default function RootLayout({
             и реальным кадрам и при тормозах снижает его — см. компонент. */}
         <PerfGovernor />
         <MediaGovernor />
+        <HeadingFit />
         {/* Замораживает CSS-анимации в блоках за пределами экрана — см.
             сам компонент. Здесь, а не в шаблонах страниц: бесконечные
             анимации (неоновые пульсации кнопок, карточек, фото команды)
