@@ -137,7 +137,7 @@ export default function TeamConsultModal({
               type="button"
               disabled={!canSend}
               onClick={submit}
-              className={`mx-auto mt-6 rounded-full bg-rec px-7 py-3 text-sm font-medium text-white transition ${
+              className={`mx-auto mt-6 rounded-[14px] bg-rec px-7 py-3 text-sm font-medium text-white transition ${
                 canSend ? "hover:bg-rec-light active:scale-95" : "pointer-events-none opacity-40"
               }`}
             >
@@ -163,7 +163,7 @@ export default function TeamConsultModal({
             <button
               type="button"
               onClick={close}
-              className="mx-auto mt-7 rounded-full bg-rec px-7 py-3 text-sm font-medium text-white transition hover:bg-rec-light"
+              className="mx-auto mt-7 rounded-[14px] bg-rec px-7 py-3 text-sm font-medium text-white transition hover:bg-rec-light"
             >
               Закрыть
             </button>
@@ -185,7 +185,7 @@ export default function TeamConsultModal({
             <button
               type="button"
               onClick={() => setScreen("form")}
-              className="mx-auto mt-7 rounded-full border border-paper/20 px-6 py-3 text-sm font-medium text-paper transition hover:border-paper/50"
+              className="mx-auto mt-7 rounded-[14px] border border-paper/20 px-6 py-3 text-sm font-medium text-paper transition hover:border-paper/50"
             >
               ← Назад
             </button>

@@ -48,7 +48,7 @@ export default async function AdminLoginPage({
 
           <button
             type="submit"
-            className="w-full rounded-full bg-rec px-8 py-3.5 text-sm font-medium text-white transition hover:bg-rec-light active:scale-95"
+            className="w-full rounded-[14px] bg-rec px-8 py-3.5 text-sm font-medium text-white transition hover:bg-rec-light active:scale-95"
           >
             Войти
           </button>

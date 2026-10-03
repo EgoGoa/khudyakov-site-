@@ -87,7 +87,7 @@ export default function OrderMenu({
   const item =
     "flex w-full items-center justify-between gap-3 rounded-2xl bg-white/[0.06] px-4 py-3 text-left font-display text-[13px] uppercase tracking-tight text-white ring-1 ring-white/15 transition hover:bg-white/[0.12] hover:ring-white/35";
   const chip = (on: boolean) =>
-    `rounded-full px-3 py-1.5 font-display text-[11px] uppercase tracking-tight ring-1 transition ${
+    `rounded-[14px] px-3 py-1.5 font-display text-[11px] uppercase tracking-tight ring-1 transition ${
       on ? "bg-white/15 text-white ring-white/60" : "text-white/70 ring-white/15 hover:text-white hover:ring-white/35"
     }`;
 

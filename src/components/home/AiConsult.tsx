@@ -135,7 +135,7 @@ export default function AiConsult() {
                     key={s}
                     type="button"
                     onClick={() => sendMessage(s)}
-                    className="rounded-full border border-paper/10 px-3 py-1.5 text-xs text-paper/60 transition hover:border-glow/50 hover:text-glow"
+                    className="rounded-[14px] border border-paper/10 px-3 py-1.5 text-xs text-paper/60 transition hover:border-glow/50 hover:text-glow"
                   >
                     {s}
                   </button>

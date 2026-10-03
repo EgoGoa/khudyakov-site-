@@ -210,7 +210,7 @@ export default function Contact() {
               <div className="md:col-span-2">
                 <button
                   type="submit"
-                  className="w-full rounded-full bg-rec px-8 py-4 text-sm font-medium text-white transition hover:bg-rec-light sm:w-auto"
+                  className="w-full rounded-[14px] bg-rec px-8 py-4 text-sm font-medium text-white transition hover:bg-rec-light sm:w-auto"
                 >
                   Отправить
                 </button>

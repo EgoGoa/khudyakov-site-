@@ -18,9 +18,13 @@ const POSTER = "/video/sites-showcase-phone.jpg";
 export default function SitesPhoneShowcase({ className = "" }: { className?: string }) {
   return (
     <div className={`relative flex shrink-0 justify-center ${className}`} aria-hidden="true">
-      {/* Размытое продолжение кадра по бокам телефона. */}
+      {/* Размытое продолжение кадра по бокам телефона. Только с lg: на
+          телефоне blur + mask на одном слое в мобильном Safari рисуется
+          грязным прямоугольником за рамкой (Егор, 2026-10-03) — там хватает
+          тёплого свечения самой рамки. (Tailwind 3: вариантов max-* нет,
+          поэтому hidden + lg:block.) */}
       <div
-        className="pointer-events-none absolute -inset-y-6 left-1/2 w-[22rem] -translate-x-1/2 scale-110 bg-cover bg-center opacity-60 blur-[44px] saturate-[1.35]"
+        className="pointer-events-none absolute hidden lg:block -inset-y-6 left-1/2 w-[22rem] -translate-x-1/2 scale-110 bg-cover bg-center opacity-60 blur-[44px] saturate-[1.35]"
         style={{
           backgroundImage: `url(${POSTER})`,
           WebkitMaskImage: "radial-gradient(closest-side, #000 35%, transparent 100%)",

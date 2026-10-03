@@ -192,7 +192,7 @@ const DECK_BEAT_MS = 4200;
 // site's orange: /ai's whole icon set and accent is emerald, and an orange
 // key here read as borrowed from the neighbouring page.
 export const AI_PILL =
-  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#03120d] shadow-[0_12px_30px_-8px_rgba(16,185,129,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
+  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-[14px] bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#03120d] shadow-[0_12px_30px_-8px_rgba(16,185,129,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
 
 export const AI_ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-[color,border-color,transform] duration-300 hover:scale-110 hover:border-emerald-300/70 hover:text-emerald-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
@@ -384,7 +384,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                         // colour plate, and a fifth smaller again — Егор:
                         // кнопка забирала на себя слишком много внимания и
                         // светилась слишком сильно.
-                        className={`deck-open-pill inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[7px] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
+                        className={`deck-open-pill inline-flex items-center gap-1.5 rounded-[14px] px-2.5 py-1 font-display text-[7px] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
                           isFront ? "" : "deck-open-pill-still"
                         }`}
                         style={{ "--pill-rgb": card.hit ? "255, 138, 92" : "92, 230, 176" } as React.CSSProperties}

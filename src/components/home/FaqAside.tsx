@@ -197,7 +197,7 @@ export default function FaqAside({ set = "content" }: { set?: "content" | "ai" }
               type="button"
               onClick={() => selectCategory(i)}
               aria-pressed={category === i}
-              className={`btn-neon tab-neon rounded-full px-3 py-1.5 font-display text-[11px] uppercase tracking-wide leading-none transition ${
+              className={`btn-neon tab-neon rounded-[14px] px-3 py-1.5 font-display text-[11px] uppercase tracking-wide leading-none transition ${
                 category === i ? "text-white" : "text-paper/60"
               }`}
               style={{ "--tab-delay": `${(i % 4) * 0.9}s` } as CSSProperties}

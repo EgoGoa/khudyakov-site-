@@ -182,7 +182,7 @@ export default function Hero() {
         >
           <a
             href="tel:+79925111812"
-            className="btn-neon grid h-12 w-12 place-items-center !rounded-full !p-0 !text-[9px] sm:flex sm:!rounded-[14px] sm:h-auto sm:w-auto sm:!px-4 sm:!py-2"
+            className="btn-neon grid h-12 w-12 place-items-center !p-0 !text-[9px] sm:flex sm:h-auto sm:w-auto sm:!px-4 sm:!py-2"
             style={{ "--btn-neon-delay": "0s" } as CSSProperties}
           >
             <PhoneIcon className="h-5 w-5 animate-pulse sm:h-4 sm:w-4" />
@@ -192,7 +192,7 @@ export default function Hero() {
             href="https://t.me/hdkv"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-neon grid h-12 w-12 place-items-center !rounded-full !p-0 !text-[9px] sm:flex sm:!rounded-[14px] sm:h-auto sm:w-auto sm:!px-4 sm:!py-2"
+            className="btn-neon grid h-12 w-12 place-items-center !p-0 !text-[9px] sm:flex sm:h-auto sm:w-auto sm:!px-4 sm:!py-2"
             style={{ "--btn-neon-delay": "1.2s" } as CSSProperties}
           >
             <TelegramIcon className="h-5 w-5 sm:h-4 sm:w-4" />
@@ -202,7 +202,7 @@ export default function Hero() {
             href="https://wa.me/79925111812"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-neon grid h-12 w-12 place-items-center !rounded-full !p-0 !text-[9px] sm:flex sm:!rounded-[14px] sm:h-auto sm:w-auto sm:!px-4 sm:!py-2"
+            className="btn-neon grid h-12 w-12 place-items-center !p-0 !text-[9px] sm:flex sm:h-auto sm:w-auto sm:!px-4 sm:!py-2"
             style={{ "--btn-neon-delay": "2.4s" } as CSSProperties}
           >
             <WhatsAppIcon className="h-5 w-5 sm:h-4 sm:w-4" />

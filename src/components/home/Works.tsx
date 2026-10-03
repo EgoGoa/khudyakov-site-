@@ -98,7 +98,7 @@ function SegmentedAxis({
   // one freezes it bright while .tab-neon-row's CSS dims and pauses the
   // rest (globals.css).
   const pillClass = (isActive: boolean, index: number) =>
-    `btn-neon tab-neon rounded-full px-3 py-1.5 font-display text-[11px] uppercase tracking-wide leading-none transition ${
+    `btn-neon tab-neon rounded-[14px] px-3 py-1.5 font-display text-[11px] uppercase tracking-wide leading-none transition ${
       isActive ? "text-white" : "text-paper/60"
     }`;
   const pillStyle = (index: number) => ({ "--tab-delay": `${(index % 4) * 0.9}s` }) as CSSProperties;
@@ -613,7 +613,7 @@ export default function Works({
                     setFilter(ALL);
                     setSphere(ALL_SPHERES);
                   }}
-                  className="rounded-full border border-paper/15 px-4 py-1.5 font-display text-[11px] uppercase tracking-[0.12em] text-paper/70 transition-colors duration-300 hover:border-glow/60 hover:text-glow"
+                  className="rounded-[14px] border border-paper/15 px-4 py-1.5 font-display text-[11px] uppercase tracking-[0.12em] text-paper/70 transition-colors duration-300 hover:border-glow/60 hover:text-glow"
                 >
                   Сбросить фильтры
                 </button>
@@ -624,7 +624,7 @@ export default function Works({
               <div className="mt-8 flex justify-center">
                 <button
                   onClick={() => setVisible((v) => v + PAGE_SIZE)}
-                  className="inline-flex items-center gap-2 rounded-full border border-paper/15 px-6 py-2.5 font-display text-xs uppercase tracking-[0.15em] text-paper/70 transition-all duration-300 hover:border-glow/60 hover:text-glow hover:shadow-[0_0_16px_rgba(0,210,255,0.2)]"
+                  className="inline-flex items-center gap-2 rounded-[14px] border border-paper/15 px-6 py-2.5 font-display text-xs uppercase tracking-[0.15em] text-paper/70 transition-all duration-300 hover:border-glow/60 hover:text-glow hover:shadow-[0_0_16px_rgba(0,210,255,0.2)]"
                 >
                   Показать ещё
                   <span className="font-display text-paper/40">

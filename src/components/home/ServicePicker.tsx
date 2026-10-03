@@ -437,7 +437,7 @@ export default function ServicePicker() {
 
         <Link
           href={`/${previewMeta.slug}`}
-          className="grad-border mt-6 inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
+          className="grad-border mt-6 inline-flex items-center gap-2 rounded-[14px] border px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
         >
           Подробнее об услуге →
         </Link>

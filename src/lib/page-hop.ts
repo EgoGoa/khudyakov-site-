@@ -65,10 +65,16 @@ export function queueFirstChapter() {
  *  (scroll: false), и колоде новой страницы не с чем гоняться. Раньше
  *  прыжок делался после монтирования и спорил с автосинхронизацией
  *  колоды по старому положению прокрутки. */
-export function scrollToDeckStart() {
+export function scrollToDeckStart(behavior: ScrollBehavior = "instant") {
   const wrap = document.querySelector<HTMLElement>("[data-stage-wrap]");
   if (!wrap) return;
-  window.scrollTo({ top: wrap.getBoundingClientRect().top + window.scrollY, behavior: "instant" });
+  // Телефон (Егор, 2026-10-03): шапка фиксированная, и без поправки на её
+  // высоту заголовок первой главы оказывался под ней. На компьютере колода
+  // сама встаёт под шапку, поправка не нужна.
+  const phone = window.matchMedia("(max-width: 1023px)").matches;
+  const headerH = phone ? document.querySelector("header")?.getBoundingClientRect().height ?? 0 : 0;
+  const top = wrap.getBoundingClientRect().top + window.scrollY - headerH;
+  window.scrollTo({ top: Math.max(top, 0), behavior });
 }
 const FIRST = "\u0000first";
 

@@ -223,7 +223,7 @@ export default function TeamPulseWindow({
                             </p>
                             <div className="mt-auto pt-3">
                               <div className="flex items-center gap-3">
-                                <span className="rounded-full px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.14em] text-white ring-1 ring-white/35">
+                                <span className="rounded-[14px] border border-white/35 px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.14em] text-white">
                                   {t.chip}
                                 </span>
                                 <span className="font-display text-[16px] uppercase sm:text-[20px]">{marks(t.chipWord)}</span>

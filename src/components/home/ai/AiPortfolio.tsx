@@ -194,7 +194,7 @@ export default function AiPortfolio() {
                   language, not the quiet outlined ghost link it was. */}
               <Link
                 href="/brief/ai"
-                className="ai-open-pulse mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-3.5 py-1.5 font-display text-[11px] font-medium uppercase tracking-[0.08em] text-[#03120d] transition-[filter] duration-300 hover:brightness-110"
+                className="ai-open-pulse mt-4 inline-flex items-center gap-2 rounded-[14px] bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-3.5 py-1.5 font-display text-[11px] font-medium uppercase tracking-[0.08em] text-[#03120d] transition-[filter] duration-300 hover:brightness-110"
               >
                 Хочу так же
               </Link>

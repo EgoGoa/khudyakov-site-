@@ -43,7 +43,7 @@ export default function FinalCTA() {
               </Link>
               <a
                 href="mailto:khudyakov.yegor@gmail.com"
-                className="rounded-full border border-paper/15 px-7 py-3.5 text-sm font-medium text-paper transition hover:bg-paper/5"
+                className="rounded-[14px] border border-paper/15 px-7 py-3.5 text-sm font-medium text-paper transition hover:bg-paper/5"
               >
                 Написать на почту →
               </a>

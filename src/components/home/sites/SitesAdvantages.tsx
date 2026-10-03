@@ -141,8 +141,14 @@ export default function SitesAdvantages({ className = "" }: { className?: string
           <div
             key={i}
             aria-hidden={i !== idx}
-            className={`col-start-1 row-start-1 self-center transition-opacity duration-700 ease-out ${
-              i === idx ? "opacity-100" : "pointer-events-none opacity-0"
+            // Смена последовательная, не кроссфейдом: уходящий слайд гаснет
+            // целиком (0.45с), и только потом проявляется новый (задержка
+            // 0.5с). Иначе три разные по форме композиции на 0.7с лежат друг
+            // на друге.
+            className={`col-start-1 row-start-1 self-center transition-[opacity,transform] ease-out ${
+              i === idx
+                ? "translate-y-0 opacity-100 delay-500 duration-500"
+                : "pointer-events-none translate-y-2 opacity-0 delay-0 duration-[450ms]"
             }`}
           >
             {slide}

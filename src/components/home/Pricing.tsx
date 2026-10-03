@@ -37,7 +37,7 @@ export default function Pricing() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/calculator"
-              className="rounded-full border border-glow/40 px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
+              className="rounded-[14px] border border-glow/40 px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
             >
               Посчитать свой бюджет →
             </Link>
@@ -90,7 +90,7 @@ export default function Pricing() {
               </ul>
               <a
                 href="#contact"
-                className={`mt-auto self-center rounded-full px-8 py-2.5 text-sm font-semibold transition ${
+                className={`mt-auto self-center rounded-[14px] px-8 py-2.5 text-sm font-semibold transition ${
                   tier.pro
                     ? "bg-rec text-white hover:bg-rec-light"
                     : "bg-paper text-ink hover:bg-white"

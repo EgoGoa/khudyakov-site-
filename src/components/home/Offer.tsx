@@ -130,6 +130,15 @@ export default function Offer({
           interactive ? `${footer && active === "content" ? "lg:min-h-[58svh]" : footer ? "lg:min-h-[68svh] lg:[@media(max-height:940px)]:min-h-[58svh]" : "lg:min-h-[68svh]"} lg:items-stretch` : "lg:items-start"
         }`}
       >
+        {/* Телефон, /ai (Егор, 2026-10-03): окошко Кирилла встаёт сразу под
+            подзаголовком, перед списком из 11 услуг; ниже список, окошко
+            выбранной услуги и кнопка «AI-видеореклама и аватары». На
+            компьютере Кирилл остаётся внизу правой панели. */}
+        {active === "ai" ? (
+          <Appear from="up" delay={BEAT.content} className="mb-6 lg:hidden">
+            <TeamPulse data={MAX_AI} compact source="/ai · глава «Лучшие в …»" />
+          </Appear>
+        ) : null}
         <div className={listAside ? "lg:flex lg:flex-1 lg:flex-col" : "contents"}>
         {services.length === 0 ? (
           <p className="text-sm leading-relaxed text-paper/60">
@@ -293,7 +302,7 @@ export default function Offer({
                 </div>
               </div>
 
-              <div className={`mt-6 border-t border-paper/15 pt-6 ${footer ? (active === "content" ? "lg:mt-1.5 lg:pt-2" : "lg:mt-2 lg:pt-3") : ""}`}>
+              <div className={`mt-6 border-t border-paper/15 pt-6 ${active === "ai" ? "hidden lg:block" : ""} ${footer ? (active === "content" ? "lg:mt-1.5 lg:pt-2" : "lg:mt-2 lg:pt-3") : ""}`}>
                 {/* One window instead of two buttons — Egor's ask: every ask
                     on the site should read as written to a specific person,
                     with a real question, not a form. Max (creative

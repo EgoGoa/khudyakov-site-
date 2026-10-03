@@ -103,7 +103,7 @@ export default function BlockAssistant({ context }: { context: string }) {
                     key={q}
                     type="button"
                     onClick={() => ask(q)}
-                    className="rounded-full border border-paper/15 px-3.5 py-2 text-left text-xs text-paper/75 transition hover:border-glow/50 hover:text-paper"
+                    className="rounded-[14px] border border-paper/15 px-3.5 py-2 text-left text-xs text-paper/75 transition hover:border-glow/50 hover:text-paper"
                   >
                     {q}
                   </button>
@@ -162,7 +162,7 @@ export default function BlockAssistant({ context }: { context: string }) {
                 <button
                   type="button"
                   onClick={reset}
-                  className="rounded-full border border-paper/20 px-5 py-2.5 text-sm font-medium text-paper transition hover:border-paper/50"
+                  className="rounded-[14px] border border-paper/20 px-5 py-2.5 text-sm font-medium text-paper transition hover:border-paper/50"
                 >
                   ← Задать ещё
                 </button>
@@ -170,7 +170,7 @@ export default function BlockAssistant({ context }: { context: string }) {
                   href={TELEGRAM_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full bg-rec px-5 py-2.5 text-sm font-medium text-white transition hover:bg-rec-light"
+                  className="rounded-[14px] bg-rec px-5 py-2.5 text-sm font-medium text-white transition hover:bg-rec-light"
                 >
                   Спросить продюсера →
                 </a>
@@ -191,7 +191,7 @@ export default function BlockAssistant({ context }: { context: string }) {
               <button
                 type="button"
                 onClick={reset}
-                className="mt-5 rounded-full border border-paper/20 px-5 py-2.5 text-sm font-medium text-paper transition hover:border-paper/50"
+                className="mt-5 rounded-[14px] border border-paper/20 px-5 py-2.5 text-sm font-medium text-paper transition hover:border-paper/50"
               >
                 ← Назад
               </button>

@@ -1703,7 +1703,7 @@ html[data-mid] .hero-wm .hero-wm-line {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  border-radius: 999px;
+  border-radius: 14px;
   padding: 11px 20px;
   font-family: var(--font-bebas), var(--font-montserrat), sans-serif;
   font-size: 11.5px;
@@ -2202,7 +2202,7 @@ html[data-mid] .hero-wm .hero-wm-line {
    this is only the shape and motion, shared by all of them. */
 .btn-3d {
   position: relative;
-  border-radius: 999px;
+  border-radius: 14px;
   transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease,
     filter 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
@@ -6270,7 +6270,7 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
    одна из них не выбор, ради которого сцена открылась. */
 .welcome-quiet {
   white-space: nowrap;
-  border-radius: 9999px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(10, 12, 16, 0.45);
   padding: 0.6rem 1.1rem;
@@ -6726,7 +6726,7 @@ html[data-lite] .welcome-card-graphic svg circle {
   justify-content: space-between;
   gap: 0.5rem;
   min-width: 0;
-  border-radius: 999px;
+  border-radius: 14px;
   padding: 0.55rem 0.85rem;
   font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
   font-size: 10.5px;
@@ -6949,7 +6949,7 @@ html[data-lite] .welcome-card-graphic svg circle {
   font-weight: 700;
   color: #fff;
   padding: 7px 13px;
-  border-radius: 999px;
+  border-radius: 14px;
   box-shadow: inset 0 0 0 1px rgba(var(--tp-to-rgb), 0.6), 0 0 12px rgba(var(--tp-to-rgb), 0.18);
   transition: background 0.2s ease;
 }
@@ -6974,7 +6974,7 @@ html[data-lite] .welcome-card-graphic svg circle {
   color: rgba(255, 255, 255, 0.7);
 }
 .team-pulse-send {
-  border-radius: 999px;
+  border-radius: 14px;
   padding: 11px;
   font-weight: 700;
   font-size: 14px;
@@ -7007,7 +7007,7 @@ html[data-lite] .welcome-card-graphic svg circle {
   font-size: 11.5px;
   font-weight: 700;
   padding: 6px 11px;
-  border-radius: 999px;
+  border-radius: 14px;
   background: rgba(var(--tp-to-rgb), 0.14);
   color: var(--sp-to);
   transition: background 0.2s ease;
@@ -7145,7 +7145,7 @@ html[data-lite] .welcome-card-graphic svg circle {
   filter: brightness(1.08);
 }
 .cab-cta {
-  border-radius: 999px;
+  border-radius: 14px;
   padding: 13px 22px;
   font-weight: 800;
   font-size: 14px;
@@ -7263,7 +7263,7 @@ html[data-lite] [data-site-header].header-glass {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  border-radius: 999px;
+  border-radius: 14px;
   padding: 0.8rem 1rem;
   font-size: 12px;
   font-weight: 600;
@@ -7314,7 +7314,7 @@ html[data-lite] [data-site-header].header-glass {
 .menu-cta {
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
+  border-radius: 14px;
   padding: 0.8rem 1.35rem;
   font-size: 12px;
   font-weight: 600;
@@ -7730,7 +7730,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
 }
 .vibe-mode__pill {
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: 14px;
   font-size: 12px;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.07);
@@ -7767,7 +7767,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
   gap: 8px;
   height: 46px;
   padding: 0 22px;
-  border-radius: 999px;
+  border-radius: 14px;
   font-size: 13px;
   font-weight: 700;
   color: #07070b;
@@ -7785,7 +7785,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
   align-items: center;
   height: 44px;
   padding: 0 14px;
-  border-radius: 999px;
+  border-radius: 14px;
   font-size: 13px;
   font-weight: 700;
   color: #fff;
@@ -8154,7 +8154,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
   align-items: center;
   gap: 0.5rem;
   padding: 0.55rem 1rem;
-  border-radius: 9999px;
+  border-radius: 14px;
   font-size: 0.85rem;
   font-weight: 700;
   color: #fff;
@@ -8205,7 +8205,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.35rem 0.35rem 0.95rem;
-  border-radius: 9999px;
+  border-radius: 14px;
   background: rgba(14, 13, 20, 0.82);
   backdrop-filter: blur(16px);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.09);
@@ -8517,7 +8517,7 @@ html[data-lite] .block-vibe {
   justify-content: center;
   gap: 10px;
   height: 44px;
-  border-radius: 999px;
+  border-radius: 14px;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -8797,7 +8797,7 @@ html[data-lite] .block-vibe__online::before { animation: none; }
 .before-after button {
   position: relative;
   padding: 7px 16px;
-  border-radius: 999px;
+  border-radius: 14px;
   font-family: var(--font-bebas), system-ui, sans-serif;
   font-size: 10px;
   font-weight: 700;
@@ -9603,7 +9603,7 @@ html[data-mid] .hero-promo { transition: none; }
   width: 100%;
   height: 2.75rem;
   padding: 0 2rem;
-  border-radius: 999px;
+  border-radius: 14px;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -9808,5 +9808,39 @@ html[data-mid] .hero-promo { transition: none; }
 @media (max-width: 1023px) {
   html[data-deck-footer="hidden"] footer#footer {
     display: none;
+  }
+}
+
+/* ── Телефон: раскрытые окна команды — ровные края и свечение вдвое меньше ──
+   (Егор, 2026-10-03). Те же «лишние края» сверху и снизу окна и у кнопок, что
+   чинили на каруселях: Safari кладёт блюр стекла и анимируемое свечение на
+   прямоугольник элемента, а не на его скругление. Рецепт тот же: у стекла
+   окна непрозрачная маска (WebKit честно режет по скруглению), у язычка
+   «Начать чат» блюра нет, свечения вдвое слабее и компактнее, и все три
+   слоя (halo, тень панели, язычок) идут одним спокойным цветом. */
+@media (max-width: 1023px) {
+  .win-shell > .glass-panel {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    isolation: isolate;
+    -webkit-mask-image: linear-gradient(#000, #000);
+    mask-image: linear-gradient(#000, #000);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  .win-shell > .team-pulse-halo {
+    box-shadow:
+      0 0 11px 0 rgba(var(--tp-from-rgb), 0.3),
+      0 0 30px -4px rgba(var(--tp-to-rgb), 0.25);
+  }
+  .win-shell .spotlight-tab--mini {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(12, 12, 20, 0.96);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  .team-pulse-order,
+  .team-pulse-pick {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
   }
 }

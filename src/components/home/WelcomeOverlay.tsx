@@ -41,7 +41,7 @@ const GLASS_BTN = {
 
 // shared by every "VIBE САЙТ" pill across the site (welcome widget, floating
 // CTA) — one definition so the gradient/glow can't drift between copies
-export const VIBE_BUTTON_CLASS = "glass-choice-btn rounded-full text-sm font-bold uppercase tracking-[0.14em]";
+export const VIBE_BUTTON_CLASS = "glass-choice-btn rounded-[14px] text-sm font-bold uppercase tracking-[0.14em]";
 export function vibeButtonStyle(): CSSProperties {
   return {
     background: GLASS_BTN.vibe.fill,
