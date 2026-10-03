@@ -230,10 +230,16 @@ function accentVars(key: ServiceKey): CSSProperties {
  *  намеренно — два механизма на один <video> разошлись бы порогами. */
 function CardVideo({ src, poster }: { src: string; poster: string }) {
   const ref = useRef<HTMLVideoElement>(null);
+  // Safari в режиме энергосбережения не запускает видео без тапа, даже
+  // беззвучное (на карточке тогда виден системный ▶). Анимированная картинка
+  // такого разрешения не требует — при отказе карточка переходит на неё
+  // (Егор, 2026-10-03, iPhone 14: «все видео на стопе»). Тот же кадр и тот же
+  // сюжет, лежит рядом с роликом: <имя>.webp.
+  const [blocked, setBlocked] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || blocked) return;
     // Небольшая пауза перед play(), а не сразу на монтировании. Разница
     // Егора между «откатом на направления — анимация верная» и «первым
     // появлением после заставки — её нет» была не в разметке (код карточек
@@ -247,20 +253,24 @@ function CardVideo({ src, poster }: { src: string; poster: string }) {
     // ~250мс, пока идёт критичная часть входной анимации.
     // React не кладёт атрибут muted в серверный HTML — он появляется только
     // после гидрации, а iOS решает про автозапуск раньше. Ставим вручную до
-    // первого play() (Егор, 2026-10-03: после обновления карточки меню стоят
-    // на постере).
+    // первого play().
     el.muted = true;
     el.defaultMuted = true;
     el.setAttribute("muted", "");
     const kick = () => {
-      if (el.paused && !document.hidden) void el.play().catch(() => {});
+      if (!el.paused || document.hidden) return;
+      el.play().catch((err: unknown) => {
+        if ((err as { name?: string })?.name === "NotAllowedError") setBlocked(true);
+      });
     };
     const id = window.setTimeout(kick, 250);
-    // Сторож: одна попытка не считается. iOS (экономия энергии, нет касания)
-    // отказывает в запуске, ролик не догрузился, страницу вернули из кэша —
-    // пробуем снова, пока не пойдёт; играющему ролику это ничего не стоит.
+    // Сторож: одна попытка не считается — ролик не догрузился, страницу
+    // вернули из кэша; пробуем снова, пока не пойдёт.
     const watchdog = window.setInterval(kick, 400);
-    // Касание — разрешение iOS: доигрываем на его конце.
+    // Не пошло за 1,8 с (и вкладка на виду) — это блокировка, а не загрузка.
+    const giveUp = window.setTimeout(() => {
+      if (el.paused && !document.hidden) setBlocked(true);
+    }, 1800);
     window.addEventListener("touchend", kick, { passive: true });
     window.addEventListener("pointerup", kick, { passive: true });
     window.addEventListener("pageshow", kick);
@@ -270,6 +280,7 @@ function CardVideo({ src, poster }: { src: string; poster: string }) {
     el.addEventListener("pause", kick);
     return () => {
       window.clearTimeout(id);
+      window.clearTimeout(giveUp);
       window.clearInterval(watchdog);
       window.removeEventListener("touchend", kick);
       window.removeEventListener("pointerup", kick);
@@ -279,8 +290,12 @@ function CardVideo({ src, poster }: { src: string; poster: string }) {
       el.removeEventListener("canplay", kick);
       el.removeEventListener("pause", kick);
     };
-  }, []);
+  }, [blocked]);
 
+  if (blocked) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src.replace(/\.mp4$/, ".webp")} alt="" className="welcome-card-media" aria-hidden="true" />;
+  }
   return (
     <video
       ref={ref}

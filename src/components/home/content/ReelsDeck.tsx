@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import LeadModal from "@/components/home/LeadModal";
 import { PhoneIcon } from "@/components/ui/Icons";
 import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, useDeckSpring, zFor } from "@/components/ui/deckFan";
@@ -26,15 +26,91 @@ const POSE: Record<number, { x: number; scale: number; opacity: number }> = {
 /** Ход руки на одну карточку, px. */
 const SPACING = 115;
 
+/** Рилс переднего плана. Играет сразу и на телефоне тоже (Егор, 2026-10-03:
+ *  «первый рилс не воспроизводится»): muted ставим руками до play() (React не
+ *  кладёт его в HTML), одной попытки мало — сторож повторяет, пока не пойдёт,
+ *  а возврат страницы и касание считаются разрешением iOS. Если iOS отказал
+ *  совсем (энергосбережение блокирует автозапуск до тапа), сообщаем колоде —
+ *  она не застревает на кадре, а листает постеры, пока не будет касания. */
+function ReelVideo({
+  src,
+  poster,
+  onEnded,
+  onError,
+  setBlocked,
+}: {
+  src: string;
+  poster: string;
+  onEnded: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
+  onError: () => void;
+  setBlocked: (v: boolean) => void;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.muted = true;
+    el.defaultMuted = true;
+    el.setAttribute("muted", "");
+    const kick = () => {
+      if (!el.paused || el.ended || document.hidden) return;
+      el.play().catch((err: unknown) => {
+        if ((err as { name?: string })?.name === "NotAllowedError") setBlocked(true);
+      });
+    };
+    kick();
+    const watchdog = window.setInterval(kick, 500);
+    window.addEventListener("touchend", kick, { passive: true });
+    window.addEventListener("pointerup", kick, { passive: true });
+    window.addEventListener("pageshow", kick);
+    document.addEventListener("visibilitychange", kick);
+    el.addEventListener("loadeddata", kick);
+    el.addEventListener("canplay", kick);
+    return () => {
+      window.clearInterval(watchdog);
+      window.removeEventListener("touchend", kick);
+      window.removeEventListener("pointerup", kick);
+      window.removeEventListener("pageshow", kick);
+      document.removeEventListener("visibilitychange", kick);
+      el.removeEventListener("loadeddata", kick);
+      el.removeEventListener("canplay", kick);
+    };
+  }, [setBlocked]);
+  return (
+    <video
+      ref={ref}
+      src={src}
+      poster={poster}
+      autoPlay
+      muted
+      playsInline
+      onPlaying={() => setBlocked(false)}
+      onEnded={onEnded}
+      onError={onError}
+      preload="auto"
+      className="absolute inset-0 h-full w-full object-cover"
+    />
+  );
+}
+
 export default function ReelsDeck({ running }: { running: boolean }) {
   const count = REELS.length;
   const [active, setActive] = useState(0);
   const [held, setHeld] = useState(false);
   const [lite, setLite] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   const [leadOpen, setLeadOpen] = useState(false);
   useEffect(() => {
     setLite(document.documentElement.hasAttribute("data-lite"));
   }, []);
+
+  // iOS не дал запустить рилс: колода листает постеры, чтобы не стоять на
+  // одном кадре; как только касание запустит видео, onPlaying снимет флаг.
+  useEffect(() => {
+    if (!blocked || !running) return;
+    const id = window.setTimeout(() => setActive((p) => p + 1), 3200);
+    return () => window.clearTimeout(id);
+  }, [blocked, running, active]);
 
   const step = useCallback((delta: number) => setActive((p) => p + delta), []);
   const { drag, dragging, bind } = useDeckDrag({ count, spacing: SPACING, onSettle: step });
@@ -46,7 +122,7 @@ export default function ReelsDeck({ running }: { running: boolean }) {
   // к следующему (он стартует сначала). Если рилс перелистали рукой —
   // следующий тоже начинается с начала и доигрывается до конца. Пока курсор
   // на колоде, рилс крутится по кругу и не уходит. На слабых устройствах
-  // (data-lite) видео нет и колода не листается.
+  // (data-lite) блюр соседей снят, а сам рилс играет так же.
   const onEnded = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     if (held) {
       e.currentTarget.currentTime = 0;
@@ -108,17 +184,13 @@ export default function ReelsDeck({ running }: { running: boolean }) {
                   loading="lazy"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
-                {isFront && running && !lite && (
-                  <video
+                {isFront && running && (
+                  <ReelVideo
                     src={`/video/reels/r${REELS[i]}.mp4`}
                     poster={`/video/reels/r${REELS[i]}.jpg`}
-                    autoPlay
-                    muted
-                    playsInline
                     onEnded={onEnded}
                     onError={onFail}
-                    preload="auto"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    setBlocked={setBlocked}
                   />
                 )}
               </div>

@@ -4539,6 +4539,19 @@ html[data-mid] .guar-term-slide:first-of-type {
   }
 }
 
+/* Телефон: заголовки глав и их подзаголовки крупнее на ~25% (Егор,
+   2026-10-03: «сильно маленькие, подзаголовки не тянутся на всю ширину»).
+   Стоит ПОСЛЕ блоков max-height выше и совпадает с ними по специфичности,
+   поэтому перебивает их clamp(2rem…) на узком экране. Альбомная ориентация
+   телефона задаёт свои размеры (!important ниже) и сюда не попадает.
+   Подзаголовок масштабируется кеглем в CHAPTER_INTRO (lib/typography.ts);
+   его max-w в em растёт вместе с ним, так что строка идёт на всю колонку. */
+@media (max-width: 639px) and (orientation: portrait) {
+  [data-chapter-pane] h2[class*="chapter-neon"] {
+    font-size: 2.55rem;
+  }
+}
+
 /* Кнопки блока персонализации на страницах направлений.
    
    Егор просил сделать их «более явными, пусть мигают неоном»: этот блок —
@@ -5860,7 +5873,12 @@ html[data-overlay-open] body *:not(.vibe-mode, .vibe-mode *, .block-vibe, .block
 /* Плавающая волна ассистента не лезет поверх стартового окна (в меню есть
    своя, встроенная). Через :has — работает с первого кадра, до JS. */
 html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .voice-dock:not(.welcome-window .voice-dock),
-html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe-fan {
+html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe-fan,
+/* Стрелки сайта (скролл-колонка справа, «Наверх», боковые стрелки страниц)
+   в стартовом окне только перегружают (Егор, 2026-10-03). */
+html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .mobile-scroll-rail,
+html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .scroll-top-btn,
+html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page-side-arrow {
   opacity: 0;
   pointer-events: none;
 }
