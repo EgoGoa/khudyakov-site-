@@ -981,6 +981,10 @@ function VoiceDock({
   const phone = usePhone();
   // Наведение на волну — над ней по очереди всплывают варианты вопросов.
   const [hover, setHover] = useState(false);
+  // В полтора раза уже при той же высоте (Егор, 2026-10-03): растянутая
+  // волна читалась жидко, плотная — живее. Касается всех мест: стартовое
+  // меню, вайб-окно и плавающая волна на странице.
+  width = Math.round(width / 1.5);
   if (phone) {
     width = Math.round(width / 2);
     height = Math.round(height / 2);
