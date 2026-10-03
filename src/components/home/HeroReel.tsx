@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { preload } from "react-dom";
 import { markMediaReady } from "@/lib/boot-sequence";
 
@@ -24,6 +24,13 @@ import { markMediaReady } from "@/lib/boot-sequence";
 const LITE = "/video/showreel-hero-mobile.mp4";
 const HD = "/video/showreel-hero.mp4";
 const POSTER = "/images/showreel-frame.jpg";
+// Телефон (< 900px): та же нарезка, но затемнена на 40% и размыта на ~30%
+// ПРЯМО В ФАЙЛЕ (Егор, 2026-10-03). CSS-фильтры на видео на телефонах сняты
+// (iOS падает по памяти GPU, см. .hero-media в globals.css), поэтому эффект
+// запечён ffmpeg-ом: gblur sigma 2.8 + яркость ×0.6. Десктоп этот файл не
+// видит — у него свой CSS-фильтр на лёгкой версии и HD поверх.
+const PHONE = "/video/showreel-hero-phone.mp4";
+const POSTER_PHONE = "/images/showreel-frame-phone.jpg";
 
 type Conn = { saveData?: boolean; effectiveType?: string };
 
@@ -38,12 +45,24 @@ export default function HeroReel({ className }: { className: string }) {
   // Подсказка браузеру из <head>: начать качать лёгкую версию сразу, с
   // высоким приоритетом. Без неё на медленной связи ролик вставал в очередь
   // за скриптами и стартовал на секунды позже (замер Chrome со связью 3G).
-  preload(LITE, { as: "video", fetchPriority: "high" });
+  // Подсказка по ширине: телефон качает свой файл, остальные — лёгкую версию.
+  preload(LITE, { as: "video", fetchPriority: "high", media: "(min-width: 900px)" });
+  preload(PHONE, { as: "video", fetchPriority: "high", media: "(max-width: 899.98px)" });
   const liteRef = useRef<HTMLVideoElement>(null);
   const hdRef = useRef<HTMLVideoElement>(null);
   const [hdMounted, setHdMounted] = useState(false);
   const [hdShown, setHdShown] = useState(false);
   const [liteGone, setLiteGone] = useState(false);
+
+  // Телефон: подменяем лёгкую версию на затемнённую раньше первого кадра.
+  useLayoutEffect(() => {
+    const v = liteRef.current;
+    if (!v || window.innerWidth >= 900 || v.getAttribute("src") === PHONE) return;
+    v.poster = POSTER_PHONE;
+    v.src = PHONE;
+    v.load();
+    v.play().catch(() => {});
+  }, []);
 
   // Автозапуск: событие canplay могло прийти ещё до гидрации — тогда
   // обработчик React его не увидел, поэтому состояние проверяем сами.

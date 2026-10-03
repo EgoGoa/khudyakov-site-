@@ -23,9 +23,10 @@ export default function HeroWordmark({ shown }: { shown: object | undefined }) {
 
   useEffect(() => {
     if (reduced) return;
-    // Эффекты-перевоплощения — только на мощных устройствах: на средних и
-    // слабых столбик остаётся статичной основой (Егор, 2026-10-03).
-    if (document.documentElement.hasAttribute("data-lite") || document.documentElement.hasAttribute("data-mid")) return;
+    // Смена стилей идёт на всех устройствах, и на телефоне тоже (Егор,
+    // 2026-10-03: «на мобильном такая же анимация, как на компьютере»): шапка
+    // — исключение из облегчения, а слои эффекта — это прозрачность и
+    // фон текста, без фильтров и размытия.
     let i = 0;
     let timer = 0;
     // Основа держится BASE_MS → слой эффекта наплывает (0.9 с) и держится

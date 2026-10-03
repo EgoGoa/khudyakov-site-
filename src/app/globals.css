@@ -336,6 +336,23 @@ body {
     font-size: clamp(1.9rem, 8vw, 3rem);
   }
 }
+/* Узкий телефон: надпись на всю ширину колонки — «DIGITAL AI» первой
+   строкой занимает ~6.5em, поэтому 13.4vw оставляет её внутри полей при
+   любой ширине от 320px. Выше sm — прежний размер. */
+@media (max-width: 639px) {
+  .hero-wm {
+    font-size: 13.4vw;
+    gap: 0 0.28em;
+  }
+}
+/* В lite/mid бесконечные анимации стоят на одном проходе — для надписи шапки
+   это не нужно: хром и сканлайны эффектов идут по кругу, пока слой виден. */
+html[data-lite] .hero-wm .hero-wm-fill,
+html[data-lite] .hero-wm .hero-wm-line,
+html[data-mid] .hero-wm .hero-wm-fill,
+html[data-mid] .hero-wm .hero-wm-line {
+  animation-iteration-count: infinite !important;
+}
 .hero-wm-word {
   display: grid;
   padding-top: 0.08em;

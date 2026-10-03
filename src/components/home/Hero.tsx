@@ -70,12 +70,17 @@ export default function Hero() {
             costs a layer that was already decoded and turns every one of
             those failures into "the reel's own frame, held" instead of
             black. */}
-        <img
-          src="/images/showreel-frame.jpg"
-          alt=""
-          aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] sm:w-[200%] md:w-[147%] lg:w-[127%]"
-        />
+        <picture>
+          {/* Телефон: кадр уже затемнён и размыт, как и ролик над ним. */}
+          <source media="(max-width: 899.98px)" srcSet="/images/showreel-frame-phone.jpg" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/showreel-frame.jpg"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] sm:w-[200%] md:w-[147%] lg:w-[127%]"
+          />
+        </picture>
         <HeroReel className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]" />
         <div
           className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-60"
@@ -169,35 +174,39 @@ export default function Hero() {
           initial={{ opacity: 0, y: 24 }}
           animate={shown}
           transition={{ duration: 0.7, delay: 0.4 }}
-          className="mt-8 flex flex-wrap items-center gap-3"
+          // Телефон: три круглые кнопки с иконками в один ряд, без текста
+          // (Егор, 2026-10-03) — освобождает место под крупную надпись. Текст
+          // остаётся для скринридеров (sr-only), с sm он снова виден. (Варианты max-* в этом проекте не
+          // генерируются — из-за raw-экрана land, поэтому «телефон сначала».)
+          className="mt-6 flex items-center gap-3 sm:mt-8 sm:flex-wrap"
         >
           <a
             href="tel:+79925111812"
-            className="btn-neon !px-4 !py-2 !text-[9px]"
+            className="btn-neon grid h-12 w-12 place-items-center !rounded-full !p-0 !text-[9px] sm:flex sm:!rounded-[14px] sm:h-auto sm:w-auto sm:!px-4 sm:!py-2"
             style={{ "--btn-neon-delay": "0s" } as CSSProperties}
           >
-            <PhoneIcon className="animate-pulse" />
-            Заказать звонок
+            <PhoneIcon className="h-5 w-5 animate-pulse sm:h-4 sm:w-4" />
+            <span className="sr-only sm:not-sr-only">Заказать звонок</span>
           </a>
           <a
             href="https://t.me/hdkv"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-neon !px-4 !py-2 !text-[9px]"
+            className="btn-neon grid h-12 w-12 place-items-center !rounded-full !p-0 !text-[9px] sm:flex sm:!rounded-[14px] sm:h-auto sm:w-auto sm:!px-4 sm:!py-2"
             style={{ "--btn-neon-delay": "1.2s" } as CSSProperties}
           >
-            <TelegramIcon />
-            Написать в Telegram
+            <TelegramIcon className="h-5 w-5 sm:h-4 sm:w-4" />
+            <span className="sr-only sm:not-sr-only">Написать в Telegram</span>
           </a>
           <a
             href="https://wa.me/79925111812"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-neon !px-4 !py-2 !text-[9px]"
+            className="btn-neon grid h-12 w-12 place-items-center !rounded-full !p-0 !text-[9px] sm:flex sm:!rounded-[14px] sm:h-auto sm:w-auto sm:!px-4 sm:!py-2"
             style={{ "--btn-neon-delay": "2.4s" } as CSSProperties}
           >
-            <WhatsAppIcon />
-            Написать в WhatsApp
+            <WhatsAppIcon className="h-5 w-5 sm:h-4 sm:w-4" />
+            <span className="sr-only sm:not-sr-only">Написать в WhatsApp</span>
           </a>
         </motion.div>
         </div>
