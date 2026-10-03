@@ -12,7 +12,7 @@
 // One step down from text-sm/text-base — Egor's ask: this line was reading
 // too heavy against the chapter title above it and the card copy below.
 export const CHAPTER_INTRO =
-  "font-display text-xs uppercase leading-snug tracking-tight text-white sm:text-sm";
+  "font-display text-[0.9375rem] land:text-xs uppercase leading-snug tracking-tight text-white sm:text-sm";
 
 /** Лид первого экрана — строка под заголовком героя.
  *

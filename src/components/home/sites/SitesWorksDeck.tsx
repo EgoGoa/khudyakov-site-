@@ -62,7 +62,7 @@ export default function SitesWorksDeck() {
       <span className="inline-block rounded-full border border-white/30 px-3 py-1 font-display text-[10px] uppercase tracking-[0.18em] text-white">
         Референсы
       </span>
-      <p className="mt-2 font-display text-2xl uppercase leading-tight tracking-tight text-white sm:text-3xl">
+      <p className="mt-2 font-display text-[1.9rem] uppercase leading-tight tracking-tight text-white sm:text-3xl">
         Сделаем <span className="kw">так же</span>
       </p>
       <div ref={box} className="relative mt-3 w-full" style={{ height: Math.round(cardH * 2.2) }}>
