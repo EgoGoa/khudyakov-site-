@@ -245,20 +245,39 @@ function CardVideo({ src, poster }: { src: string; poster: string }) {
     // вокруг всё уже простаивает — отсюда и разница. Здесь видео не
     // отменяются, а просто не встают в очередь на декодирование в первые
     // ~250мс, пока идёт критичная часть входной анимации.
-    const id = window.setTimeout(() => {
-      void el.play().catch(() => {});
-    }, 250);
-    // iOS при экономии энергии отказывает в запуске из кода, пока не было
-    // касания: любое касание — разрешение, доигрываем на его конце.
+    // React не кладёт атрибут muted в серверный HTML — он появляется только
+    // после гидрации, а iOS решает про автозапуск раньше. Ставим вручную до
+    // первого play() (Егор, 2026-10-03: после обновления карточки меню стоят
+    // на постере).
+    el.muted = true;
+    el.defaultMuted = true;
+    el.setAttribute("muted", "");
     const kick = () => {
-      if (el.paused) void el.play().catch(() => {});
+      if (el.paused && !document.hidden) void el.play().catch(() => {});
     };
+    const id = window.setTimeout(kick, 250);
+    // Сторож: одна попытка не считается. iOS (экономия энергии, нет касания)
+    // отказывает в запуске, ролик не догрузился, страницу вернули из кэша —
+    // пробуем снова, пока не пойдёт; играющему ролику это ничего не стоит.
+    const watchdog = window.setInterval(kick, 400);
+    // Касание — разрешение iOS: доигрываем на его конце.
     window.addEventListener("touchend", kick, { passive: true });
     window.addEventListener("pointerup", kick, { passive: true });
+    window.addEventListener("pageshow", kick);
+    document.addEventListener("visibilitychange", kick);
+    el.addEventListener("loadeddata", kick);
+    el.addEventListener("canplay", kick);
+    el.addEventListener("pause", kick);
     return () => {
       window.clearTimeout(id);
+      window.clearInterval(watchdog);
       window.removeEventListener("touchend", kick);
       window.removeEventListener("pointerup", kick);
+      window.removeEventListener("pageshow", kick);
+      document.removeEventListener("visibilitychange", kick);
+      el.removeEventListener("loadeddata", kick);
+      el.removeEventListener("canplay", kick);
+      el.removeEventListener("pause", kick);
     };
   }, []);
 

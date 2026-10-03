@@ -220,6 +220,9 @@ function SlideVideo({ src, poster, active }: { src: string; poster: string; acti
         /* метаданные ещё не готовы — начнёт с нуля сам */
       }
     }
+    v.muted = true;
+    v.defaultMuted = true;
+    v.setAttribute("muted", "");
     const kick = () => {
       if (v.paused && v.getAttribute("src") && !document.hidden && !isSiteFrozen()) v.play().catch(() => {});
     };
