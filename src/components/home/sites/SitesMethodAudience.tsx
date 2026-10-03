@@ -5,11 +5,13 @@ import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import { SITES_ACCENT } from "@/components/home/ai/spotlightSites";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
-import { BEAT, STAGGER } from "@/lib/motion";
+import { BEAT } from "@/lib/motion";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
 import { PILL, ROUND } from "@/components/home/sites/SitesDeck";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { SASHA_SITES } from "@/components/home/team-pulse/content/sasha-sites";
+import SitesAdvantages from "@/components/home/sites/SitesAdvantages";
+import SitesPhoneShowcase from "@/components/home/sites/SitesPhoneShowcase";
 import PromoCard from "@/components/home/PromoCard";
 import { promo } from "@/lib/promos";
 
@@ -54,14 +56,8 @@ const COMPARE_ROWS = [
   },
   {
     label: "Цена",
-    values: ["Низкая", "Высокая", "Ниже классической, выше конструктора"],
+    values: ["Низкая", "Высокая", "Средняя"],
   },
-];
-
-const SEGMENTS = [
-  { tag: "МАЛЫЙ БИЗНЕС", title: "Услуги без раздутого бюджета" },
-  { tag: "ЛИЧНЫЙ БРЕНД", title: "Быстрый запуск под задачу" },
-  { tag: "СТАРТАП", title: "Проверить нишу лендингом" },
 ];
 
 export default function SitesMethodAudience() {
@@ -98,7 +94,7 @@ export default function SitesMethodAudience() {
         {/* Widened from 38% — Egor's ask: with the promo card stacked under
             Саша's card, the narrower column read cramped next to the
             comparison table. */}
-        <div className="w-full shrink-0 lg:w-[44%] land:w-[40%]">
+        <div className="w-full shrink-0 lg:w-[33%] xl:w-[38%] land:w-[40%]">
 
           <Appear from="up" delay={BEAT.title}>
             <h2 className="chapter-neon-warm max-w-[6.7em] font-display text-[2.25rem] uppercase leading-[1.09] tracking-tight sm:text-[2.925rem] lg:text-[3.24rem] xl:text-[3.6rem]">
@@ -115,25 +111,16 @@ export default function SitesMethodAudience() {
             </p>
           </Appear>
 
-          <Appear from="up" delay={BEAT.cta}>
-            {/* Саша как сервис — пилот механики TeamPulse на месте прежней
-                компактной карточки (решение Егора, 2026-09-24). */}
-            <TeamPulse data={SASHA_SITES} className="mt-4" />
-          </Appear>
-
-          {/* /sites' own September offer — sits under Саша's card (Egor's
-              ask, same fix as /smm's chapter 02). Gap bumped to mt-8 (was
-              mt-4, too close to Саша's card) and the photo swapped for the
-              site's own stock library — a design tablet, closer to
-              "лендинг" than the generic service-sites.jpg (Egor's ask,
-              applied site-wide). Priced off this service's own real tier in
-              pricingByCategory.sites ("Лендинг", от 60 000 ₽) with a flat
-              20% off: 60 000 → 48 000 ₽ — this one already matched its own
-              service before Egor's correction, so the number is unchanged. */}
-          <Appear from="up" delay={BEAT.cta} className="mt-8">
-            <PromoCard
-              {...promo("landing")}
-            />
+          {/* Ролик каталога сайтов в iPhone под заголовком (Егор, 2026-10-03). */}
+          {/* Справа от телефона — смена трёх «слайдов» преимуществ. Блок виден,
+              только когда хватает ширины колонки (телефон + ~190px): на
+              мобильном он стоит рядом с уменьшенным телефоном, на 1024–1279
+              скрыт, чтобы не теснить таблицу, с xl — рядом. */}
+          <Appear from="up" delay={BEAT.cta} className="mt-6 land:hidden">
+            <div className="flex items-center gap-4 max-lg:justify-center lg:gap-5">
+              <SitesPhoneShowcase className="lg:ml-4" />
+              <SitesAdvantages className="min-w-0 flex-1 max-lg:max-w-[13rem] lg:max-xl:hidden" />
+            </div>
           </Appear>
         </div>
 
@@ -145,7 +132,7 @@ export default function SitesMethodAudience() {
                   <tr className="border-b border-paper/15">
                     <th
                       scope="col"
-                      className="p-3.5 font-display font-normal uppercase tracking-[0.1em] text-paper/40"
+                      className="px-3 py-2.5 font-display font-normal uppercase tracking-[0.1em] text-paper/40"
                     >
                       &nbsp;
                     </th>
@@ -153,7 +140,7 @@ export default function SitesMethodAudience() {
                       <th
                         key={col}
                         scope="col"
-                        className={`p-3.5 font-display font-normal uppercase leading-tight tracking-tight ${
+                        className={`px-3 py-2.5 font-display font-normal uppercase leading-tight tracking-tight ${
                           i === 2 ? "text-glow" : "text-paper/70"
                         }`}
                       >
@@ -165,13 +152,13 @@ export default function SitesMethodAudience() {
                 <tbody>
                   {COMPARE_ROWS.map((row) => (
                     <tr key={row.label} className="border-b border-paper/10 last:border-0">
-                      <th scope="row" className="p-3.5 font-sans font-medium text-paper/85">
+                      <th scope="row" className="px-3 py-2.5 font-sans font-medium text-paper/85">
                         {row.label}
                       </th>
                       {row.values.map((value, i) => (
                         <td
                           key={i}
-                          className={`p-3.5 leading-snug ${i === 2 ? "text-white" : "text-paper/60"}`}
+                          className={`px-3 py-2.5 leading-snug ${i === 2 ? "text-white" : "text-paper/60"}`}
                         >
                           {value}
                         </td>
@@ -183,27 +170,24 @@ export default function SitesMethodAudience() {
             </div>
           </Appear>
 
-          <div className="mt-4 flex flex-wrap gap-2.5">
-            {SEGMENTS.map((s, i) => (
-              <Appear
-                key={s.tag}
-                from="up"
-                delay={BEAT.cta + i * STAGGER.tight}
-                className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-3.5 py-2 backdrop-blur-md"
-              >
-                <span className="font-display text-[9px] uppercase tracking-[0.15em] text-glow">
-                  {s.tag}
-                </span>
-                <span className="h-1 w-1 shrink-0 rounded-full bg-paper/30" />
-                <span className="font-display text-[11px] uppercase leading-tight tracking-tight text-white">
-                  {s.title}
-                </span>
-              </Appear>
-            ))}
+          {/* Под таблицей — две колонки, чтобы правая часть не вытягивалась в
+              высоту (Егор, 2026-10-03): слева акция месяца, справа окошко
+              формата «Лендинг» (поднято на место прежних чипов «малый
+              бизнес / личный бренд / стартап» — это уже сказано в
+              подзаголовке) и Саша как сервис (пилот TeamPulse, решение
+              2026-09-24). */}
+          <div className="mt-4 grid gap-3 xl:grid-cols-2 xl:items-stretch">
+            <Appear from="up" delay={BEAT.cta}>
+              <PromoCard {...promo("landing")} />
+            </Appear>
+            <Appear from="up" delay={BEAT.cta} className="xl:h-full">
+              <TeamPulse data={SASHA_SITES} compact fill />
+            </Appear>
           </div>
 
-          {/* Окошко формата — под чипами, на всю ширину правой колонки. */}
-          <ToolSpotlight slug="site-landing" accent={SITES_ACCENT} shape="card" />
+          <div className="mt-3">
+            <ToolSpotlight slug="site-landing" accent={SITES_ACCENT} shape="card" />
+          </div>
         </div>
       </div>
     </CinematicSection>
