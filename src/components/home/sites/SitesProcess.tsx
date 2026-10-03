@@ -54,7 +54,7 @@ export default function SitesProcess() {
           </>
         }
         sub="Пять шагов от брифа до запуска — на каждом понятный результат и точка согласования."
-        primary={{ href: "/brief/sites", label: "Заполнить бриф" }}
+        primary={{ href: "/brief/sites", label: "Обсудить проект" }}
         secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
         askCard={
           <>

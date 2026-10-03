@@ -45,7 +45,7 @@ export default function Pricing() {
               href="/brief"
               className="btn-neon"
             >
-              Заполнить бриф
+              Обсудить проект
             </Link>
           </div>
         </Reveal>

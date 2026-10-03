@@ -324,7 +324,7 @@ export default function Process({
               // whole reply has to live in one string here.
               question="Создаю то, что снять камерой невозможно. На связи!"
               pitch="Отвечу быстрее, чем вы заполните бриф — вопросы по монтажу и срокам."
-              actionLabel="Заполнить бриф"
+              actionLabel="Обсудить проект"
               href={briefHrefFor(active)}
               compact
               glow={false}
@@ -365,7 +365,7 @@ export default function Process({
             member={processPerson}
             question="Отвечу по этапам быстрее, чем вы заполните бриф — прямо в переписке"
             pitch="Отвечу быстрее, чем вы заполните бриф — прямо сейчас, в переписке."
-            actionLabel="Заполнить бриф"
+            actionLabel="Обсудить проект"
             href={briefHrefFor(active)}
             compact
             className="mt-5 lg:ml-auto lg:max-w-sm"

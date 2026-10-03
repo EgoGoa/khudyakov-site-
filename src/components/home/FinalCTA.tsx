@@ -39,7 +39,7 @@ export default function FinalCTA() {
                 href="/brief"
                 className="btn-neon"
               >
-                Заполнить бриф
+                Обсудить проект
               </Link>
               <a
                 href="mailto:khudyakov.yegor@gmail.com"

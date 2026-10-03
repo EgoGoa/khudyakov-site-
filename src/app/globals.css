@@ -1737,6 +1737,14 @@ html[data-mid] .hero-wm .hero-wm-line {
   animation-delay: 1.6s;
 }
 
+/* Второстепенные пути в окне заявки — спокойное стекло, цветная только
+   главная кнопка «Заполнить бриф» (Егор: без радуги из кнопок). */
+.lead-choice-plain {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+.lead-choice-plain:hover { background: rgba(255, 255, 255, 0.14); filter: none; }
+
 @media (prefers-reduced-motion: reduce) {
   .lead-choice-call,
   .lead-choice-consult {

@@ -73,7 +73,7 @@ const FUNNELS: Record<
   { label: string; href: string; external?: boolean; glyph: React.ReactNode }
 > = {
   brief: {
-    label: "Заполнить бриф",
+    label: "Обсудить проект",
     href: "/brief",
     glyph: (
       <Glyph>

@@ -132,7 +132,7 @@ export default function FaqCloseBlock({
 
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <Link href="/brief" className="btn-neon btn-warm btn-3d !py-3.5">
-                  Заполнить бриф
+                  Обсудить проект
                 </Link>
                 <a
                   href={TELEGRAM_URL}

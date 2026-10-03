@@ -79,7 +79,7 @@ export default function SmmProcess() {
             результат и точка согласования.
           </>
         }
-        primary={{ href: "/brief/smm", label: "Заполнить бриф" }}
+        primary={{ href: "/brief/smm", label: "Обсудить проект" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
         rightFooter={<ToolSpotlight slug="smm-carousel" accent={SMM_ACCENT} shape="card" />}
         askCard={

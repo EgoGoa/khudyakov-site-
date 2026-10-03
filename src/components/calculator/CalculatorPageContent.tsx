@@ -197,7 +197,7 @@ export default function CalculatorPageContent() {
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
             <Appear from="up" delay={DIRECTION_BEAT.cta}>
               <Link href="/brief" className="btn-neon btn-warm btn-3d !py-4 !px-8">
-                Заполнить бриф
+                Обсудить проект
               </Link>
             </Appear>
             <Appear from="up" delay={DIRECTION_BEAT.cta + STAGGER.normal}>

@@ -456,7 +456,7 @@ export default function Header() {
                 </p>
                 <div className="mt-5 flex items-center gap-2.5">
                   <Link href="/brief" onClick={() => setMenuOpen(false)} className="menu-cta font-display">
-                    Пообщаться →
+                    Обсудить проект →
                   </Link>
                   <a href="https://t.me/hdkv" target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram" className="menu-round">
                     <TelegramIcon className="h-[18px] w-[18px]" />

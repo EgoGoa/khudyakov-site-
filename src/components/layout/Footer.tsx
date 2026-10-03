@@ -3,13 +3,13 @@ import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import FlareBackground from "@/components/ui/FlareBackground";
 import FooterDirections from "@/components/layout/FooterDirections";
-import { EditIcon, InstagramIcon, PhoneIcon, TelegramIcon } from "@/components/ui/Icons";
+import { EditIcon, InstagramIcon, TelegramIcon } from "@/components/ui/Icons";
 
 const navLinks = [
   { href: "/#works", label: "Работы" },
   { href: "/#services", label: "Услуги" },
   { href: "/calculator", label: "Калькулятор" },
-  { href: "/brief", label: "Заполнить бриф" },
+  { href: "/brief", label: "Обсудить проект" },
   { href: "/#contact", label: "Контакты" },
 ];
 
@@ -57,17 +57,11 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
             <br className="hidden sm:block" /> в любое время
           </h2>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={pillClass}>
-              <TelegramIcon />
-              Написать в Telegram
-            </a>
-            <a href={CALL_TEL} className={pillClass}>
-              <PhoneIcon className="animate-pulse" />
-              Заказать звонок
-            </a>
+            {/* Одна кнопка заявки (Егор, 2026-10-03): Телеграм, звонок и бриф —
+                внутри окна выбора (GlobalLead). */}
             <Link href="/brief" className={pillClass}>
               <EditIcon />
-              Заполнить бриф
+              Обсудить проект
             </Link>
           </div>
         </Container>

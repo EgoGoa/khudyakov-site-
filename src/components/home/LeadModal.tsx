@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { OPEN_VIBE_EVENT } from "@/lib/voice/store";
 import CenterModal from "@/components/ui/CenterModal";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
-import { MicIcon, PhoneIcon, UserIcon } from "@/components/ui/Icons";
+import { DocumentIcon, MicIcon, PhoneIcon, TelegramIcon, UserIcon } from "@/components/ui/Icons";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useDictation } from "@/lib/use-dictation";
 import { useResetAfterClose } from "@/lib/use-reset-after-close";
@@ -200,9 +202,13 @@ export default function LeadModal({
   open,
   onClose,
   prefill,
+  briefHref = "/brief",
 }: {
   open: boolean;
   onClose: () => void;
+  /** Бриф направления, с которого открыли окно (Егор, 2026-10-03: одна
+   *  кнопка «Обсудить проект» на весь сайт, все пути заявки — здесь). */
+  briefHref?: string;
   /** Seeds the call-brief's fields — the promo card opens this same modal
    *  with "Формат" already set to "AI-видео" and the September offer noted
    *  in "Пожелания", so a visitor doesn't have to retype what they clicked
@@ -260,13 +266,33 @@ export default function LeadModal({
               Выберите вариант — ответим в течение одного рабочего дня.
             </p>
             <div className="mx-auto mt-8 flex w-full max-w-[260px] flex-col gap-3">
-              <button type="button" onClick={() => setScreen("call")} className="lead-choice-btn lead-choice-call">
+              <Link href={briefHref} data-lead-direct onClick={close} className="lead-choice-btn lead-choice-call">
+                <DocumentIcon className="h-4 w-4" />
+                Заполнить бриф
+              </Link>
+              <button type="button" onClick={() => setScreen("call")} className="lead-choice-btn lead-choice-plain">
                 <PhoneIcon className="h-4 w-4" />
                 Заказать звонок
               </button>
-              <button type="button" onClick={() => setScreen("consult")} className="lead-choice-btn lead-choice-consult">
+              <button type="button" onClick={() => setScreen("consult")} className="lead-choice-btn lead-choice-plain">
                 <UserIcon className="h-4 w-4" />
                 Консультация с продюсером
+              </button>
+            </div>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-semibold text-paper">
+              <a href="https://t.me/hdkv" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 transition hover:text-glow">
+                <TelegramIcon className="h-4 w-4" />
+                Написать в Телеграм
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  close();
+                  window.dispatchEvent(new Event(OPEN_VIBE_EVENT));
+                }}
+                className="transition hover:text-glow"
+              >
+                Подбор решения за час →
               </button>
             </div>
           </>
