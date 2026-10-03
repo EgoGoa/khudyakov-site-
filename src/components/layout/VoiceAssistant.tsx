@@ -14,6 +14,7 @@ import { useHeaderMenu } from "@/lib/header-menu";
 import { serviceMeta, serviceOrder } from "@/lib/service-content";
 import { blocksFor } from "@/lib/welcome-blocks";
 import { CONTACTS, normalize, parseCommand, serviceFromPath, type VoiceAction } from "@/lib/voice/intents";
+import { declineSay, greeting, notUnderstood, nudge, replyToOffer, smallTalk, type VoiceOffer } from "@/lib/voice/chat";
 import TeamConsultModal from "@/components/home/TeamConsultModal";
 import VoiceTour from "@/components/layout/VoiceTour";
 import { TEAM } from "@/lib/team";
@@ -205,6 +206,12 @@ export default function VoiceAssistant() {
     let autoStart = false;
     let aiFails = 0;
     let lastSay = "";
+    // Что ассистент только что предложил («хочешь, покажу…»): короткое «да»
+    // выполняет, «нет» — вежливо отпускает (Егор, 2026-10-03).
+    let pendingOffer: VoiceOffer | null = null;
+    // Если посетитель давно молчит — один раз за включение сама что-то предложит.
+    let lastActivity = Date.now();
+    let nudged = false;
     const undo: Snapshot[] = [];
 
     // ---------- слух ----------
@@ -568,9 +575,11 @@ export default function VoiceAssistant() {
       const text = override ?? say;
       // Вслух не отвечает совсем (Егор, 2026-09-29: «ответы не надо, главное,
       // чтобы функционал работал») — только подпись над волной и действие.
-      void answer;
+      // Разговорные ответы (болтовня, совет, предложение) теперь звучат
+      // вслух — без голоса беседы не получается (Егор, 2026-10-03); действия
+      // по-прежнему молча.
       void SPOKEN;
-      const aloud = false;
+      const aloud = Boolean(text) && (answer || action.type === "none");
       if (text) {
         if (action.type !== "repeat") lastSay = text;
         setVoiceState((st) => ({ turns: [...st.turns, { role: "assistant" as const, text }].slice(-10), pulse: st.pulse + 1 }));
@@ -605,6 +614,21 @@ export default function VoiceAssistant() {
           return;
         }
       }
+      lastActivity = Date.now();
+      // Ответ на предложение ассистента: «да» — делаем, «нет» — отпускаем.
+      if (pendingOffer) {
+        const offer = pendingOffer;
+        pendingOffer = null;
+        const yes = replyToOffer(text);
+        if (yes === true) {
+          respond("", offer.action);
+          return;
+        }
+        if (yes === false) {
+          respond(declineSay(), { type: "none" }, true);
+          return;
+        }
+      }
       let local = parseCommand(text, path);
       // «Нажми …»: не нашли такой кнопки — разбираем фразу как обычную команду.
       if (local?.action.type === "click") {
@@ -620,8 +644,19 @@ export default function VoiceAssistant() {
       }
       const soft = () => {
         const loose = parseCommand(text, path, true);
-        if (loose) respond(loose.say, loose.action);
-        else respond("Не совсем поняла. Скажи, например: «дальше», «открой сайты» или «покажи цены».", { type: "none" });
+        if (loose) {
+          respond(loose.say, loose.action);
+          return;
+        }
+        const chat = smallTalk(text);
+        if (chat) {
+          respond(chat, { type: "none" }, true);
+          return;
+        }
+        // Не поняла — каждый раз по-разному и сразу с предложением.
+        const miss = notUnderstood(path);
+        pendingOffer = miss.offer;
+        respond(miss.say, { type: "none" }, true);
       };
       // ИИ дважды не ответил — дальше до конца визита разбираем сами, без ожидания.
       if (aiFails >= 2) {
@@ -637,7 +672,14 @@ export default function VoiceAssistant() {
           body: JSON.stringify({ text, path, history: getVoiceState().turns.slice(0, -1) }),
         });
         if (!res.ok) throw new Error("failed");
-        const data = (await res.json()) as { say: string; action: { type: string; href?: string } | null };
+        const data = (await res.json()) as {
+          say: string;
+          action: { type: string; href?: string } | null;
+          offer?: { type: string; href?: string } | null;
+        };
+        const toAction = (a: { type: string; href?: string }): VoiceAction =>
+          a.type === "route" && a.href ? { type: "route", href: a.href } : ({ type: a.type } as VoiceAction);
+        if (data.offer && !data.action) pendingOffer = { say: data.say, action: toAction(data.offer) };
         aiFails = 0;
         setVoiceState({ status: "idle" });
         const action: VoiceAction = data.action
@@ -707,10 +749,14 @@ export default function VoiceAssistant() {
         netFails = 0;
         writeFlag(ON_KEY, true);
         setVoiceState({ enabled: true, status: "idle" });
-        const hello = "Голос включён. Говори, что нужно.";
+        const hi = greeting(live.current.pathname);
+        const hello = hi.say;
+        pendingOffer = hi.offer;
+        lastActivity = Date.now();
+        nudged = false;
         lastSay = hello;
         setVoiceState((st) => ({ turns: [...st.turns, { role: "assistant" as const, text: hello }], pulse: st.pulse + 1 }));
-        speak("", () => scheduleListen(120));
+        speak(hello, () => scheduleListen(120));
       });
     };
 
@@ -784,7 +830,21 @@ export default function VoiceAssistant() {
     };
     document.addEventListener("visibilitychange", onVisible);
 
+    // Тишина 50 секунд — ассистент сам один раз что-то предлагает.
+    const nudgeTimer = window.setInterval(() => {
+      const st = getVoiceState();
+      if (nudged || !st.enabled || st.status === "thinking" || st.status === "speaking") return;
+      if (document.visibilityState === "hidden" || getVoiceCapture() || st.team) return;
+      if (Date.now() - lastActivity < 50_000) return;
+      nudged = true;
+      stopListening();
+      const n = nudge(live.current.pathname);
+      pendingOffer = n.offer;
+      respond(n.say, { type: "none" }, true);
+    }, 5000);
+
     return () => {
+      window.clearInterval(nudgeTimer);
       document.removeEventListener("visibilitychange", onVisible);
       cancelAnimationFrame(levelRaf);
       micStream?.getTracks().forEach((t) => t.stop());

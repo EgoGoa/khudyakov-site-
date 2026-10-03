@@ -57,6 +57,7 @@ curl_setopt_array($ch, [
         'model' => 'anthropic/claude-haiku-4.5',
         'messages' => $messages,
         'max_tokens' => 300,
+        'temperature' => 1,
     ]),
 ]);
 $res = curl_exec($ch);
@@ -72,14 +73,14 @@ $say = is_array($obj) ? trim((string)($obj['say'] ?? '')) : trim($raw);
 $say = mb_substr($say, 0, 400);
 if ($say === '') fail(502, 'ai_failed');
 
-$action = null;
-$a = is_array($obj) ? ($obj['action'] ?? null) : null;
-if (is_array($a) && is_string($a['type'] ?? null)) {
-    if ($a['type'] === 'route' && in_array($a['href'] ?? '', $data['routes'], true)) {
-        $action = ['type' => 'route', 'href' => $a['href']];
-    } elseif (in_array($a['type'], ['call', 'telegram', 'whatsapp', 'vibe'], true)) {
-        $action = ['type' => $a['type']];
-    }
+function voice_action($a, $routes) {
+    if (!is_array($a) || !is_string($a['type'] ?? null)) return null;
+    if ($a['type'] === 'route' && in_array($a['href'] ?? '', $routes, true)) return ['type' => 'route', 'href' => $a['href']];
+    if (in_array($a['type'], ['call', 'telegram', 'whatsapp', 'vibe'], true)) return ['type' => $a['type']];
+    return null;
 }
+$action = is_array($obj) ? voice_action($obj['action'] ?? null, $data['routes']) : null;
+// Предложение «хочешь, покажу…» — выполнится после «да» посетителя.
+$offer = (!$action && is_array($obj)) ? voice_action($obj['offer'] ?? null, $data['routes']) : null;
 
-echo json_encode(['say' => $say, 'action' => $action], JSON_UNESCAPED_UNICODE);
+echo json_encode(['say' => $say, 'action' => $action, 'offer' => $offer], JSON_UNESCAPED_UNICODE);

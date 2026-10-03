@@ -45,19 +45,26 @@ const ALLOWED_TYPES = new Set(["call", "telegram", "whatsapp", "vibe"]);
 function parseReply(raw: string) {
   const start = raw.indexOf("{");
   const end = raw.lastIndexOf("}");
-  if (start < 0 || end <= start) return { say: raw.trim().slice(0, 400), action: null };
+  if (start < 0 || end <= start) return { say: raw.trim().slice(0, 400), action: null, offer: null };
   try {
-    const obj = JSON.parse(raw.slice(start, end + 1)) as { say?: unknown; action?: { type?: unknown; href?: unknown } | null };
+    const obj = JSON.parse(raw.slice(start, end + 1)) as {
+      say?: unknown;
+      action?: { type?: unknown; href?: unknown } | null;
+      offer?: { type?: unknown; href?: unknown } | null;
+    };
     const say = typeof obj.say === "string" ? obj.say.trim().slice(0, 400) : "";
-    let action: { type: string; href?: string } | null = null;
-    const a = obj.action;
-    if (a && typeof a.type === "string") {
-      if (a.type === "route" && typeof a.href === "string" && ROUTES.has(a.href)) action = { type: "route", href: a.href };
-      else if (ALLOWED_TYPES.has(a.type)) action = { type: a.type };
-    }
-    return { say, action };
+    const check = (a: { type?: unknown; href?: unknown } | null | undefined) => {
+      if (!a || typeof a.type !== "string") return null;
+      if (a.type === "route" && typeof a.href === "string" && ROUTES.has(a.href)) return { type: "route", href: a.href };
+      if (ALLOWED_TYPES.has(a.type)) return { type: a.type };
+      return null;
+    };
+    const action = check(obj.action);
+    // Предложение «хочешь, покажу…» — выполнится после «да» посетителя.
+    const offer = action ? null : check(obj.offer);
+    return { say, action, offer };
   } catch {
-    return { say: "", action: null };
+    return { say: "", action: null, offer: null };
   }
 }
 
@@ -95,6 +102,8 @@ export async function POST(request: Request) {
         { role: "user" as const, content: `[страница: ${path}]\n${text}` },
       ],
       maxOutputTokens: 300,
+      // Ответы каждый раз разные и живые (Егор, 2026-10-03).
+      temperature: 1,
     });
     const reply = parseReply(raw);
     if (!reply.say) return NextResponse.json({ error: "ai_failed" }, { status: 502 });
