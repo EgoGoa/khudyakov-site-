@@ -38,6 +38,14 @@ export const BEAT = {
   cta: 3.85, // окошки услуг, акций и команды — сразу за блоком, друг за другом (Егор, 2026-10-03)
 } as const;
 
+// Телефон (Егор, 2026-10-03): листаем блок — сразу появляются заголовок и
+// подзаголовок вместе с запуском фонового фрагмента, ~1,5 с виден только он,
+// потом плавно проявляется всё остальное. Значения подменяются один раз при
+// загрузке модуля в браузере (до первого рендера любого блока).
+if (typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches) {
+  Object.assign(BEAT, { eyebrow: 0.05, title: 0.1, intro: 0.1, content: 1.65, controls: 2.15, cta: 2.65 });
+}
+
 /** How long each kind of element takes to settle.
  *
  *  These are /smm's numbers, adopted for every service page. /smm used to

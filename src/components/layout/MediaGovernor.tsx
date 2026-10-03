@@ -54,6 +54,13 @@ export default function MediaGovernor() {
 
     function settle(v: HTMLVideoElement) {
       if (!v.loop) return;
+      // Принудительно играющие ролики (окошки стартового меню, Егор,
+      // 2026-10-03: «видео должно играть в любом случае»): никаких пауз по
+      // видимости, ни lite, ни mid — только вкладка в фоне.
+      if (v.hasAttribute("data-force-play")) {
+        if (!document.hidden && v.paused) v.play().catch(() => {});
+        return;
+      }
       if (lite && !v.hasAttribute("data-hero-reel")) {
         if (!v.paused) v.pause();
         return;
@@ -79,6 +86,14 @@ export default function MediaGovernor() {
       // 2026-10-03): в lite-режиме у него и так сняты фильтры, а файл —
       // 640px/290 кбит/с, так что выгружать его незачем. Диспетчер только
       // следит, чтобы он стоял на паузе вне экрана.
+      if (v.hasAttribute("data-force-play")) {
+        if (!seen.has(v)) {
+          seen.add(v);
+          io.observe(v);
+        }
+        settle(v);
+        return;
+      }
       if (v.hasAttribute("data-hero-reel")) {
         if (!seen.has(v)) {
           seen.add(v);

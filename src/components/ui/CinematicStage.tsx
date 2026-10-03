@@ -179,6 +179,10 @@ const DEFAULT_MAX_BLUR_PX = 16;
 // would otherwise sit dead still for a whole chapter. PUSH_BASE also keeps
 // the frame overscanned, so a heavy blur can't drag the video's own edges
 // into shot.
+// Phones: how long the next chapter's clip takes to dissolve in over the
+// previous chapter's held last frame.
+const CLIP_FADE_MS = 450;
+
 const PUSH_BASE = 1.04;
 const PUSH_RANGE = 0.06;
 
@@ -251,6 +255,27 @@ export default function CinematicStage({
       setResolvedSrc(src);
     }
   }, [src]);
+  // Телефон: колода — один экран в потоке страницы (без «рельсов» прокрутки),
+  // главы листаются жестом без единого программного scrollTo, а у каждой главы
+  // свой короткий клип вместо перемотки длинного ролика. Причина: на iOS Safari
+  // любая прокрутка из кода сворачивает/разворачивает адресную строку, 100dvh
+  // меняется на лету, и колода с видео перекладывается каждый кадр — отсюда
+  // «помехи» и рывки. Раскладку (без рельсов) задаёт CSS по тому же порогу.
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const sync = () => setPhone(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  // Клип, который сейчас сверху (уже играет), и тот, что под ним, пока сверху
+  // идёт растворение.
+  const [clipTop, setClipTop] = useState<number | null>(null);
+  const [clipUnder, setClipUnder] = useState<number | null>(null);
+  const clipRefs = useRef<Map<number, HTMLVideoElement>>(new Map());
+  const clipSrc = (i: number) =>
+    src.replace("/video/", "/video/clips/").replace(/\.mp4$/, `-${i}.mp4`);
   // Chapters visited at least once this page load. Egor's ask: a chapter's
   // entrance (the whole choreography — its own slide-in plus every <Appear>
   // inside it) should play once per visit to the page, not every time the
@@ -382,6 +407,9 @@ export default function CinematicStage({
     // past it are two separate movements, otherwise the deck appears to jump
     // on its own at the end of a swipe.
     let paneMoved = false;
+    // Телефон: жест уже перелистнул главу (шаг делается в touchmove, как
+    // только палец прошёл порог, — не ждём, пока он оторвётся).
+    let swipeSpent = false;
     let tween = 0;
     const isLocked = () => performance.now() < lock;
     // One timer clears both the accumulated delta and the "this gesture was
@@ -412,7 +440,10 @@ export default function CinematicStage({
       const wrap = wrapRef.current;
       if (!wrap) return false;
       const rect = wrap.getBoundingClientRect();
-      return rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
+      // Телефон: допуск побольше — колода стоит в потоке, а не прижата, и
+      // адресная строка Safari сдвигает край на десяток-другой пикселей.
+      const tol = phone ? 24 : 1;
+      return rect.top <= tol && rect.bottom >= window.innerHeight - tol;
     };
 
     // Was the deck engaged on the previous check? Initialised from the actual
@@ -487,6 +518,8 @@ export default function CinematicStage({
     const deckTop = (wrap: HTMLElement) => wrap.getBoundingClientRect().top + window.scrollY;
 
     const indexNow = () => {
+      // Телефон: глава зависит только от жестов, не от положения прокрутки.
+      if (phone) return activeIndexRef.current;
       const wrap = wrapRef.current;
       if (!wrap) return 0;
       const travelled = (window.scrollY - deckTop(wrap)) / window.innerHeight;
@@ -497,6 +530,8 @@ export default function CinematicStage({
     // scroll cannot be cancelled or timed, and its duration varies by distance
     // and browser, so the chapter swap and the film could not be matched to it.
     const glideTo = (index: number): boolean => {
+      // Телефон: смена главы — только смена индекса, прокрутки нет.
+      if (phone) return false;
       const wrap = wrapRef.current;
       if (!wrap) return false;
       const from = window.scrollY;
@@ -607,6 +642,11 @@ export default function CinematicStage({
       directionRef.current = index > activeIndexRef.current ? 1 : -1;
       setActiveIndex(index);
       glideTo(index);
+      if (phone) {
+        // Колода одна на экран: достаточно один раз встать на её верх.
+        const wrap = wrapRef.current;
+        if (wrap) window.scrollTo({ top: deckTop(wrap), behavior: "instant" });
+      }
       extendLock(STEP_MS + 700);
       return true;
     };
@@ -619,6 +659,11 @@ export default function CinematicStage({
     };
     const voiceCurrent = () => (engaged() ? (chapters[activeIndexRef.current]?.id ?? null) : null);
     registerGoTo(goToId, firstChapterId, voiceStep, voiceCurrent);
+    if (phone) {
+      // Ссылка с #главой: на телефоне рельсов нет, якорь прокрутить некуда.
+      const hashIndex = chapters.findIndex((c) => c.id === window.location.hash.slice(1));
+      if (hashIndex >= 0) goToId(chapters[hashIndex].id);
+    }
 
     // Пришли стрелкой с соседней страницы: сразу встаём на аналогичную главу,
     // без прокрутки. Второй заход в rAF — на случай, если Next сбросил
@@ -627,7 +672,7 @@ export default function CinematicStage({
     if (hopIndex >= 0) {
       const jump = () => {
         const wrap = wrapRef.current;
-        if (wrap) window.scrollTo(0, deckTop(wrap) + hopIndex * window.innerHeight);
+        if (wrap) window.scrollTo(0, deckTop(wrap) + (phone ? 0 : hopIndex * window.innerHeight));
       };
       directionRef.current = 1;
       setActiveIndex(hopIndex);
@@ -646,7 +691,7 @@ export default function CinematicStage({
         wasEngaged = false;
         return;
       }
-      if (!wasEngaged) {
+      if (!wasEngaged && !phone) {
         const settling = armEntry();
         e.preventDefault();
         // Nothing to settle onto (the visitor is already sitting exactly on
@@ -711,6 +756,7 @@ export default function CinematicStage({
       touchStartY = e.touches[0]?.clientY ?? null;
       deck.start(e);
       paneMoved = false;
+      swipeSpent = false;
     };
     const onTouchMove = (e: TouchEvent) => {
       if (scrollLocked()) return;
@@ -718,6 +764,26 @@ export default function CinematicStage({
       const isEngagedNow = engaged();
       if (!isEngagedNow) {
         wasEngaged = false;
+        return;
+      }
+      if (phone) {
+        // Колода на экране: жест решаем сразу, на первых пикселях движения,
+        // пока браузер ещё не взял его себе (после этого preventDefault
+        // игнорируется). Края колоды отдают жест странице.
+        const y = e.touches[0]?.clientY ?? 0;
+        const dy = (touchStartY ?? y) - y;
+        if (Math.abs(dy) < 4) return;
+        const dir = dy > 0 ? 1 : -1;
+        if (paneRoom(dir) > EDGE_EPSILON) {
+          paneMoved = true;
+          return;
+        }
+        if (paneMoved || !canStep(dir)) return;
+        e.preventDefault();
+        if (!swipeSpent && !isLocked() && Math.abs(dy) >= SWIPE_THRESHOLD) {
+          swipeSpent = true;
+          stepBy(dir);
+        }
         return;
       }
       if (!wasEngaged) {
@@ -748,9 +814,14 @@ export default function CinematicStage({
       e.preventDefault();
     };
     const onTouchEnd = (e: TouchEvent) => {
+      if (phone) unlockRef.current();
       if (deck.end()) {
         touchStartY = null;
         return;
+      }
+      if (phone) {
+        touchStartY = null;
+        return; // шаг уже сделан в touchmove
       }
       if (scrollLocked() || touchStartY === null || !engaged() || isLocked()) return;
       const dy = touchStartY - (e.changedTouches[0]?.clientY ?? touchStartY);
@@ -777,7 +848,7 @@ export default function CinematicStage({
       const up = e.key === "ArrowUp" || e.key === "PageUp";
       if (!down && !up) return;
       const dir = down ? 1 : -1;
-      if (!wasEngaged) {
+      if (!wasEngaged && !phone) {
         // A key press has no momentum tail to absorb the way a trackpad
         // flick does, so armEntry's settle-then-wait-for-a-second-press
         // contract (built for that tail — see armEntry's own comment) just
@@ -855,6 +926,7 @@ export default function CinematicStage({
       }, ACTIVE_INDEX_SETTLE_MS);
     };
     const onScroll = () => {
+      if (phone) return; // телефон: главу задают жесты, не прокрутка
       if (isLocked()) return;
       const next = indexNow();
       if (!syncedInitialScroll) {
@@ -894,7 +966,56 @@ export default function CinematicStage({
       window.removeEventListener("resize", onScroll);
       registerGoTo(null, null);
     };
-  }, [chapters.length, firstChapterId, registerGoTo]);
+  }, [chapters.length, firstChapterId, registerGoTo, phone]);
+
+  // Телефон: колода стоит в потоке страницы, и палец, отпущенный на полпути
+  // между героем и колодой, оставил бы её наполовину на экране. Когда прокрутка
+  // улеглась, один раз (родной плавной прокруткой, не покадровой) встаём ровно
+  // на колоду — но только если посетитель двигался К ней. Уезжающий с колоды
+  // (дальше вниз с последней главы, вверх с первой) страницу назад не тянем.
+  useEffect(() => {
+    if (!phone) return;
+    let timer = 0;
+    let touching = false;
+    let lastY = window.scrollY;
+    let dir = 0;
+    const dock = () => {
+      const wrap = wrapRef.current;
+      if (!wrap || touching) return;
+      const r = wrap.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const visible = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+      if (visible < vh * 0.45 || Math.abs(r.top) <= 2) return;
+      const towards = (dir > 0 && r.top > 0) || (dir < 0 && r.top < 0);
+      if (towards) window.scrollTo({ top: window.scrollY + r.top, behavior: "smooth" });
+    };
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y !== lastY) dir = y > lastY ? 1 : -1;
+      lastY = y;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(dock, 110);
+    };
+    const down = () => {
+      touching = true;
+    };
+    const up = () => {
+      touching = false;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(dock, 160);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchstart", down, { passive: true });
+    window.addEventListener("touchend", up, { passive: true });
+    window.addEventListener("touchcancel", up, { passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("touchstart", down);
+      window.removeEventListener("touchend", up);
+      window.removeEventListener("touchcancel", up);
+    };
+  }, [phone]);
 
   // Run the film only while the deck is actually the thing on screen.
   //
@@ -1155,6 +1276,78 @@ export default function CinematicStage({
     return () => cancelAnimationFrame(raf);
   }, [activeIndex, phases, started, maxBlurPx, blurSeconds, push, brightness, soundPage]);
 
+  // Телефон: играет клип активной главы целиком и замирает на его последнем
+  // кадре. Клип следующей главы начинается ровно с этого кадра, поэтому
+  // растворение между ними (clipTop/clipUnder) незаметно; перемоток нет.
+  const clipTopRef = useRef<number | null>(null);
+  const underTimer = useRef(0);
+  const promoteClip = (i: number) => {
+    if (i !== activeIndexRef.current || clipTopRef.current === i) return;
+    const prev = clipTopRef.current;
+    clipTopRef.current = i;
+    setClipUnder(prev);
+    setClipTop(i);
+    window.clearTimeout(underTimer.current);
+    underTimer.current = window.setTimeout(() => setClipUnder(null), CLIP_FADE_MS + 250);
+  };
+  useEffect(() => {
+    if (!phone) return;
+    clipRefs.current.forEach((v, i) => {
+      if (i !== activeIndex && !v.paused) v.pause();
+    });
+    const el = clipRefs.current.get(activeIndex);
+    if (!started) {
+      // Колода ушла с экрана: встаёт в начало главы, чтобы заход начался заново.
+      try {
+        el?.pause();
+        if (el) el.currentTime = 0;
+      } catch {
+        /* метаданные ещё не готовы */
+      }
+      return;
+    }
+    if (soundPage) sound()?.enterChapter(soundPage, activeIndex);
+    if (!el) return;
+    try {
+      if (el.ended || el.currentTime > 0.05) el.currentTime = 0;
+    } catch {
+      /* метаданные ещё не готовы */
+    }
+    el.play().catch(() => {});
+  }, [phone, started, activeIndex, soundPage]);
+  useEffect(() => () => window.clearTimeout(underTimer.current), []);
+  // iOS (энергосбережение, экономия трафика) не даёт запустить видео из кода,
+  // если до этого не было касания. Касание — разрешение: на каждом его конце
+  // включаем клип активной главы, если он стоит, и один раз «прогреваем»
+  // соседние (play → сразу pause), чтобы дальше они запускались сами.
+  const primed = useRef<WeakSet<HTMLVideoElement>>(new WeakSet());
+  const unlockClips = () => {
+    clipRefs.current.forEach((v, i) => {
+      if (i === activeIndexRef.current) {
+        if (v.paused && !v.ended) v.play().catch(() => {});
+        primed.current.add(v);
+        return;
+      }
+      if (primed.current.has(v)) return;
+      primed.current.add(v);
+      v.play()
+        .then(() => {
+          if (i === activeIndexRef.current) return;
+          v.pause();
+          try {
+            v.currentTime = 0;
+          } catch {
+            /* метаданные ещё не готовы */
+          }
+        })
+        .catch(() => primed.current.delete(v));
+    });
+  };
+  const unlockRef = useRef(unlockClips);
+  useEffect(() => {
+    unlockRef.current = unlockClips;
+  });
+
   const api = useMemo<StageApi>(
     () => ({ activeIndex, staged: true, started, seen, warm }),
     [activeIndex, started, seen, warm],
@@ -1186,6 +1379,48 @@ export default function CinematicStage({
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-cover"
             />
+            {phone ? (
+              phases.map((_, i) => {
+                const near =
+                  i === clipTop ||
+                  i === clipUnder ||
+                  (started ? Math.abs(i - activeIndex) <= 1 : i === 0);
+                if (!near) return null;
+                const isTop = clipTop === i;
+                const isUnder = clipUnder === i;
+                return (
+                  <video
+                    key={i}
+                    ref={(el) => {
+                      if (el) clipRefs.current.set(i, el);
+                      else clipRefs.current.delete(i);
+                    }}
+                    src={clipSrc(i)}
+                    muted
+                    playsInline
+                    disablePictureInPicture
+                    data-force-play=""
+                    aria-hidden="true"
+                    preload={started && i >= activeIndex - 1 && i <= activeIndex + 1 ? "auto" : bootPreload}
+                    onPlaying={() => promoteClip(i)}
+                    onEnded={() => {
+                      if (i === activeIndexRef.current) sound()?.holdChapter();
+                    }}
+                    onPause={(e) => {
+                      // iOS иногда ставит активный клип на паузу сам — будим.
+                      const v = e.currentTarget;
+                      if (started && i === activeIndexRef.current && !v.ended) v.play().catch(() => {});
+                    }}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    style={{
+                      opacity: isTop || isUnder ? 1 : 0,
+                      zIndex: isTop ? 2 : isUnder ? 1 : 0,
+                      transition: isTop ? `opacity ${CLIP_FADE_MS}ms ease` : "none",
+                    }}
+                  />
+                );
+              })
+            ) : (
             <video
               ref={videoRef}
               src={resolvedSrc}
@@ -1212,6 +1447,7 @@ export default function CinematicStage({
               // over it.
               className="relative h-full w-full object-cover"
             />
+            )}
             {/* Two-part grade. Lives INSIDE the frame that carries the video (not as a
                   sibling above it) below lg: the frame is scaled, and on iOS Safari a
                   separate overlay layer could end up narrower than the video under

@@ -248,7 +248,18 @@ function CardVideo({ src, poster }: { src: string; poster: string }) {
     const id = window.setTimeout(() => {
       void el.play().catch(() => {});
     }, 250);
-    return () => window.clearTimeout(id);
+    // iOS при экономии энергии отказывает в запуске из кода, пока не было
+    // касания: любое касание — разрешение, доигрываем на его конце.
+    const kick = () => {
+      if (el.paused) void el.play().catch(() => {});
+    };
+    window.addEventListener("touchend", kick, { passive: true });
+    window.addEventListener("pointerup", kick, { passive: true });
+    return () => {
+      window.clearTimeout(id);
+      window.removeEventListener("touchend", kick);
+      window.removeEventListener("pointerup", kick);
+    };
   }, []);
 
   return (
@@ -258,7 +269,9 @@ function CardVideo({ src, poster }: { src: string; poster: string }) {
       poster={poster}
       muted
       loop
+      autoPlay
       playsInline
+      data-force-play=""
       preload="auto"
       className="welcome-card-media"
       aria-hidden="true"
