@@ -352,6 +352,8 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           return (
             <div
               key={key}
+              // Лёгкий веер на телефоне: дальше 1,5 карточки от центра карточка не рисуется (CSS .deck-pose[data-far]).
+              data-far={Math.abs(offset) > 1.5 ? "" : undefined}
               // Only transform and opacity animate. `transition-all` also
               // animated the per-card `filter: blur()` that used to sit
               // here, and a blur filter re-runs on every frame for every

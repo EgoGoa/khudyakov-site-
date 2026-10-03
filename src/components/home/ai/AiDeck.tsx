@@ -421,6 +421,8 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
             // by it.
             <div
               key={key}
+              // Лёгкий веер на телефоне: дальше 1,5 карточки от центра карточка не рисуется (CSS .deck-pose[data-far]).
+              data-far={Math.abs(offset) > 1.5 ? "" : undefined}
               className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[348px] w-[265px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
                 // No transition while the hand holds the rail: the cards
                 // have to sit exactly where the finger is, on the frame it

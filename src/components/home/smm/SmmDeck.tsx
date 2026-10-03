@@ -380,6 +380,8 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           return (
             <div
               key={key}
+              // Лёгкий веер на телефоне: дальше 1,5 карточки от центра карточка не рисуется (CSS .deck-pose[data-far]).
+              data-far={Math.abs(offset) > 1.5 ? "" : undefined}
               className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[250px] w-[150px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
                 live ? "transition-[filter] duration-[420ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
               }`}
