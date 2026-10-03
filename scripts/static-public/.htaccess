@@ -1,6 +1,6 @@
 RewriteEngine On
 
-# Одно зеркало для поисковиков: www.hdkv-ai.ru → hdkv-ai.ru (301),
+# Одно зеркало для поисковиков: www.hud-service.ru → hud-service.ru (301),
 # иначе Яндекс видит два одинаковых сайта.
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^(.*)$ https://%1/$1 [R=301,L]

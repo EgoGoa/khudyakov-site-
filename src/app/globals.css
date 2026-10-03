@@ -8767,7 +8767,7 @@ html[data-lite] .block-vibe__online::before { animation: none; }
    нижних кнопок. */
 body:has(.vibe-fan-dim) .voice-dock,
 /* В окне Vibe-режима волна тоже не нужна — она ложилась на низ окна (Егор). */
-body:has(.vibe-mode.fixed) .voice-dock {
+body:has(.vibe-mode.fixed) .voice-dock:not(.vibe-mode .voice-dock) {
   opacity: 0;
   pointer-events: none;
 }
@@ -9230,4 +9230,29 @@ html[data-lite] .welcome-backdrop {
 }
 [data-tight-top] .persona-step-1 {
   padding-top: 3rem;
+}
+
+/* Вайб-окно на телефоне (Егор, 2026-09-29): «нет анимации появления и
+   цикла». Общие правила mid/low выше сводят бесконечные CSS-анимации к
+   одному проходу; в окне возвращаем цикл лёгким градиенту слова и курсору
+   печати. Тяжёлое (аврора с блюром) остаётся выключенным. */
+html[data-lite] .vibe-mode .vibe-mode__iris,
+html[data-mid] .vibe-mode .vibe-mode__iris,
+html[data-lite] .vibe-mode .vibe-mode__caret:not(.is-done),
+html[data-mid] .vibe-mode .vibe-mode__caret:not(.is-done) {
+  animation-iteration-count: infinite !important;
+}
+
+/* Строка над волной в вайб-окне: как ответить голосом и что услышано
+   (Егор, 2026-09-29). Одна строка, не толкает вёрстку. */
+.vibe-mode__voice-hint {
+  margin: 0 auto 2px;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
 }

@@ -338,7 +338,10 @@ function runScene(canvas: HTMLCanvasElement, items: Item[], vw = VIEW_W, vh = VI
   // mid (lite) — сборка вдвое меньшим числом частиц и тихий цикл 30 к/с без
   // волны, искр и подпитки, high — полная сцена.
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let still = reduced || getTier() === "low";
+  // В вайб-окне сцена живёт и на low (телефон): тихий цикл 30 к/с, как на
+  // mid; замирает только при системной настройке «уменьшить движение»
+  // (Егор, 2026-09-29: «на моб версии нет анимации появления и цикла»).
+  let still = reduced;
   let lite = getTier() !== "high";
   const step = lite ? STEP.lite : STEP.high;
   const upx = vw / Math.max(160, canvas.clientWidth || vw);
@@ -659,14 +662,6 @@ function runScene(canvas: HTMLCanvasElement, items: Item[], vw = VIEW_W, vh = VI
   let raf = 0;
   const offTier = onTierChange((tier) => {
     lite = tier !== "high";
-    // Устройство не справилось и опустилось до low — замираем на готовом
-    // кадре и отпускаем процессор.
-    if (tier === "low" && !still) {
-      still = true;
-      cancelAnimationFrame(raf);
-      parts.length = 0;
-      sparks.length = 0;
-    }
     resize();
   });
 

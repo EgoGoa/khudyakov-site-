@@ -88,6 +88,16 @@ export function useVoiceState() {
   return useSyncExternalStore(subscribe, getVoiceState, getVoiceState);
 }
 
+/** Окно, которое само разбирает услышанное (вайб-анкета: «третий вариант»,
+ *  «дальше», «сто пятьдесят тысяч»). Вернуло объект — фраза разобрана окном
+ *  (say — что сказать вслух, пусто — молча); null — пусть разбирает сайт. */
+export type VoiceCapture = (text: string) => { say?: string } | null;
+let capture: VoiceCapture | null = null;
+export function setVoiceCapture(fn: VoiceCapture | null) {
+  capture = fn;
+}
+export const getVoiceCapture = () => capture;
+
 // Движок регистрирует себя здесь; сферы только дёргают эти функции.
 type Engine = {
   /** Нажатие на волну: включить голос / перебить / открыть-скрыть окно. */

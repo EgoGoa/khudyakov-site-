@@ -8,7 +8,7 @@ SRC="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$SRC/../khudyakov-site-static/out"
 KEY="$HOME/.ssh/hdkv_reg"
 REMOTE="u3652935@server286.hosting.reg.ru"
-REMOTE_DIR="www/hdkv-ai.ru/"
+REMOTE_DIR="www/hdkv-ai.ru/"  # одна папка, два имени: hud-service.ru и hdkv-ai.ru (лимит сайтов на Host-A)
 
 "$SRC/scripts/build-static.sh"
 
@@ -25,4 +25,4 @@ rsync -az --delete --human-readable --stats \
   -e "ssh -i $KEY -o IdentitiesOnly=yes -o BatchMode=yes" \
   "$@" "$OUT/" "$REMOTE:$REMOTE_DIR"
 
-echo "Готово: https://hdkv-ai.ru"
+echo "Готово: https://hud-service.ru"

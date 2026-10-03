@@ -273,10 +273,16 @@ export default function NanoWave({
       const grad = ctx.createLinearGradient(x0, 0, x0 + len, 0);
       // Концы каждой линии уходят в полную прозрачность.
       const stops: [number, string][] = [
+        // Кончики сходятся плавно, ступенькой по альфе: без неё сложенные
+        // «lighter» линии давали обрывистый светлый кончик (Егор, 2026-10-03).
         [0, `rgba(${fr},${fg},${fb},0)`],
-        [0.16, `rgba(${fr},${fg},${fb},0.55)`],
+        [0.05, `rgba(${fr},${fg},${fb},0.02)`],
+        [0.1, `rgba(${fr},${fg},${fb},0.14)`],
+        [0.17, `rgba(${fr},${fg},${fb},0.55)`],
         [head, `rgba(${lift(tr)},${lift(tg)},${lift(tb)},${flare})`],
-        [0.84, `rgba(${tr},${tg},${tb},0.55)`],
+        [0.83, `rgba(${tr},${tg},${tb},0.55)`],
+        [0.9, `rgba(${tr},${tg},${tb},0.14)`],
+        [0.95, `rgba(${tr},${tg},${tb},0.02)`],
         [1, `rgba(${tr},${tg},${tb},0)`],
       ];
       for (const [o, c] of stops.sort((a, b) => a[0] - b[0])) grad.addColorStop(Math.min(1, Math.max(0, o)), c);

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { useSiteFreeze } from "@/lib/use-site-freeze";
 import { InlineVoiceSphere } from "@/components/layout/VoiceAssistant";
 import { WIN, WIN_DIM } from "@/lib/motion";
@@ -13,6 +13,9 @@ import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { playUi } from "@/lib/sound";
+import { trackGoal } from "@/lib/ym";
+import { setVoiceCapture, useVoiceState } from "@/lib/voice/store";
+import { controlOf, matchOptions, parseBudget } from "@/lib/voice/vibe-voice";
 import {
   BUDGET_STEPS,
   OWN_PREFIX,
@@ -112,7 +115,12 @@ export default function VibeMode({
 
   if (!mounted) return null;
   return createPortal(
-    <AnimatePresence>{open && <VibeWindow key="vibe" onClose={onClose} />}</AnimatePresence>,
+    // Вайб-окно — «сердце» сайта: анимации появления играют и на телефоне
+    // (mid/low), где MotionTier сводит остальной сайт к минимуму. Уважаем
+    // только системную настройку «уменьшить движение» (Егор, 2026-09-29).
+    <MotionConfig reducedMotion="user">
+      <AnimatePresence>{open && <VibeWindow key="vibe" onClose={onClose} />}</AnimatePresence>
+    </MotionConfig>,
     document.body
   );
 }
@@ -148,6 +156,10 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
     next();
   };
 
+  useEffect(() => {
+    trackGoal("vibe_open");
+  }, []);
+
   // Заставка сама переходит к приветствию.
   useEffect(() => {
     if (stage !== "splash") return;
@@ -163,13 +175,114 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
   // Отступ сферы сверху: на заставке и приветствии сфера с текстом стоят
   // в середине окна, дальше поднимаются к верху.
   const orbSlot = stage === "contact" ? "quiz" : stage;
-  const orbTop = stage === "splash" ? (narrow ? 70 : 96) : stage === "hello" ? (narrow ? 90 : 120) : stage === "building" ? 60 : 0;
+  // На телефоне верхний отступ убран: пустота над сферой уводила всю
+  // композицию заставки и приветствия ниже середины окна (Егор, 2026-09-29).
+  const orbTop = stage === "splash" ? (narrow ? 0 : 96) : stage === "hello" ? (narrow ? 0 : 120) : stage === "building" ? 60 : 0;
+  // Тело окна начинается под строкой с крестиком (~60px), поэтому его
+  // середина ниже середины самого окна; нижний отступ возвращает её на место.
+  const bodyPad = narrow && (stage === "splash" || stage === "hello") ? 56 : undefined;
   // Над слайдами сфера крупнее (64 → 96px) и поднята выше, по центру, но
   // кольцо целиком остаётся внутри окна (Егор, 2026-09-26).
   // На телефоне не поднимаем: там сфера наезжала на «Vibe-режим» слева.
   const orbLift = stage === "intro" && !narrow ? -40 : 0;
 
+  // Голосом (Егор, 2026-09-29): пока окно открыто и голос включён, всё
+  // услышанное сначала разбирает окно — вариант по названию или номеру,
+  // бюджет, «дальше», «назад», «закрой». Не разобрало — уходит сайту.
+  const voiceRef = useRef<(text: string) => { say?: string } | null>(() => null);
+  const onVoice = (text: string): { say?: string } | null => {
+    const ctl = controlOf(text);
+    if (ctl === "close") {
+      onClose();
+      return {};
+    }
+    if (stage === "splash" || stage === "hello") {
+      if (!ctl || ctl === "back") return null;
+      go(() => setStage("intro"));
+      return {};
+    }
+    if (stage === "intro") {
+      if (ctl === "back") {
+        if (slide > 0) go(() => setSlide(slide - 1));
+        return {};
+      }
+      if (ctl === "start" || (ctl === "next" && slide === INTRO_STEPS.length - 1)) {
+        go(() => setStage("quiz"));
+        return {};
+      }
+      if (ctl === "next") {
+        go(() => setSlide(slide + 1));
+        return {};
+      }
+      return null;
+    }
+    if (stage === "contact") {
+      if (ctl === "back") {
+        go(() => setStage("quiz"));
+        return {};
+      }
+      return null;
+    }
+    if (stage !== "quiz") return null;
+    const q = questions[qi];
+    if (!q) return null;
+    const toNext = () => go(() => (qi + 1 < total ? setQi(qi + 1) : setStage("contact")));
+    const value = answers[q.id];
+    const list = Array.isArray(value) ? value : [];
+    const answered = Array.isArray(value) ? value.length > 0 : !!value;
+    if (ctl === "back") {
+      go(() => (qi > 0 ? setQi(qi - 1) : setStage("intro")));
+      return {};
+    }
+    if (ctl === "next" || ctl === "start") {
+      if (answered || q.optional) toNext();
+      else return {};
+      return {};
+    }
+    const set = (v: VibeValue) => setAnswers((prev) => ({ ...prev, [q.id]: v }));
+    if (q.kind === "range") {
+      const b = parseBudget(text);
+      if (!b) return null;
+      bump();
+      set(String(b));
+      return {};
+    }
+    if (q.kind === "text") {
+      bump();
+      set(text.trim());
+      return {};
+    }
+    const opts = q.options ?? [];
+    const hit = matchOptions(text, opts);
+    const many = q.kind === "multi" || !!q.many;
+    if (!hit.length) {
+      if (!q.own) return null;
+      bump();
+      set(many ? [...list.filter((x) => !isOwn(x)), OWN_PREFIX + text.trim()] : OWN_PREFIX + text.trim());
+      if (!many) window.setTimeout(toNext, 850);
+      return {};
+    }
+    bump();
+    playUi("click");
+    if (many) {
+      const add = hit.map((i) => opts[i].value).filter((v) => !list.includes(v));
+      set([...list, ...add]);
+    } else {
+      set(opts[hit[0]].value);
+      window.setTimeout(toNext, 850);
+    }
+    return {};
+  };
+  useEffect(() => {
+    voiceRef.current = onVoice;
+  });
+  useEffect(() => {
+    setVoiceCapture((t) => voiceRef.current(t));
+    return () => setVoiceCapture(null);
+  }, []);
+
   const finish = () => {
+    trackGoal("vibe_finish");
     setStage("building");
     bump();
     // Пауза «собираю» — не для вида: за это время сфера разгорается, и
@@ -229,7 +342,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        <div className="vibe-mode__body flex w-full flex-1 flex-col items-center pt-1">
+        <div className="vibe-mode__body flex w-full flex-1 flex-col items-center pt-1" style={{ paddingBottom: bodyPad }}>
           {/* Сфера не переезжает (Егор: «плавно затухает и там плавно
               появляется»): у каждого вида экрана своё место и размер, при
               смене вида она гаснет через размытие и проявляется на новом
@@ -326,6 +439,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
             она здесь, плавающая прячется (InlineVoiceSphere). */}
         {/* Холст волны шире неё самой (запас под раскачку) — полоса
             обрезана, чтобы этот запас не раздувал окно до прокрутки. */}
+        <VoiceHint />
         <div className="flex h-7 shrink-0 items-center justify-center overflow-hidden">
           <InlineVoiceSphere from={ORB_FROM} to={ORB_TO} width={110} height={41} waveOnly />
         </div>
@@ -335,6 +449,20 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
   );
 }
 
+
+// Строка над волной: как ответить голосом и что сейчас услышано.
+function VoiceHint() {
+  const s = useVoiceState();
+  if (!s.canListen) return null;
+  const text = !s.enabled
+    ? "Нажми на волну — отвечай голосом"
+    : s.live
+      ? `«${s.live}»`
+      : s.status === "speaking"
+        ? ""
+        : "Слушаю: назови вариант или скажи «дальше»";
+  return <p className="vibe-mode__voice-hint">{text || "\u00a0"}</p>;
+}
 
 // «Vibe-режим» — словесный знак режима: «Vibe» фиолетовым, «режим» белым,
 // без частиц — только мягкая неспешная пульсация свечения (Егор).
@@ -517,6 +645,14 @@ function Question({
   const [own, setOwn] = useState(
     q.kind === "text" ? current : q.kind === "multi" || q.many ? (list.find(isOwn)?.slice(1) ?? "") : isOwn(current) ? current.slice(1) : ""
   );
+  // Ответ мог прийти голосом — поле «свой вариант» подтягивает его.
+  const external =
+    q.kind === "text" ? current : q.kind === "multi" || q.many ? (list.find(isOwn)?.slice(1) ?? "") : isOwn(current) ? current.slice(1) : "";
+  const [seenExternal, setSeenExternal] = useState(external);
+  if (external !== seenExternal) {
+    setSeenExternal(external);
+    if (external) setOwn(external);
+  }
   const advance = useRef<number | null>(null);
   useEffect(
     () => () => {

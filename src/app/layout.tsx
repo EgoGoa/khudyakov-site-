@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Unbounded, Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import YandexMetrika from "@/components/layout/YandexMetrika";
 import Header from "@/components/layout/Header";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import PageBarSpacer from "@/components/layout/PageBarSpacer";
@@ -177,6 +178,7 @@ export default function RootLayout({
             и паркует свой цикл, пока курсор стоит. */}
         <FluidSmoke />
         <Analytics />
+        <YandexMetrika />
       </body>
     </html>
   );

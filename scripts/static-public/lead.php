@@ -54,7 +54,7 @@ if (isset($body['fields']) && is_array($body['fields'])) {
 }
 
 $to = 'khudyakov.yegor@gmail.com';
-$host = preg_replace('/^www\./', '', $_SERVER['HTTP_HOST'] ?? 'hdkv-ai.ru');
+$host = preg_replace('/^www\./', '', $_SERVER['HTTP_HOST'] ?? 'hud-service.ru');
 $subject = '=?UTF-8?B?' . base64_encode("$label — $name") . '?=';
 $headers = "From: HUD.SERVICE <no-reply@$host>\r\n";
 if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {

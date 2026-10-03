@@ -21,6 +21,7 @@ import {
   OPEN_VIBE_EVENT,
   TOUR_KEY,
   VOICE_NAV_EVENT,
+  getVoiceCapture,
   getVoiceState,
   registerVoiceEngine,
   setVoiceState,
@@ -563,7 +564,11 @@ export default function VoiceAssistant() {
     const respond = (say: string, action: VoiceAction, answer = false) => {
       const { say: override, after } = act(action);
       const text = override ?? say;
-      const aloud = answer || SPOKEN.has(action.type) || Boolean(override);
+      // Вслух не отвечает совсем (Егор, 2026-09-29: «ответы не надо, главное,
+      // чтобы функционал работал») — только подпись над волной и действие.
+      void answer;
+      void SPOKEN;
+      const aloud = false;
       if (text) {
         if (action.type !== "repeat") lastSay = text;
         setVoiceState((st) => ({ turns: [...st.turns, { role: "assistant" as const, text }].slice(-10), pulse: st.pulse + 1 }));
@@ -583,6 +588,21 @@ export default function VoiceAssistant() {
     const handle = async (text: string) => {
       setVoiceState((st) => ({ turns: [...st.turns, { role: "user" as const, text }].slice(-10), live: "", contact: null, notice: null }));
       const path = live.current.pathname;
+      // Открыто окно со своим разбором ответов (вайб-анкета): «выключи
+      // голос» работает всегда, остальное сначала слушает окно.
+      const capture = getVoiceCapture();
+      if (capture) {
+        const pre = parseCommand(text, path);
+        if (pre?.action.type === "stop") {
+          respond(pre.say, pre.action);
+          return;
+        }
+        const got = capture(text);
+        if (got) {
+          respond(got.say ?? "", { type: "none" }, Boolean(got.say));
+          return;
+        }
+      }
       let local = parseCommand(text, path);
       // «Нажми …»: не нашли такой кнопки — разбираем фразу как обычную команду.
       if (local?.action.type === "click") {
@@ -688,7 +708,7 @@ export default function VoiceAssistant() {
         const hello = "Голос включён. Говори, что нужно.";
         lastSay = hello;
         setVoiceState((st) => ({ turns: [...st.turns, { role: "assistant" as const, text: hello }], pulse: st.pulse + 1 }));
-        speak(hello, () => scheduleListen(120));
+        speak("", () => scheduleListen(120));
       });
     };
 
@@ -857,13 +877,15 @@ function musicAct(a: Extract<VoiceAction, { type: "music" }>): { say?: string } 
 
 /** Волна-кнопка: полупрозрачная в покое, проявляется при наведении и
  *  когда голос включён; раскачивается сильнее, пока слушает или говорит. */
-function VoiceWaveButton({ width, height, from, to }: { width: number; height: number; from: string; to: string }) {
+function VoiceWaveButton({ width, height, from, to, inStage = false }: { width: number; height: number; from: string; to: string; inStage?: boolean }) {
   const s = useVoiceState();
   const live = s.status === "listening" || s.status === "speaking";
   return (
     <button
       type="button"
-      onClick={() => voice.tap()}
+      // Внутри окна (вайб-анкета) волна только включает голос и перебивает:
+      // без знакомства и без окна ассистента поверх.
+      onClick={() => voice.tap(inStage)}
       aria-label={s.enabled ? "Открыть окно ассистента" : "Включить голосовое управление"}
       className={`voice-sphere ${live ? "is-listening" : ""} ${s.enabled ? "is-active" : ""}`}
       style={{ "--g-from": from, "--g-to": to } as CSSProperties}
@@ -903,7 +925,7 @@ function VoiceDock({
     <div className="voice-dock" data-voice-ui style={{ "--g-from": from, "--g-to": to } as CSSProperties}>
       {!waveOnly && <VoiceInvite />}
       {!waveOnly && <VoiceCaption />}
-      <VoiceWaveButton width={width} height={height} from={from} to={to} />
+      <VoiceWaveButton width={width} height={height} from={from} to={to} inStage={waveOnly} />
     </div>
   );
 }
