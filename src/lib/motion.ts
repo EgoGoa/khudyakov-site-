@@ -63,7 +63,9 @@ if (typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").ma
     intro: 0.1,
     content: phoneContent,
     controls: phoneContent + 0.5,
-    cta: phoneContent + 1,
+    // Окошки услуг и призывы почти вровень с основным блоком, а не через
+    // секунду после него (Егор, 2026-10-03: «сильно отстают»).
+    cta: phoneContent + 0.3,
   });
 }
 

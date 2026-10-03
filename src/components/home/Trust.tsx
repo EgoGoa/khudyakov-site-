@@ -95,7 +95,7 @@ export default function Trust({
           (`ml-auto` in BlockAssistant.tsx, was `mx-auto`) right-aligns
           inside the same width instead of centring short of it. */}
       <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:mx-auto lg:w-[1000px] xl:w-[1080px]">
-      <div className="mb-2 lg:flex lg:items-stretch lg:gap-3">
+      <div className="max-lg:hidden mb-2 lg:flex lg:items-stretch lg:gap-3">
         <Appear from="left" delay={BEAT.content} className="hidden lg:flex lg:shrink-0">
           <span className="inline-flex h-full items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-4 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />

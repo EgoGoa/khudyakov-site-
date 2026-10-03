@@ -61,6 +61,16 @@ export default function ScrollTopButton() {
     // посетитель застревал на блоке выбора услуг под героем — Егор
     // передумал (2026-09-28): «вверх» значит к видео, как на любом сайте.
     if (cinematicFirstId) {
+      // Телефон (Егор, 2026-10-03): стрелка ведёт к первому блоку страницы —
+      // карусели услуг, а не в шапку с видео: оттуда приходилось заново
+      // листать вниз. Десктоп остаётся как был.
+      const picker = document.getElementById("service-picker");
+      if (picker && window.matchMedia("(max-width: 1023px)").matches) {
+        const headerH = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
+        const top = picker.getBoundingClientRect().top + window.scrollY - headerH;
+        window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+        return;
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }

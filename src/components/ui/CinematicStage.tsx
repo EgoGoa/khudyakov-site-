@@ -1298,6 +1298,17 @@ export default function CinematicStage({
     window.clearTimeout(underTimer.current);
     underTimer.current = window.setTimeout(() => setClipUnder(null), CLIP_FADE_MS + 250);
   };
+  // Телефон: подвал сайта не торчит снизу, пока колода не дошла до последней
+  // главы (Егор, 2026-10-03). Он вне колоды и стоит прямо под экраном — любой
+  // сдвиг на пару десятков пикселей показывал его кусок. Скрываем, пока
+  // читаем главы; на последней главе он снова есть и доступен прокруткой.
+  useEffect(() => {
+    if (!phone) return;
+    const root = document.documentElement;
+    if (activeIndex < chapters.length - 1) root.setAttribute("data-deck-footer", "hidden");
+    else root.removeAttribute("data-deck-footer");
+    return () => root.removeAttribute("data-deck-footer");
+  }, [phone, activeIndex, chapters.length]);
   useEffect(() => {
     if (!phone) return;
     clipRefs.current.forEach((v, i) => {

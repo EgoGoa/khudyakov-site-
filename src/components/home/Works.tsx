@@ -2,6 +2,7 @@
 
 import { useBootPreload } from "@/lib/boot-sequence";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
@@ -452,7 +453,16 @@ export default function Works({
                         : Math.min((index % PAGE_SIZE) * 0.05, 0.35),
                       ease: MOTION_EASE,
                     }}
-                    onClick={limit ? undefined : () => setActiveId(work.id)}
+                    onClick={() => setActiveId(work.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Смотреть: ${work.title}`}
+                    onKeyDown={(e) => {
+                      if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+                        e.preventDefault();
+                        setActiveId(work.id);
+                      }
+                    }}
                     className={`group relative overflow-hidden rounded-2xl bg-ink-soft text-left transition-shadow duration-300 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85),0_0_50px_-12px_rgba(0,210,255,0.3)] ${
                       limit
                         ? // A plain 16:9 card in a 2×2 grid grows tall enough
@@ -462,8 +472,8 @@ export default function Works({
                           // lg+ keeps both rows on screen without shrinking
                           // the grid itself.
                           `aspect-[4/3] sm:aspect-video ${tight ? "lg:aspect-auto lg:h-[max(200px,calc((100svh-400px)/2))]" : "lg:aspect-[16/7]"}`
-                        : "aspect-[16/10] cursor-pointer"
-                    }`}
+                        : "aspect-[16/10]"
+                    } cursor-pointer`}
                   >
                     {limit && work.youtubeId && chapterEverActive && workVideo(work.id) ? (
                       // Chapter tiles autoplay a muted loop instead of a
@@ -557,7 +567,10 @@ export default function Works({
                         <div className="mt-2 flex w-full flex-wrap items-center gap-2 sm:mt-3 sm:gap-2.5">
                           <button
                             type="button"
-                            onClick={() => setActiveId(work.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveId(work.id);
+                            }}
                             className="btn-neon inline-flex items-center gap-1.5 !px-5 !py-2.5 !text-[11px]"
                           >
                             <span aria-hidden="true">▶</span>
@@ -571,7 +584,10 @@ export default function Works({
                               in lockstep (see --btn-neon-delay, globals.css). */}
                           <button
                             type="button"
-                            onClick={() => setLeadOpen(true)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLeadOpen(true);
+                            }}
                             className="btn-neon inline-flex items-center !px-5 !py-2.5 !text-[11px]"
                             style={{ "--btn-neon-delay": "1.8s" } as CSSProperties}
                           >
@@ -622,13 +638,18 @@ export default function Works({
         )}
       </Container>
 
+      {/* В портал на body: главы лежат внутри трансформированных слоёв, и
+          fixed-окно рисовалось относительно блока, а не экрана — поэтому
+          плеер «открывался сверху блока». На body он всегда по центру экрана
+          поверх всего, с затемнением сайта. */}
+      {typeof document !== "undefined" && createPortal(
       <AnimatePresence>
         {active && (
           <motion.div
             initial={WIN_DIM.initial}
             animate={WIN_DIM.animate}
             exit={WIN_DIM.exit}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-ink/90 p-4 sm:p-10"
+            className="fixed inset-0 z-[110] flex items-center justify-center bg-ink/90 p-4 backdrop-blur-sm sm:p-10"
             onClick={() => setActiveId(null)}
           >
             <button
@@ -643,7 +664,7 @@ export default function Works({
               animate={WIN.animate}
               exit={WIN.exit}
               onClick={(e) => e.stopPropagation()}
-              className="win-shell w-full max-w-3xl"
+              className="win-shell w-full max-w-5xl"
             >
               <div className="aspect-video w-full overflow-hidden rounded-xl bg-ink-soft">
                 <iframe
@@ -675,7 +696,9 @@ export default function Works({
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
 
       {limit && <LeadModal open={leadOpen} onClose={() => setLeadOpen(false)} />}
     </section>

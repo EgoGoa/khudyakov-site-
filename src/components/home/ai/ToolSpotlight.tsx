@@ -51,6 +51,9 @@ const STRIP_HEIGHT = 80;
 // Телефон: полоса выше, чтобы название, тезис и стрелка помещались целиком,
 // а превью сцены читалось (Егор, 2026-10-03).
 const STRIP_HEIGHT_PHONE = 108;
+// Плашки без превью (глава «Именно мы» на /content): на 15% ниже, чтобы
+// список из пяти пунктов над ними дышал (Егор, 2026-10-03).
+const STRIP_HEIGHT_PHONE_COMPACT = 92;
 
 
 /** Акцент страницы /ai — лайм→изумруд, тот же, что у заголовков глав и
@@ -212,7 +215,7 @@ export default function ToolSpotlight({
   // выше (почти весь экран за вычетом шапки и язычка), сцена ложится
   // полосой сверху, а текст мельче.
   const phone = geom.vw < 640;
-  const baseH = phone ? STRIP_HEIGHT_PHONE : STRIP_HEIGHT;
+  const baseH = phone ? (noPreview ? STRIP_HEIGHT_PHONE_COMPACT : STRIP_HEIGHT_PHONE) : STRIP_HEIGHT;
   const stripH = fill && geom.height ? geom.height : baseH;
   const openHeight = phone
     ? Math.max(380, Math.min(460, geom.vh - 150))

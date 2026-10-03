@@ -9802,3 +9802,11 @@ html[data-mid] .hero-promo { transition: none; }
 .spotlight-strip .spotlight-sheen {
   animation-iteration-count: 1 !important;
 }
+
+/* Телефон: подвал скрыт, пока колода глав не дошла до последней главы
+   (атрибут ставит CinematicStage). */
+@media (max-width: 1023px) {
+  html[data-deck-footer="hidden"] footer#footer {
+    display: none;
+  }
+}
