@@ -14,6 +14,7 @@ import { makeDeckGuard } from "@/lib/deck-gesture";
 import { useCinematicNavRegister } from "@/lib/cinematic-nav";
 import { reportActiveChapter, takePendingChapter } from "@/lib/page-hop";
 import { playUi, sound } from "@/lib/sound";
+import { isSiteFrozen } from "@/lib/welcome-freeze";
 
 // One continuous film behind a deck of chapters.
 //
@@ -1322,6 +1323,7 @@ export default function CinematicStage({
   // соседние (play → сразу pause), чтобы дальше они запускались сами.
   const primed = useRef<WeakSet<HTMLVideoElement>>(new WeakSet());
   const unlockClips = () => {
+    if (isSiteFrozen()) return;
     clipRefs.current.forEach((v, i) => {
       if (i === activeIndexRef.current) {
         if (v.paused && !v.ended) v.play().catch(() => {});
@@ -1409,7 +1411,8 @@ export default function CinematicStage({
                     onPause={(e) => {
                       // iOS иногда ставит активный клип на паузу сам — будим.
                       const v = e.currentTarget;
-                      if (started && i === activeIndexRef.current && !v.ended) v.play().catch(() => {});
+                      // Под окном (стартовое меню, вайб) сайт заморожен — не будим.
+      if (started && i === activeIndexRef.current && !v.ended && !isSiteFrozen()) v.play().catch(() => {});
                     }}
                     className="absolute inset-0 h-full w-full object-cover"
                     style={{

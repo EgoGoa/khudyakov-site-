@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { MOBILE_VIDEOS } from "@/lib/mobile-videos";
+import { isSiteFrozen, LIVE_HOSTS } from "@/lib/welcome-freeze";
 import { getTier, isSlowNet, onTierChange } from "@/lib/perf-tier";
 
 // Keeps video cheap without touching every component that renders one:
@@ -57,6 +58,12 @@ export default function MediaGovernor() {
       // Принудительно играющие ролики (окошки стартового меню, Егор,
       // 2026-10-03: «видео должно играть в любом случае»): никаких пауз по
       // видимости, ни lite, ни mid — только вкладка в фоне.
+      // Сайт за открытым окном (стартовое меню, вайб) стоит: ничего не
+      // запускаем и не будим — кроме роликов самого окна.
+      if (isSiteFrozen() && !v.closest(LIVE_HOSTS)) {
+        if (!v.paused) v.pause();
+        return;
+      }
       if (v.hasAttribute("data-force-play")) {
         if (!document.hidden && v.paused) v.play().catch(() => {});
         return;

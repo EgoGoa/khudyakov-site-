@@ -5787,7 +5787,12 @@ html:not([data-lite])[data-mid] .sp-pulse {
   inset: 0;
   /* Сайт за окном не размыт, а погашен вдвое — еле виден (Егор,
      2026-09-27). Гаснет плавно. */
-  background: rgba(2, 2, 5, 0.55);
+  background: rgba(2, 2, 5, 0.6);
+  /* Егор, 2026-10-03: сайт за меню читался насквозь и сливался. Размытие
+     лежит на подложке, одним слоем на весь экран, а заливка окон ниже
+     плотная — даже если браузер не нарисует блюр, текст под ними не
+     разобрать. */
+  backdrop-filter: blur(22px);
   animation: welcome-fade-in 1s ease-out backwards;
   transition: opacity 0.45s ease;
 }
@@ -5802,10 +5807,10 @@ html:not([data-lite])[data-mid] .sp-pulse {
   border-radius: 30px;
   overflow: hidden;
   overflow: clip;
-  background: rgba(12, 12, 20, 0.42);
+  background: rgba(12, 12, 20, 0.78);
   /* Только без префикса: пару с -webkit- сборщик схлопывает в один
      префиксный вариант, и Chrome размытие не рисует вовсе. */
-  backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(24px) saturate(1.3);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 40px 120px -24px rgba(0, 0, 0, 0.85);
   animation: welcome-window-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   transition:
@@ -7386,8 +7391,11 @@ html[data-lite] .vibe-tip {
   font-weight: 600;
   letter-spacing: -0.01em;
   color: #fff;
-  /* Лёгкое затемнение: сайт за окном должен просвечивать (Егор). */
-  background: rgba(3, 3, 6, 0.3);
+  /* Егор, 2026-10-03: сайт за вайб-окном читался насквозь — теперь он
+     размыт и притемнён по всему экрану (одним слоем), а заливка самого
+     окна ниже плотная. */
+  background: rgba(3, 3, 6, 0.5);
+  backdrop-filter: blur(22px);
 }
 .vibe-mode input,
 .vibe-mode button,
@@ -7540,8 +7548,8 @@ html[data-lite] .vibe-mode__wordmark { animation: none; }
   overflow: clip;
   /* Прозрачнее (Егор: «сайт вообще не просвечивает»): заливка была 0.74,
      блюр 30px — сайт превращался в кашу. Блюр как у стекла сайта (~16px). */
-  background: rgba(12, 12, 20, 0.42);
-  backdrop-filter: blur(16px) saturate(1.3);
+  background: rgba(12, 12, 20, 0.8);
+  backdrop-filter: blur(24px) saturate(1.3);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 40px 120px -24px rgba(0, 0, 0, 0.85);
 }
 /* Окно вайб-сайта статичное: одна высота на все шаги, не прыгает под текст. */
