@@ -6248,7 +6248,7 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe
     margin-top: 2rem;
   }
   .welcome-head-eyebrow {
-    font-size: 0.85rem;
+    font-size: 1.02rem;
     margin-bottom: 0.3rem;
   }
   .welcome-deck {
@@ -6256,37 +6256,37 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .vibe
     /* Вопрос уже опустил себя сам (см. .welcome-head выше) — колоде
        остаётся только встать под него вплотную. */
     margin-top: 0.85rem;
-    gap: 0.55rem;
+    gap: 0.8rem;
   }
   .welcome-card {
     /* Высота — главное на телефоне (Егор): в карточке живёт кадр из
        ролика, и на низкой полоске от него остаётся горизонт, а не кадр.
        Значение подобрано под экран 812px: четыре такие карточки плюс знак,
        вопрос и нижний ряд ещё умещаются в высоту без автосжатия сцены. */
-    min-height: 118px;
+    min-height: 142px;
     gap: 0.65rem;
     padding: 0.8rem 1rem;
     border-radius: 18px;
   }
   .welcome-card-block {
-    min-height: 68px;
+    min-height: 80px;
     padding: 0.55rem 0.75rem;
   }
   .welcome-card-num {
-    font-size: 1.2rem;
+    font-size: 1.44rem;
   }
   .welcome-card-title {
-    font-size: 1.3rem;
+    font-size: 1.56rem;
   }
   .welcome-card-sub {
-    font-size: 0.66rem;
+    font-size: 0.8rem;
     line-height: 1.15;
   }
   .welcome-card-block .welcome-card-title {
-    font-size: 1.1rem;
+    font-size: 1.32rem;
   }
   .welcome-card-block .welcome-card-sub {
-    font-size: 0.56rem;
+    font-size: 0.67rem;
   }
   .welcome-card-graphic {
     display: block;
@@ -9255,4 +9255,24 @@ html[data-mid] .vibe-mode .vibe-mode__caret:not(.is-done) {
   font-size: 12px;
   font-weight: 700;
   color: #fff;
+}
+
+/* Телефон, стартовое меню (Егор, 2026-10-03): карточки обоих шагов на 90%
+   ширины колоды, зазоры подобраны по скрину — на первом шаге 24px, на
+   втором (блоки направления) 37px; первый шаг ещё и ниже на 10%. */
+@media (max-width: 767px) {
+  .welcome-deck {
+    justify-content: flex-start;
+    gap: 37px;
+  }
+  .welcome-deck > * {
+    width: 90%;
+    align-self: center;
+  }
+  .welcome-deck--root {
+    gap: 24px;
+  }
+  .welcome-deck--root .welcome-card {
+    min-height: 128px;
+  }
 }

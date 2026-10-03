@@ -516,7 +516,7 @@ export default function WelcomeWidget({
                 {/* Меньше базового кегля и в одну строку (Егор) — «С какого
                     блока начнём?» на базовом 1.6/2.1rem переносилось на
                     два слова второй строкой. */}
-                <span className="whitespace-nowrap text-[1.05rem] sm:text-[1.6rem]">
+                <span className="whitespace-nowrap text-[1.26rem] sm:text-[1.6rem]">
                   С какого блока{" "}
                   <span style={accentVars(picked)} className="welcome-head-kw">
                     начнём?
@@ -528,7 +528,7 @@ export default function WelcomeWidget({
               // 1.6rem-заголовок в верхнем регистре не помещался в ширину
               // окна одной строкой — отдельный, чуть меньший размер только
               // для этой фразы (на sm+ она и так уже помещалась в 2.1rem).
-              <span className="whitespace-nowrap text-[0.73rem] sm:text-[1.26rem]">
+              <span className="whitespace-nowrap text-[1rem] sm:text-[1.26rem]">
                 Привет, с чего <span className="kw">начнём?</span>
               </span>
             )}
@@ -553,7 +553,7 @@ export default function WelcomeWidget({
             initial={picked ? { opacity: 0 } : "hidden"}
             animate={picked ? { opacity: 1 } : "show"}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
-            className="welcome-deck"
+            className={`welcome-deck ${picked ? "" : "welcome-deck--root"}`}
           >
             {!picked && onVibe && <VibeCard show={logoReady} instant={instant} onOpen={onVibe} />}
 
