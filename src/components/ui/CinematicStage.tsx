@@ -275,6 +275,13 @@ export default function CinematicStage({
   const [clipTop, setClipTop] = useState<number | null>(null);
   const [clipUnder, setClipUnder] = useState<number | null>(null);
   const clipRefs = useRef<Map<number, HTMLVideoElement>>(new Map());
+  // Телефон: первые ~1,5 с главы фон чистый и заметно светлее (на нём
+  // играет фрагмент, пока виден только заголовок), когда проявляется тело
+  // главы — фон один раз плавно темнеет (размытие живого видео убрано — тормозило, Егор,
+  // 2026-10-03). Уже виденная глава показывается сразу в «тёмном» виде:
+  // её содержимое тоже встаёт мгновенно.
+  const [introClear, setIntroClear] = useState(true);
+  const introPlayed = useRef<Set<number>>(new Set());
   const clipSrc = (i: number) =>
     src.replace("/video/", "/video/clips/").replace(/\.mp4$/, `-${i}.mp4`);
   // Chapters visited at least once this page load. Egor's ask: a chapter's
@@ -1317,6 +1324,25 @@ export default function CinematicStage({
     el.play().catch(() => {});
   }, [phone, started, activeIndex, soundPage]);
   useEffect(() => () => window.clearTimeout(underTimer.current), []);
+  useEffect(() => {
+    if (!phone) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- состояние «фон чистый» выводится из смены главы */
+    if (!started) {
+      setIntroClear(true);
+      return;
+    }
+    if (introPlayed.current.has(activeIndex)) {
+      setIntroClear(false);
+      return;
+    }
+    setIntroClear(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+    const id = window.setTimeout(() => {
+      introPlayed.current.add(activeIndex);
+      setIntroClear(false);
+    }, 1500);
+    return () => window.clearTimeout(id);
+  }, [phone, started, activeIndex]);
   // iOS (энергосбережение, экономия трафика) не даёт запустить видео из кода,
   // если до этого не было касания. Касание — разрешение: на каждом его конце
   // включаем клип активной главы, если он стоит, и один раз «прогреваем»
@@ -1382,7 +1408,16 @@ export default function CinematicStage({
               className="absolute inset-0 h-full w-full object-cover"
             />
             {phone ? (
-              phases.map((_, i) => {
+              // isolation: слои клипов (z-index 1–2) живут только внутри этой
+              // обёртки; без неё они перекрывали главы и затемнение — на экране
+              // оставалось одно видео, без текста и блоков.
+              <div
+                className="absolute inset-0"
+                // Без filter: размытие живого видео на iOS съедает кадры (видео
+                // «зависало»). Фон уходит на задний план одним затемнением.
+                style={{ isolation: "isolate" }}
+              >
+              {phases.map((_, i) => {
                 const near =
                   i === clipTop ||
                   i === clipUnder ||
@@ -1422,7 +1457,8 @@ export default function CinematicStage({
                     }}
                   />
                 );
-              })
+              })}
+              </div>
             ) : (
             <video
               ref={videoRef}
@@ -1459,7 +1495,10 @@ export default function CinematicStage({
                 second gradient adds weight at the top and bottom edges, where the
                 header and the copy actually sit. Kept as a wash rather than a
                 heavier blur so the picture is still legibly a picture. */}
-            <div className="pointer-events-none absolute inset-0 bg-ink/45 lg:hidden" />
+            <div
+              className="pointer-events-none absolute inset-0 bg-ink/45 lg:hidden"
+              style={{ opacity: introClear ? 0.12 : 1, transition: "opacity 1.1s ease" }}
+            />
             <div
               className="pointer-events-none absolute inset-0 lg:hidden"
               style={{
