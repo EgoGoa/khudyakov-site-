@@ -10,7 +10,7 @@ import LiveBrandWord from "@/components/layout/LiveBrandWord";
 // Вводные окна перед стартовым меню (Егор, 2026-10-04, макет v6 —
 // docs/intro-scenes-preview.html). После заставки со знаком идут три окна:
 // «Всё в одном», «Вайб-режим», «Приложение», в каждом по три сцены. Сцена
-// внутри окна сменяется сама каждые 5 секунд по кругу, следующее окно — по
+// внутри окна сменяется сама каждые 5 секунд, следующее окно — по
 // «Дальше», «Пропустить» сразу ведёт в меню.
 //
 // Стиль: графитовые плитки-бенто, крупные цифры, графики со стеклянными
@@ -22,7 +22,9 @@ import LiveBrandWord from "@/components/layout/LiveBrandWord";
 // всегда начинается со знака (Егор, 2026-10-04). «Пропустить» ведёт сразу в меню.
 
 const SCENE_MS = 5000;
-const TITLE_MS = 2000;
+// Заставка окна стоит дольше, чем кажется нужным: на телефоне слова проявляются
+// медленнее, и при 1,3–2 с заголовок едва успевал прочитаться (Егор, 2026-10-04).
+const TITLE_MS = 3000;
 
 // lite — слабое устройство или reduced motion: только прозрачность, без
 // размытия, сдвигов и бегущих цифр.
@@ -852,16 +854,9 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
 
   useEffect(() => {
     if (!title) return;
-    const id = window.setTimeout(() => setTitle(false), lite ? 1300 : TITLE_MS);
+    const id = window.setTimeout(() => setTitle(false), lite ? 2800 : TITLE_MS);
     return () => window.clearTimeout(id);
   }, [title, w, lite]);
-
-  // Сцены окна идут сами по кругу.
-  useEffect(() => {
-    if (title) return;
-    const id = window.setTimeout(() => setS((v) => (v + 1) % 3), SCENE_MS);
-    return () => window.clearTimeout(id);
-  }, [w, s, title]);
 
   const goWindow = useCallback((k: number) => {
     setW(k);
@@ -873,6 +868,15 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
     if (last) return onDone();
     goWindow(w + 1);
   }, [last, onDone, goWindow, w]);
+  // Всё идёт само (Егор, 2026-10-04): три сцены окна подряд, затем следующее
+  // окно, а после третьего окна — стартовое меню. «Дальше» и «Пропустить»
+  // только ускоряют.
+  useEffect(() => {
+    if (title) return;
+    const id = window.setTimeout(() => (s < 2 ? setS(s + 1) : next()), SCENE_MS);
+    return () => window.clearTimeout(id);
+  }, [w, s, title, next]);
+
   const prevScene = useCallback(() => !title && setS((v) => (v + 2) % 3), [title]);
   const nextScene = useCallback(() => !title && setS((v) => (v + 1) % 3), [title]);
 
