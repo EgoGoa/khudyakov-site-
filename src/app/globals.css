@@ -8841,12 +8841,17 @@ html[data-lite] .block-vibe__online::before { animation: none; }
 .vibe-fan {
   position: fixed;
   right: 6px;
-  /* Сфера вверху сбоку, под шапкой (Егор, 2026-10-04): крупнее вдвое, а
-     кнопки раскрываются от неё вниз. */
-  top: calc(var(--sat) + 7rem);
+  /* Сфера внизу справа, над боковой стрелкой смены страниц (Егор,
+     2026-10-04: внизу под палец удобнее). Меню раскрывается от неё вверх и
+     растягивается на всю высоту — до стрелки «наверх»: слой тянется от
+     низа сферы до этой стрелки, кнопки в нём разведены поровну. Сам слой не
+     ловит нажатия — только сфера и кружки. */
+  bottom: calc(var(--wave-cy, 4.2rem) + 1.25rem + 6px);
+  top: calc(var(--sat) + 8.7rem);
+  pointer-events: none;
   z-index: 66;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: flex-end;
 }
 /* Пока кнопки открыты, волна голоса внизу уходит — она ложилась поверх
@@ -8893,10 +8898,14 @@ body:has(.vibe-fan__list) .voice-dock-corner {
 }
 .vibe-fan__list {
   display: flex;
-  flex-direction: column;
+  flex: 1;
+  flex-direction: column-reverse;
   align-items: flex-end;
+  justify-content: space-between;
   gap: 2px;
-  margin-top: 2px;
+  margin-bottom: 2px;
+  min-height: 0;
+  pointer-events: none;
 }
 .vibe-fan__btn {
   display: flex;
@@ -8904,7 +8913,7 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   align-items: center;
   gap: 8px;
   padding-left: 10px;
-  transform-origin: right top;
+  transform-origin: right bottom;
 }
 .vibe-fan__label {
   padding: 5px 9px;
@@ -8951,6 +8960,7 @@ body:has(.vibe-fan__list) .voice-dock-corner {
 .vibe-fan__spark { font-size: 11px; line-height: 1; }
 .vibe-fan__orb {
   position: relative;
+  pointer-events: auto;
   display: grid;
   width: 60px;
   height: 60px;

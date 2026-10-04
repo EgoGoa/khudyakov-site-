@@ -870,7 +870,7 @@ export default function VibeRail() {
                   key={item.id}
                   type="button"
                   variants={{
-                    closed: { opacity: 0, y: -(26 + i * 4), scale: 0.4 },
+                    closed: { opacity: 0, y: 26 + i * 4, scale: 0.4 },
                     open: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 520, damping: 30 } },
                   }}
                   onClick={() => {
