@@ -16,6 +16,8 @@ export type BlogPost = {
   date: string;
   readMin?: number;
   url?: string;
+  /** Название источника для новостей и трендов. */
+  source?: string;
   metrics?: BlogMetric[];
 };
 

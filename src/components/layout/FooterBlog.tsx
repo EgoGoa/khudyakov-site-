@@ -55,7 +55,11 @@ function Card({ post, tone, big = false }: { post: BlogPost; tone: string; big?:
             ))}
           </span>
         )}
-        {meta && <span className="mt-4 block text-xs text-paper/35">{meta}</span>}
+        {(meta || post.source) && (
+          <span className="mt-4 block text-xs text-paper/35">
+            {[meta, post.source ? `Источник: ${post.source}` : ""].filter(Boolean).join(" · ")}
+          </span>
+        )}
       </span>
     </>
   );
@@ -80,7 +84,7 @@ export default function FooterBlog() {
   if (!active) return null;
 
   const rubric = rubrics.find((r) => r.key === active) ?? rubrics[0];
-  const posts = allPosts.filter((p) => p.rubric === rubric.key).slice(0, rubric.key === "trends" ? 3 : 2);
+  const posts = allPosts.filter((p) => p.rubric === rubric.key).slice(0, 3);
 
   return (
     <div className="border-b border-paper/10">
