@@ -1,0 +1,118 @@
+{
+  "updated": "2026-10-04",
+  "posts": [
+    {
+      "id": "case-vektor",
+      "rubric": "cases",
+      "title": "Федеральная школа вождения VEKTOR: корпоративный фильм",
+      "excerpt": "Корпоративный фильм для школы вождения, хронометраж 3:06. Выпущен в феврале 2026.",
+      "date": "2026-10-03",
+      "url": "https://youtu.be/pOV5EnAB05U"
+    },
+    {
+      "id": "case-elovoe",
+      "rubric": "cases",
+      "title": "Отель ELOVOE: промо и имиджевый фильм",
+      "excerpt": "Два видео для одного отеля: промо 2023 года (2:01) и имиджевый фильм 2025 года (2:32).",
+      "date": "2026-09-29",
+      "url": "https://youtu.be/04cOzeUw3A4"
+    },
+    {
+      "id": "case-eye-clinic",
+      "rubric": "cases",
+      "title": "Глазная клиника: серия роликов об услугах",
+      "excerpt": "Три фильма 2024 года: катаракта (1:30), оптика (1:11) и плавающие помутнения (1:48).",
+      "date": "2026-09-24",
+      "url": "https://youtu.be/GZ_V1iZUO9M"
+    },
+    {
+      "id": "case-surf",
+      "rubric": "cases",
+      "title": "Surf Coffee: от рекламы до сериала",
+      "excerpt": "Рекламный ролик для Челябинска (0:49), «Делаем красиво» и тизер серии «Треш-Фреш». 2021 год.",
+      "date": "2026-09-21",
+      "url": "https://youtu.be/_0ATM3z0rEQ"
+    },
+    {
+      "id": "trend-ai-tests",
+      "rubric": "trends",
+      "title": "ИИ-видео стало дешёвым способом тестировать идеи",
+      "excerpt": "В обзоре октября 2026 главным сдвигом названы не красивее ролики, а дешёвые эксперименты: сообщения, языки и форматы проверяют до обычной съёмки.",
+      "date": "2026-10-03",
+      "readMin": 4,
+      "url": "https://blog.mean.ceo/ai-video-generation-trends-october-2026/",
+      "source": "blog.mean.ceo"
+    },
+    {
+      "id": "trend-sostav",
+      "rubric": "trends",
+      "title": "Видеореклама удвоилась за пять лет с помощью ИИ",
+      "excerpt": "Тема материала Sostav: как ИИ изменил рынок видеорекламы. Читайте исходную статью.",
+      "date": "2026-09-30",
+      "readMin": 3,
+      "url": "https://www.sostav.ru/publication/videoreklama-udvoilas-za-pyat-let-s-pomoshchyu-ii-83640.html",
+      "source": "Sostav"
+    },
+    {
+      "id": "trend-tbank",
+      "rubric": "trends",
+      "title": "Рынок AI-видео растёт на 20% в год",
+      "excerpt": "Так сформулирован тезис материала Т-Банка о синтетическом контенте. Кто зарабатывает на новой индустрии, смотрите в статье.",
+      "date": "2026-09-26",
+      "readMin": 4,
+      "url": "https://secrets.tbank.ru/blogi-kompanij/industriya-sinteticheskogo-kontenta/",
+      "source": "Т-Банк Секреты"
+    },
+    {
+      "id": "trend-digital",
+      "rubric": "trends",
+      "title": "Что ждёт диджитал-отрасль в 2027",
+      "excerpt": "Разбор Т-Банка: итоги 2026 года и ожидания участников рынка на 2027.",
+      "date": "2026-09-22",
+      "readMin": 4,
+      "url": "https://secrets.tbank.ru/blogi-kompanij/strategiya-digital-agentstva-2026-2027/",
+      "source": "Т-Банк Секреты"
+    },
+    {
+      "id": "tool-capcut",
+      "rubric": "tools",
+      "title": "CapCut: автомонтаж и субтитры на русском",
+      "excerpt": "Подходит для коротких роликов в соцсети: автомонтаж по сценарию, ИИ-субтитры, шаблоны для Reels и Shorts. Есть бесплатный базовый план.",
+      "date": "2026-10-01",
+      "readMin": 3
+    },
+    {
+      "id": "tool-opus",
+      "rubric": "tools",
+      "title": "Opus Clip: нарезка длинного видео на вертикальные клипы",
+      "excerpt": "Находит яркие моменты в длинном ролике, добавляет субтитры и кадрирует под 9:16. Экономит время на Shorts и Reels.",
+      "date": "2026-09-27",
+      "readMin": 3
+    },
+    {
+      "id": "tool-kling",
+      "rubric": "tools",
+      "title": "Kling и Runway: генерация видео по тексту и картинке",
+      "excerpt": "Две популярные модели для видео из текста или изображения. Подходят для набросков идей и коротких вставок.",
+      "date": "2026-09-23",
+      "readMin": 3
+    },
+    {
+      "id": "tool-davinci",
+      "rubric": "tools",
+      "title": "DaVinci Resolve: бесплатный монтаж профессионального уровня",
+      "excerpt": "Есть бесплатная версия с цветокоррекцией и монтажом, на ней можно собрать ролик целиком.",
+      "date": "2026-09-20",
+      "readMin": 3
+    },
+    {
+      "id": "team-showreel",
+      "rubric": "team",
+      "title": "Наш AI-шоурил 2026",
+      "excerpt": "Новый шоурил студии на 1:05 — как мы работаем с ИИ в продакшне.",
+      "date": "2026-10-02",
+      "readMin": 1,
+      "url": "https://youtu.be/HC5SMCQuoms"
+    }
+  ]
+}

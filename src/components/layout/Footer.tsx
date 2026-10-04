@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import FlareBackground from "@/components/ui/FlareBackground";
+import FooterBlog from "@/components/layout/FooterBlog";
 import FooterDirections from "@/components/layout/FooterDirections";
 import { EditIcon, InstagramIcon, TelegramIcon } from "@/components/ui/Icons";
 
@@ -48,6 +49,7 @@ export default function Footer({ decor }: { decor?: ReactNode } = {}) {
         }}
       />
       <div className="relative">
+      <FooterBlog />
       {/* CTA band — mirrors the "ready to discuss your project" strip from
           the reference, but pointed at our own real channels */}
       <div className="border-b border-paper/10">
