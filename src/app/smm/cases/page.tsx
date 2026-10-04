@@ -8,6 +8,9 @@ import { EYEBROW } from "@/lib/typography";
 export const metadata: Metadata = {
   title: "Кейсы SMM — HUD.SERVICE",
   description: "Кейсы ведения соцсетей HUD.SERVICE появятся здесь по мере запуска проектов.",
+  // Пока кейсов нет — не в поиске: иначе пустая страница может попасть
+  // в дополнительные ссылки под сайтом в выдаче.
+  robots: { index: false, follow: true },
 };
 
 // Placeholder cards, not an empty section — content/site-copy.md's rule for

@@ -105,6 +105,17 @@ const ORGANIZATION_LD = {
   sameAs: ["https://t.me/hdkv"],
 };
 
+// Название сайта в выдаче Google (над ссылкой вместо голого домена) и
+// варианты, которыми его ищут, — в том числе «худ сервис» по-русски.
+const WEBSITE_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: BRAND,
+  alternateName: ["HUD SERVICE", "Худ сервис", "hud-service.ru"],
+  url: `${SITE_URL}/`,
+  inLanguage: "ru",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -134,6 +145,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }}
         />
       </head>
       <body className="relative bg-ink font-sans text-paper antialiased">

@@ -10,9 +10,8 @@ import SmmClose from "@/components/home/smm/SmmClose";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
-  title: "SMM — HUD.SERVICE",
-  description:
-    "SMM силами продакшена: съёмка, монтаж и ведение соцсетей одной командой, без подрядчиков со стороны.",
+  title: "SMM и ведение соцсетей — HUD.SERVICE",
+  description: "Съёмка, монтаж, публикации и продвижение одной командой, без подрядчиков.",
 };
 
 // public/video/smm-reel.mp4 is Egor's delivery for this page (bg-smm.mp4 was

@@ -10,8 +10,8 @@ import SitesClose from "@/components/home/sites/SitesClose";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
-  title: "Vibe сайты — HUD.SERVICE",
-  description: "Сайты под ключ с помощью AI-инструментов под контролем опытной команды.",
+  title: "Сайты под ключ — HUD.SERVICE",
+  description: "Лендинги, визитки и магазины: AI ускоряет работу, опытная команда отвечает за результат.",
 };
 
 // public/video/sites-reel.mp4 is Egor's second delivery for this page (his

@@ -16,8 +16,8 @@ import { ServiceProvider } from "@/lib/service-context";
 import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 
 export const metadata: Metadata = {
-  title: "AI-решения — HUD.SERVICE",
-  description: "Внедряем ИИ-инструменты в продакшн и коммуникацию с клиентами.",
+  title: "AI-решения для бизнеса — HUD.SERVICE",
+  description: "Чат-боты, AI-ассистенты и нейросети в продакшене и общении с клиентами.",
 };
 
 // Same deck as /content: one continuous film pinned behind chapters that step

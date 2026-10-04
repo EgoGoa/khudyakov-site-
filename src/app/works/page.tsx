@@ -4,8 +4,8 @@ import DirectionBackdrop from "@/components/home/direction/DirectionBackdrop";
 import { ServiceProvider } from "@/lib/service-context";
 
 export const metadata: Metadata = {
-  title: "Все работы — HUD.SERVICE",
-  description: "Полный каталог проектов: реклама, шоурилы, 3D и моушн, документальные и обучающие форматы.",
+  title: "Портфолио — HUD.SERVICE",
+  description: "Реклама, шоурилы, 3D и моушн, документальные и обучающие форматы.",
 };
 
 // The full catalogue with both filter axes, moved off the service page so

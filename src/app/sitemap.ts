@@ -25,7 +25,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/works",
     "/calculator",
     "/brief",
-    "/smm/cases",
     "/smm/pricing",
   ];
 
