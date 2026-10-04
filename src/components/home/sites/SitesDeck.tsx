@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
+import SoonCardFace from "@/components/ui/SoonCardFace";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
 import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset, useDeckSpring, zFor } from "@/components/ui/deckFan";
@@ -48,6 +49,8 @@ type Service = {
    *  format; the same frame the format's spotlight window wears
    *  (spotlightSites.ts), so the card and its window read as one object. */
   image: string;
+  /** Карточка «скоро»: процент готовности, никуда не ведёт. */
+  soon?: number;
 };
 
 // Names match lib/service-content.ts (the offer list and pricing tiers); the
@@ -79,6 +82,7 @@ const SERVICES: Service[] = [
     name: "Редизайн",
     image: "/images/stock/paint-purple-macro.webp",
   },
+  { id: "soon", name: "VIBE-сайты", image: "/images/stock/night-lights.webp", soon: 64 },
 ];
 
 // Лицо карточки: тот же приём, что у AiDeck (AiCardFace) — кадр-подложка,
@@ -245,6 +249,12 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           каруселью /ai — один компонент на все места, чтобы тексты и темп
           не расходились. */}
       {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} showTitle={false} compact />}
+      {!data && (
+        <p className="m-0 self-center font-display text-[13px] font-semibold leading-snug text-paper">
+          Собираем новые VIBE-сайты: каркас готов, идёт наполнение. <span className="text-glow">Анонс — скоро.</span>
+        </p>
+      )}
+
     </div>
   );
 
@@ -417,6 +427,17 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                 </span>
               )}
 
+              {service.soon && (
+                <span
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  aria-hidden="true"
+                  style={{ opacity: captionOpacity }}
+                >
+                  <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
+                  Скоро
+                </span>
+              )}
+
               {/* Same mechanic as SmmDeck/AiDeck: once a format is front AND
                   has its own page, the whole card becomes the link to it,
                   with the cyan hover glow — pink→orange instead for the hit
@@ -446,7 +467,11 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                     isFront ? `${CARD_SHELL_FRONT} cursor-default` : `${CARD_SHELL} cursor-pointer`
                   }`}
                 >
-                  <SitesCardFace id={service.id} image={service.image} step={isFront && settled ? sceneStep : 0} />
+                  {service.soon ? (
+                    <SoonCardFace percent={service.soon} accent="0, 210, 255" image={service.image} live={isFront && !live} />
+                  ) : (
+                    <SitesCardFace id={service.id} image={service.image} step={isFront && settled ? sceneStep : 0} />
+                  )}
                   {caption}
                   {isFront && counter}
                 </button>

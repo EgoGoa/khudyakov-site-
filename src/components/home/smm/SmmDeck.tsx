@@ -7,6 +7,7 @@ import FanFit from "@/components/ui/FanFit";
 import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset, useDeckSpring, zFor } from "@/components/ui/deckFan";
 import { smmFormatPages } from "@/components/home/direction/smmFormatRegistry";
 import SpotlightScene from "@/components/home/ai/SpotlightScene";
+import SoonCardFace from "@/components/ui/SoonCardFace";
 import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
 import { spotlightFor } from "@/components/home/ai/spotlightData";
 import { SMM_ACCENT, SMM_SPOTLIGHT_PREFIX } from "@/components/home/ai/spotlightSmm";
@@ -44,6 +45,8 @@ type Format = {
    *  image that format's own page (smm-*.tsx) already opens on, so the
    *  card previews the page it links to. */
   image: string;
+  /** Карточка «скоро»: процент готовности, никуда не ведёт. */
+  soon?: number;
 };
 
 // Wording taken from lib/service-content.ts (servicesByCategory.smm) rather
@@ -99,6 +102,17 @@ const FORMATS: Format[] = [
     now: "Своя аудитория уже видела бренд — блогер приносит тех, кто о нём ещё не слышал.",
     shape: "bloggers",
     image: "/images/stock/vr-neon-triangle.webp",
+  },
+  {
+    id: "soon",
+    name: "Новый инструмент",
+    blurb: "",
+    meta: "",
+    audience: "",
+    now: "",
+    shape: "reels",
+    image: "/images/stock/dj-neon.webp",
+    soon: 52,
   },
 ];
 
@@ -273,6 +287,11 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           тексты и темп не расходились. Динамическая панель: содержимое
           меняется вслед за выбранной карточкой колоды. */}
       {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} showTitle={false} compact />}
+      {!data && (
+        <p className="m-0 self-center font-display text-[13px] font-semibold leading-snug text-paper">
+          Готовим новый инструмент для SMM: каркас собран, идёт наполнение. <span className="text-glow">Анонс — скоро.</span>
+        </p>
+      )}
     </div>
   );
 
@@ -419,6 +438,17 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                   style={{ "--card-glow-rgb": "168, 85, 247", "--halo-r": "20px" } as CSSProperties}
                 />
               </span>
+                            {format.soon && (
+                <span
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  aria-hidden="true"
+                  style={{ opacity: captionOpacity }}
+                >
+                  <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
+                  Скоро
+                </span>
+              )}
+
               {/* Once a format is front AND has its own page, the whole
                   card becomes the link to it — Egor's ask: click anywhere
                   on the selected card (bar the dedicated buttons elsewhere
@@ -452,7 +482,11 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                     isFront ? `${CARD_SHELL_FRONT} cursor-default` : `${CARD_SHELL} cursor-pointer`
                   }`}
                 >
-                  <SmmCardFace id={format.id} image={format.image} step={isFront && settled ? sceneStep : 0} />
+                  {format.soon ? (
+                    <SoonCardFace percent={format.soon} accent="168, 85, 247" image={format.image} live={isFront && !live} />
+                  ) : (
+                    <SmmCardFace id={format.id} image={format.image} step={isFront && settled ? sceneStep : 0} />
+                  )}
                   {caption}
                   {isFront && counter}
                 </button>

@@ -237,6 +237,7 @@ function ConsultCard() {
       backgroundImage="/images/blocks/stock-brainstorm.jpg"
       classic
       row
+      hook={{ percent: 97 }}
     />
   );
 }

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import type { TeamMember } from "@/lib/team";
 import TeamConsultModal from "@/components/home/TeamConsultModal";
+import ProjectHookFlip from "@/components/home/ProjectHookFlip";
 
 // The "ask a real person" window — Egor's reference: a panel with a real,
 // specific question (not "есть вопрос?"), a photo big enough to actually
@@ -64,6 +65,9 @@ export default function TeamAskCard({
   /** Full-variant only: фото слева, текст справа и без абзаца-«pitch» — то же
    *  окошко (фон, шрифты, кнопка), но размером с обычную плитку сетки. */
   row = false,
+  /** Каждые 6 с карточка переворачивается на «Ваш проект в работе N%» —
+   *  только для первого блока /content. */
+  hook,
 }: {
   member: TeamMember;
   question: ReactNode;
@@ -79,6 +83,7 @@ export default function TeamAskCard({
   dense?: boolean;
   classic?: boolean;
   row?: boolean;
+  hook?: { percent: number };
 }) {
   const [open, setOpen] = useState(false);
   // Весь сайт переведён на окна «человек как сервис» (TeamPulse): если для
@@ -260,10 +265,12 @@ export default function TeamAskCard({
     </div>
   );
 
+  const face = hook ? <ProjectHookFlip front={card} percent={hook.percent} /> : card;
+
   if (href) {
     return (
       <Link href={href} className="block h-full">
-        {card}
+        {face}
       </Link>
     );
   }
@@ -271,7 +278,7 @@ export default function TeamAskCard({
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="block h-full w-full">
-        {card}
+        {face}
       </button>
       <TeamConsultModal open={open} onClose={() => setOpen(false)} member={member} />
     </>

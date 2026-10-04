@@ -10412,3 +10412,125 @@ html[data-mid] :is(.welcome-window, .vibe-mode__window) {
     rgba(14, 14, 20, 0.4);
   backdrop-filter: blur(22px) saturate(1.6) !important;
 }
+
+/* ---------- Карточка «скоро» в каруселях (SoonCardFace) ----------
+   Стиль вводных окон: графит, фирменная окантовка, градиентная цифра. */
+.soon-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 14px 64px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1b2030 0%, #0d0f16 58%, #0a0b10 100%);
+  color: #fff;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+}
+.soon-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; filter: grayscale(0.3) contrast(1.05); }
+.soon-scrim { position: absolute; inset: 0; background: radial-gradient(80% 60% at 0% 0%, rgba(245,49,11,0.22), transparent 62%), radial-gradient(70% 60% at 100% 100%, rgba(var(--soon-rgb),0.18), transparent 65%), linear-gradient(165deg, rgba(16,18,30,0.7) 0%, rgba(10,11,16,0.8) 55%, rgba(10,11,16,0.88) 100%); }
+.soon-face > :not(.soon-photo):not(.soon-scrim) { position: relative; }
+.soon-chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(40, 40, 44, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font: 600 10px var(--font-bebas), sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.soon-chip i { width: 6px; height: 6px; border-radius: 50%; background: #00d2ff; }
+.soon-num {
+  font: 600 44px / 1 var(--font-bebas), sans-serif;
+  letter-spacing: -0.05em;
+  padding-right: 6px;
+  background: linear-gradient(100deg, #f5310b, #ec4899 55%, #00d2ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.soon-num small { margin-left: 2px; font: 600 16px var(--font-bebas), sans-serif; letter-spacing: 0; }
+.soon-bento {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1.1fr 1fr 0.8fr;
+  gap: 6px;
+  overflow: hidden;
+}
+.soon-bento b {
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.03);
+}
+.is-live .soon-bento b { animation: soon-fill 4.8s ease-in-out infinite; animation-delay: var(--d); }
+.soon-beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  opacity: 0;
+}
+.is-live .soon-beam { animation: soon-scan 4.8s ease-in-out infinite; }
+.soon-bar { height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+.soon-bar i { display: block; height: 100%; width: var(--soon-p); border-radius: 2px; background: linear-gradient(100deg, #f5310b, #ec4899 55%, #00d2ff); }
+@keyframes soon-fill {
+  0%, 12% { background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.22); }
+  30%, 80% { background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(var(--soon-rgb), 0.12)); border-color: rgba(var(--soon-rgb), 0.7); border-style: solid; }
+  100% { background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.22); }
+}
+@keyframes soon-scan { 0% { top: 0; opacity: 0; } 10%, 90% { opacity: 0.8; } 100% { top: calc(100% - 2px); opacity: 0; } }
+@keyframes soon-blink { 50% { opacity: 0.25; } }
+@keyframes soon-pulse { 50% { transform: scale(1.08); } }
+@keyframes soon-dot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.6); opacity: 0.45; } }
+.is-live .soon-chip i { animation: soon-dot 1.4s ease-in-out infinite; }
+.soon-num { font-variant-numeric: tabular-nums; }
+.soon-ringwrap { position: relative; align-self: center; width: 118px; height: 118px; margin-top: 6px; }
+.soon-ringwrap svg { width: 100%; height: 100%; overflow: visible; }
+.soon-num--ring { position: absolute; inset: 0; display: grid; place-items: center; font-size: 38px; padding: 0; transform-origin: center !important; }
+.is-live .soon-num--ring { transform-origin: center; }
+.soon-v-ring .soon-face, .soon-v-ring { align-items: stretch; }
+.soon-v-ring .soon-bar { margin-top: auto; }
+.soon-steps { margin-top: auto; display: grid; gap: 6px; }
+.soon-steps div { display: flex; align-items: center; gap: 8px; font: 700 11px var(--font-montserrat), sans-serif; color: rgba(255,255,255,0.45); }
+.soon-steps i { width: 14px; height: 14px; border-radius: 50%; border: 1.5px dashed rgba(255,255,255,0.35); flex-shrink: 0; transition: background .4s, border-color .4s; }
+.soon-steps .is-on { color: #fff; }
+.soon-steps .is-on i { border: 1.5px solid transparent; background: linear-gradient(100deg, #f5310b, #ec4899 55%, rgb(var(--soon-rgb))); }
+.soon-v-steps .soon-num { font-size: 44px; }
+@media (prefers-reduced-motion: reduce) {
+  .is-live .soon-bento b, .is-live .soon-beam, .is-live .soon-chip i { animation: none; }
+}
+
+/* ---------- Оборотная сторона карточки Егора (ProjectHookFlip) ---------- */
+.project-hook {
+  border: 1px solid rgba(236, 72, 153, 0.55);
+  background:
+    radial-gradient(70% 120% at 0% 0%, rgba(245, 49, 11, 0.38), transparent 62%),
+    radial-gradient(60% 120% at 100% 100%, rgba(0, 210, 255, 0.2), transparent 65%),
+    #12131a;
+}
+.project-hook-num {
+  min-width: 2.2em;
+  padding-right: 6px;
+  font: 600 56px / 1 var(--font-bebas), sans-serif;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(100deg, #f5310b, #ec4899 55%, #00d2ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.project-hook-num small { margin-left: 2px; font: 600 22px var(--font-bebas), sans-serif; letter-spacing: 0; }
+.project-hook-bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+.project-hook-bar i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(100deg, #f5310b, #ec4899 55%, #00d2ff); animation: project-hook-shine 2s ease-in-out infinite; }
+@keyframes project-hook-shine { 50% { filter: brightness(1.45); } }
+@media (prefers-reduced-motion: reduce) { .project-hook-bar i { animation: none; } }

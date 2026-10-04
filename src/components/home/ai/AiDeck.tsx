@@ -7,6 +7,7 @@ import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset, useDeckSpr
 import { useCallback, useEffect, useRef, useState } from "react";
 import { servicesByCategory } from "@/lib/service-content";
 import SpotlightScene from "@/components/home/ai/SpotlightScene";
+import SoonCardFace from "@/components/ui/SoonCardFace";
 import SpotlightCopy from "@/components/home/ai/SpotlightCopy";
 import { spotlightFor } from "@/components/home/ai/spotlightData";
 
@@ -65,6 +66,8 @@ type Card = {
    *  the site's one established "featured" language, not a new colour
    *  invented for this card alone). */
   hit?: boolean;
+  /** Карточка «скоро»: процент готовности, никуда не ведёт. */
+  soon?: number;
 };
 
 
@@ -82,6 +85,7 @@ const CARDS: Card[] = [
   { id: "person", short: "Персонализация\nконтента", href: "/ai/personalization", image: "/images/stock/vr-neon-triangle.webp" },
   { id: "analytics", short: "AI-аналитика", href: "/ai/analytics", image: "/images/stock/platform-speed.webp" },
   { id: "learn", short: "Обучение\nкоманды", href: "/ai/training", image: "/images/stock/team-ideas.webp" },
+  { id: "soon", short: "Новый\nинструмент", image: "/images/stock/brain-circuit.webp", soon: 38 },
 ];
 
 const SERVICES = servicesByCategory.ai;
@@ -287,6 +291,11 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
       {/* Тот же правый блок, что в выдвижных окошках на блоках страницы —
           один компонент на оба места, чтобы текст и темп не расходились. */}
       {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} compact />}
+      {!data && (
+        <p className="m-0 self-center font-display text-[13px] font-semibold leading-snug text-paper">
+          Готовим новый AI-инструмент: каркас собран, идёт наполнение. <span className="text-glow">Анонс — скоро.</span>
+        </p>
+      )}
     </div>
   );
 
@@ -520,6 +529,17 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                 </span>
               )}
 
+              {card.soon && (
+                <span
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3.5 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  aria-hidden="true"
+                  style={{ opacity: captionOpacity }}
+                >
+                  <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
+                  Скоро
+                </span>
+              )}
+
               {/* Название и кнопка — на КАЖДОЙ карточке, не только на
                   передней (Егор: «когда я хватаю карточку, я не вижу ни
                   названия, ни кнопки»). Колода читается сразу и не пустеет,
@@ -538,7 +558,16 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   inside another <a> any more than inside a <button>, so the
                   pill below is a plain <span> styled the same — decoration,
                   not a second link. */}
-              {isFront ? (
+              {isFront && card.soon ? (
+                <div
+                  aria-current="true"
+                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)]"
+                >
+                  <SoonCardFace percent={card.soon} accent="16, 185, 129" image={card.image} live={settled === 0 && !live} />
+                  {caption}
+                  {counter}
+                </div>
+              ) : isFront ? (
                 <Link
                   href={card.href ?? "#"}
                   aria-current="true"
@@ -576,10 +605,14 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   // above re-focuses safely) removes the trigger entirely.
                   onMouseDown={(e) => e.preventDefault()}
                   tabIndex={0}
-                  aria-label={`Показать: ${SERVICES[i].title}`}
+                  aria-label={`Показать: ${SERVICES[i]?.title ?? card.short}`}
                   className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] cursor-pointer transition-[box-shadow] duration-[760ms] motion-reduce:transition-none"
                 >
-                  <AiCardFace slug={slugOf(card)} image={card.image} hit={card.hit} step={0} />
+                  {card.soon ? (
+                    <SoonCardFace percent={card.soon} accent="16, 185, 129" image={card.image} live={false} />
+                  ) : (
+                    <AiCardFace slug={slugOf(card)} image={card.image} hit={card.hit} step={0} />
+                  )}
                   {caption}
                 </button>
               )}
@@ -627,7 +660,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                 e.currentTarget.focus({ preventScroll: true });
               }}
               onMouseDown={(e) => e.preventDefault()}
-              aria-label={SERVICES[i].title}
+              aria-label={SERVICES[i]?.title ?? card.short}
               aria-current={on ? "true" : undefined}
               className="relative grid h-7 place-items-center rounded-full border bg-ink transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300 motion-reduce:transition-none"
               style={{
