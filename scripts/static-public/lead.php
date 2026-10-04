@@ -7,7 +7,49 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$body = json_decode(file_get_contents('php://input'), true);
+// Защита от спама: только со своего сайта, ограничение размера и частоты.
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if ($origin !== '') {
+    $originHost = parse_url($origin, PHP_URL_HOST);
+    $selfHost = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? '');
+    if (!$originHost || strcasecmp($originHost, $selfHost) !== 0) {
+        http_response_code(403);
+        echo json_encode(['error' => 'forbidden']);
+        exit;
+    }
+}
+
+$MAX_BODY = 16000000; // 3 скрина по 4 МБ в base64 + поля
+if ((int)($_SERVER['CONTENT_LENGTH'] ?? 0) > $MAX_BODY) {
+    http_response_code(413);
+    echo json_encode(['error' => 'too_large']);
+    exit;
+}
+
+// Не больше 8 заявок за 10 минут с одного IP (файл-счётчик во временной папке).
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$rlFile = sys_get_temp_dir() . '/hdkv_lead_' . md5($ip) . '.json';
+$fh = @fopen($rlFile, 'c+');
+if ($fh && flock($fh, LOCK_EX)) {
+    $now = time();
+    $times = json_decode((string)stream_get_contents($fh), true);
+    $times = array_values(array_filter(is_array($times) ? $times : [], function ($t) use ($now) {
+        return $now - (int)$t < 600;
+    }));
+    $times[] = $now;
+    ftruncate($fh, 0);
+    rewind($fh);
+    fwrite($fh, json_encode($times));
+    flock($fh, LOCK_UN);
+    fclose($fh);
+    if (count($times) > 8) {
+        http_response_code(429);
+        echo json_encode(['error' => 'rate_limited']);
+        exit;
+    }
+}
+
+$body = json_decode(file_get_contents('php://input', false, null, 0, $MAX_BODY + 1), true);
 if (!is_array($body)) {
     http_response_code(400);
     echo json_encode(['error' => 'invalid_json']);
@@ -18,9 +60,9 @@ $clean = function ($v) {
     return trim(str_replace(["\r", "\n"], ' ', (string)$v));
 };
 
-$name = $clean($body['name'] ?? '');
-$phone = $clean($body['phone'] ?? '');
-$email = $clean($body['email'] ?? '');
+$name = mb_substr($clean($body['name'] ?? ''), 0, 200);
+$phone = mb_substr($clean($body['phone'] ?? ''), 0, 100);
+$email = mb_substr($clean($body['email'] ?? ''), 0, 200);
 if ($name === '' || ($phone === '' && $email === '')) {
     http_response_code(400);
     echo json_encode(['error' => 'missing_fields']);
@@ -47,9 +89,9 @@ $lines = ["Имя: $name"];
 if ($phone !== '') $lines[] = "Телефон: $phone";
 if ($email !== '') $lines[] = "Email: $email";
 if (isset($body['fields']) && is_array($body['fields'])) {
-    foreach ($body['fields'] as $k => $v) {
-        $v = trim((string)$v);
-        $lines[] = $clean($k) . ': ' . ($v === '' ? '—' : $v);
+    foreach (array_slice($body['fields'], 0, 40, true) as $k => $v) {
+        $v = is_scalar($v) ? mb_substr(trim((string)$v), 0, 4000) : '';
+        $lines[] = mb_substr($clean($k), 0, 100) . ': ' . ($v === '' ? '—' : $v);
     }
 }
 

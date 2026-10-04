@@ -148,6 +148,27 @@ export function answerQuestion(answer: string) {
  *  обычной заявкой (тот же `fetch("/api/lead"`, что у всех форм — на
  *  статической сборке он подменяется на lead.php). */
 export async function register(r: { name: string; phone: string; email?: string; marketing: boolean }) {
+  // Сначала заявка команде: если она не ушла, кабинет не открываем и не
+  // дарим генерации — иначе контакт клиента потерялся бы молча. Ошибку
+  // показывает форма регистрации.
+  const res = await fetch("/api/lead", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "team",
+      name: r.name,
+      phone: r.phone,
+      email: r.email || undefined,
+      fields: {
+        "Кому адресовано": "Команда (личный кабинет)",
+        "Событие": "Регистрация в кабинете",
+        "Подарок": `${WELCOME_GIFTS} генерации изображения`,
+        "Согласия": `Соглашение, правила подарка, обработка ПДн — ${new Date().toLocaleString("ru-RU")}`,
+        "Рассылки": r.marketing ? "согласен(на)" : "нет",
+      },
+    }),
+  });
+  if (!res.ok) throw new Error("send_failed");
   writeCabinet((s) => ({
     ...s,
     registered: true,
@@ -159,27 +180,6 @@ export async function register(r: { name: string; phone: string; email?: string;
     gifts: s.registered ? s.gifts : WELCOME_GIFTS,
     history: log(s, `Регистрация · в подарок ${WELCOME_GIFTS} генерации изображения`),
   }));
-  try {
-    await fetch("/api/lead", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "team",
-        name: r.name,
-        phone: r.phone,
-        email: r.email || undefined,
-        fields: {
-          "Кому адресовано": "Команда (личный кабинет)",
-          "Событие": "Регистрация в кабинете",
-          "Подарок": `${WELCOME_GIFTS} генерации изображения`,
-          "Согласия": `Соглашение, правила подарка, обработка ПДн — ${new Date().toLocaleString("ru-RU")}`,
-          "Рассылки": r.marketing ? "согласен(на)" : "нет",
-        },
-      }),
-    });
-  } catch {
-    /* кабинет всё равно открывается — контакт сохранён локально */
-  }
 }
 
 /** Генерация в счёт подарка: клиент описывает картинку, заявка уходит
@@ -188,12 +188,6 @@ export async function register(r: { name: string; phone: string; email?: string;
 export async function requestGift(prompt: string) {
   const s = readCabinet();
   if (s.gifts <= 0) throw new Error("no_gifts");
-  writeCabinet((st) => ({
-    ...st,
-    gifts: st.gifts - 1,
-    giftRequests: [{ at: Date.now(), prompt }, ...st.giftRequests],
-    history: log(st, `Подарочная генерация заказана: «${prompt}»`),
-  }));
   const res = await fetch("/api/lead", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -210,6 +204,13 @@ export async function requestGift(prompt: string) {
     }),
   });
   if (!res.ok) throw new Error("send_failed");
+  // Подарок списываем только когда заявка реально ушла команде.
+  writeCabinet((st) => ({
+    ...st,
+    gifts: st.gifts - 1,
+    giftRequests: [{ at: Date.now(), prompt }, ...st.giftRequests],
+    history: log(st, `Подарочная генерация заказана: «${prompt}»`),
+  }));
 }
 
 /** Сообщение команде из кабинета — настоящая заявка. */

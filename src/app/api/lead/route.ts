@@ -55,7 +55,51 @@ const TYPE_LABEL: Record<LeadPayload["type"], string> = {
 
 const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
+// Защита от спама: заявки приходят только со своего сайта, тело запроса
+// ограничено (3 скрина по 4 МБ в base64 + поля), частота — по IP. Счётчик
+// живёт в памяти одного сервера: это тормоз для одного клиента, не квота.
+const MAX_BODY = 16_000_000;
+const MAX_FIELD = 4000;
+const MAX_FIELDS = 40;
+const WINDOW_MS = 10 * 60 * 1000;
+const MAX_PER_WINDOW = 8;
+const hits = new Map<string, number[]>();
+
+function rateLimited(ip: string) {
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
+  recent.push(now);
+  hits.set(ip, recent);
+  if (hits.size > 5000) {
+    for (const [key, times] of hits) {
+      if (times.every((t) => now - t >= WINDOW_MS)) hits.delete(key);
+    }
+  }
+  return recent.length > MAX_PER_WINDOW;
+}
+
+function sameSite(request: Request) {
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+  try {
+    return new URL(origin).host === request.headers.get("host");
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
+  if (!sameSite(request)) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+  if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY) {
+    return NextResponse.json({ error: "too_large" }, { status: 413 });
+  }
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (rateLimited(ip)) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
+
   let body: LeadPayload;
   try {
     body = await request.json();
@@ -66,9 +110,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const name = str(body.name);
-  const phone = str(body.phone);
-  const email = str(body.email);
+  const name = str(body.name).slice(0, 200);
+  const phone = str(body.phone).slice(0, 100);
+  const email = str(body.email).slice(0, 200);
   // A mistyped address must not cost the lead: it still goes into the letter,
   // just not into replyTo, which the mail provider may reject outright.
   const emailOk = looksLikeEmail(email);
@@ -87,7 +131,9 @@ export async function POST(request: Request) {
     `Имя: ${name}`,
     ...(phone ? [`Телефон: ${phone}`] : []),
     ...(email ? [emailOk ? `Email: ${email}` : `Email (похоже, с опечаткой): ${email}`] : []),
-    ...Object.entries(body.fields ?? {}).map(([label, value]) => `${label}: ${value || "—"}`),
+    ...Object.entries(body.fields ?? {})
+      .slice(0, MAX_FIELDS)
+      .map(([label, value]) => `${label.slice(0, 100)}: ${str(value).slice(0, MAX_FIELD) || "—"}`),
   ];
 
   const attachments = (Array.isArray(body.files) ? body.files : [])

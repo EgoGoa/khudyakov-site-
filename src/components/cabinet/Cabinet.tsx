@@ -77,6 +77,7 @@ function Register({ state }: { state: CabinetState }) {
   const [consent, setConsent] = useState(false);
   const [marketing, setMarketing] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
   const ok = name.trim() && phone.trim() && terms && consent;
   return (
     <div className="flex flex-col">
@@ -114,13 +115,23 @@ function Register({ state }: { state: CabinetState }) {
           disabled={!ok || busy}
           onClick={async () => {
             setBusy(true);
-            await register({ name: name.trim(), phone: phone.trim(), email: email.trim(), marketing });
+            setFailed(false);
+            try {
+              await register({ name: name.trim(), phone: phone.trim(), email: email.trim(), marketing });
+            } catch {
+              setFailed(true);
+            }
             setBusy(false);
           }}
           className="cab-cta mt-1.5"
         >
           {busy ? "Создаю кабинет…" : "Создать кабинет"}
         </button>
+        {failed && (
+          <p role="alert" className="text-[13px] font-semibold leading-snug text-white">
+            Не получилось создать кабинет — проверьте интернет и попробуйте ещё раз или напишите нам в Телеграм.
+          </p>
+        )}
       </div>
     </div>
   );

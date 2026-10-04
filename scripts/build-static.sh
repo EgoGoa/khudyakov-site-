@@ -49,6 +49,20 @@ export function GET() {
 }
 TS
 
+# «Спросить агента» (/api/ask) ходит к ИИ через сервер, а на статичном
+# хостинге его нет: строка показывала бы посетителю ошибку. В статичной
+# версии обе строки не выводим (Егор, 2026-10-04).
+cat > src/components/home/BlockAssistant.tsx <<'TSX'
+export default function BlockAssistant(_props: { context?: string }) {
+  return null;
+}
+TSX
+cat > src/components/home/direction/blocks/TaskAssistant.tsx <<'TSX'
+export default function TaskAssistant(_props: Record<string, unknown>) {
+  return null;
+}
+TSX
+
 # динамические маршруты метаданных должны быть статичными
 for f in src/app/apple-icon.tsx src/app/icon.tsx src/app/opengraph-image.tsx src/app/robots.ts src/app/sitemap.ts; do
   grep -q 'force-static' "$f" || printf '\nexport const dynamic = "force-static";\n' >> "$f"
