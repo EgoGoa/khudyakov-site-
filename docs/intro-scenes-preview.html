@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Три вводных окна — сцены v6</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--a:#ff4f9a;--brand:linear-gradient(100deg,#F5310B,#EC4899 55%,#00D2FF)}
+body{margin:0;color:#fff;font-family:Manrope,sans-serif;padding:32px 20px 70px;min-height:100vh;
+ background:radial-gradient(70vw 50vw at 50% 0%,#232327,transparent 70%),#0a0a0b}
+h1{font:700 22px Manrope,sans-serif;margin:0 0 8px;letter-spacing:-.01em}
+.lead{font:700 15px/1.5 Manrope,sans-serif;margin:0 0 6px;max-width:800px}
+h2{font:700 17px Manrope,sans-serif;margin:40px 0 14px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,320px);gap:22px}
+
+.win{width:320px;height:700px;border-radius:30px;padding:14px;display:flex;flex-direction:column;
+ background:rgba(20,20,22,.72);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(34px) saturate(1.3);
+ box-shadow:0 40px 80px -30px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.1)}
+.top{display:flex;align-items:center;gap:6px;padding:2px 4px 0}
+.top i{flex:1;height:2px;border-radius:2px;background:rgba(255,255,255,.18);position:relative;overflow:hidden}
+.top i.done{background:#fff}
+.top i.on::after{content:"";position:absolute;inset:0;background:#fff;transform-origin:left;animation:seg 8s linear infinite}
+@keyframes seg{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.top b{margin-left:10px;font-size:17px;line-height:1;font-weight:700}
+
+.bento{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;min-height:0}
+.tile{position:relative;overflow:hidden;border-radius:18px;padding:12px 14px;
+ background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.025));
+ border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+.tile.hot{background:radial-gradient(80% 70% at 0% 0%,rgba(245,49,11,.32),transparent 62%),radial-gradient(70% 70% at 100% 100%,rgba(0,210,255,.16),transparent 65%),radial-gradient(60% 60% at 45% 30%,rgba(236,72,153,.14),transparent 70%),linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02))}
+.tile.hotb{background:radial-gradient(70% 60% at 20% 120%,rgba(245,49,11,.3),transparent 65%),radial-gradient(70% 60% at 85% 120%,rgba(0,210,255,.22),transparent 65%),radial-gradient(60% 50% at 50% 115%,rgba(236,72,153,.26),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02))}
+.s2{grid-column:1/3}
+.d3{display:flex;gap:4px;margin-bottom:10px}.d3 i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.3)}.d3 i:first-child{background:var(--brand)}
+.ttl{font:700 23px/1.08 Manrope,sans-serif;letter-spacing:-.03em;margin:0}
+.pills{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.pill{padding:5px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.16);font:700 11.5px Manrope,sans-serif}
+.pill.acc{border:1px solid transparent;background:linear-gradient(rgba(28,28,32,.92),rgba(28,28,32,.92)) padding-box,var(--brand) border-box}
+.why{font:700 13.5px/1.42 Manrope,sans-serif;margin:8px 0 0}
+.lbl{font:700 11.5px/1.25 Manrope,sans-serif}
+.num{font:600 34px/1 Unbounded,sans-serif;letter-spacing:-.05em;background:linear-gradient(180deg,#fff 30%,#b8b8c0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.num small{font:700 13px Manrope,sans-serif;letter-spacing:0;margin-left:3px;-webkit-text-fill-color:#fff}
+.num.acc{background:var(--brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ga{background:var(--brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+.big{font:600 64px/1 Unbounded,sans-serif;letter-spacing:-.06em}
+.glass{background:rgba(40,40,44,.55);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(14px);box-shadow:0 14px 30px -10px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.14)}
+svg{display:block;overflow:visible}
+.t{font-family:Manrope,sans-serif;font-weight:700;fill:#fff}
+.u{font-family:Unbounded,sans-serif;font-weight:600;fill:#fff}
+
+.bot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:0 4px;font:700 13px Manrope,sans-serif}
+.next{padding:10px 20px;border-radius:999px;background:#fff;color:#0a0a0b;font-weight:800}
+.dots i{display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.28);margin:0 3px}.dots i.on{background:#fff}
+
+.draw{stroke-dasharray:600;animation:draw 5s cubic-bezier(.6,0,.2,1) infinite}@keyframes draw{0%{stroke-dashoffset:600}50%,100%{stroke-dashoffset:0}}
+.rise{transform-box:fill-box;transform-origin:center bottom;animation:rise 5s cubic-bezier(.6,0,.2,1) infinite}@keyframes rise{0%{transform:scaleY(.05)}45%,100%{transform:scaleY(1)}}
+.needle{transform-origin:70px 70px;animation:needle 5s cubic-bezier(.6,0,.2,1) infinite}@keyframes needle{0%{transform:rotate(-80deg)}45%,100%{transform:rotate(38deg)}}
+.blink{animation:bl 1.6s ease-in-out infinite}@keyframes bl{50%{opacity:.25}}
+.n{animation:nin 6s ease-out infinite both}.n2{animation-delay:.5s}.n3{animation-delay:1s}
+@keyframes nin{0%{opacity:0;transform:translateY(-10px)}10%,85%{opacity:1;transform:none}100%{opacity:0}}
+.note{font:700 14px/1.5 Manrope,sans-serif;margin-top:40px;max-width:800px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="gh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5310B"/><stop offset=".6" stop-color="#EC4899"/><stop offset="1" stop-color="#00D2FF"/></linearGradient>
+<linearGradient id="bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4a50"/><stop offset="1" stop-color="#26262a"/></linearGradient>
+<linearGradient id="barA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5310B"/><stop offset=".5" stop-color="#EC4899"/><stop offset="1" stop-color="#00D2FF" stop-opacity=".35"/></linearGradient>
+<linearGradient id="gl" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="264" y2="0"><stop offset="0" stop-color="#F5310B"/><stop offset=".55" stop-color="#EC4899"/><stop offset="1" stop-color="#00D2FF"/></linearGradient>
+<linearGradient id="fadeA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EC4899" stop-opacity=".3"/><stop offset="1" stop-color="#00D2FF" stop-opacity="0"/></linearGradient>
+<!-- стрелка из точек -->
+<symbol id="darr" viewBox="0 0 36 28"><g fill="#fff"><circle cx="4" cy="14" r="2"/><circle cx="11" cy="14" r="2"/><circle cx="18" cy="14" r="2"/><circle cx="25" cy="14" r="2"/><circle cx="32" cy="14" r="2"/><circle cx="25" cy="7" r="2"/><circle cx="18" cy="2" r="2" opacity=".5"/><circle cx="25" cy="21" r="2"/><circle cx="18" cy="26" r="2" opacity=".5"/></g></symbol>
+<symbol id="hud" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="url(#gh)"/><text x="20" y="24" font-family="Unbounded" font-weight="700" font-size="10" fill="#fff" text-anchor="middle">HUD</text></symbol>
+</defs></svg>
+
+<h1>Три вводных окна · вариант 6</h1>
+<p class="lead">Сделано по твоим рефам: графитовые плитки, а вместо оранжевого — мягкие фирменные цвета (красный → розовый → голубой) в окантовках, подсветке и ключевых цифрах. В верхней плитке — заголовок и пояснение, в чём выгода (как в варианте 4), ниже — крупные цифры, графики со стеклянными подсказками и стрелки из точек. Цветным остаётся только знак HUD.</p>
+<p class="lead">Цифры −30%, −20%, суммы и скидки стоят для примера.</p>
+
+<!-- ============ ОКНО 1 ============ -->
+<h2>Окно 1 · Всё в одном</h2>
+<div class="g">
+
+<div class="win"><div class="top"><i class="on"></i><i></i><i></i><b>×</b></div>
+<div class="bento" style="grid-template-rows:auto 1fr auto">
+ <div class="tile s2 hot"><div class="d3"><i></i><i></i><i></i></div><p class="ttl">Видео, AI, сайты<br>и SMM</p><p class="why">Один менеджер ведёт весь проект, договор и смета — одни на все направления. Не нужно искать и стыковать четырёх подрядчиков.</p>
+  <div class="pills"><span class="pill acc">в одном сервисе</span><span class="pill">HUD.SERVICE</span></div></div>
+ <div class="tile s2" style="display:flex;align-items:center;justify-content:space-between">
+  <div style="display:grid;gap:6px">
+   <span class="pill glass" style="width:96px">Видео</span><span class="pill glass" style="width:96px">AI</span><span class="pill glass" style="width:96px">Сайты</span><span class="pill glass" style="width:96px">SMM</span></div>
+  <svg width="40" height="30" class="blink"><use href="#darr"/></svg>
+  <svg width="86" height="86"><use href="#hud"/></svg></div>
+ <div class="tile"><div class="lbl">Менеджер</div><div class="num" style="margin-top:12px">1</div></div>
+ <div class="tile"><div class="lbl">Договор</div><div class="num" style="margin-top:12px">1</div></div>
+</div>
+<div class="bot"><span>Пропустить</span><span class="dots"><i class="on"></i><i></i><i></i></span><span class="next">Дальше</span></div></div>
+
+<div class="win"><div class="top"><i class="done"></i><i class="on"></i><i></i><b>×</b></div>
+<div class="bento" style="grid-template-rows:auto 1fr 1fr">
+ <div class="tile s2"><div class="d3"><i></i><i></i><i></i></div><p class="ttl">Запуск бренда<br>быстрее</p><p class="why">Задачи не ждут, пока их передадут от одного подрядчика другому: вся команда работает в одном процессе.</p>
+  <div class="pills"><span class="pill acc">−30% времени</span><span class="pill">без пауз</span></div></div>
+ <div class="tile hotb" style="grid-row:2/4;display:flex;flex-direction:column;align-items:center;justify-content:center">
+  <svg width="140" height="84" viewBox="0 0 140 84">
+   <g stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".35">
+    <path d="M10 70h8M14.6 47.6l7 4M28 28l5 6.5M48 15.5l2.6 7.6M70 11v8M92 15.5l-2.6 7.6M112 28l-5 6.5M125.4 47.6l-7 4M130 70h-8"/></g>
+   <path d="M18 70A52 52 0 0 1 122 70" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="6" stroke-linecap="round"/>
+   <path d="M18 70A52 52 0 0 1 112 39" fill="none" stroke="url(#gl)" stroke-width="6" stroke-linecap="round" class="draw" style="stroke-dasharray:140;animation-name:dg"/>
+   <g class="needle"><path d="M70 70L70 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></g><circle cx="70" cy="70" r="6" fill="#fff"/></svg>
+  <div class="num acc" style="font-size:30px;margin-top:10px">−30%</div><div class="lbl" style="margin-top:6px">к срокам</div></div>
+ <div class="tile"><div class="lbl">4 подрядчика</div><div class="num" style="margin-top:10px;font-size:28px">6<small>нед</small></div></div>
+ <div class="tile"><div class="lbl">HUD.SERVICE</div><div class="num acc" style="margin-top:10px;font-size:28px">4<small>нед</small></div></div>
+</div>
+<style>@keyframes dg{0%{stroke-dashoffset:140}45%,100%{stroke-dashoffset:0}}</style>
+<div class="bot"><span>Пропустить</span><span class="dots"><i></i><i class="on"></i><i></i></span><span class="next">Дальше</span></div></div>
+
+<div class="win"><div class="top"><i class="done"></i><i class="done"></i><i class="on"></i><b>×</b></div>
+<div class="bento" style="grid-template-rows:auto 1fr">
+ <div class="tile s2"><div class="d3"><i></i><i></i><i></i></div><p class="ttl">Бюджет на бренд<br>ниже</p><p class="why">Одна смета на всё вместо четырёх отдельных — без наценки каждого подрядчика сверху.</p>
+  <div class="pills"><span class="pill acc">−20%</span><span class="pill">одна смета</span></div></div>
+ <div class="tile s2 hot" style="padding-bottom:10px">
+  <div class="lbl">Затраты за год</div><div class="num" style="margin-top:6px;font-size:28px">384 000 ₽</div>
+  <svg width="264" height="190" viewBox="0 0 264 190" style="margin-top:8px">
+   <g class="rise"><rect x="0" y="128" width="34" height="42" rx="9" fill="url(#bar)"/><rect x="44" y="140" width="34" height="30" rx="9" fill="url(#bar)"/><rect x="88" y="132" width="34" height="38" rx="9" fill="url(#bar)"/><rect x="132" y="136" width="34" height="34" rx="9" fill="url(#bar)"/>
+   <rect x="176" y="30" width="34" height="140" rx="9" fill="url(#bar)"/><rect x="220" y="58" width="44" height="112" rx="10" fill="url(#barA)"/></g>
+   <path d="M242 58V170" stroke="#fff" stroke-width="1.4"/><circle cx="242" cy="58" r="8" fill="#fff"/><path d="M238 58l3 3 5-6" fill="none" stroke="url(#gl)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M0 171H264" stroke="#fff" stroke-opacity=".18"/>
+   <g class="t" font-size="10.5" text-anchor="middle"><text x="17" y="186">Видео</text><text x="61" y="186">AI</text><text x="105" y="186">Сайт</text><text x="149" y="186">SMM</text><text x="193" y="186">Отдельно</text><text x="242" y="186" style="fill:#EC4899">HUD</text></g>
+  </svg>
+  <div class="glass" style="position:absolute;left:14px;top:92px;border-radius:14px;padding:9px 12px;width:150px">
+   <div class="lbl">Отдельно — 480 000 ₽</div><div class="lbl" style="margin-top:4px">Экономия <span class="ga">96 000 ₽</span></div></div>
+ </div>
+</div>
+<div class="bot"><span>Пропустить</span><span class="dots"><i></i><i></i><i class="on"></i></span><span class="next">Дальше</span></div></div>
+</div>
+
+<!-- ============ ОКНО 2 ============ -->
+<h2>Окно 2 · Вайб-режим</h2>
+<div class="g">
+
+<div class="win"><div class="top"><i class="on"></i><i></i><i></i><b>×</b></div>
+<div class="bento" style="grid-template-rows:auto 1fr">
+ <div class="tile s2 hot"><div class="d3"><i></i><i></i><i></i></div><p class="ttl">Расскажи<br>о своём деле</p><p class="why">Пять коротких вопросов, около минуты. По ответам сервис понимает твою задачу.</p>
+  <div class="pills"><span class="pill acc">вайб-режим</span><span class="pill">5 вопросов · 1 минута</span></div></div>
+ <div class="tile s2" style="display:flex;flex-direction:column">
+  <div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Вопрос 2 из 5</span>
+   <span style="display:flex;gap:4px"><i style="width:22px;height:4px;border-radius:2px;background:var(--brand)"></i><i style="width:22px;height:4px;border-radius:2px;background:var(--brand)"></i><i style="width:22px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)"></i><i style="width:22px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)"></i><i style="width:22px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)"></i></span></div>
+  <div style="font:700 21px/1.15 Manrope,sans-serif;letter-spacing:-.02em;margin-top:16px">Чем занимаешься?</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px;font:700 13px Manrope,sans-serif;text-align:center">
+   <span class="glass" style="padding:11px 0;border-radius:14px">Кафе</span>
+   <span style="padding:11px 0;border-radius:14px;background:#fff;color:#0a0a0b;position:relative">Онлайн-школа
+    <svg width="30" height="34" viewBox="0 0 30 34" style="position:absolute;right:8px;top:16px"><path d="M2 2l0 22 6-5 4.5 9.5 4-2-4.5-9.5 8-1z" fill="#fff" stroke="#0a0a0b" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
+   <span class="glass" style="padding:11px 0;border-radius:14px">Бьюти</span>
+   <span class="glass" style="padding:11px 0;border-radius:14px">Магазин</span></div>
+  <div class="glass" style="margin-top:auto;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font:700 13px Manrope,sans-serif">Или скажи голосом
+   <svg width="20" height="16" viewBox="0 0 20 16"><g stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M2 6v4M6.5 3v10M11 1v14M15.5 4v8M19 7v2"/></g></svg></div>
+ </div>
+</div>
+<div class="bot"><span>Пропустить</span><span class="dots"><i class="on"></i><i></i><i></i></span><span class="next">Дальше</span></div></div>
+
+<div class="win"><div class="top"><i class="done"></i><i class="on"></i><i></i><b>×</b></div>
+<div class="bento" style="grid-template-rows:auto auto 1fr">
+ <div class="tile s2"><div class="d3"><i></i><i></i><i></i></div><p class="ttl">Сайт<br>подстраивается</p><p class="why">Показываем услуги, цены и кейсы, которые нужны именно твоему бизнесу. Лишнее убираем.</p>
+  <div class="pills"><span class="pill acc">под твою нишу</span><span class="pill">услуги · цены · кейсы</span></div></div>
+ <div class="tile"><div class="lbl">Обычный сайт</div>
+  <svg width="104" height="50" viewBox="0 0 104 50" style="margin-top:10px"><g fill="#fff" fill-opacity=".16"><rect width="104" height="8" rx="4"/><rect y="13" width="104" height="18" rx="5"/><rect y="36" width="48" height="14" rx="5"/><rect x="56" y="36" width="48" height="14" rx="5"/></g></svg></div>
+ <div class="tile" style="border:1px solid transparent;background:linear-gradient(#17171a,#17171a) padding-box,var(--brand) border-box"><div class="lbl">Для онлайн-школ</div>
+  <svg width="104" height="50" viewBox="0 0 104 50" style="margin-top:10px"><rect width="64" height="8" rx="4" fill="url(#gl)"/><rect y="13" width="104" height="18" rx="5" fill="#fff"/><rect y="36" width="48" height="14" rx="5" fill="#fff" fill-opacity=".5"/><rect x="56" y="36" width="48" height="14" rx="5" fill="#fff" fill-opacity=".5"/></svg></div>
+ <div class="tile s2 hotb">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="lbl">Заявок с сайта</div><div class="num acc" style="margin-top:8px">+40%</div></div><svg width="36" height="28" style="transform:rotate(-35deg)"><use href="#darr"/></svg></div>
+  <svg width="264" height="96" viewBox="0 0 264 96" style="margin-top:10px">
+   <path d="M0 84C24 84 30 70 48 72C68 74 72 48 96 52C118 56 122 32 146 36C170 40 176 16 198 18C222 20 236 8 264 4V96H0Z" fill="url(#fadeA)"/>
+   <path d="M0 84C24 84 30 70 48 72C68 74 72 48 96 52C118 56 122 32 146 36C170 40 176 16 198 18C222 20 236 8 264 4" fill="none" stroke="url(#gl)" stroke-width="2.4" class="draw"/>
+   <circle cx="264" cy="4" r="4.5" fill="#fff"/></svg></div>
+</div>
+<div class="bot"><span>Пропустить</span><span class="dots"><i></i><i class="on"></i><i></i></span><span class="next">Дальше</span></div></div>
+
+<div class="win"><div class="top"><i class="done"></i><i class="done"></i><i class="on"></i><b>×</b></div>
+<div class="bento" style="grid-template-rows:auto auto 1fr">
+ <div class="tile s2"><div class="d3"><i></i><i></i><i></i></div><p class="ttl">Личное предложение<br>за 1 час</p><p class="why">Через час приходит готовый план: состав работ, сроки и цена — прямо в окне.</p>
+  <div class="pills"><span class="pill acc">готово</span><span class="pill">состав · сроки · цена</span></div></div>
+ <div class="tile hot" style="display:grid;place-items:center;padding:14px 8px">
+  <svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="44" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="7"/>
+   <circle cx="52" cy="52" r="44" fill="none" stroke="url(#gl)" stroke-width="7" stroke-linecap="round" stroke-dasharray="250 277" transform="rotate(-90 52 52)"/>
+   <g fill="#fff"><circle cx="52" cy="2" r="0"/></g>
+   <text class="u" x="52" y="52" font-size="17" text-anchor="middle">59:12</text><text class="t" x="52" y="68" font-size="10" text-anchor="middle">осталось</text></svg></div>
+ <div style="display:grid;gap:8px">
+  <div class="tile"><div class="lbl">Сроки</div><div class="num" style="margin-top:6px;font-size:22px">14<small>дней</small></div></div>
+  <div class="tile"><div class="lbl">Цена</div><div class="num acc" style="margin-top:6px;font-size:19px">89 000 ₽</div></div></div>
+ <div class="tile s2"><div class="lbl" style="margin-bottom:10px">Запуск онлайн-школы</div>
+  <div style="display:grid;gap:8px;font:700 13.5px Manrope,sans-serif">
+   <div style="display:flex;justify-content:space-between"><span>Лендинг под курс</span><span class="ga">✓</span></div>
+   <div style="display:flex;justify-content:space-between"><span>8 Reels в месяц</span><span class="ga">✓</span></div>
+   <div style="display:flex;justify-content:space-between"><span>AI-бот для заявок</span><span class="ga">✓</span></div></div></div>
+</div>
+<div class="bot"><span>Пропустить</span><span class="dots"><i></i><i></i><i class="on"></i></span><span class="next">Дальше</span></div></div>
+</div>
+
+<!-- ============ ОКНО 3 ============ -->
+<h2>Окно 3 · Приложение</h2>
+<div class="g">
+
+<div class="win"><div class="top"><i class="on"></i><i></i><i></i><b>×</b></div>
+<div class="bento" style="grid-template-rows:auto 1fr">
+ <div class="tile s2 hot"><div class="d3"><i></i><i></i><i></i></div><p class="ttl">HUD у тебя<br>на экране</p><p class="why">Два нажатия — и иконка сервиса на твоём экране. Открывается как обычное приложение.</p>
+  <div class="pills"><span class="pill acc">2 нажатия</span><span class="pill">как приложение</span></div></div>
+ <div class="tile s2" style="padding:0">
+  <svg width="140" height="300" viewBox="0 0 140 300" style="position:absolute;left:16px;top:16px">
+   <rect x="1" y="1" width="138" height="298" rx="28" fill="#0a0a0b" stroke="#fff" stroke-opacity=".3" stroke-width="1.5"/>
+   <rect x="7" y="7" width="126" height="290" rx="23" fill="#1b1b1f"/>
+   <rect x="50" y="14" width="40" height="12" rx="6" fill="#000"/><text class="t" x="20" y="24" font-size="8.5">9:41</text>
+   <g fill="#fff" fill-opacity=".12"><rect x="18" y="42" width="28" height="28" rx="8"/><rect x="56" y="42" width="28" height="28" rx="8"/><rect x="94" y="42" width="28" height="28" rx="8"/><rect x="18" y="82" width="28" height="28" rx="8"/><rect x="94" y="82" width="28" height="28" rx="8"/><rect x="18" y="122" width="28" height="28" rx="8"/><rect x="56" y="122" width="28" height="28" rx="8"/></g>
+   <use href="#hud" x="56" y="82" width="28" height="28"/></svg>
+  <div class="glass" style="position:absolute;right:14px;top:70px;width:156px;border-radius:18px;padding:6px">
+   <div style="display:flex;align-items:center;gap:9px;padding:10px 8px;font:700 13px Manrope,sans-serif"><span class="num acc" style="font-size:15px">1</span>Поделиться</div>
+   <div style="height:1px;background:rgba(255,255,255,.12);margin:0 8px"></div>
+   <div style="display:flex;align-items:center;gap:9px;padding:10px 8px;font:700 13px/1.2 Manrope,sans-serif;border-radius:12px;background:rgba(255,255,255,.12)"><span class="num acc" style="font-size:15px">2</span>На экран «Домой»</div></div>
+  <svg width="36" height="28" style="position:absolute;right:66px;top:200px;transform:rotate(150deg)" class="blink"><use href="#darr"/></svg>
+ </div>
+</div>
+<div class="bot"><span>Пропустить</span><span class="dots"><i class="on"></i><i></i><i></i></span><span class="next">Дальше</span></div></div>
+
+<div class="win"><div class="top"><i class="done"></i><i class="on"></i><i></i><b>×</b></div>
+<div class="bento" style="grid-template-rows:auto 1fr">
+ <div class="tile s2"><div class="d3"><i></i><i></i><i></i></div><p class="ttl">Всё важное<br>в уведомлениях</p><p class="why">Статусы работ, акции и бонусы приходят сами — не нужно заходить на сайт и проверять.</p>
+  <div class="pills"><span class="pill acc">сразу на экран</span><span class="pill">статусы · акции · бонусы</span></div></div>
+ <div class="tile s2 hotb" style="padding:14px 10px">
+  <div style="text-align:center"><div class="lbl">суббота, 4 октября</div><div style="font:500 52px/1 Unbounded,sans-serif;letter-spacing:-.05em;margin-top:6px">9:41</div></div>
+  <div style="display:grid;gap:7px;margin-top:16px">
+   <div class="glass n" style="border-radius:16px;padding:9px 10px;display:flex;gap:10px;align-items:center"><svg width="30" height="30"><use href="#hud"/></svg>
+    <div style="flex:1"><div class="lbl" style="display:flex;justify-content:space-between"><span>Монтаж готов</span><span>сейчас</span></div><div class="lbl" style="font-weight:600;margin-top:2px">Посмотри и оставь правки</div></div></div>
+   <div class="glass n n2" style="border-radius:16px;padding:9px 10px;display:flex;gap:10px;align-items:center"><svg width="30" height="30"><use href="#hud"/></svg>
+    <div style="flex:1"><div class="lbl" style="display:flex;justify-content:space-between"><span>Акция недели</span><span>2 мин</span></div><div class="lbl" style="font-weight:600;margin-top:2px">−20% на сайт-визитку</div></div></div>
+   <div class="glass n n3" style="border-radius:16px;padding:9px 10px;display:flex;gap:10px;align-items:center"><svg width="30" height="30"><use href="#hud"/></svg>
+    <div style="flex:1"><div class="lbl" style="display:flex;justify-content:space-between"><span>Скидка выросла</span><span>1 ч</span></div><div class="lbl" style="font-weight:600;margin-top:2px">Теперь <span class="ga">10%</span> на все заказы</div></div></div>
+  </div></div>
+</div>
+<div class="bot"><span>Пропустить</span><span class="dots"><i></i><i class="on"></i><i></i></span><span class="next">Дальше</span></div></div>
+
+<div class="win"><div class="top"><i class="done"></i><i class="done"></i><i class="on"></i><b>×</b></div>
+<div class="bento" style="grid-template-rows:auto 1fr auto">
+ <div class="tile s2"><div class="d3"><i></i><i></i><i></i></div><p class="ttl">Скидка растёт<br>с каждым заказом</p><p class="why">Чем больше заказов, тем ниже цена следующего. Скидка копится автоматически.</p>
+  <div class="pills"><span class="pill acc">до 15%</span><span class="pill">накопительная</span></div></div>
+ <div class="tile hot" style="display:flex;flex-direction:column;justify-content:space-between"><div class="lbl">Твоя скидка</div><div class="big" style="color:#fff">10<span class="ga" style="font-size:26px">%</span></div></div>
+ <div class="tile" style="display:flex;flex-direction:column;justify-content:space-between"><div class="lbl">Следующий уровень</div>
+  <div><div class="num" style="font-size:30px">15%</div><div class="lbl" style="margin-top:6px">после 4-го заказа</div></div></div>
+ <div class="tile s2"><div class="lbl" style="display:flex;justify-content:space-between"><span>Заказы</span><span>3 из 4</span></div>
+  <svg width="264" height="54" viewBox="0 0 264 54" style="margin-top:10px">
+   <g fill="url(#gl)"><rect x="0" y="0" width="60" height="8" rx="4"/><rect x="68" y="0" width="60" height="8" rx="4"/><rect x="136" y="0" width="60" height="8" rx="4"/></g>
+   <rect x="204" y="0" width="60" height="8" rx="4" fill="#fff" fill-opacity=".14"/>
+   <g class="u" font-size="12"><text x="0" y="34">3%</text><text x="68" y="34">5%</text><text x="136" y="34">10%</text><text x="204" y="34">15%</text></g></svg></div>
+</div>
+<div class="bot"><span>Пропустить</span><span class="dots"><i></i><i></i><i class="on"></i></span><span class="next">Дальше</span></div></div>
+</div>
+
+<p class="note">Как листается: внутри окна сцены идут сами по 8 секунд, полоска сверху заполняется. «Дальше» ведёт к следующему окну, «Пропустить» и × — сразу в стартовое меню.</p>
+</body>
+</html>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { MicIcon } from "@/components/ui/Icons";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { OPEN_WELCOME_EVENT, useWelcomeGate } from "@/lib/welcome-gate";
@@ -12,6 +12,7 @@ import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { WELCOME_OPEN_ATTR } from "@/lib/welcome-freeze";
 import WelcomeWidget from "./WelcomeWidget";
 import IntroSplash from "./IntroSplash";
+import WelcomeIntro, { markIntroSeen, shouldShowIntro } from "./WelcomeIntro";
 import { OPEN_VIBE_EVENT, VOICE_NAV_EVENT } from "@/lib/voice/store";
 import { isBareClick, skipIntros } from "@/lib/skip-intro";
 import MobileClose from "@/components/ui/MobileClose";
@@ -317,6 +318,13 @@ export default function WelcomeOverlay() {
   const [settled, setSettled] = useState(false);
   // Окно открыто повторно (клик по логотипу): без заставки, сразу меню.
   const [quick, setQuick] = useState(false);
+  // Три вводных окна между заставкой и меню (Егор, 2026-10-04): один раз на
+  // устройство, не при повторном открытии по логотипу и не в приложении.
+  const [intro, setIntro] = useState(false);
+  const finishIntro = () => {
+    markIntroSeen();
+    setIntro(false);
+  };
 
   // Starts true on the server (and for the very first client render, to
   // match it and avoid a hydration mismatch) so a first-time visitor still
@@ -384,6 +392,7 @@ export default function WelcomeOverlay() {
   }, [setSkippedToSite]);
 
   const goToSite = () => {
+    if (intro) markIntroSeen();
     setSkippedToSite(true);
     close();
     // wait for the overlay's own exit + the body scroll-lock release before
@@ -474,6 +483,7 @@ export default function WelcomeOverlay() {
   useDialogFocus(visible && revealed, dialogRef);
 
   const reveal = () => {
+    if (!quick && shouldShowIntro()) setIntro(true);
     setRevealed(true);
     playUi("windows");
   };
@@ -485,7 +495,7 @@ export default function WelcomeOverlay() {
   }, [revealed, settled]);
 
   const rush = (e: React.PointerEvent) => {
-    if (settled || skipped || !isBareClick(e.target)) return;
+    if (intro || settled || skipped || !isBareClick(e.target)) return;
     setSkipped(true);
     setSettled(true);
     skipIntros();
@@ -519,7 +529,18 @@ export default function WelcomeOverlay() {
         </button>
         {visible && <MobileClose inline onClick={goToSite} />}
         {visible && !quick && <IntroSplash onReveal={reveal} skip={skipped} />}
-        {revealed && (
+        <AnimatePresence>
+          {revealed && intro && (
+            <motion.div
+              key="wi"
+              className="welcome-window__body"
+              exit={{ opacity: 0, transition: { duration: 0.35, ease: EASE } }}
+            >
+              <WelcomeIntro onDone={finishIntro} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {revealed && !intro && (
           <motion.div
             key={skipped ? "rushed" : "intro"}
             className="welcome-window__body"

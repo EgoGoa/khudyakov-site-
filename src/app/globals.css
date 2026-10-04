@@ -5937,6 +5937,244 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
   .welcome-shell { padding: max(16px, env(safe-area-inset-top)) 12px max(16px, env(safe-area-inset-bottom)); }
   .welcome-window { width: 100%; }
 }
+
+/* ---------- Вводные окна (WelcomeIntro) ----------
+   Макет v6 (docs/intro-scenes-preview.html): графитовые плитки-бенто внутри
+   стеклянного стартового окна. Акцент — фирменный градиент, не заливка. */
+.wi {
+  --a: #ec4899;
+  --brand: linear-gradient(100deg, #f5310b, #ec4899 55%, #00d2ff);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 14px 14px 12px;
+  color: #fff;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+}
+.wi-content { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.wi-titlecard {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+}
+.wi-tc-n { font: 700 13px var(--font-montserrat), sans-serif; letter-spacing: 0.2em; opacity: 0.7; }
+.wi-tc-t {
+  margin: 0;
+  font: 700 clamp(30px, 8vw, 46px) / 1.1 var(--font-bebas), sans-serif;
+  letter-spacing: -0.03em;
+}
+.wi-tc-line { display: block; width: 120px; height: 2px; border-radius: 2px; background: var(--brand); transform-origin: left; }
+.wi-tc-skip { position: absolute; left: 18px; bottom: 16px; }
+.wi-brand { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.wi-bdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; animation: wi-pulse 2.4s ease-in-out infinite; }
+.wi-gdot { animation: wi-pulse 2.4s ease-in-out infinite; }
+@keyframes wi-pulse { 50% { opacity: .55; } }
+.wi-dsk { display: none; }
+.wi-k { background: var(--brand); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* слово — часть фразы: лента градиента шириной во всю фразу, со сдвигом */
+.wi-kw { background-size: var(--gw, 100%) 100%; background-position: calc(var(--gx, 0px) * -1) 0; background-repeat: no-repeat; }
+.wi-head { display: flex; align-items: center; padding: 8px 8px 0 44px; }
+.wi-label { flex: 1; font: 700 11px var(--font-montserrat), sans-serif; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; white-space: nowrap; }
+.wi-bar { display: flex; flex: 1; gap: 6px; }
+.wi-bar button { position: relative; flex: 1; height: 10px; padding: 4px 0; background: none; cursor: pointer; }
+.wi-bar button::before { content: ""; position: absolute; left: 0; right: 0; top: 4px; height: 2px; border-radius: 2px; background: rgba(255,255,255,0.2); }
+.wi-bar button.is-done::before { background: #fff; }
+.wi-bar button i { position: absolute; left: 0; right: 0; top: 4px; height: 2px; border-radius: 2px; background: #fff; transform-origin: left; animation: wi-seg linear forwards; }
+@keyframes wi-seg { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.wi-panel { display: grid; gap: 8px; margin-top: 10px; }
+.wi-wins { display: flex; gap: 6px; }
+.wi-wins button { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 7px 10px; border-radius: 12px; font: 700 11px var(--font-montserrat), sans-serif; text-align: left; color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.08); transition: color .3s, border-color .3s, background .3s; }
+.wi-wins button span { font-size: 10px; opacity: 0.7; }
+.wi-wins button.is-on { color: #fff; border-color: transparent; background: linear-gradient(rgba(28,28,32,.92), rgba(28,28,32,.92)) padding-box, var(--brand) border-box; }
+.wi-stage { position: relative; flex: 1; min-height: 0; margin-top: 8px; }
+.wi-scene { position: absolute; inset: 0; display: flex; }
+.wi-scene > .wi-bento { flex: 1; }
+.wi-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding: 0 4px; }
+.wi-skip { font: 700 13px var(--font-montserrat), sans-serif; color: rgba(255,255,255,0.8); }
+.wi-skip:hover { color: #fff; }
+.wi-wdots i { display: inline-block; width: 6px; height: 6px; margin: 0 3px; border-radius: 50%; background: rgba(255,255,255,0.28); }
+.wi-wdots i.is-on { background: #fff; }
+.wi-next { padding: 10px 20px; border-radius: 999px; background: #fff; color: #0a0a0b; font: 800 13px var(--font-montserrat), sans-serif; }
+
+.wi-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; min-height: 0; }
+.wi-tile {
+  position: relative; overflow: hidden; border-radius: 18px; padding: 12px 14px; min-height: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.025));
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+}
+.wi-hot { background: radial-gradient(80% 70% at 0% 0%, rgba(245,49,11,.32), transparent 62%), radial-gradient(70% 70% at 100% 100%, rgba(0,210,255,.16), transparent 65%), radial-gradient(60% 60% at 45% 30%, rgba(236,72,153,.14), transparent 70%), linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); }
+.wi-hotb { background: radial-gradient(70% 60% at 20% 120%, rgba(245,49,11,.3), transparent 65%), radial-gradient(70% 60% at 85% 120%, rgba(0,210,255,.22), transparent 65%), radial-gradient(60% 50% at 50% 115%, rgba(236,72,153,.26), transparent 65%), linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); }
+.wi-edge { border: 1px solid transparent; background: linear-gradient(#17171a, #17171a) padding-box, var(--brand) border-box; }
+.wi-s2 { grid-column: 1 / 3; }
+.wi-col { display: flex; flex-direction: column; }
+.wi-between { justify-content: space-between; }
+.wi-center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.wi-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.wi-stack { display: grid; gap: 8px; grid-template-rows: 1fr 1fr; }
+.wi-glass { background: rgba(40,40,44,.55); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(14px); box-shadow: 0 14px 30px -10px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.14); }
+.wi-title-tile { padding: 14px 16px 14px; }
+.wi-d3 { display: flex; gap: 4px; margin-bottom: 10px; }
+.wi-d3 i { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.3); }
+.wi-d3 i:first-child { background: var(--brand); }
+.wi-ttl { margin: 0; font: 700 23px / 1.12 var(--font-bebas), sans-serif; letter-spacing: -.03em; }
+.wi-why { margin: 8px 0 0; font: 700 14px / 1.4 var(--font-montserrat), sans-serif; }
+.wi-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.wi-pill { padding: 5px 12px; border-radius: 99px; border: 1px solid rgba(255,255,255,.16); font: 700 11.5px var(--font-montserrat), sans-serif; }
+.wi-pill--acc { border: 1px solid transparent; background: linear-gradient(rgba(28,28,32,.92), rgba(28,28,32,.92)) padding-box, var(--brand) border-box; }
+.wi-lbl { font: 700 11.5px / 1.25 var(--font-montserrat), sans-serif; }
+.wi-lbl--soft { font-weight: 600; margin-top: 2px; }
+.wi-mt { margin-top: 12px; } .wi-mt-s { margin-top: 6px; } .wi-mt-xs { margin-top: 4px; }
+.wi-num { font: 600 34px / 1 var(--font-bebas), sans-serif; letter-spacing: -.05em; background: linear-gradient(180deg, #fff 30%, #b8b8c0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wi-num small { margin-left: 3px; font: 700 13px var(--font-montserrat), sans-serif; letter-spacing: 0; -webkit-text-fill-color: #fff; }
+.wi-num--m { font-size: 28px; } .wi-num--s { font-size: 22px; } .wi-num--xs { font-size: 19px; } .wi-num--step { font-size: 15px; }
+.wi-acc { background: var(--brand); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wi-big { font: 600 64px / 1 var(--font-bebas), sans-serif; letter-spacing: -.06em; }
+.wi-big-pct { font-size: 26px; }
+.wi-svgt { font-family: var(--font-montserrat), sans-serif; font-weight: 700; fill: #fff; }
+.wi-svgu { font-family: var(--font-bebas), sans-serif; font-weight: 600; fill: #fff; }
+.wi svg { overflow: visible; }
+
+.wi-flowtile { display: flex; align-items: center; justify-content: space-between; }
+.wi-pills-col { display: grid; gap: 6px; }
+.wi-pills-col .wi-pill { width: 96px; }
+.wi-dot { animation: wi-blink 1.6s ease-in-out infinite; }
+@keyframes wi-blink { 50% { opacity: .25; } }
+.wi-gauge { width: 140px; height: 84px; }
+.wi-chart { flex: 1; min-height: 64px; margin-top: 8px; position: relative; }
+.wi-chart svg { width: 100%; height: 100%; }
+.wi-tip { position: absolute; left: 0; top: 0; padding: 9px 12px; border-radius: 14px; width: max-content; white-space: nowrap; }
+.wi-growth-n { flex-shrink: 0; }
+.wi-steps { display: flex; gap: 4px; }
+.wi-steps i { width: 22px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.18); }
+.wi-steps i.is-on { background: var(--brand); }
+.wi-q { margin-top: 16px; font: 700 21px / 1.15 var(--font-montserrat), sans-serif; letter-spacing: -.02em; }
+.wi-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 14px; }
+.wi-chip { position: relative; padding: 11px 0; border-radius: 14px; text-align: center; font: 700 13px var(--font-montserrat), sans-serif; background: rgba(40,40,44,.55); border: 1px solid rgba(255,255,255,.18); transition: background .35s, color .35s; }
+.wi-chip.is-on { background: #fff; color: #0a0a0b; border-color: #fff; }
+.wi-cursor { position: absolute; right: 8px; top: 16px; width: 26px; height: 30px; z-index: 2; }
+.wi-input { margin-top: auto; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font: 700 13px var(--font-montserrat), sans-serif; }
+.wi-eq { display: flex; gap: 3px; align-items: center; height: 16px; }
+.wi-eq i { width: 2.5px; height: 100%; border-radius: 2px; background: #fff; transform-origin: center; animation: wi-eq 1s ease-in-out infinite; }
+@keyframes wi-eq { 0%, 100% { transform: scaleY(.25); } 50% { transform: scaleY(1); } }
+.wi-skel { display: block; width: 100%; height: auto; margin-top: 10px; }
+.wi-ring { width: 104px; height: 104px; }
+.wi-list { display: grid; gap: 8px; margin-top: 10px; font: 700 13.5px var(--font-montserrat), sans-serif; }
+
+.wi-phone-tile { padding: 0; display: flex; }
+.wi-phone { width: 140px; height: 300px; position: absolute; left: 16px; top: 16px; }
+.wi-sheet { position: absolute; right: 14px; top: 70px; width: 156px; border-radius: 18px; padding: 6px; }
+.wi-sheet-row { display: flex; align-items: center; gap: 9px; padding: 10px 8px; border-radius: 12px; font: 700 13px / 1.2 var(--font-montserrat), sans-serif; transition: background .4s; }
+.wi-sheet-row.is-on { background: rgba(255,255,255,.14); }
+.wi-sep { height: 1px; margin: 0 8px; background: rgba(255,255,255,.12); }
+.wi-lock { padding: 14px 10px; }
+.wi-lock-time { text-align: center; }
+.wi-clock { margin-top: 6px; font: 500 52px / 1 var(--font-bebas), sans-serif; letter-spacing: -.05em; }
+.wi-notes { display: grid; gap: 7px; margin-top: 16px; }
+.wi-note { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 16px; }
+.wi-note-body { flex: 1; min-width: 0; }
+.wi-levels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.wi-level-track { display: block; height: 8px; border-radius: 4px; background: rgba(255,255,255,.14); overflow: hidden; }
+.wi-level-track i { display: block; height: 100%; border-radius: 4px; background: var(--brand); }
+.wi-level-l { display: block; margin-top: 10px; font: 600 12px var(--font-bebas), sans-serif; }
+
+/* Окно телефона: вводное окно живёт внутри .welcome-window, внизу полоса
+   под крестик (см. MobileClose inline) — подвал не заезжает под неё. */
+@media (max-width: 767px) {
+  .wi { padding-bottom: 4px; }
+  .wi-ttl { font-size: 20px; }
+  .wi-why { font-size: 13px; }
+  .wi-big { font-size: 54px; }
+}
+@media (max-height: 700px) {
+  .wi-panel { gap: 6px; }
+  .wi-wins { display: none; }
+  .wi-clock { font-size: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wi-dot, .wi-eq i, .wi-bdot, .wi-gdot { animation: none; }
+}
+
+
+/* Компьютер: окно просторнее по содержимому — графика и шрифты крупнее, чем
+   на телефоне (Егор, 2026-10-04: «на компьютере графика теряется»). */
+@media (min-width: 768px) {
+  .wi { padding: 18px 20px 14px; }
+  .wi-label { font-size: 12.5px; }
+  .wi-bar { width: 120px; }
+  .wi-title-tile { padding: 14px 20px 14px; }
+  .wi-d3 { margin-bottom: 8px; }
+  .wi-ttl { font-size: 30px; }
+  .wi-why { margin-top: 8px; font-size: 16.5px; }
+  .wi-pills { margin-top: 10px; }
+  .wi-pill { padding: 6px 14px; font-size: 13px; }
+  .wi-tile { padding: 16px 18px; border-radius: 22px; }
+  .wi-bento { gap: 10px; }
+  .wi-lbl { font-size: 14px; }
+  .wi-num { font-size: 52px; }
+  .wi-num--m { font-size: 42px; } .wi-num--s { font-size: 32px; } .wi-num--xs { font-size: 26px; } .wi-num--step { font-size: 20px; }
+  .wi-num small { font-size: 16px; }
+  .wi-dsk { display: inline; }
+  .wi-big { font-size: 104px; } .wi-big-pct { font-size: 40px; }
+  .wi-gauge { width: 230px; height: 138px; }
+  .wi-ring { width: 124px; height: 124px; }
+  .wi-pills-col .wi-pill { width: 132px; padding: 8px 0; text-align: center; font-size: 15px; }
+  .wi-flowtile svg:not(.wi-dot) { transform-origin: center; }
+  .wi-tip { padding: 11px 14px; }
+  .wi-growth { flex-direction: row; gap: 18px; }
+  .wi-growth .wi-chart { margin-top: 0; min-height: 0; }
+  .wi-q { margin-top: 20px; font-size: 30px; }
+  .wi-chips { gap: 10px; margin-top: 18px; }
+  .wi-chip { padding: 15px 0; font-size: 16px; border-radius: 16px; }
+  .wi-input { height: 54px; font-size: 16px; border-radius: 16px; }
+  .wi-cursor { width: 32px; height: 36px; top: 22px; }
+  .wi-list { gap: 8px; margin-top: 8px; font-size: 16px; }
+  .wi-clock { font-size: 56px; }
+  .wi-notes { gap: 8px; margin-top: 12px; }
+  .wi-note { padding: 9px 14px; gap: 14px; border-radius: 18px; }
+  .wi-note .wi-lbl { font-size: 15px; }
+  .wi-sheet { width: 210px; right: 20px; top: 90px; }
+  .wi-sheet-row { font-size: 16px; padding: 13px 10px; }
+  .wi-levels { gap: 12px; margin-top: 16px; }
+  .wi-level-track { height: 10px; }
+  .wi-level-l { font-size: 16px; margin-top: 12px; }
+  .wi-skip { font-size: 15px; }
+  .wi-next { padding: 12px 26px; font-size: 15px; }
+  .wi-tc-t { font-size: 64px; }
+  .wi-tc-n { font-size: 15px; }
+  .wi-tc-line { width: 160px; }
+}
+
+/* Подписи и цифры внутри плиток проявляются слева направо из размытия
+   следом за самой плиткой (--td ставит Tile). На слабых устройствах — без
+   размытия, только прозрачность. */
+.wi-tile .wi-lbl,
+.wi-tile .wi-num,
+.wi-tile .wi-big,
+.wi-tile .wi-clock,
+.wi-tile .wi-q {
+  animation: wi-textin 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--td, 0.15s) + 0.3s);
+}
+@keyframes wi-textin {
+  from { opacity: 0; transform: translateX(-14px); filter: blur(12px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+html[data-lite] .wi-tile :is(.wi-lbl, .wi-num, .wi-big, .wi-clock, .wi-q),
+html[data-mid] .wi-tile :is(.wi-lbl, .wi-num, .wi-big, .wi-clock, .wi-q) { animation-name: wi-textfade; }
+@keyframes wi-textfade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .wi-tile :is(.wi-lbl, .wi-num, .wi-big, .wi-clock, .wi-q) { animation: none; }
+}
+
 @keyframes welcome-fade-in { from { opacity: 0; } }
 @keyframes welcome-window-in { from { opacity: 0; transform: scale(0.97); } }
 @media (prefers-reduced-motion: reduce) {
