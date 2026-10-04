@@ -830,6 +830,22 @@ export default function VibeRail() {
         className="vibe-fan lg:hidden"
         style={{ "--g-from": accent.from, "--g-to": accent.to } as CSSProperties}
       >
+        <button
+          type="button"
+          onClick={() => setSheetOpen((o) => !o)}
+          aria-haspopup="true"
+          aria-expanded={sheetOpen}
+          aria-label={sheetOpen ? "Свернуть меню" : "Vibe меню"}
+          className="boot-sphere vibe-fan__orb vibe-live"
+          ref={fanOrbRef}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span key={railPath} className="block" exit={{ opacity: 0, scale: 0.7, filter: "blur(4px)" }} transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1] }}>
+              {sphereOn && <NanoSphere size={48} from={accent.from} to={accent.to} sleepy hot={sheetOpen || vibeOpen || pickerOpen || !!blockItem} cloud intro="implode" />}
+            </motion.span>
+          </AnimatePresence>
+          {sphereOn && <SphereDust orbRef={fanOrbRef} sleepy bleed={78} density={0.12} speed={0.5} scale={1} />}
+        </button>
         <AnimatePresence>
           {sheetOpen && (
             <motion.nav
@@ -840,21 +856,21 @@ export default function VibeRail() {
               animate="open"
               exit="closed"
               variants={{
-                open: { transition: { staggerChildren: 0.035, staggerDirection: -1 } },
-                closed: { transition: { staggerChildren: 0.02 } },
+                open: { transition: { staggerChildren: 0.035 } },
+                closed: { transition: { staggerChildren: 0.02, staggerDirection: -1 } },
               }}
             >
               {[
                 { id: "__vibe", label: "Vibe-режим", glyph: null, vibe: true } as const,
+                ...pageItems.map((item) => ({ ...item, vibe: false as const })),
+                ...crossPageItems.map((item) => ({ ...item, vibe: false as const })),
                 ...(showInstall ? [{ ...INSTALL_ITEM, vibe: false as const }] : []),
-                ...[...crossPageItems].reverse().map((item) => ({ ...item, vibe: false as const })),
-                ...[...pageItems].reverse().map((item) => ({ ...item, vibe: false as const })),
               ].map((item, i, all) => (
                 <motion.button
                   key={item.id}
                   type="button"
                   variants={{
-                    closed: { opacity: 0, y: 26 + (all.length - i) * 4, scale: 0.4 },
+                    closed: { opacity: 0, y: -(26 + i * 4), scale: 0.4 },
                     open: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 520, damping: 30 } },
                   }}
                   onClick={() => {
@@ -880,22 +896,6 @@ export default function VibeRail() {
             </motion.nav>
           )}
         </AnimatePresence>
-        <button
-          type="button"
-          onClick={() => setSheetOpen((o) => !o)}
-          aria-haspopup="true"
-          aria-expanded={sheetOpen}
-          aria-label={sheetOpen ? "Свернуть меню" : "Vibe меню"}
-          className="boot-sphere vibe-fan__orb vibe-live"
-          ref={fanOrbRef}
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span key={railPath} className="block" exit={{ opacity: 0, scale: 0.7, filter: "blur(4px)" }} transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1] }}>
-              {sphereOn && <NanoSphere size={34} from={accent.from} to={accent.to} sleepy hot={sheetOpen || vibeOpen || pickerOpen || !!blockItem} cloud intro="implode" />}
-            </motion.span>
-          </AnimatePresence>
-          {sphereOn && <SphereDust orbRef={fanOrbRef} sleepy bleed={60} density={0.12} speed={0.5} />}
-        </button>
       </div>
 
       {/* Окошко «персонализировать этот блок» рядом с баром */}

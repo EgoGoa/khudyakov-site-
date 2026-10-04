@@ -78,10 +78,10 @@ export default function Hero() {
             src="/images/showreel-frame.jpg"
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] sm:w-[200%] md:w-[147%] lg:w-[127%]"
+            className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.92] lg:brightness-[0.8] sm:w-[200%] md:w-[147%] lg:w-[127%]"
           />
         </picture>
-        <HeroReel className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.8] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]" />
+        <HeroReel className="pointer-events-none absolute left-1/2 top-1/2 aspect-video w-[280%] max-w-none scale-[1.5] -translate-x-1/2 -translate-y-1/2 hero-media object-cover blur-[8px] saturate-[1.15] brightness-[0.92] lg:brightness-[0.8] transition-[filter] duration-500 ease-out group-hover:blur-0 group-hover:brightness-100 sm:w-[200%] md:w-[147%] lg:w-[127%]" />
         <div
           className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-60"
           style={{

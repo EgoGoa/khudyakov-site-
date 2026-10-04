@@ -14,6 +14,7 @@ import WelcomeWidget from "./WelcomeWidget";
 import IntroSplash from "./IntroSplash";
 import { OPEN_VIBE_EVENT, VOICE_NAV_EVENT } from "@/lib/voice/store";
 import { isBareClick, skipIntros } from "@/lib/skip-intro";
+import MobileClose from "@/components/ui/MobileClose";
 
 // shared easing across every motion in this overlay, so entrances/exits read
 // as one authored sequence instead of mismatched curves
@@ -491,9 +492,10 @@ export default function WelcomeOverlay() {
       onClick={goToSite}
     >
       <div className="welcome-window" onClick={(e) => e.stopPropagation()} onPointerDown={rush}>
-        <button type="button" onClick={goToSite} aria-label="Закрыть" className="welcome-window__close">
+        <button type="button" onClick={goToSite} aria-label="Закрыть" className="welcome-window__close mobile-hide">
           <CloseIcon />
         </button>
+        {visible && <MobileClose onClick={goToSite} />}
         {visible && <IntroSplash onReveal={reveal} skip={skipped} />}
         {revealed && (
           <motion.div

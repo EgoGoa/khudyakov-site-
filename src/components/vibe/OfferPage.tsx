@@ -11,6 +11,7 @@ import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { buildOffer, decodeAnswers, encodeAnswers, formatBudget, type VibeAnswers } from "@/lib/vibe-quiz";
 import type { PricingTier } from "@/lib/types";
+import MobileClose from "@/components/ui/MobileClose";
 import { Arrow, CONTACT_KEY, ORB_FROM, ORB_TO, TELEGRAM } from "./VibeMode";
 
 // Персональный лендинг вайб-режима (Егор, 2026-09-26): отдельная страница в
@@ -354,9 +355,10 @@ function OrderSheet({
 
   return (
     <div className="vibe-mode fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Заказ" onClick={onClose}>
+      <MobileClose onClick={onClose} />
       <div className="vibe-mode__window" onClick={(e) => e.stopPropagation()}>
       <div className="vibe-mode__aurora" aria-hidden="true" />
-      <button type="button" aria-label="Закрыть" onClick={onClose} className="vibe-mode__icon-btn absolute right-4 top-4 z-[2]">
+      <button type="button" aria-label="Закрыть" onClick={onClose} className="vibe-mode__icon-btn absolute right-4 top-4 z-[2] mobile-hide">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>

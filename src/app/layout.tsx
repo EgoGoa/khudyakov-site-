@@ -12,6 +12,7 @@ import GlobalLead from "@/components/layout/GlobalLead";
 import SkipIntro from "@/components/layout/SkipIntro";
 import VoiceAssistant from "@/components/layout/VoiceAssistant";
 import InstallApp from "@/components/layout/InstallApp";
+import SlowLoadVeil from "@/components/layout/SlowLoadVeil";
 import { BIP_SNIPPET } from "@/lib/pwa";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import BackgroundFX from "@/components/layout/BackgroundFX";
@@ -160,6 +161,14 @@ export default function RootLayout({
         />
       </head>
       <body className="relative bg-ink font-sans text-paper antialiased">
+        {/* Экран ожидания при слабом интернете: в HTML с первого байта, виден
+            только если страница не собралась за ~1.3с (см. SlowLoadVeil). */}
+        <div id="slow-veil" aria-hidden="true">
+          <div className="slow-veil__in">
+            <i className="slow-veil__ring" />
+          </div>
+        </div>
+        <SlowLoadVeil />
         <BackgroundFX />
         {/* Уточняет уровень устройства (слабое/среднее/сильное) по видеокарте
             и реальным кадрам и при тормозах снижает его — см. компонент. */}
@@ -202,6 +211,8 @@ export default function RootLayout({
                   нужна на каждой странице сайта, и один экземпляр в layout
                   закрывает и разделы, и подстраницы, и служебные. */}
               <ScrollTopButton />
+              {/* Низ экрана на телефоне чуть темнее: сфера и линия ассистента читаются чётче. */}
+              <div aria-hidden="true" className="bottom-fade" />
             </HeaderMenuProvider>
           </CinematicNavProvider>
         </FullpageProvider>

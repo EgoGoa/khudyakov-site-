@@ -154,6 +154,44 @@ export default function ToolSpotlight({
 
   const close = useCallback(() => setOpen(false), []);
 
+  // Гашение главы всегда ровно по экрану (Егор, 2026-10-04: на телефоне
+  // часть сайта за окошком не темнела и тап мимо не закрывал). Слой `fixed`
+  // внутри главы с will-change/transform считается не от экрана, а от самой
+  // главы, и при её прокрутке или въезде съезжал. Пока окошко открыто,
+  // сверяем его прямоугольник с экраном и подгоняем смещением и размером;
+  // там, где `fixed` честный (компьютер), поправка нулевая и ничего не меняет.
+  // Шапка при этом тоже притухает (data-spotlight-open, globals.css).
+  const dimRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    document.documentElement.setAttribute("data-spotlight-open", "");
+    let raf = 0;
+    const fit = () => {
+      const el = dimRef.current;
+      if (el) {
+        const r = el.getBoundingClientRect();
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        if (Math.abs(r.left) > 0.5 || Math.abs(r.top) > 0.5 || Math.abs(r.width - vw) > 0.5 || Math.abs(r.height - vh) > 0.5) {
+          const m = /translate\(([-\d.]+)px,\s*([-\d.]+)px\)/.exec(el.style.transform);
+          const tx = (m ? parseFloat(m[1]) : 0) - r.left;
+          const ty = (m ? parseFloat(m[2]) : 0) - r.top;
+          el.style.transform = `translate(${tx}px, ${ty}px)`;
+          el.style.width = `${vw}px`;
+          el.style.height = `${vh}px`;
+          el.style.right = "auto";
+          el.style.bottom = "auto";
+        }
+      }
+      raf = requestAnimationFrame(fit);
+    };
+    raf = requestAnimationFrame(fit);
+    return () => {
+      cancelAnimationFrame(raf);
+      document.documentElement.removeAttribute("data-spotlight-open");
+    };
+  }, [open]);
+
   // Открыто только одно окошко на странице: когда окошки стоят рядом
   // (глава «Сильные в этом» — два друг под другом), клик по соседнему
   // закрывает текущее, а не открывает второе поверх.
@@ -275,6 +313,7 @@ export default function ToolSpotlight({
           затеняется. */}
       <motion.button
         type="button"
+        ref={dimRef}
         aria-label="Закрыть"
         tabIndex={open ? 0 : -1}
         onClick={close}

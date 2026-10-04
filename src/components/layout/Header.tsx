@@ -314,7 +314,11 @@ export default function Header() {
           <BrandLockup />
         </Link>
 
-        <div className="flex shrink-0 items-center gap-3 sm:gap-4">
+        {/* Телефон боком (Егор, 2026-10-04): кнопки шапки встают вертикальной
+            колонкой у правого края — меню сверху, ниже плеер и кабинет, —
+            чтобы дотягиваться большим пальцем. Колонка лежит поверх страницы
+            и не отнимает у неё ширину. */}
+        <div className="flex shrink-0 items-center gap-3 sm:gap-4 land:fixed land:right-[max(0.5rem,calc(env(safe-area-inset-right)+0.25rem))] land:top-1 land:z-[60] land:flex-col-reverse land:items-center land:gap-0.5 land:rounded-full land:bg-ink/45 land:px-0.5 land:py-1 land:backdrop-blur-[15px] land:pointer-events-auto">
           <a
             href="tel:+79925111812"
             aria-label="Позвонить: +7 992 511-18-12"
@@ -332,7 +336,7 @@ export default function Header() {
           {/* Станция HDKV: звук сайта и музыка по настроению (lib/sound). */}
           {/* На телефоне плеер и кабинет живут в меню (строки сверху
               шторки), в шапке остаются только три палочки. */}
-          <div className="hidden items-center gap-3 sm:flex sm:gap-4 land:!flex">
+          <div className="hidden items-center gap-3 sm:flex sm:gap-4 land:!flex land:flex-col land:gap-0.5">
             <SoundStation />
             <CabinetButton />
           </div>

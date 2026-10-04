@@ -8,6 +8,7 @@ import Cabinet from "./Cabinet";
 import { useCabinet } from "./store";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import MobileClose from "@/components/ui/MobileClose";
 
 // Кабинет поверх любой страницы — открывается иконкой в шапке и кнопкой
 // после заявки в чате. Та же вёрстка, что на отдельной странице /cabinet.
@@ -63,6 +64,7 @@ export default function CabinetWindow() {
           >
             <Cabinet onClose={() => setOpen(false)} />
           </motion.div>
+          <MobileClose onClick={() => setOpen(false)} />
         </motion.div>
       )}
     </AnimatePresence>,

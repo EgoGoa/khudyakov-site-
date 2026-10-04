@@ -4544,7 +4544,7 @@ html[data-mid] .guar-term-slide:first-of-type {
    `!important` needed either way. */
 @media (max-height: 940px) {
   [data-chapter-pane][data-active] {
-    padding-top: 4.5rem;
+    padding-top: calc(4.5rem + var(--sat));
     padding-bottom: var(--voice-safe); /* полоса под волну ассистента */
   }
 
@@ -4560,7 +4560,7 @@ html[data-mid] .guar-term-slide:first-of-type {
    tall and fixed — any less and a chapter's number row slides under it. */
 @media (max-height: 860px) {
   [data-chapter-pane][data-active] {
-    padding-top: 4rem;
+    padding-top: calc(4rem + var(--sat));
     padding-bottom: var(--voice-safe);
   }
 
@@ -8829,8 +8829,10 @@ html[data-lite] .block-vibe__online::before { animation: none; }
    попадать удобно. */
 .vibe-fan {
   position: fixed;
-  right: 8px;
-  bottom: calc(12px + env(safe-area-inset-bottom));
+  right: 6px;
+  /* Сфера вверху сбоку, под шапкой (Егор, 2026-10-04): крупнее вдвое, а
+     кнопки раскрываются от неё вниз. */
+  top: calc(var(--sat) + 3.9rem);
   z-index: 66;
   display: flex;
   flex-direction: column;
@@ -8883,7 +8885,7 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
-  margin-bottom: 4px;
+  margin-top: 2px;
 }
 .vibe-fan__btn {
   display: flex;
@@ -8891,7 +8893,7 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   align-items: center;
   gap: 8px;
   padding-left: 10px;
-  transform-origin: right center;
+  transform-origin: right top;
 }
 .vibe-fan__label {
   padding: 5px 9px;
@@ -8939,8 +8941,8 @@ body:has(.vibe-fan__list) .voice-dock-corner {
 .vibe-fan__orb {
   position: relative;
   display: grid;
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
   margin-right: 0;
   place-items: center;
 }
@@ -9854,4 +9856,150 @@ html[data-mid] .hero-promo { transition: none; }
     -webkit-tap-highlight-color: transparent;
     outline: none;
   }
+}
+
+/* Крестик окна для телефона (Егор, 2026-10-04): внизу по центру, над полосой
+   голосового ассистента, — там, где достаёт большой палец. Верхние крестики
+   окон на телефоне прячутся (max-sm:hidden). Компонент MobileClose. */
+.mobile-close { display: none; }
+@media (max-width: 639px) {
+  .mobile-close {
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--voice-safe) + 0.9rem);
+    z-index: 120;
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(24, 24, 32, 0.62);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 8px 24px -8px rgba(0, 0, 0, 0.7);
+    animation: mobile-close-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .mobile-close:active { transform: translateX(-50%) scale(0.94); }
+  .mobile-close svg { width: 22px; height: 22px; }
+}
+@keyframes mobile-close-in {
+  from { opacity: 0; margin-bottom: -10px; }
+  to { opacity: 1; margin-bottom: 0; }
+}
+
+/* Низ экрана на телефоне (Егор, 2026-10-04): плавное затемнение снизу, чтобы
+   сфера вайба и линия голосового ассистента читались отчётливее на любом
+   кадре. Слой над страницей, но под сферой, меню и самим ассистентом, и не
+   ловит нажатия. Только на телефоне и планшете. */
+.bottom-fade { display: none; }
+@media (max-width: 1023px) {
+  .bottom-fade {
+    display: block;
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 58;
+    height: calc(10rem + env(safe-area-inset-bottom));
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      rgba(11, 11, 16, 0.82) 0%,
+      rgba(11, 11, 16, 0.6) 30%,
+      rgba(11, 11, 16, 0.28) 62%,
+      rgba(11, 11, 16, 0) 100%
+    );
+  }
+}
+
+/* Открыто окошко услуги (ToolSpotlight): на телефоне шапка притухает вместе с
+   остальным сайтом, а не светит ярким поверх затемнения. */
+@media (max-width: 1023px) {
+  [data-site-header] { transition: opacity 0.4s ease; }
+  html[data-spotlight-open] [data-site-header] { opacity: 0.32; pointer-events: none; }
+}
+
+/* Карусель акций листается рукой (HeroPromoStack + useDeckDrag): курсор-рука
+   над лентой, выделение текста и системное перетаскивание картинок выключены. */
+.hero-promo-stage {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.hero-promo-stage:active { cursor: grabbing; }
+.hero-promo-slot { will-change: transform; }
+
+/* Верхний крестик окна на телефоне прячется — вместо него MobileClose внизу. */
+@media (max-width: 639px) {
+  .mobile-hide { display: none !important; }
+}
+/* Стрелки смены страницы внизу — на уровне линии голосового ассистента
+   (Егор, 2026-10-04): центр стрелки (40px) совпадает с центром ассистента. */
+@media (max-width: 639px) and (orientation: portrait) {
+  .page-side-arrow { bottom: calc(1.25rem + 17px + env(safe-area-inset-bottom)); }
+}
+
+/* Телефон боком: сверху справа стоит колонка кнопок шапки, а высоты мало —
+   сфера возвращается вниз справа, кнопки раскрываются от неё вверх и,
+   если не помещаются, прокручиваются. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .vibe-fan {
+    top: auto;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    right: max(6px, calc(env(safe-area-inset-right) + 4px));
+    flex-direction: column-reverse;
+  }
+  .vibe-fan__list {
+    flex-direction: column-reverse;
+    margin-top: 0;
+    margin-bottom: 2px;
+    max-height: calc(100dvh - 5.2rem);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .vibe-fan__list::-webkit-scrollbar { display: none; }
+  .vibe-fan__btn { transform-origin: right bottom; }
+}
+
+/* ── Экран ожидания (слабый интернет) ─────────────────────────────────────────
+   Внешний слой всегда в HTML и не ловит нажатия; внутренний проявляется
+   только через 1.3с после начала загрузки. Если страница собралась раньше,
+   JS ставит data-veil-done на <html>, и внутренний слой так и не показывается.
+   Если же он уже показан — плавно гаснет вместе с внешним. Страховка: через
+   14с гаснет сам, даже если скрипты не отработали вовсе. */
+#slow-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+}
+html[data-veil-done] #slow-veil { opacity: 0; visibility: hidden; }
+.slow-veil__in {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  background: rgba(11, 11, 16, 0.72);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  animation: slow-veil-in 0.5s ease 1.3s forwards, slow-veil-out 0.5s ease 14s forwards;
+}
+.slow-veil__ring {
+  display: block;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(245, 49, 11, 0), #f5310b, #ec4899, #00d2ff, rgba(0, 210, 255, 0));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+  animation: slow-veil-spin 1.1s linear infinite;
+}
+@keyframes slow-veil-in { to { opacity: 1; } }
+@keyframes slow-veil-out { to { opacity: 0; visibility: hidden; } }
+@keyframes slow-veil-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .slow-veil__ring { animation: none; }
 }

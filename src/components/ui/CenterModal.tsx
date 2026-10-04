@@ -8,6 +8,7 @@ import type { ReactNode } from "react";
 import { CloseIcon } from "@/components/ui/Icons";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { WIN, WIN_DIM } from "@/lib/motion";
+import MobileClose from "@/components/ui/MobileClose";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -237,12 +238,13 @@ export default function CenterModal({
               type="button"
               onClick={onClose}
               aria-label="Закрыть"
-              className={`${bare ? "fixed" : "absolute"} left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-paper/10 text-paper/70 backdrop-blur-md transition hover:bg-paper/20 hover:text-paper sm:left-5 sm:top-5`}
+              className={`${bare ? "fixed" : "absolute"} mobile-hide left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-paper/10 text-paper/70 backdrop-blur-md transition hover:bg-paper/20 hover:text-paper sm:left-5 sm:top-5`}
             >
               <CloseIcon />
             </button>
             {children}
           </motion.div>
+          <MobileClose onClick={onClose} />
         </motion.div>
       )}
     </AnimatePresence>,

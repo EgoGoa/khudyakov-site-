@@ -12,6 +12,7 @@ import NanoSphere, { type SphereIntro } from "@/components/ui/NanoSphere";
 import { InfoHow, InfoInside, InfoWhat } from "@/components/vibe/VibeInfographics";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import MobileClose from "@/components/ui/MobileClose";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { playUi } from "@/lib/sound";
 import { trackGoal } from "@/lib/ym";
@@ -307,6 +308,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
       className="vibe-mode fixed inset-0 z-[100] flex items-center justify-center p-4 outline-none"
       onClick={onClose}
     >
+      <MobileClose onClick={onClose} />
       {/* Окошко по центру (Егор: «окошко, а не на весь экран»). */}
       <motion.div
         // Общая анимация окон сайта (WIN, lib/motion).
@@ -338,7 +340,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
           {/* «Vibe-режим» — без пилюли, переливается палитрой сферы и
               тихо выпускает частицы (Егор, 2026-09-26). */}
           <VibeWordmark className={`transition-opacity duration-500 ${stage === "splash" || stage === "hello" ? "opacity-0" : ""}`} />
-          <button type="button" onClick={onClose} aria-label="Закрыть" className="vibe-mode__close">
+          <button type="button" onClick={onClose} aria-label="Закрыть" className="vibe-mode__close mobile-hide">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>

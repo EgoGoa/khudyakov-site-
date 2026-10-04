@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
+import { modIndex, useDeckDrag, useDeckSpring, wrapOffset } from "@/components/ui/deckFan";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { BOOT, useBootStage } from "@/lib/boot-sequence";
 import { PROMOS, PROMO_BADGE, discountOf, type PromoSection } from "@/lib/promos";
@@ -10,6 +11,12 @@ import { PROMOS, PROMO_BADGE, discountOf, type PromoSection } from "@/lib/promos
 // шапки, как плеер на его референсе — крупная карточка в центре, по бокам
 // меньшие и чуть развёрнутые. Все 8 акций по кругу вперемешку, смена раз в
 // 3 секунды, карточки плавно заезжают друг за другом.
+//
+// Листание рукой (Егор, 2026-10-04): карусель ведётся пальцем и мышью тем же
+// жестом, что колоды на страницах услуг (useDeckDrag + пружина useDeckSpring
+// из deckFan): карточки едут за рукой один в один, короткий смах листает,
+// бросок доносит инерцией. Позы считаются из непрерывного положения, а не из
+// целых смещений, поэтому CSS-переходы у карточек выключены.
 //
 // Почти без нагрузки на процессор:
 //   · часы — CSS-анимация полоски-таймера, а не setInterval: её конец
@@ -46,17 +53,38 @@ function shuffled(n: number) {
   return a;
 }
 
+// Поза карточки по непрерывному расстоянию от центра: те же ступени STEPS,
+// но с плавным переходом между ними. Размытие — по целым ступеням (дробное
+// пересчитывало бы растр карточки каждый кадр, см. blurAt в deckFan).
+function poseOf(o: number) {
+  const a = Math.min(Math.abs(o), STEPS.length - 1);
+  const lo = Math.min(Math.floor(a), STEPS.length - 2);
+  const t = a - lo;
+  const A = STEPS[lo];
+  const B = STEPS[lo + 1];
+  const mix = (k: "x" | "s" | "r" | "a") => A[k] + (B[k] - A[k]) * t;
+  const sign = Math.sign(o);
+  return {
+    x: sign * mix("x"),
+    r: -sign * mix("r"),
+    s: mix("s"),
+    a: mix("a"),
+    b: STEPS[Math.min(STEPS.length - 1, Math.round(a))].b,
+    z: 10 - Math.round(a),
+  };
+}
+
 export default function HeroPromoStack({ className = "" }: { className?: string }) {
   const ready = useBootStage(BOOT.blocks);
   const rootRef = useRef<HTMLDivElement>(null);
   // Первый кадр (и сервер) — исходный порядок; перемешиваем после монтажа,
   // иначе разметка сервера и браузера не совпадёт.
   const [order, setOrder] = useState(() => PROMOS.map((_, i) => i));
-  const [pos, setPos] = useState(0);
+  // Счётчик без обёртки (как в колодах): fanSlots-логика считает по нему.
+  const [active, setActive] = useState(0);
   const [cycle, setCycle] = useState(0);
   const [offscreen, setOffscreen] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const paused = offscreen || hidden;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- перемешивание только в браузере (см. выше)
@@ -80,10 +108,24 @@ export default function HeroPromoStack({ className = "" }: { className?: string 
   }, []);
 
   const n = order.length;
-  const go = (i: number) => {
-    setPos(((i % n) + n) % n);
+  const step = useCallback((delta: number) => {
+    setActive((a) => a + delta);
     setCycle((c) => c + 1);
-  };
+  }, []);
+  const goTo = useCallback(
+    (target: number) => {
+      setActive((a) => a + wrapOffset(target - modIndex(a, n), n));
+      setCycle((c) => c + 1);
+    },
+    [n],
+  );
+
+  // Жест и пружина — те же, что у колод услуг. 76 — расстояние между
+  // центральной и соседней карточкой (STEPS[1].x).
+  const { drag, dragging, bind } = useDeckDrag({ count: n, spacing: STEPS[1].x, onSettle: step });
+  const { lag, moving } = useDeckSpring(active, drag, dragging);
+  const paused = offscreen || hidden || dragging || moving;
+  const pos = modIndex(active, n);
 
   return (
     <div
@@ -92,24 +134,24 @@ export default function HeroPromoStack({ className = "" }: { className?: string 
       aria-roledescription="карусель"
       aria-label="Акции месяца"
     >
-      <div className="hero-promo-stage">
+      <div className="hero-promo-stage" {...bind}>
         {order.map((idx, i) => {
-          // Положение относительно центра по кругу: −3…+4.
-          let o = (((i - pos) % n) + n) % n;
-          if (o > n / 2) o -= n;
-          return <PromoCard key={PROMOS[idx].id} index={idx} offset={o} onPick={() => go(i)} />;
+          // Непрерывное расстояние до центра по кругу: палец и пружина уже
+          // внутри drag/lag, поэтому карточки идут за рукой один в один.
+          const o = wrapOffset(i - active + drag + lag, n);
+          return <PromoCard key={PROMOS[idx].id} index={idx} offset={o} onPick={() => goTo(i)} />;
         })}
       </div>
       <div className="hero-promo-foot">
         <span className="hero-promo-track" aria-hidden="true">
-          {ready && <span key={cycle} className="hero-promo-timer" onAnimationEnd={() => go(pos + 1)} />}
+          {ready && <span key={cycle} className="hero-promo-timer" onAnimationEnd={() => step(1)} />}
         </span>
         <span className="hero-promo-dots">
           {order.map((idx, i) => (
             <button
               key={PROMOS[idx].id}
               type="button"
-              onClick={() => go(i)}
+              onClick={() => goTo(i)}
               className={`hero-promo-dot ${i === pos ? "is-on" : ""}`}
               aria-label={`Акция: ${PROMOS[idx].title}`}
               aria-current={i === pos}
@@ -125,11 +167,10 @@ function PromoCard({ index, offset, onPick }: { index: number; offset: number; o
   const p = PROMOS[index];
   const g = PAGE_GRADIENT[p.section];
   const off = discountOf(p.price, p.oldPrice);
-  const front = offset === 0;
   const abs = Math.abs(offset);
-  const far = abs > 2;
-  const step = STEPS[Math.min(abs, STEPS.length - 1)];
-  const sign = Math.sign(offset);
+  const front = abs < 0.5;
+  const far = abs > 2.2;
+  const pose = poseOf(offset);
   // Боковую карточку нажатием выводим в центр, а не открываем по ссылке.
   const click = (e: MouseEvent) => {
     if (!front) {
@@ -140,17 +181,21 @@ function PromoCard({ index, offset, onPick }: { index: number; offset: number; o
   return (
     <div
       className="hero-promo-slot"
-      data-offset={offset}
+      data-offset={Math.round(offset)}
       style={
         {
-          "--x": sign * step.x,
-          "--r": `${-sign * step.r}deg`,
-          "--sc": step.s,
-          "--op": step.a,
-          "--bl": `${step.b}px`,
-          "--z": 10 - abs,
+          "--x": pose.x,
+          "--r": `${pose.r}deg`,
+          "--sc": pose.s,
+          "--op": pose.a,
+          "--bl": `${pose.b}px`,
+          "--z": pose.z,
           "--hp-from": g.from,
           "--hp-to": g.to,
+          // Позу ведёт жест и пружина — CSS-переход только мешал бы.
+          transition: "none",
+          visibility: abs > 3.2 ? "hidden" : undefined,
+          pointerEvents: abs > 3.2 ? "none" : undefined,
         } as CSSProperties
       }
     >

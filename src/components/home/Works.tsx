@@ -19,6 +19,7 @@ import { TEAM } from "@/lib/team";
 import { useService } from "@/lib/service-context";
 import { worksByCategory } from "@/lib/service-content";
 import type { Work } from "@/lib/types";
+import MobileClose from "@/components/ui/MobileClose";
 import { EYEBROW, CHAPTER_INTRO } from "@/lib/typography";
 
 // Self-hosted now (was img.youtube.com/vi/.../maxresdefault.jpg with a
@@ -655,10 +656,11 @@ export default function Works({
             <button
               onClick={() => setActiveId(null)}
               aria-label="Закрыть"
-              className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-paper/10 text-paper hover:bg-rec"
+              className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-paper/10 text-paper hover:bg-rec mobile-hide"
             >
               <CloseIcon />
             </button>
+            <MobileClose onClick={() => setActiveId(null)} />
             <motion.div
               initial={WIN.initial}
               animate={WIN.animate}

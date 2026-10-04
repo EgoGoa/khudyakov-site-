@@ -662,7 +662,7 @@ export default function Cabinet({ onClose }: { onClose?: () => void }) {
     return (
       <div className="cab-glass relative w-full rounded-[26px] p-6 text-white sm:p-7">
         {onClose && (
-          <button type="button" onClick={onClose} aria-label="Закрыть" className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-[14px] text-white transition hover:bg-white/20">
+          <button type="button" onClick={onClose} aria-label="Закрыть" className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full mobile-hide bg-white/10 text-[14px] text-white transition hover:bg-white/20">
             ✕
           </button>
         )}
@@ -673,7 +673,7 @@ export default function Cabinet({ onClose }: { onClose?: () => void }) {
   return (
     <div className="cab-glass relative flex h-full w-full flex-col overflow-hidden rounded-[26px] text-white sm:rounded-[30px] lg:grid lg:grid-cols-[210px_1fr_300px]">
       {onClose && (
-        <button type="button" onClick={onClose} aria-label="Закрыть кабинет" className="absolute right-3 top-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-[15px] text-white transition hover:bg-white/20">
+        <button type="button" onClick={onClose} aria-label="Закрыть кабинет" className="absolute right-3 top-3 z-20 grid h-9 w-9 place-items-center rounded-full mobile-hide bg-white/10 text-[15px] text-white transition hover:bg-white/20">
           ✕
         </button>
       )}

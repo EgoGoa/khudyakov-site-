@@ -215,7 +215,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      <CompactSwitch index={chosen} underline={home >= 0} onStep={step} onFront={() => {
+      <CompactSwitch active={active} index={chosen} underline={home >= 0} onStep={step} onFront={() => {
         if (onTop) scrollToDeckStart();
         else {
           queueFirstChapter();
@@ -380,12 +380,20 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
 
 // Телефонный вид бара: название выбранной страницы и мини-стрелки ‹ › по
 // бокам — видно, что страницы листаются. Свайп по названию тоже листает.
+// Телефон: бар — одно название со стрелками. Листается пальцем так же, как
+// карусели (Егор, 2026-10-04): название едет за пальцем, соседнее заезжает
+// следом, короткий смах или бросок переключает страницу, а отпущенное
+// на полпути возвращается пружиной (useDeckDrag + useDeckSpring из deckFan).
+const COMPACT_GAP = 170;
+
 function CompactSwitch({
+  active,
   index,
   underline,
   onStep,
   onFront,
 }: {
+  active: number;
   index: number;
   underline: boolean;
   onStep: (delta: number) => void;
@@ -393,8 +401,8 @@ function CompactSwitch({
 }) {
   const key = serviceOrder[index];
   const g = PAGE_GRADIENT[key];
-  const pageGrad = `linear-gradient(90deg, ${g.from}, ${g.to})`;
-  const startX = useRef<number | null>(null);
+  const { drag, dragging, bind } = useDeckDrag({ count: COUNT, spacing: COMPACT_GAP, onSettle: onStep });
+  const { lag } = useDeckSpring(active, drag, dragging);
   const arrow = (dir: -1 | 1) => (
     <button
       type="button"
@@ -420,31 +428,48 @@ function CompactSwitch({
     </button>
   );
   return (
-    <div
-      className="flex items-center sm:hidden land:!hidden"
-      style={{ touchAction: "pan-y" }}
-      onTouchStart={(e) => (startX.current = e.touches[0].clientX)}
-      onTouchEnd={(e) => {
-        if (startX.current == null) return;
-        const dx = e.changedTouches[0].clientX - startX.current;
-        startX.current = null;
-        if (Math.abs(dx) > 36) onStep(dx < 0 ? 1 : -1);
-      }}
-    >
+    <div className="flex items-center sm:hidden land:!hidden">
       {arrow(-1)}
-      <button
-        type="button"
-        onClick={onFront}
-        aria-current={underline ? "page" : undefined}
-        className="relative whitespace-nowrap px-1 font-display text-[12px] uppercase leading-none tracking-tight text-white"
+      <div
+        {...bind}
+        className="relative h-10 w-[204px] select-none overflow-hidden [-webkit-user-drag:none]"
+        style={{
+          touchAction: "pan-y",
+          cursor: dragging ? "grabbing" : "grab",
+          WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%)",
+          maskImage: "linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%)",
+        }}
       >
-        {LABEL[key][0]} {LABEL[key][1]}
-        <span
-          aria-hidden="true"
-          className={`pointer-events-none absolute -inset-x-1 top-[calc(100%+4px)] h-[1.5px] ${underline ? "opacity-100" : "opacity-0"}`}
-          style={{ background: pageGrad, WebkitMaskImage: LINE_MASK, maskImage: LINE_MASK }}
-        />
-      </button>
+        {fanSlots(COUNT, active, drag + lag, 1).map(({ i, key: slotKey, offset, settled }) => {
+          const k = serviceOrder[i];
+          const gi = PAGE_GRADIENT[k];
+          const front = settled === 0;
+          return (
+            <button
+              key={slotKey}
+              type="button"
+              onClick={front ? onFront : undefined}
+              tabIndex={front ? 0 : -1}
+              aria-hidden={!front}
+              aria-current={front && underline ? "page" : undefined}
+              className="absolute left-1/2 top-1/2 whitespace-nowrap px-1 font-display text-[12px] uppercase leading-none tracking-tight text-white"
+              style={{
+                whiteSpace: "nowrap",
+                transform: `translate(calc(-50% + ${offset * COMPACT_GAP}px), -50%)`,
+                opacity: Math.max(0, 1 - Math.abs(offset) * 1.1),
+                pointerEvents: Math.abs(offset) > 0.5 ? "none" : undefined,
+              }}
+            >
+              {LABEL[k][0]} {LABEL[k][1]}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute -inset-x-1 top-[calc(100%+4px)] h-[1.5px] ${underline ? "opacity-100" : "opacity-0"}`}
+                style={{ background: `linear-gradient(90deg, ${gi.from}, ${gi.to})`, WebkitMaskImage: LINE_MASK, maskImage: LINE_MASK }}
+              />
+            </button>
+          );
+        })}
+      </div>
       {arrow(1)}
     </div>
   );

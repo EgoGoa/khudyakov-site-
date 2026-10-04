@@ -15,6 +15,7 @@ import TeamPulseChat, { type Phase } from "./TeamPulseChat";
 import { marks } from "./marks";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import MobileClose from "@/components/ui/MobileClose";
 
 // Большое окно человека команды — нарочно собрано из тех же деталей, что
 // окошки услуг (ToolSpotlight): стекло `.glass-panel`, неоновый контур
@@ -110,6 +111,7 @@ export default function TeamPulseWindow({
           exit={WIN_DIM.exit}
         >
           <div className="absolute inset-0 bg-ink/75" onClick={onClose} aria-hidden="true" />
+          <MobileClose onClick={onClose} />
 
           <motion.div
             ref={dialogRef}
@@ -141,7 +143,7 @@ export default function TeamPulseWindow({
               type="button"
               onClick={onClose}
               aria-label="Закрыть"
-              className="absolute -top-11 right-0 z-40 grid h-11 w-11 place-items-center text-white/80 transition hover:text-white sm:-right-11 sm:top-0"
+              className="absolute -top-11 right-0 z-40 grid mobile-hide h-11 w-11 place-items-center text-white/80 transition hover:text-white sm:-right-11 sm:top-0"
             >
               <CloseIcon />
             </button>

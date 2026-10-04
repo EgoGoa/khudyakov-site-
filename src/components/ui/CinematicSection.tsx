@@ -377,7 +377,7 @@ export default function CinematicSection({
           fades out before it reaches the opposite edge of a narrow screen,
           leaving a bright strip of raw footage down that edge. A flat,
           light veil over the whole pane closes it. */}
-      <div aria-hidden="true" className={`pointer-events-none absolute inset-0 ${z} bg-ink/40 lg:hidden`} />
+      <div aria-hidden="true" className={`pointer-events-none absolute inset-0 ${z} bg-ink/[0.31] lg:hidden`} />
     </>
   );
 
@@ -422,7 +422,7 @@ export default function CinematicSection({
           // при ней уже не нужно в прежнем размере — иначе плотные главы
           // (04, 05) начинают прокручиваться внутри себя.
           ? `absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 ${
-              footer ? "pb-[var(--voice-safe)] pt-[4.5rem] lg:pt-[4.75rem]" : "pb-[var(--voice-safe)] pt-[5.5rem] lg:pt-[5.5rem]"
+              footer ? "pb-[var(--voice-safe)] pt-[calc(4.5rem+var(--sat))] lg:pt-[4.75rem]" : "pb-[var(--voice-safe)] pt-[calc(5.5rem+var(--sat))] lg:pt-[5.5rem]"
             } lg:px-10 land:pb-[var(--voice-safe)] land:pt-8 land:pl-[max(2rem,calc(env(safe-area-inset-left)+1rem))] land:pr-[max(2rem,calc(env(safe-area-inset-right)+1rem))] ${
               active ? "" : "pointer-events-none"
             }`
