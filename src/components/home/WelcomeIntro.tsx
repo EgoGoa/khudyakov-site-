@@ -18,8 +18,9 @@ import { getTier } from "@/lib/perf-tier";
 // цифрах. Текст проявляется по словам слева направо из размытия.
 //
 // Показывается один раз: после просмотра (или пропуска) ставится отметка в
-// localStorage. При повторном открытии окна по логотипу и в режиме
-// приложения введения нет.
+// localStorage. При повторном открытии окна по логотипу введения нет. В
+// установленном приложении оно играет так же (Егор, 2026-10-04): у
+// приложения своё хранилище, так что первый запуск покажет его заново.
 
 const SCENE_MS = 8000;
 const TITLE_MS = 2000;
@@ -32,8 +33,6 @@ export function shouldShowIntro(): boolean {
   } catch {
     return false;
   }
-  const nav = navigator as Navigator & { standalone?: boolean };
-  if (window.matchMedia("(display-mode: standalone)").matches || nav.standalone) return false;
   return true;
 }
 
