@@ -6175,6 +6175,16 @@ html[data-mid] .wi-tile :is(.wi-lbl, .wi-num, .wi-big, .wi-clock, .wi-q) { anima
   .wi-tile :is(.wi-lbl, .wi-num, .wi-big, .wi-clock, .wi-q) { animation: none; }
 }
 
+/* Уход сцены и слабые телефоны (Егор, 2026-10-04: заголовки окон 2 и 3
+   «зависают и дёргаются»): вложенное размытие стекла внутри стеклянного
+   окна — самое дорогое, поэтому на время ухода сцены оно снимается, а на
+   слабых и средних устройствах его нет вовсе (плотный фон держит читаемость). */
+.wi-leaving .wi-glass { backdrop-filter: none; background: rgba(46, 46, 52, 0.82); }
+.wi-leaving *, .wi-leaving *::before { animation-play-state: paused !important; }
+html[data-lite] .wi-glass,
+html[data-mid] .wi-glass { backdrop-filter: none; background: rgba(46, 46, 52, 0.82); }
+html[data-lite] .wi *, html[data-mid] .wi * { will-change: auto; }
+
 @keyframes welcome-fade-in { from { opacity: 0; } }
 @keyframes welcome-window-in { from { opacity: 0; transform: scale(0.97); } }
 @media (prefers-reduced-motion: reduce) {

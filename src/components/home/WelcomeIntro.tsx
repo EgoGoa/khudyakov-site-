@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { EASE } from "@/lib/motion";
 import { getTier } from "@/lib/perf-tier";
 import LiveBrandWord from "@/components/layout/LiveBrandWord";
@@ -79,6 +79,29 @@ function Reveal({ text, delay = 0, className }: { text: string; delay?: number; 
     void document.fonts?.ready.then(paint);
     return () => ro.disconnect();
   }, [text]);
+
+  if (lite) {
+    // Слабое устройство: слова неподвижны, плавно проявляется вся фраза
+    // целиком — один анимируемый слой вместо десятка.
+    return (
+      <motion.span
+        className={className}
+        ref={ref}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.9, ease: EASE, delay }}
+      >
+        {words.map(({ w, run: r }, i) => (
+          <span key={i}>
+            <span className={r >= 0 ? "wi-k wi-kw" : undefined} data-run={r >= 0 ? r : undefined} style={{ display: "inline-block" }}>
+              {w}
+            </span>
+            {i < words.length - 1 ? " " : null}
+          </span>
+        ))}
+      </motion.span>
+    );
+  }
 
   return (
     <span className={className} ref={ref}>
@@ -837,12 +860,15 @@ const WINDOWS: { label: string; scenes: Scene[] }[] = [
 // ---------- окно ----------
 
 export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
-  const reduced = useReducedMotion();
-  const [lite, setLite] = useState(false);
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- уровень устройства известен только в браузере
-    setLite(Boolean(reduced) || getTier() !== "high");
-  }, [reduced]);
+  // Облегчённый режим известен с первого кадра: окно монтируется уже в
+  // браузере, поэтому читаем уровень устройства сразу, а не в эффекте — иначе
+  // первая заставка стартовала бы тяжёлой анимацией и переключалась на ходу.
+  const [lite] = useState(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches || getTier() !== "high",
+  );
+  // Уход старой сцены: на это время снимаем размытие стекла и замираем
+  // бесконечные анимации — иначе затухание всего окна идёт рывками.
+  const [leaving, setLeaving] = useState(false);
 
   const [w, setW] = useState(0);
   const [s, setS] = useState(0);
@@ -859,10 +885,16 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
   }, [title, w, lite]);
 
   const goWindow = useCallback((k: number) => {
+    setLeaving(true);
     setW(k);
     setS(0);
     setTitle(true);
   }, []);
+  useEffect(() => {
+    if (title) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- флаг ухода гаснет, когда новая сцена на месте
+    setLeaving(false);
+  }, [title]);
 
   const next = useCallback(() => {
     if (last) return onDone();
@@ -909,8 +941,9 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
 
   return (
     <LiteCtx.Provider value={lite}>
+      <MotionConfig reducedMotion="never">
       <motion.div
-        className="wi"
+        className={`wi${leaving ? " wi-leaving" : ""}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -1034,6 +1067,7 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
           )}
         </AnimatePresence>
       </motion.div>
+      </MotionConfig>
     </LiteCtx.Provider>
   );
 }
