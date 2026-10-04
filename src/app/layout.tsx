@@ -11,6 +11,8 @@ import VibeRail from "@/components/layout/VibeRail";
 import GlobalLead from "@/components/layout/GlobalLead";
 import SkipIntro from "@/components/layout/SkipIntro";
 import VoiceAssistant from "@/components/layout/VoiceAssistant";
+import InstallApp from "@/components/layout/InstallApp";
+import { BIP_SNIPPET } from "@/lib/pwa";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import MediaGovernor from "@/components/layout/MediaGovernor";
@@ -71,6 +73,10 @@ export const metadata: Metadata = {
   // origin instead of the site's, so Telegram/WhatsApp preview cards showed
   // nothing at all.
   metadataBase: new URL(SITE_URL),
+  // Установка как приложения: выбранную иконку окно установки подменяет в
+  // этой ссылке (lib/pwa → applyIcon).
+  manifest: "/pwa/manifest-hud.webmanifest",
+  appleWebApp: { capable: true, title: "HUD", statusBarStyle: "black-translucent" },
   title: TITLE,
   description: DESCRIPTION,
   // "./" — адрес текущей страницы на главном домене: каждая страница сама
@@ -142,6 +148,8 @@ export default function RootLayout({
               "try{var h=document.documentElement;h.setAttribute('data-boot','0');if(Number(localStorage.getItem('hdkv_welcome_snoozed_until'))>Date.now()||/[?&]vibe(=|&|$)/.test(location.search))h.setAttribute('data-welcome-snoozed','');else if(/^\\/(content|ai|sites|smm)(\\/|\\.html|$)/.test(location.pathname))h.setAttribute('data-welcome-open','')}catch(e){}",
           }}
         />
+        {/* Событие установки приходит один раз и рано — ловим до гидратации. */}
+        <script dangerouslySetInnerHTML={{ __html: BIP_SNIPPET }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }}
@@ -185,6 +193,7 @@ export default function RootLayout({
               </div>
               <VibeRail />
               <VoiceAssistant />
+              <InstallApp />
               <GlobalLead />
               <SkipIntro />
               {/* Лишние стрелки вверх-вниз у края на телефоне убраны (Егор, 2026-10-03). */}

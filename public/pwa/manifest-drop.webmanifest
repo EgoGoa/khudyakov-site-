@@ -1,0 +1,78 @@
+{
+  "id": "/",
+  "name": "HUD.SERVICE — креативный сервис",
+  "short_name": "HUD",
+  "description": "Креативный сервис: видео, фото, брендинг, SMM и AI-контент.",
+  "lang": "ru",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0B0B10",
+  "theme_color": "#0B0B10",
+  "categories": [
+    "business",
+    "design"
+  ],
+  "icons": [
+    {
+      "src": "/pwa/drop-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa/drop-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa/drop-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/pwa/drop-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Обсудить проект",
+      "url": "/?pwa=lead",
+      "icons": [
+        {
+          "src": "/pwa/drop-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Личный кабинет",
+      "url": "/?pwa=cabinet",
+      "icons": [
+        {
+          "src": "/pwa/drop-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Бриф голосом",
+      "url": "/?pwa=brief",
+      "icons": [
+        {
+          "src": "/pwa/drop-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

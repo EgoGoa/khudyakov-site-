@@ -50,7 +50,7 @@ export function GET() {
 TS
 
 # динамические маршруты метаданных должны быть статичными
-for f in src/app/apple-icon.tsx src/app/icon.tsx src/app/opengraph-image.tsx src/app/robots.ts src/app/sitemap.ts; do
+for f in src/app/opengraph-image.tsx src/app/robots.ts src/app/sitemap.ts; do
   grep -q 'force-static' "$f" || printf '\nexport const dynamic = "force-static";\n' >> "$f"
 done
 perl -pi -e 's#disallow: \["/admin", "/api"\]#disallow: []#' src/app/robots.ts

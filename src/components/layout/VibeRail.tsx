@@ -14,6 +14,7 @@ import CenterModal from "@/components/ui/CenterModal";
 import NanoSphere from "@/components/ui/NanoSphere";
 import SphereDust from "@/components/ui/SphereDust";
 import { OPEN_VIBE_EVENT } from "@/lib/voice/store";
+import { canOfferInstall, openInstall, useInstallMode } from "@/lib/pwa";
 import VibeMode from "@/components/vibe/VibeMode";
 import BlockVibe from "@/components/vibe/BlockVibe";
 import { OPEN_BLOCK_VIBE_EVENT } from "@/lib/block-vibe";
@@ -152,6 +153,18 @@ const RAIL_LABEL_CLASS =
 // while every other label stays plain white.
 const RAIL_LABEL_HOVER =
   "group-hover:[text-shadow:0_0_1px_rgba(255,255,255,1),0_0_3px_rgba(255,255,255,0.95),0_0_7px_rgba(255,255,255,0.7)]";
+
+// Пункт «Приложение»: не страница и не блок, а окно установки (lib/pwa).
+const INSTALL_ITEM = {
+  id: "__install",
+  label: "Приложение",
+  glyph: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" className="shrink-0">
+      <rect x="6.5" y="2.5" width="11" height="19" rx="2.8" />
+      <path d="M12 8v6m0 0-2.4-2.4M12 14l2.4-2.4M10.5 18.5h3" />
+    </svg>
+  ),
+} as const;
 
 type RailItem = {
   id: string;
@@ -652,6 +665,8 @@ export default function VibeRail() {
   const [blockItem, setBlockItem] = useState<RailItem | null>(null);
   const cinematicGoTo = useCinematicGoTo();
   const router = useRouter();
+  const installMode = useInstallMode();
+  const showInstall = canOfferInstall(installMode);
   // Header's desktop burger dropdown lives in roughly the same top-right
   // corner of the screen — stepping the rail out of the way while it's open
   // is simpler and more robust than trying to keep two floating panels from
@@ -776,6 +791,18 @@ export default function VibeRail() {
             </button>
           </Fragment>
         ))}
+        {showInstall && (
+          <button
+            type="button"
+            onClick={openInstall}
+            aria-label={INSTALL_ITEM.label}
+            className="boot-rail vibe-bubble"
+            style={{ "--boot-i": pageItems.length + crossPageItems.length } as CSSProperties}
+          >
+            {INSTALL_ITEM.glyph}
+            <span className="vibe-tip font-display">{INSTALL_ITEM.label}</span>
+          </button>
+        )}
       </nav>
 
       {/* Телефон (Егор, 2026-09-27): сфера в правом нижнем углу. Тап — над
@@ -819,6 +846,7 @@ export default function VibeRail() {
             >
               {[
                 { id: "__vibe", label: "Vibe-режим", glyph: null, vibe: true } as const,
+                ...(showInstall ? [{ ...INSTALL_ITEM, vibe: false as const }] : []),
                 ...[...crossPageItems].reverse().map((item) => ({ ...item, vibe: false as const })),
                 ...[...pageItems].reverse().map((item) => ({ ...item, vibe: false as const })),
               ].map((item, i, all) => (
@@ -836,6 +864,7 @@ export default function VibeRail() {
                     }
                     setSheetOpen(false);
                     if (item.vibe) setVibeOpen(true);
+                    else if (item.id === INSTALL_ITEM.id) openInstall();
                     else openItem(item as RailItem);
                   }}
                   aria-label={item.label}

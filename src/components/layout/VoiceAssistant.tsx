@@ -18,6 +18,7 @@ import { declineSay, greeting, notUnderstood, nudge, replyToOffer, smallTalk, ty
 import TeamConsultModal from "@/components/home/TeamConsultModal";
 import VoiceTour from "@/components/layout/VoiceTour";
 import { TEAM } from "@/lib/team";
+import { openInstall } from "@/lib/pwa";
 import {
   OPEN_VIBE_EVENT,
   TOUR_KEY,
@@ -536,6 +537,10 @@ export default function VoiceAssistant() {
         case "vibe":
           window.dispatchEvent(new Event(VOICE_NAV_EVENT));
           window.dispatchEvent(new Event(OPEN_VIBE_EVENT));
+          return {};
+        case "install":
+          window.dispatchEvent(new Event(VOICE_NAV_EVENT));
+          openInstall();
           return {};
         case "team":
           window.dispatchEvent(new Event(VOICE_NAV_EVENT));

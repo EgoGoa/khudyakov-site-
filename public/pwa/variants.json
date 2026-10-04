@@ -1,0 +1,34 @@
+[
+  {
+    "id": "hud",
+    "label": "HUD на градиенте"
+  },
+  {
+    "id": "aim",
+    "label": "Прицел HUD"
+  },
+  {
+    "id": "four",
+    "label": "Четыре направления"
+  },
+  {
+    "id": "brush",
+    "label": "Мазок"
+  },
+  {
+    "id": "window",
+    "label": "Окно"
+  },
+  {
+    "id": "drop",
+    "label": "Капля"
+  },
+  {
+    "id": "column",
+    "label": "Столбик"
+  },
+  {
+    "id": "paper",
+    "label": "Бумага"
+  }
+]

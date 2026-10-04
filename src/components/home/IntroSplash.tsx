@@ -50,7 +50,10 @@ const T_SETTLED = T_CHARS + (11 - 1) * STAGGER + CHAR_DUR;
 // Егор явно забраковал.
 const HOLD = 1.5;
 /** Момент, с которого знак начинает испаряться. */
-const T_VANISH = T_SETTLED + HOLD;
+/** В режиме приложения (иконка на рабочем столе) знак стоит заметно короче:
+ *  человек запускает приложение десятки раз, повторно ждать ему незачем. */
+const HOLD_APP = 0.35;
+const T_TIMES = { vanish: T_SETTLED + HOLD, reveal: 0, doneMs: 0 };
 /** Уход знака (Егор, 2026-09-26, вариант «A — мягкий» из макета): весь знак
  *  целиком летит на зрителя с разгоном — ×1.8 за 0.9с, размываясь и
  *  растворяясь, — а на его месте вспыхивает и медленно расходится мягкая
@@ -70,9 +73,14 @@ const D_DISSOLVE = D_HAZE;
  *  поэтому ждём и её. */
 // Меню встаёт, как только знак улетел и погас (конец рывка D_ZOOM), — пауза
 // почти нулевая (Егор, 2026-09-27); дымка доживает уже над меню.
-const T_REVEAL = T_VANISH + D_ZOOM * 0.85;
+
 /** Стекло уходит вместе с появлением меню — меню проступает сквозь него. */
-const T_DONE_MS = (T_VANISH + D_DISSOLVE + 0.1) * 1000;
+function tuneTimes(hold: number) {
+  T_TIMES.vanish = T_SETTLED + hold;
+  T_TIMES.reveal = T_TIMES.vanish + D_ZOOM * 0.85;
+  T_TIMES.doneMs = (T_TIMES.vanish + D_DISSOLVE + 0.1) * 1000;
+}
+tuneTimes(HOLD);
 
 /** Слово знака посимвольно. Градиент `.brand-word` идёт по всему слову
  *  сразу, а посимвольная анимация требует отдельного элемента на букву —
@@ -123,6 +131,8 @@ export default function IntroSplash({
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- разовая отметка монтирования
     setMounted(true);
+    const nav = navigator as Navigator & { standalone?: boolean };
+    tuneTimes(window.matchMedia("(display-mode: standalone)").matches || nav.standalone ? HOLD_APP : HOLD);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
       setPlaying(false);
@@ -136,8 +146,8 @@ export default function IntroSplash({
     const a = window.setTimeout(() => {
       revealed.current = true;
       cb.current.onReveal();
-    }, T_REVEAL * 1000);
-    const b = window.setTimeout(() => setPlaying(false), T_DONE_MS);
+    }, T_TIMES.reveal * 1000);
+    const b = window.setTimeout(() => setPlaying(false), T_TIMES.doneMs);
     timers.current = [wind, a, b];
     return () => timers.current.forEach((t) => window.clearTimeout(t));
   }, []);
@@ -188,7 +198,7 @@ export default function IntroSplash({
           style={{ filter: "blur(16px)" }}
           initial={{ opacity: 0, scale: 1 }}
           animate={{ opacity: [0, 0.3, 0], scale: [1, 1.45, 2.3] }}
-          transition={{ duration: D_HAZE, times: [0, 0.29, 1], ease: ["easeOut", "easeOut"], delay: T_VANISH + 0.08 }}
+          transition={{ duration: D_HAZE, times: [0, 0.29, 1], ease: ["easeOut", "easeOut"], delay: T_TIMES.vanish + 0.08 }}
           aria-hidden="true"
         >
           <span className="inline-block h-[0.2em] w-[0.2em] shrink-0 rounded-full brand-dot" />
@@ -205,7 +215,7 @@ export default function IntroSplash({
           className="relative flex flex-col items-center"
           initial={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
           animate={{ scale: ZOOM_TO, opacity: 0, filter: "blur(12px)" }}
-          transition={{ duration: D_ZOOM, ease: ZOOM_EASE, delay: T_VANISH }}
+          transition={{ duration: D_ZOOM, ease: ZOOM_EASE, delay: T_TIMES.vanish }}
         >
         {/* Размер знака. Нижняя граница clamp рассчитана на телефон: корневой
             размер там 14.4px, поэтому 2.1rem даёт ~30px — знак остаётся

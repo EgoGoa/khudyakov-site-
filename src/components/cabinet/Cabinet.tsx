@@ -21,6 +21,7 @@ import {
   useCabinet,
   type CabinetState,
 } from "./store";
+import { canOfferInstall, openInstall, useInstallMode } from "@/lib/pwa";
 import { GOALS, NICHES, SERVICES, WANTS, recommendationsFor } from "./data";
 
 // Демо-кабинет клиента. Стиль — по решению Егора: строго и минималистично,
@@ -178,6 +179,28 @@ function Onboarding() {
 }
 
 /* ── Разделы ──────────────────────────────────────────────────────────── */
+
+// Установка сайта как приложения: в кабинете это самый сильный повод —
+// статус проекта в один тап с экрана телефона.
+function InstallCard() {
+  const mode = useInstallMode();
+  if (!canOfferInstall(mode)) return null;
+  return (
+    <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+      <div className="flex flex-1 items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element -- значок из public/pwa */}
+        <img src="/pwa/hud-192.png" alt="" width={42} height={42} className="rounded-[10px]" draggable={false} />
+        <div>
+          <p className="text-[15px] font-extrabold text-white">Следи за проектом с экрана телефона</p>
+          <p className="text-[13px] font-bold text-white">Поставь HUD приложением — кабинет откроется в один тап.</p>
+        </div>
+      </div>
+      <button type="button" onClick={openInstall} className="shrink-0 rounded-full px-5 py-2.5 text-[14px] font-extrabold text-white" style={{ background: "linear-gradient(90deg,#F5310B,#FF6A3D)" }}>
+        Поставить на экран
+      </button>
+    </Card>
+  );
+}
 
 function TeamQuestion({ state }: { state: CabinetState }) {
   const last = state.orders[0];
@@ -700,6 +723,7 @@ export default function Cabinet({ onClose }: { onClose?: () => void }) {
                 {section === "home" && (
                   <>
                     <TeamQuestion state={state} />
+                    <InstallCard />
                     <Orders state={state} compact />
                     <Recs state={state} />
                   </>
