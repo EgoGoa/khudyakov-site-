@@ -9166,8 +9166,8 @@ html:not([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [da
    тот же «матовый», только сквозь него не просвечивает сайт. Шапка и
    кнопки вайб-бара оставляют размытие по прежнему решению (их немного). */
 html[data-lite] :is(.liquid-glass, .btn-glass, .glass-tile, .c3-card, .glass-panel, .spotlight-tab,
-  .welcome-window, .welcome-quiet, .team-pulse-card, .team-pulse-note, .cab-glass,
-  .vibe-mode__window, .vibe-mode__card, .offer-card, .offer-tier, .voice-invite, .voice-caption,
+  .welcome-quiet, .team-pulse-card, .team-pulse-note, .cab-glass,
+  .vibe-mode__card, .offer-card, .offer-tier, .voice-invite, .voice-caption,
   .voice-stage, .voice-tour, .block-vibe, .tuned-block__card, .before-after, .music-player) {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
@@ -10081,4 +10081,16 @@ html[data-veil-done] #slow-veil { opacity: 0; visibility: hidden; }
   .mobile-close.mobile-close--inline svg { width: 18px; height: 18px; }
   .welcome-window,
   .vibe-mode__window { padding-bottom: 36px; }
+}
+
+/* Стартовое и вайб-окна остаются прозрачным размытым стеклом на любых
+   устройствах, как шапка сайта (Егор, 2026-10-04: «оно всё равно
+   непрозрачное»). Это один слой на экране; на слабых телефонах размытие чуть
+   мягче, но сайт за окном по-прежнему читается очертаниями. */
+html[data-lite] :is(.welcome-window, .vibe-mode__window),
+html[data-mid] :is(.welcome-window, .vibe-mode__window) {
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
+    rgba(14, 14, 20, 0.4);
+  backdrop-filter: blur(22px) saturate(1.6) !important;
 }

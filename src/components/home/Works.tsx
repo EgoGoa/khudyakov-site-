@@ -106,7 +106,7 @@ function SegmentedAxis({
 
   return (
     <div>
-      <div className={`${EYEBROW} text-paper/45`}>{label}</div>
+      <div className={`${EYEBROW} text-white`}>{label}</div>
       <div className="tab-neon-row mt-2.5 flex flex-wrap gap-2">
         {[...shown, ...rest].map((option, i) => (
           <button
@@ -150,7 +150,7 @@ function FilterAxis({
 }) {
   return (
     <div>
-      <div className="font-sans text-sm text-paper/45">{label}</div>
+      <div className="font-sans text-sm font-semibold text-white">{label}</div>
       <div className="mt-3 font-display text-[11px] uppercase leading-[1.75] tracking-[0.1em] sm:text-xs">
         {options.map((option, i) => (
           <span key={option}>
