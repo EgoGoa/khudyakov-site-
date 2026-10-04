@@ -5973,7 +5973,7 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
 .wi-tc-line { display: block; width: 120px; height: 2px; border-radius: 2px; background: var(--brand); transform-origin: left; }
 .wi-tc-skip { position: absolute; left: 18px; bottom: 16px; }
 .wi-brand { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
-.wi-bdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; animation: wi-pulse 2.4s ease-in-out infinite; }
+.wi-bdot { display: inline-block; flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; }
 .wi-gdot { animation: wi-pulse 2.4s ease-in-out infinite; }
 @keyframes wi-pulse { 50% { opacity: .55; } }
 .wi-dsk { display: none; }

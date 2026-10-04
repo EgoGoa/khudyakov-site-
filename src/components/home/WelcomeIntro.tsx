@@ -5,6 +5,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { EASE } from "@/lib/motion";
 import { getTier } from "@/lib/perf-tier";
+import LiveBrandWord from "@/components/layout/LiveBrandWord";
 
 // Вводные окна перед стартовым меню (Егор, 2026-10-04, макет v6 —
 // docs/intro-scenes-preview.html). После заставки со знаком идут три окна:
@@ -237,12 +238,16 @@ function HudMark({ size = 40 }: { size?: number }) {
   );
 }
 
-/** Название в тексте: «● HUD.SERVICE», как логотип в шапке. */
+/** Название — один в один как логотип в шапке: зелёная пульсирующая точка,
+ *  «HUD» шрифтом заголовков капсом и «.SERVICE» с живым градиентом
+ *  (LiveBrandWord). Везде, где в введении написано HUD.SERVICE. */
 function Brand() {
   return (
     <span className="wi-brand">
-      <i className="brand-dot wi-bdot" />
-      HUD.SERVICE
+      <i className="brand-dot animate-pulse-rec wi-bdot" />
+      <span className="font-display uppercase tracking-tight">
+        HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
+      </span>
     </span>
   );
 }
