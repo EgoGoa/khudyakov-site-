@@ -12,7 +12,7 @@ import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { WELCOME_OPEN_ATTR } from "@/lib/welcome-freeze";
 import WelcomeWidget from "./WelcomeWidget";
 import IntroSplash from "./IntroSplash";
-import WelcomeIntro, { markIntroSeen, shouldShowIntro } from "./WelcomeIntro";
+import WelcomeIntro from "./WelcomeIntro";
 import { OPEN_VIBE_EVENT, VOICE_NAV_EVENT } from "@/lib/voice/store";
 import { isBareClick, skipIntros } from "@/lib/skip-intro";
 import MobileClose from "@/components/ui/MobileClose";
@@ -321,10 +321,7 @@ export default function WelcomeOverlay() {
   // Три вводных окна между заставкой и меню (Егор, 2026-10-04): один раз на
   // устройство, не при повторном открытии по логотипу и не в приложении.
   const [intro, setIntro] = useState(false);
-  const finishIntro = () => {
-    markIntroSeen();
-    setIntro(false);
-  };
+  const finishIntro = () => setIntro(false);
 
   // Starts true on the server (and for the very first client render, to
   // match it and avoid a hydration mismatch) so a first-time visitor still
@@ -337,7 +334,7 @@ export default function WelcomeOverlay() {
     // под ним не показываем: иначе сайт «замирает» под ним, и сфера с
     // приветствием в вайб-окне не рисуются.
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, localStorage read has to happen post-hydration (see comment above on the initial useState)
-    if (isSnoozed() || new URLSearchParams(window.location.search).has("vibe")) setVisible(false);
+    if (new URLSearchParams(window.location.search).has("vibe")) setVisible(false);
   }, []);
 
   // Блокировка прокрутки снимается не в момент закрытия, а после того, как
@@ -392,7 +389,6 @@ export default function WelcomeOverlay() {
   }, [setSkippedToSite]);
 
   const goToSite = () => {
-    if (intro) markIntroSeen();
     setSkippedToSite(true);
     close();
     // wait for the overlay's own exit + the body scroll-lock release before
@@ -416,16 +412,14 @@ export default function WelcomeOverlay() {
   // Клик по логотипу в шапке: окно открывается снова, плавно, сразу с меню.
   useEffect(() => {
     const open = () => {
-      try {
-        window.localStorage.removeItem(SNOOZE_KEY);
-      } catch {
-        /* без localStorage окно просто открывается */
-      }
+      // Клик по логотипу — тот же путь, что при заходе на сайт: знак, три
+      // вводных окна, затем меню (Егор, 2026-10-04).
       document.documentElement.removeAttribute("data-welcome-snoozed");
-      setQuick(true);
-      setSkipped(true);
-      setSettled(true);
-      setRevealed(true);
+      setQuick(false);
+      setSkipped(false);
+      setSettled(false);
+      setRevealed(false);
+      setIntro(false);
       setPresent(true);
       setVisible(true);
     };
@@ -483,7 +477,7 @@ export default function WelcomeOverlay() {
   useDialogFocus(visible && revealed, dialogRef);
 
   const reveal = () => {
-    if (!quick && shouldShowIntro()) setIntro(true);
+    if (!quick) setIntro(true);
     setRevealed(true);
     playUi("windows");
   };

@@ -18,32 +18,11 @@ import LiveBrandWord from "@/components/layout/LiveBrandWord";
 // (красный → розовый → голубой) в окантовках, важных словах и ключевых
 // цифрах. Текст проявляется по словам слева направо из размытия.
 //
-// Показывается один раз: после просмотра (или пропуска) ставится отметка в
-// localStorage. При повторном открытии окна по логотипу введения нет. В
-// установленном приложении оно играет так же (Егор, 2026-10-04): у
-// приложения своё хранилище, так что первый запуск покажет его заново.
+// Показывается при каждой загрузке сайта и при клике на логотип в шапке: путь
+// всегда начинается со знака (Егор, 2026-10-04). «Пропустить» ведёт сразу в меню.
 
 const SCENE_MS = 5000;
 const TITLE_MS = 2000;
-const SEEN_KEY = "hdkv_intro_seen";
-
-export function shouldShowIntro(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    if (window.localStorage.getItem(SEEN_KEY)) return false;
-  } catch {
-    return false;
-  }
-  return true;
-}
-
-export function markIntroSeen() {
-  try {
-    window.localStorage.setItem(SEEN_KEY, "1");
-  } catch {
-    /* без localStorage введение просто покажется ещё раз */
-  }
-}
 
 // lite — слабое устройство или reduced motion: только прозрачность, без
 // размытия, сдвигов и бегущих цифр.

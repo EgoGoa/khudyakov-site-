@@ -146,7 +146,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var h=document.documentElement;h.setAttribute('data-boot','0');if(Number(localStorage.getItem('hdkv_welcome_snoozed_until'))>Date.now()||/[?&]vibe(=|&|$)/.test(location.search))h.setAttribute('data-welcome-snoozed','');else if(/^\\/(content|ai|sites|smm)(\\/|\\.html|$)/.test(location.pathname))h.setAttribute('data-welcome-open','')}catch(e){}",
+              "try{var h=document.documentElement;h.setAttribute('data-boot','0');if(/[?&]vibe(=|&|$)/.test(location.search))h.setAttribute('data-welcome-snoozed','');else if(/^\\/(content|ai|sites|smm)(\\/|\\.html|$)/.test(location.pathname))h.setAttribute('data-welcome-open','')}catch(e){}",
           }}
         />
         {/* Событие установки приходит один раз и рано — ловим до гидратации. */}
