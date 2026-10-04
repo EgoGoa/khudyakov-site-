@@ -5,7 +5,7 @@
 // что карточка Егора (открывает чат) — это решает родитель, сюда приходит
 // только вид. Пока курсор над карточкой, она стоит лицом Егора, чтобы по ней
 // можно было спокойно кликнуть.
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 const FLIP_MS = 6000;
 const COUNT_MS = 900;
@@ -57,41 +57,54 @@ export default function ProjectHookFlip({
     return () => cancelAnimationFrame(raf);
   }, [back, percent]);
 
+  // Переворот без preserve-3d и backface-visibility: на iOS Safari их
+  // ломают overflow/backdrop-filter у карточки, и обратная сторона просвечивала
+  // зеркально поверх лицевой. Вместо этого каждая сторона сама складывается до
+  // ребра (rotateX 90°) и гаснет, а вторая в этот момент раскрывается.
+  const HALF = 320;
+  const face = (shown: boolean, edge: number): CSSProperties => ({
+    transform: `perspective(1100px) rotateX(${shown ? 0 : edge}deg)`,
+    opacity: shown ? 1 : 0,
+    transition: shown
+      ? `transform ${HALF}ms cubic-bezier(0.22,1,0.36,1) ${HALF}ms, opacity 0s linear ${HALF}ms`
+      : `transform ${HALF}ms cubic-bezier(0.55,0,0.9,0.6), opacity 0s linear ${HALF}ms`,
+    pointerEvents: shown ? "auto" : "none",
+    willChange: "transform, opacity",
+  });
+
   return (
     <div
       ref={ref}
-      className="relative h-full [perspective:1100px]"
+      className="relative h-full"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
+      <div className="h-full" style={face(!back, -90)}>
+        {front}
+      </div>
       <div
-        className="relative h-full transition-transform duration-[700ms] ease-[cubic-bezier(0.45,0.05,0.2,1)] [transform-style:preserve-3d] motion-reduce:transition-none"
-        style={{ transform: back ? "rotateX(180deg)" : "none" }}
+        aria-hidden={!back}
+        className="project-hook absolute inset-0 flex items-center gap-4 overflow-hidden rounded-2xl px-5"
+        style={face(back, 90)}
       >
-        <div className="h-full [backface-visibility:hidden]">{front}</div>
-        <div
-          aria-hidden={!back}
-          className="project-hook absolute inset-0 flex items-center gap-4 overflow-hidden rounded-2xl px-5 [backface-visibility:hidden] [transform:rotateX(180deg)]"
-        >
-          <div className="flex shrink-0 flex-col items-start gap-1.5">
-            <div className="project-hook-num">
-              {v}
-              <small>%</small>
-            </div>
-            <span className="font-display text-[9px] uppercase tracking-[0.16em] text-paper/70">готовность</span>
+        <div className="flex shrink-0 flex-col items-start gap-1.5">
+          <div className="project-hook-num">
+            {v}
+            <small>%</small>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="m-0 font-display text-sm uppercase leading-[1.15] tracking-tight text-white sm:text-base">
-              Ваш проект в работе
-            </p>
-            <div className="project-hook-bar mt-3" aria-hidden="true">
-              <i style={{ width: `${v}%` }} />
-            </div>
-          </div>
-          <span aria-hidden="true" className="text-2xl text-orange">
-            →
-          </span>
+          <span className="font-display text-[9px] uppercase tracking-[0.16em] text-paper/70">готовность</span>
         </div>
+        <div className="min-w-0 flex-1">
+          <p className="m-0 font-display text-sm uppercase leading-[1.15] tracking-tight text-white sm:text-base">
+            Ваш проект в работе
+          </p>
+          <div className="project-hook-bar mt-3" aria-hidden="true">
+            <i style={{ width: `${v}%` }} />
+          </div>
+        </div>
+        <span aria-hidden="true" className="text-2xl text-orange">
+          →
+        </span>
       </div>
     </div>
   );

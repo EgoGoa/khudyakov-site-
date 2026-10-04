@@ -6,7 +6,7 @@ import Link from "next/link";
 import OrderMenu from "./OrderMenu";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { WIN, WIN_DIM } from "@/lib/motion";
+import { WIN, WIN_DIM, WIN_SETTLE_MS } from "@/lib/motion";
 import { CloseIcon } from "@/components/ui/Icons";
 import { accentVars, type TeamPulseChatVisual, type TeamPulseData } from "./types";
 import TeamPulseScenes, { SCENE_MS, TeamPulseChatScene } from "./TeamPulseScenes";
@@ -51,6 +51,27 @@ export default function TeamPulseWindow({
   // eslint-disable-next-line react-hooks/set-state-in-effect -- портал можно строить только после гидратации
   useEffect(() => setMounted(true), []);
 
+  // Кадр окна декодируется заранее, пока карточка просто лежит на странице, —
+  // иначе его первая отрисовка попадает прямо в кадры открытия и даёт рывок.
+  useEffect(() => {
+    const im = new window.Image();
+    im.src = data.image;
+    im.decode?.().catch(() => {});
+  }, [data.image]);
+
+  // Тяжёлая графика окна встаёт только когда само окно раскрылось: на открытии
+  // видеокарта занята одним — движением окна (Егор: открытие без рывков).
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- сброс при закрытии
+      setSettled(false);
+      return;
+    }
+    const t = setTimeout(() => setSettled(true), WIN_SETTLE_MS + 80);
+    return () => clearTimeout(t);
+  }, [open]);
+
   const [orderOpen, setOrderOpen] = useState(false);
   // «Заказать» внизу окна: по клику на её месте встают три способа связи.
   const [picking, setPicking] = useState(false);
@@ -66,10 +87,10 @@ export default function TeamPulseWindow({
   }, [open]);
 
   useEffect(() => {
-    if (!open || chat || hold || reduced) return;
+    if (!open || !settled || chat || hold || reduced) return;
     const t = setTimeout(() => setStep((s) => (s + 1) % data.theses.length), SCENE_MS[data.theses[step].scene]);
     return () => clearTimeout(t);
-  }, [open, chat, hold, reduced, step, data.theses]);
+  }, [open, settled, chat, hold, reduced, step, data.theses]);
 
   // Общая блокировка прокрутки: страница не дёргается вбок, а CinematicStage
   // видит её и не листает главы под окном.
@@ -105,7 +126,7 @@ export default function TeamPulseWindow({
       {open && (
         <motion.div
           key="team-pulse-window"
-          className="fixed inset-0 z-[80] flex items-end justify-center px-3 pb-3 pt-[4.5rem] sm:items-center sm:px-10 sm:pb-6 sm:pt-24"
+          className="team-win-wrap fixed inset-0 z-[80] flex items-end justify-center px-3 pb-3 pt-[4.5rem] sm:items-center sm:px-10 sm:pb-6 sm:pt-24"
           initial={WIN_DIM.initial}
           animate={WIN_DIM.animate}
           exit={WIN_DIM.exit}
@@ -120,7 +141,7 @@ export default function TeamPulseWindow({
             aria-modal="true"
             aria-label={`${data.member.name}: ${data.windowCta}`}
             className="win-shell relative outline-none h-[min(640px,calc(100dvh-6.5rem))] w-full max-w-[1200px] sm:h-[min(580px,calc(100dvh-9rem))]"
-            style={accentVars(data.accent)}
+            style={{ ...accentVars(data.accent), willChange: "transform, opacity" }}
             // Общая анимация окон сайта (WIN, lib/motion).
             initial={reduced ? false : WIN.initial}
             animate={WIN.animate}
@@ -184,7 +205,7 @@ export default function TeamPulseWindow({
                       <TeamPulseChatScene visual={view.visual} chosen={view.chosen} phase={view.phase} answers={view.answers} who={data.member.nameGenitive} />
                     ) : (
                       <>
-                        <TeamPulseScenes scene={t.scene} />
+                        {settled && <TeamPulseScenes scene={t.scene} />}
                         <SceneArrows onPrev={() => go(-1)} onNext={() => go(1)} />
                       </>
                     )}

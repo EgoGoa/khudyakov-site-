@@ -10534,3 +10534,15 @@ html[data-mid] :is(.welcome-window, .vibe-mode__window) {
 .project-hook-bar i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(100deg, #f5310b, #ec4899 55%, #00d2ff); animation: project-hook-shine 2s ease-in-out infinite; }
 @keyframes project-hook-shine { 50% { filter: brightness(1.45); } }
 @media (prefers-reduced-motion: reduce) { .project-hook-bar i { animation: none; } }
+
+/* Окно человека команды на телефоне: крестик MobileClose стоит внизу по центру
+   (fixed), поэтому само окно поднято над ним и не накрыто — раньше крестик
+   ложился поверх нижней строки окна. Высота окна уменьшена на ту же полосу. */
+@media (max-width: 639px) {
+  .team-win-wrap {
+    padding-bottom: calc(var(--voice-safe, 0px) + 0.9rem + 52px + 0.75rem);
+  }
+  .team-win-wrap .win-shell {
+    height: min(640px, calc(100dvh - 4.5rem - var(--voice-safe, 0px) - 0.9rem - 52px - 0.75rem));
+  }
+}
