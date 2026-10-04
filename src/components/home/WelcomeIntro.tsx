@@ -536,9 +536,9 @@ function S22() {
       </Tile>
       <Tile i={2} className="wi-s2 wi-hotb wi-col wi-growth">
         <div className="wi-growth-n">
-          <div className="wi-lbl">Заявок с сайта</div>
+          <div className="wi-lbl">Эффективность страницы</div>
           <div className="wi-num wi-acc wi-mt-s">
-            <Count to={40} prefix="+" suffix="%" delay={0.9} />
+            <Count to={80} prefix="+" suffix="%" delay={0.9} />
           </div>
           <DotArrow style={{ transform: "rotate(-35deg)", marginTop: 10 }} />
         </div>
@@ -856,7 +856,7 @@ const WINDOWS: { label: string; scenes: Scene[] }[] = [
       },
       {
         title: "**Персонализируй** любой блок",
-        why: "Услуги, цены, кейсы — **под твой бизнес.**",
+        why: "Блок под тебя: **удобнее, быстрее, лично.**",
         Body: S22,
       },
       {
