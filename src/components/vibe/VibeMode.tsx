@@ -308,7 +308,6 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
       className="vibe-mode fixed inset-0 z-[100] flex items-center justify-center p-4 outline-none"
       onClick={onClose}
     >
-      <MobileClose onClick={onClose} />
       {/* Окошко по центру (Егор: «окошко, а не на весь экран»). */}
       <motion.div
         // Общая анимация окон сайта (WIN, lib/motion).
@@ -320,6 +319,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
         onPointerDown={skipIntros}
         className="win-shell vibe-mode__window vibe-mode__window--fixed"
       >
+      <MobileClose inline onClick={onClose} />
       <div aria-hidden="true" className="vibe-mode__aurora" />
       {/* Частиц вокруг сферы нет (Егор, 2026-09-27): пыль живёт только в
           сборке сферы на заставке и сливается в кольцо. */}

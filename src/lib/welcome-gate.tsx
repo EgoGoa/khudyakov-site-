@@ -15,6 +15,12 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 // It stays true for the rest of this client-side session — once someone's
 // chosen the classic site, later navigations within /content, /ai, /sites,
 // /smm shouldn't keep re-surfacing the guided submenu either.
+// Клик по логотипу в шапке открывает стартовое окно (Егор, 2026-10-04): то же
+// стеклянное окошко, что при заходе на сайт, сразу с меню — без повторной
+// заставки. Слушает WelcomeOverlay.
+export const OPEN_WELCOME_EVENT = "hdkv:open-welcome";
+export const openWelcome = () => window.dispatchEvent(new Event(OPEN_WELCOME_EVENT));
+
 const WelcomeGateContext = createContext<{
   welcomeOpen: boolean;
   setWelcomeOpen: (open: boolean) => void;

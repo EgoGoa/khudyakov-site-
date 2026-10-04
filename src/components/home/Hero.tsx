@@ -161,6 +161,10 @@ export default function Hero() {
             (line 92) the same way the H1 above it does, and a nested
             Container was doubling the left padding, pushing this out of
             alignment with the headline's own left edge. */}
+        {/* Телефон (Егор, 2026-10-04): три кнопки связи встают справа от абзаца
+            вертикальной колонкой — под большой палец. С sm обёртка прозрачна
+            (display: contents) и всё лежит как раньше. */}
+        <div className="hero-lead-row">
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={shown}
@@ -178,7 +182,7 @@ export default function Hero() {
           // (Егор, 2026-10-03) — освобождает место под крупную надпись. Текст
           // остаётся для скринридеров (sr-only), с sm он снова виден. (Варианты max-* в этом проекте не
           // генерируются — из-за raw-экрана land, поэтому «телефон сначала».)
-          className="mt-6 flex items-center gap-3 sm:mt-8 sm:flex-wrap"
+          className="hero-contacts mt-6 flex items-center gap-3 sm:mt-8 sm:flex-wrap"
         >
           <a
             href="tel:+79925111812"
@@ -209,6 +213,7 @@ export default function Hero() {
             <span className="sr-only sm:not-sr-only">Написать в WhatsApp</span>
           </a>
         </motion.div>
+        </div>
         </div>
         </div>
       </Container>

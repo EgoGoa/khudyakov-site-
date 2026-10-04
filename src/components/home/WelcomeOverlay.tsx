@@ -5,7 +5,7 @@ import type { CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { MicIcon } from "@/components/ui/Icons";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
-import { useWelcomeGate } from "@/lib/welcome-gate";
+import { OPEN_WELCOME_EVENT, useWelcomeGate } from "@/lib/welcome-gate";
 import { CloseIcon } from "@/components/ui/Icons";
 import { playUi } from "@/lib/sound";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
@@ -315,6 +315,8 @@ export default function WelcomeOverlay() {
   // встаёт сразу целиком (Егор, 2026-10-03). settled — вступление кончилось.
   const [skipped, setSkipped] = useState(false);
   const [settled, setSettled] = useState(false);
+  // Окно открыто повторно (клик по логотипу): без заставки, сразу меню.
+  const [quick, setQuick] = useState(false);
 
   // Starts true on the server (and for the very first client render, to
   // match it and avoid a hydration mismatch) so a first-time visitor still
@@ -401,6 +403,26 @@ export default function WelcomeOverlay() {
 
   // Окно держится в дереве, пока доигрывает уход, и только потом снимается.
   const [present, setPresent] = useState(true);
+
+  // Клик по логотипу в шапке: окно открывается снова, плавно, сразу с меню.
+  useEffect(() => {
+    const open = () => {
+      try {
+        window.localStorage.removeItem(SNOOZE_KEY);
+      } catch {
+        /* без localStorage окно просто открывается */
+      }
+      document.documentElement.removeAttribute("data-welcome-snoozed");
+      setQuick(true);
+      setSkipped(true);
+      setSettled(true);
+      setRevealed(true);
+      setPresent(true);
+      setVisible(true);
+    };
+    window.addEventListener(OPEN_WELCOME_EVENT, open);
+    return () => window.removeEventListener(OPEN_WELCOME_EVENT, open);
+  }, []);
   useEffect(() => {
     if (visible) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- собственный жизненный цикл окна
@@ -495,8 +517,8 @@ export default function WelcomeOverlay() {
         <button type="button" onClick={goToSite} aria-label="Закрыть" className="welcome-window__close mobile-hide">
           <CloseIcon />
         </button>
-        {visible && <MobileClose onClick={goToSite} />}
-        {visible && <IntroSplash onReveal={reveal} skip={skipped} />}
+        {visible && <MobileClose inline onClick={goToSite} />}
+        {visible && !quick && <IntroSplash onReveal={reveal} skip={skipped} />}
         {revealed && (
           <motion.div
             key={skipped ? "rushed" : "intro"}

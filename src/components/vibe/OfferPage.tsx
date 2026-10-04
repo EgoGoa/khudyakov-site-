@@ -355,8 +355,8 @@ function OrderSheet({
 
   return (
     <div className="vibe-mode fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Заказ" onClick={onClose}>
-      <MobileClose onClick={onClose} />
       <div className="vibe-mode__window" onClick={(e) => e.stopPropagation()}>
+      <MobileClose inline onClick={onClose} />
       <div className="vibe-mode__aurora" aria-hidden="true" />
       <button type="button" aria-label="Закрыть" onClick={onClose} className="vibe-mode__icon-btn absolute right-4 top-4 z-[2] mobile-hide">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">

@@ -401,14 +401,17 @@ export default function ServicePicker() {
         {/* On phones the prev/next controls join the dots in one row under the
             copy instead of floating over it. Same buttons, same order, just
             somewhere they cannot cover the heading. */}
-        <div className="mt-5 flex items-center gap-4">
+        <div className="mt-5 flex items-center gap-2">
           <button
             type="button"
             onClick={() => go(-1)}
             aria-label="Предыдущее"
-            className="grad-border flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-ink/50 text-2xl leading-none text-glow backdrop-blur-md sm:hidden"
+            // Без кружка и рамки (Егор, 2026-10-04): только стрелка, зона нажатия 44px.
+            className="flex h-11 w-9 shrink-0 items-center justify-center text-glow transition active:scale-90 sm:hidden"
           >
-            ‹
+            <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="drop-shadow-[0_0_6px_rgba(0,210,255,0.55)]">
+              <path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
 
           <div className="flex gap-2">
@@ -429,9 +432,12 @@ export default function ServicePicker() {
             type="button"
             onClick={() => go(1)}
             aria-label="Следующее"
-            className="grad-border flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-ink/50 text-2xl leading-none text-glow backdrop-blur-md sm:hidden"
+            // Без кружка и рамки (Егор, 2026-10-04): только стрелка, зона нажатия 44px.
+            className="flex h-11 w-9 shrink-0 items-center justify-center text-glow transition active:scale-90 sm:hidden"
           >
-            ›
+            <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="drop-shadow-[0_0_6px_rgba(0,210,255,0.55)]">
+              <path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
         </div>
 
