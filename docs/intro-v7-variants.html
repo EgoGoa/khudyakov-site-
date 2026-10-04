@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Вводные окна — варианты v7</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--brand:linear-gradient(100deg,#f5310b,#ec4899 55%,#00d2ff)}
+body{margin:0;color:#fff;font-family:Manrope,sans-serif;padding:24px 18px 60px;background:radial-gradient(70vw 50vw at 50% 0%,#232327,transparent 70%),#0a0a0b}
+h1{font:800 20px Unbounded,sans-serif;margin:0 0 6px}
+.lead{font:700 14px/1.5 Manrope;margin:0 0 4px;max-width:760px}
+h2{font:700 15px Manrope;margin:26px 0 10px}
+.row{display:flex;gap:16px;flex-wrap:wrap}
+.card{width:300px;height:600px;border-radius:30px;padding:12px;display:flex;flex-direction:column;background:rgba(24,24,28,.8);border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 60px -30px #000}
+.tag{font:800 11px Manrope;letter-spacing:.1em;opacity:.7;margin:0 0 6px}
+.bar{display:flex;gap:6px;margin:4px 6px 10px 34px}.bar i{flex:1;height:2px;border-radius:2px;background:rgba(255,255,255,.2)}.bar i:first-child{background:#fff}
+.tile{position:relative;overflow:hidden;border-radius:18px;padding:12px 14px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.09)}
+.hot{background:radial-gradient(80% 70% at 0% 0%,rgba(245,49,11,.3),transparent 62%),radial-gradient(70% 70% at 100% 100%,rgba(0,210,255,.16),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02))}
+.hotb{background:radial-gradient(70% 60% at 20% 120%,rgba(245,49,11,.3),transparent 65%),radial-gradient(70% 60% at 85% 120%,rgba(0,210,255,.22),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02))}
+.edge{border:1px solid transparent;background:linear-gradient(#17171a,#17171a) padding-box,var(--brand) border-box}
+.g{background:var(--brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+.u{font-family:Unbounded;font-weight:700;letter-spacing:-.03em}
+.h1{font:700 30px/1.05 Unbounded;letter-spacing:-.04em;margin:0}
+.p{font:700 13px/1.35 Manrope;margin:6px 0 0}
+.lbl{font:700 12px/1.25 Manrope}
+.sm{font:600 11.5px/1.3 Manrope;opacity:.85}
+.pill{display:inline-block;padding:4px 11px;border-radius:99px;border:1px solid rgba(255,255,255,.16);font:700 11px Manrope}
+.pa{border:1px solid transparent;background:linear-gradient(#1c1c20,#1c1c20) padding-box,var(--brand) border-box}
+.pulse{animation:pu 1.8s ease-in-out infinite}.pulse2{animation:pu 1.8s ease-in-out .45s infinite}.pulse3{animation:pu 1.8s ease-in-out .9s infinite}.pulse4{animation:pu 1.8s ease-in-out 1.35s infinite}
+@keyframes pu{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(236,72,153,0)}50%{transform:scale(1.07);box-shadow:0 0 22px 2px rgba(236,72,153,.4)}}
+.ring{position:absolute;border-radius:50%;border:2px solid rgba(236,72,153,.7);animation:rg 2.2s ease-out infinite}
+@keyframes rg{from{transform:scale(.5);opacity:.9}to{transform:scale(1.9);opacity:0}}
+.dots{display:flex;gap:5px}.dots i{width:5px;height:5px;border-radius:50%;background:#fff;animation:db 1.2s ease-in-out infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}.dots i:nth-child(4){animation-delay:.45s}.dots i:nth-child(5){animation-delay:.6s}
+@keyframes db{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.5)}}
+.foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;font:700 12px Manrope;padding:10px 4px 0}
+.next{background:#fff;color:#000;border-radius:99px;padding:9px 18px;font-weight:800}
+.mark{display:grid;place-items:center;border-radius:22%;background:linear-gradient(135deg,#F5310B,#EC4899 60%,#00D2FF);font:700 11px Unbounded}
+.gd{width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d399;display:inline-block;margin-right:3px}
+.bn{font:600 10.5px/1.3 Manrope;opacity:.75;margin-top:2px}
+svg{display:block;overflow:visible}
+</style>
+</head>
+<body>
+<h1>Вводные окна · варианты v7</h1>
+<p class="lead">Общее для всех: на заставке окна остаётся только слово (без цифры сверху и без черты), заголовки крупнее, больше тезисов в блоках, графика на весь экран, цифры и проценты — главный акцент. Пульсации здесь анимированы, как будут в сайте.</p>
+
+<h2>Заставка окна: сейчас → как хочешь</h2>
+<div class="row">
+ <div class="card" style="justify-content:center;align-items:center;text-align:center;gap:10px"><div class="tag">СЕЙЧАС</div><div style="font:700 13px Manrope;letter-spacing:.2em;opacity:.7">01</div><div class="u g" style="font-size:34px">Всё в одном</div><i style="display:block;width:120px;height:2px;background:var(--brand)"></i></div>
+ <div class="card" style="justify-content:center;align-items:center;text-align:center"><div class="tag">БУДЕТ · вариант А</div><div class="u g" style="font-size:96px;line-height:.9">4</div><div class="u" style="font-size:40px;margin-top:6px">в одном</div></div>
+ <div class="card" style="justify-content:center;align-items:center;text-align:center"><div class="tag">БУДЕТ · вариант Б</div><div class="u" style="font-size:44px;line-height:1">Четыре</div><div class="u g" style="font-size:44px;line-height:1.1">в одном</div></div>
+</div>
+
+<h2>Сцена 1 · «4 в одном»</h2>
+<div class="row">
+ <div class="card"><div class="tag">А · ОРБИТА</div><div class="bar"><i></i><i></i><i></i></div>
+  <div class="tile hot"><h2 class="h1"><span class="g">4</span> в одном сервисе</h2><p class="p">Один менеджер, <b class="g">один договор,</b> одна смета.</p></div>
+  <div class="tile" style="flex:1;margin-top:8px;padding:10px">
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;height:100%;position:relative">
+    <div class="tile pulse edge"><div class="lbl">Видео</div><div class="bn">съёмка · монтаж</div></div>
+    <div class="tile pulse2 edge" style="text-align:right"><div class="lbl">AI</div><div class="bn">агенты · генерация</div></div>
+    <div class="tile pulse3 edge" style="display:flex;flex-direction:column;justify-content:flex-end"><div class="lbl">Сайты</div><div class="bn">лендинг · магазин</div></div>
+    <div class="tile pulse4 edge" style="display:flex;flex-direction:column;justify-content:flex-end;text-align:right"><div class="lbl">SMM</div><div class="bn">контент · реклама</div></div>
+    <div style="position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px"><i class="ring" style="inset:0"></i><i class="ring" style="inset:0;animation-delay:1.1s"></i><div class="mark pulse" style="width:64px;height:64px;font-size:12px;position:relative"><span class="gd"></span>HUD.</div></div>
+   </div></div>
+  <div class="foot"><span>Пропустить</span><span class="next">Дальше</span></div></div>
+
+ <div class="card"><div class="tag">Б · ВОРОНКА</div><div class="bar"><i></i><i></i><i></i></div>
+  <div class="tile hot"><h2 class="h1"><span class="g">4</span> в одном сервисе</h2><p class="p">Видео, AI, сайты и SMM — <b class="g">одна команда.</b></p></div>
+  <div class="tile" style="flex:1;margin-top:8px;display:flex;flex-direction:column;justify-content:space-between">
+   <div style="display:flex;gap:6px;justify-content:space-between"><span class="pill pa pulse">Видео</span><span class="pill pa pulse2">AI</span><span class="pill pa pulse3">Сайты</span><span class="pill pa pulse4">SMM</span></div>
+   <div class="dots" style="justify-content:center;flex-direction:column;align-items:center;gap:6px"><i></i><i></i><i></i></div>
+   <div class="tile edge pulse" style="text-align:center;padding:16px"><div class="u" style="font-size:20px"><span class="gd"></span>HUD<span class="g">.SERVICE</span></div><div class="sm" style="margin-top:6px">один менеджер · один договор · одна смета</div></div>
+   <div style="display:flex;gap:8px"><div class="tile" style="flex:1"><div class="lbl">Менеджер</div><div class="u g" style="font-size:34px">1</div></div><div class="tile" style="flex:1"><div class="lbl">Договор</div><div class="u g" style="font-size:34px">1</div></div></div>
+  </div>
+  <div class="foot"><span>Пропустить</span><span class="next">Дальше</span></div></div>
+</div>
+
+<h2>Сцена 2 · «Запуск на 30% быстрее»</h2>
+<div class="row">
+ <div class="card"><div class="tag">А · СПИДОМЕТР + ДВА БЛОКА</div><div class="bar"><i></i><i></i><i></i></div>
+  <div class="tile hot"><h2 class="h1">Запуск бренда <span class="g">на 30% быстрее</span></h2><p class="p">Без пауз между подрядчиками — <b class="g">одна команда, один процесс.</b></p></div>
+  <div class="tile hotb" style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;padding:10px 16px">
+   <div class="u g pulse" style="font-size:54px">−30%</div><div class="sm" style="max-width:110px">срок запуска бренда от идеи до готового результата</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;flex:1">
+   <div class="tile"><div class="lbl">4 подрядчика</div><div class="u" style="font-size:30px;margin-top:6px">6 <span style="font:700 13px Manrope">недель</span></div><div class="bn" style="margin-top:8px">• передачи задач<br>• согласования с каждым<br>• простои между этапами</div></div>
+   <div class="tile edge"><div class="lbl"><span class="gd"></span>HUD.SERVICE</div><div class="u g" style="font-size:30px;margin-top:6px">4 <span style="font:700 13px Manrope;-webkit-text-fill-color:#fff">недели</span></div><div class="bn" style="margin-top:8px">• одна команда<br>• один процесс<br>• задачи не ждут</div></div></div>
+  <div class="foot"><span>Пропустить</span><span class="next">Дальше</span></div></div>
+
+ <div class="card"><div class="tag">Б · ДВЕ ПОЛОСЫ ВО ВЕСЬ ЭКРАН</div><div class="bar"><i></i><i></i><i></i></div>
+  <div class="tile hot"><h2 class="h1">Запуск бренда <span class="g">на 30% быстрее</span></h2><p class="p">Задачи не ждут, пока их передадут.</p></div>
+  <div class="tile" style="margin-top:8px;flex:1;display:flex;flex-direction:column;justify-content:space-around">
+   <div><div class="lbl" style="display:flex;justify-content:space-between"><span>4 подрядчика</span><b class="u">6 недель</b></div>
+    <div style="display:flex;gap:4px;margin-top:8px"><i style="flex:1;height:30px;border-radius:8px;background:#ffffff33"></i><i style="width:14px;height:30px;border-radius:5px;background:repeating-linear-gradient(45deg,#ffffff55 0 3px,transparent 3px 6px)"></i><i style="flex:1;height:30px;border-radius:8px;background:#ffffff33"></i><i style="width:14px;height:30px;border-radius:5px;background:repeating-linear-gradient(45deg,#ffffff55 0 3px,transparent 3px 6px)"></i><i style="flex:1;height:30px;border-radius:8px;background:#ffffff33"></i><i style="width:14px;height:30px;border-radius:5px;background:repeating-linear-gradient(45deg,#ffffff55 0 3px,transparent 3px 6px)"></i><i style="flex:1;height:30px;border-radius:8px;background:#ffffff33"></i></div>
+    <div class="bn" style="margin-top:6px">простои на передаче задач между командами</div></div>
+   <div style="text-align:center"><span class="u g pulse" style="font-size:44px;display:inline-block">−30%</span></div>
+   <div><div class="lbl" style="display:flex;justify-content:space-between"><span><span class="gd"></span>HUD.SERVICE</span><b class="u g">4 недели</b></div>
+    <div style="margin-top:8px;height:30px;border-radius:8px;width:66%;background:var(--brand)"></div>
+    <div class="bn" style="margin-top:6px">одна команда ведёт задачу от идеи до результата</div></div>
+  </div>
+  <div class="foot"><span>Пропустить</span><span class="next">Дальше</span></div></div>
+</div>
+
+<h2>Сцена 3 · «Бюджет на 20% ниже»</h2>
+<div class="row">
+ <div class="card"><div class="tag">А · ГРАФИК ВО ВЕСЬ ЭКРАН</div><div class="bar"><i></i><i></i><i></i></div>
+  <div class="tile hot"><h2 class="h1">Бюджет на проект <span class="g">на 20% ниже</span></h2><p class="p">Одна смета вместо четырёх — <b class="g">без наценок</b> подрядчиков.</p></div>
+  <div class="tile hotb" style="margin-top:8px;flex:1;display:flex;flex-direction:column">
+   <div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="lbl">Затраты за год</div><div class="u" style="font-size:27px;margin-top:4px;white-space:nowrap">384 000 ₽</div></div><span class="u pulse" style="padding:8px 12px;border-radius:14px;background:var(--brand);font-size:20px;white-space:nowrap">−20%</span></div>
+   <div style="flex:1;display:flex;align-items:flex-end;gap:8px;margin-top:10px"><div style="flex:1;height:34%;border-radius:10px;background:#ffffff26"></div><div style="flex:1;height:26%;border-radius:10px;background:#ffffff26"></div><div style="flex:1;height:32%;border-radius:10px;background:#ffffff26"></div><div style="flex:1;height:30%;border-radius:10px;background:#ffffff26"></div><div style="flex:1;height:100%;border-radius:10px;background:#ffffff40;position:relative"><span class="sm" style="position:absolute;top:-16px;left:0;white-space:nowrap">480 000 ₽</span></div><div style="flex:1.2;height:80%;border-radius:10px;background:linear-gradient(#F5310B,#EC4899 55%,#00D2FF88)"></div></div>
+   <div style="display:flex;gap:8px;margin-top:6px" class="sm"><span style="flex:1">Видео</span><span style="flex:1">AI</span><span style="flex:1">Сайт</span><span style="flex:1">SMM</span><span style="flex:1">Отдельно</span><span style="flex:1.2"><span class="gd"></span>HUD</span></div></div>
+  <div class="foot"><span>Пропустить</span><span class="next">Дальше</span></div></div>
+
+ <div class="card"><div class="tag">Б · ДО / ПОСЛЕ КРУПНО</div><div class="bar"><i></i><i></i><i></i></div>
+  <div class="tile hot"><h2 class="h1">Бюджет на проект <span class="g">на 20% ниже</span></h2><p class="p">Одна смета вместо четырёх.</p></div>
+  <div class="tile" style="margin-top:8px"><div class="lbl">4 отдельных подрядчика</div><div class="u" style="font-size:28px;margin-top:4px;opacity:.6;white-space:nowrap;text-decoration:line-through;text-decoration-thickness:3px">480 000 ₽</div></div>
+  <div class="tile edge pulse" style="margin-top:8px"><div class="lbl"><span class="gd"></span>HUD.SERVICE · одна смета</div><div class="u g" style="font-size:34px;margin-top:4px;white-space:nowrap">384 000 ₽</div></div>
+  <div class="tile hotb" style="margin-top:8px;flex:1;text-align:center;display:grid;place-items:center"><div><div class="u g pulse" style="font-size:36px;display:inline-block;white-space:nowrap">−96 000 ₽</div><div class="sm" style="margin-top:6px">остаётся в вашем бюджете каждый год</div></div></div>
+  <div class="foot"><span>Пропустить</span><span class="next">Дальше</span></div></div>
+</div>
+
+<h2>Окно 3 · Приложение: телефон → планшет → ноутбук</h2>
+<div class="row">
+ <div class="card"><div class="tag">А · УСТРОЙСТВА ПО ОЧЕРЕДИ</div><div class="bar"><i></i><i></i><i></i></div>
+  <div class="tile hot"><h2 class="h1">HUD на <span class="g">любом устройстве</span></h2><p class="p">Телефон, планшет, ноутбук — <b class="g">иконка на каждом экране.</b></p></div>
+  <div class="tile" style="margin-top:8px;flex:1;position:relative;padding:10px">
+   <svg viewBox="0 0 270 340" width="100%" height="100%" style="overflow:hidden">
+    <rect x="6" y="30" width="86" height="170" rx="16" fill="#0b0b0e" stroke="#fff" stroke-opacity=".4"/><rect x="50" y="36" width="18" height="6" rx="3" fill="#000"/>
+    <rect x="68" y="84" width="22" height="22" rx="6" fill="url(#g)" class="pulse" style="transform-box:fill-box;transform-origin:center"/>
+    <rect x="102" y="70" width="110" height="130" rx="12" fill="#0b0b0e" stroke="#fff" stroke-opacity=".4"/><rect x="152" y="112" width="30" height="30" rx="8" fill="url(#g)" class="pulse2" style="transform-box:fill-box;transform-origin:center"/>
+    <rect x="30" y="236" width="170" height="86" rx="8" fill="#0b0b0e" stroke="#fff" stroke-opacity=".4"/><path d="M14 322h202l-10 10H24z" fill="#fff" fill-opacity=".25"/><rect x="104" y="268" width="26" height="26" rx="7" fill="url(#g)" class="pulse3" style="transform-box:fill-box;transform-origin:center"/>
+    <g class="lbl" fill="#fff" font-size="11" font-weight="700" font-family="Manrope"><text x="6" y="22">Телефон</text><text x="102" y="62">Планшет</text><text x="30" y="228">Ноутбук</text></g>
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5310B"/><stop offset=".6" stop-color="#EC4899"/><stop offset="1" stop-color="#00D2FF"/></linearGradient></defs>
+   </svg></div>
+  <div class="foot"><span>Пропустить</span><span class="next">Дальше</span></div></div>
+
+ <div class="card"><div class="tag">Б · ТЕЛЕФОН КРУПНО + РЯД УСТРОЙСТВ</div><div class="bar"><i></i><i></i><i></i></div>
+  <div class="tile hot"><h2 class="h1">HUD у тебя <span class="g">на экране</span></h2><p class="p">Два нажатия — <b class="g">и иконка на всех устройствах.</b></p></div>
+  <div class="tile" style="margin-top:8px;flex:1;display:flex;flex-direction:column;justify-content:space-between">
+   <div style="display:flex;gap:12px;align-items:center"><div style="width:96px;height:150px;border-radius:20px;background:#0b0b0e;border:1px solid #ffffff55;position:relative"><div class="mark pulse" style="position:absolute;left:34px;top:60px;width:30px;height:30px;font-size:7px"><span class="gd"></span>HUD.</div></div>
+    <div style="flex:1" class="tile edge"><div class="sm">1 · Поделиться</div><div class="lbl" style="margin-top:10px">2 · На экран «Домой»</div></div></div>
+   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center"><div class="tile edge pulse" style="padding:10px 4px"><div class="u" style="font-size:18px">☎</div><div class="lbl">Телефон</div><div class="bn">iOS · Android</div></div><div class="tile edge pulse2" style="padding:10px 4px"><div class="u" style="font-size:18px">▭</div><div class="lbl">Планшет</div><div class="bn">iPad · Android</div></div><div class="tile edge pulse3" style="padding:10px 4px"><div class="u" style="font-size:18px">⌨</div><div class="lbl">Ноутбук</div><div class="bn">Mac · Windows</div></div></div>
+  </div>
+  <div class="foot"><span>Пропустить</span><span class="next">Дальше</span></div></div>
+</div>
+</body>
+</html>

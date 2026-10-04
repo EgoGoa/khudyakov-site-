@@ -5964,7 +5964,6 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
   gap: 14px;
   text-align: center;
 }
-.wi-tc-n { font: 700 13px var(--font-montserrat), sans-serif; letter-spacing: 0.2em; opacity: 0.7; }
 .wi-tc-t {
   margin: 0;
   font: 700 clamp(30px, 8vw, 46px) / 1.1 var(--font-bebas), sans-serif;
@@ -6048,7 +6047,6 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
 .wi-pills-col .wi-pill { width: 96px; }
 .wi-dot { animation: wi-blink 1.6s ease-in-out infinite; }
 @keyframes wi-blink { 50% { opacity: .25; } }
-.wi-gauge { width: 140px; height: 84px; }
 .wi-chart { flex: 1; min-height: 64px; margin-top: 8px; position: relative; }
 .wi-chart svg { width: 100%; height: 100%; }
 .wi-tip { position: absolute; left: 0; top: 0; padding: 9px 12px; border-radius: 14px; width: max-content; white-space: nowrap; }
@@ -6184,6 +6182,63 @@ html[data-mid] .wi-tile :is(.wi-lbl, .wi-num, .wi-big, .wi-clock, .wi-q) { anima
 html[data-lite] .wi-glass,
 html[data-mid] .wi-glass { backdrop-filter: none; background: rgba(46, 46, 52, 0.82); }
 html[data-lite] .wi *, html[data-mid] .wi * { will-change: auto; }
+
+/* Мягкие правки введения (Егор, 2026-10-04): пульсация плиток и стрелки,
+   крупные проценты, значки устройств, без мелких плашек и подписей. */
+.wi-pulse { animation: wi-pu 2s ease-in-out infinite; animation-delay: var(--pd, 0s); }
+/* Только масштаб: свечение box-shadow давало прямоугольную рамку вокруг
+   скруглённого значка (Егор, 2026-10-04) — света вокруг знаков нет. */
+@keyframes wi-pu {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+.wi-num.wi-pulse { display: inline-block; }
+.wi-arrow { animation: wi-arrow 1.5s ease-in-out infinite; transform-origin: center; }
+@keyframes wi-arrow { 0%, 100% { transform: scale(1) translateX(0); opacity: .7; } 50% { transform: scale(1.18) translateX(6px); opacity: 1; } }
+.wi-num--l { font-size: clamp(26px, 9vw, 40px); }
+.wi-badge { padding: 8px 14px; border-radius: 14px; background: var(--brand); font: 700 22px var(--font-bebas), sans-serif; letter-spacing: -.03em; white-space: nowrap; }
+.wi-devices { position: absolute; right: 14px; bottom: 12px; width: 132px; height: 88px; }
+.wi-gauge { width: min(170px, 100%); height: auto; aspect-ratio: 140 / 84; }
+.wi-tc-t { max-width: 100%; padding: 0 12px; text-align: center; font-size: clamp(30px, 9vw, 40px); }
+@media (min-width: 768px) {
+  .wi-num--l { font-size: 60px; }
+  .wi-badge { font-size: 30px; padding: 10px 18px; }
+  .wi-devices { right: auto; left: 200px; bottom: 16px; width: 200px; height: 134px; }
+  .wi-gauge { width: min(260px, 100%); height: auto; }
+  .wi-tc-t { font-size: 58px; }
+  .wi-ttl { font-size: 34px; }
+}
+@media (prefers-reduced-motion: reduce) { .wi-pulse, .wi-arrow { animation: none; } }
+
+/* Число без дрожания и значки без обрезки (Егор, 2026-10-04). */
+/* Два слоя в одной ячейке сетки (оба в потоке, иначе градиентная заливка
+   текста их не красит): невидимый итог держит ширину, видимое число бежит. */
+.wi-count { display: inline-grid; }
+.wi-count > * { grid-area: 1 / 1; white-space: nowrap; }
+.wi-count-ghost { visibility: hidden; }
+/* background-clip: text обрезает хвост буквы при отрицательном
+   межбуквенном интервале — «%» срезался с края. Запас справа и снизу. */
+.wi-num, .wi-big, .wi-k, .wi-acc { padding-right: 0.1em; padding-bottom: 0.06em; }
+.wi-badge { position: absolute; top: 64px; right: 16px; padding: 10px 18px; font-size: 28px; }
+.wi-big { font-size: 72px; white-space: nowrap; }
+.wi-big-pct { font-size: 36px; }
+.wi-vibe { --brand: linear-gradient(100deg, #6f86ff, #b07cff 50%, #ff7a9c); }
+@media (min-width: 768px) {
+  .wi-badge { top: 18px; right: 22px; padding: 12px 22px; font-size: 38px; }
+  .wi-big { font-size: 124px; }
+  .wi-big-pct { font-size: 60px; }
+}
+
+
+/* Узкие телефоны (320 px): крупные элементы сжимаются, чтобы не вылезать из плиток. */
+@media (max-width: 359px) {
+  .wi-arrow { width: 36px !important; height: 28px !important; }
+  .wi-flowtile { gap: 6px; }
+  .wi-num--l { font-size: 25px; }
+  .wi-badge { font-size: 22px; padding: 8px 12px; }
+  .wi-big { font-size: 56px; }
+  .wi-big-pct { font-size: 28px; }
+}
 
 @keyframes welcome-fade-in { from { opacity: 0; } }
 @keyframes welcome-window-in { from { opacity: 0; transform: scale(0.97); } }
@@ -9094,8 +9149,12 @@ html[data-lite] .block-vibe__online::before { animation: none; }
      растягивается на всю высоту — до стрелки «наверх»: слой тянется от
      низа сферы до этой стрелки, кнопки в нём разведены поровну. Сам слой не
      ловит нажатия — только сфера и кружки. */
-  bottom: calc(var(--wave-cy, 4.2rem) + 1.25rem + 6px);
-  top: calc(var(--sat) + 8.7rem);
+  bottom: calc(var(--wave-cy, calc(1.25rem + 16px + env(safe-area-inset-bottom))) + 1.25rem + 6px);
+  /* Меню раскрывается вверх до самой шапки (Егор, 2026-10-04): кружки
+     крупные, почти как сфера, и все видны. Размер кружка сжимается под
+     высоту экрана, чтобы одиннадцать кнопок всегда помещались. */
+  top: calc(var(--sat) + 3.6rem);
+  --fan-dot: clamp(30px, calc((100dvh - var(--sat) - 15rem) / 11.5), 46px);
   pointer-events: none;
   z-index: 66;
   display: flex;
@@ -9157,7 +9216,7 @@ body:has(.vibe-fan__list) .voice-dock-corner {
 }
 .vibe-fan__btn {
   display: flex;
-  height: 36px;
+  height: calc(var(--fan-dot, 46px) + 6px);
   align-items: center;
   gap: 8px;
   padding-left: 10px;
@@ -9178,9 +9237,10 @@ body:has(.vibe-fan__list) .voice-dock-corner {
 }
 .vibe-fan__dot {
   display: grid;
-  width: 24px;
-  height: 24px;
-  margin: 0 12px;
+  width: var(--fan-dot, 46px);
+  height: var(--fan-dot, 46px);
+  /* Центр кружка — на одной оси с центром сферы (60px). */
+  margin: 0 calc(30px - var(--fan-dot, 46px) / 2) 0 0;
   place-items: center;
   border-radius: 999px;
   color: #fff;
@@ -9188,7 +9248,7 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   backdrop-filter: blur(14px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 6px 16px -8px rgba(0, 0, 0, 0.8);
 }
-.vibe-fan__dot svg { width: 11px; height: 11px; }
+.vibe-fan__dot svg { width: 46%; height: 46%; }
 .vibe-fan__btn.is-active .vibe-fan__dot {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
@@ -9205,7 +9265,7 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   background: linear-gradient(135deg, #6f86ff, #b07cff 50%, #ff7a9c);
   box-shadow: 0 0 14px -2px rgba(169, 139, 255, 0.7);
 }
-.vibe-fan__spark { font-size: 11px; line-height: 1; }
+.vibe-fan__spark { font-size: calc(var(--fan-dot, 46px) * 0.46); line-height: 1; }
 .vibe-fan__orb {
   position: relative;
   pointer-events: auto;
@@ -10206,7 +10266,7 @@ html[data-mid] .hero-promo { transition: none; }
 /* Стрелки смены страницы внизу — на уровне линии голосового ассистента
    (Егор, 2026-10-04): центр стрелки (40px) совпадает с центром ассистента. */
 @media (max-width: 639px) and (orientation: portrait) {
-  .page-side-arrow { bottom: calc(var(--wave-cy, 4.2rem) - 1.25rem); }
+  .page-side-arrow { bottom: calc(var(--wave-cy, calc(1.25rem + 16px + env(safe-area-inset-bottom))) - 1.25rem); }
 }
 
 /* Телефон боком: сверху справа стоит колонка кнопок шапки, а высоты мало —

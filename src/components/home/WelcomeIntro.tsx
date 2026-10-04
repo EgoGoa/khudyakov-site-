@@ -184,12 +184,21 @@ function Count({
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [to, delay, dur, lite]);
+  // Ширина резервируется по итоговому числу: пока цифры бегут, блок не
+  // растёт и не двигает соседей (значок рядом больше не «трясёт»).
+  const final = `${prefix}${to.toLocaleString("ru-RU")}`;
   return (
-    <>
-      {prefix}
-      {v.toLocaleString("ru-RU")}
-      {suffix}
-    </>
+    <span className="wi-count">
+      <span className="wi-count-ghost" aria-hidden="true">
+        {final}
+        {suffix}
+      </span>
+      <span className="wi-count-now">
+        {prefix}
+        {v.toLocaleString("ru-RU")}
+        {suffix}
+      </span>
+    </span>
   );
 }
 
@@ -210,13 +219,13 @@ const draw = (delay: number, dur = 1.4) => ({
   transition: { duration: dur, ease: EASE, delay },
 });
 
-function DotArrow({ style }: { style?: CSSProperties }) {
+function DotArrow({ style, className }: { style?: CSSProperties; className?: string }) {
   const pts = [
     [4, 14], [11, 14], [18, 14], [25, 14], [32, 14],
     [25, 7], [18, 2], [25, 21], [18, 26],
   ];
   return (
-    <svg width="36" height="28" viewBox="0 0 36 28" style={style} aria-hidden="true">
+    <svg width="36" height="28" viewBox="0 0 36 28" style={style} className={className} aria-hidden="true">
       {pts.map(([x, y], i) => (
         <circle key={i} cx={x} cy={y} r="2" fill="#fff" className="wi-dot" style={{ animationDelay: `${(x / 32) * 0.6}s` }} />
       ))}
@@ -267,7 +276,8 @@ function S11() {
           {["Видео", "AI", "Сайты", "SMM"].map((t, k) => (
             <motion.span
               key={t}
-              className="wi-pill wi-glass"
+              className="wi-pill wi-glass wi-pulse"
+              style={{ "--pd": `${0.9 + k * 0.45}s` } as CSSProperties}
               initial={lite ? { opacity: 0 } : { opacity: 0, x: -14 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, ease: EASE, delay: 0.45 + k * 0.1 }}
@@ -276,13 +286,15 @@ function S11() {
             </motion.span>
           ))}
         </div>
-        <DotArrow />
+        <DotArrow className="wi-arrow" style={{ width: 54, height: 42 }} />
         <motion.div
           initial={lite ? { opacity: 0 } : { opacity: 0, scale: 0.6, rotate: -8 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={lite ? { duration: 0.3 } : { type: "spring", stiffness: 160, damping: 14, delay: 1.1 }}
         >
-          <HudMark size={92} />
+          <div className="wi-pulse" style={{ "--pd": "1.4s" } as CSSProperties}>
+            <HudMark size={92} />
+          </div>
         </motion.div>
       </Tile>
       <Tile i={1}>
@@ -318,17 +330,14 @@ function S12() {
           </motion.g>
           <circle cx="70" cy="70" r="6" fill="#fff" />
         </svg>
-        <div className="wi-num wi-acc wi-mt">
+        <div className="wi-num wi-num--l wi-acc wi-mt wi-pulse" style={{ "--pd": "2.2s" } as CSSProperties}>
           <Count to={30} prefix="−" suffix="%" delay={0.6} dur={1.6} />
         </div>
-        <div className="wi-lbl wi-mt-s">к срокам запуска</div>
       </Tile>
       <Tile i={1}>
         <div className="wi-lbl">4 подрядчика</div>
         <div className="wi-num wi-num--m wi-mt">
-          6<small>
-            нед<span className="wi-dsk">ель</span>
-          </small>
+          6<small>недель</small>
         </div>
       </Tile>
       <Tile i={2} className="wi-edge">
@@ -336,9 +345,7 @@ function S12() {
           <Brand />
         </div>
         <div className="wi-num wi-num--m wi-acc wi-mt">
-          4<small>
-            нед<span className="wi-dsk">ели</span>
-          </small>
+          4<small>недели</small>
         </div>
       </Tile>
     </div>
@@ -359,9 +366,12 @@ function S13() {
     <div className="wi-bento" style={{ gridTemplateRows: "1fr" }}>
       <Tile i={0} className="wi-s2 wi-hot wi-col">
         <div className="wi-lbl">Затраты за год</div>
-        <div className="wi-num wi-num--m wi-mt-s">
+        <div className="wi-num wi-num--l wi-mt-s">
           <Count to={384000} suffix=" ₽" delay={0.4} />
         </div>
+        <span className="wi-badge wi-pulse" style={{ "--pd": "1.8s" } as CSSProperties}>
+          −20%
+        </span>
         <div className="wi-chart">
           <svg viewBox="0 0 440 190" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
             {bars.map((b, k) => (
@@ -586,9 +596,6 @@ function S23() {
           <text x="52" y="52" className="wi-svgu" fontSize="17" textAnchor="middle">
             {mm}:{ss}
           </text>
-          <text x="52" y="68" className="wi-svgt" fontSize="10" textAnchor="middle">
-            осталось
-          </text>
         </svg>
       </Tile>
       <div className="wi-stack">
@@ -634,6 +641,8 @@ function S31() {
   const step1 = useAfter(800);
   const step2 = useAfter(1500);
   const icon = useAfter(2100);
+  const dev1 = useAfter(2900);
+  const dev2 = useAfter(3500);
   return (
     <div className="wi-bento" style={{ gridTemplateRows: "1fr" }}>
       <Tile i={0} className="wi-s2 wi-phone-tile">
@@ -681,6 +690,37 @@ function S31() {
             <span className="wi-num wi-acc wi-num--step">2</span>На экран «Домой»
           </div>
         </motion.div>
+        <svg viewBox="0 0 150 100" className="wi-devices" aria-hidden="true">
+          <rect x="1" y="6" width="62" height="84" rx="9" fill="#0a0a0b" stroke="#fff" strokeOpacity=".35" strokeWidth="1.5" />
+          <rect x="6" y="11" width="52" height="74" rx="5" fill="#1b1b1f" />
+          <rect x="79" y="26" width="70" height="46" rx="5" fill="#0a0a0b" stroke="#fff" strokeOpacity=".35" strokeWidth="1.5" />
+          <rect x="83" y="30" width="62" height="38" rx="2" fill="#1b1b1f" />
+          <path d="M70 76h86l-6 8H76z" fill="#fff" fillOpacity=".25" />
+          <motion.g
+            style={{ transformBox: "fill-box", originX: 0.5, originY: 0.5 }}
+            initial={{ opacity: 0, scale: lite ? 1 : 0.3 }}
+            animate={{ opacity: dev1 ? 1 : 0, scale: dev1 ? 1 : lite ? 1 : 0.3 }}
+            transition={lite ? { duration: 0.3 } : { type: "spring", stiffness: 220, damping: 13 }}
+          >
+            <rect x="21" y="38" width="22" height="22" rx="6" fill="url(#wi-gh)" />
+            <GreenDot cx={26} cy={49} r={1.4} />
+            <text x="28.6" y="51.2" fontFamily="var(--font-bebas)" fontWeight="700" fontSize="5" fill="#fff">
+              HUD.
+            </text>
+          </motion.g>
+          <motion.g
+            style={{ transformBox: "fill-box", originX: 0.5, originY: 0.5 }}
+            initial={{ opacity: 0, scale: lite ? 1 : 0.3 }}
+            animate={{ opacity: dev2 ? 1 : 0, scale: dev2 ? 1 : lite ? 1 : 0.3 }}
+            transition={lite ? { duration: 0.3 } : { type: "spring", stiffness: 220, damping: 13 }}
+          >
+            <rect x="103" y="37" width="22" height="22" rx="6" fill="url(#wi-gh)" />
+            <GreenDot cx={108} cy={48} r={1.4} />
+            <text x="110.6" y="50.2" fontFamily="var(--font-bebas)" fontWeight="700" fontSize="5" fill="#fff">
+              HUD.
+            </text>
+          </motion.g>
+        </svg>
       </Tile>
     </div>
   );
@@ -783,51 +823,45 @@ function S33() {
 
 // ---------- содержание ----------
 
-type Scene = { title: string; why: string; pills: [string, string]; Body: () => ReactNode };
+type Scene = { title: string; why: string; Body: () => ReactNode };
 
 const WINDOWS: { label: string; scenes: Scene[] }[] = [
   {
-    label: "Всё в одном",
+    label: "5в1",
     scenes: [
       {
         title: "Видео, AI, сайты и SMM — **в одном сервисе**",
         why: "Один менеджер, **один договор,** одна смета.",
-        pills: ["в одном сервисе", "HUD.SERVICE"],
         Body: S11,
       },
       {
         title: "Запуск бренда **на 30% быстрее**",
         why: "Без пауз между подрядчиками — **одна команда, один процесс.**",
-        pills: ["−30% времени", "без пауз"],
         Body: S12,
       },
       {
-        title: "Бюджет на бренд **на 20% ниже**",
+        title: "Бюджет на проект **на 20% ниже**",
         why: "Одна смета — **без наценок** четырёх подрядчиков.",
-        pills: ["−20%", "одна смета"],
         Body: S13,
       },
     ],
   },
   {
-    label: "Вайб-режим",
+    label: "VIBE-режим",
     scenes: [
       {
         title: "**Персонализируй** наш сервис",
         why: "5 вопросов, **1 минута** — и сервис твой.",
-        pills: ["вайб-режим", "5 вопросов · 1 минута"],
         Body: S21,
       },
       {
         title: "**Персонализируй** любой блок",
         why: "Услуги, цены, кейсы — **под твой бизнес.**",
-        pills: ["персонализация", "любой блок"],
         Body: S22,
       },
       {
         title: "Личное предложение **за 1 час**",
         why: "Состав, сроки и цена — **через час в окне.**",
-        pills: ["готово", "состав · сроки · цена"],
         Body: S23,
       },
     ],
@@ -838,19 +872,16 @@ const WINDOWS: { label: string; scenes: Scene[] }[] = [
       {
         title: "HUD у тебя **на экране**",
         why: "Два нажатия — и **HUD всегда под рукой.**",
-        pills: ["2 нажатия", "как приложение"],
         Body: S31,
       },
       {
         title: "Всё важное **в уведомлениях**",
         why: "Статусы, акции, бонусы — **приходят сами.**",
-        pills: ["сразу на экран", "статусы · акции · бонусы"],
         Body: S32,
       },
       {
         title: "Скидка растёт **с каждым заказом**",
         why: "Чем больше заказов, **тем ниже цена.**",
-        pills: ["до 15%", "накопительная"],
         Body: S33,
       },
     ],
@@ -896,10 +927,17 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
     setLeaving(false);
   }, [title]);
 
+  // Выход в меню: сначала снимаем тяжёлое размытие и замираем анимации,
+  // затем окно плавно гаснет (см. WelcomeOverlay) — меню не борется за кадры.
+  const finish = useCallback(() => {
+    setLeaving(true);
+    onDone();
+  }, [onDone]);
+
   const next = useCallback(() => {
-    if (last) return onDone();
+    if (last) return finish();
     goWindow(w + 1);
-  }, [last, onDone, goWindow, w]);
+  }, [last, finish, goWindow, w]);
   // Всё идёт само (Егор, 2026-10-04): три сцены окна подряд, затем следующее
   // окно, а после третьего окна — стартовое меню. «Дальше» и «Пропустить»
   // только ускоряют.
@@ -961,17 +999,10 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
               exit={{ opacity: 0, filter: lite ? "none" : "blur(14px)", transition: { duration: 0.45, ease: EASE } }}
               transition={{ duration: 0.3 }}
             >
-              <span className="wi-tc-n">0{w + 1}</span>
-              <h2 className="wi-tc-t">
+              <h2 className={`wi-tc-t${w === 1 ? " wi-vibe" : ""}`}>
                 <Reveal text={`**${win.label}**`} delay={0.15} />
               </h2>
-              <motion.i
-                className="wi-tc-line"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.1, ease: EASE, delay: 0.5 }}
-              />
-              <button type="button" className="wi-skip wi-tc-skip" onClick={onDone}>
+              <button type="button" className="wi-skip wi-tc-skip" onClick={finish}>
                 Пропустить
               </button>
             </motion.div>
@@ -1023,15 +1054,6 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
               <p className="wi-why">
                 <Reveal text={scene.why} delay={0.55} />
               </p>
-              <motion.div
-                className="wi-pills"
-                initial={{ opacity: 0, y: lite ? 0 : 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, ease: EASE, delay: 1.2 }}
-              >
-                <span className="wi-pill wi-pill--acc">{scene.pills[0]}</span>
-                <span className="wi-pill">{scene.pills[1] === "HUD.SERVICE" ? <Brand /> : scene.pills[1]}</span>
-              </motion.div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -1051,7 +1073,7 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
         </div>
 
         <div className="wi-foot">
-          <button type="button" className="wi-skip" onClick={onDone}>
+          <button type="button" className="wi-skip" onClick={finish}>
             Пропустить
           </button>
           <span className="wi-wdots" aria-hidden="true">

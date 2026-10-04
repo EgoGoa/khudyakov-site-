@@ -194,7 +194,7 @@ export default function IntroSplash({
         {/* Дымка: размытая копия знака. Появляется в момент рывка и медленно
             расходится — «как будто немножко дымки осталось». */}
         <motion.div
-          className="pointer-events-none absolute flex items-center gap-[0.3em] text-[clamp(1.05rem,4.25vw,3.25rem)] sm:gap-[0.35em]"
+          className="pointer-events-none absolute flex items-center gap-[0.3em] text-[clamp(1.5rem,5.6vw,3.4rem)] sm:gap-[0.35em]"
           style={{ filter: "blur(16px)" }}
           initial={{ opacity: 0, scale: 1 }}
           animate={{ opacity: [0, 0.3, 0], scale: [1, 1.45, 2.3] }}
@@ -222,7 +222,7 @@ export default function IntroSplash({
             крупным, но с полями по краям, а не встык к рамке экрана. */}
         {/* В 2 раза меньше прежнего размера — просьба Егора: знак был
             слишком крупным для заставки. */}
-        <div className="relative flex items-center gap-[0.3em] text-[clamp(1.05rem,4.25vw,3.25rem)] sm:gap-[0.35em]">
+        <div className="relative flex items-center gap-[0.3em] text-[clamp(1.5rem,5.6vw,3.4rem)] sm:gap-[0.35em]">
           {/* Точка. Приходит первой и бьёт двумя расходящимися кольцами —
               это отсчёт, после которого начинают вставать буквы. На выходе
               тает первой же, тем же приёмом, что и буквы (см. lifespan). */}

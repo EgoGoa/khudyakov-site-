@@ -208,10 +208,12 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
     // нельзя было листать.
     <nav
       aria-label="Страницы услуг"
+      // Телефон (Егор, 2026-10-04): блок занимает место между логотипом и
+      // меню, а не центрируется по экрану — иначе стрелка залезала на «HUD».
       // На телефоне (Егор, 2026-09-29) бар встаёт в ту же строку, что логотип
       // и меню: вместо колоды — одно название со стрелочками по бокам, чтобы
       // шапка стала в одну строку и заголовки страниц снова были видны.
-      className={`pointer-events-auto absolute left-1/2 top-[var(--sat)] z-20 flex h-14 w-max -translate-x-1/2 items-center justify-center transition-opacity duration-300 sm:relative sm:left-auto sm:top-0 sm:w-full sm:translate-x-0 lg:absolute lg:left-1/2 lg:top-[var(--sat)] lg:h-[70px] lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
+      className={`pointer-events-auto absolute left-[84px] right-[58px] top-[var(--sat)] z-20 flex h-14 items-center justify-center transition-opacity duration-300 sm:relative sm:left-auto sm:right-auto sm:top-0 sm:w-full sm:translate-x-0 lg:absolute lg:left-1/2 lg:top-[var(--sat)] lg:h-[70px] lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:right-auto land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
@@ -408,7 +410,7 @@ function CompactSwitch({
       type="button"
       onClick={() => onStep(dir)}
       aria-label={dir < 0 ? "Предыдущая страница" : "Следующая страница"}
-      className="grid h-10 w-7 shrink-0 place-items-center text-paper/80 transition active:scale-90"
+      className="grid h-10 w-6 shrink-0 place-items-center text-paper/80 transition active:scale-90"
     >
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path
@@ -432,12 +434,12 @@ function CompactSwitch({
       {arrow(-1)}
       <div
         {...bind}
-        className="relative h-10 w-[204px] select-none overflow-hidden [-webkit-user-drag:none]"
+        className="relative h-10 w-[186px] select-none overflow-hidden [-webkit-user-drag:none]"
         style={{
           touchAction: "pan-y",
           cursor: dragging ? "grabbing" : "grab",
-          WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%)",
-          maskImage: "linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%)",
+          maskImage: "linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%)",
         }}
       >
         {fanSlots(COUNT, active, drag + lag, 1).map(({ i, key: slotKey, offset, settled }) => {

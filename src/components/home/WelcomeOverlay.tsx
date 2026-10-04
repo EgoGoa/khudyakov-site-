@@ -322,6 +322,10 @@ export default function WelcomeOverlay() {
   // устройство, не при повторном открытии по логотипу и не в приложении.
   const [intro, setIntro] = useState(false);
   const finishIntro = () => setIntro(false);
+  // Меню встаёт только после того, как введение полностью погасло и стекло
+  // постояло чистым долю секунды: раньше оба окна одновременно боролись за
+  // кадры, и карточки меню дёргались (Егор, 2026-10-04).
+  const [menuGate, setMenuGate] = useState(true);
 
   // Starts true on the server (and for the very first client render, to
   // match it and avoid a hydration mismatch) so a first-time visitor still
@@ -477,7 +481,10 @@ export default function WelcomeOverlay() {
   useDialogFocus(visible && revealed, dialogRef);
 
   const reveal = () => {
-    if (!quick) setIntro(true);
+    if (!quick) {
+      setMenuGate(false);
+      setIntro(true);
+    }
     setRevealed(true);
     playUi("windows");
   };
@@ -523,7 +530,11 @@ export default function WelcomeOverlay() {
         </button>
         {visible && <MobileClose inline onClick={goToSite} />}
         {visible && !quick && <IntroSplash onReveal={reveal} skip={skipped} />}
-        <AnimatePresence>
+        <AnimatePresence
+          onExitComplete={() => {
+            window.setTimeout(() => setMenuGate(true), 220);
+          }}
+        >
           {revealed && intro && (
             <motion.div
               key="wi"
@@ -534,7 +545,7 @@ export default function WelcomeOverlay() {
             </motion.div>
           )}
         </AnimatePresence>
-        {revealed && !intro && (
+        {revealed && !intro && menuGate && (
           <motion.div
             key={skipped ? "rushed" : "intro"}
             className="welcome-window__body"
