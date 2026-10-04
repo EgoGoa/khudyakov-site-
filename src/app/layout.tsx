@@ -184,7 +184,8 @@ export default function RootLayout({
                   button never did either. */}
               <div className="relative z-10">
                 <Header />
-                <main>
+                {/* Вырез телефона в режиме приложения: страница начинается под шапкой. */}
+                <main style={{ paddingTop: "var(--sat)" }}>
                   <Breadcrumbs />
                   <PageBarSpacer />
                   {children}

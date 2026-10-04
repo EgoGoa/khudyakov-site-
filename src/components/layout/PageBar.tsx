@@ -211,7 +211,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
       // На телефоне (Егор, 2026-09-29) бар встаёт в ту же строку, что логотип
       // и меню: вместо колоды — одно название со стрелочками по бокам, чтобы
       // шапка стала в одну строку и заголовки страниц снова были видны.
-      className={`pointer-events-auto absolute left-1/2 top-0 z-20 flex h-14 w-max -translate-x-1/2 items-center justify-center transition-opacity duration-300 sm:relative sm:left-auto sm:w-full sm:translate-x-0 lg:absolute lg:left-1/2 lg:top-0 lg:h-[70px] lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
+      className={`pointer-events-auto absolute left-1/2 top-[var(--sat)] z-20 flex h-14 w-max -translate-x-1/2 items-center justify-center transition-opacity duration-300 sm:relative sm:left-auto sm:top-0 sm:w-full sm:translate-x-0 lg:absolute lg:left-1/2 lg:top-[var(--sat)] lg:h-[70px] lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
