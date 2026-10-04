@@ -9,7 +9,7 @@ import { getTier } from "@/lib/perf-tier";
 // Вводные окна перед стартовым меню (Егор, 2026-10-04, макет v6 —
 // docs/intro-scenes-preview.html). После заставки со знаком идут три окна:
 // «Всё в одном», «Вайб-режим», «Приложение», в каждом по три сцены. Сцена
-// внутри окна сменяется сама каждые 8 секунд по кругу, следующее окно — по
+// внутри окна сменяется сама каждые 5 секунд по кругу, следующее окно — по
 // «Дальше», «Пропустить» сразу ведёт в меню.
 //
 // Стиль: графитовые плитки-бенто, крупные цифры, графики со стеклянными
@@ -22,7 +22,7 @@ import { getTier } from "@/lib/perf-tier";
 // установленном приложении оно играет так же (Егор, 2026-10-04): у
 // приложения своё хранилище, так что первый запуск покажет его заново.
 
-const SCENE_MS = 8000;
+const SCENE_MS = 5000;
 const TITLE_MS = 2000;
 const SEEN_KEY = "hdkv_intro_seen";
 
@@ -338,7 +338,7 @@ function S12() {
 
 function S13() {
   const lite = useLite();
-  const tip = useAfter(1700);
+  const tip = useAfter(1300);
   const bars = [
     { x: 0, h: 46, l: "Видео" },
     { x: 76, h: 32, l: "AI" },
@@ -419,7 +419,7 @@ function S13() {
 
 function S21() {
   const lite = useLite();
-  const picked = useAfter(2000);
+  const picked = useAfter(1500);
   const chips = ["Кафе", "Онлайн-школа", "Бьюти", "Магазин"];
   return (
     <div className="wi-bento" style={{ gridTemplateRows: "1fr" }}>
@@ -622,9 +622,9 @@ function S23() {
 
 function S31() {
   const lite = useLite();
-  const step1 = useAfter(1000);
-  const step2 = useAfter(2000);
-  const icon = useAfter(2800);
+  const step1 = useAfter(800);
+  const step2 = useAfter(1500);
+  const icon = useAfter(2100);
   return (
     <div className="wi-bento" style={{ gridTemplateRows: "1fr" }}>
       <Tile i={0} className="wi-s2 wi-phone-tile">
