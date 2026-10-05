@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import PriceText from "@/components/home/PriceText";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import CinematicSection from "@/components/ui/CinematicSection";
@@ -178,7 +179,9 @@ export default function Close({
                       {tier.oldPrice}
                     </span>
                   )}
-                  {tier.oldPrice ? <span className="tier-new-price">{tier.price}</span> : tier.price}
+                  <span className="tier-price-pill inline-block font-display font-black leading-none">
+                    <PriceText text={tier.price} />
+                  </span>
                 </div>
                 <div className={`c3-team relative ${dense ? "mb-3" : "mb-6"}`}>{tier.team}</div>
 

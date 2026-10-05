@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import PriceText from "@/components/home/PriceText";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
@@ -96,7 +97,9 @@ export default function SmmClose() {
           >
             <span className="c3-tier-small relative">{tier.tagline}</span>
             <div className="c3-tier-large relative kw !text-base lg:!text-lg xl:!text-[1.35rem]">{tier.name}</div>
-            <div className="relative tier-glow-price">{tier.price}</div>
+            <div className="tier-glow-price tier-price-pill relative font-display font-black leading-none">
+              <PriceText text={tier.price} />
+            </div>
             <div className="c3-team relative mb-5">{tier.team}</div>
 
             <ul className="c3-list relative">

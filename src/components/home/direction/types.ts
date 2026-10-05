@@ -125,6 +125,8 @@ export type DirectionTier = {
   price: string;
   tagline: string;
   features: string[];
+  /** Метка над карточкой, например «Рекомендуем» у самого доступного тарифа. */
+  badge?: string;
   /** Выделенный по умолчанию тариф, пока посетитель не выбрал задачу. */
   pro?: boolean;
 };

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PriceText from "@/components/home/PriceText";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
@@ -47,7 +48,7 @@ export default function SmmPricingPage() {
             {tiers.map((tier, i) => (
               <Reveal key={tier.name} delay={i * 0.08}>
                 <div
-                  className={`flex h-full flex-col rounded-3xl border p-6 backdrop-blur-md ${
+                  className={`tier-glow-${i} flex h-full flex-col rounded-3xl border p-6 backdrop-blur-md ${
                     tier.pro ? "border-glow/50 bg-glow/[0.06]" : "border-paper/15 bg-ink/45"
                   }`}
                 >
@@ -57,7 +58,9 @@ export default function SmmPricingPage() {
                   <div className="mt-2 font-display text-2xl uppercase tracking-tight text-paper">
                     {tier.name}
                   </div>
-                  <div className="mt-2 text-base font-semibold text-paper">{tier.price}</div>
+                  <div className="mt-2 tier-price-pill relative font-display font-black leading-none">
+                    <PriceText text={tier.price} />
+                  </div>
                   <div className="mb-6 mt-1 text-xs text-paper/50">{tier.team}</div>
 
                   <ul className="flex-1 space-y-2.5">

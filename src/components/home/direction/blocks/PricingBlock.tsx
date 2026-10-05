@@ -1,5 +1,6 @@
 "use client";
 
+import PriceText from "@/components/home/PriceText";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
@@ -110,13 +111,18 @@ export default function PricingBlock({
               // что и остальные блоки страницы, — вход играет ровно тогда,
               // когда блок реально появился в кадре, у всех трёх карточек
               // одинаково.
+              <div key={tier.id} className={`relative ${tier.badge ? "pt-9" : ""}`}>
+                {tier.badge ? (
+                  <span className="absolute left-0 right-0 top-0 mx-auto w-fit rounded-full bg-[linear-gradient(90deg,#ff7a1a,#ff3d8b)] shadow-[0_0_22px_2px_rgba(255,61,139,0.7),0_0_10px_-2px_rgba(255,122,26,0.8)] px-4 py-1.5 font-display text-[10px] uppercase tracking-[0.16em] text-white">
+                    {tier.badge}
+                  </span>
+                ) : null}
               <Appear
-                key={tier.id}
                 from={i === 0 ? "left" : i === 2 ? "right" : "scale"}
                 delay={DIRECTION_BEAT.content + i * STAGGER.normal}
                 className={`c3-card c3-card-dense tier-glow-${i} relative !min-h-0 !rounded-3xl !p-7 transition-transform ${
                   tier.pro ? "c3-card-pro" : ""
-                } ${on ? "lg:-translate-y-2" : ""}`}
+                } ${tier.badge ? "shadow-[0_0_30px_-6px_rgba(255,61,139,0.55)]" : ""} ${on ? "lg:-translate-y-2" : ""}`}
               >
                 <AnimatePresence>
                   {on && (active || budgetChoice) ? (
@@ -132,12 +138,13 @@ export default function PricingBlock({
                   ) : null}
                 </AnimatePresence>
 
+
                 <span className={`${EYEBROW} c3-tier-small relative text-white`}>{tier.tagline}</span>
                 <h3 className="c3-tier-large kw relative font-display uppercase leading-none tracking-tight !text-lg lg:!text-xl xl:!text-[1.6rem]">
                   {tier.name}
                 </h3>
-                <div className="tier-glow-price relative font-semibold text-paper text-2xl leading-none">
-                  {tier.price}
+                <div className="tier-glow-price tier-price-pill relative font-display font-black leading-none">
+                  <PriceText text={tier.price} />
                 </div>
 
                 <ul className="c3-list relative mt-8 flex-1">
@@ -156,6 +163,7 @@ export default function PricingBlock({
                   Запросить смету
                 </Link>
               </Appear>
+              </div>
             );
           })}
         </div>

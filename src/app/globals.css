@@ -6001,7 +6001,7 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
 .wi-skip:hover { color: #fff; }
 .wi-wdots i { display: inline-block; width: 6px; height: 6px; margin: 0 3px; border-radius: 50%; background: rgba(255,255,255,0.28); }
 .wi-wdots i.is-on { background: #fff; }
-.wi-next { padding: 10px 20px; border-radius: 999px; background: #fff; color: #0a0a0b; font: 800 13px var(--font-montserrat), sans-serif; }
+.wi-next { padding: 10px 20px; border-radius: 999px; background: none; border: 0; color: #fff; font: 800 13px var(--font-montserrat), sans-serif; }
 
 .wi-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; min-height: 0; }
 .wi-tile {
@@ -10546,3 +10546,60 @@ html[data-mid] :is(.welcome-window, .vibe-mode__window) {
     height: min(640px, calc(100dvh - 4.5rem - var(--voice-safe, 0px) - 0.9rem - 52px - 0.75rem));
   }
 }
+
+/* Цена тарифа — пилюля с градиентной рамкой и свечением, белый жирный текст.
+   Перебивает цвета и размеры per-page правил .tier-glow-price, чтобы цена
+   читалась одинаково на всех направлениях. */
+.tier-price-pill {
+  display: inline-block;
+  width: fit-content;
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: linear-gradient(#111114, #111114) padding-box,
+    linear-gradient(90deg, #ff7a1a, #ff3d8b, #7c5cff) border-box;
+  color: #fff !important;
+  font-size: 0.9rem !important;
+  font-weight: 900 !important;
+  animation: tier-price-glow 3.2s ease-in-out infinite;
+}
+/* Цена мягко светится и чуть мигает — свечение и яркость рамки. */
+@keyframes tier-price-glow {
+  0%, 100% { box-shadow: 0 0 14px -2px var(--price-a); filter: brightness(1); }
+  50% { box-shadow: 0 0 26px 2px var(--price-a), 0 0 12px -2px var(--price-b); filter: brightness(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tier-price-pill { animation: none; }
+}
+/* Свечение цен идёт по очереди: первый тариф, за ним второй, третий —
+   одна волна слева направо, а не три цены сразу. */
+.tier-glow-0 .tier-price-pill { animation-delay: 0s; }
+.tier-glow-1 .tier-price-pill { animation-delay: 1.07s; }
+.tier-glow-2 .tier-price-pill { animation-delay: 2.13s; }
+
+/* Цифры цены — градиентным текстом, в тон рамке. */
+.tier-price-digits {
+  background: linear-gradient(90deg, #ffffff, #ffd9c7 50%, #e6d9ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Цены: у каждого из трёх тарифов свой контрастный цвет — оранжевый,
+   розовый, сине-голубой. Рамка пилюли и цифры берут два цвета из
+   --price-a / --price-b. */
+.tier-price-pill {
+  --price-a: #ff7a1a;
+  --price-b: #ffb347;
+  background: linear-gradient(#111114, #111114) padding-box,
+    linear-gradient(90deg, var(--price-a), var(--price-b)) border-box;
+}
+.tier-price-pill .tier-price-digits {
+  background: linear-gradient(90deg, #ffffff, var(--price-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.tier-glow-1 .tier-price-pill { --price-a: #ff3d8b; --price-b: #ff7ad9; }
+.tier-glow-2 .tier-price-pill { --price-a: #3b82f6; --price-b: #00d2ff; }

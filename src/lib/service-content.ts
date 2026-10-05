@@ -325,7 +325,7 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
     },
     {
       name: "Профессиональный",
-      price: "от 78 000 ₽",
+      price: "от 165 000 ₽",
       oldPrice: "250 000 ₽",
       benefits: [
         "2–3 концепции до договора — бесплатно",

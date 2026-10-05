@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import PriceText from "@/components/home/PriceText";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
@@ -74,11 +75,13 @@ export default function Pricing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className={`c3-card ${tier.pro ? "c3-card-pro" : ""}`}
+              className={`c3-card tier-glow-${index} ${tier.pro ? "c3-card-pro" : ""}`}
             >
               <span className="c3-tier-small">{tier.tagline}</span>
               <div className="c3-tier-large">{tier.name}</div>
-              <div className="mt-2 text-lg font-semibold text-paper">{tier.price}</div>
+              <div className="mt-2 tier-price-pill relative font-display font-black leading-none">
+                <PriceText text={tier.price} />
+              </div>
               <div className="c3-team mb-8">{tier.team}</div>
               <ul className="c3-list">
                 {tier.features.map((feature) => (

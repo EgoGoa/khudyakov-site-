@@ -1,5 +1,6 @@
 "use client";
 
+import PriceText from "@/components/home/PriceText";
 import { motion } from "framer-motion";
 import { BEAT, EASE, STAGGER } from "@/lib/motion";
 import type { InteractiveTier } from "@/components/home/ai/aiPricingTiers";
@@ -39,7 +40,9 @@ export default function InteractiveTierCard({
           family — one static line now instead of a live number plus a
           dimmed range note, matching how every other page's tier card
           prints its price. */}
-      <div className="relative mt-1 font-semibold tier-glow-price">{tier.priceLabel}</div>
+      <div className="relative mt-1 tier-glow-price tier-price-pill font-display font-black leading-none">
+        <PriceText text={tier.priceLabel} />
+      </div>
 
       <div className="c3-team relative mb-3">{tier.team}</div>
 
