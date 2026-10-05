@@ -2,6 +2,7 @@
 
 import { useState, type CSSProperties, type ReactNode } from "react";
 import Container from "@/components/ui/Container";
+import StudioNews from "./StudioNews";
 import {
   blogRubrics,
   formatBlogDate,
@@ -106,6 +107,7 @@ export default function FooterBlog() {
   return (
     <div className="border-b border-paper/10">
       <Container className="py-14 sm:py-20">
+        <StudioNews />
         <div className="font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-[#c8f169]">
           Блог · обновляем каждую неделю
         </div>
