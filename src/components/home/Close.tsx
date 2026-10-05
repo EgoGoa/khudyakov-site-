@@ -159,7 +159,6 @@ export default function Close({
                   dense ? "c3-card-dense" : ""
                 } ${tier.pro ? "c3-card-pro" : ""} tier-glow-${i}`}
               >
-                <span className="c3-tier-small relative">{tier.tagline}</span>
                 {/* !text-xl, not the class's own 1.9rem/!text-2xl default — a
                     long single-word tier name ("Профессиональный") has
                     nowhere to break inside a ~270px card and was clipped by
@@ -170,7 +169,8 @@ export default function Close({
                 {/* !text-sm in dense (was !text-lg) — 20px → 14px is the
                     ~30% shrink Egor asked for on /content's tariff cards. */}
                 {/* dense: название крупнее и в градиенте страницы (.kw) — Егор. */}
-                <div className={`c3-tier-large relative ${dense ? "kw !text-base lg:!text-lg xl:!text-[1.35rem]" : "!text-xl"}`}>{tier.name}</div>
+                <div className={`c3-tier-large tier-name-grad relative ${dense ? "!text-base lg:!text-lg xl:!text-[1.35rem]" : "!text-xl"}`}>{tier.name}</div>
+                <span className="c3-tier-small tier-tagline-under relative">{tier.tagline}</span>
                 <div
                   className={`relative font-semibold text-paper tier-glow-price ${dense ? "text-xs" : "text-base"}`}
                 >

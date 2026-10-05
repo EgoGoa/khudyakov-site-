@@ -78,7 +78,10 @@ const PHASES: Phase[] = [
   // darkest in the reel (a terrace after sunset), and at the page's 1.16 the
   // closing chapter read as an unlit black page rather than as film. 1.5 is
   // the phase's own multiplier; every other chapter keeps 1.16.
-  { start: 28.5, end: 30.5, brightness: 1.5 },
+  // Egor (2026-10-05): последние ~2 с — камера кружит вокруг пары, и их обрезка
+  // на 30.5 читалась как обрыв сюжета на блоке тарифов. Фаза идёт до 32.5
+  // (конец файла 32.583): сюжет доигрывается, а закат плавно гаснет сам.
+  { start: 28.5, end: 32.5, brightness: 1.5, settle: false },
 ];
 
 const CHAPTERS: ChapterMeta[] = [

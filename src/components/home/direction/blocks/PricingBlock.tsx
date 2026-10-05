@@ -51,6 +51,14 @@ const TEAM_KEY_BY_HEADING: Record<string, keyof typeof PAGE_TEAM> = {
   "smm-violet-headings": "smm",
 };
 
+// Каждая метка своего цвета: оранжевая, розовая, голубая — по порядку тарифов.
+const BADGE_GRADIENTS = [
+  "linear-gradient(90deg,#ff7a1a,#ffb347)",
+  "linear-gradient(90deg,#ff3d8b,#ff7ad9)",
+  "linear-gradient(90deg,#3b82f6,#00d2ff)",
+];
+const BADGE_GLOWS = ["rgba(255,122,26,0.6)", "rgba(255,61,139,0.6)", "rgba(0,210,255,0.6)"];
+
 export default function PricingBlock({
   pricing,
   headingClass = "content-warm-headings",
@@ -111,9 +119,9 @@ export default function PricingBlock({
               // что и остальные блоки страницы, — вход играет ровно тогда,
               // когда блок реально появился в кадре, у всех трёх карточек
               // одинаково.
-              <div key={tier.id} className={`relative ${tier.badge ? "pt-9" : ""}`}>
+              <div key={tier.id} className={`relative isolate ${tier.badge ? "pt-9" : ""}`}>
                 {tier.badge ? (
-                  <span className="absolute left-0 right-0 top-0 mx-auto w-fit rounded-full bg-[linear-gradient(90deg,#ff7a1a,#ff3d8b)] shadow-[0_0_22px_2px_rgba(255,61,139,0.7),0_0_10px_-2px_rgba(255,122,26,0.8)] px-4 py-1.5 font-display text-[10px] uppercase tracking-[0.16em] text-white">
+                  <span style={{ background: BADGE_GRADIENTS[i % BADGE_GRADIENTS.length], boxShadow: `0 0 22px 2px ${BADGE_GLOWS[i % BADGE_GLOWS.length]}` }} className="pointer-events-none absolute left-0 right-0 top-0 z-30 mx-auto w-fit rounded-full px-4 py-1.5 font-display text-[10px] uppercase tracking-[0.16em] text-white">
                     {tier.badge}
                   </span>
                 ) : null}
@@ -139,10 +147,10 @@ export default function PricingBlock({
                 </AnimatePresence>
 
 
-                <span className={`${EYEBROW} c3-tier-small relative text-white`}>{tier.tagline}</span>
-                <h3 className="c3-tier-large kw relative font-display uppercase leading-none tracking-tight !text-lg lg:!text-xl xl:!text-[1.6rem]">
+                <h3 className="c3-tier-large tier-name-grad relative font-display uppercase tracking-tight !text-lg lg:!text-xl xl:!text-[1.6rem]">
                   {tier.name}
                 </h3>
+                <span className={`${EYEBROW} c3-tier-small tier-tagline-under relative text-white`}>{tier.tagline}</span>
                 <div className="tier-glow-price tier-price-pill relative font-display font-black leading-none">
                   <PriceText text={tier.price} />
                 </div>
@@ -158,7 +166,7 @@ export default function PricingBlock({
 
                 <Link
                   href="/brief"
-                  className={`btn-neon btn-neon-breathe tier-glow-btn-${i} relative mt-2 w-full justify-center !font-bold`}
+                  className={`btn-neon btn-neon-breathe tier-glow-btn-${i} relative mt-2 w-full justify-center !font-bold !py-1.5 !text-[0.65rem]`}
                 >
                   Запросить смету
                 </Link>
@@ -196,6 +204,18 @@ export default function PricingBlock({
                 actionLabel={`Написать ${secondaryMember.nameDative}`}
               />
             )}
+          </div>
+        </Appear>
+
+        {/* Низ блока как на /content: крупная неоновая кнопка под окошками команды. */}
+        <Appear from="up" delay={DIRECTION_BEAT.cta}>
+          <div className="relative flex justify-center">
+            <Link
+              href="/brief"
+              className="chapter-neon group relative inline-block text-center font-display uppercase leading-[1.09] tracking-tight transition-opacity hover:opacity-80 mt-10 text-[clamp(0.9rem,3vw,1.9rem)]"
+            >
+              Начать проект сейчас
+            </Link>
           </div>
         </Appear>
 

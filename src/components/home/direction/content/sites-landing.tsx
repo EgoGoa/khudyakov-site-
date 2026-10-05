@@ -1,5 +1,6 @@
 import Accent from "../Accent";
 import type { CompactToolContent } from "../types";
+import { SITE_TIER_BADGES } from "../siteBadges";
 import { pricingByCategory } from "@/lib/service-content";
 
 // Формат «Лендинг» — /sites/landing. Первый из пяти форматов SitesDeck
@@ -28,6 +29,7 @@ const mapTiers = () =>
     tagline: t.tagline,
     features: t.features,
     pro: t.name === "Лендинг",
+    badge: SITE_TIER_BADGES[t.name],
   }));
 
 export const sitesLandingContent: CompactToolContent = {

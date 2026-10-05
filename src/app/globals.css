@@ -3624,7 +3624,7 @@ html[data-mid] .hero-wm .hero-wm-line {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  font-size: 0.9rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
   margin-bottom: 16px;
@@ -10603,3 +10603,20 @@ html[data-mid] :is(.welcome-window, .vibe-mode__window) {
 }
 .tier-glow-1 .tier-price-pill { --price-a: #ff3d8b; --price-b: #ff7ad9; }
 .tier-glow-2 .tier-price-pill { --price-a: #3b82f6; --price-b: #00d2ff; }
+
+/* Шапка тарифа: название сверху градиентом тарифа, подпись под ним. */
+.tier-name-grad {
+  background-image: linear-gradient(90deg, #ff7a1a, #ffb347);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  line-height: 1.25 !important;
+  padding-bottom: 0.12em;
+}
+.tier-glow-1 .tier-name-grad { background-image: linear-gradient(90deg, #ff3d8b, #ff7ad9); }
+.tier-glow-2 .tier-name-grad { background-image: linear-gradient(90deg, #3b82f6, #00d2ff); }
+.tier-tagline-under {
+  display: block;
+  margin-top: -2px;
+  margin-bottom: 6px;
+}

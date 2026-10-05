@@ -1,5 +1,6 @@
 import Accent from "../Accent";
 import type { CompactToolContent } from "../types";
+import { SITE_TIER_BADGES } from "../siteBadges";
 import { pricingByCategory } from "@/lib/service-content";
 
 // Формат «AI-ассистент» — /sites/assistant. Четвёртый из пяти форматов
@@ -23,6 +24,7 @@ const mapTiers = () =>
     tagline: t.tagline,
     features: t.features,
     pro: t.name === "Сайт под ключ",
+    badge: SITE_TIER_BADGES[t.name],
   }));
 
 export const sitesAssistantContent: CompactToolContent = {

@@ -95,8 +95,8 @@ export default function SmmClose() {
             blurPx={14}
             className={`c3-card !min-h-0 c3-card-dense smm-tier tier-glow-${i} ${tier.pro ? "c3-card-pro" : ""}`}
           >
-            <span className="c3-tier-small relative">{tier.tagline}</span>
-            <div className="c3-tier-large relative kw !text-base lg:!text-lg xl:!text-[1.35rem]">{tier.name}</div>
+            <div className="c3-tier-large tier-name-grad relative !text-base lg:!text-lg xl:!text-[1.35rem]">{tier.name}</div>
+            <span className="c3-tier-small tier-tagline-under relative">{tier.tagline}</span>
             <div className="tier-glow-price tier-price-pill relative font-display font-black leading-none">
               <PriceText text={tier.price} />
             </div>
@@ -138,7 +138,19 @@ export default function SmmClose() {
           follows the deck — see shared/SeoLongRead. */}
       <Appear from="up" delay={BEAT.cta}>
         <div className="mt-6 [@media(max-height:820px)]:hidden">
-          <TeamRow members={PAGE_TEAM.smm} page="smm" className="!max-w-5xl [@media(max-height:820px)]:!max-w-4xl" />
+          <TeamRow members={PAGE_TEAM.smm} page="smm" className="!max-w-none sm:gap-6" />
+        </div>
+      </Appear>
+
+      {/* Низ блока как на /content: крупная неоновая кнопка. */}
+      <Appear from="up" delay={BEAT.cta}>
+        <div className="relative flex justify-center">
+          <Link
+            href="/brief/smm"
+            className="chapter-neon group relative inline-block text-center font-display uppercase leading-[1.09] tracking-tight transition-opacity hover:opacity-80 mt-10 text-[clamp(0.9rem,3vw,1.9rem)]"
+          >
+            Начать проект сейчас
+          </Link>
         </div>
       </Appear>
 

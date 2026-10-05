@@ -77,8 +77,8 @@ export default function Pricing() {
               transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
               className={`c3-card tier-glow-${index} ${tier.pro ? "c3-card-pro" : ""}`}
             >
-              <span className="c3-tier-small">{tier.tagline}</span>
-              <div className="c3-tier-large">{tier.name}</div>
+              <div className="c3-tier-large tier-name-grad !text-xl">{tier.name}</div>
+              <span className="c3-tier-small tier-tagline-under">{tier.tagline}</span>
               <div className="mt-2 tier-price-pill relative font-display font-black leading-none">
                 <PriceText text={tier.price} />
               </div>

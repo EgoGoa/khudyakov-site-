@@ -82,8 +82,8 @@ export default function SitesClose() {
               key={tier.name}
               className={`c3-card !min-h-0 c3-card-dense sites-tier tier-glow-${i} ${tier.pro ? "c3-card-pro" : ""}`}
             >
-              <span className="c3-tier-small relative">{tier.tagline}</span>
-              <div className="c3-tier-large relative kw !text-base lg:!text-lg xl:!text-[1.35rem]">{tier.name}</div>
+              <div className="c3-tier-large tier-name-grad relative !text-base lg:!text-lg xl:!text-[1.35rem]">{tier.name}</div>
+              <span className="c3-tier-small tier-tagline-under relative">{tier.tagline}</span>
               <div className="tier-glow-price tier-price-pill relative font-display font-black leading-none">
                 <PriceText text={tier.price} />
               </div>
@@ -120,32 +120,19 @@ export default function SitesClose() {
 
       <Appear from="up" delay={BEAT.content + 0.1}>
         <div className="mt-6 [@media(max-height:820px)]:hidden">
-          <TeamRow members={PAGE_TEAM.sites} page="sites" className="!max-w-5xl [@media(max-height:820px)]:!max-w-4xl" />
+          <TeamRow members={PAGE_TEAM.sites} page="sites" className="!max-w-none sm:gap-6" />
         </div>
       </Appear>
 
-      {/* Окошко AI-ассистента переехало на главу 05 (Guarantees), вторым
-          под «Сайт-визиткой» — Егор попросил, чтобы обе плитки этого формата
-          стояли рядом в одном месте, а не по одной на разных главах. */}
+      {/* Низ блока как на /content: окошки команды по краям карточек и
+          крупная неоновая кнопка «Начать проект сейчас». */}
       <Appear from="up" delay={BEAT.cta}>
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <Link href="/brief/sites" className={PILL}>
-            Начать проект
-          </Link>
-          <Link href="/calculator" aria-label="Рассчитать бюджет" className={ROUND}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M7 17 17 7M9 7h8v8" />
-            </svg>
+        <div className="relative flex justify-center">
+          <Link
+            href="/brief/sites"
+            className="chapter-neon group relative inline-block text-center font-display uppercase leading-[1.09] tracking-tight transition-opacity hover:opacity-80 mt-10 text-[clamp(0.9rem,3vw,1.9rem)]"
+          >
+            Начать проект сейчас
           </Link>
         </div>
       </Appear>

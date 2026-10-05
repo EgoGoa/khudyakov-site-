@@ -56,6 +56,10 @@ export type Phase = {
    *  picture simply read as an unlit page. Left undefined, a phase inherits
    *  the stage value, so no existing page changes. */
   brightness?: number;
+  /** false — фаза не размывается перед остановкой и замирает на чётком кадре.
+   *  Нужно последней главе, у которой нет следующей фазы и финал ролика
+   *  (например, облёт камеры) должен быть виден. По умолчанию размытие есть. */
+  settle?: boolean;
 };
 export type ChapterMeta = { id: string };
 
@@ -1238,8 +1242,12 @@ export default function CinematicStage({
           sound()?.holdChapter();
         }
         if (frame) {
-          if (lite) frame.style.transition = `filter ${blurSeconds}s ease`;
-          frame.style.filter = lite ? `blur(${maxBlurPx}px)` : `${brightnessPrefix}blur(${maxBlurPx}px)`;
+          if (phase.settle === false) {
+            frame.style.filter = lite ? "none" : brightnessPrefix.trim();
+          } else {
+            if (lite) frame.style.transition = `filter ${blurSeconds}s ease`;
+            frame.style.filter = lite ? `blur(${maxBlurPx}px)` : `${brightnessPrefix}blur(${maxBlurPx}px)`;
+          }
         }
         return;
       }
@@ -1260,7 +1268,7 @@ export default function CinematicStage({
           void frame.offsetHeight; // commit the blurred start before easing out of it
           frame.style.transition = `filter ${blurSeconds}s ease`;
           frame.style.filter = "none";
-        } else if (frame && !settling && remaining - HOLD_BACK_SECONDS <= blurSeconds) {
+        } else if (frame && !settling && phase.settle !== false && remaining - HOLD_BACK_SECONDS <= blurSeconds) {
           settling = true;
           frame.style.filter = `blur(${maxBlurPx}px)`;
         }
@@ -1277,7 +1285,7 @@ export default function CinematicStage({
       // closed the gap in one step.
       const settleT = Math.min(1, Math.max(0, (remaining - HOLD_BACK_SECONDS) / blurSeconds));
       const blurIn = (1 - smoothstep(revealT)) * maxBlurPx;
-      const blurOut = (1 - smoothstep(settleT)) * maxBlurPx;
+      const blurOut = phase.settle === false ? 0 : (1 - smoothstep(settleT)) * maxBlurPx;
       const blur = Math.max(blurIn, blurOut);
       if (frame) {
         frame.style.filter = blur > 0.4 ? `${brightnessPrefix}blur(${blur.toFixed(1)}px)` : brightnessPrefix.trim();
