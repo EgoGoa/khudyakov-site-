@@ -64,7 +64,7 @@ export const sitesRedesignContent: CompactToolContent = {
     { value: "−7%", label: "конверсии на каждую лишнюю секунду загрузки" },
   ],
 
-  backdrop: { from: "#ff4fd8", to: "#00d2ff" },
+  backdrop: { from: "#ff6f61", to: "#00c2b2" },
 
   taskPrompt: "Что не так с текущим сайтом",
   taskNote:
@@ -104,10 +104,10 @@ export const sitesRedesignContent: CompactToolContent = {
       promise: "редизайн не откатывает накопленные позиции в поиске",
     },
   ],
-  taskMedia: { photo: "/images/stock/speed-lines-pink.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
+  taskMedia: { photo: "/images/stock/speed-lines-pink.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
-    media: { photo: "/images/stock/robot-hand-white.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
+    media: { photo: "/images/stock/robot-hand-white.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -159,7 +159,7 @@ export const sitesRedesignContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/stock/smart-glasses-pale.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
+    media: { photo: "/images/stock/smart-glasses-pale.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -204,7 +204,7 @@ export const sitesRedesignContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" },
+    media: { gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium" },
     eyebrow: "Зависит от объёма",
     align: "center",
     title: (
@@ -224,7 +224,7 @@ export const sitesRedesignContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/stock/brain-circuit.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
+    media: { photo: "/images/stock/brain-circuit.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как старый сайт становится новым",
@@ -270,7 +270,7 @@ export const sitesRedesignContent: CompactToolContent = {
   },
 
   faq: {
-    media: { photo: "/images/stock/holo-keyboard.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
+    media: { photo: "/images/stock/holo-keyboard.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "FAQ",
     align: "left",
     title: (

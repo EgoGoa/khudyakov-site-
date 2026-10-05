@@ -83,7 +83,7 @@ export const SITE_SPOTLIGHT_PREFIX = "site-";
 
 /** Акцент страницы /sites — тот же розово-голубой градиент, что у заголовков
  *  глав и рельсы (`backdrop` страниц форматов). */
-export const SITES_ACCENT = { from: "#ff4fd8", to: "#00d2ff" };
+export const SITES_ACCENT = { from: "#ff6f61", to: "#00c2b2" };
 
 export function siteSpotlight(key: string): Spotlight | null {
   if (!key.startsWith(SITE_SPOTLIGHT_PREFIX)) return null;

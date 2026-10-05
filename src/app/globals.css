@@ -402,8 +402,8 @@ html[data-mid] .hero-wm .hero-wm-line {
 }
 .hero-wm-word.is-ai .hero-wm-base,
 .hero-wm-word.is-ai .hero-wm-fill {
-  background-image: linear-gradient(90deg, #ff4fd8 0%, #00d2ff 100%);
-  filter: drop-shadow(0 0 14px rgba(255, 79, 216, 0.45));
+  background-image: linear-gradient(90deg, #ff5a1f 0%, #ffb020 100%);
+  filter: drop-shadow(0 0 14px rgba(255, 90, 31, 0.45));
 }
 .hero-wm-word.is-ai .hero-wm-line {
   -webkit-text-stroke-color: rgba(255, 79, 216, 0.85);
@@ -596,7 +596,7 @@ html[data-mid] .hero-wm .hero-wm-line {
    glow, per the founder's logo. Drop-shadow rather than text-shadow because
    text-shadow can't pick up a gradient fill's colour. */
 .header-ai-mark {
-  background-image: linear-gradient(90deg, #ff4fd8 0%, #00d2ff 100%);
+  background-image: linear-gradient(90deg, #ff5a1f 0%, #ffb020 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -727,14 +727,14 @@ html[data-mid] .hero-wm .hero-wm-line {
    the painted gradient rather than the glyph's fill. */
 .chapter-neon-warm .kw,
 .kw {
-  background-image: linear-gradient(90deg, #ff4fd8 0%, #00d2ff 100%);
+  background-image: linear-gradient(90deg, #ff5a1f 0%, #ffb020 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
   text-shadow: none;
-  filter: drop-shadow(0 0 10px rgba(255, 79, 216, 0.45))
-    drop-shadow(0 0 26px rgba(0, 210, 255, 0.4));
+  filter: drop-shadow(0 0 10px rgba(255, 90, 31, 0.45))
+    drop-shadow(0 0 26px rgba(255, 176, 32, 0.38));
 }
 
 /* Every heading inside /sites' stage, including the chapters whose
@@ -775,6 +775,13 @@ html[data-mid] .hero-wm .hero-wm-line {
   background-image: linear-gradient(90deg, #c8f169 0%, #10b981 100%);
   filter: drop-shadow(0 0 10px rgba(200, 241, 105, 0.4))
     drop-shadow(0 0 26px rgba(16, 185, 129, 0.42));
+}
+
+/* /sites — коралл и бирюза (Егор, 2026-10-05). */
+.sites-warm-headings .kw {
+  background-image: linear-gradient(90deg, #ff6f61 0%, #00c2b2 100%);
+  filter: drop-shadow(0 0 10px rgba(255, 111, 97, 0.4))
+    drop-shadow(0 0 26px rgba(0, 194, 178, 0.38));
 }
 
 /* /content's own keyword gradient — magenta to orange (Egor's pick, variant
@@ -1800,7 +1807,7 @@ html[data-mid] .hero-wm .hero-wm-line {
    gradient can actually run around all four sides. */
 .promo-card-border {
   padding: 1.5px;
-  background: linear-gradient(120deg, #ff4fd8, #ff6a3d, #ff4fd8);
+  background: linear-gradient(120deg, #ff5a1f, #ffb020, #ff5a1f);
   background-size: 220% 220%;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -1828,7 +1835,7 @@ html[data-mid] .hero-wm .hero-wm-line {
    headline, shifting slowly across the pill instead of sitting flat, so
    the badge reads as lit rather than just a label. */
 .promo-card-badge {
-  background: linear-gradient(90deg, #ff4fd8, #ff6a3d, #ff4fd8);
+  background: linear-gradient(90deg, #ff5a1f, #ffb020, #ff5a1f);
   background-size: 200% 100%;
   animation: promo-card-badge-shimmer 4s ease-in-out infinite;
 }
@@ -1855,7 +1862,7 @@ html[data-mid] .hero-wm .hero-wm-line {
    card's border, so it needs to read as lit on its own rather than borrow
    the card's ambient glow underneath it). */
 .promo-card-badge-lift {
-  background: linear-gradient(90deg, #ff4fd8, #ff6a3d, #ff4fd8);
+  background: linear-gradient(90deg, #ff5a1f, #ffb020, #ff5a1f);
   background-size: 200% 100%;
   animation: promo-card-badge-shimmer 6s ease-in-out infinite, promo-card-badge-blink 3.2s ease-in-out infinite;
   box-shadow: 0 4px 14px -2px rgba(255, 79, 216, 0.6), 0 0 10px 0px rgba(255, 106, 61, 0.5);
@@ -2106,12 +2113,12 @@ html[data-mid] .hero-wm .hero-wm-line {
 }
 
 .promo-card-cyan .promo-card-border {
-  background: linear-gradient(120deg, #00d2ff, #6a5cff, #00d2ff);
+  background: linear-gradient(120deg, #ff5a1f, #ffb020, #ff5a1f);
   background-size: 220% 220%;
 }
 
 .promo-card-cyan .promo-card-badge {
-  background: linear-gradient(90deg, #00d2ff, #6a5cff, #00d2ff);
+  background: linear-gradient(90deg, #ff5a1f, #ffb020, #ff5a1f);
   background-size: 200% 100%;
 }
 
@@ -2121,7 +2128,7 @@ html[data-mid] .hero-wm .hero-wm-line {
 }
 
 .promo-card-title-cyan {
-  background-image: linear-gradient(90deg, #00d2ff 0%, #6a5cff 100%);
+  background-image: linear-gradient(90deg, #ff5a1f 0%, #ffb020 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -9860,7 +9867,7 @@ html[data-lite] .hero-promo-slot { filter: none; }
   position: absolute;
   inset: 0;
   transform-origin: left center;
-  background: linear-gradient(90deg, #ff4fd8, #ff6a3d);
+  background: linear-gradient(90deg, #ff5a1f, #ffb020);
   animation: hero-promo-timer 5s linear both;
 }
 @keyframes hero-promo-timer {

@@ -63,7 +63,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
     { value: "CRM", label: "интеграция форм в вашу воронку — в пакете" },
   ],
 
-  backdrop: { from: "#ff4fd8", to: "#00d2ff" },
+  backdrop: { from: "#ff6f61", to: "#00c2b2" },
 
   taskPrompt: "Что должен делать каталог",
   taskNote:
@@ -103,10 +103,10 @@ export const sitesTurnkeyContent: CompactToolContent = {
       promise: "первый ответ клиенту даёт ассистент, а не тишина до утра",
     },
   ],
-  taskMedia: { photo: "/images/stock/platform-speed.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
+  taskMedia: { photo: "/images/stock/platform-speed.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
-    media: { photo: "/images/stock/vr-fitness-white.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light", position: "75% 45%" },
+    media: { photo: "/images/stock/vr-fitness-white.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light", position: "75% 45%" },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -158,7 +158,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/stock/paint-pastel.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
+    media: { photo: "/images/stock/paint-pastel.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -203,7 +203,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" },
+    media: { gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -222,7 +222,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/stock/team-night-office.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", position: "25% 45%" },
+    media: { photo: "/images/stock/team-night-office.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "full", position: "25% 45%" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как каталог становится сайтом",
@@ -268,7 +268,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
   },
 
   faq: {
-    media: { photo: "/images/stock/wave-abstract.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
+    media: { photo: "/images/stock/wave-abstract.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "quiet", sharp: true, scrim: "full" },
     eyebrow: "FAQ",
     align: "left",
     title: (

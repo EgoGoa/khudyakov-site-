@@ -27,7 +27,7 @@ const LABEL_ACCENT: Partial<
 > = {
   content: { word: "контента", from: "#ff4fd8", to: "#ff6a3d" },
   ai: { word: "AI", from: "#c8f169", to: "#10b981" },
-  sites: { word: "Vibe", from: "#ff4fd8", to: "#00d2ff" },
+  sites: { word: "Vibe", from: "#ff6f61", to: "#00c2b2" },
   // /smm has no entry here on purpose. Once the page itself was rebuilt with
   // its own violet identity, Egor asked for this label to read exactly like
   // that page's chapter heading — the near-white word under one soft violet

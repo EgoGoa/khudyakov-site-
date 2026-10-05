@@ -22,7 +22,7 @@ import { serviceOrder, servicesByCategory, type ServiceKey } from "@/lib/service
 const GRADIENT: Record<ServiceKey, { from: string; to: string }> = {
   content: { from: "#ff4fd8", to: "#ff6a3d" },
   ai: { from: "#c8f169", to: "#10b981" },
-  sites: { from: "#ff4fd8", to: "#00d2ff" },
+  sites: { from: "#ff6f61", to: "#00c2b2" },
   smm: { from: "#a855f7", to: "#38bdf8" },
 };
 

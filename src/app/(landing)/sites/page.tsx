@@ -125,7 +125,7 @@ export default function SitesServicePage() {
         // site-wide, unlike /ai's page-specific lime→emerald) — Egor's call,
         // matching the rail's colour to the actual keyword accent rather than
         // to the page's separate orange halo.
-        rail={<ChapterRail count={CHAPTERS.length} from="#ff4fd8" to="#00d2ff" />}
+        rail={<ChapterRail count={CHAPTERS.length} from="#ff6f61" to="#00c2b2" />}
       >
         <SitesPitch />
         <SitesMethodAudience />

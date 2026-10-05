@@ -61,7 +61,7 @@ export const sitesCardContent: CompactToolContent = {
     { value: "до 5", label: "страниц — типовая структура визитки" },
   ],
 
-  backdrop: { from: "#ff4fd8", to: "#00d2ff" },
+  backdrop: { from: "#ff6f61", to: "#00c2b2" },
 
   taskPrompt: "Что сейчас представляет компанию в интернете",
   taskNote:
@@ -101,10 +101,10 @@ export const sitesCardContent: CompactToolContent = {
       promise: "структура сразу закладывается под каталог и интеграции",
     },
   ],
-  taskMedia: { photo: "/images/stock/man-laptop-green.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
+  taskMedia: { photo: "/images/stock/man-laptop-green.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
-    media: { photo: "/images/stock/holo-keyboard.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
+    media: { photo: "/images/stock/holo-keyboard.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -156,7 +156,7 @@ export const sitesCardContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/stock/businesswoman-office.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", tone: "light", position: "25% 45%" },
+    media: { photo: "/images/stock/businesswoman-office.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "full", tone: "light", position: "25% 45%" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -201,7 +201,7 @@ export const sitesCardContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" },
+    media: { gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -221,7 +221,7 @@ export const sitesCardContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/stock/collage-laptop-head.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
+    media: { photo: "/images/stock/collage-laptop-head.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как компания становится сайтом",
@@ -267,7 +267,7 @@ export const sitesCardContent: CompactToolContent = {
   },
 
   faq: {
-    media: { photo: "/images/stock/statue-torn-paper.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
+    media: { photo: "/images/stock/statue-torn-paper.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "FAQ",
     align: "left",
     title: (

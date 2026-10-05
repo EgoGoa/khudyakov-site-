@@ -69,7 +69,7 @@ export const sitesLandingContent: CompactToolContent = {
     { value: "5 дней", label: "срок в нашем стартовом пакете" },
   ],
 
-  backdrop: { from: "#ff4fd8", to: "#00d2ff" },
+  backdrop: { from: "#ff6f61", to: "#00c2b2" },
 
   taskPrompt: "Какая у лендинга задача",
   taskNote:
@@ -109,10 +109,10 @@ export const sitesLandingContent: CompactToolContent = {
       promise: "решение о большом сайте принимается по цифрам, а не наугад",
     },
   ],
-  taskMedia: { photo: "/images/stock/devs-night.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
+  taskMedia: { photo: "/images/stock/devs-night.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "quiet", sharp: true, scrim: "full" },
 
   audience: {
-    media: { photo: "/images/stock/desk-aerial.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
+    media: { photo: "/images/stock/desk-aerial.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "left", panel: true, tone: "light" },
     eyebrow: "Кому подходит",
     align: "left",
     title: (
@@ -164,7 +164,7 @@ export const sitesLandingContent: CompactToolContent = {
   },
 
   tech: {
-    media: { photo: "/images/stock/planner-desk.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
+    media: { photo: "/images/stock/planner-desk.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "full", tone: "light" },
     eyebrow: "Под капотом",
     align: "right",
     title: (
@@ -209,7 +209,7 @@ export const sitesLandingContent: CompactToolContent = {
   },
 
   pricing: {
-    media: { gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium" },
+    media: { gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium" },
     eyebrow: "Три сценария",
     align: "center",
     title: (
@@ -228,7 +228,7 @@ export const sitesLandingContent: CompactToolContent = {
   },
 
   process: {
-    media: { photo: "/images/stock/woman-coffee-desk.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
+    media: { photo: "/images/stock/woman-coffee-desk.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "medium", sharp: true, scrim: "full", position: "75% 45%" },
     eyebrow: "Как это делается",
     align: "sticky",
     typed: "Как оффер становится страницей",
@@ -274,7 +274,7 @@ export const sitesLandingContent: CompactToolContent = {
   },
 
   faq: {
-    media: { photo: "/images/stock/holo-keyboard.webp", gradient: { from: "#ff4fd8", to: "#00d2ff" }, intensity: "quiet", sharp: true, scrim: "full" },
+    media: { photo: "/images/stock/holo-keyboard.webp", gradient: { from: "#ff6f61", to: "#00c2b2" }, intensity: "quiet", sharp: true, scrim: "full" },
     eyebrow: "FAQ",
     align: "left",
     title: (
