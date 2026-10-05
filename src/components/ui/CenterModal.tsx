@@ -169,10 +169,15 @@ export default function CenterModal({
             // items-start вместо items-center только у вступительной сцены
             // (bare) — Егор попросил поднять лого выше; остальные окна
             // (бриф, вайб-режим блока) остаются вертикально по центру.
-            bare ? "welcome-backdrop bg-ink/30 items-start" : "bg-ink/50 items-center"
+            bare ? "items-start" : "items-center"
           }`}
           onClick={onClose}
         >
+          {/* Сайт за окном темнеет и уходит в расфокус — как за кабинетом
+              (CabinetWindow). Затемнение и блюр — отдельным слоем рядом с
+              окном, а не на контейнере: backdrop-filter предка ломает блюр
+              стекла самого окна. */}
+          <div className="site-scrim" aria-hidden="true" />
           <motion.div
             // Вступительная сцена (bare) на входе не анимируется как единый
             // блок — заголовок, карточки и логотип внутри уже растворяются

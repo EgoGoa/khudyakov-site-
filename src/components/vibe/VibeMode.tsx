@@ -308,6 +308,8 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
       className="vibe-mode fixed inset-0 z-[100] flex items-center justify-center p-4 outline-none"
       onClick={onClose}
     >
+      {/* Сайт за окном темнеет и уходит в расфокус — как за кабинетом. */}
+      <div className="site-scrim" aria-hidden="true" />
       {/* Окошко по центру (Егор: «окошко, а не на весь экран»). */}
       <motion.div
         // Общая анимация окон сайта (WIN, lib/motion).

@@ -5835,9 +5835,12 @@ html:not([data-lite])[data-mid] .sp-pulse {
   content: "";
   position: absolute;
   inset: 0;
-  /* Сайт за окном не размыт, а погашен вдвое — еле виден (Егор,
-     2026-09-27). Гаснет плавно. */
-  background: rgba(2, 2, 5, 0.3);
+  /* Сайт за окном темнеет и уходит в расфокус — как за кабинетом
+     (Егор, 2026-10-05): bg-ink/75 и блюр 12px, один слой на весь экран.
+     Гаснет плавно. */
+  background: rgba(11, 11, 16, 0.75);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   /* Егор, 2026-10-03: сайт за меню читался насквозь и сливался. Размытие
      лежит на подложке, одним слоем на весь экран, а заливка окон ниже
      плотная — даже если браузер не нарисует блюр, текст под ними не
@@ -5874,6 +5877,11 @@ html:not([data-lite])[data-mid] .sp-pulse {
     opacity 0.45s ease,
     transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     filter 0.45s ease;
+}
+html[data-lite] .welcome-shell::before {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: rgba(6, 6, 10, 0.88);
 }
 .welcome-shell.is-leaving { pointer-events: none; }
 .welcome-shell.is-leaving::before { opacity: 0; }
@@ -7751,7 +7759,7 @@ html[data-lite] .vibe-tip {
   /* Егор, 2026-10-03: сайт за вайб-окном читался насквозь — теперь он
      размыт и притемнён по всему экрану (одним слоем), а заливка самого
      окна ниже плотная. */
-  background: rgba(3, 3, 6, 0.3);
+  background: transparent; /* затемнение и блюр — слой .site-scrim */
 }
 .vibe-mode input,
 .vibe-mode button,
@@ -10626,4 +10634,22 @@ html[data-mid] :is(.welcome-window, .vibe-mode__window) {
   display: block;
   margin-top: -2px;
   margin-bottom: 6px;
+}
+
+/* Подложка окон: сайт темнеет и мягко размывается — тот же приём, что у окна
+   кабинета (bg-ink/75 + backdrop-blur-md). Отдельный слой под окном: фильтр на
+   предке окна ломает его собственное стекло. На слабых устройствах блюра нет,
+   только плотное затемнение. */
+.site-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: rgba(11, 11, 16, 0.75);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+html[data-lite] .site-scrim {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: rgba(6, 6, 10, 0.88);
 }
