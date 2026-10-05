@@ -409,7 +409,7 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
   sites: [
     {
       name: "Лендинг",
-      price: "от 60 000 ₽",
+      price: "от 29 000 ₽",
       tagline: "Одна страница под задачу",
       team: "Срок — 5 рабочих дней",
       features: [
@@ -421,7 +421,7 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
     },
     {
       name: "Сайт-визитка",
-      price: "от 120 000 ₽",
+      price: "от 59 000 ₽",
       tagline: "До 5 страниц, всё включено",
       team: "Срок — 8 рабочих дней",
       features: [
@@ -433,7 +433,7 @@ export const pricingByCategory: Record<ServiceKey, PricingTier[]> = {
     },
     {
       name: "Сайт под ключ",
-      price: "от 220 000 ₽",
+      price: "от 119 000 ₽",
       tagline: "Многостраничный сайт с интеграциями",
       team: "Срок — 14 рабочих дней",
       features: [
