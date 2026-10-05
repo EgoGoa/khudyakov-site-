@@ -135,6 +135,92 @@ const OVERRIDES: Record<string, Partial<WorkStats>> = {
     timeline: "2 недели",
     budget: "220 000 ₽",
   },
+  "6up7b9Slc2s": {
+    // AMSARVEDA · имиджевый фильм, Гоа
+    timeline: "3 недели",
+    budget: "377 000 ₽",
+  },
+  "4Aj7F2Nz7BM": {
+    // БЕЛЫЙ КИТ · 32 оттенка белого
+    timeline: "2 недели",
+    budget: "183 000 ₽",
+  },
+  esFKWcX1wIM: {
+    // Корпоративный фильм · медцентр VITOM
+    shootLabel: "Съёмка",
+    shootValue: "3 смены",
+    timeline: "3 недели",
+    budget: "471 000 ₽",
+  },
+  "6faTn2p6O4E": {
+    // Корпоративный фильм · ATOMUS GROUP
+    timeline: "3 недели",
+    budget: "348 000 ₽",
+  },
+  fKODIj4svZU: {
+    // ZEN FACTORY · промо
+    timeline: "1 неделя",
+    budget: "82 000 ₽",
+  },
+  pOV5EnAB05U: {
+    // Федеральная школа вождения VEKTOR
+    shootLabel: "Съёмка",
+    shootValue: "3 смены",
+    budget: "419 000 ₽",
+  },
+  FtwaFzYvwkc: {
+    // РУСТЕХ · 3D-трекинг и инфографика
+    timeline: "1 неделя",
+    budget: "85 000 ₽",
+  },
+  znxECfyxtX0: {
+    // PROFILACTIKA · моушн-промо
+    timeline: "1 неделя",
+  },
+  lcIUQ6Mo_to: {
+    // Первый гипермаркет мебели · анимационный ролик
+    timeline: "2 недели",
+    budget: "45 000 ₽",
+  },
+  "0kHKcCuqh74": {
+    // Рекламный ролик KIA
+    shootLabel: "Съёмка",
+    shootValue: "1 смена",
+    timeline: "2 недели",
+    budget: "160 000 ₽",
+  },
+  iaHvMPD9xQs: {
+    // Имиджевое промо CARPOINT
+    timeline: "2 недели",
+    budget: "220 000 ₽",
+  },
+  _0ATM3z0rEQ: {
+    // Surf Coffee Челябинск · рекламный ролик
+    shootLabel: "Съёмка",
+    shootValue: "3 смены",
+    budget: "335 000 ₽",
+  },
+  Vssrdgfc_nI: {
+    // БЕЛЫЙ КИТ · Герой
+    shootLabel: "Съёмка",
+    shootValue: "1 смена",
+    timeline: "1 неделя",
+    budget: "290 000 ₽",
+  },
+  DlR4RTFiWC8: {
+    // ТВ-ролик «Школа Мира»
+    shootLabel: "Съёмка",
+    shootValue: "1 смена",
+    timeline: "1 неделя",
+    budget: "85 000 ₽",
+  },
+  zo0YyrkyI7w: {
+    // Батл дизайнеров · Лига дизайнеров
+    shootLabel: "Съёмка",
+    shootValue: "1 смена",
+    timeline: "1 неделя",
+    budget: "55 000 ₽",
+  },
   xnb_uuddJpA: {
     // Анимационный ролик · Школа сметчиков — реальные цифры от Егора.
     shootLabel: "Рендер",
@@ -160,7 +246,7 @@ const OVERRIDES: Record<string, Partial<WorkStats>> = {
     // 3D-анимация · франшиза GoodGame — реальные цифры от Егора.
     shootLabel: "Рендер",
     shootValue: "35 часов рендера",
-    timeline: "3 недели",
+    timeline: "2 недели",
     budget: "345 000 ₽",
   },
 };

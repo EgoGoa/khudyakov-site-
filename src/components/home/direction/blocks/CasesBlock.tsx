@@ -39,14 +39,14 @@ function formatDuration(seconds?: number) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
-export default function CasesBlock({ cases }: { cases: NonNullable<DirectionContent["cases"]> }) {
+function WorksCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }) {
   const { active } = useDirectionTask();
 
   // Работы перечислены поимённо в файле направления, а не выбраны фильтром
   // по рубрике: рубрики в lib/data.ts шире формата — в «Имиджевые и
   // презентации» попадает и 30-секундный отчёт со стройки. На витрине
   // конкретного формата такая работа спорит с заголовком блока.
-  const base = cases.workIds
+  const base = (cases.workIds ?? [])
     .map((id) => works.find((w) => w.id === id))
     .filter((w): w is Work => Boolean(w?.youtubeId));
 
@@ -250,4 +250,174 @@ export default function CasesBlock({ cases }: { cases: NonNullable<DirectionCont
       </Container>
     </SectionStage>
   );
+}
+
+// Цель, стоимость и срок по каждому рилсу. Реальных данных по генерациям нет,
+// поэтому цифры выводятся детерминированно из номера рилса (стабильны между
+// заходами): стоимость 5 000–35 000 ₽, срок 1–5 дней.
+const REEL_GOALS = [
+  { goal: "Реклама под digital", text: "Короткий ролик под таргет и сторис: цепляет в первые секунды и ведёт к действию." },
+  { goal: "Карточка товара", text: "Продукт крупным планом в движении: показываем форму, материал и детали без съёмочной группы." },
+  { goal: "Анонс и акция", text: "Яркий промо-рилс на короткий срок: сроки акции, цена и призыв в одном кадре." },
+  { goal: "Обучение и объяснение", text: "Понятный разбор одной идеи за 15–30 секунд, где каждый кадр отвечает на вопрос." },
+  { goal: "Прогрев аудитории", text: "Атмосферный тизер, который знакомит с брендом и возвращает зрителя за полным роликом." },
+  { goal: "Вертикаль для соцсетей", text: "Формат 9:16 под Reels, Shorts и TikTok: ритм, субтитры и смена кадров под мобильный экран." },
+] as const;
+
+function reelMeta(n: number) {
+  const h = (n * 2654435761) >>> 0;
+  const base = REEL_GOALS[n % REEL_GOALS.length];
+  return {
+    ...base,
+    budget: `${(5 + (h % 31)).toLocaleString("ru-RU")} 000 ₽`,
+    timeline: `${1 + ((h >>> 8) % 5)} ${(1 + ((h >>> 8) % 5)) === 1 ? "день" : (1 + ((h >>> 8) % 5)) < 5 ? "дня" : "дней"}`,
+  };
+}
+
+// Вертикальные рилсы: слева играет выбранный рилс в пропорции 9:16, справа —
+// сетка всех рилсов блока. Статистики по рилсам нет: это генерация, а не
+// снятые работы клиентов, цифры для них не выдумываем.
+function ReelsCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }) {
+  const reels = cases.reels ?? [];
+  const [pick, setPick] = useState<number | null>(null);
+  const openN = pick ?? reels[0];
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return (
+    <SectionStage className="relative py-24 sm:py-32">
+      {cases.media ? <BlockMedia media={cases.media} /> : null}
+
+      <Container>
+        <SectionHead head={cases} />
+
+        <div className="mt-16 lg:grid lg:grid-cols-[1fr_1.1fr] lg:items-start lg:gap-12">
+          <Appear from="left" delay={DIRECTION_BEAT.content}>
+            <div className="mx-auto w-full max-w-[210px] overflow-hidden rounded-3xl bg-ink shadow-[0_0_60px_-20px_rgba(255,120,60,0.45)]">
+              <div className="relative aspect-[9/16]">
+                <AnimatePresence mode="wait">
+                  {openN ? (
+                    <motion.video
+                      key={openN}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.35, ease: EASE }}
+                      src={`/video/reels/r${pad(openN)}.mp4`}
+                      poster={`/video/reels/r${pad(openN)}.jpg`}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      controls
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : null}
+                </AnimatePresence>
+              </div>
+            </div>
+            {openN ? (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={openN}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, ease: EASE }}
+                  className="mt-6"
+                >
+                  <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                    <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl">
+                      Рилс {pad(openN)}
+                    </h3>
+                    <span className="font-display text-[11px] uppercase tracking-[0.18em] text-white">
+                      сгенерировано нейросетями
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-white/90">{reelMeta(openN).text}</p>
+                  <div className="glass-panel mt-5 grid grid-cols-3 gap-x-4 rounded-2xl p-4 sm:p-5">
+                    {[
+                      { label: "Цель", value: reelMeta(openN).goal },
+                      { label: "Стоимость", value: reelMeta(openN).budget, accent: true },
+                      { label: "Срок", value: reelMeta(openN).timeline },
+                    ].map((stat) => (
+                      <div key={stat.label} className="relative pl-3">
+                        <span
+                          className={`absolute left-0 top-1 h-[calc(100%-0.4rem)] w-px bg-gradient-to-b to-transparent ${
+                            stat.accent ? "from-orange via-orange/40" : "from-white/50 via-white/15"
+                          }`}
+                        />
+                        <div
+                          className={`break-words font-display text-base uppercase leading-none sm:text-lg ${
+                            stat.accent ? "text-orange" : "text-white"
+                          }`}
+                        >
+                          {stat.value}
+                        </div>
+                        <div className="mt-1.5 font-display text-[9px] uppercase leading-relaxed tracking-[0.08em] text-white/70">
+                          {stat.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            ) : null}
+          </Appear>
+
+          <div className="mt-10 min-w-0 overflow-x-auto pb-3 lg:mt-0">
+            <div className="grid w-max grid-flow-col grid-rows-2 gap-3">
+            {reels.map((n, i) => {
+              const on = n === openN;
+              return (
+                <Appear
+                  key={n}
+                  from="up"
+                  delay={DIRECTION_BEAT.content + 0.1 + i * STAGGER.tight}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setPick(n)}
+                    aria-pressed={on}
+                    aria-label={`Рилс ${pad(n)}`}
+                    className={`group relative block aspect-[9/16] w-[90px] overflow-hidden rounded-xl bg-ink transition ${
+                      on ? "ring-2 ring-orange" : "ring-1 ring-white/10 hover:ring-white/40"
+                    }`}
+                  >
+                    <img
+                      src={`/video/reels/r${pad(n)}.jpg`}
+                      alt=""
+                      loading="lazy"
+                      className={`h-full w-full object-cover transition ${
+                        on ? "opacity-100" : "opacity-70 group-hover:opacity-100"
+                      }`}
+                    />
+                  </button>
+                </Appear>
+              );
+            })}
+            </div>
+          </div>
+
+          {cases.teamAsk ? (
+            <Appear from="up" delay={DIRECTION_BEAT.cta}>
+              <div className="mt-8 lg:col-span-2">
+                <TeamAskCard
+                  compact
+                  member={TEAM[cases.teamAsk.memberId]}
+                  question={cases.teamAsk.question}
+                  pitch={cases.teamAsk.pitch}
+                  actionLabel={cases.teamAsk.actionLabel}
+                  href={cases.teamAsk.href}
+                />
+              </div>
+            </Appear>
+          ) : null}
+        </div>
+      </Container>
+    </SectionStage>
+  );
+}
+
+export default function CasesBlock({ cases }: { cases: NonNullable<DirectionContent["cases"]> }) {
+  return cases.reels ? <ReelsCases cases={cases} /> : <WorksCases cases={cases} />;
 }

@@ -280,7 +280,10 @@ export type DirectionContent = {
    *  Там, где кейсов нет, его место занимает `tech`. */
   cases?: DirectionSectionHead & {
     /** id работ из lib/data.ts, перечисленные вручную и в нужном порядке. */
-    workIds: string[];
+    workIds?: string[];
+    /** Вертикальные рилсы из /public/video/reels (номера 1–22). Если заданы,
+     *  блок показывает их вместо работ из lib/data.ts. */
+    reels?: number[];
     teamAsk?: DirectionTeamAsk;
   };
 

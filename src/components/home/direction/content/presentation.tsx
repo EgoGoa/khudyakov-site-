@@ -236,7 +236,7 @@ export const presentationContent: DirectionContent = {
       {
         id: "base",
         name: "Базовый",
-        price: "от 250 000 ₽",
+        price: "от 65 000 ₽",
         tagline: "Компания одним фильмом",
         features: [
           "Одна съёмочная смена на вашей площадке",
@@ -247,7 +247,7 @@ export const presentationContent: DirectionContent = {
       {
         id: "work",
         name: "Рабочий",
-        price: "от 450 000 ₽",
+        price: "от 240 000 ₽",
         tagline: "Фильм под тендер и переговоры",
         features: [
           "2–3 смены: производство, продукт, люди",
@@ -261,7 +261,7 @@ export const presentationContent: DirectionContent = {
       {
         id: "strong",
         name: "Усиленный",
-        price: "от 1 200 000 ₽",
+        price: "от 960 000 ₽",
         tagline: "Съёмка плюс 3D-графика",
         features: [
           "До 5 смен и несколько площадок, включая выезд",
