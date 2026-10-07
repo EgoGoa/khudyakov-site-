@@ -395,6 +395,21 @@ export default function NanoWave({
           ctx.fill();
         }
       }
+
+      // Затухание к краям рисуем в самом холсте, а не CSS-маской: маска
+      // вместе с filter на холсте при прокрутке резала левый край жёстким
+      // обрезом (Егор, 2026-10-07).
+      if (dust) {
+        const fade = ctx.createLinearGradient(0, 0, W, 0);
+        fade.addColorStop(0, "rgba(0,0,0,0)");
+        fade.addColorStop(0.3, "rgba(0,0,0,1)");
+        fade.addColorStop(0.7, "rgba(0,0,0,1)");
+        fade.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.globalCompositeOperation = "destination-in";
+        ctx.fillStyle = fade;
+        ctx.fillRect(0, 0, W, H);
+        ctx.globalCompositeOperation = "source-over";
+      }
     };
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -460,12 +475,6 @@ export default function NanoWave({
         style={{
           width: width + padX * 2,
           height: height + padY * 2,
-          ...(dust
-            ? {
-                maskImage: "linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)",
-              }
-            : null),
         }}
       />
     </span>

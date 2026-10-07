@@ -8483,7 +8483,7 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
 .voice-sphere.is-active:hover .voice-sphere-core { transform: scale(1.02); }
 .voice-stage .voice-sphere-core { transform: none; filter: none; }
 /* Появление при загрузке страницы — мягкое проступание из размытия. */
-.nano-wave-canvas { animation: nano-wave-in 1.6s cubic-bezier(0.45, 0, 0.15, 1) both; }
+.nano-wave-canvas { animation: nano-wave-in 1.6s cubic-bezier(0.45, 0, 0.15, 1) backwards; }
 @keyframes nano-wave-in {
   from { opacity: 0; filter: blur(8px); }
   to { opacity: 1; filter: blur(0); }
