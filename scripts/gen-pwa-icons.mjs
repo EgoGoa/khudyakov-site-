@@ -121,7 +121,25 @@ for (const [id, v] of Object.entries(VARIANTS)) {
 // Значок вкладки: слово в 16px не читается — только буква H на том же
 // градиенте, с мягким скруглением (вкладки показывают иконку как есть).
 const fav = `<rect width="512" height="512" rx="112" fill="url(#g)"/>${word("H", 256, 256, 250, "#fff")}`;
-await sharp(svgOf(fav, 64)).png().toFile("src/app/icon.png");
+// Google берёт для выдачи только квадрат кратный 48px (48, 96, 192…), поэтому
+// 192; Яндекс первым делом смотрит /favicon.ico — кладём его с 16/32/48 внутри.
+await sharp(svgOf(fav, 192)).png().toFile("src/app/icon.png");
+const icoPngs = await Promise.all([16, 32, 48].map((s) => sharp(svgOf(fav, s)).png().toBuffer()));
+const icoHead = Buffer.alloc(6 + 16 * icoPngs.length);
+icoHead.writeUInt16LE(1, 2);
+icoHead.writeUInt16LE(icoPngs.length, 4);
+let icoOff = icoHead.length;
+icoPngs.forEach((png, i) => {
+  const s = [16, 32, 48][i], e = 6 + 16 * i;
+  icoHead.writeUInt8(s, e);
+  icoHead.writeUInt8(s, e + 1);
+  icoHead.writeUInt16LE(1, e + 4);
+  icoHead.writeUInt16LE(32, e + 6);
+  icoHead.writeUInt32LE(png.length, e + 8);
+  icoHead.writeUInt32LE(icoOff, e + 12);
+  icoOff += png.length;
+});
+writeFileSync("src/app/favicon.ico", Buffer.concat([icoHead, ...icoPngs]));
 await sharp(svgOf(VARIANTS.hud.body, 180)).png().toFile("src/app/apple-icon.png");
 
 writeFileSync("public/pwa/variants.json", JSON.stringify(Object.entries(VARIANTS).map(([id, v]) => ({ id, label: v.label })), null, 2) + "\n");
