@@ -5,6 +5,13 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
 
+# Старый домен hdkv-ai.ru (та же папка на хостинге) → hud-service.ru, адрес
+# в адрес: иначе Яндекс держит два одинаковых сайта и может считать главным
+# старый. .well-known не трогаем — по нему продлевается сертификат.
+RewriteCond %{HTTP_HOST} ^(www\.)?hdkv-ai\.ru$ [NC]
+RewriteCond %{REQUEST_URI} !^/\.well-known/
+RewriteRule ^(.*)$ https://hud-service.ru/$1 [R=301,L]
+
 # Корень сразу ведёт на «Создание контента» серверным 301. В статичной
 # версии redirect() из page.tsx срабатывает только в браузере, а робот
 # видел на главной пустую страницу-ошибку.
