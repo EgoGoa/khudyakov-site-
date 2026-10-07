@@ -1,13 +1,15 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { getStudioNews, type StudioNewsItem } from "@/lib/studioNews";
+import { WIN } from "@/lib/motion";
 
-// Новости студии — единый блок: каждая новость это карточка, где слева своя
-// карусель слайдов (сама листается раз в 3 с), справа текст. Сами новости тоже
-// листаются по горизонтали (карусель из каруселей). Одна новость — без внешних
-// стрелок. Акценты в заголовках — сплошные цвета бренда, без градиентов.
+// Новости студии — лента компактных карточек (видно сразу несколько новостей).
+// Клик по карточке раскрывает новость в большую: слева своя карусель слайдов
+// (сама листается раз в 3 с), справа текст. Акценты в заголовках — сплошные
+// цвета бренда, без градиентов.
 
 const news = getStudioNews();
 
@@ -256,16 +258,61 @@ function Text({ item }: { item: StudioNewsItem }) {
   );
 }
 
-export default function StudioNews() {
-  const outer = useRef<HTMLDivElement>(null);
-  const [n, setN] = useState(0);
-  if (news.length === 0) return null;
+// Компактная карточка новости в ленте: обложка, дата, заголовок, вступление.
+// Клик раскрывает новость целиком в большую карточку под лентой.
+function NewsCard({ item, active, onOpen }: { item: StudioNewsItem; active: boolean; onOpen: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-expanded={active}
+      className="group flex w-[calc(50%-8px)] shrink-0 snap-start flex-col overflow-hidden rounded-2xl text-left transition duration-300 hover:-translate-y-1 sm:w-[260px]"
+      style={{
+        background: "rgba(255,255,255,0.04)",
+        boxShadow: active
+          ? `inset 0 0 0 2px ${ORANGE}, 0 0 28px -6px ${ORANGE}`
+          : "inset 0 0 0 1px rgba(255,255,255,0.12)",
+      }}
+    >
+      <img
+        src={item.slides[0]}
+        alt=""
+        loading="lazy"
+        draggable={false}
+        className="aspect-[4/5] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+      />
+      <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
+        <time
+          dateTime={item.date}
+          className="self-start rounded-full px-2.5 py-0.5 font-display text-[11px] font-bold text-[#0b0b10] sm:text-[12px]"
+          style={{ background: LIME }}
+        >
+          {longDate(item.date)}
+        </time>
+        <h3 className="font-display text-[14px] font-extrabold leading-[1.2] text-white sm:text-[16px]">
+          <Accent text={item.title} accent={item.titleAccent} color={ORANGE} />
+        </h3>
+        <p className="hidden text-[13px] font-semibold leading-snug text-white sm:block">
+          <Accent text={item.lead} accent={item.leadAccent} color={LIME} />
+        </p>
+        <span className="mt-auto pt-1 font-display text-[11px] font-bold uppercase tracking-wider" style={{ color: ORANGE }}>
+          {active ? "Свернуть ↑" : "Открыть ↓"}
+        </span>
+      </div>
+    </button>
+  );
+}
 
-  const go = (to: number) => {
-    const el = outer.current;
-    if (!el) return;
-    const k = Math.min(news.length - 1, Math.max(0, to));
-    el.scrollTo({ left: k * el.clientWidth, behavior: "smooth" });
+export default function StudioNews() {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const big = useRef<HTMLDivElement>(null);
+  if (news.length === 0) return null;
+  const open = news.find((x) => x.id === openId) ?? null;
+
+  const toggle = (id: string) => {
+    setOpenId((cur) => (cur === id ? null : id));
+    // Раскрытая новость встаёт в кадр, когда окно уже начало раскрываться.
+    window.setTimeout(() => big.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 120);
   };
 
   return (
@@ -274,41 +321,34 @@ export default function StudioNews() {
         Новости <span style={{ color: ORANGE }}>студии</span>
       </h2>
 
-      <div className="relative mt-8">
-        <div
-          ref={outer}
-          onScroll={() => {
-            const el = outer.current;
-            if (el) setN(Math.round(el.scrollLeft / el.clientWidth));
-          }}
-          className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {news.map((item) => (
-            <Fragment key={item.id}>
-              <article
-                className="grid w-full shrink-0 snap-center items-start gap-8 rounded-3xl p-5 sm:p-8 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:gap-12"
-                style={{ background: "rgba(255,255,255,0.04)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.1)" }}
-              >
-                <Slides item={item} />
-                <Text item={item} />
-              </article>
-            </Fragment>
-          ))}
-        </div>
+      <div className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {news.map((item) => (
+          <NewsCard key={item.id} item={item} active={item.id === openId} onOpen={() => toggle(item.id)} />
+        ))}
+      </div>
 
-        {news.length > 1 && (
-          <div className="mt-4 flex items-center justify-center gap-4">
-            <button type="button" aria-label="Предыдущая новость" onClick={() => go(n - 1)} className="text-xl text-white/80 hover:text-white">
-              ←
-            </button>
-            <span className="font-display text-[11px] font-semibold tracking-widest text-white/70">
-              {n + 1} / {news.length}
-            </span>
-            <button type="button" aria-label="Следующая новость" onClick={() => go(n + 1)} className="text-xl text-white/80 hover:text-white">
-              →
-            </button>
-          </div>
-        )}
+      <div ref={big} className="scroll-mt-24">
+        <AnimatePresence mode="wait" initial={false}>
+          {open && (
+            <motion.article
+              key={open.id}
+              {...WIN}
+              className="relative mt-6 grid items-start gap-8 rounded-3xl p-5 sm:p-8 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:gap-12"
+              style={{ background: "rgba(255,255,255,0.04)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.1)" }}
+            >
+              <button
+                type="button"
+                aria-label="Свернуть новость"
+                onClick={() => setOpenId(null)}
+                className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-lg text-white transition hover:bg-white/20"
+              >
+                ×
+              </button>
+              <Slides item={open} />
+              <Text item={open} />
+            </motion.article>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
