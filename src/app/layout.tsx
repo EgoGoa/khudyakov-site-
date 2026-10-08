@@ -19,6 +19,7 @@ import BackgroundFX from "@/components/layout/BackgroundFX";
 import MediaGovernor from "@/components/layout/MediaGovernor";
 import HeadingFit from "@/components/layout/HeadingFit";
 import ScrollQuiet from "@/components/layout/ScrollQuiet";
+import { SLOW_VEIL_ORB_SCRIPT } from "@/components/layout/slowVeilOrb";
 import PerfGovernor from "@/components/layout/PerfGovernor";
 import MotionTier from "@/components/layout/MotionTier";
 import { LITE_DETECT_SNIPPET } from "@/lib/lite";
@@ -166,9 +167,11 @@ export default function RootLayout({
             только если страница не собралась за ~1.3с (см. SlowLoadVeil). */}
         <div id="slow-veil" aria-hidden="true">
           <div className="slow-veil__in">
-            <i className="slow-veil__ring" />
+            <canvas id="slow-veil-orb" className="slow-veil__orb" />
           </div>
         </div>
+        {/* Сфера рисуется сразу, без скриптов сайта (см. slowVeilOrb.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: SLOW_VEIL_ORB_SCRIPT }} />
         <SlowLoadVeil />
         <BackgroundFX />
         {/* Уточняет уровень устройства (слабое/среднее/сильное) по видеокарте
@@ -196,9 +199,6 @@ export default function RootLayout({
                   button never did either. */}
               <div className="relative z-10">
                 <Header />
-                {/* Полоса тени под шапкой — в одном слое с ней: стрелка
-                    «назад» (z-40) остаётся поверх тени, текст страницы — под. */}
-                <div aria-hidden="true" className="top-fade" />
                 {/* Вырез телефона в режиме приложения: страница начинается под шапкой. */}
                 <main style={{ paddingTop: "var(--sat)" }}>
                   <Breadcrumbs />

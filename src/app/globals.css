@@ -5896,8 +5896,10 @@ html[data-lite] .welcome-shell::before {
   overflow: hidden;
 }
 /* Сайт за стартовым окном замирает (lib/welcome-freeze): все CSS-анимации
-   вне окна на паузе и продолжатся с того же кадра после закрытия. */
-html[data-welcome-open]:not([data-welcome-snoozed]) body *:not(.welcome-shell, .welcome-shell *),
+   вне окна на паузе и продолжатся с того же кадра после закрытия. Кроме
+   экрана ожидания (#slow-veil): иначе при слабом интернете он так и не
+   проявлялся — стартовое окно открыто с первого байта. */
+html[data-welcome-open]:not([data-welcome-snoozed]) body *:not(.welcome-shell, .welcome-shell *, #slow-veil, #slow-veil *),
 html[data-overlay-open] body *:not(.vibe-mode, .vibe-mode *, .block-vibe, .block-vibe *) {
   animation-play-state: paused !important;
 }
@@ -5923,6 +5925,25 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
   transition: none;
 }
 .welcome-logo-band { height: 104px; flex-shrink: 0; }
+/* Второй шаг (блоки выбранного раздела) в постоянном макете: у AI блоков
+   восемь, и колода вылезала за окно под крестик (Егор, 2026-10-08). Колода
+   занимает остаток высоты сцены и прокручивается внутри окна; внизу мягкое
+   затухание — видно, что ниже есть ещё. Поля по бокам — чтобы свечение
+   карточек не обрезалось краем прокрутки. */
+.welcome-scene--framed .welcome-deck:not(.welcome-deck--root) {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.4rem 0.75rem 2.2rem;
+  margin-inline: auto;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 2.6rem), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 2.6rem), transparent);
+}
+.welcome-scene--framed .welcome-deck:not(.welcome-deck--root)::-webkit-scrollbar { display: none; }
+.welcome-scene--framed .welcome-deck:not(.welcome-deck--root) > * { flex-shrink: 0; }
 /* Телефон (Егор, 2026-10-04, отмена решения от 09-27 «на весь экран»): стартовое
    меню — то же стеклянное окошко, что вайб-режим, а не весь сайт. Меню внутри
    ужимается под высоту окна (useFitToHeight), поля у карточек чуть шире, чтобы
@@ -9426,7 +9447,7 @@ body:has(.vibe-fan__list) .voice-dock-corner {
    дрейф иконок — их ~70) стоят на паузе: первый кадр держится картинкой,
    процессор занят видео и первым экраном. Окно-приветствие и сами шаги
    очереди не замирают. */
-html:is([data-boot="0"], [data-boot="1"], [data-boot="2"]) body *:not(.welcome-shell, .welcome-shell *, .boot-late),
+html:is([data-boot="0"], [data-boot="1"], [data-boot="2"]) body *:not(.welcome-shell, .welcome-shell *, .boot-late, #slow-veil, #slow-veil *),
 html:is([data-boot="0"], [data-boot="1"], [data-boot="2"]) body *:not(.welcome-shell, .welcome-shell *)::before,
 html:is([data-boot="0"], [data-boot="1"], [data-boot="2"]) body *:not(.welcome-shell, .welcome-shell *)::after {
   animation-play-state: paused !important;
@@ -10241,13 +10262,12 @@ html[data-mid] .hero-promo { transition: none; }
    сфера вайба и линия голосового ассистента читались отчётливее на любом
    кадре. Слой над страницей, но под сферой, меню и самим ассистентом, и не
    ловит нажатия. Только на телефоне и планшете. */
-.bottom-fade,
-.top-fade { display: none; }
+.bottom-fade { display: none; }
 @media (max-width: 1023px) {
-  /* Края экрана на телефоне темнее (Егор, 2026-10-08): внизу висят сфера,
-     стрелки страниц и волна ассистента, сверху под шапкой — стрелки
-     «назад» и «наверх». Текст под ними уходит в тень, а не ложится под
-     кнопку. Затемнение плотное там, где кнопки, и сходит на нет к центру. */
+  /* Низ экрана на телефоне темнее (Егор, 2026-10-08): там висят сфера,
+     стрелки страниц и волна ассистента — текст под ними уходит в тень, а
+     не ложится под кнопку. Сверху такое же затемнение Егор убрал: гасило
+     первый экран под шапкой. */
   .bottom-fade {
     display: block;
     position: fixed;
@@ -10263,27 +10283,6 @@ html[data-mid] .hero-promo { transition: none; }
       rgba(11, 11, 16, 0) 100%
     );
   }
-  .top-fade {
-    display: block;
-    position: fixed;
-    inset: calc(68px + var(--sat)) 0 auto 0;
-    z-index: 39;
-    height: 5rem;
-    pointer-events: none;
-    background: linear-gradient(
-      to bottom,
-      rgba(11, 11, 16, 0.9) 0%,
-      rgba(11, 11, 16, 0.7) 45%,
-      rgba(11, 11, 16, 0) 100%
-    );
-  }
-}
-/* Та же высота шапки, что у хлебных крошек (Breadcrumbs.tsx). */
-@media (min-width: 640px) and (max-width: 1023px) {
-  .top-fade { top: calc(84px + var(--sat)); }
-}
-@media (orientation: landscape) and (max-height: 520px) {
-  .top-fade { top: calc(3rem + var(--sat)); height: 3.5rem; }
 }
 
 /* Открыто окошко услуги (ToolSpotlight): на телефоне шапка притухает вместе с
@@ -10361,22 +10360,14 @@ html[data-veil-done] #slow-veil { opacity: 0; visibility: hidden; }
   backdrop-filter: blur(8px);
   animation: slow-veil-in 0.5s ease 1.3s forwards, slow-veil-out 0.5s ease 14s forwards;
 }
-.slow-veil__ring {
+/* Сфера вайб-бара (canvas, рисует slowVeilOrb.ts из HTML). */
+.slow-veil__orb {
   display: block;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, rgba(245, 49, 11, 0), #f5310b, #ec4899, #00d2ff, rgba(0, 210, 255, 0));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
-  animation: slow-veil-spin 1.1s linear infinite;
+  width: 140px;
+  height: 140px;
 }
 @keyframes slow-veil-in { to { opacity: 1; } }
 @keyframes slow-veil-out { to { opacity: 0; visibility: hidden; } }
-@keyframes slow-veil-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) {
-  .slow-veil__ring { animation: none; }
-}
 
 /* Колонка кнопок шапки у телефона боком (Header → .header-tools): меню сверху,
    ниже звук и кабинет, у правого края, под большой палец. Отдельный класс, а
