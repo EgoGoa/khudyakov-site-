@@ -79,7 +79,7 @@ export default function ContentServicePage() {
           иначе перемотка рывками. */}
       <ScrubStage
         src="/video/content-reel-scrub.mp4"
-        mobileSrc="/video/content-reel-scrub-mobile.mp4"
+        mobileSrc="/video/content-reel-scrub-portrait.mp4"
         poster="/images/content-reel-poster.jpg"
         phases={PHASES}
         chapters={CHAPTERS}

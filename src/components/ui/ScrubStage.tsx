@@ -31,8 +31,16 @@ import { StageContext, type ChapterMeta, type Phase } from "@/components/ui/Cine
 // Ролик — отдельный файл с опорным кадром каждые 8 кадров и без B-кадров
 // (content-reel-scrub*.mp4): в исходном их всего 7 на 43 с, и перемотка
 // назад каждый раз декодировала до 7 секунд видео — рывки вместо кадров.
+// На телефоне (портрет) — свой файл: вертикальная вырезка 406×720 из
+// середины 720p (ровно то, что object-cover и так показывал на экране, но
+// резче прежних 480p) и каждый кадр опорный: перемотка на iPhone декодирует
+// один кадр, а не до восьми, и видео успевает за пальцем (Егор, 2026-10-08:
+// «рывками, не хватает частоты кадров»).
 
 const SMOOTH_TAU = 0.11; // с — постоянная времени догоняния
+// Палец и инерция прокрутки на iOS отдают положение неровно; чуть более
+// мягкое догоняние раскладывает скачки на соседние кадры.
+const SMOOTH_TAU_TOUCH = 0.16;
 const SEEK_MIN_DELTA = 1 / 50; // мельче полукадра не перематываем
 
 export default function ScrubStage({
@@ -45,7 +53,7 @@ export default function ScrubStage({
   children,
 }: {
   src: string;
-  /** Лёгкая версия для телефонов и режима экономии трафика. */
+  /** Вертикальная версия для телефонов и планшетов в портрете. */
   mobileSrc: string;
   poster: string;
   /** Отрезок ролика на каждую главу, по порядку. */
@@ -68,8 +76,9 @@ export default function ScrubStage({
 
   useEffect(() => {
     const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    const portrait = window.innerHeight > window.innerWidth;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- выбор файла зависит от экрана, известного только в браузере
-    setResolvedSrc(window.innerWidth < 1024 || saveData ? mobileSrc : src);
+    setResolvedSrc((window.innerWidth < 1024 && portrait) || saveData ? mobileSrc : src);
   }, [src, mobileSrc]);
 
   const activeIndexRef = useRef(0);
@@ -176,11 +185,12 @@ export default function ScrubStage({
     let shown = timeAtRef.current(window.scrollY);
     let last = performance.now();
     let raf = 0;
+    const tau = window.matchMedia("(pointer: coarse)").matches ? SMOOTH_TAU_TOUCH : SMOOTH_TAU;
     const tick = (now: number) => {
       const dt = Math.min(0.1, (now - last) / 1000);
       last = now;
       const target = timeAtRef.current(window.scrollY);
-      shown += (target - shown) * (1 - Math.exp(-dt / SMOOTH_TAU));
+      shown += (target - shown) * (1 - Math.exp(-dt / tau));
       if (Math.abs(target - shown) < 0.004) shown = target;
       if (video.readyState >= 1 && !video.seeking) {
         const t = clampTime(shown);
@@ -351,8 +361,9 @@ export default function ScrubStage({
           </div>
           {/* Затемнение: ровная вуаль и тяжелее у краёв. Плотнее, чем у
               колоды: подложки самих глав здесь выключены (globals.css,
-              .scrub-chapter), иначе их край полосой виден на стыке глав. */}
-          <div className="pointer-events-none absolute inset-0 bg-ink/50 lg:bg-ink/[0.58]" />
+              .scrub-chapter), иначе их край полосой виден на стыке глав.
+              Телефон: /60 вместо /50 — на 20% темнее (Егор, 2026-10-08). */}
+          <div className="pointer-events-none absolute inset-0 bg-ink/60 lg:bg-ink/[0.58]" />
           <div
             className="pointer-events-none absolute inset-0"
             style={{
