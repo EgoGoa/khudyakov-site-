@@ -322,7 +322,12 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
         className="win-shell vibe-mode__window vibe-mode__window--fixed"
       >
       <MobileClose inline onClick={onClose} />
-      <div aria-hidden="true" className="vibe-mode__aurora" />
+      {/* Сияние в отдельной рамке по скруглению окна: оно шире окна и
+          вращается, а Safari обрезает такой слой по прямоугольнику — за
+          углами торчали ровные края (Егор, 2026-10-08). */}
+      <div aria-hidden="true" className="vibe-mode__aurora-clip">
+        <div className="vibe-mode__aurora" />
+      </div>
       {/* Частиц вокруг сферы нет (Егор, 2026-09-27): пыль живёт только в
           сборке сферы на заставке и сливается в кольцо. */}
 

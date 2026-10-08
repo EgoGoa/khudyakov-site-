@@ -82,7 +82,10 @@ export default function VoiceTour({ from, to }: { from: string; to: string }) {
       exit={{ opacity: 0, x: 28, scale: 0.97 }}
       transition={{ duration: 0.5, ease: SMOOTH }}
     >
-      <div aria-hidden="true" className="vibe-mode__aurora" />
+      {/* Сияние в рамке по скруглению окна — см. .vibe-mode__aurora-clip. */}
+      <div aria-hidden="true" className="vibe-mode__aurora-clip">
+        <div className="vibe-mode__aurora" />
+      </div>
       <button type="button" onClick={close} aria-label="Закрыть" className="voice-stage-close">
         <CloseIcon />
       </button>

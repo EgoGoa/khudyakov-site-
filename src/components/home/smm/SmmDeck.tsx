@@ -145,7 +145,10 @@ function SmmCardFace({ id, image, step }: { id: string; image: string; step: num
           background: "linear-gradient(170deg, rgba(23,16,38,0.55) 0%, rgba(12,11,20,0.66) 55%, rgba(12,11,20,0.78) 100%)",
         }}
       />
-      <span className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full bg-[#a855f7]/20 blur-2xl" />
+      {/* Сияние в углу — мягкий радиальный градиент, а не blur-2xl: Safari
+          обрезает размытый слой по прямоугольнику, а не по скруглению
+          карточки, и за углом торчал ровный край (Егор, 2026-10-08). */}
+      <span className="pointer-events-none absolute -right-16 -top-[72px] h-44 w-44" style={{ background: "radial-gradient(circle, rgba(168,85,247,0.2) 0%, rgba(168,85,247,0.11) 28%, transparent 62%)" }} />
 
       {/* Stories-style progress strip along the top — the one cue every
           vertical-video surface shares, so it reads as "phone" instantly. */}

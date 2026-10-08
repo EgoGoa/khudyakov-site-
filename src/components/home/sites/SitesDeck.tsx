@@ -114,7 +114,10 @@ function SitesCardFace({ id, image, step }: { id: string; image: string; step: n
             "linear-gradient(165deg, rgba(16,18,30,0.62) 0%, rgba(10,11,16,0.72) 55%, rgba(10,11,16,0.8) 100%)",
         }}
       />
-      <span className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full bg-[#ff4fd8]/20 blur-2xl" />
+      {/* Сияние в углу — мягкий радиальный градиент, а не blur-2xl: Safari
+          обрезает размытый слой по прямоугольнику, а не по скруглению
+          карточки, и за углом торчал ровный край (Егор, 2026-10-08). */}
+      <span className="pointer-events-none absolute -right-16 -top-[72px] h-44 w-44" style={{ background: "radial-gradient(circle, rgba(255,79,216,0.2) 0%, rgba(255,79,216,0.11) 28%, transparent 62%)" }} />
       {/* Сцена растянута почти до подписи — Егор: раньше графика занимала
           половину карточки и читалась мелкой на фоне пустого затемнённого
           низа. Теперь сцена доходит до самого имени формата; собственный

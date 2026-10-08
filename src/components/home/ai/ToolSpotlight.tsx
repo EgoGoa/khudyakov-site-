@@ -173,6 +173,18 @@ export default function ToolSpotlight({
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         if (Math.abs(r.left) > 0.5 || Math.abs(r.top) > 0.5 || Math.abs(r.width - vw) > 0.5 || Math.abs(r.height - vh) > 0.5) {
+          // Глава на невысоком телефоне ужимается CSS-зумом (paneRoom в
+          // CinematicSection, напр. 0.85) — вместе с ней ужимался и этот
+          // слой: справа и снизу оставалась незатемнённая полоса (Егор,
+          // 2026-10-08). Обратный зум на самом слое возвращает ему масштаб
+          // экрана, дальше подгонка ниже работает в честных пикселях.
+          let zoom = 1;
+          for (let a = el.parentElement; a; a = a.parentElement) {
+            const z = parseFloat(getComputedStyle(a).zoom);
+            if (z && z !== 1) zoom *= z;
+          }
+          const unzoom = Math.abs(zoom - 1) > 0.001 ? String(1 / zoom) : "";
+          if (el.style.zoom !== unzoom) el.style.zoom = unzoom;
           const m = /translate\(([-\d.]+)px,\s*([-\d.]+)px\)/.exec(el.style.transform);
           const tx = (m ? parseFloat(m[1]) : 0) - r.left;
           const ty = (m ? parseFloat(m[2]) : 0) - r.top;

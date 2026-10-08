@@ -137,10 +137,16 @@ function AiCardFace({
             "linear-gradient(165deg, rgba(12,22,19,0.62) 0%, rgba(10,13,16,0.72) 55%, rgba(10,13,16,0.8) 100%)",
         }}
       />
+      {/* Сияние в углу — мягкий радиальный градиент, а не blur-2xl: Safari
+          обрезает размытый слой по прямоугольнику, а не по скруглению
+          карточки, и за углом торчал ровный край (Егор, 2026-10-08). */}
       <span
-        className={`pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full blur-2xl ${
-          hit ? "bg-[#ff6a3d]/25" : "bg-emerald-400/20"
-        }`}
+        className="pointer-events-none absolute -right-16 -top-[72px] h-44 w-44"
+        style={{
+          background: hit
+            ? "radial-gradient(circle, rgba(255,106,61,0.25) 0%, rgba(255,106,61,0.138) 28%, transparent 62%)"
+            : "radial-gradient(circle, rgba(52,211,153,0.2) 0%, rgba(52,211,153,0.11) 28%, transparent 62%)",
+        }}
       />
       {/* Сцена растянута почти до подписи — тот же фикс, что на
           SitesCardFace/SmmCardFace: раньше графика занимала меньше
