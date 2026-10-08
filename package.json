@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "build:static": "./scripts/build-static.sh",
-    "deploy:ru": "./scripts/deploy-ru.sh"
+    "deploy:ru": "./scripts/deploy-ru.sh",
+    "audit:overlaps": "node scripts/audit-overlaps.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
@@ -29,6 +30,7 @@
     "docx": "^9.7.1",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.3.6",
+    "playwright-core": "^1.56.1",
     "postcss": "^8.5.25",
     "tailwindcss": "^3.4.7",
     "typescript": "^5.9.0"

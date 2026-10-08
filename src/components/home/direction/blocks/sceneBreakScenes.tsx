@@ -1739,8 +1739,9 @@ function GfxDataBig() {
       {segs.map((s, i) => (
         <In key={s.l} at={2.8 + i * 0.45}>
           <text x="12" y={196 + i * 34} fill="#fff" fontSize="11.5" fontWeight="800" fontFamily="inherit">{s.l}</text>
-          <rect x="164" y={184 + i * 34} width="216" height="19" rx="9.5" fill={`${W}0.07)`} />
-          <rect x="164" y={184 + i * 34} width={2.16 * s.v} height="19" rx="9.5" fill={s.c} fillOpacity="0.85" className="sp-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
+          {/* Дорожка кончается до процентов: раньше «42%» лежали на её конце. */}
+          <rect x="164" y={184 + i * 34} width="184" height="19" rx="9.5" fill={`${W}0.07)`} />
+          <rect x="164" y={184 + i * 34} width={1.84 * s.v} height="19" rx="9.5" fill={s.c} fillOpacity="0.85" className="sp-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
           <text x="388" y={198 + i * 34} textAnchor="end" fill="#fff" fontSize="12" fontWeight="800" fontFamily="inherit">{s.v}%</text>
         </In>
       ))}
