@@ -10700,3 +10700,28 @@ html[data-lite] .site-scrim {
     font-size: 8.6px;
   }
 }
+
+/* Safari на iOS 26 (Егор, 2026-10-08): страница прокручивается под
+   стеклянную адресную строку, и в полосе над шапкой читался текст сайта.
+   Плашка .header-top-mask туда не дотягивается — Safari рисует эту зону
+   сам и красит её цветом фиксированного элемента у верхнего края. Шапка —
+   полупрозрачное стекло, её цвет не годится, поэтому у самого края стоит
+   сплошная полоска в 1px цвета фона: Safari берёт её цвет, а на экране
+   она не видна (тёмное на тёмном, под краем шапки). Только iOS
+   (-webkit-touch-callout есть только там) и только телефон стоя. */
+.safari-top-tint { display: none; }
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 767px) and (orientation: portrait) {
+    .safari-top-tint {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: #0b0b10;
+      z-index: 51;
+      pointer-events: none;
+    }
+  }
+}
