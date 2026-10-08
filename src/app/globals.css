@@ -5127,6 +5127,28 @@ html[data-lite] .deck-pose-blur > button {
   margin-top: -100dvh;
 }
 
+/* ScrubStage (/content): фон-ролик прикреплён к экрану, главы идут поверх
+   обычной прокруткой. lvh — высота со свёрнутой адресной строкой: фон не
+   перекладывается, когда Safari её прячет и показывает. */
+.scrub-frame {
+  height: 100vh;
+  height: 100lvh;
+}
+.scrub-pull {
+  margin-top: -100vh;
+  margin-top: -100lvh;
+}
+.scrub-chapter {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+/* Подложки-затемнения CinematicSection (её слои -z-10 под текстом) кончаются
+   на краю своей главы — при обычной прокрутке их край виден полосой на стыке
+   глав. Внутри ScrubStage затемнение одно, на весь фон (см. сам компонент). */
+.scrub-chapter .pointer-events-none.absolute.inset-0.-z-10 {
+  display: none;
+}
+
 /* ── Weak-GPU guard for phones and tablets ───────────────────────────────
    iOS Safari reloads a tab ("a problem occurred repeatedly") when it runs out
    of GPU memory. The two biggest consumers here are CSS filters on the big
