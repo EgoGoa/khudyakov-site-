@@ -507,7 +507,7 @@ function PresTrustBig() {
       <In at={3}>
         <path d="M 140 157 L 150 157" stroke="var(--sp-to)" strokeWidth="1.3" className="sp-flow" />
         <rect x="150" y="78" width="112" height="158" rx="12" fill={`${W}0.05)`} stroke="var(--sp-from)" strokeOpacity="0.45" />
-        <text x="159" y="94" {...LABEL}>ПЕРЕСЛАЛИ ВНУТРИ</text>
+        <text x="159" y="94" {...LABEL}>ПЕРЕСЛАЛИ</text>
         <g className="sb-steps3" style={step(38)}>
           <rect x="155" y="102" width="102" height="34" rx="7" fill="url(#sb-ramp-x)" fillOpacity="0.14" stroke="var(--sp-from)" strokeOpacity="0.55" />
         </g>
