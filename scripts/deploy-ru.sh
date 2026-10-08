@@ -20,8 +20,11 @@ REMOTE_DIR="www/hdkv-ai.ru/"  # одна папка, два имени: hud-serv
 find "$OUT" -type f -exec chmod a+r {} +
 find "$OUT" -type d -exec chmod a+rx {} +
 
+# Старые файлы сборки (_next/static) не удаляем: открытая у посетителя
+# прежняя страница ссылается на них, и без них она теряет стили.
 rsync -az --delete --human-readable --stats \
   --exclude '.well-known' --exclude 'cgi-bin' \
+  --filter 'P _next/static/' \
   -e "ssh -i $KEY -o IdentitiesOnly=yes -o BatchMode=yes" \
   "$@" "$OUT/" "$REMOTE:$REMOTE_DIR"
 
