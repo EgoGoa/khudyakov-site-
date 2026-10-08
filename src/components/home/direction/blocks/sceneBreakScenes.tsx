@@ -142,11 +142,13 @@ function PresBriefBig() {
       <In at={5.6}>
         <rect x="294" y="116" width="94" height="98" rx="12" {...CARD} />
         <text x="303" y="132" {...LABEL}>НА ВСТРЕЧЕ</text>
-        <text x="303" y="148" fill={`${W}0.88)`} fontSize="7.6" fontFamily="inherit">без фильма</text>
-        <text x="379" y="148" textAnchor="end" fill={`${W}0.88)`} fontSize="7.6" fontFamily="inherit">30 мин</text>
+        {/* Пара «подпись — минуты» на карточке в 76 единиц: на телефоне
+            кегль не растёт (style перебивает .scene-big), иначе слипается. */}
+        <text x="303" y="148" fill={`${W}0.88)`} fontSize="7.6" style={{ fontSize: 7.6 }} fontFamily="inherit">без фильма</text>
+        <text x="379" y="148" textAnchor="end" fill={`${W}0.88)`} fontSize="7.6" style={{ fontSize: 7.6 }} fontFamily="inherit">30 мин</text>
         <rect x="303" y="153" width="76" height="6" rx="3" fill={`${W}0.22)`} />
-        <text x="303" y="172" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">с фильмом</text>
-        <text x="379" y="172" textAnchor="end" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">3 мин</text>
+        <text x="303" y="172" fill="#fff" fontSize="7.6" style={{ fontSize: 7.6 }} fontWeight="700" fontFamily="inherit">с фильмом</text>
+        <text x="379" y="172" textAnchor="end" fill="#fff" fontSize="7.6" style={{ fontSize: 7.6 }} fontWeight="700" fontFamily="inherit">3 мин</text>
         <rect x="303" y="177" width="8" height="6" rx="3" fill="url(#sb-ramp-x)" />
         <text x="303" y="204" className="sp-figure" fill="url(#sb-ramp-x)" fontSize="17">×10</text>
         <text x="345" y="204" fill="#fff" fontSize="8" fontWeight="700" fontFamily="inherit">быстрее</text>
@@ -313,10 +315,10 @@ function PresScaleBig() {
       <In at={6.6}>
         <circle cx="16" cy="340" r="3.4" fill="var(--sp-from)" />
         <text x="26" y="342.5" fill="#fff" fontSize="8" fontWeight="700" fontFamily="inherit">В кадре:</text>
-        <text x="72" y="342.5" fill="#fff" fontSize="8" fontFamily="inherit">цех, люди, масштаб площадки</text>
+        <text x="78" y="342.5" fill="#fff" fontSize="8" fontFamily="inherit">цех, люди, масштаб площадки</text>
         <circle cx="16" cy="358" r="3.4" fill="none" stroke="var(--sp-to)" strokeDasharray="2 1.5" />
         <text x="26" y="360.5" fill="#fff" fontSize="8" fontWeight="700" fontFamily="inherit">Дорисуем:</text>
-        <text x="72" y="360.5" fill="#fff" fontSize="8" fontFamily="inherit">процесс внутри печи, схемы, микромир</text>
+        <text x="78" y="360.5" fill="#fff" fontSize="8" fontFamily="inherit">процесс внутри печи, схемы, микромир</text>
       </In>
     </BigFrame>
   );
@@ -520,7 +522,7 @@ function PresTrustBig() {
           <text x="183" y={115 + i * 38} fill="#fff" fontSize="8.2" fontWeight="700" fontFamily="inherit">{v}</text>
           <path d={`M 183 ${122 + i * 38} L 250 ${122 + i * 38}`} stroke={`${W}0.1)`} strokeWidth="3.4" strokeLinecap="round" />
           <path d={`M 183 ${122 + i * 38} L 250 ${122 + i * 38}`} stroke="url(#sb-ramp-x)" strokeWidth="3.4" strokeLinecap="round" pathLength="1" className="sp-draw" />
-          <text x="183" y={132 + i * 38} fill={`${W}0.88)`} fontSize="7" fontFamily="inherit">досмотрел до конца</text>
+          <text x="183" y={132 + i * 38} fill={`${W}0.88)`} fontSize="7" fontFamily="inherit">досмотрел</text>
         </In>
       ))}
       <In at={5}>
@@ -647,7 +649,9 @@ function AdHookBig() {
         <In key={f.t} at={3.6 + i * 0.5}>
           <rect x={118 + i * 92} y="190" width="82" height="66" rx="8" fill="url(#sb-ramp)" fillOpacity={0.1 + i * 0.06} stroke={i === 2 ? "var(--sp-to)" : "var(--sp-from)"} strokeOpacity="0.55" />
           <text x={124 + i * 92} y="204" fill="#fff" fontSize="8" fontWeight="700" fontFamily="inherit">{f.t}</text>
-          <text x={124 + i * 92} y="248" fill={`${W}0.88)`} fontSize="7.2" fontFamily="inherit">{f.d}</text>
+          {/* Подпись во всю ширину карточки: на телефоне растёт меньше
+              остальных (style перебивает .scene-big), иначе в упор к рамке. */}
+          <text x={124 + i * 92} y="248" fill={`${W}0.88)`} fontSize="7.2" style={{ fontSize: 7.6 }} fontFamily="inherit">{f.d}</text>
           {i === 2 && <circle cx="190" cy="200" r="3" fill="var(--sp-to)" className="sp-blink" />}
         </In>
       ))}
@@ -664,7 +668,7 @@ function AdHookBig() {
           <rect key={t} x={118 + i * 66} y="284" width="60" height="18" rx="9" fill={`${W}0.05)`} stroke={`${W}0.16)`} />
         ))}
         {["дёшево", "быстро", "качественно", "надёжно"].map((t, i) => (
-          <text key={t} x={148 + i * 66} y="296" textAnchor="middle" fill={`${W}0.88)`} fontSize="6.8" fontFamily="inherit">{t}</text>
+          <text key={t} x={148 + i * 66} y="296" textAnchor="middle" fill={`${W}0.88)`} fontSize="6.8" style={{ fontSize: 7.6 }} fontFamily="inherit">{t}</text>
         ))}
       </In>
       <In at={6.2}>
@@ -714,7 +718,8 @@ function AdPlatformBig() {
 
       {/* ── Звуковая дорожка ──────────────────────────────────── */}
       <In at={3}>
-        <text x="12" y="232" {...LABEL}>ЗВУК ПОД РИТМ МОНТАЖА</text>
+        {/* Над столбиками дорожки, а не поверх них. */}
+        <text x="12" y="206" {...LABEL}>ЗВУК ПОД РИТМ МОНТАЖА</text>
         <path d="M 12 246 L 388 246" stroke={`${W}0.1)`} />
         {Array.from({ length: 40 }).map((_, i) => (
           <rect key={i} x={13 + i * 9.6} y={246 - (8 + (i * 37) % 26)} width="5" height={16 + (i * 37) % 26} rx="2" fill="url(#sb-ramp-x)" fillOpacity={0.2 + ((i * 13) % 40) / 100} className="sp-pulse" style={{ animationDelay: `${(i % 6) * 0.15}s` }} />
@@ -883,7 +888,7 @@ function AdPipelineBig() {
         <text x="12" y="264" {...LABEL}>КАЛЕНДАРЬ ПРОИЗВОДСТВА</text>
         <path d="M 12 272 L 388 272" stroke={`${W}0.12)`} />
         {["день 1", "день 5", "день 9", "день 13"].map((t, i) => (
-          <text key={t} x={12 + i * 125.3} y="288" textAnchor={i === 0 ? "start" : "middle"} fill={`${W}0.88)`} fontSize="7.2" fontFamily="inherit">{t}</text>
+          <text key={t} x={12 + i * 125.3} y="288" textAnchor={i === 0 ? "start" : i === 3 ? "end" : "middle"} fill={`${W}0.88)`} fontSize="7.2" fontFamily="inherit">{t}</text>
         ))}
       </In>
       {(() => {
@@ -904,7 +909,9 @@ function AdPipelineBig() {
           return (
             <In key={d.n} at={5.4 + i * 0.35}>
               <rect x={x} y="296" width={w} height="20" rx="6" fill="url(#sb-ramp-x)" fillOpacity={0.35 + (i % 2) * 0.25} />
-              <text x={x + w / 2} y="309.5" textAnchor="middle" fill="#fff" fontSize="7.2" fontWeight="700" fontFamily="inherit">{d.n}</text>
+              {/* Однодневный этап уже своей подписи — она встаёт над
+                  полосой, в строку дней, а не вылезает за края отрезка. */}
+              <text x={x + w / 2} y={d.d === 1 ? 288 : 309.5} textAnchor="middle" fill="#fff" fontSize="7.2" fontWeight="700" fontFamily="inherit">{d.n}</text>
             </In>
           );
         });
@@ -978,7 +985,8 @@ function ImgMoodBig() {
       <In at={2.6}>
         <circle cx="240" cy="88" r="44" fill="url(#sb-glow)" className="sp-pulse" />
         <path d="M 184 128 C 200 90 216 68 240 64 S 300 70 320 60 S 360 46 378 40" stroke="url(#sb-ramp-x)" strokeWidth="2.2" pathLength="1" className="sp-draw" />
-        <text x="378" y="52" textAnchor="end" fill="#fff" fontSize="7.4" fontWeight="700" fontFamily="inherit">настроение</text>
+        {/* Под концом кривой, а не на ней. */}
+        <text x="378" y="66" textAnchor="end" fill="#fff" fontSize="7.4" fontWeight="700" fontFamily="inherit">настроение</text>
         <g className="sp-scan" style={scan(194)}>
           <circle cx="184" cy="128" r="6" fill="#fff" fillOpacity="0.7" />
         </g>
@@ -1025,7 +1033,7 @@ function ImgLanguageBig() {
       {/* ── Гайдлайн бренда ──────────────────────────────────── */}
       <In at={0}>
         <rect x="12" y="12" width="140" height="356" rx="14" {...CARD} />
-        <text x="22" y="28" {...LABEL}>ВИЗУАЛЬНЫЙ ЯЗЫК</text>
+        <text x="22" y="28" {...LABEL}>ЯЗЫК БРЕНДА</text>
       </In>
       <In at={0.6}>
         <text x="22" y="48" fill={`${W}0.75)`} fontSize="7.6" fontFamily="inherit">палитра</text>
@@ -1060,17 +1068,19 @@ function ImgLanguageBig() {
       </In>
       {frames.map((fr, i) => (
         <In key={fr.f} at={1.6 + i * 0.6}>
+          {/* Кадры по 92 в высоту, шаг 104: подпись под ними раньше
+              ложилась на третий кадр. */}
           <path d="M 152 190 L 164 116" stroke={`${W}0.14)`} style={i > 0 ? { opacity: 0 } : undefined} />
-          <rect x="164" y={28 + i * 116} width="212" height="100" rx="10" fill={fr.c} fillOpacity="0.14" stroke={fr.c} strokeOpacity="0.6" />
-          <path d={`M 204 ${28 + i * 116} L 204 ${128 + i * 116} M 336 ${28 + i * 116} L 336 ${128 + i * 116}`} stroke={`${W}0.12)`} strokeDasharray="2 3" />
-          <circle cx="270" cy={78 + i * 116} r="16" fill={fr.c} fillOpacity="0.5" className="sp-pulse" style={{ animationDelay: `${i * 0.35}s` }} />
-          <text x="174" y={44 + i * 116} fill="#fff" fontSize="7.8" fontWeight="700" fontFamily="inherit">{fr.f}</text>
-          <circle cx="366" cy={38 + i * 116} r="2.6" fill={fr.c} className="sp-blink" style={{ animationDelay: `${i * 0.4}s` }} />
+          <rect x="164" y={28 + i * 104} width="212" height="92" rx="10" fill={fr.c} fillOpacity="0.14" stroke={fr.c} strokeOpacity="0.6" />
+          <path d={`M 204 ${28 + i * 104} L 204 ${120 + i * 104} M 336 ${28 + i * 104} L 336 ${120 + i * 104}`} stroke={`${W}0.12)`} strokeDasharray="2 3" />
+          <circle cx="270" cy={74 + i * 104} r="16" fill={fr.c} fillOpacity="0.5" className="sp-pulse" style={{ animationDelay: `${i * 0.35}s` }} />
+          <text x="174" y={44 + i * 104} fill="#fff" fontSize="7.8" fontWeight="700" fontFamily="inherit">{fr.f}</text>
+          <circle cx="366" cy={38 + i * 104} r="2.6" fill={fr.c} className="sp-blink" style={{ animationDelay: `${i * 0.4}s` }} />
         </In>
       ))}
       <In at={4}>
         <text x="164" y="352" fill="#fff" fontSize="8.2" fontWeight="700" fontFamily="inherit">Три разных сюжета — один узнаваемый почерк.</text>
-        <text x="164" y="364" fill={`${W}0.88)`} fontSize="7.6" fontFamily="inherit">Компанию узнают по кадру ещё до появления логотипа.</text>
+        <text x="164" y="364" fill={`${W}0.88)`} fontSize="7.6" fontFamily="inherit">Компанию узнают по кадру ещё до логотипа.</text>
       </In>
     </BigFrame>
   );
@@ -1121,7 +1131,8 @@ function ImgToneBig() {
       {/* ── Кадр под тон ──────────────────────────────────────── */}
       <In at={1.6}>
         <rect x="212" y="28" width="180" height="118" rx="14" fill="url(#sb-ramp)" fillOpacity="0.18" stroke="var(--sp-from)" strokeOpacity="0.6" />
-        <circle cx="248" cy="64" r="15" fill="#fff" fillOpacity="0.5" className="sp-pulse" />
+        {/* Солнце ниже тега «16:9» — раньше лежало на нём. */}
+        <circle cx="250" cy="86" r="14" fill="#fff" fillOpacity="0.5" className="sp-pulse" />
         <path d="M 276 100 L 308 62 L 330 84 L 360 48 L 388 88 L 276 88 Z" fill="rgba(10,13,16,0.4)" />
         {/* Голубой уголок-тег — тот же приём, каким на сайте помечены
             служебные детали карточек (рамка, а не заливка). */}
@@ -1269,7 +1280,9 @@ function AiVideoShotBig() {
     { t: "Отбор", d: 1, c: AV_EMERALD },
   ];
   const SPAN = 364;
-  const GEN_SPAN = SPAN * 0.3;
+  // 0.42, а не 0.3: в отрезках по ~34 подписи «Промпт», «Варианты»,
+  // «Отбор» слипались в одну строку; разница «недели против дней» видна и так.
+  const GEN_SPAN = SPAN * 0.42;
   const shootTotal = shoot.reduce((s, c) => s + c.d, 0);
   const genTotal = gen.reduce((s, c) => s + c.d, 0);
   let accS = 0;
@@ -1491,7 +1504,7 @@ function AiVideoHybridBig() {
           <text x="12" y={194 + i * 34} fill="#fff" fontSize="8.4" fontWeight="700" fontFamily="inherit">{t.t}</text>
           <rect x="110" y={180 + i * 34} width={BAR} height="20" rx="8" fill={`${W}0.05)`} stroke={`${W}0.14)`} />
           <rect x="110" y={180 + i * 34} width={(t.p / maxP) * BAR} height="20" rx="8" fill={t.c} fillOpacity={0.55 + i * 0.12} />
-          <text x="378" y={194 + i * 34} textAnchor="end" fill="#fff" fontSize="8" fontWeight="700" fontFamily="inherit">от {t.p} 000 ₽</text>
+          <text x="372" y={194 + i * 34} textAnchor="end" fill="#fff" fontSize="8" fontWeight="700" fontFamily="inherit">от {t.p} 000 ₽</text>
         </In>
       ))}
 
@@ -1535,8 +1548,9 @@ function AiVideoVariantsBig() {
           <rect x="240" y={38 + i * 36} width="100" height="8" rx="4" fill={`${W}0.1)`} />
           <rect x="240" y={38 + i * 36} width={v.score} height="8" rx="4" fill={v.c} fillOpacity={v.score >= 85 ? 0.9 : 0.5} />
           <text x="368" y={46 + i * 36} textAnchor="end" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">{v.score}%</text>
+          {/* Галочка сразу за названием варианта: в углу она ложилась на «88%». */}
           {v.score >= 85 ? (
-            <path d={`M 350 ${33 + i * 36} l 4 4 l 7 -8`} stroke={v.c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="sp-pulse" />
+            <path d={`M 202 ${40 + i * 36} l 3 3 l 6 -7`} stroke={v.c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="sp-pulse" />
           ) : null}
         </In>
       ))}

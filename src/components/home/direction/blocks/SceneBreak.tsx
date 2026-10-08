@@ -64,7 +64,10 @@ function Scene({ slug, index }: { slug: string; index: number }) {
             className="absolute inset-0"
           >
             {Big ? (
-              <div className={`tool-scene absolute inset-0 ${AI_BREAK_SCENES[slug] ? "p-0 sm:p-4" : "p-3 sm:p-4"}`}>
+              // На телефоне без внутренних полей у всех сцен (раньше только у
+              // AI): схема шире — подписи крупнее. scene-big поднимает самые
+              // мелкие подписи сцен «Контента» на телефоне (globals.css).
+              <div className={`tool-scene absolute inset-0 p-0 sm:p-4 ${AI_BREAK_SCENES[slug] ? "" : "scene-big"}`}>
                 <Big />
               </div>
             ) : Small ? (
@@ -118,7 +121,7 @@ export default function SceneBreak({
           >
             {/* Графика тянется на всю высоту текстовой колонки (lg), а на
                 телефоне держит пропорцию сцены 400×380. */}
-            {/* У AI-сцен на телефоне графика без внутренних полей и чуть
+            {/* У всех сцен на телефоне графика без внутренних полей и чуть
                 шире колонки: вьюбокс сжимается меньше, подписи крупнее. */}
             {/* Заголовок окошка — о чём оно (Егор): вместо счётчика
                 «02 / 04 · …», который он убрал со всех табличек. */}
@@ -126,9 +129,7 @@ export default function SceneBreak({
               <span className="spotlight-accent spotlight-sheen">{benefit.label}</span>
             </h3>
             <div
-              className={`relative aspect-[400/380] overflow-hidden rounded-2xl bg-white/[0.025] ring-1 ring-white/10 lg:aspect-auto lg:min-h-[28rem] ${
-                spec.own ? "-mx-2 w-[calc(100%+1rem)] sm:mx-0 sm:w-full" : "w-full"
-              }`}
+              className="relative -mx-2 aspect-[400/380] w-[calc(100%+1rem)] overflow-hidden rounded-2xl bg-white/[0.025] ring-1 ring-white/10 sm:mx-0 sm:w-full lg:aspect-auto lg:min-h-[28rem]"
             >
               <Scene slug={slug} index={index} />
             </div>
@@ -194,8 +195,11 @@ export default function SceneBreak({
                   {/* Без .btn-warm: на /content он превращается в сплошную
                       заливку розовый→оранж (content-warm-headings в
                       globals.css) — Егор попросил прозрачную минималистичную
-                      кнопку здесь, обычное неоновое кольцо .btn-neon. */}
-                  <button type="button" onClick={() => setConsult(true)} className="btn-neon !py-3">
+                      кнопку здесь, обычное неоновое кольцо .btn-neon.
+                      .scene-cta (Егор, 2026-10-08): та же прозрачная кнопка,
+                      но ярче — белый текст и кольцо в цвете страницы, иначе
+                      главная кнопка окна читалась неактивной. */}
+                  <button type="button" onClick={() => setConsult(true)} className="btn-neon scene-cta !py-3">
                     Проконсультироваться
                   </button>
                 </div>
