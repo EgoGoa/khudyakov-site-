@@ -18,6 +18,7 @@ import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import MediaGovernor from "@/components/layout/MediaGovernor";
 import HeadingFit from "@/components/layout/HeadingFit";
+import ScrollQuiet from "@/components/layout/ScrollQuiet";
 import PerfGovernor from "@/components/layout/PerfGovernor";
 import MotionTier from "@/components/layout/MotionTier";
 import { LITE_DETECT_SNIPPET } from "@/lib/lite";
@@ -175,6 +176,8 @@ export default function RootLayout({
         <PerfGovernor />
         <MediaGovernor />
         <HeadingFit />
+        {/* Плавающие кнопки на телефоне прячутся, пока страница листается. */}
+        <ScrollQuiet />
         {/* Замораживает CSS-анимации в блоках за пределами экрана — см.
             сам компонент. Здесь, а не в шаблонах страниц: бесконечные
             анимации (неоновые пульсации кнопок, карточек, фото команды)

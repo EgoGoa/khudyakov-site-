@@ -10653,3 +10653,29 @@ html[data-lite] .site-scrim {
   backdrop-filter: none;
   background: rgba(6, 6, 10, 0.88);
 }
+
+/* Плавающие кнопки на телефоне (Егор, 2026-10-08, вариант «а»): пока
+   страница листается, они уходят, и текст окон больше не проезжает под
+   ними; остановился — через полсекунды возвращаются. Флаг data-scrolling
+   ставит ScrollQuiet.tsx. Не прячутся, пока раскрыто меню сферы и пока
+   включён голос. Только opacity — раскладка и клики в покое прежние. */
+@media (max-width: 1023px) {
+  .crumbs,
+  .vibe-fan,
+  .voice-dock-corner .voice-dock {
+    transition: opacity 0.3s ease;
+  }
+  a.page-side-arrow {
+    transition-property: transform, opacity;
+  }
+  html[data-scrolling]:not(:has(.vibe-fan-dim)) :is(
+    .crumbs,
+    .scroll-top-btn,
+    .vibe-fan,
+    a.page-side-arrow,
+    .voice-dock-corner .voice-dock:not(:has(.is-active))
+  ) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
