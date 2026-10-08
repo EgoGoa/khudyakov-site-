@@ -325,12 +325,12 @@ export const sitesCardContent: CompactToolContent = {
           label: "судят о надёжности по дизайну"
         },
         {
-          value: "8 дней",
-          label: "срок пакета"
+          value: "Поиск",
+          label: "находят по названию"
         },
         {
-          value: "до 5",
-          label: "страниц в структуре"
+          value: "Домен",
+          label: "подключаем сами"
         }
       ]
     },

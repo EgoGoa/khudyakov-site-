@@ -326,8 +326,8 @@ export const sitesTurnkeyContent: CompactToolContent = {
           label: "срок пакета"
         },
         {
-          value: "3",
-          label: "итерации правок"
+          value: "Поиск",
+          label: "по всему каталогу"
         },
         {
           value: "Админка",
@@ -351,8 +351,8 @@ export const sitesTurnkeyContent: CompactToolContent = {
           label: "связаны с воронкой"
         },
         {
-          value: "Админка",
-          label: "без программиста"
+          value: "Звонки",
+          label: "тоже в воронку"
         },
         {
           value: "AI",
@@ -364,7 +364,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
       after: "process",
       memberId: "egor",
       own: {
-        label: "AI-ассистент",
+        label: "Запуск под ключ",
         value: "3",
         note: "итерации правок включены",
         text: "Структура и интеграции, дизайн каркаса, наполнение, тест и запуск. По запросу на сайте работает AI-ассистент: первый ответ клиенту даёт он, а не тишина до утра.",
@@ -376,8 +376,8 @@ export const sitesTurnkeyContent: CompactToolContent = {
           label: "этапа до запуска"
         },
         {
-          value: "14 дней",
-          label: "срок пакета"
+          value: "Наполнение",
+          label: "делаем мы"
         },
         {
           value: "Тест",

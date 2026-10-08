@@ -349,8 +349,8 @@ export const sitesRedesignContent: CompactToolContent = {
       },
       facts: [
         {
-          value: "UX-аудит",
-          label: "текущего сайта"
+          value: "Карта",
+          label: "где люди уходят"
         },
         {
           value: "−7%",

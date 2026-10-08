@@ -332,8 +332,8 @@ export const sitesLandingContent: CompactToolContent = {
           label: "у лучших 10% страниц"
         },
         {
-          value: "5 дней",
-          label: "срок стартового пакета"
+          value: "Деплой",
+          label: "и домен — в пакете"
         },
         {
           value: "1",

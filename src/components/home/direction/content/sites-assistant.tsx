@@ -324,12 +324,12 @@ export const sitesAssistantContent: CompactToolContent = {
       },
       facts: [
         {
-          value: "×21",
-          label: "шанс квалифицировать за 5 минут"
+          value: "1 мин",
+          label: "на первый ответ клиенту"
         },
         {
-          value: "24/7",
-          label: "без выходных"
+          value: "Ночью",
+          label: "заявки не теряются"
         },
         {
           value: "+20–25%",
