@@ -69,6 +69,11 @@ export default function OfferPage() {
   const p = params.get("p");
   const answers = useMemo<VibeAnswers | null>(() => (p ? decodeAnswers(p) : null), [p]);
   const [contact, setContact] = useState<Contact | null>(null);
+  // Лендинг всегда открывается с обложки: переход из вайб-режима идёт с
+  // прокрученной страницы раздела, и без этого посетитель попадал в середину.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [p]);
   useEffect(() => {
     // Имя клиента живёт только в его браузере — читается после монтирования.
     // eslint-disable-next-line react-hooks/set-state-in-effect -- внешнее хранилище, один раз

@@ -29,7 +29,7 @@ const TOP_LEVEL = new Set(["/", "/content", "/ai", "/sites", "/smm"]);
 
 const PAGES: Record<string, string> = {
   "/works": "Работы",
-  "/offer": "Оферта",
+  "/offer": "Твой лендинг",
   "/bonus": "Подарок за регистрацию",
   "/calculator": "Калькулятор",
   "/privacy": "Конфиденциальность",
