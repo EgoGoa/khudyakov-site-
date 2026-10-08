@@ -941,11 +941,24 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
   // Всё идёт само (Егор, 2026-10-04): три сцены окна подряд, затем следующее
   // окно, а после третьего окна — стартовое меню. «Дальше» и «Пропустить»
   // только ускоряют.
+  //
+  // Нажатие на окошко ставит сцену на паузу, чтобы рассмотреть её (Егор,
+  // 2026-10-08): таймер, полоска сцены и CSS-анимации внутри замирают;
+  // второе нажатие — сцена доигрывает оставшееся время.
+  const [paused, setPaused] = useState(false);
+  const remaining = useRef(SCENE_MS);
   useEffect(() => {
-    if (title) return;
-    const id = window.setTimeout(() => (s < 2 ? setS(s + 1) : next()), SCENE_MS);
-    return () => window.clearTimeout(id);
-  }, [w, s, title, next]);
+    remaining.current = SCENE_MS;
+  }, [w, s]);
+  useEffect(() => {
+    if (title || paused) return;
+    const started = performance.now();
+    const id = window.setTimeout(() => (s < 2 ? setS(s + 1) : next()), remaining.current);
+    return () => {
+      window.clearTimeout(id);
+      remaining.current = Math.max(0, remaining.current - (performance.now() - started));
+    };
+  }, [w, s, title, next, paused]);
 
   const prevScene = useCallback(() => !title && setS((v) => (v + 2) % 3), [title]);
   const nextScene = useCallback(() => !title && setS((v) => (v + 1) % 3), [title]);
@@ -960,15 +973,21 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [next, nextScene, prevScene]);
 
-  // Свайп по сцене на телефоне листает сцены окна.
-  const down = useRef<number | null>(null);
+  // Свайп по сцене на телефоне листает сцены окна, нажатие — пауза.
+  const down = useRef<{ x: number; y: number } | null>(null);
   const onPointerDown = (e: React.PointerEvent) => {
-    down.current = e.clientX;
+    down.current = { x: e.clientX, y: e.clientY };
   };
   const onPointerUp = (e: React.PointerEvent) => {
     if (down.current === null) return;
-    const dx = e.clientX - down.current;
+    const dx = e.clientX - down.current.x;
+    const dy = e.clientY - down.current.y;
     down.current = null;
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+      // Кнопки внутри сцены живут своей жизнью.
+      if (!(e.target as HTMLElement).closest("button, a")) setPaused((p) => !p);
+      return;
+    }
     if (Math.abs(dx) < 40) return;
     if (dx < 0) nextScene();
     else prevScene();
@@ -981,7 +1000,7 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
     <LiteCtx.Provider value={lite}>
       <MotionConfig reducedMotion="never">
       <motion.div
-        className={`wi${leaving ? " wi-leaving" : ""}`}
+        className={`wi${leaving ? " wi-leaving" : ""}${paused && !title ? " wi-paused" : ""}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -1031,9 +1050,14 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
               </button>
             ))}
           </span>
+          {paused && (
+            <button type="button" className="wi-pause-tag" onClick={() => setPaused(false)}>
+              Пауза · нажми, чтобы продолжить
+            </button>
+          )}
         </div>
 
-        <div className="wi-panel">
+        <div className="wi-panel" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
           <AnimatePresence mode="wait">
             <motion.div
               key={key}

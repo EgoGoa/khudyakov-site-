@@ -345,7 +345,11 @@ export default function ScrubStage({
             со свёрнутой адресной строкой, чтобы фон не перекладывался, когда
             Safari её прячет и показывает. */}
         <div className="scrub-frame sticky top-0 w-full overflow-hidden" aria-hidden="true">
-          <div className="absolute inset-0" style={{ filter: brightness !== 1 ? `brightness(${brightness})` : undefined }}>
+          <div className="absolute inset-0" style={{ filter: brightness !== 1 ? `brightness(${brightness})` : undefined }}
+            // Компьютер: лёгкая расфокусировка прячет блоки сжатия на
+            // большом экране — вместе с зерном ниже ролик читается как
+            // плёнка, а не как пережатое видео (Егор, 2026-10-08).
+            data-scrub-soft="">
             {/* Кадр-заглушка под видео: пока ролик грузится, виден он, а не чёрный фон. */}
             <img src={poster} alt="" className="absolute inset-0 h-full w-full object-cover" />
             <video
@@ -362,8 +366,12 @@ export default function ScrubStage({
           {/* Затемнение: ровная вуаль и тяжелее у краёв. Плотнее, чем у
               колоды: подложки самих глав здесь выключены (globals.css,
               .scrub-chapter), иначе их край полосой виден на стыке глав.
-              Телефон: /60 вместо /50 — на 20% темнее (Егор, 2026-10-08). */}
-          <div className="pointer-events-none absolute inset-0 bg-ink/60 lg:bg-ink/[0.58]" />
+              Телефон: /60 вместо /50, компьютер: /66 вместо /58 — на 20%
+              темнее (Егор, 2026-10-08). */}
+          <div className="pointer-events-none absolute inset-0 bg-ink/60 lg:bg-ink/[0.66]" />
+          {/* Плёночное зерно — только компьютер (на телефоне смешивание
+              слоёв поверх видео лишняя нагрузка, а экран мелкий). */}
+          <div className="scrub-grain pointer-events-none absolute -inset-[50%] max-lg:hidden" />
           <div
             className="pointer-events-none absolute inset-0"
             style={{
