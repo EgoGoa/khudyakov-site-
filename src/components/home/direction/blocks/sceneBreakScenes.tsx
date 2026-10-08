@@ -1271,7 +1271,8 @@ const AV_EMERALD = "#10b981";
 function AiVideoShotBig() {
   const shoot = [
     { t: "Препрод.", d: 5 },
-    { t: "Смена", d: 1 },
+    // 1.4, а не 1: «Смена» при кегле 10 упиралась в края своего отрезка.
+    { t: "Смена", d: 1.4 },
     { t: "Монтаж", d: 4 },
   ];
   const gen = [
@@ -1279,10 +1280,10 @@ function AiVideoShotBig() {
     { t: "Варианты", d: 1, c: AV_LIME },
     { t: "Отбор", d: 1, c: AV_EMERALD },
   ];
-  const SPAN = 364;
-  // 0.42, а не 0.3: в отрезках по ~34 подписи «Промпт», «Варианты»,
-  // «Отбор» слипались в одну строку; разница «недели против дней» видна и так.
-  const GEN_SPAN = SPAN * 0.42;
+  const SPAN = 376;
+  // Половина шкалы съёмки: подписи отрезков («Варианты») при кегле 10
+  // помещаются в свои отрезки с полями, разница «недели против дней» видна.
+  const GEN_SPAN = SPAN * 0.5;
   const shootTotal = shoot.reduce((s, c) => s + c.d, 0);
   const genTotal = gen.reduce((s, c) => s + c.d, 0);
   let accS = 0;
@@ -1300,70 +1301,70 @@ function AiVideoShotBig() {
     return { ...s, x, w };
   });
   const reasons = [
-    { t: "Локация, которой нет", c: AV_VIOLET },
-    { t: "Продукт, который не собран", c: AV_CYAN },
-    { t: "Бюджет не тянет масштаб", c: AV_LIME },
+    { t: "Локации нет", c: AV_VIOLET },
+    { t: "Продукт не собран", c: AV_CYAN },
+    { t: "Масштаб не по бюджету", c: AV_LIME },
   ];
 
   return (
     <BigFrame>
       <In at={0}>
-        <text x="12" y="20" {...LABEL}>СЪЁМКА ПРОТИВ ГЕНЕРАЦИИ</text>
+        <text x="12" y="22" {...LABEL}>СЪЁМКА ПРОТИВ ГЕНЕРАЦИИ</text>
       </In>
 
       <In at={0.4}>
-        <text x="12" y="44" fill="#fff" fontSize="10.5" fontWeight="700" className="sp-figure">Классическая смена</text>
-        <text x="388" y="44" textAnchor="end" fill={`${W}0.88)`} fontSize="8.2" fontFamily="inherit">2–3 недели</text>
-        <rect x="12" y="50" width={SPAN} height="28" rx="8" fill={`${W}0.05)`} stroke={`${W}0.14)`} />
+        <text x="12" y="50" fill="#fff" fontSize="12" fontWeight="700" className="sp-figure">Съёмочная смена</text>
+        <text x="388" y="50" textAnchor="end" fill="#fff" fontSize="10.5" fontWeight="700" fontFamily="inherit">2–3 недели</text>
+        <rect x="12" y="58" width={SPAN} height="32" rx="8" fill={`${W}0.05)`} stroke={`${W}0.14)`} />
       </In>
       {shootBars.map((s, i) => (
         <In key={s.t} at={1 + i * 0.4}>
-          <rect x={s.x} y="50" width={s.w} height="28" rx="6" fill={`${W}${(0.08 + i * 0.05).toFixed(2)})`} stroke={`${W}0.18)`} />
-          <text x={s.x + s.w / 2} y="68" textAnchor="middle" fill="#fff" fontSize="7.4" fontWeight="700" fontFamily="inherit">{s.t}</text>
+          <rect x={s.x} y="58" width={s.w} height="32" rx="6" fill={`${W}${(0.08 + i * 0.05).toFixed(2)})`} stroke={`${W}0.18)`} />
+          <text x={s.x + s.w / 2} y="78" textAnchor="middle" fill="#fff" fontSize="10" fontWeight="700" fontFamily="inherit">{s.t}</text>
         </In>
       ))}
 
       <In at={2.4}>
-        <text x="12" y="106" fill="url(#sb-ramp-x)" fontSize="10.5" fontWeight="700" className="sp-figure">Генерация</text>
-        <text x="388" y="106" textAnchor="end" fill="var(--sp-to)" fontSize="8.2" fontWeight="700" className="sp-figure">дни</text>
-        <rect x="12" y="112" width={SPAN} height="28" rx="8" fill={`${W}0.03)`} stroke={`${W}0.1)`} />
-        <rect x="12" y="112" width={GEN_SPAN} height="28" rx="8" fill="url(#sb-ramp-x)" fillOpacity="0.12" stroke="var(--sp-from)" strokeOpacity="0.55" />
+        <text x="12" y="120" fill="url(#sb-ramp-x)" fontSize="12" fontWeight="700" className="sp-figure">Генерация</text>
+        <text x="388" y="120" textAnchor="end" fill="var(--sp-to)" fontSize="10.5" fontWeight="700" fontFamily="inherit">5–7 дней</text>
+        <rect x="12" y="128" width={SPAN} height="32" rx="8" fill={`${W}0.03)`} stroke={`${W}0.1)`} />
+        <rect x="12" y="128" width={GEN_SPAN} height="32" rx="8" fill="url(#sb-ramp-x)" fillOpacity="0.12" stroke="var(--sp-from)" strokeOpacity="0.55" />
       </In>
       {genBars.map((s, i) => (
         <In key={s.t} at={2.8 + i * 0.3}>
-          <rect x={s.x} y="112" width={s.w} height="28" rx="6" fill={s.c} fillOpacity="0.75" />
-          <text x={s.x + s.w / 2} y="130" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="700" fontFamily="inherit">{s.t}</text>
+          <rect x={s.x} y="128" width={s.w} height="32" rx="6" fill={s.c} fillOpacity="0.75" />
+          <text x={s.x + s.w / 2} y="148" textAnchor="middle" fill="#0b0b10" fontSize="10" fontWeight="700" fontFamily="inherit">{s.t}</text>
         </In>
       ))}
       <In at={3.7}>
         <g className="sp-scan" style={scan(GEN_SPAN - 14)}>
-          <path d="M 12 108 L 12 144" stroke="var(--glow)" strokeOpacity="0.9" strokeWidth="1.2" />
+          <path d="M 12 124 L 12 164" stroke="var(--glow)" strokeOpacity="0.9" strokeWidth="1.2" />
         </g>
       </In>
 
       <In at={4}>
-        <text x="12" y="168" {...LABEL}>ЧТО СНИМАТЬ НЕЛЬЗЯ ИЛИ НЕЧЕМ</text>
+        <text x="12" y="196" {...LABEL}>КОГДА КАМЕРА БЕССИЛЬНА</text>
       </In>
       {reasons.map((r, i) => (
         <In key={r.t} at={4.4 + i * 0.4}>
-          <rect x="12" y={176 + i * 34} width="200" height="26" rx="8" fill={`${W}0.045)`} stroke={r.c} strokeOpacity="0.5" />
-          <circle cx="26" cy={189 + i * 34} r="3" fill={r.c} className="sp-pulse" style={{ animationDelay: `${i * 0.3}s` }} />
-          <text x="36" y={192.5 + i * 34} fill="#fff" fontSize="7.8" fontWeight="600" fontFamily="inherit">{r.t}</text>
-          <path d={`M 212 ${189 + i * 34} C 232 ${189 + i * 34} 232 ${189 + i * 34} 250 ${189 + i * 34}`} stroke={r.c} strokeOpacity="0.6" strokeWidth="1.1" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
+          <rect x="12" y={206 + i * 40} width="214" height="32" rx="9" fill={`${W}0.045)`} stroke={r.c} strokeOpacity="0.55" />
+          <circle cx="28" cy={222 + i * 40} r="3.5" fill={r.c} className="sp-pulse" style={{ animationDelay: `${i * 0.3}s` }} />
+          <text x="40" y={226 + i * 40} fill="#fff" fontSize="10.5" fontWeight="600" fontFamily="inherit">{r.t}</text>
+          <path d={`M 226 ${222 + i * 40} C 240 ${222 + i * 40} 240 ${246} 254 ${246}`} stroke={r.c} strokeOpacity="0.6" strokeWidth="1.1" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
         </In>
       ))}
 
       <In at={5.6}>
-        <rect x="250" y="176" width="138" height="112" rx="12" fill="url(#sb-ramp)" fillOpacity="0.16" stroke="var(--sp-to)" strokeOpacity="0.7" className="sp-pulse" />
-        <circle cx="319" cy="222" r="24" fill="url(#sb-glow)" className="sp-pulse" />
-        <circle cx="319" cy="222" r="14" fill="rgba(10,13,16,0.85)" stroke="url(#sb-ramp)" strokeWidth="1.3" />
-        <path d="M 314 214 L 328 222 L 314 230 Z" fill="#fff" />
-        <text x="260" y="273" fill="url(#sb-ramp-x)" fontSize="9.4" fontWeight="700" className="sp-figure">кадр готов</text>
+        <rect x="254" y="206" width="134" height="112" rx="12" fill="url(#sb-ramp)" fillOpacity="0.16" stroke="var(--sp-to)" strokeOpacity="0.7" className="sp-pulse" />
+        <circle cx="321" cy="250" r="26" fill="url(#sb-glow)" className="sp-pulse" />
+        <circle cx="321" cy="250" r="16" fill="rgba(10,13,16,0.85)" stroke="url(#sb-ramp)" strokeWidth="1.3" />
+        <path d="M 315 241 L 331 250 L 315 259 Z" fill="#fff" />
+        <text x="321" y="302" textAnchor="middle" fill="url(#sb-ramp-x)" fontSize="12" fontWeight="700" className="sp-figure">кадр готов</text>
       </In>
 
       <In at={6.4}>
-        <text x="12" y="330" fill="#fff" fontSize="8.2" fontWeight="700" fontFamily="inherit">Честно: если задачу дешевле снять — мы так и скажем.</text>
-        <text x="12" y="343" fill={`${W}0.9)`} fontSize="8" fontFamily="inherit">Генерация — для того, что снять нельзя или невыгодно.</text>
+        <text x="12" y="350" fill="#fff" fontSize="10.5" fontWeight="700" fontFamily="inherit">Если задачу дешевле снять — так и скажем.</text>
+        <text x="12" y="368" fill={`${W}0.8)`} fontSize="10" fontFamily="inherit">Генерация — для того, что снять нельзя или невыгодно.</text>
       </In>
     </BigFrame>
   );
@@ -1380,7 +1381,7 @@ function AiVideoVoiceBig() {
     { l: "PT", c: AV_VIOLET },
   ];
   const Y0 = 40;
-  const ROW = 30;
+  const ROW = 38;
   const checklist = [
     { t: "Голос и интонация", c: AV_VIOLET },
     { t: "Субтитры и титры", c: AV_CYAN },
@@ -1390,58 +1391,78 @@ function AiVideoVoiceBig() {
   return (
     <BigFrame>
       <In at={0}>
-        <text x="12" y="20" {...LABEL}>ОДИН ГОЛОС — ЛЮБОЙ ЯЗЫК</text>
+        <text x="12" y="22" {...LABEL}>ОДНА ЗАПИСЬ — ПЯТЬ ЯЗЫКОВ</text>
       </In>
 
       <In at={0.4}>
-        <rect x="12" y="40" width="120" height="200" rx="14" {...CARD} />
-        <text x="22" y="58" {...LABEL}>ИСХОДНИК</text>
+        <rect x="12" y="40" width="120" height="182" rx="14" {...CARD} />
+        <text x="24" y="60" {...LABEL}>ИСХОДНИК</text>
       </In>
       <In at={1}>
-        <circle cx="72" cy="150" r="46" fill="url(#sb-glow)" className="sp-pulse" />
-        <circle cx="72" cy="130" r="20" fill={`${W}0.1)`} stroke="url(#sb-ramp)" strokeWidth="1.6" />
-        <path d="M 40 196 C 42 164 102 164 104 196" fill={`${W}0.06)`} stroke="url(#sb-ramp)" strokeWidth="1.6" />
-        <circle cx="72" cy="130" r="28" stroke="var(--sp-from)" strokeOpacity="0.5" strokeDasharray="3 7" className="sp-spin" style={{ transformOrigin: "72px 130px" }} />
+        <circle cx="72" cy="128" r="46" fill="url(#sb-glow)" className="sp-pulse" />
+        <circle cx="72" cy="112" r="20" fill={`${W}0.1)`} stroke="url(#sb-ramp)" strokeWidth="1.6" />
+        <path d="M 40 176 C 42 144 102 144 104 176" fill={`${W}0.06)`} stroke="url(#sb-ramp)" strokeWidth="1.6" />
+        <circle cx="72" cy="112" r="28" stroke="var(--sp-from)" strokeOpacity="0.5" strokeDasharray="3 7" className="sp-spin" style={{ transformOrigin: "72px 112px" }} />
       </In>
       <In at={1.8}>
-        <text x="22" y="222" fill="#fff" fontSize="8.2" fontWeight="700" fontFamily="inherit">1 запись</text>
-        <text x="22" y="232" fill={`${W}0.88)`} fontSize="7.4" fontFamily="inherit">интонация сохраняется</text>
+        <text x="72" y="204" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="inherit">1 запись голоса</text>
       </In>
 
-      <In at={1.4}>
-        <text x="146" y="34" {...LABEL}>ВЕРСИИ ПОД ЯЗЫК</text>
-      </In>
       {langs.map((lang, i) => (
         <In key={lang.l} at={2 + i * 0.45}>
-          <path d={`M 132 150 C 150 150 150 ${Y0 + i * ROW + 10} 146 ${Y0 + i * ROW + 10}`} stroke={lang.c} strokeOpacity="0.55" strokeWidth="1.1" className="sp-flow" style={{ animationDelay: `${i * 0.25}s` }} />
-          <rect x="146" y={Y0 + i * ROW} width="242" height="22" rx="11" fill={`${W}0.045)`} stroke={lang.c} strokeOpacity="0.45" />
-          <text x="158" y={Y0 + i * ROW + 15} fill="#fff" fontSize="8.4" fontWeight="700" fontFamily="inherit">{lang.l}</text>
-          {Array.from({ length: 20 }).map((_, k) => (
-            <rect key={k} x={190 + k * 9.5} y={Y0 + i * ROW + 11 - (2 + ((k * 5 + i * 3) % 7))} width="4" height={4 + ((k * 5 + i * 3) % 7) * 2} rx="1.6" fill={lang.c} fillOpacity={0.4 + (k % 3) * 0.15} />
+          <path d={`M 132 131 C 146 131 146 ${Y0 + i * ROW + 14} 146 ${Y0 + i * ROW + 14}`} stroke={lang.c} strokeOpacity="0.55" strokeWidth="1.1" className="sp-flow" style={{ animationDelay: `${i * 0.25}s` }} />
+          <rect x="146" y={Y0 + i * ROW} width="242" height="28" rx="14" fill={`${W}0.045)`} stroke={lang.c} strokeOpacity="0.45" />
+          <text x="160" y={Y0 + i * ROW + 18} fill="#fff" fontSize="11" fontWeight="700" fontFamily="inherit">{lang.l}</text>
+          {Array.from({ length: 19 }).map((_, k) => (
+            <rect key={k} x={194 + k * 9.5} y={Y0 + i * ROW + 14 - (2 + ((k * 5 + i * 3) % 7))} width="4" height={4 + ((k * 5 + i * 3) % 7) * 2} rx="1.6" fill={lang.c} fillOpacity={0.4 + (k % 3) * 0.15} />
           ))}
         </In>
       ))}
 
       <In at={4.6}>
-        <text x="12" y="270" {...LABEL}>ЧТО МЕНЯЕТСЯ ПОД ЯЗЫК</text>
+        <text x="12" y="254" {...LABEL}>ЧТО ПОДСТРАИВАЕМ ПОД ЯЗЫК</text>
       </In>
       {checklist.map((c, i) => (
         <In key={c.t} at={5 + i * 0.35}>
-          <path d={`M 14 ${288 + i * 20} l 4 4 l 7 -8`} stroke={c.c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          <text x="30" y={294 + i * 20} fill="#fff" fontSize="8.2" fontFamily="inherit">{c.t}</text>
+          <path d={`M 14 ${268 + i * 22} l 4 4 l 7 -8`} stroke={c.c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          <text x="32" y={275 + i * 22} fill="#fff" fontSize="10.5" fontFamily="inherit">{c.t}</text>
         </In>
       ))}
 
       <In at={6.4}>
-        <text x="12" y="358" fill="#fff" fontSize="8.2" fontWeight="700" fontFamily="inherit">Без студии дубляжа и недель ожидания.</text>
-        <text x="12" y="370" fill={`${W}0.88)`} fontSize="7.6" fontFamily="inherit">Один голос звучит одинаково узнаваемо на каждом языке.</text>
+        <text x="12" y="350" fill="#fff" fontSize="10.5" fontWeight="700" fontFamily="inherit">Без студии дубляжа и недель ожидания.</text>
+        <text x="12" y="368" fill={`${W}0.8)`} fontSize="10" fontFamily="inherit">Голос узнаваемо звучит на каждом языке.</text>
       </In>
     </BigFrame>
   );
 }
 
-/** 03 · Гибрид. Лента из живых и AI-кадров с общим цветом и светом; ниже —
- *  три тарифа страницы как шкала «чем больше AI, тем выше гибкость». */
+/** Живой кадр в ленте: силуэт человека — то, что честнее снять камерой. */
+function LiveCell({ x, y }: { x: number; y: number }) {
+  return (
+    <>
+      <circle cx={x + 20} cy={y + 26} r="7" fill={`${W}0.3)`} />
+      <path d={`M ${x + 8} ${y + 52} C ${x + 9} ${y + 38} ${x + 31} ${y + 38} ${x + 32} ${y + 52}`} fill={`${W}0.3)`} />
+    </>
+  );
+}
+
+/** AI-кадр в ленте: искра — знак генерации, та же, что у иконки «AI». */
+function AiCell({ x, y, c }: { x: number; y: number; c: string }) {
+  const cx = x + 20;
+  const cy = y + 32;
+  return (
+    <path
+      d={`M ${cx} ${cy - 13} L ${cx + 4} ${cy - 4} L ${cx + 13} ${cy} L ${cx + 4} ${cy + 4} L ${cx} ${cy + 13} L ${cx - 4} ${cy + 4} L ${cx - 13} ${cy} L ${cx - 4} ${cy - 4} Z`}
+      fill={c}
+      fillOpacity="0.85"
+      className="sp-pulse"
+    />
+  );
+}
+
+/** 03 · Гибрид. Лента из живых и AI-кадров со сведённым цветом; ниже — три
+ *  тарифа страницы с их настоящими ценами (из pricing в ai-video.tsx). */
 function AiVideoHybridBig() {
   const cells = [
     { k: "live" },
@@ -1453,140 +1474,128 @@ function AiVideoHybridBig() {
     { k: "ai", c: AV_EMERALD },
     { k: "live" },
   ];
+  // Цены — те же, что в тарифах страницы. Ширина полосы не в масштабе цены
+  // (7 000 против 355 000 дали бы точку), а ступенями — порядок виден.
   const tiers = [
-    { t: "Генерация", p: 50, c: AV_CYAN },
-    { t: "Гибрид", p: 150, c: AV_LIME },
-    { t: "Объём", p: 400, c: AV_EMERALD },
+    { t: "Генерация", s: "только AI", p: "от 7 000 ₽", w: 0.22, c: AV_CYAN },
+    { t: "Гибрид", s: "съёмка + AI", p: "от 55 000 ₽", w: 0.5, c: AV_LIME },
+    { t: "Объём", s: "линейка версий", p: "от 355 000 ₽", w: 1, c: AV_EMERALD },
   ];
-  const maxP = 400;
-  const SPAN = 360;
-  const BAR = SPAN - 98;
+  const BX = 118;
+  const BAR = 270;
 
   return (
     <BigFrame>
       <In at={0}>
-        <text x="12" y="20" {...LABEL}>ЖИВОЕ + AI — ОДНА ЛЕНТА</text>
+        <text x="12" y="22" {...LABEL}>ЖИВОЕ + AI — ОДНА ЛЕНТА</text>
       </In>
 
       {cells.map((c, i) => (
         <In key={i} at={0.6 + i * 0.3}>
-          <rect x={12 + i * 46} y="30" width="40" height="60" rx="8" fill={c.k === "ai" ? c.c : `${W}0.06)`} fillOpacity={c.k === "ai" ? 0.24 : 1} stroke={c.k === "ai" ? c.c : `${W}0.18)`} strokeDasharray={c.k === "ai" ? "4 3" : undefined} />
-          {c.k === "ai" ? (
-            <path d={`M ${22 + i * 46} 72 L ${32 + i * 46} 48 L ${42 + i * 46} 72`} stroke={c.c} strokeWidth="1.4" className="sp-flow" />
-          ) : (
-            <circle cx={32 + i * 46} cy="60" r="8" fill={`${W}0.28)`} />
-          )}
+          <rect x={12 + i * 47} y="34" width="41" height="64" rx="8" fill={c.k === "ai" ? c.c : `${W}0.06)`} fillOpacity={c.k === "ai" ? 0.18 : 1} stroke={c.k === "ai" ? c.c : `${W}0.18)`} strokeDasharray={c.k === "ai" ? "4 3" : undefined} />
+          {c.k === "ai" ? <AiCell x={12 + i * 47} y={34} c={c.c!} /> : <LiveCell x={12 + i * 47} y={34} />}
         </In>
       ))}
       <In at={3.4}>
-        <rect x="12" y="96" width="10" height="6" rx="3" fill={`${W}0.3)`} />
-        <text x="28" y="102" fill={`${W}0.75)`} fontSize="7.4" fontFamily="inherit">живая съёмка</text>
-        <rect x="120" y="96" width="10" height="6" rx="3" fill="var(--sp-from)" fillOpacity="0.6" />
-        <text x="136" y="102" fill={`${W}0.75)`} fontSize="7.4" fontFamily="inherit">AI — где не снять</text>
+        <circle cx="18" cy="116" r="5" fill={`${W}0.35)`} />
+        <text x="30" y="120" fill="#fff" fontSize="10.5" fontFamily="inherit">живая съёмка</text>
+        <path d="M 160 109 L 162.5 114 L 167 116 L 162.5 118 L 160 123 L 157.5 118 L 153 116 L 157.5 114 Z" fill="var(--sp-from)" />
+        <text x="174" y="120" fill="#fff" fontSize="10.5" fontFamily="inherit">AI — где снять нельзя</text>
       </In>
 
       <In at={3.8}>
-        <text x="12" y="126" {...LABEL}>ОДИН ЦВЕТ И СВЕТ НА ВСЮ ЛЕНТУ</text>
-        <path d="M 12 140 L 372 140" stroke={`${W}0.14)`} strokeWidth="1.2" />
-        <path d="M 12 140 L 372 140" stroke="url(#sb-ramp-x)" strokeWidth="1.8" pathLength="1" className="sp-draw" />
-      </In>
-      <In at={4.6}>
-        <g className="sp-scan" style={scan(348)}>
-          <circle cx="12" cy="140" r="6" fill="url(#sb-glow)" />
-        </g>
+        <rect x="12" y="134" width="376" height="10" rx="5" fill="url(#sb-ramp-x)" fillOpacity="0.85" />
+        <text x="12" y="162" fill={`${W}0.8)`} fontSize="10" fontFamily="inherit">Цвет и свет сведены — стык между кадрами не виден</text>
       </In>
 
       <In at={4.4}>
-        <text x="12" y="166" {...LABEL}>СМЕТА РАСТЁТ С ДОЛЕЙ AI</text>
+        <text x="12" y="196" {...LABEL}>ТРИ ТАРИФА НА СТАРТ</text>
       </In>
       {tiers.map((t, i) => (
         <In key={t.t} at={4.8 + i * 0.4}>
-          <text x="12" y={194 + i * 34} fill="#fff" fontSize="8.4" fontWeight="700" fontFamily="inherit">{t.t}</text>
-          <rect x="110" y={180 + i * 34} width={BAR} height="20" rx="8" fill={`${W}0.05)`} stroke={`${W}0.14)`} />
-          <rect x="110" y={180 + i * 34} width={(t.p / maxP) * BAR} height="20" rx="8" fill={t.c} fillOpacity={0.55 + i * 0.12} />
-          <text x="372" y={194 + i * 34} textAnchor="end" fill="#fff" fontSize="8" fontWeight="700" fontFamily="inherit">от {t.p} 000 ₽</text>
+          <text x="12" y={220 + i * 42} fill="#fff" fontSize="11" fontWeight="700" fontFamily="inherit">{t.t}</text>
+          <text x="12" y={234 + i * 42} fill={`${W}0.7)`} fontSize="9.4" fontFamily="inherit">{t.s}</text>
+          <rect x={BX} y={208 + i * 42} width={BAR} height="28" rx="9" fill={`${W}0.05)`} stroke={`${W}0.14)`} />
+          <rect x={BX} y={208 + i * 42} width={t.w * BAR} height="28" rx="9" fill={t.c} fillOpacity={0.35 + i * 0.12} />
+          <text x={BX + BAR - 10} y={226 + i * 42} textAnchor="end" fill="#fff" fontSize="10.5" fontWeight="700" fontFamily="inherit">{t.p}</text>
         </In>
       ))}
 
       <In at={6.4}>
-        <text x="12" y="296" fill="#fff" fontSize="8.2" fontWeight="700" fontFamily="inherit">Гибрид — средний путь: часть кадров живая, часть — AI.</text>
-        <text x="12" y="308" fill={`${W}0.88)`} fontSize="7.6" fontFamily="inherit">Стык не читается — цвет и свет сведены в одну ленту.</text>
+        <text x="12" y="350" fill="#fff" fontSize="10.5" fontWeight="700" fontFamily="inherit">Гибрид — средний путь: часть кадров живая, часть — AI.</text>
+        <text x="12" y="368" fill={`${W}0.8)`} fontSize="10" fontFamily="inherit">Живое — где нужна эмоция, AI — где камера бессильна.</text>
       </In>
     </BigFrame>
   );
 }
 
-/** 04 · Варианты. Один бюджет → три сгенерированных варианта → отбор
- *  лучшего по оценке → победитель едет на все площадки без пересъёмки. */
+/** 04 · Варианты. Одна смета → три варианта → тест на площадках →
+ *  победитель уходит во все точки без пересъёмки. */
 function AiVideoVariantsBig() {
   const variants = [
     { t: "Вариант A", score: 62, c: AV_VIOLET },
     { t: "Вариант B", score: 88, c: AV_LIME },
     { t: "Вариант C", score: 74, c: AV_CYAN },
   ];
-  const cols = ["Сайт", "Соцсети", "Реклама", "Стенд"];
+  const dest = ["Сайт", "Соцсети", "Реклама", "Стенд"];
 
   return (
     <BigFrame>
       <In at={0}>
-        <text x="12" y="20" {...LABEL}>ОДИН БЮДЖЕТ — ТРИ ВАРИАНТА</text>
+        <text x="12" y="22" {...LABEL}>ОДНА СМЕТА — ТРИ ВАРИАНТА</text>
+        <text x="388" y="22" textAnchor="end" fill={`${W}0.75)`} fontSize="9.4" fontFamily="inherit">отклик в тесте</text>
       </In>
 
       <In at={0.4}>
-        <rect x="12" y="28" width="84" height="100" rx="12" {...CARD} />
-        <text x="22" y="44" {...LABEL}>БЮДЖЕТ</text>
-        <circle cx="54" cy="86" r="24" fill="url(#sb-glow)" className="sp-pulse" />
-        <text x="54" y="92" textAnchor="middle" className="sp-figure" fill="url(#sb-ramp-x)" fontSize="16">1</text>
-        <text x="22" y="118" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">одна смета</text>
+        <rect x="12" y="34" width="88" height="124" rx="12" {...CARD} />
+        <circle cx="56" cy="82" r="26" fill="url(#sb-glow)" className="sp-pulse" />
+        <text x="56" y="90" textAnchor="middle" className="sp-figure" fill="url(#sb-ramp-x)" fontSize="22">1</text>
+        <text x="56" y="132" textAnchor="middle" fill="#fff" fontSize="10.5" fontWeight="700" fontFamily="inherit">смета</text>
       </In>
 
-      {variants.map((v, i) => (
-        <In key={v.t} at={1 + i * 0.5}>
-          <path d={`M 96 78 C 120 78 120 ${44 + i * 36} 144 ${44 + i * 36}`} stroke={v.c} strokeOpacity="0.55" strokeWidth="1.1" className="sp-flow" style={{ animationDelay: `${i * 0.25}s` }} />
-          <rect x="144" y={28 + i * 36} width="234" height="28" rx="9" fill={v.c} fillOpacity={0.12 + i * 0.03} stroke={v.score >= 85 ? v.c : `${W}0.18)`} strokeWidth={v.score >= 85 ? 1.8 : 1} />
-          <text x="154" y={46 + i * 36} fill="#fff" fontSize="7.8" fontWeight="700" fontFamily="inherit">{v.t}</text>
-          <rect x="240" y={38 + i * 36} width="100" height="8" rx="4" fill={`${W}0.1)`} />
-          <rect x="240" y={38 + i * 36} width={v.score} height="8" rx="4" fill={v.c} fillOpacity={v.score >= 85 ? 0.9 : 0.5} />
-          <text x="368" y={46 + i * 36} textAnchor="end" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">{v.score}%</text>
-          {/* Галочка сразу за названием варианта: в углу она ложилась на «88%». */}
-          {v.score >= 85 ? (
-            <path d={`M 202 ${40 + i * 36} l 3 3 l 6 -7`} stroke={v.c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="sp-pulse" />
-          ) : null}
-        </In>
-      ))}
-
-      <In at={2.8}>
-        <text x="12" y="158" fill={`${W}0.88)`} fontSize="7.6" fontFamily="inherit">выбираем лучший, а не единственный</text>
-      </In>
-
-      <In at={3.4}>
-        {/* Подпись над строкой колонок, а не в ней: в одну строку она
-            наезжала на «Сайт». */}
-        <text x="12" y="176" {...LABEL}>КУДА ИДЁТ ПОБЕДИТЕЛЬ</text>
-        {cols.map((c, j) => (
-          <text key={c} x={140 + j * 62} y="190" textAnchor="middle" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">{c}</text>
-        ))}
-        <path d="M 12 197 L 388 197" stroke={`${W}0.12)`} />
-      </In>
       {variants.map((v, i) => {
-        const on = i === 1 ? [1, 1, 1, 1] : i === 2 ? [0, 1, 0, 1] : [0, 0, 0, 0];
+        const win = v.score >= 85;
         return (
-          <In key={`m${v.t}`} at={3.8 + i * 0.4}>
-            <text x="16" y={214 + i * 28} fill="#fff" fontSize="8" fontWeight="700" fontFamily="inherit">{v.t}</text>
-            {on.map((o, j) =>
-              o ? (
-                <circle key={j} cx={140 + j * 62} cy={211 + i * 28} r="5" fill="url(#sb-ramp)" className="sp-pulse" style={{ animationDelay: `${(i + j) * 0.2}s` }} />
-              ) : (
-                <circle key={j} cx={140 + j * 62} cy={211 + i * 28} r="4.5" stroke={`${W}0.2)`} />
-              ),
-            )}
+          <In key={v.t} at={1 + i * 0.5}>
+            <path d={`M 100 96 C 116 96 116 ${52 + i * 42} 130 ${52 + i * 42}`} stroke={v.c} strokeOpacity="0.55" strokeWidth="1.1" className="sp-flow" style={{ animationDelay: `${i * 0.25}s` }} />
+            <rect x="130" y={34 + i * 42} width="258" height="36" rx="10" fill={v.c} fillOpacity={0.12 + i * 0.03} stroke={win ? v.c : `${W}0.18)`} strokeWidth={win ? 1.8 : 1} />
+            <text x="142" y={57 + i * 42} fill="#fff" fontSize="10.5" fontWeight="700" fontFamily="inherit">{v.t}</text>
+            <rect x="226" y={48 + i * 42} width="110" height="8" rx="4" fill={`${W}0.1)`} />
+            <rect x="226" y={48 + i * 42} width={1.1 * v.score} height="8" rx="4" fill={v.c} fillOpacity={win ? 0.9 : 0.5} />
+            <text x="378" y={57 + i * 42} textAnchor="end" fill="#fff" fontSize="10.5" fontWeight="700" fontFamily="inherit">{v.score}%</text>
+            {win ? (
+              <path d={`M 206 ${47 + i * 42} l 3.5 3.5 l 7 -8`} stroke={v.c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="sp-pulse" />
+            ) : null}
           </In>
         );
       })}
 
+      <In at={3.4}>
+        <text x="12" y="196" {...LABEL}>ПОБЕДИТЕЛЬ — ВО ВСЕ ТОЧКИ</text>
+        <rect x="12" y="208" width="104" height="40" rx="12" fill={AV_LIME} fillOpacity="0.18" stroke={AV_LIME} strokeWidth="1.6" />
+        <text x="64" y="233" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="inherit">Вариант B</text>
+        {/* Одна стрелка к сетке площадок: линии к каждой плашке правого
+            столбца шли сквозь плашки левого. */}
+        <path d="M 120 228 L 142 228 M 136 222 L 142 228 L 136 234" stroke={AV_LIME} strokeOpacity="0.8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="sp-pulse" />
+      </In>
+      {dest.map((d, j) => {
+        const x = 152 + (j % 2) * 120;
+        const y = 206 + Math.floor(j / 2) * 46;
+        return (
+          <In key={d} at={3.8 + j * 0.3}>
+            <rect x={x} y={y} width="112" height="36" rx="10" fill={`${W}0.05)`} stroke={`${W}0.2)`} />
+            <path d={`M ${x + 12} ${y + 18} l 3.5 3.5 l 7 -8`} stroke={AV_LIME} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <text x={x + 30} y={y + 22} fill="#fff" fontSize="10.5" fontWeight="600" fontFamily="inherit">{d}</text>
+          </In>
+        );
+      })}
+      <In at={5}>
+        <text x="12" y="316" fill={`${W}0.7)`} fontSize="9.4" fontFamily="inherit">A и C не пропадают — пригодятся в следующем тесте.</text>
+      </In>
+
       <In at={5.6}>
-        <text x="12" y="322" fill="#fff" fontSize="8.2" fontWeight="700" fontFamily="inherit">Тестируем варианты, а не гадаем заранее.</text>
-        <text x="12" y="334" fill={`${W}0.88)`} fontSize="7.6" fontFamily="inherit">Победитель едет во все точки — без пересъёмки.</text>
+        <text x="12" y="350" fill="#fff" fontSize="10.5" fontWeight="700" fontFamily="inherit">Тестируем варианты, а не гадаем заранее.</text>
+        <text x="12" y="368" fill={`${W}0.8)`} fontSize="10" fontFamily="inherit">Победитель уходит во все точки без пересъёмки.</text>
       </In>
     </BigFrame>
   );

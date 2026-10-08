@@ -121,7 +121,7 @@ export default function PersonaAssets({ media }: { media?: BlockMediaSpec }) {
       <Appear from="up" delay={DIRECTION_BEAT.cta}>
         <label className="mx-auto mt-8 block max-w-[34em] text-left">
           <span className={`${EYEBROW} text-white/70`}>
-            Ссылка или ожидания
+            Сайт или пару слов о задаче
           </span>
           <input
             type="text"

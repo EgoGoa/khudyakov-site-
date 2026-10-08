@@ -161,8 +161,9 @@ export default function DirectionHero({
               карточка, а не карточка плюс дублирующие её кнопки рядом. */}
           {(hero.deepInline ?? true) && spotKey && (directionDeep(spotKey) ?? spotlightFor(spotKey)) && hero.teamAsk ? (
             // Сцены «почему это работает» развёрнуты прямо здесь (слева), а
-            // рядом — окошко Егора с кнопкой «Заказать» (просьба Егора для
-            // «Презентационных фильмов»).
+            // рядом — окошко Егора (просьба Егора для «Презентационных
+            // фильмов»). Кнопка «Обсудить», а не «Заказать»: окошко
+            // предлагает созвон и план, и кнопка отвечает на это (2026-10-08).
             <div className="mt-8 grid max-w-[880px] items-stretch gap-4 sm:grid-cols-[1.3fr_1fr]">
               {/* Окошко с графикой на 30% шире окошка человека, чтобы сцена
                   помещалась свободно; окошко человека прежней ширины (Егор). */}
@@ -172,7 +173,7 @@ export default function DirectionHero({
                 const page = seg === "ai" || seg === "sites" || seg === "smm" ? seg : "content";
                 const pulse = findPulse(hero.teamAsk.memberId, page);
                 return pulse ? (
-                  <TeamPulse data={pulse} compact fill ctaLabel="Заказать" source={`/${page}/${slug} · шапка`} />
+                  <TeamPulse data={pulse} compact fill ctaLabel="Обсудить" source={`/${page}/${slug} · шапка`} />
                 ) : null;
               })()}
             </div>

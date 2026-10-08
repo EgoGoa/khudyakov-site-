@@ -425,16 +425,28 @@ function AiShot({ mini }: SceneProps) {
       <Headline value="дни" note="вместо недель на первую версию" mini={mini} />
       <In at={1}>
         <rect x="14" y="66" width="312" height="26" rx="13" {...SOFT} />
-        <text x="28" y="83" fill={`${W}0.8)`} fontSize="13.2" fontFamily="inherit">Ночной город, которого нет, дождь, неон…</text>
+        {/* Короткий промпт: длинный уходил под кнопку справа. */}
+        <text x="28" y="83" fill={`${W}0.8)`} fontSize="13.2" fontFamily="inherit">Ночной город, дождь, неон…</text>
         <rect x="292" y="72" width="28" height="14" rx="7" fill="url(#sp-ramp)" />
       </In>
+      {/* Три сгенерированных кадра ночного города: дома с окнами, луна и
+          косой дождь — чтобы читалось как картинка, а не как график. */}
       {[0, 1, 2].map((i) => (
         <In key={i} at={2 + i}>
           <rect x={14 + i * 106} y="102" width="98" height="62" rx="10" fill="url(#sp-ramp)" fillOpacity={0.14 + i * 0.07} stroke="var(--sp-from)" strokeOpacity="0.55" />
-          {[0, 1, 2, 3, 4].map((k) => (
-            <rect key={k} x={22 + i * 106 + k * 16} y={150 - ((k * 13 + i * 9) % 32) - 12} width="12" height={((k * 13 + i * 9) % 32) + 12} rx="1.5" fill={`${W}0.16)`} />
-          ))}
-          <circle cx={84 + i * 106} cy="118" r="6" fill="#fff" fillOpacity="0.55" className="sp-pulse" style={{ animationDelay: `${i * 0.4}s` }} />
+          <circle cx={88 + i * 106} cy="116" r="5" fill="#fff" fillOpacity="0.6" />
+          {[0, 1, 2, 3, 4].map((k) => {
+            const h = ((k * 13 + i * 9) % 22) + 14;
+            const x = 20 + i * 106 + k * 17;
+            return (
+              <g key={k}>
+                <rect x={x} y={160 - h} width="14" height={h} rx="1.5" fill={`${W}0.2)`} />
+                <rect x={x + 3} y={164 - h} width="3" height="3" fill="var(--sp-to)" fillOpacity="0.85" />
+                <rect x={x + 8} y={170 - h} width="3" height="3" fill="var(--sp-to)" fillOpacity="0.6" />
+              </g>
+            );
+          })}
+          <path d={`M ${30 + i * 106} 108 l -4 10 M ${52 + i * 106} 106 l -4 10 M ${70 + i * 106} 110 l -4 10`} stroke={`${W}0.35)`} strokeWidth="1" strokeLinecap="round" />
         </In>
       ))}
       <BeforeAfter before="Нет локации — нет кадра" after="Кадр из описания" mini={mini} />
@@ -488,10 +500,20 @@ function AiHybrid({ mini }: SceneProps) {
             stroke={c === "ai" ? "var(--sp-from)" : `${W}0.2)`}
             strokeDasharray={c === "ai" ? "4 3" : undefined}
           />
+          {/* AI-кадр — искра (знак генерации), живой — силуэт человека:
+              раньше были чёрточка и точка, и смысл не читался. */}
           {c === "ai" ? (
-            <path d={`M ${25 + i * 52} 128 L ${37 + i * 52} 100 L ${49 + i * 52} 128`} stroke="var(--sp-from)" strokeWidth="1.4" className="sp-flow" />
+            <path
+              d={`M ${37 + i * 52} 101 l 4 9 l 9 4 l -9 4 l -4 9 l -4 -9 l -9 -4 l 9 -4 z`}
+              fill="var(--sp-from)"
+              fillOpacity="0.85"
+              className="sp-pulse"
+            />
           ) : (
-            <circle cx={37 + i * 52} cy="112" r="8" fill={`${W}0.28)`} />
+            <>
+              <circle cx={37 + i * 52} cy="106" r="7" fill={`${W}0.3)`} />
+              <path d={`M ${25 + i * 52} 132 C ${26 + i * 52} 118 ${48 + i * 52} 118 ${49 + i * 52} 132`} fill={`${W}0.3)`} />
+            </>
           )}
         </In>
       ))}
@@ -510,7 +532,7 @@ function AiHybrid({ mini }: SceneProps) {
 function AiVariants({ mini }: SceneProps) {
   return (
     <Frame>
-      <Headline value="×3" note="вариантов на том же бюджете" mini={mini} />
+      <Headline value="×3" note="варианта за ту же смету" mini={mini} />
       <In at={1}>
         <rect x="14" y="88" width="66" height="50" rx="10" {...SOFT} />
         <text x="47" y="116" textAnchor="middle" fill="#fff" fontSize="12.4" fontWeight="600" fontFamily="inherit">Бриф</text>
@@ -541,7 +563,7 @@ const AI_VIDEO_FIG: SceneFigure[] = [
   { value: "дни", note: "вместо недель на первую версию", before: "Нет локации — нет кадра", after: "Кадр из описания" },
   { value: "1 голос", note: "на любом языке", before: "Дубляж: недели работы", after: "Тот же голос, любой язык" },
   { value: "живое + AI", note: "в одном ролике", before: "Съёмка или ничего", after: "Камера + AI в одном" },
-  { value: "×3", note: "вариантов на том же бюджете", before: "Одна дорогая ставка", after: "Выбор из готовых идей" },
+  { value: "×3", note: "варианта за ту же смету", before: "Одна дорогая ставка", after: "Выбор из готовых идей" },
 ];
 
 /* ═══ Графика и анимация ════════════════════════════════════════════ */

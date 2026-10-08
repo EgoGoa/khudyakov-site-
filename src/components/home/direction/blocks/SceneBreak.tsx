@@ -105,7 +105,7 @@ export default function SceneBreak({
   // окошка услуги на /content у них нет.
   const own = spec.own;
   const figure = own ? { value: own.value, note: own.note } : SCENE_FIGURES[slug]?.[index];
-  const benefit = own ? { label: own.label, text: own.text, accent: own.accent } : data?.benefits[index];
+  const benefit = own ? { label: own.label, text: own.text, accent: own.accent, title: undefined } : data?.benefits[index];
   if (!figure || !benefit) return null;
   const accent = data?.accent ?? backdrop;
 
@@ -126,7 +126,7 @@ export default function SceneBreak({
             {/* Заголовок окошка — о чём оно (Егор): вместо счётчика
                 «02 / 04 · …», который он убрал со всех табличек. */}
             <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl lg:col-span-2">
-              <span className="spotlight-accent spotlight-sheen">{benefit.label}</span>
+              <span className="spotlight-accent spotlight-sheen">{benefit.title ?? benefit.label}</span>
             </h3>
             <div
               className="relative -mx-2 aspect-[400/380] w-[calc(100%+1rem)] overflow-hidden rounded-2xl bg-white/[0.025] ring-1 ring-white/10 sm:mx-0 sm:w-full lg:aspect-auto lg:min-h-[28rem]"
@@ -161,7 +161,9 @@ export default function SceneBreak({
                 </p>
               </Appear>
 
-              <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/12 pt-4 sm:grid-cols-3">
+              {/* Три факта в две колонки (телефон): третий во всю ширину,
+                  а не сиротой в половине ряда. */}
+              <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/12 pt-4 sm:grid-cols-3 [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
                 {spec.facts.map((f, i) => (
                   <Appear key={f.label} from="up" delay={DIRECTION_BEAT.content + 0.15 + i * STAGGER.normal}>
                     <div className="relative pl-3">

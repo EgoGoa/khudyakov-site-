@@ -9269,6 +9269,17 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   margin-right: 0;
   place-items: center;
 }
+/* Тёмный ореол под сферой (Егор, 2026-10-08): текст страницы под ней
+   уходит в тень, а не просвечивает сквозь кольцо. */
+.vibe-fan__orb::before {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  z-index: -1;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(11, 11, 16, 0.92) 0%, rgba(11, 11, 16, 0.8) 45%, rgba(11, 11, 16, 0) 72%);
+  pointer-events: none;
+}
 
 /* ── Плеер музыки (SoundStation) ───────────────────────────────────────────
    Раскладка Apple Music (обложка → название → полоса → кнопки → громкость),
@@ -10216,23 +10227,49 @@ html[data-mid] .hero-promo { transition: none; }
    сфера вайба и линия голосового ассистента читались отчётливее на любом
    кадре. Слой над страницей, но под сферой, меню и самим ассистентом, и не
    ловит нажатия. Только на телефоне и планшете. */
-.bottom-fade { display: none; }
+.bottom-fade,
+.top-fade { display: none; }
 @media (max-width: 1023px) {
+  /* Края экрана на телефоне темнее (Егор, 2026-10-08): внизу висят сфера,
+     стрелки страниц и волна ассистента, сверху под шапкой — стрелки
+     «назад» и «наверх». Текст под ними уходит в тень, а не ложится под
+     кнопку. Затемнение плотное там, где кнопки, и сходит на нет к центру. */
   .bottom-fade {
     display: block;
     position: fixed;
     inset: auto 0 0 0;
     z-index: 58;
-    height: calc(10rem + env(safe-area-inset-bottom));
+    height: calc(12rem + env(safe-area-inset-bottom));
     pointer-events: none;
     background: linear-gradient(
       to top,
-      rgba(11, 11, 16, 0.82) 0%,
-      rgba(11, 11, 16, 0.6) 30%,
-      rgba(11, 11, 16, 0.28) 62%,
+      rgba(11, 11, 16, 0.94) 0%,
+      rgba(11, 11, 16, 0.86) 30%,
+      rgba(11, 11, 16, 0.55) 62%,
       rgba(11, 11, 16, 0) 100%
     );
   }
+  .top-fade {
+    display: block;
+    position: fixed;
+    inset: calc(68px + var(--sat)) 0 auto 0;
+    z-index: 39;
+    height: 5rem;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgba(11, 11, 16, 0.9) 0%,
+      rgba(11, 11, 16, 0.7) 45%,
+      rgba(11, 11, 16, 0) 100%
+    );
+  }
+}
+/* Та же высота шапки, что у хлебных крошек (Breadcrumbs.tsx). */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .top-fade { top: calc(84px + var(--sat)); }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .top-fade { top: calc(3rem + var(--sat)); height: 3.5rem; }
 }
 
 /* Открыто окошко услуги (ToolSpotlight): на телефоне шапка притухает вместе с

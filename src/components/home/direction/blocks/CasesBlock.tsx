@@ -346,10 +346,13 @@ function ReelsCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                             stat.accent ? "from-orange via-orange/40" : "from-white/50 via-white/15"
                           }`}
                         />
+                        {/* Слова не рвутся посередине («КАРТОЧ-КА»): длинное
+                            значение на телефоне — ступенью мельче. */}
                         <div
-                          className={`break-words font-display text-base uppercase leading-none sm:text-lg ${
-                            stat.accent ? "text-orange" : "text-white"
-                          }`}
+                          className={`font-display uppercase leading-none sm:text-lg ${
+                            String(stat.value).length > 10 ? "text-sm" : "text-base"
+                          } ${stat.accent ? "text-orange" : "text-white"}`}
+                          style={{ overflowWrap: "normal", wordBreak: "normal", hyphens: "none" }}
                         >
                           {stat.value}
                         </div>

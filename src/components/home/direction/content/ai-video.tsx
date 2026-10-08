@@ -41,9 +41,9 @@ export const aiVideoContent: DirectionContent = {
     ),
     lead: (
       <>
-        Локация, которой нет. Продукт, который ещё не собран. Сцена, на которую
-        не хватит бюджета никогда. <Accent>Нейросети закрывают это за дни, а не
-        за месяцы</Accent> — там, где это действительно уместно.
+        Локация, которой нет. Продукт, который ещё не собран. Сцена не по
+        бюджету. <Accent>Нейросеть собирает такой кадр за дни</Accent> — там,
+        где камера бессильна.
       </>
     ),
     video: "/video/works/showreel-2026-hero.mp4",
@@ -66,7 +66,7 @@ export const aiVideoContent: DirectionContent = {
     { value: "2024", label: "внедряем AI в продакшн" },
     { value: "дни", label: "вместо недель на первую версию" },
     { value: "×3", label: "больше вариантов на том же бюджете" },
-    { value: "8 лет", label: "в видеопроизводстве" },
+    { value: "8 лет", label: "снимаем видео" },
   ],
   statsMedia: { photo: "/images/stock/paint-pastel.webp", gradient: ACCENT, intensity: "quiet", sharp: true, scrim: "full", tone: "light" },
 
@@ -434,7 +434,7 @@ export const aiVideoContent: DirectionContent = {
       after: "pricing",
       memberId: "max",
       facts: [
-        { value: "8 сцен", label: "лимит на один ролик" },
+        { value: "до 8 сцен", label: "в одном ролике" },
         { value: "Языки", label: "голос и субтитры под язык" },
         { value: "5", label: "этапов от идеи до сдачи" },
       ],
@@ -445,7 +445,7 @@ export const aiVideoContent: DirectionContent = {
       facts: [
         { value: "NDA", label: "данные под NDA не уходят в модель" },
         { value: "8 лет", label: "в живых съёмках до AI" },
-        { value: "дни", label: "вместо недель на первую версию" },
+        { value: "Исходники", label: "отдаём вместе с роликом" },
       ],
     },
   ],

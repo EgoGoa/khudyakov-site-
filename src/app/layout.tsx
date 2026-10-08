@@ -196,6 +196,9 @@ export default function RootLayout({
                   button never did either. */}
               <div className="relative z-10">
                 <Header />
+                {/* Полоса тени под шапкой — в одном слое с ней: стрелка
+                    «назад» (z-40) остаётся поверх тени, текст страницы — под. */}
+                <div aria-hidden="true" className="top-fade" />
                 {/* Вырез телефона в режиме приложения: страница начинается под шапкой. */}
                 <main style={{ paddingTop: "var(--sat)" }}>
                   <Breadcrumbs />
@@ -214,7 +217,8 @@ export default function RootLayout({
                   нужна на каждой странице сайта, и один экземпляр в layout
                   закрывает и разделы, и подстраницы, и служебные. */}
               <ScrollTopButton />
-              {/* Низ экрана на телефоне чуть темнее: сфера и линия ассистента читаются чётче. */}
+              {/* Низ экрана на телефоне темнее: текст уходит в тень под
+                  сферой, стрелками и волной, а не ложится под них (globals.css). */}
               <div aria-hidden="true" className="bottom-fade" />
             </HeaderMenuProvider>
           </CinematicNavProvider>
