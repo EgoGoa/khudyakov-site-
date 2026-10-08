@@ -85,8 +85,10 @@ function SideArrow({
     // страницах (тот скрыт до sm). Причина в том, что здесь стрелка —
     // единственный способ попасть к соседнему формату, не возвращаясь в
     // раздел: на основной странице внизу лежит сама карусель, и на телефоне
-    // соседей листают ею. Позиция bottom-24 держит стрелки над тумблером
-    // вайб-рельса (fixed bottom-6 right-6, 48x48) с запасом.
+    // соседей листают ею. На телефоне стоя (page-side-arrow в globals.css)
+    // стрелки опускаются на линию голосового ассистента, как на основных
+    // страницах: на bottom-24 правая ложилась прямо на сферу вайб-меню
+    // (она теперь 60px и стоит выше), а обе — на текст окон над кнопками.
     //
     // На телефоне стрелка ужата до 36x36 и прижата к самому краю (left-0),
     // а не отставлена от него: боковой отступ контента здесь всего 24px, и
@@ -101,7 +103,7 @@ function SideArrow({
     <Link
       href={href}
       aria-label={`${isLeft ? "Предыдущий" : "Следующий"} формат: ${label}`}
-      className={`touch-slop group fixed bottom-24 land:bottom-1 z-[63] flex h-9 w-9 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
+      className={`page-side-arrow touch-slop group fixed bottom-24 land:bottom-1 z-[63] flex h-9 w-9 land:h-8 land:w-8 items-center justify-center transition-transform duration-300 active:scale-90 active:duration-100 sm:h-11 sm:w-11 ${
         isLeft
           ? "left-0 sm:left-3 xl:left-6 land:left-[calc(50%-92px)]"
           : "right-0 sm:right-3 xl:right-6 land:right-[calc(50%-92px)]"

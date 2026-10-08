@@ -524,7 +524,7 @@ function PresTrustBig() {
         </In>
       ))}
       <In at={5}>
-        <text x="159" y="226" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">решение принимают вместе</text>
+        <text x="159" y="226" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">решают вместе</text>
       </In>
 
       {/* ── Встреча ──────────────────────────────────────────── */}
@@ -953,7 +953,7 @@ function ImgMoodBig() {
       {/* ── Карточка характеристик ───────────────────────────── */}
       <In at={0}>
         <rect x="12" y="12" width="150" height="150" rx="12" {...CARD} />
-        <text x="22" y="28" {...LABEL}>ТЕХНИЧЕСКОЕ ЗАДАНИЕ</text>
+        <text x="22" y="28" {...LABEL}>ХАРАКТЕРИСТИКИ</text>
       </In>
       {facts.map((f, i) => (
         <In key={f.t} at={0.5 + i * 0.35}>
@@ -1546,11 +1546,13 @@ function AiVideoVariantsBig() {
       </In>
 
       <In at={3.4}>
-        <text x="12" y="188" {...LABEL}>КУДА ИДЁТ ПОБЕДИТЕЛЬ</text>
+        {/* Подпись над строкой колонок, а не в ней: в одну строку она
+            наезжала на «Сайт». */}
+        <text x="12" y="176" {...LABEL}>КУДА ИДЁТ ПОБЕДИТЕЛЬ</text>
         {cols.map((c, j) => (
-          <text key={c} x={140 + j * 62} y="188" textAnchor="middle" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">{c}</text>
+          <text key={c} x={140 + j * 62} y="190" textAnchor="middle" fill="#fff" fontSize="7.6" fontWeight="700" fontFamily="inherit">{c}</text>
         ))}
-        <path d="M 12 196 L 388 196" stroke={`${W}0.12)`} />
+        <path d="M 12 197 L 388 197" stroke={`${W}0.12)`} />
       </In>
       {variants.map((v, i) => {
         const on = i === 1 ? [1, 1, 1, 1] : i === 2 ? [0, 1, 0, 1] : [0, 0, 0, 0];

@@ -277,10 +277,10 @@ function TrPractice({ mini }: SceneProps) {
         <rect x="180" y="62" width="146" height="98" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" />
         <text x="192" y="80" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">РАЗБОР</text>
       </In>
-      {["Где промпт слабый", "Что можно автоматизировать", "Как проверить ответ"].map((t, i) => (
+      {["Где промпт слабый", "Что автоматизировать", "Как проверить ответ"].map((t, i) => (
         <In key={t} at={5 + i}>
           <circle cx="194" cy={96 + i * 20} r="3" fill="var(--sp-from)" />
-          <text x="204" y={99 + i * 20} fill="#fff" fontSize="11.6" fontFamily="inherit">{t}</text>
+          <text x="204" y={99 + i * 20} fill="#fff" fontSize="10.8" fontFamily="inherit">{t}</text>
         </In>
       ))}
       <BeforeAfter before="Примеры из чужой отрасли" after="Тренируемся на ваших кейсах" mini={mini} />
