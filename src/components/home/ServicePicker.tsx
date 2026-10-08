@@ -333,7 +333,7 @@ export default function ServicePicker() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(11,11,16,0.65), rgba(11,11,16,0.55) 40%, rgba(11,11,16,0.85))",
+              "linear-gradient(to bottom, rgba(11,11,16,0.58), rgba(11,11,16,0.46) 40%, rgba(11,11,16,0.82))",
           }}
         />
 

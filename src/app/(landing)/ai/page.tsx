@@ -111,7 +111,7 @@ export default function AiServicePage() {
         // stretch, not a single clean frame) still reads as covered by the
         // blur rather than poking out of it mid-reveal.
         blurSeconds={1.15}
-        brightness={1.12}
+        brightness={1.34}
         push
         // The left-edge chapter rail, in /ai's own lime→emerald gradient —
         // each of the eight segments takes its hue from its position down the

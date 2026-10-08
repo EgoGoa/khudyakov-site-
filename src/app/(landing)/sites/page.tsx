@@ -119,7 +119,7 @@ export default function SitesServicePage() {
         chapters={CHAPTERS}
         maxBlurPx={10}
         blurSeconds={0.9}
-        brightness={1.1}
+        brightness={1.32}
         // The left-edge rail runs in the same magenta→cyan gradient the
         // chapter keyword spans use (the logo mark's own gradient, shared
         // site-wide, unlike /ai's page-specific lime→emerald) — Egor's call,

@@ -80,6 +80,7 @@ export default function ContentServicePage() {
         poster="/images/content-reel-poster.jpg"
         phases={PHASES}
         chapters={CHAPTERS}
+        brightness={1.2}
         // The left-edge rail follows the same magenta→orange gradient as the
         // keyword spans above.
         rail={<ChapterRail count={CHAPTERS.length} from="#ff4fd8" to="#ff6a3d" />}

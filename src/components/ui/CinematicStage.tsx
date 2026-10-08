@@ -1536,7 +1536,7 @@ export default function CinematicStage({
                 header and the copy actually sit. Kept as a wash rather than a
                 heavier blur so the picture is still legibly a picture. */}
             <div
-              className="pointer-events-none absolute inset-0 bg-ink/[0.37] lg:hidden"
+              className="pointer-events-none absolute inset-0 bg-ink/[0.24] lg:hidden"
               style={{ opacity: introClear ? 0.12 : 1, transition: "opacity 1.1s ease" }}
             />
             <div

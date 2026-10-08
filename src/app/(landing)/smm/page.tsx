@@ -81,7 +81,7 @@ const PHASES: Phase[] = [
   // Egor (2026-10-05): последние ~2 с — камера кружит вокруг пары, и их обрезка
   // на 30.5 читалась как обрыв сюжета на блоке тарифов. Фаза идёт до 32.5
   // (конец файла 32.583): сюжет доигрывается, а закат плавно гаснет сам.
-  { start: 28.5, end: 32.5, brightness: 1.5, settle: false },
+  { start: 28.5, end: 32.5, brightness: 1.8, settle: false },
 ];
 
 const CHAPTERS: ChapterMeta[] = [
@@ -124,7 +124,7 @@ export default function SmmServicePage() {
           // The reel is a night shoot and grades darker than /sites' footage,
           // so it is lifted a little further to keep the chapters' body copy
           // off a near-black frame.
-          brightness={1.16}
+          brightness={1.39}
           // The rail runs in the page's own violet → sky, the same gradient
           // the chapter keyword spans use — matching the rail to the actual
           // keyword accent rather than to a separate halo, which is how /ai

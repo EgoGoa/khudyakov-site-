@@ -42,7 +42,7 @@ export default function BackgroundFX() {
             below the hero, staying put behind every section — visible in
             the gaps between glass cards and softly through their
             backdrop-blur */}
-        <div className="pointer-events-none absolute inset-0 opacity-60">
+        <div className="pointer-events-none absolute inset-0 opacity-[0.72] lg:opacity-60">
           <img
             src="/images/portrait.jpg"
             alt=""
