@@ -660,6 +660,41 @@ html[data-mid] .hero-wm .hero-wm-line {
   }
 }
 
+/* Иконки разделов в боковом меню и шторке шапки (SectionIcon.tsx, Егор,
+   2026-10-08): при появлении контур рисуется сам, заливка цветом страницы
+   проявляется следом. Задержка — по номеру строки (--i в шторке,
+   --boot-i в боковом меню), чтобы иконки оживали по очереди сверху вниз. */
+.section-icon__fill {
+  fill: var(--g-to, #00d2ff);
+  fill-opacity: 0.32;
+  stroke: none;
+  animation: section-icon-fill 0.5s ease-out calc(0.35s + var(--i, var(--boot-i, 0)) * 60ms) backwards;
+}
+.section-icon__lines > * {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 0;
+  animation: section-icon-draw 0.75s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, var(--boot-i, 0)) * 60ms) backwards;
+}
+@keyframes section-icon-draw {
+  from { stroke-dashoffset: 120; }
+}
+@keyframes section-icon-fill {
+  from { fill-opacity: 0; }
+}
+/* Боковое меню ждёт своей очереди загрузки (.boot-rail ниже) — пока оно
+   скрыто, его иконки стоят на первом кадре и оживают вместе с кнопками.
+   Шторку шапки это не касается: её иконки рисуются при каждом открытии. */
+html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [data-boot="4"]) .boot-rail .section-icon__fill,
+html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [data-boot="4"]) .boot-rail .section-icon__lines > * {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-icon__fill,
+  .section-icon__lines > * {
+    animation: none;
+  }
+}
+
 /* Chapter headings on the cinematic service pages carry the same cyan neon as
    the hero's "DIGITAL AI" word, so the two read as one typographic system.
    The glow is dialled back from the hero's: these sit over live footage rather

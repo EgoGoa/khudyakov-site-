@@ -19,11 +19,11 @@ import { useHeaderMenu } from "@/lib/header-menu";
 import { useCinematicGoTo } from "@/lib/cinematic-nav";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { openWelcome } from "@/lib/welcome-gate";
+import { CROSS_PAGE_ITEMS, PAGE_BLOCKS } from "@/components/layout/page-sections";
+import SectionIcon from "@/components/ui/SectionIcon";
 
-// Same 20-unit, 1.75-stroke line-icon language as VibeRail's own row glyphs
-// (see PageBlock/CROSS_PAGE_ITEMS there) — reused here rather than shared
-// via an import so the two floating panels stay decoupled, but a visitor
-// should still recognise "Работы" as the same icon in both places.
+// Иконки плиток «Музыка» и «Кабинет». Разделы и страницы в шторке берут
+// иконки из общего списка (page-sections.ts) — те же, что в боковом меню.
 function NavGlyph({ children }: { children: ReactNode }) {
   return (
     <svg
@@ -44,104 +44,9 @@ function NavGlyph({ children }: { children: ReactNode }) {
   );
 }
 
-// The six cinematic chapters of a service page (see (landing)/content/page.tsx)
-const sections = [
-  {
-    id: "opening",
-    label: "Начало",
-    short: "Начало",
-    glyph: <path d="M5 4.5 19 12 5 19.5z" />,
-  },
-  {
-    id: "works",
-    label: "Работы",
-    short: "Работы",
-    glyph: (
-      <>
-        <rect x="3" y="5" width="18" height="14" rx="2.5" />
-        <path d="M3 9h18M3 15h18M8 5v14M16 5v14" />
-      </>
-    ),
-  },
-  {
-    id: "why",
-    label: "Почему мы",
-    short: "Почему",
-    glyph: <path d="M12 3 4 6.5V12c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6.5L12 3z" />,
-  },
-  {
-    id: "services",
-    label: "Что делаем",
-    short: "Услуги",
-    glyph: (
-      <>
-        <path d="M12 3l8.5 4.5L12 12 3.5 7.5 12 3z" />
-        <path d="M3.5 12L12 16.5 20.5 12" />
-        <path d="M3.5 16.5L12 21l8.5-4.5" />
-      </>
-    ),
-  },
-  {
-    id: "process",
-    label: "Как работаем",
-    short: "Процесс",
-    glyph: (
-      <>
-        <path d="M4 6h11a3.5 3.5 0 0 1 0 7H7" />
-        <path d="M9.5 10 6 13l3.5 3M14 18h6" />
-      </>
-    ),
-  },
-  {
-    id: "contact",
-    label: "Цены и заявка",
-    short: "Заявка",
-    glyph: <path d="M12 2.5l2.3 6.2 6.2 2.3-6.2 2.3L12 19.5l-2.3-6.2L3.5 11l6.2-2.3L12 2.5z" />,
-  },
-];
-
-// standalone pages, kept out of the scroll-spy list above
-const pages = [
-  {
-    href: "/works",
-    label: "Все работы",
-    short: "Каталог",
-    glyph: (
-      <>
-        <rect x="3.5" y="3.5" width="7" height="7" rx="1.3" />
-        <rect x="13.5" y="3.5" width="7" height="7" rx="1.3" />
-        <rect x="3.5" y="13.5" width="7" height="7" rx="1.3" />
-        <rect x="13.5" y="13.5" width="7" height="7" rx="1.3" />
-      </>
-    ),
-  },
-  {
-    href: "/calculator",
-    label: "Калькулятор",
-    short: "Калькулятор",
-    glyph: (
-      <>
-        <rect x="4.5" y="3" width="15" height="18" rx="2" />
-        <path d="M8 7.5h8M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h3.5" />
-      </>
-    ),
-  },
-  {
-    href: "/brief",
-    label: "Бриф",
-    short: "Бриф",
-    glyph: (
-      <>
-        <path d="M5 3.5h9l5 5V20a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 4 20V5a1.5 1.5 0 0 1 1-1.5z" />
-        <path d="M14 3.5V9h5M8.5 13.5h7M8.5 17h4.5" />
-      </>
-    ),
-  },
-];
-
-// the section anchors above exist on every /content, /ai, /sites, /smm
-// page identically — jumping there should stay on whichever one you're
-// already viewing instead of bouncing to the default service
+// on /content, /ai, /sites, /smm the section anchors are that page's own —
+// jumping there should stay on whichever one you're already viewing
+// instead of bouncing to the default service
 const landingSlugs = ["content", "ai", "sites", "smm"];
 
 /** Логотип: точка + HUD.SERVICE. Слоган «DIGITAL AI CREATIVE» Егор пока
@@ -172,6 +77,9 @@ export default function Header() {
   // Цвет света у активного пункта меню — градиент услуги этой страницы.
   const accent = PAGE_GRADIENT[serviceOrder[Math.max(homeOf(pathname), 0)]];
   const [active, setActive] = useState<string>("");
+  // Разделы этой страницы направления; вне их — разделы /content (ссылки
+  // ведут туда, см. hrefFor).
+  const sections = PAGE_BLOCKS[pathname] ?? PAGE_BLOCKS["/content"];
   // Высота шапки — шторка меню встаёт ровно под её нижний край. Меряется
   // живьём: на телефоне бар страниц делает шапку выше, у телефона боком ниже.
   const headerRef = useRef<HTMLElement>(null);
@@ -236,7 +144,7 @@ export default function Header() {
     );
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [isLanding, fullpageActive]);
+  }, [isLanding, fullpageActive, sections]);
 
   const hrefFor = (id: string) => (isLanding ? `#${id}` : `/content#${id}`);
 
@@ -432,7 +340,7 @@ export default function Header() {
               <div>
                 <p className="menu-kicker font-display">На этой странице</p>
                 <div className="grid sm:grid-cols-2 sm:gap-x-8">
-                  {sections.map((s) => (
+                  {sections.map((s, i) => (
                     <Link
                       key={s.id}
                       href={hrefFor(s.id)}
@@ -441,8 +349,9 @@ export default function Header() {
                         setMenuOpen(false);
                       }}
                       className={`menu-item ${active === s.id ? "is-active" : ""}`}
+                      style={{ "--i": i } as React.CSSProperties}
                     >
-                      <NavGlyph>{s.glyph}</NavGlyph>
+                      <SectionIcon name={s.icon} size={20} />
                       <span className="menu-label font-display">{s.label}</span>
                     </Link>
                   ))}
@@ -450,14 +359,15 @@ export default function Header() {
               </div>
               <div>
                 <p className="menu-kicker font-display">Страницы</p>
-                {pages.map((p) => (
+                {CROSS_PAGE_ITEMS.map((p, i) => (
                   <Link
                     key={p.href}
                     href={p.href}
                     onClick={() => setMenuOpen(false)}
                     className={`menu-item ${pathname === p.href ? "is-active" : ""}`}
+                    style={{ "--i": sections.length + i } as React.CSSProperties}
                   >
-                    <NavGlyph>{p.glyph}</NavGlyph>
+                    <SectionIcon name={p.icon} size={20} />
                     <span className="menu-label font-display">{p.label}</span>
                   </Link>
                 ))}
