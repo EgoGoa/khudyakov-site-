@@ -604,62 +604,6 @@ html[data-mid] .hero-wm .hero-wm-line {
   filter: drop-shadow(0 0 5px rgba(255, 79, 216, 0.5)) drop-shadow(0 0 8px rgba(0, 210, 255, 0.5));
 }
 
-/* Chapter icons (ChapterIcon.tsx): one line-icon language across the six
-   chapters. They draw themselves on when their chapter takes the stage, then
-   hold a slow halo breathe so the frame never looks frozen. The halo is a
-   drop-shadow rather than a box-shadow so it follows the strokes, not a box. */
-.chapter-icon {
-  color: #b8ecff;
-  filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.75))
-    drop-shadow(0 0 14px rgba(0, 210, 255, 0.35));
-}
-
-.chapter-icon.is-active {
-  animation: chapter-icon-breathe 4.5s ease-in-out 0.9s infinite;
-}
-
-/* Every path/circle/rect in the icon shares one dash length. 120 units is
-   longer than the longest single path on the 24-unit grid, so each stroke is
-   fully hidden at the start and fully drawn at the end regardless of shape. */
-.chapter-icon.is-active > * {
-  stroke-dasharray: 120;
-  stroke-dashoffset: 120;
-  animation: chapter-icon-draw 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.chapter-icon.is-active > *:nth-child(2) {
-  animation-delay: 0.18s;
-}
-.chapter-icon.is-active > *:nth-child(3) {
-  animation-delay: 0.32s;
-}
-
-@keyframes chapter-icon-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes chapter-icon-breathe {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.75))
-      drop-shadow(0 0 14px rgba(0, 210, 255, 0.35));
-  }
-  50% {
-    filter: drop-shadow(0 0 7px rgba(0, 210, 255, 0.95))
-      drop-shadow(0 0 26px rgba(0, 210, 255, 0.5));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chapter-icon.is-active,
-  .chapter-icon.is-active > * {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
-}
-
 /* Иконки разделов в боковом меню и шторке шапки (SectionIcon.tsx, Егор,
    2026-10-08): при появлении контур рисуется сам, заливка цветом страницы
    проявляется следом. Задержка — по номеру строки (--i в шторке,

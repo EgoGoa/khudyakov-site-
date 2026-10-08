@@ -7,7 +7,7 @@ import LiveBrandWord from "@/components/layout/LiveBrandWord";
 import SoundStation, { openSoundStation } from "@/components/layout/SoundStation";
 import PageBar from "@/components/layout/PageBar";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { CloseIcon, MenuIcon, PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
@@ -21,28 +21,6 @@ import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { openWelcome } from "@/lib/welcome-gate";
 import { CROSS_PAGE_ITEMS, PAGE_BLOCKS } from "@/components/layout/page-sections";
 import SectionIcon from "@/components/ui/SectionIcon";
-
-// Иконки плиток «Музыка» и «Кабинет». Разделы и страницы в шторке берут
-// иконки из общего списка (page-sections.ts) — те же, что в боковом меню.
-function NavGlyph({ children }: { children: ReactNode }) {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-      className="shrink-0"
-    >
-      {children}
-    </svg>
-  );
-}
 
 // on /content, /ai, /sites, /smm the section anchors are that page's own —
 // jumping there should stay on whichever one you're already viewing
@@ -315,11 +293,7 @@ export default function Header() {
                   }}
                   className="menu-tile font-display"
                 >
-                  <NavGlyph>
-                    <path d="M9 18V5.5l11-2V16" />
-                    <circle cx="6.5" cy="18" r="2.5" />
-                    <circle cx="17.5" cy="16" r="2.5" />
-                  </NavGlyph>
+                  <SectionIcon name="music" size={18} />
                   Музыка
                 </button>
                 <button
@@ -330,10 +304,7 @@ export default function Header() {
                   }}
                   className="menu-tile font-display"
                 >
-                  <NavGlyph>
-                    <circle cx="12" cy="8.5" r="3.8" />
-                    <path d="M4.5 20c1.4-3.6 4.2-5.4 7.5-5.4s6.1 1.8 7.5 5.4" />
-                  </NavGlyph>
+                  <SectionIcon name="cabinet" size={18} />
                   Кабинет
                 </button>
               </div>

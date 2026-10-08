@@ -160,12 +160,7 @@ const RAIL_LABEL_HOVER =
 const INSTALL_ITEM = {
   id: "__install",
   label: "Приложение",
-  glyph: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" className="shrink-0">
-      <rect x="6.5" y="2.5" width="11" height="19" rx="2.8" />
-      <path d="M12 8v6m0 0-2.4-2.4M12 14l2.4-2.4M10.5 18.5h3" />
-    </svg>
-  ),
+  icon: "install",
 } as const;
 
 // This page's own blocks (own ids, own hrefs) followed by the fixed
@@ -347,7 +342,7 @@ export default function VibeRail() {
             className="boot-rail vibe-bubble"
             style={{ "--boot-i": pageItems.length + crossPageItems.length } as CSSProperties}
           >
-            {INSTALL_ITEM.glyph}
+            <SectionIcon name={INSTALL_ITEM.icon} />
             <span className="vibe-tip font-display">{INSTALL_ITEM.label}</span>
           </button>
         )}
@@ -409,7 +404,7 @@ export default function VibeRail() {
               }}
             >
               {[
-                { id: "__vibe", label: "Vibe-режим", glyph: null, vibe: true } as const,
+                { id: "__vibe", label: "Vibe-режим", vibe: true } as const,
                 ...pageItems.map((item) => ({ ...item, vibe: false as const })),
                 ...crossPageItems.map((item) => ({ ...item, vibe: false as const })),
                 ...(showInstall ? [{ ...INSTALL_ITEM, vibe: false as const }] : []),
@@ -438,7 +433,7 @@ export default function VibeRail() {
                   }${armedId === item.id ? " is-armed" : ""}`}
                 >
                   <span className="vibe-fan__label font-display">{item.label}</span>
-                  <span className="vibe-fan__dot">{item.vibe ? <span className="vibe-fan__spark">✦</span> : "icon" in item ? <SectionIcon name={item.icon} /> : item.glyph}</span>
+                  <span className="vibe-fan__dot">{item.vibe ? <span className="vibe-fan__spark">✦</span> : <SectionIcon name={item.icon} />}</span>
                 </motion.button>
               ))}
             </motion.nav>

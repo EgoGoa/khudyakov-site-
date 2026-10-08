@@ -26,7 +26,7 @@ const TELEGRAM_URL = "https://t.me/hdkv";
 
 export type FunnelKey = "brief" | "calculator" | "consult" | "discuss";
 
-// Same line language as ChapterIcon: 24-unit grid, 1.75 stroke, round joins,
+// Same line language as the section icons (SectionIcon): 24-unit grid, 1.75 stroke, round joins,
 // no fills. Decorative — each sits beside its own visible label.
 function Glyph({ children }: { children: React.ReactNode }) {
   return (
