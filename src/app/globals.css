@@ -6869,19 +6869,18 @@ html[data-lite] .welcome-card-graphic svg circle {
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.45));
 }
 
 /* Живой градиент «.SERVICE» в шапке (LiveBrandWord.tsx): цвета и сдвиг
    ставит JS. Свечение нейтральное — зелёное спорило бы с остальными
    цветами круга. */
 .brand-word-live {
-  filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.22));
+  filter: none;
 }
 
+/* Логотип без свечения и теней (Егор, 2026-10-08). */
 .brand-dot {
   background: #34d399;
-  box-shadow: 0 0 10px 1px rgba(52, 211, 153, 0.7);
 }
 
 /* Названия на карточках вступительной сцены: яркий градиент без затемнения
@@ -9304,15 +9303,16 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   margin-right: 0;
   place-items: center;
 }
-/* Тёмный ореол под сферой (Егор, 2026-10-08): текст страницы под ней
-   уходит в тень, а не просвечивает сквозь кольцо. */
+/* Тёмная подложка под сферой (Егор, 2026-10-08): минимальная, только
+   под самим кольцом — текст под ним не просвечивает, а вокруг сферы
+   страница не темнеет. */
 .vibe-fan__orb::before {
   content: "";
   position: absolute;
-  inset: -18px;
+  inset: 4px;
   z-index: -1;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(11, 11, 16, 0.92) 0%, rgba(11, 11, 16, 0.8) 45%, rgba(11, 11, 16, 0) 72%);
+  background: radial-gradient(circle, rgba(11, 11, 16, 0.6) 0%, rgba(11, 11, 16, 0.45) 55%, rgba(11, 11, 16, 0) 72%);
   pointer-events: none;
 }
 

@@ -1,6 +1,7 @@
 // Сфера экрана ожидания (Егор, 2026-10-08): та же «нано-сфера», что в
 // вайб-баре (NanoSphere.tsx), — волнистые контуры вокруг одного радиуса,
-// сложенные светом, с переливом по кругу в цвете раздела. При слабом
+// сложенные светом, с переливом по кругу в цвете раздела. Без свечения и
+// теней вокруг (Егор). При слабом
 // интернете скрипты сайта ещё не пришли, поэтому сфера рисуется маленьким
 // скриптом прямо в HTML (layout.tsx) и ничего не ждёт. Останавливается,
 // как только страница собралась (data-veil-done) или через 15 секунд.
@@ -17,13 +18,9 @@ var still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matc
 function draw(t){
 ctx.clearRect(0,0,cv.width,cv.height);
 ctx.globalCompositeOperation="lighter";
-var h=ctx.createRadialGradient(c,c,R*0.5,c,c,R*2.05);
-h.addColorStop(0,"rgba("+F+",0)");h.addColorStop(0.4,"rgba("+F+",0.09)");h.addColorStop(1,"rgba("+T+",0)");
-ctx.fillStyle=h;ctx.fillRect(0,0,cv.width,cv.height);
 var g=ctx.createConicGradient?ctx.createConicGradient(t*1.35,c,c):null;
 if(g){g.addColorStop(0,"rgba("+T+",0.95)");g.addColorStop(0.1,"rgba("+F+",0.55)");g.addColorStop(0.3,"rgba("+F+",0.2)");g.addColorStop(0.5,"rgba("+T+",0.5)");g.addColorStop(0.62,"rgba("+F+",0.2)");g.addColorStop(0.82,"rgba("+F+",0.28)");g.addColorStop(1,"rgba("+T+",0.95)");}
 ctx.strokeStyle=g||"rgba("+F+",0.4)";ctx.lineWidth=0.6*d;
-ctx.shadowBlur=8*d;ctx.shadowColor="rgba("+F+",0.35)";
 var e=1+0.2*Math.sin(t*1.1)+0.08*Math.sin(t*2.3);
 for(var j=0;j<L;j++){ctx.beginPath();
 for(var i=0;i<=N;i++){var a=i/N*Math.PI*2,aa=a+t*0.25;
