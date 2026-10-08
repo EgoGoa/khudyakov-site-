@@ -887,7 +887,7 @@ function AdPipelineBig() {
       <In at={4.8}>
         <text x="12" y="264" {...LABEL}>КАЛЕНДАРЬ ПРОИЗВОДСТВА</text>
         <path d="M 12 272 L 388 272" stroke={`${W}0.12)`} />
-        {["день 1", "день 5", "день 9", "день 13"].map((t, i) => (
+        {["день 1", "день 5", "день 9", "день 12"].map((t, i) => (
           <text key={t} x={12 + i * 125.3} y="288" textAnchor={i === 0 ? "start" : i === 3 ? "end" : "middle"} fill={`${W}0.88)`} fontSize="7.2" fontFamily="inherit">{t}</text>
         ))}
       </In>
@@ -947,7 +947,7 @@ function ImgMoodBig() {
   const facts = [
     { t: "Хронометраж 45 с", c: I_GOLD },
     { t: "Формат 16:9", c: "var(--glow)" },
-    { t: "Бюджет от Х ₽", c: I_ROSE },
+    { t: "Цена в прайсе", c: I_ROSE },
     { t: "Команда 6 человек", c: I_CORAL },
   ];
   const memory = [

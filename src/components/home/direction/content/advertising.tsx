@@ -457,7 +457,7 @@ export const advertisingContent: DirectionContent = {
       facts: [
         { value: "1 команда", label: "от идеи до цвета" },
         { value: "1 смета", label: "без пяти подрядчиков" },
-        { value: "24 ч", label: "идея и смета — быстро" },
+        { value: "12 дней", label: "от идеи до готового ролика" },
       ],
     },
   ],

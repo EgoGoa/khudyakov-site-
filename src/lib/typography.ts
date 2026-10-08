@@ -23,7 +23,9 @@ export const CHAPTER_INTRO =
  *  основных страницах, крупнее, стильнее и толще». Дисплейный шрифт
  *  (Bebas) узкий, поэтому в тот же блок помещается заметно больший кегль. */
 export const HERO_LEAD =
-  "font-display text-[9px] uppercase !leading-relaxed tracking-normal text-white sm:text-[10px]";
+  // Тень под буквами: на светлых кадрах видео (Имидж) оранжевый акцент
+  // сливался с серым фоном (2026-10-08).
+  "font-display text-[9px] uppercase !leading-relaxed tracking-normal text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.9),0_0_12px_rgba(0,0,0,0.6)] sm:text-[10px]";
 
 /** Надзаголовок блока — короткая строка капсом над заголовком («НАШИ
  *  РАБОТЫ», «ЗАДАЧА В ЦЕНТРЕ ВНИМАНИЯ», «ПЕРСОНАЛИЗАЦИЯ»).

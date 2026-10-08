@@ -389,7 +389,7 @@ export const imageContent: DirectionContent = {
       facts: [
         { value: "1 ролик", label: "везде, где о вас судят" },
         { value: "3", label: "площадки — сайт, соцсети, встреча" },
-        { value: "24 ч", label: "идея и смета — быстро" },
+        { value: "Исходники", label: "отдаём вместе с роликом" },
       ],
     },
   ],

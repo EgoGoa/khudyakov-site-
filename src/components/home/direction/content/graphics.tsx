@@ -40,6 +40,9 @@ export const graphicsContent: DirectionContent = {
       </>
     ),
     video: "/video/works/showreel-2024-motion-hero.mp4",
+    // Обложка — кадр с 8-й секунды, без вшитых титров заказчика: прежняя
+    // (первый кадр) ложилась текстом под заголовок, а на слабых телефонах
+    // видео не стартует и обложка висит всё время (2026-10-08).
     poster: "/images/works/showreel-2024-motion-hero.jpg",
     typed: "Показать невидимое для камеры",
     teamAsk: {
@@ -434,7 +437,7 @@ export const graphicsContent: DirectionContent = {
       memberId: "max",
       facts: [
         { value: "8", label: "работ без единой камеры" },
-        { value: "450+", label: "проектов уже снято" },
+        { value: "450+", label: "проектов за 8 лет" },
         { value: "2 нед", label: "путь без 3D" },
       ],
     },
@@ -452,7 +455,7 @@ export const graphicsContent: DirectionContent = {
       memberId: "max",
       facts: [
         { value: "7 сек", label: "и лого оживает" },
-        { value: "8 лет", label: "бренд узнают сразу" },
+        { value: "4", label: "площадки — ролик, соцсети, тендер, сайт" },
         { value: "1", label: "комплект на все ролики" },
       ],
     },
