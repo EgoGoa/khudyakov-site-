@@ -19,13 +19,19 @@ const HARD_FALLBACK_MS = 5000;
 let latest = 0;
 const clean = (p: string) => p.replace(/\/+$/, "") || "/";
 
-export function sureNavigate(router: Router, href: string, opts?: { scroll?: boolean }) {
+/** Страховка для перехода, который уже запускает кто-то другой (например,
+ *  <Link>): сфера ожидания и обычная загрузка, если через 5 с мы не там. */
+export function guardNavigation(href: string) {
   const id = ++latest;
   const target = clean(new URL(href, location.href).pathname);
   window.dispatchEvent(new CustomEvent(NAV_START_EVENT, { detail: target }));
-  router.push(href, opts);
   window.setTimeout(() => {
     if (id !== latest || !navigator.onLine) return;
     if (clean(location.pathname) !== target) window.location.assign(href);
   }, HARD_FALLBACK_MS);
+}
+
+export function sureNavigate(router: Router, href: string, opts?: { scroll?: boolean }) {
+  guardNavigation(href);
+  router.push(href, opts);
 }

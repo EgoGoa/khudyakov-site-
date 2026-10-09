@@ -1,83 +1,38 @@
 "use client";
 
+import Link from "next/link";
 import { queueFirstChapter, scrollToDeckStart } from "@/lib/page-hop";
 import { useRouter } from "next/navigation";
 import { sureNavigate } from "@/lib/sure-nav";
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
-import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, useDeckSpring, wrapOffset, zFor } from "@/components/ui/deckFan";
 
-// Бар страниц в шапке: четыре страницы услуг маленькой колодой на механике
-// deckFan (как карусели /ai, /sites, /smm). После правок Егора 2026-09-26 от
-// карточек остались только названия: без стекла, рамок и фона. Выбранная
-// страница крупно по центру со светом в её градиенте под буквами, соседи —
-// одним коротким словом по бокам, крайние скрыты.
+// Бар страниц в шапке (Егор, 2026-10-09): все четыре направления видны
+// сразу, коротким словом в ряд. Выбранное отмечено линией в градиенте его
+// страницы и светом, стекающим от неё вниз; при переходе меняются только
+// линия и свет — линия переезжает под новое название. Раньше здесь была
+// колода-карусель с паузой перед переходом, и страница менялась заметно
+// позже, чем бар.
 //
-// Сверху к механике колод добавлен горизонтальный свайп трекпадом и стрелки
-// клавиатуры.
+// Переход моментальный: по клику линия сразу едет к новому названию, адрес
+// меняется в тот же миг (без паузы), страницы заранее подгружены.
 //
-// Активную страницу задаёт адрес. Бар сам ведёт на выбранную страницу после
-// короткой паузы (чтобы быстрый бросок через две страницы не открывал
-// промежуточную), а переход не из бара — боковые стрелки, «назад» в
-// браузере — подтягивает колоду к адресу.
+// На телефоне ряд стоит второй строкой под логотипом и меню, на планшете
+// тоже, на компьютере и у телефона боком — по центру строки шапки.
 
-// Названия — строго, как логотип «HUD.SERVICE»: первое слово белое, второе
-// в градиенте своей страницы. Без свечения (просьба Егора).
-const LABEL: Record<ServiceKey, [string, string]> = {
-  content: ["Создание", "контента"],
-  ai: ["AI", "решения"],
-  sites: ["Vibe", "сайты"],
-  smm: ["SMM", "продвижение"],
-};
-
-// У соседей одно короткое слово в градиенте страницы: полное название
-// наезжало на выбранное («…здание контента»).
-const SHORT: Record<ServiceKey, string> = {
+export const SHORT: Record<ServiceKey, string> = {
   content: "Контент",
   ai: "AI",
   sites: "Сайты",
   smm: "SMM",
 };
 
-// Позы в духе колоды /sites (SitesDeck) под карточку 180×34: выбранная по
-// центру, соседи по бокам чуть мельче и размытее, названия сдвинуты наружу
-// (shift), чтобы не наезжать на выбранное. Макетные пиксели, рельса 480.
-const FAN: Record<number, { x: number; scale: number; opacity: number; label: number; shift: number }> = {
-  [-3]: { x: -172, scale: 0.5, opacity: 0, label: 0, shift: -60 },
-  [-2]: { x: -160, scale: 0.6, opacity: 0, label: 0, shift: -56 },
-  [-1]: { x: -100, scale: 0.8, opacity: 1, label: 0.9, shift: -62 },
-  [0]: { x: 0, scale: 1.05, opacity: 1, label: 1, shift: 0 },
-  [1]: { x: 100, scale: 0.8, opacity: 1, label: 0.9, shift: 62 },
-  [2]: { x: 160, scale: 0.6, opacity: 0, label: 0, shift: 56 },
-  [3]: { x: 172, scale: 0.5, opacity: 0, label: 0, shift: 60 },
-}
-
-// Видны только передняя и две соседние: крайние (|2|) убраны (просьба
-// Егора). Уходящая при листании карточка гаснет к внешнему краю.
-const edgeFade = (offset: number): CSSProperties => {
-  const t = Math.max(0, Math.min(1, Math.abs(offset) - 2));
-  if (t === 0) return {};
-  const mask = `linear-gradient(${offset > 0 ? "to right" : "to left"}, #000 ${70 - 10 * t}%, rgba(0,0,0,${1 - 0.6 * t}) 100%)`;
-  return { WebkitMaskImage: mask, maskImage: mask };
-};
-
-// Размытие глубины на названиях соседей.
-const BLUR_BOOST = 0.4;
-
-// Сколько макетных пикселей рука проходит на одну карточку.
-const SPACING = 100;
-
-// Свет под выбранным (Егор): чёткая линия в градиенте страницы прямо под
-// буквами, и от неё свет идёт только вниз — под центром сильнее, к краям
-// слабее. Без blur: форму задают градиентные маски, поэтому верхний край
-// ровный и ничего не поднимается выше линии.
+// Свет под выбранным: чёткая линия в градиенте страницы прямо под буквами,
+// от неё свет идёт только вниз — под центром сильнее, к краям слабее. Форму
+// задают градиентные маски, без blur.
 const LINE_MASK = "linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent)";
-// Свет — ровная полоса, а не овальное пятно (Егор: пятно «некрасивое», от
-// центра резко обрывалось). По вертикали плавно стекает от линии вниз, по
-// горизонтали — мягкая кривая: к центру чуть плотнее, к краям гаснет без
-// ступеньки. Две маски перемножаются (intersect).
 const GLOW_MASK_Y = "linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.4) 35%, rgba(0,0,0,0.12) 70%, transparent)";
 const GLOW_MASK_X =
   "linear-gradient(90deg, transparent, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.55) 24%, rgba(0,0,0,0.85) 38%, #000 50%, rgba(0,0,0,0.85) 62%, rgba(0,0,0,0.55) 76%, rgba(0,0,0,0.2) 90%, transparent)";
@@ -85,8 +40,7 @@ const GLOW_MASK = `${GLOW_MASK_Y}, ${GLOW_MASK_X}`;
 
 // Какой услуге принадлежит адрес. Подстраницы — своей услуге (кейсы и
 // тарифы SMM → SMM, направления контента и портфолио → контент, брифы — по
-// своему направлению); общие страницы — никакой (-1). Просьба Егора: бар и
-// листание на всех страницах и подстраницах.
+// своему направлению); общие страницы — никакой (-1).
 const HOME_PREFIXES: [string, ServiceKey][] = [
   ["/content", "content"],
   ["/works", "content"],
@@ -103,393 +57,141 @@ export function homeOf(path: string) {
   return hit ? serviceOrder.indexOf(hit[1]) : -1;
 }
 
-const COUNT = serviceOrder.length;
-// Пауза перед переходом на выбранную страницу.
-const NAV_DELAY_MS = 280;
-
+const hrefOf = (k: ServiceKey) => `/${serviceMeta[k].slug}`;
 
 export default function PageBar({ hidden = false }: { hidden?: boolean }) {
   const pathname = useCleanPathname();
   const router = useRouter();
-  // Чья это страница: у главных четырёх и их подстраниц — своя услуга, у
-  // общих (бонус, калькулятор, кабинет…) — ничья (-1).
   const home = homeOf(pathname);
-  const onTop = home >= 0 && pathname === `/${serviceMeta[serviceOrder[home]].slug}`;
+  const onTop = home >= 0 && pathname === hrefOf(serviceOrder[home]);
 
-  // `active` считается без свёртки по модулю — см. fanSlots.
-  const [active, setActive] = useState(Math.max(home, 0));
-  // Жест руки. На общих странице бар сам никуда не ведёт, пока его не
-  // пролистнули, — `touched` отличает жест от первоначальной расстановки.
-  const touched = useRef(false);
-  // Жест живёт только на той странице, где его сделали (Егор, 2026-10-08):
-  // иначе после перехода на общую страницу (персональный лендинг /offer
-  // из вайб-режима) бар считал старое пролистывание свежим и через миг
-  // уводил обратно в раздел — лендинг «вылетал» на стартовое окно.
-  // Эффект объявлен раньше эффекта перехода ниже, поэтому срабатывает
-  // первым в том же коммите.
-  useEffect(() => {
-    touched.current = false;
-  }, [pathname]);
-  const step = useCallback((delta: number) => {
-    touched.current = true;
-    setActive((prev) => prev + delta);
-  }, []);
-  const goTo = useCallback(
-    (target: number) => setActive((prev) => prev + wrapOffset(target - modIndex(prev, COUNT), COUNT)),
-    [],
-  );
+  // Куда только что нажали: линия едет туда сразу, не дожидаясь, пока
+  // сменится адрес. Действует только на той странице, откуда нажали.
+  const [pending, setPending] = useState<{ from: string; to: number } | null>(null);
+  const current = pending && pending.from === pathname ? pending.to : home;
 
-  // Один жест — одна страница. У колод на страницах инерция броска доносит
-  // на несколько карточек, но страниц всего четыре: бросок на три вперёд по
-  // кругу — это шаг назад, и тянул вправо, а попадал влево (Егор: «не
-  // листается как карусель»).
-  const settleOne = useCallback((delta: number) => step(Math.sign(delta)), [step]);
-  const { drag, dragging, bind } = useDeckDrag({ count: COUNT, spacing: SPACING, onSettle: settleOne });
-  const { lag, moving } = useDeckSpring(active, drag, dragging);
-  const live = dragging || moving;
-
-  // Страницу, на которую бар сам только что повёл, не надо «догонять»: пока
-  // адрес меняется, рука могла уже шагнуть дальше.
-  const pushed = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (home < 0) return;
-    if (pushed.current === home) {
-      pushed.current = null;
-      return;
-    }
-    goTo(home);
-  }, [home, goTo]);
-
-  const chosen = modIndex(active, COUNT);
-  useEffect(() => {
-    if (chosen === home || dragging || (home < 0 && !touched.current)) return;
-    // Нажатие на название уже повело туда само (см. onClick карточки).
-    if (pushed.current === chosen) return;
-    const t = window.setTimeout(() => {
-      pushed.current = chosen;
-      queueFirstChapter();
-      sureNavigate(router, `/${serviceMeta[serviceOrder[chosen]].slug}`, { scroll: false });
-    }, NAV_DELAY_MS);
-    return () => window.clearTimeout(t);
-  }, [chosen, home, dragging, router]);
-
-  useEffect(() => {
-    serviceOrder.forEach((k) => router.prefetch(`/${serviceMeta[k].slug}`));
-  }, [router]);
-
-  // Горизонтальный свайп двумя пальцами по трекпаду (или колесо с Shift).
-  // Вертикальная прокрутка над баром остаётся странице.
-  const wrapRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const rail = wrapRef.current;
-    if (!rail) return;
-    let acc = 0;
-    let lockUntil = 0;
-    const onWheel = (e: WheelEvent) => {
-      const dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.shiftKey ? e.deltaY : 0;
-      if (!dx) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const now = performance.now();
-      // Хвост инерции трекпада после шага не должен листать дальше.
-      if (now < lockUntil) return;
-      acc += dx;
-      if (Math.abs(acc) > 30) {
-        step(acc > 0 ? 1 : -1);
-        acc = 0;
-        lockUntil = now + 450;
-      }
+  // Положение линии — по живому размеру выбранного названия.
+  const rowRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [line, setLine] = useState<{ left: number; width: number } | null>(null);
+  // Первая расстановка — без анимации, иначе линия выезжала бы от левого края.
+  const [animate, setAnimate] = useState(false);
+  useLayoutEffect(() => {
+    const row = rowRef.current;
+    if (!row) return;
+    const measure = () => {
+      const el = current >= 0 ? itemRefs.current[current] : null;
+      setLine(el ? { left: el.offsetLeft, width: el.offsetWidth } : null);
     };
-    rail.addEventListener("wheel", onWheel, { passive: false });
-    return () => rail.removeEventListener("wheel", onWheel);
-  }, [step]);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(row);
+    return () => ro.disconnect();
+  }, [current]);
+  useEffect(() => {
+    if (!line || animate) return;
+    const raf = requestAnimationFrame(() => setAnimate(true));
+    return () => cancelAnimationFrame(raf);
+  }, [line, animate]);
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-    e.preventDefault();
-    e.stopPropagation();
-    step(e.key === "ArrowRight" ? 1 : -1);
-  };
+  useEffect(() => {
+    serviceOrder.forEach((k) => router.prefetch(hrefOf(k)));
+  }, [router]);
 
   if (pathname.startsWith("/admin")) return null;
 
+  const g = PAGE_GRADIENT[serviceOrder[Math.max(current, 0)]];
+  const pageGrad = `linear-gradient(90deg, ${g.from}, ${g.to})`;
+
   return (
     // z-20: контейнер шапки (логотип, иконки) растянут на всю ширину и стоит
-    // выше (z-10) — без этого он перехватывал мышь, трекпад и палец, и бар
-    // нельзя было листать.
+    // выше (z-10) — без этого он перехватывал бы мышь и палец.
     <nav
       aria-label="Страницы услуг"
-      // Телефон (Егор, 2026-10-04): блок занимает место между логотипом и
-      // меню, а не центрируется по экрану — иначе стрелка залезала на «HUD».
-      // На телефоне (Егор, 2026-09-29) бар встаёт в ту же строку, что логотип
-      // и меню: вместо колоды — одно название со стрелочками по бокам, чтобы
-      // шапка стала в одну строку и заголовки страниц снова были видны.
-      className={`pointer-events-auto absolute left-[84px] right-[58px] top-[var(--sat)] z-20 flex h-14 items-center justify-center transition-opacity duration-300 sm:relative sm:left-auto sm:right-auto sm:top-0 sm:w-full sm:translate-x-0 lg:absolute lg:left-1/2 lg:top-[var(--sat)] lg:h-[70px] lg:w-[480px] lg:-translate-x-1/2 land:absolute land:left-1/2 land:right-auto land:top-0 land:h-10 land:w-[480px] land:-translate-x-1/2 ${
+      className={`pointer-events-auto relative z-20 flex h-10 w-full items-start justify-center transition-opacity duration-300 sm:h-14 sm:items-center lg:absolute lg:left-1/2 lg:top-[var(--sat)] lg:h-[70px] lg:w-auto lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-auto land:-translate-x-1/2 ${
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      <CompactSwitch active={active} index={chosen} underline={home >= 0} onStep={step} onFront={() => {
-        if (onTop) scrollToDeckStart();
-        else {
-          queueFirstChapter();
-          sureNavigate(router, `/${serviceMeta[serviceOrder[chosen]].slug}`);
-        }
-      }} />
-      <div ref={wrapRef} className="hidden w-[480px] shrink-0 sm:block sm:scale-100 land:!block land:!scale-[0.8]">
-        <div
-          {...bind}
-          tabIndex={0}
-          onKeyDown={onKeyDown}
-          className="deck-rail relative h-12 select-none outline-none [-webkit-user-drag:none] focus-visible:rounded-2xl focus-visible:ring-1 focus-visible:ring-paper/30"
-          style={{ cursor: dragging ? "grabbing" : "grab", touchAction: "pan-y" }}
-        >
-          {fanSlots(COUNT, active, drag + lag, 3).map(({ i, key, offset, settled }) => {
-            const pageKey = serviceOrder[i];
-            const g = PAGE_GRADIENT[pageKey];
-            const pose = poseAt(FAN, offset);
-            const opacity = pose.opacity * pose.fade;
-            const blurPx = blurAt(offset) * BLUR_BOOST;
-            // Название видно на каждой карточке, тусклее с глубиной, и
-            // сдвинуто к открытому краю карточки — из-за соседа видно слово,
-            // а не обрубок. Под стеклом передней оно мягко размыто.
-            const captionOpacity = pose.label;
-            const isFront = settled === 0;
-            // Полное название — у центра, короткое — к бокам; перетекают.
-            const d = Math.abs(offset);
-            const fullO = Math.max(0, Math.min(1, 1 - d * 1.6));
-            const shortO = Math.max(0, Math.min(1, (d - 0.35) * 1.6));
-            // Буквы в баре белые (Егор), цвет страницы — только в линии и свете.
-            const pageGrad = `linear-gradient(90deg, ${g.from}, ${g.to})`;
-            const fade = live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]";
-
-            return (
-              <div
-                key={key}
-                // Без стекла, рамок и фона (просьба Егора): от карточки
-                // остались только название и свет под выбранным.
-                className={`group/card deck-pose absolute left-1/2 top-1/2 h-[34px] w-[180px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
-                  live ? "transition-[filter] duration-[420ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
-                }`}
-                style={{
-                  zIndex: zFor(offset),
-                  ...edgeFade(offset),
-                  opacity,
-                  pointerEvents: opacity < 0.05 ? "none" : undefined,
-                  transform: `translate(-50%, -50%) translateX(${pose.x}px) scale(${pose.scale})`,
-                }}
-              >
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  aria-current={isFront && onTop ? "page" : undefined}
-                  aria-label={serviceMeta[pageKey].label}
-                  onClick={() => {
-                    if (!isFront) {
-                      touched.current = true;
-                      goTo(i);
-                      // Нажатие — переход сразу, без паузы NAV_DELAY_MS (она
-                      // нужна только жесту, который может шагнуть дальше).
-                      pushed.current = i;
-                      queueFirstChapter();
-                      sureNavigate(router, `/${serviceMeta[pageKey].slug}`, { scroll: false });
-                    } else if (onTop) {
-                      // Название текущей страницы — тоже к её первому блоку.
-                      scrollToDeckStart();
-                    } else {
-                      // С подстраницы или общей страницы — на главную этой услуги.
-                      queueFirstChapter();
-                      sureNavigate(router, `/${serviceMeta[pageKey].slug}`);
-                    }
-                  }}
-                  className={`absolute inset-0 ${isFront ? "" : "cursor-pointer"}`}
-                >
-                  <span
-                    className={`flex h-full items-center justify-center ${fade} ${
-                      live ? "" : "[transition-property:opacity,filter]"
-                    }`}
-                    style={{
-                      opacity: captionOpacity,
-                      transform: `translateX(${pose.shift}px)`,
-                      filter: blurPx > 0 ? `blur(${blurPx}px)` : undefined,
-                    }}
-                  >
-                    {/* Полное и короткое название лежат друг на друге и
-                        перетекают по расстоянию до центра, а размер везде
-                        один — крупнее или мельче их делает масштаб карточки.
-                        Так при листании нет рывка ни в тексте, ни в размере. */}
-                    <span className="grid place-items-center font-display text-[13px] uppercase leading-none tracking-tight text-white [&>*]:[grid-area:1/1]">
-                      <span className={`relative whitespace-nowrap ${fade}`} style={{ opacity: fullO }}>
-                        {/* Выбранная страница «нажата» (просьба Егора): сразу
-                            под буквами ровная светлая линия в градиенте
-                            страницы, и от неё свет мягко стекает вниз.
-                            Насыщеннее всего по центру, к краям гаснет. */}
-                        <span
-                          aria-hidden="true"
-                          // На общих страницах ничего не «нажато».
-                          className={`pointer-events-none absolute -inset-x-2 top-[calc(100%+4px)] h-[18px] ${home >= 0 ? "opacity-100" : "opacity-0"}`}
-                        >
-                          <span
-                            className="absolute inset-0 opacity-70"
-                            style={{
-                              background: pageGrad,
-                              WebkitMaskImage: GLOW_MASK,
-                              maskImage: GLOW_MASK,
-                              WebkitMaskComposite: "source-in",
-                              maskComposite: "intersect",
-                            }}
-                          />
-                          <span
-                            className="absolute inset-x-0 top-0 h-[1.5px]"
-                            style={{ background: pageGrad, WebkitMaskImage: LINE_MASK, maskImage: LINE_MASK }}
-                          />
-                        </span>
-                        {LABEL[pageKey][0]} {LABEL[pageKey][1]}
-                      </span>
-                      <span className={`relative whitespace-nowrap ${fade}`} style={{ opacity: shortO }}>
-                        {/* Соседи подчёркнуты просто волосяной линией в цвете
-                            своей страницы, растворяющейся к краям (просьба
-                            Егора). */}
-                        <span
-                          aria-hidden="true"
-                          className="pointer-events-none absolute -inset-x-3 top-[calc(100%+3px)] h-px opacity-85"
-                          style={{
-                            background: `linear-gradient(90deg, ${g.from}, ${g.to})`,
-                            WebkitMaskImage: "linear-gradient(90deg, transparent, #000 50%, transparent)",
-                            maskImage: "linear-gradient(90deg, transparent, #000 50%, transparent)",
-                          }}
-                        />
-                        {SHORT[pageKey]}
-                      </span>
-                    </span>
-                  </span>
-                </button>
-
-                {/* Подсказка при наведении на боковую карточку (просьба
-                    Егора): полное название страницы маленькой таблеткой под
-                    ней. Только там, где есть наведение мышью; при листании
-                    прячется. */}
-                {!isFront && !live && (
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-1/2 top-full z-30 mt-1 -translate-x-1/2 translate-y-[-3px] whitespace-nowrap rounded-full bg-[#0b0b10]/80 px-3 py-1.5 font-display text-[12px] uppercase leading-none tracking-tight text-white opacity-0 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-[opacity,transform] duration-200 ease-out [@media(hover:hover)]:group-hover/card:translate-y-0 [@media(hover:hover)]:group-hover/card:opacity-100"
-                  >
-                    {LABEL[pageKey][0]}{" "}
-                    <span
-                      style={{
-                        backgroundImage: `linear-gradient(90deg, ${g.from}, ${g.to})`,
-                        WebkitBackgroundClip: "text",
-                        backgroundClip: "text",
-                        color: "transparent",
-                        WebkitTextFillColor: "transparent",
-                      }}
-                    >
-                      {LABEL[pageKey][1]}
-                    </span>
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </nav>
-  );
-}
-
-// Телефонный вид бара: название выбранной страницы и мини-стрелки ‹ › по
-// бокам — видно, что страницы листаются. Свайп по названию тоже листает.
-// Телефон: бар — одно название со стрелками. Листается пальцем так же, как
-// карусели (Егор, 2026-10-04): название едет за пальцем, соседнее заезжает
-// следом, короткий смах или бросок переключает страницу, а отпущенное
-// на полпути возвращается пружиной (useDeckDrag + useDeckSpring из deckFan).
-const COMPACT_GAP = 170;
-
-function CompactSwitch({
-  active,
-  index,
-  underline,
-  onStep,
-  onFront,
-}: {
-  active: number;
-  index: number;
-  underline: boolean;
-  onStep: (delta: number) => void;
-  onFront: () => void;
-}) {
-  const key = serviceOrder[index];
-  const g = PAGE_GRADIENT[key];
-  const { drag, dragging, bind } = useDeckDrag({ count: COUNT, spacing: COMPACT_GAP, onSettle: onStep });
-  const { lag } = useDeckSpring(active, drag, dragging);
-  const arrow = (dir: -1 | 1) => (
-    <button
-      type="button"
-      onClick={() => onStep(dir)}
-      aria-label={dir < 0 ? "Предыдущая страница" : "Следующая страница"}
-      className="grid h-10 w-6 shrink-0 place-items-center text-paper/80 transition active:scale-90"
-    >
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-        <path
-          d={dir < 0 ? "M7.5 2.5 4 6l3.5 3.5" : "M4.5 2.5 8 6l-3.5 3.5"}
-          stroke={`url(#cs-${dir < 0 ? "l" : "r"})`}
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <defs>
-          <linearGradient id={`cs-${dir < 0 ? "l" : "r"}`} x1="0" x2="12" y1="0" y2="0" gradientUnits="userSpaceOnUse">
-            <stop stopColor={g.from} />
-            <stop offset="1" stopColor={g.to} />
-          </linearGradient>
-        </defs>
-      </svg>
-    </button>
-  );
-  return (
-    <div className="flex items-center sm:hidden land:!hidden">
-      {arrow(-1)}
-      <div
-        {...bind}
-        className="relative h-10 w-[186px] select-none overflow-hidden [-webkit-user-drag:none]"
-        style={{
-          touchAction: "pan-y",
-          cursor: dragging ? "grabbing" : "grab",
-          WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%)",
-          maskImage: "linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%)",
-        }}
-      >
-        {fanSlots(COUNT, active, drag + lag, 1).map(({ i, key: slotKey, offset, settled }) => {
-          const k = serviceOrder[i];
-          const gi = PAGE_GRADIENT[k];
-          const front = settled === 0;
+      <div ref={rowRef} className="relative flex items-center gap-1 sm:gap-3 lg:gap-4 land:gap-2">
+        {serviceOrder.map((k, i) => {
+          const href = hrefOf(k);
+          const isCurrent = i === current;
           return (
-            <button
-              key={slotKey}
-              type="button"
-              onClick={front ? onFront : undefined}
-              tabIndex={front ? 0 : -1}
-              aria-hidden={!front}
-              aria-current={front && underline ? "page" : undefined}
-              className="absolute left-1/2 top-1/2 whitespace-nowrap px-1 font-display text-[12px] uppercase leading-none tracking-tight text-white"
-              style={{
-                whiteSpace: "nowrap",
-                transform: `translate(calc(-50% + ${offset * COMPACT_GAP}px), -50%)`,
-                opacity: Math.max(0, 1 - Math.abs(offset) * 1.1),
-                pointerEvents: Math.abs(offset) > 0.5 ? "none" : undefined,
+            <Link
+              key={k}
+              href={href}
+              ref={(el) => {
+                itemRefs.current[i] = el;
               }}
+              prefetch
+              aria-current={i === home && onTop ? "page" : undefined}
+              aria-label={serviceMeta[k].label}
+              onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                e.preventDefault();
+                // Название текущей страницы — к её первому блоку.
+                if (i === home && onTop) {
+                  scrollToDeckStart();
+                  return;
+                }
+                setPending({ from: pathname, to: i });
+                // Со страницы-колоды переход идёт без прокрутки: общий герой
+                // одинаковый, и первая глава новой страницы встаёт ровно туда
+                // же (см. queueFirstChapter). С общих страниц — с верха.
+                const fromDeck = !!document.querySelector("[data-stage-wrap]");
+                queueFirstChapter();
+                // Не может застрять: на долгом переходе — сфера, через 5 с — обычная загрузка.
+                sureNavigate(router, href, { scroll: !fromDeck });
+              }}
+              className={`group/pb relative flex h-8 items-center px-2.5 font-display text-[12px] uppercase leading-none tracking-tight text-white transition-opacity duration-200 sm:h-10 sm:px-3 sm:text-[13px] land:h-8 land:text-[12px] ${
+                isCurrent ? "opacity-100" : "opacity-90 hover:opacity-100"
+              }`}
             >
-              {LABEL[k][0]} {LABEL[k][1]}
-              <span
-                aria-hidden="true"
-                className={`pointer-events-none absolute -inset-x-1 top-[calc(100%+4px)] h-[1.5px] ${underline ? "opacity-100" : "opacity-0"}`}
-                style={{ background: `linear-gradient(90deg, ${gi.from}, ${gi.to})`, WebkitMaskImage: LINE_MASK, maskImage: LINE_MASK }}
-              />
-            </button>
+              {SHORT[k]}
+              {/* Подсказка о цвете страницы при наведении: тонкая линия
+                  в её градиенте. */}
+              {!isCurrent && (
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-2 bottom-0.5 h-px opacity-0 transition-opacity duration-200 [@media(hover:hover)]:group-hover/pb:opacity-70"
+                  style={{
+                    background: `linear-gradient(90deg, ${PAGE_GRADIENT[k].from}, ${PAGE_GRADIENT[k].to})`,
+                    WebkitMaskImage: LINE_MASK,
+                    maskImage: LINE_MASK,
+                  }}
+                />
+              )}
+            </Link>
           );
         })}
+
+        {/* Одна общая линия со светом — переезжает под выбранное название. */}
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute bottom-[-14px] left-0 h-[18px] ${
+            animate ? "transition-[transform,width,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]" : ""
+          } motion-reduce:transition-none ${line ? "opacity-100" : "opacity-0"}`}
+          style={{
+            width: line?.width ?? 0,
+            transform: `translateX(${line?.left ?? 0}px)`,
+          }}
+        >
+          <span
+            className="absolute inset-0 opacity-70"
+            style={{
+              background: pageGrad,
+              WebkitMaskImage: GLOW_MASK,
+              maskImage: GLOW_MASK,
+              WebkitMaskComposite: "source-in",
+              maskComposite: "intersect",
+            }}
+          />
+          <span
+            className="absolute inset-x-0 top-0 h-[1.5px]"
+            style={{ background: pageGrad, WebkitMaskImage: LINE_MASK, maskImage: LINE_MASK }}
+          />
+        </span>
       </div>
-      {arrow(1)}
-    </div>
+    </nav>
   );
 }

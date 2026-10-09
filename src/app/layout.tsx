@@ -5,6 +5,8 @@ import YandexMetrika from "@/components/layout/YandexMetrika";
 import Header from "@/components/layout/Header";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import PageBarSpacer from "@/components/layout/PageBarSpacer";
+import BottomIsland from "@/components/layout/BottomIsland";
+import SiteSearch from "@/components/layout/SiteSearch";
 import SoundSystem from "@/components/layout/SoundSystem";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import VibeRail from "@/components/layout/VibeRail";
@@ -209,6 +211,10 @@ export default function RootLayout({
               </div>
               <VibeRail />
               <VoiceAssistant />
+              {/* Остров внизу на телефоне (‹ поиск · волна · страница ›) и
+                  окно поиска по сайту — на всех страницах. */}
+              <BottomIsland />
+              <SiteSearch />
               <InstallApp />
               <GlobalLead />
               <SkipIntro />

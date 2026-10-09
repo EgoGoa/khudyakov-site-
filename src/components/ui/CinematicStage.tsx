@@ -522,11 +522,10 @@ export default function CinematicStage({
       return settling;
     };
 
-    // Начало колоды от верха документа. Не offsetTop: сразу после смены
-    // страницы колода лежит в анимированном контейнере PageSlide, и её
-    // offsetTop на миг считается от него (0 вместо ~1500px) — колода
-    // решала, что проехала две главы, и открывала третью («Кому подходит»
-    // вместо первого блока при переходе из шапки).
+    // Начало колоды от верха документа. Не offsetTop: он считается от
+    // ближайшего позиционированного предка, а не от документа (раньше это
+    // был контейнер въезда страницы — offsetTop давал 0 вместо ~1500px, и
+    // колода открывала третью главу при переходе из шапки).
     const deckTop = (wrap: HTMLElement) => wrap.getBoundingClientRect().top + window.scrollY;
 
     const indexNow = () => {
@@ -1576,7 +1575,7 @@ export default function CinematicStage({
               page below, which scrolls normally anyway. */}
           {activeIndex < chapters.length - 1 && (
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-[max(0.375rem,env(safe-area-inset-bottom))] flex items-center justify-center gap-2 text-paper/60"
+            className="scroll-hint pointer-events-none absolute inset-x-0 bottom-[max(0.375rem,env(safe-area-inset-bottom))] flex items-center justify-center gap-2 text-paper/60"
             aria-hidden="true"
           >
             {/* The "Листайте дальше" caption is gone — three chevrons in a
