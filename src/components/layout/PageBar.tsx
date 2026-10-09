@@ -2,6 +2,7 @@
 
 import { queueFirstChapter, scrollToDeckStart } from "@/lib/page-hop";
 import { useRouter } from "next/navigation";
+import { sureNavigate } from "@/lib/sure-nav";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
@@ -163,10 +164,12 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
   const chosen = modIndex(active, COUNT);
   useEffect(() => {
     if (chosen === home || dragging || (home < 0 && !touched.current)) return;
+    // Нажатие на название уже повело туда само (см. onClick карточки).
+    if (pushed.current === chosen) return;
     const t = window.setTimeout(() => {
       pushed.current = chosen;
       queueFirstChapter();
-      router.push(`/${serviceMeta[serviceOrder[chosen]].slug}`, { scroll: false });
+      sureNavigate(router, `/${serviceMeta[serviceOrder[chosen]].slug}`, { scroll: false });
     }, NAV_DELAY_MS);
     return () => window.clearTimeout(t);
   }, [chosen, home, dragging, router]);
@@ -230,7 +233,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
         if (onTop) scrollToDeckStart();
         else {
           queueFirstChapter();
-          router.push(`/${serviceMeta[serviceOrder[chosen]].slug}`);
+          sureNavigate(router, `/${serviceMeta[serviceOrder[chosen]].slug}`);
         }
       }} />
       <div ref={wrapRef} className="hidden w-[480px] shrink-0 sm:block sm:scale-100 land:!block land:!scale-[0.8]">
@@ -285,13 +288,18 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                     if (!isFront) {
                       touched.current = true;
                       goTo(i);
+                      // Нажатие — переход сразу, без паузы NAV_DELAY_MS (она
+                      // нужна только жесту, который может шагнуть дальше).
+                      pushed.current = i;
+                      queueFirstChapter();
+                      sureNavigate(router, `/${serviceMeta[pageKey].slug}`, { scroll: false });
                     } else if (onTop) {
                       // Название текущей страницы — тоже к её первому блоку.
                       scrollToDeckStart();
                     } else {
                       // С подстраницы или общей страницы — на главную этой услуги.
                       queueFirstChapter();
-                      router.push(`/${serviceMeta[pageKey].slug}`);
+                      sureNavigate(router, `/${serviceMeta[pageKey].slug}`);
                     }
                   }}
                   className={`absolute inset-0 ${isFront ? "" : "cursor-pointer"}`}

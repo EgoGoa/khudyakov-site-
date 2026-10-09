@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { WELCOME_OPEN_ATTR } from "@/lib/welcome-freeze";
+import { NAV_START_EVENT } from "@/lib/sure-nav";
 
 // Экран ожидания со сферой (слой #slow-veil — в layout.tsx, сфера — в
 // slowVeilOrb.ts).
@@ -86,6 +87,16 @@ export default function SlowLoadVeil() {
     };
     // Капчур — до того, как Link отменит обычный переход по ссылке.
     document.addEventListener("click", onClick, true);
+    // Переходы из кода (шапка, блок выбора услуги) — см. lib/sure-nav.
+    const onNavStart = (e: Event) => {
+      const path = (e as CustomEvent<string>).detail;
+      if (!path || path === location.pathname.replace(/\/+$/, "")) return;
+      navigating = true;
+      window.clearTimeout(giveUp);
+      giveUp = window.setTimeout(arrived, GIVE_UP_MS);
+      begin(path);
+    };
+    window.addEventListener(NAV_START_EVENT, onNavStart);
 
     const urlOf = (input: RequestInfo | URL) =>
       typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
@@ -134,6 +145,7 @@ export default function SlowLoadVeil() {
       window.fetch = originalFetch;
       mo.disconnect();
       document.removeEventListener("click", onClick, true);
+      window.removeEventListener(NAV_START_EVENT, onNavStart);
       window.clearTimeout(waitTimer);
       window.clearTimeout(giveUp);
       window.removeEventListener("offline", onOffline);
