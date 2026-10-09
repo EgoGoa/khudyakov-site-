@@ -10777,3 +10777,170 @@ html[data-lite] .site-scrim {
     }
   }
 }
+
+/* ---------- Остров внизу и поиск (Егор, 2026-10-09) ----------
+   Телефон и планшет стоя: ‹ 🔍 (волна) SMM › — одна стеклянная капсула
+   (BottomIsland.tsx). Волна ассистента остаётся своим элементом и стоит
+   по центру экрана, остров оставляет под неё гнездо её ширины. */
+.bottom-island { display: none; }
+@media (max-width: 1023px) and (orientation: portrait) {
+  html {
+    --isl-slot: 0px;
+    --isl-wave: 0px;
+    --isl-label: 0px;
+    --isl-w: calc(8px + 44px + var(--isl-label) + 2 * var(--isl-slot) + var(--isl-wave));
+  }
+  html:has(.bottom-island[data-label]) { --isl-label: 44px; }
+  html:has(.bottom-island[data-arrows]) { --isl-slot: 44px; }
+  html:has(.bottom-island[data-wave]) { --isl-wave: max(80px, calc(var(--wave-w, 56px) + 30px)); }
+
+  .bottom-island {
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--wave-cy, calc(1.25rem + 16px + env(safe-area-inset-bottom))) - 26px);
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    height: 52px;
+    width: var(--isl-w);
+    padding: 0 4px;
+    translate: -50% 0;
+    border-radius: 26px;
+    background: rgba(20, 19, 28, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    backdrop-filter: blur(18px) saturate(1.2);
+    transition: opacity 0.3s ease, width 0.3s ease;
+  }
+  .bottom-island__wave { width: var(--isl-wave); flex: none; align-self: stretch; }
+  .bottom-island__btn {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 50%;
+    color: rgba(244, 242, 238, 0.82);
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  }
+  .bottom-island__btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.1); color: #fff; }
+  .bottom-island__label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: var(--isl-label);
+    overflow: hidden;
+    flex: none;
+    font-family: var(--font-bebas), var(--font-montserrat), system-ui, sans-serif;
+    text-transform: uppercase;
+    line-height: 1.15;
+    font-size: 8.5px;
+    letter-spacing: 0.02em;
+    color: rgba(244, 242, 238, 0.45);
+    white-space: nowrap;
+  }
+  .bottom-island__label b { font-size: 10px; font-weight: 700; color: rgba(244, 242, 238, 0.92); }
+
+  .bottom-island__arrow {
+    display: grid;
+    place-items: center;
+    width: var(--isl-slot);
+    height: 44px;
+    flex: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s ease;
+  }
+  .bottom-island__arrow:active { transform: scale(0.88); }
+  /* Прежние боковые стрелки живут внутри слоя страницы и не встают поверх
+     острова — на телефоне стоя их роль берут стрелки острова. */
+  a.page-side-arrow { display: none !important; }
+
+  /* Три стрелки «листай дальше» стояли под волной — теперь там остров. */
+  .scroll-hint { display: none !important; }
+  /* Сфера меню справа — чуть выше острова, чтобы на узких экранах не
+     касалась его угла. */
+  .vibe-fan { bottom: calc(var(--wave-cy, calc(1.25rem + 16px + env(safe-area-inset-bottom))) + 1.25rem + 14px); }
+  /* Капсула «Поставить HUD» — над островом, а не на нём. */
+  .install-capsule { bottom: calc(var(--wave-cy, 34px) + 38px) !important; }
+
+  /* Прячется вместе с плавающими кнопками: пока листают, пока открыто
+     окошко услуги и пока на экране стартовое окно. */
+  html[data-scrolling]:not(:has(.vibe-fan-dim)) .bottom-island,
+  html[data-spotlight-open] .bottom-island,
+  html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .bottom-island,
+  html:has(.site-search[data-open]) .bottom-island {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Окно поиска: шторка снизу на телефоне, окно по центру на компьютере.
+   Смонтировано всегда (см. SiteSearch.tsx) — закрытое просто невидимо. */
+.site-search {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  visibility: hidden;
+  transition: visibility 0s linear 0.3s;
+}
+.site-search[data-open] { visibility: visible; transition-delay: 0s; }
+.site-search__dim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: rgba(6, 6, 10, 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: default;
+}
+.site-search[data-open] .site-search__dim { opacity: 1; }
+.site-search__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: calc(var(--sat, 0px) + 2.75rem);
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px 24px 0 0;
+  background: rgba(17, 16, 24, 0.94);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  transform: translateY(104%);
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.site-search[data-open] .site-search__panel { transform: none; }
+.site-search__chips { scrollbar-width: none; }
+.site-search__chips::-webkit-scrollbar { display: none; }
+.site-search__list { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.15) transparent; }
+.site-search__input::-webkit-search-cancel-button { display: none; }
+@media (min-width: 1024px), (orientation: landscape) and (max-height: 500px) {
+  .site-search__panel {
+    left: 50%;
+    right: auto;
+    top: 12vh;
+    bottom: auto;
+    width: min(760px, 92vw);
+    max-height: 76vh;
+    border-radius: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+    transform: translateX(-50%) translateY(10px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+  }
+  .site-search[data-open] .site-search__panel { transform: translateX(-50%); opacity: 1; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .site-search__panel { top: 4vh; max-height: 92vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-search__panel, .site-search__dim, .bottom-island { transition: none !important; }
+}

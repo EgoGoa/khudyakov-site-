@@ -21,6 +21,8 @@ import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { openWelcome } from "@/lib/welcome-gate";
 import { CROSS_PAGE_ITEMS, PAGE_BLOCKS } from "@/components/layout/page-sections";
 import SectionIcon from "@/components/ui/SectionIcon";
+import { SearchGlyph } from "@/components/layout/SiteSearch";
+import { openSearch } from "@/lib/site-search";
 
 // on /content, /ai, /sites, /smm the section anchors are that page's own —
 // jumping there should stay on whichever one you're already viewing
@@ -229,6 +231,17 @@ export default function Header() {
           {/* На телефоне плеер и кабинет живут в меню (строки сверху
               шторки), в шапке остаются только три палочки. */}
           <div className="hidden items-center gap-3 sm:flex sm:gap-4 land:!flex land:flex-col land:gap-0.5">
+            {/* Поиск по сайту (⌘/Ctrl+K). На телефоне стоя лупа живёт в
+                острове внизу экрана, здесь — компьютер и телефон боком. */}
+            <button
+              type="button"
+              onClick={openSearch}
+              aria-label="Поиск по сайту"
+              title="Поиск · Ctrl+K"
+              className="hidden h-9 w-9 items-center justify-center text-paper/75 transition-colors hover:text-paper lg:inline-flex land:!inline-flex land:pointer-events-auto land:h-8 land:w-8 land:text-paper/55"
+            >
+              <SearchGlyph className="h-[19px] w-[19px]" />
+            </button>
             <SoundStation />
             <CabinetButton />
           </div>

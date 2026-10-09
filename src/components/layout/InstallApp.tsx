@@ -283,7 +283,7 @@ export default function InstallApp() {
             initial={{ opacity: 0, y: 24, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 420, damping: 30 } }}
             exit={{ opacity: 0, y: 16, scale: 0.94, transition: { duration: 0.25 } }}
-            className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-[64] flex items-center gap-3 rounded-full bg-[#0B0B10]/80 py-2 pl-2 pr-4 text-left text-white backdrop-blur-[15px]"
+            className="install-capsule fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-[64] flex items-center gap-3 rounded-full bg-[#0B0B10]/80 py-2 pl-2 pr-4 text-left text-white backdrop-blur-[15px]"
             aria-label="Поставить HUD на экран"
           >
             <IconTile id="hud" size={36} />

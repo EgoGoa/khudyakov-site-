@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 import { queueChapterHop } from "@/lib/page-hop";
@@ -30,39 +29,8 @@ export const PAGE_GRADIENT: Record<ServiceKey, { from: string; via?: string; to:
 };
 
 export default function PageSideNav() {
-  // Стрелки внизу на телефоне стоят на уровне линии голосового ассистента
-  // (Егор, 2026-10-04). Высота блока ассистента разная на разных страницах
-  // и зависит от выреза снизу, поэтому расстояние от низа экрана до его
-  // центра меряется живьём и кладётся в --wave-cy (читает globals.css).
-  useEffect(() => {
-    let ro: ResizeObserver | null = null;
-    let seen: Element | null = null;
-    const apply = () => {
-      const dock = document.querySelector(".voice-dock");
-      if (!dock) return;
-      const r = dock.getBoundingClientRect();
-      if (r.height === 0) return;
-      document.documentElement.style.setProperty("--wave-cy", `${Math.round(window.innerHeight - (r.top + r.height / 2))}px`);
-    };
-    const tick = () => {
-      const dock = document.querySelector(".voice-dock");
-      if (dock && dock !== seen) {
-        seen = dock;
-        ro?.disconnect();
-        ro = new ResizeObserver(apply);
-        ro.observe(dock);
-      }
-      apply();
-    };
-    tick();
-    const id = window.setInterval(tick, 700);
-    window.addEventListener("resize", apply);
-    return () => {
-      window.clearInterval(id);
-      window.removeEventListener("resize", apply);
-      ro?.disconnect();
-    };
-  }, []);
+  // Положение волны ассистента (--wave-cy), по которому стрелки встают
+  // в одну линию с ней, меряет BottomIsland — он есть на каждой странице.
   const pathname = useCleanPathname();
   if (!TOP_LEVEL_ROUTES.has(pathname)) return null;
 

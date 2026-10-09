@@ -21,7 +21,7 @@ import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 // На телефоне ряд стоит второй строкой под логотипом и меню, на планшете
 // тоже, на компьютере и у телефона боком — по центру строки шапки.
 
-const SHORT: Record<ServiceKey, string> = {
+export const SHORT: Record<ServiceKey, string> = {
   content: "Контент",
   ai: "AI",
   sites: "Сайты",
