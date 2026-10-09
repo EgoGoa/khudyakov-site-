@@ -165,8 +165,8 @@ export default function RootLayout({
         />
       </head>
       <body className="relative bg-ink font-sans text-paper antialiased">
-        {/* Экран ожидания при слабом интернете: в HTML с первого байта, виден
-            только если страница не собралась за ~1.3с (см. SlowLoadVeil). */}
+        {/* Экран ожидания: в HTML с первого байта, но виден только на сайте,
+            когда переход висит или нет сети (см. SlowLoadVeil). */}
         <div id="slow-veil" aria-hidden="true">
           <div className="slow-veil__in">
             <canvas id="slow-veil-orb" className="slow-veil__orb" />

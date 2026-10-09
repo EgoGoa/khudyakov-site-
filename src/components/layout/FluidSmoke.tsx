@@ -466,8 +466,12 @@ const MAX_SPRITES = 6000;
 // уже на месте.
 // На средних устройствах (data-mid) и этого мало: сборка WebGL — короткий
 // пик нагрузки, поэтому там дым заводится только с первым движением мыши.
+// Дым за курсором выключен (Егор, 2026-10-08: «пока убрать, но эффект
+// сохранить»). Код целиком на месте — вернуть: SMOKE_ENABLED = true.
+const SMOKE_ENABLED = false;
+
 export default function FluidSmoke() {
-  const on = useBootStage(BOOT.smoke);
+  const on = useBootStage(BOOT.smoke) && SMOKE_ENABLED;
   const [armed, setArmed] = useState(false);
   useEffect(() => {
     if (!on) return;

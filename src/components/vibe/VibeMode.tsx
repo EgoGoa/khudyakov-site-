@@ -452,7 +452,9 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
         {/* Холст волны шире неё самой (запас под раскачку) — полоса
             обрезана, чтобы этот запас не раздувал окно до прокрутки. */}
         <VoiceHint />
-        <div className="flex h-7 shrink-0 items-center justify-center overflow-hidden">
+        {/* Без overflow-hidden: поля холста волны выступают за строку, и
+            обрезка здесь срезала её края (см. globals.css, «ВОЛНА И ФИЛЬТРЫ»). */}
+        <div className="flex h-7 shrink-0 items-center justify-center">
           <InlineVoiceSphere from={ORB_FROM} to={ORB_TO} width={110} height={41} waveOnly />
         </div>
       </div>

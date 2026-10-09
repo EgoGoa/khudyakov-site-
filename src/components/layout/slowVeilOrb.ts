@@ -1,17 +1,20 @@
 // Сфера экрана ожидания (Егор, 2026-10-08): та же «нано-сфера», что в
 // вайб-баре (NanoSphere.tsx), — волнистые контуры вокруг одного радиуса,
 // сложенные светом, с переливом по кругу в цвете раздела. Без свечения и
-// теней вокруг (Егор). При слабом
-// интернете скрипты сайта ещё не пришли, поэтому сфера рисуется маленьким
-// скриптом прямо в HTML (layout.tsx) и ничего не ждёт. Останавливается,
-// как только страница собралась (data-veil-done) или через 15 секунд.
+// теней вокруг (Егор). Рисуется маленьким скриптом прямо в HTML (layout.tsx):
+// при пропавшей сети скрипты сайта могут не догрузиться.
+//
+// С 2026-10-09 (Егор) сфера не крутится при первом заходе и в стартовом
+// окне — только на сайте, когда переход завис или нет сети (SlowLoadVeil
+// ставит data-veil-wait). Скрипт отдаёт window.__veilOrb.start(): цикл
+// идёт, пока висит data-veil-wait, цвет — раздела, куда идёт переход.
 export const SLOW_VEIL_ORB_SCRIPT = `(function(){
 var cv=document.getElementById("slow-veil-orb");
 if(!cv||!cv.getContext)return;
 var P={content:["#ff4fd8","#ff6a3d"],ai:["#c8f169","#10b981"],sites:["#ff6f61","#00c2b2"],smm:["#a855f7","#38bdf8"]};
-var col=P[location.pathname.split("/")[1]]||P.content;
 function rgb(h){var n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255].join(",")}
-var F=rgb(col[0]),T=rgb(col[1]);
+var F,T,running=false;
+function tint(path){var col=P[(path||location.pathname).split("/")[1]]||P.content;F=rgb(col[0]);T=rgb(col[1]);}
 var d=Math.min(2,window.devicePixelRatio||1),S=140;cv.width=cv.height=S*d;
 var ctx=cv.getContext("2d"),c=S*d/2,R=S*d*0.27,L=14,N=72,t0=0,html=document.documentElement;
 var still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -31,8 +34,8 @@ ctx.stroke();}
 }
 function frame(now){
 if(!t0)t0=now;var t=(now-t0)/1000;
-if(html.hasAttribute("data-veil-done")||t>15)return;
+if(!html.hasAttribute("data-veil-wait")){running=false;return;}
 draw(t+2);requestAnimationFrame(frame);
 }
-if(still)draw(2);else requestAnimationFrame(frame);
+window.__veilOrb={start:function(path){tint(path);if(still){draw(2);return;}if(running)return;running=true;t0=0;requestAnimationFrame(frame);}};
 })();`;

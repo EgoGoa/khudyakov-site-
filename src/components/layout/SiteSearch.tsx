@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { useRouter } from "next/navigation";
+import { sureNavigate } from "@/lib/sure-nav";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { useCinematicGoTo } from "@/lib/cinematic-nav";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
@@ -195,10 +196,10 @@ export default function SiteSearch() {
     if (!hash && TOP_LEVEL.has(path)) {
       const fromDeck = !!document.querySelector("[data-stage-wrap]");
       queueFirstChapter();
-      router.push(path, { scroll: !fromDeck });
+      sureNavigate(router, path, { scroll: !fromDeck });
       return;
     }
-    router.push(e.href);
+    sureNavigate(router, e.href);
   };
 
   const onKeyDown = (ev: React.KeyboardEvent) => {

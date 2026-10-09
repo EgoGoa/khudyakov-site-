@@ -5,6 +5,7 @@ import { isSiteFrozen } from "@/lib/welcome-freeze";
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { sureNavigate } from "@/lib/sure-nav";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import Container from "@/components/ui/Container";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
@@ -289,11 +290,11 @@ export default function ServicePicker() {
   const go = (delta: number) => {
     const next = serviceOrder[(index + delta + count) % count];
     setPreviewKey(next);
-    router.push(`/${serviceMeta[next].slug}`, { scroll: false });
+    sureNavigate(router, `/${serviceMeta[next].slug}`, { scroll: false });
   };
   const goTo = (key: ServiceKey) => {
     setPreviewKey(key);
-    router.push(`/${serviceMeta[key].slug}`, { scroll: false });
+    sureNavigate(router, `/${serviceMeta[key].slug}`, { scroll: false });
   };
 
   return (

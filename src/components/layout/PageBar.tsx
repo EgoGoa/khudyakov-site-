@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { queueFirstChapter, scrollToDeckStart } from "@/lib/page-hop";
 import { useRouter } from "next/navigation";
+import { sureNavigate } from "@/lib/sure-nav";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
@@ -139,7 +140,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                 // же (см. queueFirstChapter). С общих страниц — с верха.
                 const fromDeck = !!document.querySelector("[data-stage-wrap]");
                 queueFirstChapter();
-                router.push(href, { scroll: !fromDeck });
+                sureNavigate(router, href, { scroll: !fromDeck });
               }}
               className={`group/pb relative flex h-8 items-center px-2.5 font-display text-[12px] uppercase leading-none tracking-tight text-white transition-opacity duration-200 sm:h-10 sm:px-3 sm:text-[13px] land:h-8 land:text-[12px] ${
                 isCurrent ? "opacity-100" : "opacity-90 hover:opacity-100"
