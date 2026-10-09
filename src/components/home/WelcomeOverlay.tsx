@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { MicIcon } from "@/components/ui/Icons";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { OPEN_WELCOME_EVENT, useWelcomeGate } from "@/lib/welcome-gate";
+import { SOFT_NAV_KEY } from "@/lib/sure-nav";
 import { CloseIcon } from "@/components/ui/Icons";
 import { playUi } from "@/lib/sound";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
@@ -339,6 +340,15 @@ export default function WelcomeOverlay() {
     // приветствием в вайб-окне не рисуются.
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount check, localStorage read has to happen post-hydration (see comment above on the initial useState)
     if (new URLSearchParams(window.location.search).has("vibe")) setVisible(false);
+    // Перезагрузка по ходу перехода из шапки (sure-nav) — не новый заход.
+    try {
+      if (sessionStorage.getItem(SOFT_NAV_KEY)) {
+        sessionStorage.removeItem(SOFT_NAV_KEY);
+        setVisible(false);
+      }
+    } catch {
+      /* без хранилища — как обычно */
+    }
   }, []);
 
   // Блокировка прокрутки снимается не в момент закрытия, а после того, как

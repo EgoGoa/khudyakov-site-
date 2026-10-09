@@ -14,6 +14,7 @@ import type { useRouter } from "next/navigation";
 type Router = ReturnType<typeof useRouter>;
 
 export const NAV_START_EVENT = "hdkv:nav-start";
+export const SOFT_NAV_KEY = "hdkv_soft_nav";
 const HARD_FALLBACK_MS = 5000;
 
 let latest = 0;
@@ -27,7 +28,15 @@ export function guardNavigation(href: string) {
   window.dispatchEvent(new CustomEvent(NAV_START_EVENT, { detail: target }));
   window.setTimeout(() => {
     if (id !== latest || !navigator.onLine) return;
-    if (clean(location.pathname) !== target) window.location.assign(href);
+    if (clean(location.pathname) === target) return;
+    // Это всё ещё переход по сайту, а не новый заход: стартовое окно после
+    // такой перезагрузки не показываем (см. WelcomeOverlay).
+    try {
+      sessionStorage.setItem(SOFT_NAV_KEY, "1");
+    } catch {
+      /* без хранилища окно просто покажется */
+    }
+    window.location.assign(href);
   }, HARD_FALLBACK_MS);
 }
 

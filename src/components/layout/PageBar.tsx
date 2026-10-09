@@ -123,7 +123,6 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
               ref={(el) => {
                 itemRefs.current[i] = el;
               }}
-              prefetch
               aria-current={i === home && onTop ? "page" : undefined}
               aria-label={serviceMeta[k].label}
               onClick={(e) => {
