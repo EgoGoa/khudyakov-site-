@@ -56,7 +56,10 @@ export function currentChapterId(): string | null {
  *  блок под общим блоком с рукой (Егор, 2026-09-28). */
 export function queueFirstChapter() {
   pendingChapterId = FIRST;
-  scrollToDeckStart();
+  // Без перемотки сцены текущей страницы на её первую главу (Егор,
+  // 2026-10-09): на телефоне, пока грузилась новая страница, на секунду
+  // показывался первый кадр старой («девушка у стены» с /content).
+  scrollToDeckStart("instant", false);
 }
 
 /** Встаёт на первую главу текущей страницы ещё ДО перехода. Общий герой и
@@ -65,7 +68,7 @@ export function queueFirstChapter() {
  *  (scroll: false), и колоде новой страницы не с чем гоняться. Раньше
  *  прыжок делался после монтирования и спорил с автосинхронизацией
  *  колоды по старому положению прокрутки. */
-export function scrollToDeckStart(behavior: ScrollBehavior = "instant") {
+export function scrollToDeckStart(behavior: ScrollBehavior = "instant", rewind = true) {
   const wrap = document.querySelector<HTMLElement>("[data-stage-wrap]");
   if (!wrap) return;
   // Телефон (Егор, 2026-10-03): шапка фиксированная, и без поправки на её
@@ -79,7 +82,7 @@ export function scrollToDeckStart(behavior: ScrollBehavior = "instant") {
   // прокрутка окна активную главу не меняет. Без этого стрелка вверх и
   // название страницы возвращали к сцене, но она так и стояла на той главе,
   // где посетитель был (Егор, 2026-10-03: «не работает»).
-  if (phone) window.dispatchEvent(new CustomEvent(FIRST_CHAPTER_EVENT));
+  if (phone && rewind) window.dispatchEvent(new CustomEvent(FIRST_CHAPTER_EVENT));
 }
 export const FIRST_CHAPTER_EVENT = "hdkv:first-chapter";
 const FIRST = "\u0000first";
@@ -90,7 +93,7 @@ const FIRST = "\u0000first";
 export function queueChapterHop(fromSlug: string, toSlug: string) {
   pendingChapterId = FIRST;
   // Роль берём до прокрутки — scrollToDeckStart ниже сменит активную главу.
-  const hop = () => scrollToDeckStart();
+  const hop = () => scrollToDeckStart("instant", false);
   const from = ROLES[fromSlug];
   const to = ROLES[toSlug];
   if (from && to && activeChapterId && from[activeChapterId]) {

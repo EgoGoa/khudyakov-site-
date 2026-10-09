@@ -19,8 +19,9 @@ import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 // Переход моментальный: по клику линия сразу едет к новому названию, адрес
 // меняется в тот же миг (без паузы), страницы заранее подгружены.
 //
-// На телефоне ряд стоит второй строкой под логотипом и меню, на планшете
-// тоже, на компьютере и у телефона боком — по центру строки шапки.
+// На телефоне ряд стоит в строке шапки между «HUD» и меню (Егор,
+// 2026-10-09: второй строкой шапка закрывала заголовки), на планшете —
+// второй строкой, на компьютере и у телефона боком — по центру строки.
 
 export const SHORT: Record<ServiceKey, string> = {
   content: "Контент",
@@ -108,11 +109,11 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
     // выше (z-10) — без этого он перехватывал бы мышь и палец.
     <nav
       aria-label="Страницы услуг"
-      className={`pointer-events-auto relative z-20 flex h-10 w-full items-start justify-center transition-opacity duration-300 sm:h-14 sm:items-center lg:absolute lg:left-1/2 lg:top-[var(--sat)] lg:h-[70px] lg:w-auto lg:-translate-x-1/2 land:absolute land:left-1/2 land:top-0 land:h-10 land:w-auto land:-translate-x-1/2 ${
+      className={`pointer-events-auto absolute left-[calc(1.5rem+4.4rem)] right-[calc(1.5rem+2.5rem+2px)] top-[var(--sat)] z-20 flex h-14 items-center justify-center transition-opacity duration-300 sm:relative sm:left-auto sm:right-auto sm:top-auto sm:w-full lg:absolute lg:left-1/2 lg:top-[var(--sat)] lg:h-[70px] lg:w-auto lg:-translate-x-1/2 land:absolute land:left-1/2 land:right-auto land:top-0 land:h-10 land:w-auto land:-translate-x-1/2 ${
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      <div ref={rowRef} className="relative flex items-center gap-1 sm:gap-3 lg:gap-4 land:gap-2">
+      <div ref={rowRef} className="relative flex items-center gap-0 sm:gap-3 lg:gap-4 land:gap-2">
         {serviceOrder.map((k, i) => {
           const href = hrefOf(k);
           const isCurrent = i === current;
@@ -142,7 +143,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                 // Не может застрять: на долгом переходе — сфера, через 5 с — обычная загрузка.
                 sureNavigate(router, href, { scroll: !fromDeck });
               }}
-              className={`group/pb relative flex h-8 items-center px-2.5 font-display text-[12px] uppercase leading-none tracking-tight text-white transition-opacity duration-200 sm:h-10 sm:px-3 sm:text-[13px] land:h-8 land:text-[12px] ${
+              className={`group/pb relative flex h-8 items-center px-[clamp(4px,1.6vw,8px)] font-display text-[clamp(10.5px,3.1vw,12px)] uppercase leading-none tracking-tight text-white transition-opacity duration-200 sm:h-10 sm:px-3 sm:text-[13px] land:h-8 land:text-[12px] ${
                 isCurrent ? "opacity-100" : "opacity-90 hover:opacity-100"
               }`}
             >

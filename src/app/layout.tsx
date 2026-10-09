@@ -14,14 +14,12 @@ import GlobalLead from "@/components/layout/GlobalLead";
 import SkipIntro from "@/components/layout/SkipIntro";
 import VoiceAssistant from "@/components/layout/VoiceAssistant";
 import InstallApp from "@/components/layout/InstallApp";
-import SlowLoadVeil from "@/components/layout/SlowLoadVeil";
 import { BIP_SNIPPET } from "@/lib/pwa";
 import ScrollTopButton from "@/components/ui/ScrollTopButton";
 import BackgroundFX from "@/components/layout/BackgroundFX";
 import MediaGovernor from "@/components/layout/MediaGovernor";
 import HeadingFit from "@/components/layout/HeadingFit";
 import ScrollQuiet from "@/components/layout/ScrollQuiet";
-import { SLOW_VEIL_ORB_SCRIPT } from "@/components/layout/slowVeilOrb";
 import PerfGovernor from "@/components/layout/PerfGovernor";
 import MotionTier from "@/components/layout/MotionTier";
 import { LITE_DETECT_SNIPPET } from "@/lib/lite";
@@ -165,16 +163,6 @@ export default function RootLayout({
         />
       </head>
       <body className="relative bg-ink font-sans text-paper antialiased">
-        {/* Экран ожидания: в HTML с первого байта, но виден только на сайте,
-            когда переход висит или нет сети (см. SlowLoadVeil). */}
-        <div id="slow-veil" aria-hidden="true">
-          <div className="slow-veil__in">
-            <canvas id="slow-veil-orb" className="slow-veil__orb" />
-          </div>
-        </div>
-        {/* Сфера рисуется сразу, без скриптов сайта (см. slowVeilOrb.ts). */}
-        <script dangerouslySetInnerHTML={{ __html: SLOW_VEIL_ORB_SCRIPT }} />
-        <SlowLoadVeil />
         <BackgroundFX />
         {/* Уточняет уровень устройства (слабое/среднее/сильное) по видеокарте
             и реальным кадрам и при тормозах снижает его — см. компонент. */}

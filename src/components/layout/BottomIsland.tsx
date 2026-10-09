@@ -13,7 +13,7 @@ import { openSearch } from "@/lib/site-search";
 import { SearchGlyph } from "@/components/layout/SiteSearch";
 
 // Остров внизу экрана на телефоне (Егор, 2026-10-09, вариант C):
-// ‹ 🔍 (волна) SMM › — одна стеклянная капсула вместо трёх отдельных
+// ‹ 🔍 (волна) SMM › — стеклянная полоса на всю ширину вместо трёх отдельных
 // элементов. Волна остаётся голосовым ассистентом и стоит в гнезде по
 // центру. Стрелки остров рисует сам, с той же логикой, что PageSideNav и
 // FormatSideNav (те живут внутри слоя страницы и не могут встать поверх
@@ -130,26 +130,32 @@ export default function BottomIsland() {
   const hops = hopsFor(pathname);
 
   return (
-    <div
-      className="bottom-island"
-      data-arrows={hops ? "" : undefined}
-      data-wave={hasWave ? "" : undefined}
-      data-label={label ? "" : undefined}
-    >
-      {hops && <Arrow hop={hops.prev} side="prev" kind={hops.kind} />}
-      <button type="button" onClick={openSearch} aria-label="Поиск по сайту" className="bottom-island__btn">
-        <SearchGlyph className="h-[19px] w-[19px]" />
-      </button>
-      <span className="bottom-island__wave" aria-hidden="true" />
-      <span className="bottom-island__label" aria-hidden="true">
+    <div className="bottom-island" data-wave={hasWave ? "" : undefined}>
+      <div className="bottom-island__side">
+        {hops && <Arrow hop={hops.prev} side="prev" kind={hops.kind} />}
+        {hasWave && (
+          <button type="button" onClick={openSearch} aria-label="Поиск по сайту" className="bottom-island__btn">
+            <SearchGlyph className="h-[19px] w-[19px]" />
+          </button>
+        )}
+      </div>
+      {hasWave ? (
+        <span className="bottom-island__wave" aria-hidden="true" />
+      ) : (
+        <button type="button" onClick={openSearch} className="bottom-island__field">
+          <SearchGlyph className="h-[17px] w-[17px] shrink-0" />
+          Поиск
+        </button>
+      )}
+      <div className="bottom-island__side bottom-island__side--end">
         {label && (
-          <>
+          <span className="bottom-island__label" aria-hidden="true">
             <b>{label.name}</b>
             {label.pos && <span>{label.pos}</span>}
-          </>
+          </span>
         )}
-      </span>
-      {hops && <Arrow hop={hops.next} side="next" kind={hops.kind} />}
+        {hops && <Arrow hop={hops.next} side="next" kind={hops.kind} />}
+      </div>
     </div>
   );
 }

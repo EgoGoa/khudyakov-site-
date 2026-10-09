@@ -37,9 +37,9 @@ function BrandLockup() {
     <span className="flex items-center gap-2 sm:gap-2.5">
       <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot sm:h-2.5 sm:w-2.5" />
       <span className="whitespace-nowrap font-display text-[clamp(1.1rem,3.2vw,1.4rem)] land:!text-[0.9rem] uppercase tracking-tight">
-        {/* Бар страниц на телефоне ушёл второй строкой — в первой строке
-            снова хватает места на полное название. */}
-        HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
+        {/* На телефоне — только «HUD» (Егор, 2026-10-09): рядом в той же
+            строке стоят четыре раздела. */}
+        HUD<span className="hidden sm:inline land:!inline"><LiveBrandWord>.SERVICE</LiveBrandWord></span>
       </span>
     </span>
   );
@@ -268,8 +268,8 @@ export default function Header() {
         </div>
       </Container>
 
-      {/* Бар страниц — на всех страницах (просьба Егора). На телефоне и
-          планшете — второй строкой под логотипом,
+      {/* Бар страниц — на всех страницах (просьба Егора). На телефоне — в
+          строке логотипа между «HUD» и меню, на планшете — второй строкой,
           на десктопе и у телефона боком — по центру шапки. Логотип и иконки
           на это время уходят по углам: подпись у логотипа и телефон
           показываются только там, где им хватает места рядом с баром. */}
