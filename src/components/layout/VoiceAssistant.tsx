@@ -14,7 +14,7 @@ import { useHeaderMenu } from "@/lib/header-menu";
 import { serviceMeta, serviceOrder } from "@/lib/service-content";
 import { blocksFor } from "@/lib/welcome-blocks";
 import { CONTACTS, normalize, parseCommand, serviceFromPath, type VoiceAction } from "@/lib/voice/intents";
-import { declineSay, greeting, notUnderstood, nudge, replyToOffer, smallTalk, type VoiceOffer } from "@/lib/voice/chat";
+import { declineSay, greeting, notUnderstood, replyToOffer, smallTalk, type VoiceOffer } from "@/lib/voice/chat";
 import TeamConsultModal from "@/components/home/TeamConsultModal";
 import VoiceTour from "@/components/layout/VoiceTour";
 import { TEAM } from "@/lib/team";
@@ -210,9 +210,6 @@ export default function VoiceAssistant() {
     // Что ассистент только что предложил («хочешь, покажу…»): короткое «да»
     // выполняет, «нет» — вежливо отпускает (Егор, 2026-10-03).
     let pendingOffer: VoiceOffer | null = null;
-    // Если посетитель давно молчит — один раз за включение сама что-то предложит.
-    let lastActivity = Date.now();
-    let nudged = false;
     const undo: Snapshot[] = [];
 
     // ---------- слух ----------
@@ -619,7 +616,6 @@ export default function VoiceAssistant() {
           return;
         }
       }
-      lastActivity = Date.now();
       // Ответ на предложение ассистента: «да» — делаем, «нет» — отпускаем.
       if (pendingOffer) {
         const offer = pendingOffer;
@@ -757,8 +753,6 @@ export default function VoiceAssistant() {
         const hi = greeting(live.current.pathname);
         const hello = hi.say;
         pendingOffer = hi.offer;
-        lastActivity = Date.now();
-        nudged = false;
         lastSay = hello;
         setVoiceState((st) => ({ turns: [...st.turns, { role: "assistant" as const, text: hello }], pulse: st.pulse + 1 }));
         speak(hello, () => scheduleListen(120));
@@ -816,18 +810,10 @@ export default function VoiceAssistant() {
       closePanel: () => setVoiceState({ panelOpen: false }),
     });
 
-    // Первое состояние: голос уже был включён — пробуем продолжить без
-    // нажатия; иначе приглашаем.
-    const wasOn = readFlag(ON_KEY);
-    setVoiceState({
-      canListen: Boolean(Ctor),
-      invite: Boolean(Ctor) && !wasOn && !readFlag(INVITE_KEY),
-    });
-    if (Ctor && wasOn) {
-      autoStart = true;
-      setVoiceState({ enabled: true });
-      scheduleListen(600);
-    }
+    // Первое состояние — всегда выключен и молчит (Егор, 2026-10-09): ни
+    // приглашения «Включить», ни продолжения прошлого разговора при новом
+    // заходе. Голос оживает только по нажатию на волну.
+    setVoiceState({ canListen: Boolean(Ctor), invite: false });
 
     // Вкладка вернулась на экран — браузер к этому времени закрыл сессию.
     const onVisible = () => {
@@ -835,21 +821,10 @@ export default function VoiceAssistant() {
     };
     document.addEventListener("visibilitychange", onVisible);
 
-    // Тишина 50 секунд — ассистент сам один раз что-то предлагает.
-    const nudgeTimer = window.setInterval(() => {
-      const st = getVoiceState();
-      if (nudged || !st.enabled || st.status === "thinking" || st.status === "speaking") return;
-      if (document.visibilityState === "hidden" || getVoiceCapture() || st.team) return;
-      if (Date.now() - lastActivity < 50_000) return;
-      nudged = true;
-      stopListening();
-      const n = nudge(live.current.pathname);
-      pendingOffer = n.offer;
-      respond(n.say, { type: "none" }, true);
-    }, 5000);
+    // Сам ассистент в тишине ничего не предлагает (Егор, 2026-10-09:
+    // «надоедает вопросами») — говорит только в ответ.
 
     return () => {
-      window.clearInterval(nudgeTimer);
       document.removeEventListener("visibilitychange", onVisible);
       cancelAnimationFrame(levelRaf);
       micStream?.getTracks().forEach((t) => t.stop());
@@ -958,7 +933,7 @@ function VoiceWaveButton({ width, height, from, to, inStage = false }: { width: 
       style={{ "--g-from": from, "--g-to": to } as CSSProperties}
     >
       <span className="voice-sphere-core relative grid place-items-center">
-        <NanoWave width={width} height={height} from={from} to={to} hot={live} pulse={s.pulse} level={getVoiceLevel} particles={false} sleepy />
+        <NanoWave width={width} height={height} from={from} to={to} hot={live} pulse={s.pulse} level={getVoiceLevel} particles={false} sleepy resting={!s.enabled} />
       </span>
     </button>
   );
@@ -1086,7 +1061,8 @@ function VoiceCaption({ hover }: { hover: boolean }) {
   // Пока курсор на волне — подсказки сменяют друг друга каждые 2.6 с,
   // с новой при каждом наведении. Пока висит приглашение «Включить»,
   // подсказки молчат, чтобы не было двух плашек.
-  const quiet = hover && !s.panelOpen && !s.invite && !shown;
+  // Только когда голос включён: выключенная волна молчит (Егор, 2026-10-09).
+  const quiet = hover && s.enabled && !s.panelOpen && !s.invite && !shown;
   const hintAt = useRef(0);
   useEffect(() => {
     if (!quiet) {

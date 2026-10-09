@@ -49,6 +49,7 @@ export default function NanoWave({
   sparkle = false,
   particles = true,
   sleepy = false,
+  resting = false,
 }: {
   width?: number;
   height?: number;
@@ -69,10 +70,15 @@ export default function NanoWave({
   /** Спящий режим (нижняя волна): в покое застывший кадр без перерисовки,
    *  при наведении, голосе и всплеске — живая волна. */
   sleepy?: boolean;
+  /** Голос выключен (Егор, 2026-10-09): один спокойный неподвижный кадр,
+   *  без дыхания и без ряби от курсора. Оживает, как только снят. */
+  resting?: boolean;
 }) {
   const wrapRef = useRef<HTMLSpanElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hotRef = useRef(hot);
+  const restingRef = useRef(resting);
+  const restDirtyRef = useRef(true);
   const pulseRef = useRef(pulse);
   const levelRef = useRef(level);
   // Цвета — цель, к которой волна плавно перетекает (смена страницы не
@@ -82,11 +88,13 @@ export default function NanoWave({
   const wakeRef = useRef<() => void>(() => {});
   useEffect(() => {
     hotRef.current = hot;
+    restingRef.current = resting;
+    restDirtyRef.current = true;
     pulseRef.current = pulse;
     levelRef.current = level;
     colorRef.current = { from, to };
     wakeRef.current();
-  }, [hot, pulse, level, from, to]);
+  }, [hot, pulse, level, from, to, resting]);
 
   // Холст шире знака — ореолу и размытию нужно место за краем ленты.
   const padX = dust ? width * 0.3 : height * 0.5;
@@ -437,6 +445,21 @@ export default function NanoWave({
         if (now < settle) return;
         // Вне экрана и в фоновой вкладке не рисуем вовсе.
         if (!onScreen || document.hidden || frozen()) {
+          last = 0;
+          return;
+        }
+        // Голос выключен: рисуем один неподвижный кадр и останавливаемся.
+        // Снова запускает только смена пропсов (wakeRef).
+        if (restingRef.current) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+          if (restDirtyRef.current) {
+            restDirtyRef.current = false;
+            ripples.length = 0;
+            energy = 1;
+            hoverS = 0;
+            draw(SLEEP_CLOCK_S);
+          }
           last = 0;
           return;
         }
