@@ -78,7 +78,7 @@ export default function Breadcrumbs() {
   const parent = trail[trail.length - 2];
 
   return (
-    <nav aria-label="Навигация по сайту" className={`crumbs pointer-events-none fixed inset-x-0 ${scrolled ? "is-scrolled" : ""} top-[calc(68px+var(--sat))] z-40 sm:top-[calc(84px+var(--sat))] land:top-12`}>
+    <nav aria-label="Навигация по сайту" className={`crumbs pointer-events-none fixed inset-x-0 ${scrolled ? "is-scrolled" : ""} top-[calc(6rem+12px+var(--sat))] z-40 sm:top-[calc(70px+3.5rem+14px+var(--sat))] lg:top-[calc(84px+var(--sat))] land:top-12`}>
       <Container>
         <ol className="pointer-events-auto inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 font-display text-[10px] font-bold uppercase tracking-[0.08em] sm:text-[11px]">
           <li>

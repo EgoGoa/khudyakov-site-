@@ -6,7 +6,6 @@ import Hero from "@/components/home/Hero";
 import PageSideNav from "@/components/home/PageSideNav";
 import ServicePicker from "@/components/home/ServicePicker";
 import WelcomeOverlay from "@/components/home/WelcomeOverlay";
-import PageSlide from "@/components/layout/PageSlide";
 import { WelcomeGateProvider } from "@/lib/welcome-gate";
 
 // Shared between /content, /ai, /sites, /smm (a Next.js route group — the
@@ -39,7 +38,7 @@ export default function LandingLayout({ children }: { children: ReactNode }) {
       {showChrome && <Hero />}
       {showChrome && <ServicePicker />}
       {showChrome && <PageSideNav />}
-      {showChrome ? <PageSlide pathname={pathname}>{children}</PageSlide> : children}
+      {children}
     </WelcomeGateProvider>
   );
 }
