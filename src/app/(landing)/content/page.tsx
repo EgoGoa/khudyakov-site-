@@ -6,8 +6,8 @@ import Trust from "@/components/home/Trust";
 import Offer from "@/components/home/Offer";
 import Process from "@/components/home/Process";
 import Close from "@/components/home/Close";
-import type { ChapterMeta } from "@/components/ui/CinematicStage";
-import ScrubStage from "@/components/ui/ScrubStage";
+import CinematicStage, { type ChapterMeta } from "@/components/ui/CinematicStage";
+import ChapterRail from "@/components/ui/ChapterRail";
 import CinematicSection from "@/components/ui/CinematicSection";
 import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
@@ -37,9 +37,9 @@ export const metadata: Metadata = {
 // 38.4s — a scene change in the film itself — to give chapter 06 the neon
 // finale. Everything before that is exactly as specified.
 //
-// Each phase is the slice of film that plays under its chapter while it is
-// scrolled through (ScrubStage), so the picture runs continuously from 0 to
-// 43.2s across a full scroll and never carries a join of ours.
+// A chapter holds on its closing frame and scrolling on resumes straight
+// through, so the picture runs continuously from 0 to 43.2s across a full
+// scroll and never carries a join of ours.
 // Акцент страницы /content — тот же, что у рельсы и заголовков глав.
 const CONTENT_ACCENT = { from: "#ff4fd8", to: "#ff6a3d" };
 
@@ -52,6 +52,8 @@ const PHASES = [
   { start: 38.4, end: 43.2 }, // 43:05
 ];
 
+// One viewport-height of runway per chapter, so every chapter costs the same
+// gesture to pass and each is its own snap step.
 const CHAPTERS: ChapterMeta[] = [
   { id: "opening" },
   { id: "works" },
@@ -73,17 +75,15 @@ export default function ContentServicePage() {
           globals.css). Same mechanism /ai and /sites use for their own
           accent colours. */}
       <div className="content-warm-headings">
-      {/* Ролик ведёт прокрутка (Егор, 2026-10-08): главы идут обычным
-          скроллом, кадр фона — от положения страницы, по тем же фазам.
-          См. ScrubStage. Отдельный файл ролика с частыми опорными кадрами —
-          иначе перемотка рывками. */}
-      <ScrubStage
-        src="/video/content-reel-scrub.mp4"
-        mobileSrc="/video/content-reel-scrub-portrait.mp4"
+      <CinematicStage
+        src="/video/content-reel.mp4"
         poster="/images/content-reel-poster.jpg"
         phases={PHASES}
         chapters={CHAPTERS}
         brightness={1.2}
+        // The left-edge rail follows the same magenta→orange gradient as the
+        // keyword spans above.
+        rail={<ChapterRail count={CHAPTERS.length} from="#ff4fd8" to="#ff6a3d" />}
       >
         <Opening />
 
@@ -182,7 +182,7 @@ export default function ContentServicePage() {
           title={<>Персональные <span className="kw">условия</span></>}
           intro={<>Ценообразование индивидуальное — считаем по ТЗ. Бесплатно: <span className="kw">консультация, смета</span> и 2–3 концепции до договора.</>}
         />
-      </ScrubStage>
+      </CinematicStage>
       </div>
     </ServiceProvider>
   );
