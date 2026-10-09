@@ -469,10 +469,16 @@ export default function NanoWave({
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width, height }} aria-hidden="true">
+      {/* Поля холста выступают за обёртку отрицательными left/top, а не
+          translate(-50%): со сдвигом Safari считал границы слоя по
+          несдвинутому холсту и срезал левый край (см. globals.css,
+          «ВОЛНА И ФИЛЬТРЫ»). */}
       <canvas
         ref={canvasRef}
-        className="nano-wave-canvas pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="nano-wave-canvas pointer-events-none absolute"
         style={{
+          left: -padX,
+          top: -padY,
           width: width + padX * 2,
           height: height + padY * 2,
         }}

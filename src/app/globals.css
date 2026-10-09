@@ -8484,22 +8484,29 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
 /* В покое волна на 20% меньше; включил голос — она медленно и
    кинематографично раскрывается до полного размера. Никаких скачков:
    размер, свет и появление — только плавными переходами. */
+/* ВОЛНА И ФИЛЬТРЫ (Егор, 2026-10-09: «обрыв слева — закрыть раз и
+   навсегда»). Холст волны шире своей обёртки (поля под размах). Safari
+   считает границы слоя с CSS filter по коробке элемента без учёта
+   выступающих детей и срезает их — всегда с одной стороны. Поэтому ни на
+   холсте, ни на его обёртках НЕТ filter (ни brightness, ни blur, ни в
+   анимациях) и нет mask: приглушение — через opacity, затухание краёв —
+   в самом canvas (NanoWave). Не возвращать. */
 .voice-sphere-core {
   transform: scale(0.8);
-  filter: brightness(0.92);
+  opacity: 0.9;
   transition:
     transform 1.4s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .voice-sphere:hover .voice-sphere-core { transform: scale(0.84); }
-.voice-sphere.is-active .voice-sphere-core { transform: scale(1); filter: brightness(1.05); }
+.voice-sphere.is-active .voice-sphere-core { transform: scale(1); opacity: 1; }
 .voice-sphere.is-active:hover .voice-sphere-core { transform: scale(1.02); }
-.voice-stage .voice-sphere-core { transform: none; filter: none; }
-/* Появление при загрузке страницы — мягкое проступание из размытия. */
+.voice-stage .voice-sphere-core { transform: none; opacity: 1; }
+/* Появление при загрузке страницы — мягкое проступание (без blur, см. выше). */
 .nano-wave-canvas { animation: nano-wave-in 1.6s cubic-bezier(0.45, 0, 0.15, 1) backwards; }
 @keyframes nano-wave-in {
-  from { opacity: 0; filter: blur(8px); }
-  to { opacity: 1; filter: blur(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .voice-contact {
   align-self: flex-start;
@@ -10340,29 +10347,32 @@ html[data-mid] .hero-promo { transition: none; }
 }
 
 /* ── Экран ожидания (слабый интернет) ─────────────────────────────────────────
-   Внешний слой всегда в HTML и не ловит нажатия; внутренний проявляется
-   только через 1.3с после начала загрузки. Если страница собралась раньше,
-   JS ставит data-veil-done на <html>, и внутренний слой так и не показывается.
-   Если же он уже показан — плавно гаснет вместе с внешним. Страховка: через
-   14с гаснет сам, даже если скрипты не отработали вовсе. */
+   Слой всегда в HTML, но скрыт. Показывается только на сайте, когда
+   SlowLoadVeil ставит data-veil-wait на <html>: переход между страницами
+   висит дольше 1.3с или пропала сеть. При первом заходе и в стартовом окне
+   не показывается (Егор, 2026-10-09). */
 #slow-veil {
   position: fixed;
   inset: 0;
   z-index: 300;
   pointer-events: none;
-  transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
 }
-html[data-veil-done] #slow-veil { opacity: 0; visibility: hidden; }
+html[data-veil-wait] #slow-veil {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease, visibility 0s;
+}
 .slow-veil__in {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
-  opacity: 0;
   background: rgba(11, 11, 16, 0.72);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  animation: slow-veil-in 0.5s ease 1.3s forwards, slow-veil-out 0.5s ease 14s forwards;
 }
 /* Сфера вайб-бара (canvas, рисует slowVeilOrb.ts из HTML). */
 .slow-veil__orb {
@@ -10370,8 +10380,6 @@ html[data-veil-done] #slow-veil { opacity: 0; visibility: hidden; }
   width: 140px;
   height: 140px;
 }
-@keyframes slow-veil-in { to { opacity: 1; } }
-@keyframes slow-veil-out { to { opacity: 0; visibility: hidden; } }
 
 /* Колонка кнопок шапки у телефона боком (Header → .header-tools): меню сверху,
    ниже звук и кабинет, у правого края, под большой палец. Отдельный класс, а
