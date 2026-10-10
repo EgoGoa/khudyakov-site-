@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex" />
+<title>Центр Зрения × HUD.SERVICE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+  /* Стиль hud-service.ru/sites: графит, затемнённое размытое фото на фоне,
+     стеклянные окна, заголовки Unbounded капсом, ключевое слово — коралл → бирюза. */
+  :root {
+    --ink: #0b0b10;
+    --glass: rgba(22, 22, 30, 0.46);
+    --glass-2: rgba(255, 255, 255, 0.07);
+    --line: rgba(255, 255, 255, 0.13);
+    --white: #ffffff;
+    --soft: #ececf6;
+    --coral: #ff6f61;
+    --teal: #00c2b2;
+    --grad: linear-gradient(90deg, var(--coral) 0%, var(--teal) 100%);
+    --display: "Unbounded", system-ui, sans-serif;
+    --font: "Manrope", system-ui, sans-serif;
+    --s: 1;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--ink); color: var(--white); }
+  body { font-family: var(--font); font-weight: 600; -webkit-font-smoothing: antialiased; }
+  html { scroll-snap-type: y mandatory; }
+
+  .frame { height: calc(900px * var(--s)); width: 100%; display: grid; place-items: center; scroll-snap-align: start; overflow: hidden; }
+  .slide {
+    width: 1600px; height: 900px; flex: none; transform: scale(var(--s));
+    position: relative; padding: 72px 96px; display: flex; flex-direction: column;
+    background: var(--ink); overflow: hidden; isolation: isolate;
+  }
+  /* Фон — фото из библиотеки сайта, размытое и затемнённое, как видео на /sites. */
+  .slide::before {
+    content: ""; position: absolute; inset: -40px; z-index: -2;
+    background: var(--bg) center / cover no-repeat;
+    filter: blur(10px) saturate(1.15);
+  }
+  .slide::after {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, rgba(11,11,16,.62) 0%, rgba(11,11,16,.74) 55%, rgba(11,11,16,.9) 100%);
+  }
+
+  .kicker { font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 12px; letter-spacing: .04em; }
+  .kicker .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--teal); }
+  h1, h2 { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; line-height: 1.04; text-transform: uppercase;
+    text-shadow: 0 0 0.72em rgba(255,106,61,.32), 0 2px 24px rgba(11,11,16,.9); }
+  h1 { font-size: 72px; line-height: 1.08; }
+  h2 { font-size: 58px; line-height: 1.12; }
+  h2.one { font-size: 50px; }
+  .kw { background-image: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; text-shadow: none;
+    filter: drop-shadow(0 0 10px rgba(255,111,97,.35)) drop-shadow(0 0 22px rgba(0,194,178,.3)); }
+  .lead { font-size: 25px; line-height: 1.4; color: var(--soft); max-width: 900px; }
+  .lead b { color: var(--white); font-weight: 800; }
+
+  .tile {
+    background: var(--glass); border: 1px solid var(--line); border-radius: 30px; padding: 32px;
+    position: relative; overflow: hidden; backdrop-filter: blur(21px) saturate(1.4);
+  }
+  .tile h3 { font-family: var(--display); font-weight: 700; font-size: 25px; line-height: 1.15; }
+  .tile p { font-size: 19px; line-height: 1.4; margin-top: 10px; color: var(--soft); }
+  .tile p b { color: var(--white); }
+  .big { font-family: var(--display); font-weight: 800; font-size: 76px; line-height: 1; letter-spacing: -0.02em; }
+
+  .ring { border-color: transparent; }
+  .ring::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.6px; background: var(--grad);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+  }
+  .pill { display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: 999px; background: var(--glass); backdrop-filter: blur(21px); border: 1px solid var(--line); font-weight: 700; font-size: 18px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; padding: 20px 44px; border-radius: 999px; background: var(--grad); color: var(--ink); font-weight: 800; font-size: 22px; text-decoration: none; }
+  .pulse { animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  .foot { position: absolute; left: 96px; right: 96px; bottom: 40px; display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; color: var(--soft); }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  .shown .in { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; }
+  .shown .in:nth-child(2) { animation-delay: .08s; } .shown .in:nth-child(3) { animation-delay: .16s; }
+  .shown .in:nth-child(4) { animation-delay: .24s; } .shown .in:nth-child(5) { animation-delay: .32s; }
+  @media (prefers-reduced-motion: reduce) { .shown .in, .pulse, .iris, .shown .eye .draw { animation: none !important; } .eye .draw { stroke-dashoffset: 0; } }
+  .s-center { justify-content: center; }
+
+  /* 1 · Обложка */
+  .cover { justify-content: space-between; }
+  .cover h1 { max-width: 1000px; margin-top: 40px; }
+  .cover .lead { margin-top: 28px; max-width: 780px; }
+  .eye { position: absolute; right: -210px; top: 50%; width: 700px; height: 700px; transform: translateY(-50%); }
+  .eye circle { fill: none; stroke-width: 2; }
+  .eye .draw { stroke-dasharray: 2000; stroke-dashoffset: 2000; }
+  .shown .eye .draw { animation: draw 2.4s cubic-bezier(.2,.7,.2,1) forwards; }
+  .shown .eye .draw:nth-of-type(2) { animation-delay: .15s; } .shown .eye .draw:nth-of-type(3) { animation-delay: .3s; }
+  .shown .eye .draw:nth-of-type(4) { animation-delay: .45s; } .shown .eye .draw:nth-of-type(5) { animation-delay: .6s; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .iris { transform-origin: 310px 310px; animation: spin 40s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 2 · Факты */
+  .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .facts { margin-top: 40px; grid-template-columns: 1.3fr 1.1fr 1fr 1fr; }
+  .facts .tile { height: 300px; display: flex; flex-direction: column; justify-content: space-between; }
+  .facts .big { font-size: 56px; white-space: nowrap; }
+  .facts .tile h3 { font-size: 21px; }
+  .base { margin-top: 26px; font-size: 21px; line-height: 1.4; color: var(--soft); }
+  .base b { color: var(--white); }
+  .loss-title { margin-top: 26px; font-family: var(--display); font-size: 22px; font-weight: 700; text-transform: uppercase; }
+  .loss { margin-top: 16px; }
+  .loss .tile { padding: 22px 26px; border-radius: 24px; }
+  .loss .tile h3 { font-size: 18px; display: flex; gap: 12px; align-items: center; }
+  .loss .tile p { font-size: 17px; margin-top: 6px; }
+  .x { width: 26px; height: 26px; border-radius: 50%; background: var(--grad); color: var(--ink); display: grid; place-items: center; font-size: 14px; font-weight: 800; flex: none; }
+
+  /* Телефон */
+  .phone { width: 300px; height: 610px; border-radius: 48px; background: rgba(14,14,20,.82); backdrop-filter: blur(21px); border: 10px solid #23232d; position: relative; overflow: hidden; flex: none; padding: 46px 18px 18px; }
+  .phone::before { content: ""; position: absolute; top: 12px; left: 50%; width: 92px; height: 26px; border-radius: 99px; background: #000; transform: translateX(-50%); }
+  .ph-bar { font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; margin-bottom: 16px; }
+  .ph-h { font-family: var(--display); font-weight: 700; font-size: 21px; line-height: 1.15; }
+  .ph-p { font-size: 13px; line-height: 1.4; color: var(--soft); margin-top: 8px; }
+  .ph-card { background: var(--glass-2); border: 1px solid var(--line); border-radius: 18px; padding: 14px; margin-top: 12px; }
+  .ph-card b { font-size: 14px; display: block; }
+  .ph-card span { font-size: 12px; color: var(--soft); }
+  .ph-btn { margin-top: 12px; border-radius: 99px; background: var(--grad); color: var(--ink); font-weight: 800; font-size: 14px; text-align: center; padding: 12px; }
+  .ph-chip { display: inline-block; font-size: 11px; font-weight: 800; padding: 6px 10px; border-radius: 99px; background: rgba(0,194,178,.18); color: var(--teal); }
+  .ph-chip.c { background: rgba(255,111,97,.18); color: var(--coral); }
+  .slots { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-top: 10px; }
+  .slots i { font-style: normal; font-size: 12px; font-weight: 800; text-align: center; padding: 8px 0; border-radius: 10px; background: rgba(255,255,255,.08); }
+  .slots i.on { background: var(--grad); color: var(--ink); }
+  .frames { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .fr { background: var(--glass-2); border: 1px solid var(--line); border-radius: 14px; padding: 12px 10px 10px; }
+  .fr svg { width: 100%; height: 34px; }
+  .fr b { font-size: 12px; display: block; margin-top: 6px; }
+  .fr span { font-size: 11px; color: var(--soft); }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .tags span { font-size: 15px; font-weight: 700; padding: 8px 14px; border-radius: 99px; background: var(--glass-2); border: 1px solid var(--line); }
+  .choice { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+  .choice div { border-radius: 16px; padding: 10px 12px; font-weight: 800; font-size: 15px; background: var(--glass-2); border: 1.5px solid var(--line); }
+  .choice div small { display: block; font-weight: 600; font-size: 12px; color: var(--soft); margin-top: 4px; }
+  .choice div.sel { border-color: var(--teal); }
+
+  /* 3 · Система */
+  .sys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 44px; }
+  .sys .tile { height: 500px; padding: 36px; display: flex; flex-direction: column; }
+  .sys .n { font-family: var(--display); font-weight: 800; font-size: 44px; }
+  .sys h3 { font-size: 30px; margin-top: 18px; text-transform: uppercase; }
+  .sys .what { font-size: 20px; line-height: 1.4; margin-top: 12px; color: var(--soft); }
+  .sys .uses { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+  .sys .uses div { font-size: 17px; font-weight: 700; padding: 12px 16px; border-radius: 16px; background: var(--glass-2); border: 1px solid var(--line); }
+  .sys-line { text-align: center; font-size: 22px; font-weight: 700; margin-top: 26px; }
+
+  /* 4 · Фильм */
+  .film { flex: 1; display: grid; grid-template-columns: 860px 1fr; gap: 48px; margin-top: 40px; align-items: start; }
+  .player { border-radius: 28px; overflow: hidden; position: relative; aspect-ratio: 16 / 9; border: 1px solid var(--line); }
+  .player .scene { position: absolute; inset: 0; background: url(img/projector-life.jpg) center 40% / cover; }
+  .player .scene::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,11,16,.1), rgba(11,11,16,.75)); }
+  .player .title { position: absolute; left: 36px; bottom: 74px; font-family: var(--display); font-weight: 700; font-size: 30px; line-height: 1.15; text-transform: uppercase; }
+  .player .bar { position: absolute; left: 36px; right: 36px; bottom: 30px; display: flex; gap: 6px; }
+  .player .bar i { flex: 1; height: 6px; border-radius: 6px; background: rgba(255,255,255,.25); }
+  .player .bar i.on { background: var(--grad); }
+  .player .play { position: absolute; right: 36px; top: 32px; font-weight: 800; font-size: 15px; padding: 8px 14px; border-radius: 99px; background: var(--glass); backdrop-filter: blur(21px); border: 1px solid var(--line); }
+  .chapters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 16px; }
+  .chapters div { font-size: 14px; font-weight: 800; line-height: 1.3; }
+  .chapters small { display: block; font-size: 13px; font-weight: 800; color: var(--teal); }
+  .film-side { display: flex; flex-direction: column; gap: 16px; }
+  .film-side .tile { padding: 24px 26px; border-radius: 24px; }
+  .film-side .tile h3 { font-size: 20px; }
+  .film-side .tile p { font-size: 17px; margin-top: 6px; }
+
+  /* 5 · Сайт */
+  .screens { flex: 1; display: flex; justify-content: center; gap: 64px; align-items: flex-end; margin-top: 36px; }
+  .screens .col { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .screens .cap { font-family: var(--display); font-weight: 700; font-size: 18px; text-transform: uppercase; }
+  .screens .phone { height: 500px; }
+  .under { display: flex; justify-content: center; gap: 12px; margin-top: 22px; }
+
+  /* 6 · Примеры */
+  .refs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 40px; }
+  .refs a { text-decoration: none; color: inherit; }
+  .refs .tile { height: 250px; padding: 26px; border-radius: 26px; display: flex; flex-direction: column; }
+  .refs .tag { align-self: flex-start; font-size: 13px; font-weight: 800; padding: 6px 12px; border-radius: 99px; background: rgba(0,194,178,.18); color: var(--teal); }
+  .refs .tag.c { background: rgba(255,111,97,.18); color: var(--coral); }
+  .refs h3 { font-size: 21px; margin-top: 16px; }
+  .refs p { font-size: 16px; margin-top: 8px; }
+  .refs .url { margin-top: auto; font-size: 15px; font-weight: 800; color: var(--white); border-top: 1px solid var(--line); padding-top: 12px; }
+  .refs-note { margin-top: 22px; font-size: 20px; text-align: center; }
+
+  /* 7 · AI-ассистент */
+  .ai { flex: 1; display: grid; grid-template-columns: 560px 1fr; gap: 56px; margin-top: 36px; }
+  .feed { background: var(--glass); backdrop-filter: blur(21px) saturate(1.4); border-radius: 30px; border: 1px solid var(--line); padding: 26px; display: flex; flex-direction: column; gap: 12px; }
+  .chan { display: flex; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .chan span { font-size: 13px; font-weight: 800; padding: 7px 12px; border-radius: 99px; background: var(--glass-2); border: 1px solid var(--line); }
+  .chan span.max { background: var(--grad); color: var(--ink); border-color: transparent; }
+  .msg { max-width: 84%; font-size: 16px; line-height: 1.38; padding: 12px 16px; border-radius: 20px; }
+  .msg small { display: block; font-size: 11px; font-weight: 800; margin-bottom: 4px; color: var(--soft); }
+  .msg.u { background: var(--glass-2); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 6px; }
+  .msg.a { background: linear-gradient(90deg, rgba(255,111,97,.3), rgba(0,194,178,.3)); align-self: flex-end; border-bottom-right-radius: 6px; }
+  .caps { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-content: start; }
+  .caps .tile { padding: 26px; border-radius: 26px; }
+  .caps .tile h3 { font-size: 21px; }
+  .caps .tile p { font-size: 17px; }
+  .caps .wide { grid-column: 1 / -1; }
+  .badge { position: absolute; right: 96px; top: 76px; }
+
+  /* 8 · Пакет */
+  .pack { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 36px; }
+  .pack .tile { padding: 32px; display: flex; flex-direction: column; height: 410px; }
+  .pack h3 { text-transform: uppercase; font-size: 22px; }
+  .pack .big { font-size: 40px; margin-top: 14px; }
+  .pack .term { font-size: 18px; font-weight: 800; margin-top: 8px; color: var(--soft); }
+  .pack ul { list-style: none; margin-top: 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .pack li { font-size: 18px; font-weight: 700; line-height: 1.3; }
+  .pack .btn { padding: 15px; font-size: 18px; }
+  .pack .ghost { background: var(--glass-2); color: var(--white); border: 1px solid var(--line); }
+  .rec { padding: 8px 16px !important; font-size: 14px !important; color: var(--teal) !important; }
+  .pack .rec { position: static; align-self: flex-start; margin-bottom: 12px; }
+  .closing { display: grid; grid-template-columns: 1fr auto; gap: 22px; margin-top: 22px; align-items: stretch; }
+  .closing .tile { padding: 24px 30px; border-radius: 26px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  .closing .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .closing .row span { font-size: 15px; font-weight: 700; padding: 8px 14px; border-radius: 99px; background: var(--glass-2); border: 1px solid var(--line); }
+  .closing .row b { font-family: var(--display); font-size: 14px; margin-right: 6px; align-self: center; text-transform: uppercase; }
+  .closing .cta { align-items: flex-start; min-width: 360px; }
+
+  .nav { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 5; }
+  .nav a { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.25); }
+  .nav a.on { background: var(--white); }
+
+  @media print {
+    @page { size: 1600px 900px; margin: 0; }
+    html { scroll-snap-type: none; }
+    .frame { height: 900px; page-break-after: always; }
+    .slide { transform: none; }
+    .in { opacity: 1 !important; transform: none !important; }
+    .eye .draw { stroke-dashoffset: 0 !important; }
+    .nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 · Обложка -->
+<section class="frame" id="s1"><div class="slide cover" style="--bg:url(img/surreal-face.jpg)">
+  <div class="kicker in"><span class="dot"></span>HUD.SERVICE × Центр Зрения</div>
+  <div>
+    <h1 class="in">Сайт, который <span class="kw">видит</span>, зачем пришёл человек</h1>
+    <p class="lead in">Три инструмента для shaimov-clinic.ru: <b>фильм</b> рассказывает о клинике, <b>моушен вайб-сайт</b> подстраивается под пациента, <b>AI-ассистент</b> отвечает во всех чатах.</p>
+  </div>
+  <div class="in" style="display:flex;gap:12px">
+    <span class="pill">01 · Фильм о клинике</span><span class="pill">02 · Моушен вайб-сайт</span><span class="pill">03 · AI-ассистент</span>
+  </div>
+  <svg class="eye" viewBox="0 0 620 620" aria-hidden="true">
+    <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#ff6f61"/><stop offset="1" stop-color="#00c2b2"/></linearGradient></defs>
+    <circle class="draw" cx="310" cy="310" r="300" stroke="rgba(255,255,255,.12)"/>
+    <circle class="draw" cx="310" cy="310" r="240" stroke="url(#g)" stroke-opacity=".35"/>
+    <circle class="draw" cx="310" cy="310" r="180" stroke="url(#g)" stroke-width="3"/>
+    <circle class="draw" cx="310" cy="310" r="120" stroke="url(#g)" stroke-opacity=".7"/>
+    <circle class="draw" cx="310" cy="310" r="64" stroke="rgba(255,255,255,.45)"/>
+    <g class="iris" stroke="url(#g)" stroke-width="2" stroke-linecap="round" opacity=".8">
+      <line x1="310" y1="130" x2="310" y2="190"/><line x1="310" y1="430" x2="310" y2="490"/>
+      <line x1="130" y1="310" x2="190" y2="310"/><line x1="430" y1="310" x2="490" y2="310"/>
+      <line x1="183" y1="183" x2="225" y2="225"/><line x1="395" y1="395" x2="437" y2="437"/>
+      <line x1="437" y1="183" x2="395" y2="225"/><line x1="225" y1="395" x2="183" y2="437"/>
+    </g>
+    <circle cx="310" cy="310" r="40" fill="url(#g)" style="fill:url(#g)"/>
+  </svg>
+  <div class="foot"><span>Коммерческое предложение · Челябинск</span><span>2026</span></div>
+</div></section>
+
+<!-- 2 · Факты и следующий шаг -->
+<section class="frame" id="s2"><div class="slide s-center" style="--bg:url(img/hand-light-ring.jpg)">
+  <h2 class="in one">Сильная клиника. <span class="kw">Следующий шаг.</span></h2>
+  <div class="g4 facts">
+    <div class="tile in"><div class="big kw">30 000+</div><div><h3>операций по катаракте</h3><p>15 минут, без швов и госпитализации</p></div></div>
+    <div class="tile in"><div class="big kw">Navilas</div><div><h3>единственный в области</h3><p>Бесконтактный лазер для сетчатки</p></div></div>
+    <div class="tile in"><div class="big kw">1 час</div><div><h3>полное обследование</h3><p>В пределах одной клиники</p></div></div>
+    <div class="tile in"><div class="big kw">2 + 2</div><div><h3>клиники и салоны оптики</h3><p>Воровского и Бр. Кашириных</p></div></div>
+  </div>
+  <p class="base in">Новый сайт — <b>хорошая база</b>: онлайн-запись, врачи, видео «Не вижу! — Вижу!». Дальше — сделать так, чтобы он <b>продавал</b>.</p>
+  <div class="loss-title in">Где ещё теряются люди</div>
+  <div class="g4 loss">
+    <div class="tile in"><h3><span class="x">!</span>Оптика без витрины</h3><p>Ни оправ, ни цен — запись по телефону</p></div>
+    <div class="tile in"><h3><span class="x">!</span>Один путь для всех</h3><p>Пациент и покупатель видят одно</p></div>
+    <div class="tile in"><h3><span class="x">!</span>Чат — только MAX</h3><p>И оператор в рабочие часы</p></div>
+    <div class="tile in"><h3><span class="x">!</span>3 номера, 2 адреса</h3><p>Выбирать человеку приходится самому</p></div>
+  </div>
+</div></section>
+
+<!-- 3 · Система -->
+<section class="frame" id="s3"><div class="slide s-center" style="--bg:url(img/hologram-laptop.jpg)">
+  <h2 class="in">Три инструмента. <span class="kw">Одна система.</span></h2>
+  <div class="sys">
+    <div class="tile in"><div class="n kw">01</div><h3>Фильм о клинике</h3><p class="what">За 3 минуты пациент видит врачей, технологии и путь лечения — и приходит без страха.</p>
+      <div class="uses"><div>Главный экран сайта</div><div>Нарезки в соцсети</div><div>Экран в холле</div></div></div>
+    <div class="tile ring in"><div class="n kw">02</div><h3>Моушен вайб-сайт</h3><p class="what">Подстраивается под человека: лечение, оптика, дети, повторный визит.</p>
+      <div class="uses"><div>Два входа: лечение и оптика</div><div>Витрина оправ</div><div>Запись в 2 клиники</div></div></div>
+    <div class="tile in"><div class="n kw">03</div><h3>AI-ассистент</h3><p class="what">Один ассистент во всех чатах: отвечает за 3 секунды, записывает, напоминает.</p>
+      <div class="uses"><div>MAX, Telegram, WhatsApp, VK</div><div>Виджет на сайте</div><div>Отправляет нужный ролик</div></div></div>
+  </div>
+  <p class="sys-line in">Фильм — <span class="kw">лицо</span> сайта, сайт — <span class="kw">витрина</span>, ассистент — <span class="kw">голос</span> клиники 24/7</p>
+</div></section>
+
+<!-- 4 · Фильм -->
+<section class="frame" id="s4"><div class="slide" style="--bg:url(img/night-lights.jpg)">
+  <h2 class="in one">Фильм, после которого <span class="kw">не страшно</span></h2>
+  <div class="film">
+    <div class="in">
+      <div class="player">
+        <div class="scene"></div>
+                <span class="play">▶ 2:58</span>
+        <div class="title">Центр Зрения.<br>Не вижу → Вижу</div>
+        <div class="bar"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="chapters">
+        <div><small>0:00</small>Клиника без «больничной» атмосферы</div>
+        <div><small>0:35</small>Navilas и диагностика за 1 час</div>
+        <div><small>1:15</small>Врачи и 30 000 операций</div>
+        <div><small>2:00</small>Путь пациента от записи до «вижу»</div>
+        <div><small>2:35</small>Салон оптики</div>
+      </div>
+    </div>
+    <div class="film-side">
+      <div class="tile in"><h3>Сценарий под пациента</h3><p>Отвечаем на главный страх: «больно? долго? кому доверить глаза?»</p></div>
+      <div class="tile in"><h3>Съёмка + графика</h3><p>Снимаем в клинике, а как работает лазер — показываем анимацией</p></div>
+      <div class="tile in"><h3>Версии под каждое место</h3><p>Полная — на сайт, 30 сек — в соцсети, без звука — в холл</p></div>
+      <div class="tile ring in"><h3>Ролики для ассистента</h3><p>«Как проходит операция катаракты — 60 сек»: ассистент отправит его перед визитом</p></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 5 · Сайт -->
+<section class="frame" id="s5"><div class="slide" style="--bg:url(img/holo-keyboard.jpg)">
+  <h2 class="in" style="text-align:center">Моушен вайб-сайт, который <span class="kw">подстраивается</span></h2>
+  <div class="screens">
+    <div class="col in">
+      <div class="phone">
+        <div class="ph-bar"><span>9:41</span><span>Лечение</span></div>
+        <span class="ph-chip">Лазерный витреолизис</span>
+        <div class="ph-h" style="margin-top:10px">«Мушки» перед глазами?</div>
+        <p class="ph-p">Испаряем плавающие помутнения лазером — без разрезов.</p>
+        <div class="ph-card"><b>Шаимов Т. Б.</b><span>Главный врач, лазерный хирург</span>
+          <div class="slots"><i>10:00</i><i class="on">11:30</i><i>14:00</i></div></div>
+        <div class="ph-btn">Записаться · Воровского 11</div>
+      </div>
+      <div class="cap">Пациент</div>
+    </div>
+    <div class="col in">
+      <div class="phone">
+        <div class="ph-bar"><span>9:41</span><span>Центр Зрения</span></div>
+        <div class="ph-h">Что вас привело?</div>
+        <p class="ph-p">Сайт перестроится под ваш ответ</p>
+        <div class="choice">
+          <div class="sel">Беспокоят глаза<small>диагностика и лечение</small></div>
+          <div>Нужны очки или линзы<small>салон оптики</small></div>
+          <div>Зрение ребёнка<small>детский офтальмолог</small></div>
+          <div>Я уже ваш пациент<small>контроль, замена линз</small></div>
+        </div>
+      </div>
+      <div class="cap">Первый экран</div>
+    </div>
+    <div class="col in">
+      <div class="phone">
+        <div class="ph-bar"><span>9:41</span><span>Оптика</span></div>
+        <div class="ph-h">Оправы</div>
+        <div class="tags" style="margin-top:10px;gap:6px"><span style="font-size:11px;padding:5px 10px">Круглые</span><span style="font-size:11px;padding:5px 10px">Титан</span><span style="font-size:11px;padding:5px 10px">Детские</span></div>
+        <div class="frames">
+          <div class="fr"><svg viewBox="0 0 100 34"><circle cx="28" cy="17" r="13" fill="none" stroke="url(#g)" stroke-width="3"/><circle cx="72" cy="17" r="13" fill="none" stroke="url(#g)" stroke-width="3"/><path d="M41 15q9-6 18 0" fill="none" stroke="#ffffff" stroke-width="2"/></svg><b>Круглые</b><span>Титан</span></div>
+          <div class="fr"><svg viewBox="0 0 100 34"><rect x="8" y="6" width="36" height="22" rx="6" fill="none" stroke="#ffffff" stroke-width="3"/><rect x="56" y="6" width="36" height="22" rx="6" fill="none" stroke="#ffffff" stroke-width="3"/><path d="M44 14q6-4 12 0" fill="none" stroke="#ffffff" stroke-width="2"/></svg><b>Классика</b><span>Ацетат</span></div>
+          <div class="fr"><svg viewBox="0 0 100 34"><path d="M8 8h36l-4 18H14z" fill="none" stroke="url(#g)" stroke-width="3"/><path d="M56 8h36l-6 18H60z" fill="none" stroke="url(#g)" stroke-width="3"/></svg><b>Авиатор</b><span>Солнцезащитные</span></div>
+          <div class="fr"><svg viewBox="0 0 100 34"><ellipse cx="28" cy="17" rx="18" ry="11" fill="none" stroke="#ffffff" stroke-width="3"/><ellipse cx="72" cy="17" rx="18" ry="11" fill="none" stroke="#ffffff" stroke-width="3"/></svg><b>Овальные</b><span>Детские</span></div>
+        </div>
+        <div class="ph-btn">Отложить в салоне</div>
+      </div>
+      <div class="cap">Покупатель оптики</div>
+    </div>
+  </div>
+  <div class="under in"><span class="pill">Дни, не месяцы — вайб-кодинг</span><span class="pill">Моушен-дизайн</span><span class="pill">Проверили зрение → подобрали очки</span><span class="pill">Версия для слабовидящих</span></div>
+</div></section>
+
+<!-- 6 · Примеры -->
+<section class="frame" id="s6"><div class="slide s-center" style="--bg:url(img/wave-abstract.jpg)">
+  <h2 class="in">Как это <span class="kw">может выглядеть</span></h2>
+  <div class="refs">
+    <a class="tile in" href="https://www.instituteofhealth.com/" target="_blank"><span class="tag">Awwwards · 2026</span><h3>Institute of Health</h3><p>Видео на фоне, живые счётчики, плавный скролл</p><span class="url">instituteofhealth.com ↗</span></a>
+    <a class="tile in" href="https://skyclinics.al/" target="_blank"><span class="tag">Awwwards</span><h3>Sky Clinics</h3><p>WebGL-сцена и видео — клиника как бренд</p><span class="url">skyclinics.al ↗</span></a>
+    <a class="tile in" href="https://www.showcasemd.io/" target="_blank"><span class="tag">Awwwards · 2025</span><h3>Showcase MD</h3><p>Моушен-типографика для частных клиник</p><span class="url">showcasemd.io ↗</span></a>
+    <a class="tile in" href="https://www.zeiss.com/vision-care/en/home.html" target="_blank"><span class="tag c">Оптика</span><h3>ZEISS Vision Care</h3><p>Видео-герой про зрение и линзы</p><span class="url">zeiss.com/vision-care ↗</span></a>
+    <a class="tile in" href="https://www.ultrahuman.com/" target="_blank"><span class="tag c">3D</span><h3>Ultrahuman</h3><p>3D-продукт крупным планом, скролл-сцены</p><span class="url">ultrahuman.com ↗</span></a>
+    <a class="tile in" href="https://neuralink.com/" target="_blank"><span class="tag c">Кино</span><h3>Neuralink</h3><p>Сторителлинг видео — медицина без страха</p><span class="url">neuralink.com ↗</span></a>
+    <a class="tile in" href="https://lusion.co/" target="_blank"><span class="tag c">3D · WebGL</span><h3>Lusion</h3><p>Предел 3D в браузере — частицы, свет, физика</p><span class="url">lusion.co ↗</span></a>
+    <a class="tile in" href="https://klearmindclinics.com/" target="_blank"><span class="tag">Клиника</span><h3>Klearmind Clinics</h3><p>Мягкий моушен и спокойная подача</p><span class="url">klearmindclinics.com ↗</span></a>
+  </div>
+  <p class="refs-note in">Эти приёмы мы соберём <span class="kw">для Центра Зрения</span> — в его цветах и с его фильмом</p>
+</div></section>
+
+<!-- 7 · AI-ассистент -->
+<section class="frame" id="s7"><div class="slide" style="--bg:url(img/smm-phone-bokeh.jpg)">
+  <span class="pill badge in">+ Дополнительно</span>
+  <h2 class="in">Один ассистент. <span class="kw">Все чаты.</span></h2>
+  <div class="ai">
+    <div class="feed in">
+      <div class="chan"><span class="max">MAX</span><span>Telegram</span><span>WhatsApp</span><span>ВКонтакте</span><span>Сайт</span></div>
+      <div class="msg u"><small>MAX · 22:40</small>Можно завтра сделать ОКТ глаза?</div>
+      <div class="msg a"><small>AI · 3 сек</small>Да, завтра в 11:30 на Воровского 11. Записать вас?</div>
+      <div class="msg u"><small>Telegram</small>Есть детские оправы?</div>
+      <div class="msg a"><small>AI · 3 сек</small>Есть в обоих салонах. Записать ребёнка на подбор к оптометристу?</div>
+      <div class="msg u"><small>ВКонтакте</small>Вижу мушки перед глазами</div>
+      <div class="msg a"><small>AI · 3 сек</small>Это стоит показать врачу. Записать на консультацию?</div>
+    </div>
+    <div class="caps">
+      <div class="tile in"><h3>Отвечает 24/7</h3><p>За 3 сек — даже ночью, когда оператора нет</p></div>
+      <div class="tile in"><h3>Записывает</h3><p>Свободные окна в обеих клиниках</p></div>
+      <div class="tile in"><h3>Продаёт оптику</h3><p>Наличие оправ, подбор, «отложить»</p></div>
+      <div class="tile in"><h3>Напоминает</h3><p>Замена линз, контроль после операции</p></div>
+      <div class="tile ring wide in"><h3>Не ставит <span class="kw">диагнозы</span></h3><p>На вопросы о симптомах — к врачу. Отвечает только по данным клиники. Сложное передаёт оператору. Запуск — <b>3–5 дней</b>.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 8 · Пакет и запуск -->
+<section class="frame" id="s8"><div class="slide s-center" style="--bg:url(img/surreal-face.jpg)">
+  <h2 class="in">Выберите <span class="kw">с чего начать</span></h2>
+  <div class="pack">
+    <div class="tile in">
+      <span class="pill rec" style="visibility:hidden">·</span>
+      <h3>Фильм о клинике</h3>
+      <div class="big">от 165 000 ₽</div>
+      <div class="term">2–3 минуты + версии</div>
+      <ul><li>Сценарий и 2–3 концепции до договора</li><li>Съёмка в клинике и графика</li><li>Нарезки для соцсетей и ассистента</li></ul>
+      <a class="btn ghost" href="https://hud-service.ru/brief/" target="_blank">Бриф на фильм →</a>
+    </div>
+    <div class="tile ring in">
+      <span class="pill rec">Основа</span>
+      <h3>Моушен вайб-сайт</h3>
+      <div class="big kw">от 119 000 ₽</div>
+      <div class="term">14 рабочих дней</div>
+      <ul><li>Персонализация: лечение, оптика, дети</li><li>Витрина оптики, запись в 2 клиники</li><li>30 дней поддержки</li></ul>
+      <a class="btn pulse" href="https://hud-service.ru/brief/sites/" target="_blank">Бриф на сайт →</a>
+    </div>
+    <div class="tile in">
+      <span class="pill rec" style="visibility:hidden">·</span>
+      <h3>AI-ассистент</h3>
+      <div class="big">По запросу</div>
+      <div class="term">Запуск 3–5 дней</div>
+      <ul><li>MAX, Telegram, WhatsApp, VK, сайт</li><li>Запись, оптика, напоминания</li><li>Не ставит диагнозы</li></ul>
+      <a class="btn ghost" href="https://hud-service.ru/brief/ai/" target="_blank">Бриф на ассистента →</a>
+    </div>
+  </div>
+  <div class="closing">
+    <div class="tile in">
+      <div class="row"><b>Этапы</b><span>Бриф 15 мин</span><span>Концепция</span><span>Сборка по ссылке</span><span>Правки</span><span>Запуск</span></div>
+      <div class="row"><b>Гарантии</b><span>Дата запуска с первого дня</span><span>Вернём деньги</span><span>Код ваш</span><span>ФЗ «О рекламе» и 152-ФЗ</span></div>
+    </div>
+    <div class="tile ring cta in">
+      <div class="big" style="font-size:26px;line-height:1.15">Что <span class="kw">зацепило?</span></div>
+      <p style="font-size:16px;margin:0">Выберите услугу — бриф на 5 минут</p>
+      <a class="btn pulse" href="https://hud-service.ru/" target="_blank">Пообщаться</a>
+    </div>
+  </div>
+</div></section>
+
+<nav class="nav" aria-label="Слайды"></nav>
+
+<script>
+  const frames = [...document.querySelectorAll('.frame')];
+  const nav = document.querySelector('.nav');
+  frames.forEach((f) => { const a = document.createElement('a'); a.href = '#' + f.id; nav.appendChild(a); });
+  const dots = [...nav.children];
+  function fit() { document.documentElement.style.setProperty('--s', Math.min(document.documentElement.clientWidth / 1600, innerHeight / 900)); }
+  addEventListener('resize', fit); fit();
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) e.target.classList.add('shown'); }), { threshold: 0.05 });
+  const navIo = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) dots.forEach((d, i) => d.classList.toggle('on', frames[i] === e.target));
+  }), { threshold: 0.55 });
+  frames.forEach((f) => { io.observe(f); navIo.observe(f); });
+  addEventListener('keydown', (e) => {
+    const cur = dots.findIndex((d) => d.classList.contains('on'));
+    const go = (i) => frames[Math.max(0, Math.min(frames.length - 1, i))].scrollIntoView({ behavior: 'smooth' });
+    if (['ArrowDown', 'ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+    if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  });
+</script>
+</body>
+</html>
