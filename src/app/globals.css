@@ -10923,6 +10923,93 @@ html[data-lite] .site-scrim {
 .site-search__chips::-webkit-scrollbar { display: none; }
 .site-search__list { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.15) transparent; }
 .site-search__input::-webkit-search-cancel-button { display: none; }
+
+/* Фирменный вид окна поиска (Егор, 2026-10-10): цвет каждой группы —
+   градиент её страницы (--ss-from/--ss-to ставит SiteSearch.tsx). Цвет —
+   акцентом (точка, окантовка, полоска), а не заливкой всей кнопки. */
+.ss-kicker {
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #5eead4;
+  background: rgba(94, 234, 212, 0.1);
+}
+.ss-field {
+  position: relative;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ss-field:focus-within {
+  border-color: transparent;
+  background:
+    linear-gradient(rgb(28, 27, 37), rgb(28, 27, 37)) padding-box,
+    linear-gradient(90deg, #10b981, #00d2ff, #ffc53d, #ff7a2e) border-box;
+  box-shadow: 0 0 22px -6px rgba(0, 210, 255, 0.45);
+}
+.ss-chip {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ss-chip:hover { border-color: rgba(255, 255, 255, 0.3); }
+.ss-chip__dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--ss-from), var(--ss-to));
+}
+.ss-chip[aria-pressed="true"] {
+  border-color: transparent;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--ss-from) 22%, rgb(24, 23, 32)), color-mix(in srgb, var(--ss-to) 22%, rgb(24, 23, 32))) padding-box,
+    linear-gradient(90deg, var(--ss-from), var(--ss-to)) border-box;
+  box-shadow: 0 0 16px -4px color-mix(in srgb, var(--ss-to) 60%, transparent);
+}
+.ss-section::before {
+  content: "";
+  width: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #10b981, #00d2ff);
+}
+.ss-row { transition: background 0.15s ease; }
+.ss-row:hover { background: rgba(255, 255, 255, 0.04); }
+.ss-row[data-active] { background: rgba(255, 255, 255, 0.07); }
+.ss-row[data-active]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(to bottom, var(--ss-from), var(--ss-to));
+}
+.ss-row__icon {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--ss-from) 20%, rgb(22, 21, 30)), color-mix(in srgb, var(--ss-to) 20%, rgb(22, 21, 30))) padding-box,
+    linear-gradient(135deg, color-mix(in srgb, var(--ss-from) 70%, transparent), color-mix(in srgb, var(--ss-to) 70%, transparent)) border-box;
+  border: 1px solid transparent;
+}
+/* Иконки в поиске стоят сразу, без прорисовки: окно смонтировано
+   скрытым, и анимация не должна зависеть от очереди загрузки. */
+.site-search .section-icon__fill,
+.site-search .section-icon__lines > * { animation: none !important; }
+.ss-row__go { color: rgba(244, 242, 238, 0.45); transition: color 0.15s ease; }
+.ss-row[data-active] .ss-row__go { color: var(--ss-to); }
+.ss-key-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #ff7a2e;
+  animation: ss-key-pulse 1.6s ease-in-out infinite;
+}
+@keyframes ss-key-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 122, 46, 0.55); }
+  50% { box-shadow: 0 0 0 5px rgba(255, 122, 46, 0); }
+}
 @media (min-width: 1024px), (orientation: landscape) and (max-height: 500px) {
   .site-search__panel {
     left: 50%;

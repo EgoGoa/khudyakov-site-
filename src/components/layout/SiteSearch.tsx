@@ -12,6 +12,8 @@ import { openLead } from "@/lib/lead";
 import { openInstall } from "@/lib/pwa";
 import { openCabinet } from "@/components/cabinet/CabinetWindow";
 import SectionIcon from "@/components/ui/SectionIcon";
+import LiveBrandWord from "@/components/layout/LiveBrandWord";
+import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { CloseIcon, PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import {
   GROUP_LABEL,
@@ -41,6 +43,19 @@ const CHIPS: ("all" | SearchGroup)[] = ["all", "content", "ai", "sites", "smm", 
 const TOP_LEVEL = new Set(["/content", "/ai", "/sites", "/smm"]);
 
 type Section = { title: string; items: SearchEntry[] };
+
+// Цвет группы — градиент страницы направления (как в шапке и на стрелках);
+// у «Связи» и служебных страниц — фирменные бирюза и янтарь.
+const GROUP_COLOR: Record<SearchGroup, { from: string; to: string }> = {
+  ...PAGE_GRADIENT,
+  contact: { from: "#00d2ff", to: "#10b981" },
+  pages: { from: "#ffc53d", to: "#ff7a2e" },
+};
+const ALL_COLOR = { from: "#10b981", to: "#ff7a2e" };
+// Главные кнопки — с пульсирующей точкой-акцентом.
+const KEY_IDS = new Set(["price", "lead"]);
+
+const grad = (c: { from: string; to: string }, a = "") => `linear-gradient(90deg, ${c.from}${a}, ${c.to}${a})`;
 
 export function SearchGlyph({ className = "h-[18px] w-[18px]" }: { className?: string }) {
   return (
@@ -223,6 +238,7 @@ export default function SiteSearch() {
     n += 1;
     const i = n;
     const external = e.act === "telegram" || e.act === "whatsapp";
+    const c = GROUP_COLOR[e.group];
     return (
       <li key={`${e.id}-${i}`} role="option" aria-selected={i === active} id={`ss-opt-${i}`}>
         <button
@@ -231,20 +247,21 @@ export default function SiteSearch() {
           tabIndex={-1}
           onMouseMove={() => i !== active && setActive(i)}
           onClick={() => choose(e)}
-          className={`flex w-full items-center gap-3 rounded-2xl px-2 py-2 text-left transition-colors duration-150 ${
-            i === active ? "bg-white/[0.07]" : "hover:bg-white/[0.04]"
-          }`}
+          data-active={i === active ? "" : undefined}
+          style={{ "--ss-from": c.from, "--ss-to": c.to } as React.CSSProperties}
+          className="ss-row relative flex w-full items-center gap-3 rounded-2xl px-2 py-2 text-left"
         >
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.06] text-paper/85">
+          <span className="ss-row__icon grid h-10 w-10 shrink-0 place-items-center rounded-xl text-paper">
             <EntryIcon icon={e.icon} />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[15px] font-bold leading-snug text-paper">
-              <Title text={e.title} query={q} />
+            <span className="flex min-w-0 items-center gap-2 text-[15px] font-bold leading-snug text-paper">
+              <span className="truncate"><Title text={e.title} query={q} /></span>
+              {KEY_IDS.has(e.id) && <span aria-hidden="true" className="ss-key-dot" />}
             </span>
-            <span className="block truncate text-[12.5px] leading-snug text-paper/50">{e.sub}</span>
+            <span className="block truncate text-[12.5px] font-semibold leading-snug text-paper/70">{e.sub}</span>
           </span>
-          <span aria-hidden="true" className={`shrink-0 pr-1 text-paper/30 ${i === active ? "text-paper/70" : ""}`}>
+          <span aria-hidden="true" className="ss-row__go shrink-0 pr-1 text-[15px] font-bold">
             {external ? "↗" : "›"}
           </span>
         </button>
@@ -256,9 +273,28 @@ export default function SiteSearch() {
     <div className="site-search" data-open={open ? "" : undefined} inert={!open} aria-hidden={!open}>
       <button type="button" tabIndex={-1} aria-label="Закрыть поиск" className="site-search__dim" onClick={close} />
       <div role="dialog" aria-modal="true" aria-label="Поиск по сайту" className="site-search__panel" onKeyDown={onKeyDown}>
-        <div className="flex items-center gap-2.5 px-3.5 pt-3.5 lg:px-4 lg:pt-4">
-          <label className="flex h-12 flex-1 items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.06] pl-4 pr-1.5 focus-within:border-white/25">
-            <SearchGlyph className="h-[18px] w-[18px] shrink-0 text-paper/55" />
+        {/* Фирменная шапка окна: логотип как в шапке сайта, подпись,
+            крестик. Под ней — поле с градиентной окантовкой. */}
+        <div className="flex items-center justify-between gap-3 px-4 pt-3.5 lg:px-5 lg:pt-4">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot" />
+            <span className="whitespace-nowrap font-display text-[17px] uppercase leading-none tracking-tight text-paper">
+              HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
+            </span>
+            <span className="ss-kicker whitespace-nowrap font-display text-[10px] uppercase leading-none tracking-[0.12em]">поиск</span>
+          </div>
+          <button
+            type="button"
+            onClick={close}
+            aria-label="Закрыть поиск"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/[0.07] text-paper/90 transition-colors hover:bg-white/[0.12] hover:text-paper"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        <div className="px-3.5 pt-3 lg:px-4">
+          <label className="ss-field flex h-12 items-center gap-2.5 rounded-full pl-4 pr-1.5">
+            <SearchGlyph className="h-[18px] w-[18px] shrink-0 text-[#5eead4]" />
             <input
               ref={inputRef}
               type="search"
@@ -291,23 +327,18 @@ export default function SiteSearch() {
                 Стереть
               </button>
             )}
-            <kbd className="mr-2 hidden shrink-0 rounded-md border border-white/15 px-1.5 py-0.5 font-sans text-[11px] text-paper/45 lg:block">Esc</kbd>
+            <kbd className="mr-2 hidden shrink-0 rounded-md border border-white/15 px-1.5 py-0.5 font-sans text-[11px] text-paper/60 lg:block">Esc</kbd>
           </label>
-          <button
-            type="button"
-            onClick={close}
-            aria-label="Закрыть поиск"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/[0.07] text-paper/80 transition-colors hover:bg-white/[0.12] hover:text-paper"
-          >
-            <CloseIcon />
-          </button>
         </div>
 
-        <div className="site-search__chips flex gap-1.5 overflow-x-auto px-3.5 pb-1 pt-3 lg:px-4">
+        {/* Вкладки переносятся на вторую строку, а не уезжают за край:
+            ни одна не обрезается краем окна. */}
+        <div className="site-search__chips flex flex-wrap gap-1.5 px-3.5 pb-1 pt-3 lg:px-4">
           {CHIPS.map((c) => {
             const count = c === "all" ? hits.length : counts[c] ?? 0;
             if (q && c !== "all" && !count) return null;
             const on = chip === c;
+            const col = c === "all" ? ALL_COLOR : GROUP_COLOR[c];
             return (
               <button
                 key={c}
@@ -317,12 +348,12 @@ export default function SiteSearch() {
                   setActive(0);
                 }}
                 aria-pressed={on}
-                className={`shrink-0 rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold transition-colors ${
-                  on ? "border-paper bg-paper text-ink" : "border-white/12 text-paper/75 hover:border-white/30 hover:text-paper"
-                }`}
+                style={{ "--ss-from": col.from, "--ss-to": col.to } as React.CSSProperties}
+                className="ss-chip inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 font-display text-[10.5px] uppercase leading-none tracking-[0.04em] text-paper"
               >
+                <span aria-hidden="true" className="ss-chip__dot" />
                 {c === "all" ? "Все" : GROUP_LABEL[c]}
-                {q ? <span className={on ? "text-ink/55" : "text-paper/40"}> · {count}</span> : null}
+                {q ? <span className="font-sans text-[11px] font-bold opacity-70">{count}</span> : null}
               </button>
             );
           })}
@@ -331,7 +362,11 @@ export default function SiteSearch() {
         <div ref={listRef} id="ss-list" role="listbox" aria-label="Результаты" className="site-search__list flex-1 overflow-y-auto overscroll-contain px-2 pb-[max(1rem,env(safe-area-inset-bottom))] pt-1 lg:px-2.5">
           {sections.map((s, si) => (
             <div key={`${s.title}-${si}`} className="mt-2 first:mt-1">
-              {s.title && <div className="px-2 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-paper/40">{s.title}</div>}
+              {s.title && (
+                <div className="ss-section flex items-center gap-2 px-2 pb-1.5 pt-1.5 font-display text-[10.5px] uppercase leading-none tracking-[0.1em] text-paper/90">
+                  {s.title}
+                </div>
+              )}
               <ul className={s.title === "Направления" || s.title === "Популярное" ? "lg:grid lg:grid-cols-2 lg:gap-x-2" : ""}>
                 {s.items.map(row)}
               </ul>
