@@ -31,10 +31,10 @@
   body { font-family: var(--font); font-weight: 600; -webkit-font-smoothing: antialiased; }
   html { scroll-snap-type: y mandatory; }
 
-  .frame { height: calc(900px * var(--s)); width: 100%; display: grid; place-items: center; scroll-snap-align: start; overflow: hidden; }
+  .frame { height: calc(900px * var(--s)); width: 100%; position: relative; scroll-snap-align: start; overflow: hidden; }
   .slide {
-    width: 1600px; height: 900px; flex: none; transform: scale(var(--s));
-    position: relative; padding: 72px 96px; display: flex; flex-direction: column;
+    width: 1600px; height: 900px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(var(--s));
+    padding: 72px 96px; display: flex; flex-direction: column;
     background: var(--ink); overflow: hidden; isolation: isolate;
   }
   /* Фон — фото из библиотеки сайта, размытое и затемнённое, как видео на /sites. */
@@ -229,12 +229,13 @@
   .nav { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 5; }
   .nav a { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.25); }
   .nav a.on { background: var(--white); }
+  @media (max-width: 900px) { .nav { display: none; } html { scroll-snap-type: none; } }
 
   @media print {
     @page { size: 1600px 900px; margin: 0; }
     html { scroll-snap-type: none; }
     .frame { height: 900px; page-break-after: always; }
-    .slide { transform: none; }
+    .slide { transform: none; left: 0; top: 0; }
     .in { opacity: 1 !important; transform: none !important; }
     .eye .draw { stroke-dashoffset: 0 !important; }
     .nav { display: none; }
