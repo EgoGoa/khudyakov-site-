@@ -3,6 +3,10 @@
 // public/images/icons/ai and the .ai-deco-icon-N classes in globals.css).
 // Positioned via `className` from the call site rather than computed here,
 // since each chapter's header has its own layout.
+// Стеклянные иконки пока убраны со всех главных страниц (Егор, 2026-10-10).
+// Вызовы оставлены — вернуть: HIDDEN = false.
+const HIDDEN = true;
+
 export default function AiDecoIcon({
   src,
   size,
@@ -33,6 +37,7 @@ export default function AiDecoIcon({
   spin3d?: boolean;
   click?: boolean;
 }) {
+  if (HIDDEN) return null;
   const animClass = spin3d ? "ai-deco-icon-spin3d" : click ? "ai-deco-icon-click" : `ai-deco-icon-${variant}`;
   return (
     <div

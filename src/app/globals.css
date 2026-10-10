@@ -6019,6 +6019,8 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
 .wi-scene > .wi-bento { flex: 1; }
 .wi-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding: 0 4px; }
 .wi-skip { font: 700 13px var(--font-montserrat), sans-serif; color: rgba(255,255,255,0.8); }
+.wi-foot-btns { display: flex; align-items: center; gap: 6px; }
+.wi-foot-btns .wi-skip { padding: 10px 12px; }
 .wi-skip:hover { color: #fff; }
 .wi-wdots i { display: inline-block; width: 6px; height: 6px; margin: 0 3px; border-radius: 50%; background: rgba(255,255,255,0.28); }
 .wi-wdots i.is-on { background: #fff; }
@@ -10844,6 +10846,9 @@ html[data-lite] .site-scrim {
     transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
   }
   .bottom-island__btn:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+  /* Поиск проявляется следом за волной (BOOT.voice) — не раньше неё. */
+  .bottom-island__search { opacity: 0; pointer-events: none; transition: opacity 0.5s ease 0.6s, background-color 0.2s ease, color 0.2s ease, transform 0.15s ease; }
+  .bottom-island__search.is-on { opacity: 1; pointer-events: auto; }
   .bottom-island__btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.1); color: #fff; }
   .bottom-island__label {
     display: flex;

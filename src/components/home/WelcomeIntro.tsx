@@ -11,7 +11,7 @@ import LiveBrandWord from "@/components/layout/LiveBrandWord";
 // docs/intro-scenes-preview.html). После заставки со знаком идут три окна:
 // «Всё в одном», «Вайб-режим», «Приложение», в каждом по три сцены. Сцена
 // внутри окна сменяется сама каждые 5 секунд, после третьей сцены идёт
-// следующее окно; кнопка «В меню» внизу сразу ведёт в меню.
+// следующее окно (или сразу по «Дальше»); «В меню» внизу ведёт в меню.
 //
 // Стиль: графитовые плитки-бенто, крупные цифры, графики со стеклянными
 // подсказками. Явных оранжевых кнопок нет — акцент даёт фирменный градиент
@@ -1096,17 +1096,26 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
           </AnimatePresence>
         </div>
 
-        {/* Внизу всегда одна кнопка «В меню» (Егор, 2026-10-10): окна и
-            сцены листаются сами, свайпом и стрелками клавиатуры. */}
+        {/* Внизу всегда «В меню» (Егор, 2026-10-10), рядом «Дальше» — к
+            следующему окну; сцены листаются сами, свайпом и стрелками. */}
         <div className="wi-foot">
           <span className="wi-wdots" aria-hidden="true">
             {WINDOWS.map((x, k) => (
               <i key={x.label} className={k === w ? "is-on" : ""} />
             ))}
           </span>
-          <button type="button" className="wi-next" onClick={finish}>
-            В меню
-          </button>
+          <span className="wi-foot-btns">
+            {/* «Дальше» — к следующему окну: 4в1 → вайб → приложение
+                (Егор, 2026-10-10). На последнем окне остаётся одно «В меню». */}
+            {!last && (
+              <button type="button" className="wi-skip" onClick={() => goWindow(w + 1)}>
+                Дальше
+              </button>
+            )}
+            <button type="button" className="wi-next" onClick={finish}>
+              В меню
+            </button>
+          </span>
         </div>
             </motion.div>
           )}

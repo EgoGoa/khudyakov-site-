@@ -11,6 +11,7 @@ import { guardNavigation } from "@/lib/sure-nav";
 import { SHORT } from "@/components/layout/PageBar";
 import { openSearch } from "@/lib/site-search";
 import { SearchGlyph } from "@/components/layout/SiteSearch";
+import { BOOT, useBootStage } from "@/lib/boot-sequence";
 
 // Остров внизу экрана (Егор, 2026-10-10): волна · 🔍 · ‹ SMM 2/4 › · сфера.
 // Волна голосового ассистента встроена в левый край, сфера вайб-меню — в
@@ -127,6 +128,9 @@ function labelFor(path: string): { name: string; pos?: string } | null {
 export default function BottomIsland() {
   const pathname = useCleanPathname();
   const hasWave = useDockMetrics();
+  // Поиск проявляется после волны и сферы, сразу на своём месте (Егор,
+  // 2026-10-10): гнездо волны стоит с первого кадра, ничего не сдвигается.
+  const voiceOn = useBootStage(BOOT.voice);
   if (pathname.startsWith("/admin")) return null;
   const label = labelFor(pathname);
   const hops = hopsFor(pathname);
@@ -136,8 +140,13 @@ export default function BottomIsland() {
       <div className="bottom-island__side">
         {/* Гнездо волны: сама волна — своим элементом (VoiceAssistant),
             CSS ставит её ровно сюда. */}
-        {hasWave && <span className="bottom-island__slot" aria-hidden="true" />}
-        <button type="button" onClick={openSearch} aria-label="Поиск по сайту" className="bottom-island__btn">
+        <span className="bottom-island__slot" aria-hidden="true" />
+        <button
+          type="button"
+          onClick={openSearch}
+          aria-label="Поиск по сайту"
+          className={`bottom-island__btn bottom-island__search${voiceOn ? " is-on" : ""}`}
+        >
           <SearchGlyph className="h-[18px] w-[18px]" />
         </button>
       </div>

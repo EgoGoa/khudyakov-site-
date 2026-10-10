@@ -11,6 +11,10 @@ import Reveal from "@/components/ui/Reveal";
 // Reveal (see that component) gives every icon a one-time scroll-in pop —
 // separate from the continuous loop (click/pulse/float), which lives on the
 // <img> itself via CSS so the two animations don't fight over one transform.
+// Стеклянные иконки пока убраны со всех главных страниц (Егор, 2026-10-10).
+// Вызовы оставлены — вернуть: HIDDEN = false.
+const HIDDEN = true;
+
 export default function SitesDecoIcon({
   src,
   size,
@@ -36,6 +40,7 @@ export default function SitesDecoIcon({
   pulse?: boolean;
   delay?: number;
 }) {
+  if (HIDDEN) return null;
   const animClass = click ? "sites-deco-icon-click" : pulse ? "sites-deco-icon-pulse" : "sites-deco-icon-float";
   return (
     <div

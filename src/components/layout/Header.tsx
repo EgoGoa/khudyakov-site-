@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import CabinetButton from "@/components/cabinet/CabinetButton";
 import CabinetWindow, { openCabinet } from "@/components/cabinet/CabinetWindow";
 import LiveBrandWord from "@/components/layout/LiveBrandWord";
 import SoundStation, { openSoundStation } from "@/components/layout/SoundStation";
@@ -228,8 +227,8 @@ export default function Header() {
               само окно кабинета смонтировано здесь же, чтобы открываться
               с любой страницы. */}
           {/* Станция HDKV: звук сайта и музыка по настроению (lib/sound). */}
-          {/* На телефоне плеер и кабинет живут в меню (строки сверху
-              шторки), в шапке остаются только три палочки. */}
+          {/* Плеер и кабинет живут в меню (плитки сверху шторки) на всех
+              экранах (Егор, 2026-10-10). */}
           <div className="hidden items-center gap-3 sm:flex sm:gap-4 land:!flex land:flex-col land:gap-0.5">
             {/* Поиск по сайту (⌘/Ctrl+K). На телефоне стоя лупа живёт в
                 острове внизу экрана, здесь — компьютер и телефон боком. */}
@@ -242,8 +241,11 @@ export default function Header() {
             >
               <SearchGlyph className="h-[19px] w-[19px]" />
             </button>
-            <SoundStation />
-            <CabinetButton />
+            {/* Плеер и кабинет — только в меню (Егор, 2026-10-10); здесь
+                смонтированы скрыто ради окна плеера (оно порталом в body). */}
+            <span className="hidden">
+              <SoundStation />
+            </span>
           </div>
           <CabinetWindow />
 
@@ -297,7 +299,7 @@ export default function Header() {
             style={{ top: headerH, maxHeight: `calc(100dvh - ${headerH}px - 1rem)`, "--g-from": accent.from, "--g-to": accent.to } as React.CSSProperties}
           >
             <Container className="grid gap-8 py-7 sm:py-8 lg:grid-cols-[1.25fr_1fr_1fr] lg:gap-14">
-              <div className="-mb-3 grid grid-cols-2 gap-2.5 sm:hidden land:!hidden">
+              <div className="-mb-3 grid max-w-md grid-cols-2 gap-2.5 lg:col-span-3">
                 <button
                   type="button"
                   onClick={() => {

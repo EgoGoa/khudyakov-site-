@@ -7,6 +7,10 @@ import Reveal from "@/components/ui/Reveal";
 // in page.tsx), so it can sit close to or slightly under a text block
 // without ever covering it.
 
+// Стеклянные иконки пока убраны со всех главных страниц (Егор, 2026-10-10).
+// Вызовы оставлены — вернуть: HIDDEN = false.
+const HIDDEN = true;
+
 export default function SmmDecoIcon({
   src,
   size,
@@ -20,6 +24,7 @@ export default function SmmDecoIcon({
   className?: string;
   delay?: number;
 }) {
+  if (HIDDEN) return null;
   return (
     <div className={`pointer-events-none absolute z-0 hidden lg:block ${className}`} aria-hidden="true">
       <Reveal delay={delay} y={36}>

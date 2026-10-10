@@ -178,25 +178,8 @@ export default function AiServicePage() {
           // exact line, at every viewport rather than only lg+ (no `hidden
           // lg:block` here, unlike AiDecoIcon's other placements — the ask
           // was for it to hold there "at any breakpoint").
-          ctaIcon={
-            <img
-              // Keyed even though this is a single element and not part of a
-              // list here. Close drops it into a <Link> beside the closing
-              // line, and next/link runs its children through an array — at
-              // which point React sees an element created in this file with
-              // no key and warns ("Check the render method of LinkComponent…
-              // It was passed a child from AiServicePage"). A key on the
-              // element itself is the contained fix; the alternative is
-              // restructuring Close's own markup for every page that uses it.
-              key="cta-icon"
-              src="/images/icons/ai/close.webp?v=2"
-              alt=""
-              aria-hidden="true"
-              width={34}
-              className="ai-deco-icon-click inline-block w-7 shrink-0 rounded-[10px] sm:w-9"
-              style={{ "--r": "-7deg" } as React.CSSProperties}
-            />
-          }
+          // ctaIcon (стеклянный курсор у «Начать проект сейчас») пока убран
+          // вместе со всеми стеклянными иконками (Егор, 2026-10-10).
         />
       </CinematicStage>
       </div>
