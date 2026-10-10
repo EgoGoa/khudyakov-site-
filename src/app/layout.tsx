@@ -214,6 +214,9 @@ export default function RootLayout({
               {/* Низ экрана на телефоне темнее: текст уходит в тень под
                   сферой, стрелками и волной, а не ложится под них (globals.css). */}
               <div aria-hidden="true" className="bottom-fade" />
+              {/* ЗАКРЕПЛЕНО: по этой полосе Safari на iOS 26 красит зону под
+                  своей нижней панелью (globals.css, «зоны под панелями»). */}
+              <div aria-hidden="true" className="safari-bottom-tint" />
             </HeaderMenuProvider>
           </CinematicNavProvider>
         </FullpageProvider>

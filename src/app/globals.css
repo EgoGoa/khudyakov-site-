@@ -10286,7 +10286,8 @@ html[data-mid] .hero-promo { transition: none; }
     pointer-events: none;
     background: linear-gradient(
       to top,
-      rgba(11, 11, 16, 0.94) 0%,
+      rgba(11, 11, 16, 1) 0,
+      rgba(11, 11, 16, 0.94) 14px,
       rgba(11, 11, 16, 0.86) 30%,
       rgba(11, 11, 16, 0.55) 62%,
       rgba(11, 11, 16, 0) 100%
@@ -10706,27 +10707,67 @@ html[data-lite] .site-scrim {
   }
 }
 
-/* Safari на iOS 26 (Егор, 2026-10-08): страница прокручивается под
-   стеклянную адресную строку, и в полосе над шапкой читался текст сайта.
-   Плашка .header-top-mask туда не дотягивается — Safari рисует эту зону
-   сам и красит её цветом фиксированного элемента у верхнего края. Шапка —
-   полупрозрачное стекло, её цвет не годится, поэтому у самого края стоит
-   сплошная полоска в 1px цвета фона: Safari берёт её цвет, а на экране
-   она не видна (тёмное на тёмном, под краем шапки). Только iOS
-   (-webkit-touch-callout есть только там) и только телефон стоя. */
-.safari-top-tint { display: none; }
+/* ═══ ЗАКРЕПЛЕНО (Егор, 2026-10-10): зоны под панелями Safari на iOS 26 ═══
+   НЕ МЕНЯТЬ И НЕ УБИРАТЬ. Сайт не должен просвечивать ни над шапкой (за
+   адресной строкой), ни под нижней полосой (за панелью кнопок Safari).
+
+   Как Safari решает, что рисовать в этих зонах (WebKit,
+   LocalFrameView::fixedContainerEdges): берёт точку в 8px от края экрана и
+   первый fixed-элемент под ней.
+   - У элемента сплошной background-color → продлевает этот цвет под панель.
+   - У элемента backdrop-filter (наше стекло) → рисует своё слабое размытие,
+     и сквозь него читается сайт. Так было на скрине Егора.
+   - Элементы тоньше ~10px, почти прозрачные или с pointer-events: none
+     Safari пропускает. Поэтому не сработала прежняя полоска в 1px.
+
+   Решение:
+   1. .safari-top-tint (Header.tsx) — отдельная fixed-полоса 14px у верхнего
+      края, цвета --ios-bar, ПОВЕРХ шапки и ловит нажатия. Safari продлевает
+      её цвет до верха экрана.
+   2. Шапка остаётся стеклом с размытием, но сверху её тон плавно переходит
+      в --ios-bar: полоса, зона Safari и стекло читаются одной шапкой.
+   3. .safari-bottom-tint (layout.tsx) — такая же полоса 14px у нижнего края,
+      цвета низа затемнения .bottom-fade: градиент идёт от самого низа экрана.
+   Только iOS (-webkit-touch-callout есть только там) и только стоя: боком
+   шапка прозрачная по своему решению (land:). */
+:root { --ios-bar: #16151d; }
+.safari-top-tint,
+.safari-bottom-tint { display: none; }
 @supports (-webkit-touch-callout: none) {
-  @media (max-width: 767px) and (orientation: portrait) {
+  @media (orientation: portrait) {
     .safari-top-tint {
       display: block;
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 1px;
-      background-color: #0b0b10;
+      height: 14px;
+      background-color: var(--ios-bar);
       z-index: 51;
-      pointer-events: none;
+    }
+    html [data-site-header].header-glass {
+      background:
+        linear-gradient(to bottom, var(--ios-bar) 14px, rgba(22, 21, 29, 0) 46px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
+        rgba(14, 14, 20, 0.4);
+      /* без блика по верхней кромке — на стыке с зоной Safari он рисовал бы
+         шов; волосяная кромка снизу и тень остаются */
+      box-shadow:
+        inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
+        0 12px 32px -14px rgba(0, 0, 0, 0.65);
+    }
+  }
+  @media (max-width: 1023px) and (orientation: portrait) {
+    .safari-bottom-tint {
+      display: block;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 14px;
+      /* тот же цвет, что у самого низа .bottom-fade, но сплошной */
+      background-color: #0b0b10;
+      z-index: 59;
     }
   }
 }
