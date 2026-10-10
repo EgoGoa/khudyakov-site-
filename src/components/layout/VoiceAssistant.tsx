@@ -922,6 +922,15 @@ function musicAct(a: Extract<VoiceAction, { type: "music" }>): { say?: string } 
 function VoiceWaveButton({ width, height, from, to, inStage = false }: { width: number; height: number; from: string; to: string; inStage?: boolean }) {
   const s = useVoiceState();
   const live = s.status === "listening" || s.status === "speaking";
+  // Выключенная волна в покое (Егор, 2026-10-10): чуть подвижная и с редкими
+  // искрами, но без лишней нагрузки — ~11 кадров в секунду; на средних и
+  // слабых устройствах по-прежнему один неподвижный кадр.
+  const [lite, setLite] = useState(false);
+  useEffect(() => {
+    const html = document.documentElement;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- класс устройства известен только в браузере
+    setLite(html.hasAttribute("data-lite") || html.hasAttribute("data-mid"));
+  }, []);
   return (
     <button
       type="button"
@@ -933,7 +942,7 @@ function VoiceWaveButton({ width, height, from, to, inStage = false }: { width: 
       style={{ "--g-from": from, "--g-to": to } as CSSProperties}
     >
       <span className="voice-sphere-core relative grid place-items-center">
-        <NanoWave width={width} height={height} from={from} to={to} hot={live} pulse={s.pulse} level={getVoiceLevel} particles={false} sleepy resting={!s.enabled} />
+        <NanoWave width={width} height={height} from={from} to={to} hot={live} pulse={s.pulse} level={getVoiceLevel} particles={!lite} moteRate={0.3} idleFrameMs={90} sleepy resting={lite && !s.enabled} />
       </span>
     </button>
   );

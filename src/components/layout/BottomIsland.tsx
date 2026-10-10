@@ -12,16 +12,18 @@ import { SHORT } from "@/components/layout/PageBar";
 import { openSearch } from "@/lib/site-search";
 import { SearchGlyph } from "@/components/layout/SiteSearch";
 
-// Остров внизу экрана на телефоне (Егор, 2026-10-09, вариант C):
-// ‹ 🔍 (волна) SMM › — стеклянная полоса на всю ширину вместо трёх отдельных
-// элементов. Волна остаётся голосовым ассистентом и стоит в гнезде по
-// центру. Стрелки остров рисует сам, с той же логикой, что PageSideNav и
+// Остров внизу экрана (Егор, 2026-10-10): волна · 🔍 · ‹ SMM 2/4 › · сфера.
+// Волна голосового ассистента встроена в левый край, сфера вайб-меню — в
+// правый, по центру — страница и стрелки к соседним. На телефоне стоя —
+// полоса на всю ширину, на компьютере — тонкий остров по центру внизу.
+// Волна и сфера остаются своими элементами (VoiceAssistant, VibeRail) и
+// встают в гнёзда острова через CSS. Стрелки остров рисует сам, с той же логикой, что PageSideNav и
 // FormatSideNav (те живут внутри слоя страницы и не могут встать поверх
 // острова) — на телефоне стоя прежние стрелки спрятаны (globals.css).
 //
 // Остров стоит по центру волны: её положение меряется живьём и кладётся в
 // --wave-cy (расстояние от низа экрана до центра волны), ширина — в --wave-w.
-// Только телефон и планшет стоя; у телефона боком и на компьютере его нет.
+// У телефона боком острова нет.
 
 // Сама волна, без приглашения «Управляй сайтом голосом» над ней: иначе
 // центр считался бы по волне вместе с приглашением, и остров уезжал вверх.
@@ -108,7 +110,7 @@ function Arrow({ hop, side, kind }: { hop: Hop; side: "prev" | "next"; kind: "pa
   );
 }
 
-/** Подпись справа от волны: где посетитель и какая это страница по счёту. */
+/** Подпись по центру: где посетитель и какая это страница по счёту. */
 function labelFor(path: string): { name: string; pos?: string } | null {
   const parts = path.split("/").filter(Boolean);
   const key = parts[0] ? slugToKey(parts[0]) : null;
@@ -132,22 +134,15 @@ export default function BottomIsland() {
   return (
     <div className="bottom-island" data-wave={hasWave ? "" : undefined}>
       <div className="bottom-island__side">
-        {hops && <Arrow hop={hops.prev} side="prev" kind={hops.kind} />}
-        {hasWave && (
-          <button type="button" onClick={openSearch} aria-label="Поиск по сайту" className="bottom-island__btn">
-            <SearchGlyph className="h-[19px] w-[19px]" />
-          </button>
-        )}
-      </div>
-      {hasWave ? (
-        <span className="bottom-island__wave" aria-hidden="true" />
-      ) : (
-        <button type="button" onClick={openSearch} className="bottom-island__field">
-          <SearchGlyph className="h-[17px] w-[17px] shrink-0" />
-          Поиск
+        {/* Гнездо волны: сама волна — своим элементом (VoiceAssistant),
+            CSS ставит её ровно сюда. */}
+        {hasWave && <span className="bottom-island__slot" aria-hidden="true" />}
+        <button type="button" onClick={openSearch} aria-label="Поиск по сайту" className="bottom-island__btn">
+          <SearchGlyph className="h-[18px] w-[18px]" />
         </button>
-      )}
-      <div className="bottom-island__side bottom-island__side--end">
+      </div>
+      <div className="bottom-island__center">
+        {hops && <Arrow hop={hops.prev} side="prev" kind={hops.kind} />}
         {label && (
           <span className="bottom-island__label" aria-hidden="true">
             <b>{label.name}</b>
@@ -156,6 +151,8 @@ export default function BottomIsland() {
         )}
         {hops && <Arrow hop={hops.next} side="next" kind={hops.kind} />}
       </div>
+      {/* Гнездо сферы вайб-меню (VibeRail ставит её сюда через CSS). */}
+      <span className="bottom-island__slot bottom-island__slot--orb" aria-hidden="true" />
     </div>
   );
 }

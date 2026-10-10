@@ -50,6 +50,8 @@ export default function NanoWave({
   particles = true,
   sleepy = false,
   resting = false,
+  moteRate = 1,
+  idleFrameMs,
 }: {
   width?: number;
   height?: number;
@@ -73,6 +75,10 @@ export default function NanoWave({
   /** Голос выключен (Егор, 2026-10-09): один спокойный неподвижный кадр,
    *  без дыхания и без ряби от курсора. Оживает, как только снят. */
   resting?: boolean;
+  /** Множитель числа искр: 1 — как было, меньше — реже. */
+  moteRate?: number;
+  /** Шаг кадров спящей волны в покое, мс (по умолчанию 40, на mid/low 55). */
+  idleFrameMs?: number;
 }) {
   const wrapRef = useRef<HTMLSpanElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -158,7 +164,7 @@ export default function NanoWave({
     type Mote = { side: -1 | 1; u: number; y: number; vx: number; vy: number; born: number; life: number; size: number; mix: number };
     const motes: Mote[] = [];
     // Искры минимальные, как у сферы (Егор: «не надо крупные частицы»).
-    const MOTES_PER_S = sparkle ? (light ? 6 : 12) : light ? 5 : 9;
+    const MOTES_PER_S = (sparkle ? (light ? 6 : 12) : light ? 5 : 9) * moteRate;
     let moteAcc = 0;
     let moteLast = 0;
     // Искры сферы: рождаются у волны по всей длине, вспыхивают и уходят
@@ -467,7 +473,7 @@ export default function NanoWave({
         // тормозит и застывает; тогда цикл кадров выключается совсем.
         const awake = !sleepy || hotRef.current || inside || hoverS > 0.02 || energy > 1.2 || ripples.length > 0;
         rate += ((awake ? 1 : IDLE_RATE) - rate) * (awake ? 0.15 : 0.04);
-        const gap = sleepy && !awake ? (light ? IDLE_FRAME_MS_LITE : IDLE_FRAME_MS) : frameMs;
+        const gap = sleepy && !awake ? (idleFrameMs ?? (light ? IDLE_FRAME_MS_LITE : IDLE_FRAME_MS)) : frameMs;
         if (now - last < gap) return;
         if (last) clock += Math.min(now - last, 100) * rate;
         last = now;
@@ -488,7 +494,7 @@ export default function NanoWave({
       window.removeEventListener("pointerdown", onDown);
       document.documentElement.removeEventListener("pointerleave", onOut);
     };
-  }, [width, height, padX, padY, dust, sparkle, particles, sleepy]);
+  }, [width, height, padX, padY, dust, sparkle, particles, sleepy, moteRate, idleFrameMs]);
 
   return (
     <span ref={wrapRef} className="relative block shrink-0" style={{ width, height }} aria-hidden="true">

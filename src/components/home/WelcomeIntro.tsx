@@ -10,8 +10,8 @@ import LiveBrandWord from "@/components/layout/LiveBrandWord";
 // Вводные окна перед стартовым меню (Егор, 2026-10-04, макет v6 —
 // docs/intro-scenes-preview.html). После заставки со знаком идут три окна:
 // «Всё в одном», «Вайб-режим», «Приложение», в каждом по три сцены. Сцена
-// внутри окна сменяется сама каждые 5 секунд, следующее окно — по
-// «Дальше», «Пропустить» сразу ведёт в меню.
+// внутри окна сменяется сама каждые 5 секунд, после третьей сцены идёт
+// следующее окно; кнопка «В меню» внизу сразу ведёт в меню.
 //
 // Стиль: графитовые плитки-бенто, крупные цифры, графики со стеклянными
 // подсказками. Явных оранжевых кнопок нет — акцент даёт фирменный градиент
@@ -19,7 +19,7 @@ import LiveBrandWord from "@/components/layout/LiveBrandWord";
 // цифрах. Текст проявляется по словам слева направо из размытия.
 //
 // Показывается при каждой загрузке сайта и при клике на логотип в шапке: путь
-// всегда начинается со знака (Егор, 2026-10-04). «Пропустить» ведёт сразу в меню.
+// всегда начинается со знака (Егор, 2026-10-04). «В меню» ведёт сразу в меню.
 
 const SCENE_MS = 5000;
 // Заставка окна стоит дольше, чем кажется нужным: на телефоне слова проявляются
@@ -939,8 +939,8 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
     goWindow(w + 1);
   }, [last, finish, goWindow, w]);
   // Всё идёт само (Егор, 2026-10-04): три сцены окна подряд, затем следующее
-  // окно, а после третьего окна — стартовое меню. «Дальше» и «Пропустить»
-  // только ускоряют.
+  // окно, а после третьего окна — стартовое меню. «В меню» и Enter сразу
+  // ведут в меню.
   //
   // Нажатие на окошко ставит сцену на паузу, чтобы рассмотреть её (Егор,
   // 2026-10-08): таймер, полоска сцены и CSS-анимации внутри замирают;
@@ -1021,8 +1021,8 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
               <h2 className={`wi-tc-t${w === 1 ? " wi-vibe" : ""}`}>
                 <Reveal text={`**${win.label}**`} delay={0.15} />
               </h2>
-              <button type="button" className="wi-skip wi-tc-skip" onClick={finish}>
-                Пропустить
+              <button type="button" className="wi-next wi-tc-skip" onClick={finish}>
+                В меню
               </button>
             </motion.div>
           ) : (
@@ -1096,17 +1096,16 @@ export default function WelcomeIntro({ onDone }: { onDone: () => void }) {
           </AnimatePresence>
         </div>
 
+        {/* Внизу всегда одна кнопка «В меню» (Егор, 2026-10-10): окна и
+            сцены листаются сами, свайпом и стрелками клавиатуры. */}
         <div className="wi-foot">
-          <button type="button" className="wi-skip" onClick={finish}>
-            Пропустить
-          </button>
           <span className="wi-wdots" aria-hidden="true">
             {WINDOWS.map((x, k) => (
               <i key={x.label} className={k === w ? "is-on" : ""} />
             ))}
           </span>
-          <button type="button" className="wi-next" onClick={next}>
-            {last ? "К меню" : "Дальше"}
+          <button type="button" className="wi-next" onClick={finish}>
+            В меню
           </button>
         </div>
             </motion.div>

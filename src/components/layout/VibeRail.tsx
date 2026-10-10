@@ -283,9 +283,11 @@ export default function VibeRail() {
           ниже — разделы страницы и общие страницы, каждая кнопка своим
           матовым стеклом, как шапка. Раздел на экране — крупнее и в кольце
           света цвета страницы; подпись всплывает при наведении. */}
-      <nav
-        aria-label="Vibe"
-        className={`fixed right-2 top-1/2 z-[65] hidden -translate-y-1/2 flex-col items-center gap-1.5 transition-opacity duration-300 lg:flex ${
+      {/* Сфера вайб-меню на компьютере — в правом краю нижнего острова
+          (Егор, 2026-10-10, BottomIsland), колонка разделов справа — без неё.
+          Свой слой: внутри колонки fixed считался бы от её сдвига. */}
+      <div
+        className={`vibe-island-orb hidden transition-opacity duration-300 lg:block ${
           headerMenuOpen ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
         style={{ "--g-from": accent.from, "--g-to": accent.to } as CSSProperties}
@@ -295,7 +297,7 @@ export default function VibeRail() {
           onClick={() => setVibeOpen(true)}
           aria-label="Vibe-режим"
           aria-haspopup="dialog"
-          className="boot-sphere vibe-bubble vibe-bubble--crown vibe-live mb-1"
+          className="boot-sphere vibe-bubble vibe-bubble--crown vibe-live"
           ref={crownRef}
         >
           {/* Сфера собирается той же анимацией, что в вайб-окне (Егор,
@@ -313,6 +315,14 @@ export default function VibeRail() {
           {sphereOn && <SphereDust orbRef={crownRef} sleepy bleed={42} density={0.1} speed={0.35} brightness={0.6} scale={0.8} />}
           <span className="vibe-tip font-display">Vibe</span>
         </button>
+      </div>
+      <nav
+        aria-label="Vibe"
+        className={`fixed right-2 top-1/2 z-[65] hidden -translate-y-1/2 flex-col items-center gap-1.5 transition-opacity duration-300 lg:flex ${
+          headerMenuOpen ? "pointer-events-none opacity-0" : "opacity-100"
+        }`}
+        style={{ "--g-from": accent.from, "--g-to": accent.to } as CSSProperties}
+      >
         {[...pageItems, ...crossPageItems].map((item, i) => (
           <Fragment key={item.id}>
             {i === pageItems.length && pageItems.length > 0 && <span aria-hidden="true" className="boot-rail my-0.5 h-px w-4 bg-paper/20" style={{ "--boot-i": i } as CSSProperties} />}
