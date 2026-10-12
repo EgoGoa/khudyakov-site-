@@ -144,7 +144,8 @@ export default function ContentServicePage() {
               <ToolSpotlight slug="advertising" accent={CONTENT_ACCENT} shape="card" noPreview className="!pt-0" />
             </div>
           }
-          intro={<>Продюсерский центр полного цикла: от первого созвона до файлов в вашей папке. <span className="kw">Шесть из десяти заказов</span> — от клиентов, которые уже работали с нами.</>}
+          minimal
+          intro={<>Полный цикл. <span className="kw">6 из 10 заказов</span> — постоянные клиенты.</>}
         />
         {/* Not "…под формат и площадку" any more: the ServicePicker above the
             deck and chapter 01 both already used that phrase, so it landed
@@ -154,20 +155,18 @@ export default function ContentServicePage() {
           // Два окошка услуг друг под другом под левым списком (просьба
           // Егора): правая панель получает всю высоту главы и больше воздуха.
           listAside={
-            <>
-              <ToolSpotlight slug="graphics" accent={CONTENT_ACCENT} place="left" className="!pt-0" />
-              <ToolSpotlight slug="ai-video" accent={CONTENT_ACCENT} place="left" className="!pt-0" />
-            </>
+            <ToolSpotlight slug="ai-video" accent={CONTENT_ACCENT} place="left" fill className="!pt-0 h-full" />
           }
           // Десять строк + виджет + окошко делят одну высоту экрана.
           titleClassName="text-[1.575rem] sm:text-[2.1rem] lg:text-[2.625rem] xl:text-[2.625rem]"
           title={<>Сильные в <span className="kw">этом</span></>}
-          intro={<>Десять задач, которые закрываем своей командой — от рекламного ролика до 3D-графики и <span className="kw">AI-контента</span>.</>}
+          minimal
+          intro={<>Десять задач своей командой — от рекламы до 3D и <span className="kw">AI-контента</span>.</>}
         />
         <Process
           middleSlot={<ToolSpotlight slug="presentation" accent={CONTENT_ACCENT} shape="card" fill className="!pt-0 h-full" />}
           title={<>PRO <span className="kw">хронология</span></>}
-          intro={<>Шесть шагов от брифа до сдачи. На каждом видно <span className="kw">прогресс</span> и есть точка, где можно вмешаться.</>}
+          intro={<>Шесть шагов от брифа до сдачи — с видимым <span className="kw">прогрессом</span> на каждом.</>}
         />
         {/* Блок тарифов: без окошка услуги (перенесено в блок 04) и с
             полным списком тезисов-преимуществ на каждой карточке — Егор

@@ -34,6 +34,7 @@ export default function Offer({
   decor,
   bodyDecor,
   titleClassName,
+  minimal = false,
 }: {
   /** Окошко услуги внизу главы — см. ToolSpotlight. Необязательно:
    *  эту главу используют несколько страниц, и окошко есть не у всех. */
@@ -60,6 +61,10 @@ export default function Offer({
    *  to its bottom edge therefore sits at the *top* of the screen and gets
    *  clipped by the site header. Anything sized to the chapter belongs here. */
   bodyDecor?: ReactNode;
+  /** /content (Егор, 2026-10-12): без умной строки в панели; панель и список —
+   *  одной высоты; снизу ровный ряд: окошко услуги слева и Кирилл справа,
+   *  одного размера, каждый под своей колонкой. */
+  minimal?: boolean;
 }) {
   const { active } = useService();
   const services = servicesByCategory[active];
@@ -91,7 +96,8 @@ export default function Offer({
 
   return (
     <CinematicSection
-      footer={footer}
+      // minimal: окошко услуги стоит в нижнем ряду главы, а не полосой под ней.
+      footer={minimal ? undefined : footer}
       index={index}
       chapter={chapter}
       title={title}
@@ -127,19 +133,19 @@ export default function Offer({
           /smm, which was sized for the old `items-start` baseline. */}
       <div
         className={`relative z-10 lg:flex lg:gap-16 ${
-          interactive ? `${footer && active === "content" ? "lg:min-h-[58svh]" : footer ? "lg:min-h-[68svh] lg:[@media(max-height:940px)]:min-h-[58svh]" : "lg:min-h-[68svh]"} lg:items-stretch` : "lg:items-start"
+          minimal ? "lg:items-stretch" : interactive ? `${footer && active === "content" ? "lg:min-h-[58svh]" : footer ? "lg:min-h-[68svh] lg:[@media(max-height:940px)]:min-h-[58svh]" : "lg:min-h-[68svh]"} lg:items-stretch` : "lg:items-start"
         }`}
       >
         {/* Телефон, /ai (Егор, 2026-10-03): окошко Кирилла встаёт сразу под
             подзаголовком, перед списком из 11 услуг; ниже список, окошко
             выбранной услуги и кнопка «AI-видеореклама и аватары». На
             компьютере Кирилл остаётся внизу правой панели. */}
-        {active === "ai" ? (
+        {active === "ai" && !minimal ? (
           <Appear from="up" delay={BEAT.content} className="mb-6 lg:hidden">
             <TeamPulse data={MAX_AI} compact source="/ai · глава «Лучшие в …»" />
           </Appear>
         ) : null}
-        <div className={listAside ? "lg:flex lg:flex-1 lg:flex-col" : "contents"}>
+        <div className={listAside || minimal ? "lg:flex lg:flex-1 lg:flex-col" : "contents"}>
         {services.length === 0 ? (
           <p className="text-sm leading-relaxed text-paper/60">
             Список услуг по этому направлению скоро появится здесь.
@@ -211,7 +217,7 @@ export default function Offer({
             })}
           </ul>
         )}
-        {listAside ? (
+        {listAside && !minimal ? (
           // mt-auto прижимает окошки к низу колонки: колонка тянется на
           // высоту правой панели (items-stretch), и низ второго окошка
           // совпадает с низом панели.
@@ -230,7 +236,7 @@ export default function Offer({
           from="right"
           delay={BEAT.content + STAGGER.normal}
           className={`mt-10 rounded-2xl bg-ink/45 backdrop-blur-md lg:mt-0 lg:shrink-0 ${
-            interactive ? `flex flex-col p-6 ${listAside ? "lg:self-stretch" : "lg:h-full"} lg:w-1/2 ${footer && active === "content" ? "lg:p-3" : ""}` : "p-6 lg:w-[300px] xl:w-[320px]"
+            interactive ? `flex flex-col p-6 ${listAside || minimal ? "lg:self-stretch" : "lg:h-full"} lg:w-1/2 ${minimal ? "lg:p-5" : footer && active === "content" ? "lg:p-3" : ""}` : "p-6 lg:w-[300px] xl:w-[320px]"
           }`}
         >
           {interactive && selectedService ? (
@@ -251,9 +257,11 @@ export default function Offer({
                   scoped to whichever service is selected — Egor's ask: "любой
                   вопрос по данной услуге", answered by the same agent/producer
                   flow rather than a new mechanism. */}
+              {!minimal && (
               <BlockAssistant
                 context={`Страница /${active} (${pageLabel}), услуга «${selectedService.title}». ${selectedService.description}`}
               />
+              )}
 
               {/* Что это → Для кого → Сроки → Бюджет — Egor's order. Each
                   subheading is the same font-display/uppercase treatment
@@ -264,7 +272,7 @@ export default function Offer({
                   throughout — the site's standing rule is white body text,
                   never dimmed grey (it "сливается"), and that applies here
                   too even though these values sit inside a quieter card. */}
-              <div className={`mt-6 flex-1 space-y-6 overflow-y-auto border-t border-paper/15 pt-6 ${footer ? (active === "content" ? "lg:mt-1 lg:space-y-1.5 lg:pt-2" : "lg:mt-2 lg:space-y-3 lg:pt-3") : ""}`}>
+              <div className={`mt-6 flex-1 space-y-6 overflow-y-auto border-t border-paper/15 pt-6 ${minimal ? "lg:mt-3 lg:space-y-4 lg:pt-4" : footer ? (active === "content" ? "lg:mt-1 lg:space-y-1.5 lg:pt-2" : "lg:mt-2 lg:space-y-3 lg:pt-3") : ""}`}>
                 <div>
                   <div className="flex items-center">
                     <span className="font-display text-base uppercase leading-tight tracking-tight text-white sm:text-lg">
@@ -302,6 +310,7 @@ export default function Offer({
                 </div>
               </div>
 
+              {!minimal && (
               <div className={`mt-6 border-t border-paper/15 pt-6 ${active === "ai" ? "hidden lg:block" : ""} ${footer ? (active === "content" ? "lg:mt-1.5 lg:pt-2" : "lg:mt-2 lg:pt-3") : ""}`}>
                 {/* One window instead of two buttons — Egor's ask: every ask
                     on the site should read as written to a specific person,
@@ -322,6 +331,7 @@ export default function Offer({
                 />
                 )}
               </div>
+              )}
             </>
           ) : (
             <>
@@ -371,6 +381,16 @@ export default function Offer({
           )}
         </Appear>
       </div>
+      {minimal && (
+        <div className="relative z-10 mt-6 flex flex-col gap-3 lg:mt-5 lg:flex-row lg:items-stretch lg:gap-16">
+          {/* z-20: раскрытое окно услуги растёт поверх главы и обязано
+              лечь и на Кирилла справа, а не под него. */}
+          <div className="relative z-20 lg:flex-1">{listAside ?? footer}</div>
+          <Appear from="up" delay={BEAT.cta} className="lg:w-1/2 lg:shrink-0">
+            <TeamPulse data={active === "ai" ? MAX_AI : MAX_CONTENT} compact fill source={`/${active} · глава «Лучшие в …»`} />
+          </Appear>
+        </div>
+      )}
     </CinematicSection>
   );
 }

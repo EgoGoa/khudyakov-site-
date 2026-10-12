@@ -181,6 +181,7 @@ export default function CinematicSection({
   bodyDecor,
   spacious = false,
   distribute = false,
+  bodyTop = false,
   column = false,
   headless = false,
   footer,
@@ -278,6 +279,10 @@ export default function CinematicSection({
    *  the chapter spreads its own blocks through it (`justify-evenly` on its
    *  root). Opt-in — only chapters whose root is built for it pass it. */
   distribute?: boolean;
+  /** Тело встаёт сразу под подзаголовком с постоянным зазором (28px), а
+   *  свободная высота уходит вниз, а не делится поровну над и под телом
+   *  (Егор, 2026-10-12: хронология «висела» далеко от подзаголовка). */
+  bodyTop?: boolean;
 }) {
   // Trust/Offer/Process/Close are authored for the pinned deck (see
   // CinematicStage) but Process is also reused directly on the plain-scroll
@@ -421,7 +426,7 @@ export default function CinematicSection({
           // кнопка стоит в потоке и забирает высоту, а нижнее поле главы
           // при ней уже не нужно в прежнем размере — иначе плотные главы
           // (04, 05) начинают прокручиваться внутри себя.
-          ? `absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 ${
+          ? `chapter-layer absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 ${
               footer ? "pb-[var(--voice-safe)] pt-[calc(4.5rem+var(--sat))] lg:pt-[4.75rem]" : "pb-[var(--voice-safe)] pt-[calc(5.5rem+var(--sat))] lg:pt-[5.5rem]"
             } lg:px-10 land:pb-[var(--voice-safe)] land:pt-8 land:pl-[max(2rem,calc(env(safe-area-inset-left)+1rem))] land:pr-[max(2rem,calc(env(safe-area-inset-right)+1rem))] ${
               active ? "" : "pointer-events-none"
@@ -529,7 +534,7 @@ export default function CinematicSection({
           // section's only flex child, so auto margins are what centre the
           // chapter's whole stack in the viewport instead of leaving it
           // parked at the top.
-          className={`relative mx-auto w-full max-w-7xl py-2 ${roomy && !headless ? "" : "my-auto"} ${
+          className={`relative mx-auto w-full max-w-7xl py-2 ${roomy && !headless ? "" : bodyTop ? "mb-auto lg:mt-5" : "my-auto"} ${
             distribute && staged ? "max-lg:my-0 max-lg:flex max-lg:flex-1 max-lg:flex-col" : ""
           }`}
           ref={bodyRef}

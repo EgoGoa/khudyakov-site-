@@ -96,8 +96,9 @@ function DirectionCard({ direction }: { direction: ContentDirection; work?: Work
               отметил его как образец): фирменный дисплейный шрифт крупнее
               обычного тела, а не мелкий текст на общих основаниях —
               читается сразу, а не угадывается. */}
-          <p className="body-small mt-1.5 line-clamp-4 sm:line-clamp-3">
-            {direction.description}
+          {/* +30% к body-small (Егор, 2026-10-12): 8.5→11px, 10→13px. */}
+          <p className="body-small mt-1.5 line-clamp-4 !text-[11px] sm:line-clamp-3 sm:!text-[13px]">
+            {direction.cardLine ?? direction.description}
           </p>
         </div>
 
@@ -181,8 +182,7 @@ function SpecialFormatCard() {
               one line — reads distinctive without introducing a font
               nobody else on the page uses. */}
           <p className="mt-1.5 line-clamp-3 font-display text-xs leading-snug tracking-tight text-paper/65 [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-sm">
-            Пять форматов выше — не весь диапазон. Подберём формат под цель и обсудим на бесплатной креативной сессии
-            онлайн.
+            Это не весь диапазон. Подберём формат под цель на бесплатной онлайн-сессии.
           </p>
         </div>
 

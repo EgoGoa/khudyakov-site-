@@ -38,7 +38,9 @@ import { spotlightFor } from "@/components/home/ai/spotlightData";
  *  тизере») → 3.4с («динамичнее и чаще») → 5.2с после просмотра живьём
  *  («медленнее везде»). 5.2с — середина: кадр не мельтешит, но и не
  *  застывает. Потом +1.5с: Егор попросил сбавить смену сцен и текстов. */
-const BEAT_MS = 6000;
+// Потом ×3 (Егор, 2026-10-12): тексты и графика окошек меняются в три
+// раза реже.
+const BEAT_MS = 18000;
 
 /** Высота закрытой кнопки. Числом, а не по содержимому: высота окна
  *  анимируется числом (см. ниже), и второй конец этой анимации тоже
@@ -47,13 +49,15 @@ const BEAT_MS = 6000;
  *  80: кнопке нужно дышать — при 62 название, слово-выгода и превью
  *  стояли вплотную. Высоту, которую она на это забрала, вернули, ужав
  *  собственный вертикальный ритм двух самых плотных глав (04 и 05). */
-const STRIP_HEIGHT = 80;
+// 120 (Егор, 2026-10-12): название кнопки втрое крупнее, превью больше —
+// кнопка заполнена, а не пустое тёмное поле вокруг мелкой строки.
+const STRIP_HEIGHT = 120;
 // Телефон: полоса выше, чтобы название, тезис и стрелка помещались целиком,
 // а превью сцены читалось (Егор, 2026-10-03).
-const STRIP_HEIGHT_PHONE = 108;
+const STRIP_HEIGHT_PHONE = 128;
 // Плашки без превью (глава «Именно мы» на /content): на 15% ниже, чтобы
 // список из пяти пунктов над ними дышал (Егор, 2026-10-03).
-const STRIP_HEIGHT_PHONE_COMPACT = 92;
+const STRIP_HEIGHT_PHONE_COMPACT = 112;
 
 
 /** Акцент страницы /ai — лайм→изумруд, тот же, что у заголовков глав и
@@ -162,6 +166,55 @@ export default function ToolSpotlight({
   // там, где `fixed` честный (компьютер), поправка нулевая и ничего не меняет.
   // Шапка при этом тоже притухает (data-spotlight-open, globals.css).
   const dimRef = useRef<HTMLButtonElement>(null);
+  // Раскрытое окно — над всей главой (Егор, 2026-10-12: окошко Кирилла
+  // ложилось поверх окна услуги). Окно сидит внутри обёрток с transform, и
+  // z-index дальше ближайшей из них не работает, поэтому на время открытия
+  // поднимаем z-index у каждой обёртки на пути до слоя главы. Только
+  // z-index: position и filter не трогаем — они сдвигали бы вёрстку.
+  const lowerTimer = useRef(0);
+  useEffect(() => {
+    if (!open) return;
+    window.clearTimeout(lowerTimer.current);
+    const host = dimRef.current?.parentElement;
+    const stop = host?.closest(".chapter-layer");
+    if (!host || !stop) return;
+    const raised: [HTMLElement, string][] = [];
+    // Всё остальное в главе — соседи на пути от окна до слоя главы — уходит
+    // в расфокус фильтром (.spotlight-defocus). Блюр «за стеклом» здесь не
+    // работает: глава лежит на отдельном слое (will-change: opacity), и
+    // backdrop-filter затемнения видит под собой пустоту. filter вёрстку не
+    // трогает — размеры и места блоков те же.
+    const dimmed: HTMLElement[] = [];
+    for (let el: HTMLElement | null = host; el && el !== stop; el = el.parentElement) {
+      if (el !== host) {
+        raised.push([el, el.style.zIndex]);
+        // 70, не 60: карточки команды поднимаются на 60 правилом
+        // [data-appear]:has([data-raise]) и шли бы поверх окна.
+        el.style.zIndex = "70";
+      }
+      const parent: HTMLElement | null = el.parentElement;
+      if (!parent) break;
+      for (const sib of Array.from(parent.children)) {
+        if (sib !== el && sib instanceof HTMLElement && !sib.contains(host)) {
+          sib.classList.add("spotlight-defocus-fx");
+          dimmed.push(sib);
+        }
+      }
+    }
+    // Класс-переход ставится кадром раньше самого блюра, чтобы он проявился
+    // плавно, а не включился сразу.
+    const raf = requestAnimationFrame(() => dimmed.forEach((e) => e.classList.add("spotlight-defocus")));
+    return () => {
+      cancelAnimationFrame(raf);
+      dimmed.forEach((e) => e.classList.remove("spotlight-defocus"));
+      // Опускаем, когда окно уже ушло, иначе на закрытии оно на миг
+      // провалится под соседей.
+      lowerTimer.current = window.setTimeout(() => {
+        for (const [e, z] of raised) e.style.zIndex = z;
+        dimmed.forEach((e) => e.classList.remove("spotlight-defocus-fx"));
+      }, 480);
+    };
+  }, [open]);
   useEffect(() => {
     if (!open) return;
     document.documentElement.setAttribute("data-spotlight-open", "");
@@ -330,12 +383,11 @@ export default function ToolSpotlight({
         tabIndex={open ? 0 : -1}
         onClick={close}
         initial={false}
-        animate={{
-          opacity: open ? 1 : 0,
-          backdropFilter: open ? "blur(7px) saturate(85%)" : "blur(0px) saturate(100%)",
-        }}
-        transition={{ duration: reduced ? 0 : 0.4, ease: [0.32, 0.72, 0, 1] }}
-        className={`fixed inset-0 z-40 bg-ink/75 ${open ? "" : "pointer-events-none"}`}
+        // Та же подложка, что у всех окон (.spotlight-scrim = .site-scrim):
+        // проявляется своей прозрачностью, блюр не анимируется.
+        animate={{ opacity: open ? 1 : 0 }}
+        transition={{ duration: reduced ? 0 : 0.45, ease: [0.32, 0.72, 0, 1] }}
+        className={`spotlight-scrim fixed inset-0 z-40 ${open ? "" : "pointer-events-none"}`}
       />
 
       {/* Кнопка занимает в вёрстке ровно свою высоту, а раскрытое окно
@@ -421,7 +473,8 @@ export default function ToolSpotlight({
               // 0.28 → 0.44 по просьбе Егора: кадр должен читаться, а не
               // угадываться. Скрим под текстом ослаблен на столько же,
               // иначе поднятая экспозиция снова съедается им.
-              className="absolute inset-0 h-full w-full object-cover opacity-[0.44] [filter:grayscale(0.2)_contrast(1.05)]"
+              // Размыт (Егор, 2026-10-12): картинка — фон, текст поверх читается.
+              className="absolute inset-0 h-full w-full scale-105 object-cover opacity-[0.44] [filter:grayscale(0.2)_contrast(1.05)_blur(8px)]"
             />
             <span
               className="absolute inset-0"
@@ -478,13 +531,13 @@ export default function ToolSpotlight({
                   {/* На телефоне сцена стоит полосой ~110px: в таком масштабе подписи и
                       цифры внутри неё нечитаемы, поэтому только фигуры (mini), а
                       слова несёт текст ниже. */}
-                  <SpotlightScene slug={data.slug} step={step} mini={phone} />
+                  <SpotlightScene slug={data.slug} step={step} mini={phone} clean />
                   {steps > 1 && (
                     <SceneArrows onPrev={() => setStep((s) => (s - 1 + steps) % steps)} onNext={() => setStep((s) => (s + 1) % steps)} />
                   )}
                 </div>
 
-                <SpotlightCopy data={data} step={step} setStep={setStep} onClose={close} compact={phone} showSub={!phone} />
+                <SpotlightCopy data={data} step={step} setStep={setStep} onClose={close} compact={phone} showSub={!phone} large={!phone} />
                 </div>
 
                 {/* Кнопка — язычок НАД окном: верхняя кромка плавно
@@ -528,12 +581,14 @@ export default function ToolSpotlight({
                   // последний рубеж). Названию отдана своя строка на всю
                   // ширину плитки — там ему хватает места на одну строку —
                   // а картинка с тезисом и стрелкой встали ниже. Egor's ask.
-                  fill ? "flex-col justify-center gap-1.5 px-5 py-3" : "items-center " + (side ? "gap-3.5 px-4 py-3" : "gap-5 px-5 py-3 sm:px-6")
+                  fill ? (side ? "items-center gap-5 px-5 py-3" : "flex-col justify-center gap-3 px-5 py-4") : "items-center " + (side ? "gap-4 px-4 py-3" : "gap-6 px-5 py-3 sm:px-6")
                 }`}
               >
                 {fill && (
-                  <span className="block w-full shrink-0">
-                    <span className="block font-display text-[12px] font-bold uppercase leading-tight tracking-[0.16em] text-white">
+                  // Боковая плитка (side): текст слева, превью справа на всю
+                  // высоту — под текстом ему не хватало места (Егор, 2026-10-12).
+                  <span className={side ? "block min-w-0 flex-1" : "block w-full shrink-0"}>
+                    <span className="spotlight-strip-title block font-display font-bold uppercase text-white">
                       {data.title}
                     </span>
                     {/* Тезис поднят сюда же — в узкой колонке рядом с
@@ -547,14 +602,14 @@ export default function ToolSpotlight({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: reduced ? 0 : 0.7 }}
-                        className="spotlight-accent spotlight-sheen mt-0.5 block font-display text-[15px] uppercase leading-snug tracking-[0.06em]"
+                        className="spotlight-accent spotlight-sheen spotlight-strip-punch mt-1 block font-display uppercase"
                       >
                         {benefit.punch}
                       </motion.span>
                     </AnimatePresence>
                   </span>
                 )}
-                <span className={fill ? "flex min-w-0 flex-1 items-center gap-5" : "contents"}>
+                <span className={fill ? (side ? "flex h-full shrink-0 items-center gap-4" : "flex min-w-0 flex-1 items-center gap-5") : "contents"}>
                 {/* Мини-превью карточки — та же графика, что развернётся.
                     Раньше квадрат ~64px тонул в пустом тёмном поле плитки;
                     Егор попросил растянуть его минимум на треть кнопки — на
@@ -575,7 +630,11 @@ export default function ToolSpotlight({
                 {!noPreview && (
                 <span
                   className={`relative shrink-0 overflow-hidden rounded-xl ring-1 ring-white/15 ${
-                    side ? "h-[84px] w-[136px] sm:h-16 sm:w-[38%]" : "hidden h-[70px] aspect-[340/210] sm:block"
+                    side
+                      ? fill
+                        ? "h-[84px] w-[136px] sm:h-full sm:max-h-[130px] sm:w-auto sm:aspect-[340/210]"
+                        : "h-[96px] w-[150px] sm:h-[96px] sm:w-[42%]"
+                      : "hidden h-[100px] aspect-[340/210] sm:block"
                   }`}
                 >
                   <SpotlightScene slug={data.slug} step={step} mini />
@@ -590,7 +649,7 @@ export default function ToolSpotlight({
                       // Название переносится на вторую строку, а не режется
                       // многоточием: обрезанное на полуслове название
                       // Егор назвал неприемлемым.
-                      className="block font-display text-[12px] font-bold uppercase leading-tight tracking-[0.16em] text-white"
+                      className="spotlight-strip-title block font-display font-bold uppercase text-white"
                     >
                       {data.title}
                     </span>
@@ -604,14 +663,14 @@ export default function ToolSpotlight({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: reduced ? 0 : 0.7 }}
-                        className="spotlight-accent spotlight-sheen mt-1 block font-display text-[15px] uppercase leading-snug tracking-[0.06em]"
+                        className="spotlight-accent spotlight-sheen spotlight-strip-punch mt-1 block font-display uppercase"
                       >
                         {benefit.punch}
                       </motion.span>
                     </AnimatePresence>
                   </span>
                 )}
-                {fill && <span className="flex-1" />}
+                {fill && !side && <span className="flex-1" />}
                 <span className="spotlight-cta shrink-0">
                   {/* В плашке-форме (глава 04) подписи-кнопки нет: место
                       нужно названию и слову-выгоде, а плашка и так целиком

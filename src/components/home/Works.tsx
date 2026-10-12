@@ -650,9 +650,10 @@ export default function Works({
             initial={WIN_DIM.initial}
             animate={WIN_DIM.animate}
             exit={WIN_DIM.exit}
-            className="fixed inset-0 z-[110] flex items-center justify-center bg-ink/90 p-4 backdrop-blur-sm sm:p-10"
+            className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-10"
             onClick={() => setActiveId(null)}
           >
+            <div className="site-scrim" aria-hidden="true" />
             <button
               onClick={() => setActiveId(null)}
               aria-label="Закрыть"
@@ -666,7 +667,7 @@ export default function Works({
               animate={WIN.animate}
               exit={WIN.exit}
               onClick={(e) => e.stopPropagation()}
-              className="win-shell w-full max-w-5xl"
+              className="win-shell relative w-full max-w-5xl"
             >
               <div className="aspect-video w-full overflow-hidden rounded-xl bg-ink-soft">
                 <iframe

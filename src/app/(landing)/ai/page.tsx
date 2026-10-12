@@ -139,7 +139,8 @@ export default function AiServicePage() {
           index={3}
           chapter="04"
           title={<>Продюсерский центр, <span className="kw">не коробка</span></>}
-          intro={<>AI-инструменты внедряем с 2024 года внутри сервиса полного цикла. Около <span className="kw">60% заказов</span> — клиенты, которые возвращаются.</>}
+          minimal
+          intro={<>AI внедряем с 2024 года в полном цикле. <span className="kw">60% заказов</span> — постоянные клиенты.</>}
           // Кнопка живёт внутри правой колонки этой главы (см. Trust):
           // под пятью причинами, над промо-карточкой, той же ширины и той
           // же плашкой-формой, что окошки рядом.
@@ -149,15 +150,16 @@ export default function AiServicePage() {
           index={4}
           chapter="05"
           title={<>Лучшие в <span className="kw">AI</span></>}
-          intro={<>Съёмка, монтаж, графика и <span className="kw">AI-продакшн</span> — под формат и площадку.</>}
-          footer={<ToolSpotlight slug="video" />}
+          intro={<>Съёмка, монтаж и <span className="kw">AI-продакшн</span> под площадку.</>}
+          minimal
+          footer={<ToolSpotlight slug="video" place="left" fill className="!pt-0 h-full" />}
         />
         <AiGuarantees />
         <Process
           index={6}
           chapter="07"
           title={<>Как проходит <span className="kw">внедрение</span></>}
-          intro={<>Шесть шагов от аудита до сопровождения. На каждом — понятный результат и <span className="kw">точка согласования</span>.</>}
+          intro={<>Шесть шагов от аудита до сопровождения — с <span className="kw">результатом</span> на каждом.</>}
           steps={AI_PROCESS_STEPS}
           footer={<ToolSpotlight slug="ops" place="left" />}
         />

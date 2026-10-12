@@ -37,6 +37,59 @@ const SLOGAN: Record<ServiceKey, string> = {
   smm: "соцсети, которые живут",
 };
 
+// Градиент — только на одном слове заголовка, главном по смыслу; остальное
+// белым (Егор, 2026-10-12). Ключ — заголовок услуги, значение — слово из
+// него. Заголовок, которого нет в списке, идёт целиком белым.
+const ACCENT: Record<string, string> = {
+  "Продвижение товаров и услуг": "товаров",
+  "Наполнение социальных сетей": "Наполнение",
+  "Развитие личного бренда": "бренда",
+  "3D/2D графика": "3D/2D",
+  "Специальные проекты": "Специальные",
+  "Обучающие ролики": "Обучающие",
+  "Музыкальные клипы": "клипы",
+  "Продвижение мероприятия": "мероприятия",
+  "Продвижение компании": "компании",
+  "AI-контент и автоматизация": "AI-контент",
+  "Единый AI-чат для мессенджеров": "AI-чат",
+  "AI-генерация видео и фото": "AI-генерация",
+  "Чат-боты и AI-агенты для продаж": "продаж",
+  "Автоматизация коммуникации с клиентами": "Автоматизация",
+  "Генерация текстового контента": "текстового",
+  "AI-ассистенты для внутренних процессов": "AI-ассистенты",
+  "Интеграция AI в CRM": "CRM",
+  "Голосовые AI-решения": "Голосовые",
+  "Персонализация контента": "Персонализация",
+  "AI-аналитика по контенту и продажам": "AI-аналитика",
+  "Обучение команды работе с AI": "Обучение",
+  "Лендинг под продукт или услугу": "Лендинг",
+  "Сайт-визитка": "визитка",
+  "Сайт под ключ": "под ключ",
+  "AI-ассистент на сайте": "AI-ассистент",
+  "Интеграция форм и CRM": "CRM",
+  "SEO-каркас": "SEO",
+  "Адаптивная вёрстка": "Адаптивная",
+  "Редизайн существующего сайта": "Редизайн",
+  "Съёмка и монтаж контента": "Съёмка",
+  "Комьюнити-менеджмент": "Комьюнити",
+  "Таргетированная реклама": "Таргетированная",
+  "Аналитика и отчётность": "Аналитика",
+  "Блогеры и инфлюенс-маркетинг": "Блогеры",
+  "Контент-стратегия": "стратегия",
+};
+
+function splitAccent(title: string): [string, string, string] {
+  const word = ACCENT[title];
+  const at = word ? title.indexOf(word) : -1;
+  if (at < 0) return [title, "", ""];
+  const after = title.slice(at + word.length);
+  // Дефис после слова уходит вместе с ним: иначе на стыке двух span браузер
+  // не переносит строку после дефиса и «Комьюнити-менеджмент» вылезает за
+  // колонку.
+  if (after.startsWith("-")) return [title.slice(0, at), `${word}-`, after.slice(1)];
+  return [title.slice(0, at), word, after];
+}
+
 function buildFeed(): { key: ServiceKey; title: string }[] {
   const maxLen = Math.max(...serviceOrder.map((key) => servicesByCategory[key].length));
   const feed: { key: ServiceKey; title: string }[] = [];
@@ -64,12 +117,13 @@ export default function HeroHeadline() {
 
   const entry = FEED[index];
   const g = GRADIENT[entry.key];
-  const titleStyle = {
+  const accentStyle = {
     backgroundImage: `linear-gradient(90deg, ${g.from} 0%, ${g.to} 100%)`,
     textShadow: "none",
-    letterSpacing: "-0.025em",
-    fontWeight: 400,
-  };
+    WebkitBoxDecorationBreak: "clone",
+    boxDecorationBreak: "clone",
+  } as const;
+  const [before, accent, after] = splitAccent(entry.title);
 
   return (
     <span style={{ display: "block" }}>
@@ -82,8 +136,14 @@ export default function HeroHeadline() {
           transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
           style={{ display: "block" }}
         >
-          <span className="hero-neon-word block" style={titleStyle}>
-            {entry.title}
+          <span className="block text-white" style={{ letterSpacing: "-0.025em", fontWeight: 400 }}>
+            {before}
+            {accent && (
+              <span className="hero-neon-word" style={accentStyle}>
+                {accent}
+              </span>
+            )}
+            {after}
           </span>
           {/* Same family/weight/case, plain white, half size, own dash
               prefix — matches the static reference Egor approved. Plain

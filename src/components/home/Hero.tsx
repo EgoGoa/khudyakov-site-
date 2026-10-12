@@ -98,7 +98,21 @@ export default function Hero() {
             Слова столбика раз в несколько секунд перетекают в тонкий
             контур и обратно. На телефоне столбик стоит над заголовком. */}
         <div className="hero-split">
+        {/* Компьютер (Егор, 2026-10-12): строка «Команда…» стоит под
+            бренд-столбиком крупным подзаголовком, справа остаются только
+            заголовок услуги и кнопки. На телефоне и планшете она по-прежнему
+            над кнопками связи (ниже, lg:hidden). */}
+        <div className="hero-split-brand">
         <HeroWordmark shown={shown} />
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={shown}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="hero-brand-lead hidden font-display uppercase text-white lg:block"
+        >
+          <span className="kw">Команда</span>, AI-технологии мы подключили как инструмент — чтобы делать <span className="kw">глубже и эффективнее</span>.
+        </motion.p>
+        </div>
         <div className="hero-split-main">
         <div
           ref={titleWrapRef}
@@ -169,7 +183,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={shown}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className={`mt-3 max-w-[70%] text-left ${HERO_LEAD}`}
+          className={`mt-3 max-w-[70%] text-left lg:hidden ${HERO_LEAD}`}
         >
           <span className="kw">Команда</span>, AI-технологии мы подключили как инструмент — чтобы делать <span className="kw">глубже и эффективнее</span>.
         </motion.p>
@@ -182,7 +196,7 @@ export default function Hero() {
           // (Егор, 2026-10-03) — освобождает место под крупную надпись. Текст
           // остаётся для скринридеров (sr-only), с sm он снова виден. (Варианты max-* в этом проекте не
           // генерируются — из-за raw-экрана land, поэтому «телефон сначала».)
-          className="hero-contacts mt-6 flex items-center gap-3 sm:mt-8 sm:flex-wrap"
+          className="hero-contacts mt-6 flex items-center gap-3 sm:mt-8 sm:flex-wrap lg:mt-5"
         >
           <a
             href="tel:+79925111812"

@@ -22,10 +22,11 @@ import { fitValue, useRefit } from "@/lib/use-fit-text";
 //
 // Высота контейнера одна на оба состояния: окошко живёт в потоке блока, и
 // всё, что стоит под ним (акция, таблица), не должно подпрыгивать.
-const COLLAPSE_MS = 5000;
+// Смена текстов в три раза реже (Егор, 2026-10-12): было 5000/4800/5200.
+const COLLAPSE_MS = 15000;
 const TYPE_MS = 28;
-const HOLD_MS = 4800;
-const NOTE_MS = 5200;
+const HOLD_MS = 14400;
+const NOTE_MS = 15600;
 const SPRING = { type: "spring", stiffness: 340, damping: 30, mass: 0.9 } as const;
 
 /** Печатает строку с цветовой разметкой (*градиент* ^тёплый^ ~серый~, см.

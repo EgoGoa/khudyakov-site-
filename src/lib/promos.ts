@@ -71,7 +71,7 @@ export const PROMOS: Promo[] = [
     price: "40 000 ₽",
     oldPrice: "50 000 ₽",
     image: "/images/stock/ai-desk-ui.webp",
-    href: "/brief/ai",
+    href: "/ai/chat-hub",
     leadPrefill: { format: "AI-чат для мессенджеров", wishes: "Акция месяца — пилот за 40 000 ₽ вместо 50 000 ₽" },
   },
   {
@@ -82,7 +82,7 @@ export const PROMOS: Promo[] = [
     price: "60 000 ₽",
     oldPrice: "75 000 ₽",
     image: "/images/stock/hologram-laptop.webp",
-    href: "/brief/ai",
+    href: "/ai/video",
     leadPrefill: { format: "AI-генерация видео и фото", wishes: "Акция месяца — пилот за 60 000 ₽ вместо 75 000 ₽" },
   },
   {
@@ -93,7 +93,7 @@ export const PROMOS: Promo[] = [
     price: "96 000 ₽",
     oldPrice: "120 000 ₽",
     image: "/images/stock/desk-aerial.webp",
-    href: "/brief/sites",
+    href: "/sites/card",
     leadPrefill: { format: "Сайт-визитка", wishes: "Акция месяца — от 120 000 до 96 000 ₽" },
   },
   {
@@ -104,7 +104,7 @@ export const PROMOS: Promo[] = [
     price: "48 000 ₽",
     oldPrice: "60 000 ₽",
     image: "/images/stock/design-tablet.webp",
-    href: "/brief/sites",
+    href: "/sites/landing",
     leadPrefill: { format: "Лендинг", wishes: "Акция месяца — от 60 000 до 48 000 ₽" },
   },
   {
@@ -115,7 +115,7 @@ export const PROMOS: Promo[] = [
     price: "36 000 ₽/мес",
     oldPrice: "45 000 ₽/мес",
     image: "/images/blocks/stock-clapper.jpg",
-    href: "/brief/smm",
+    href: "/smm/reels",
     leadPrefill: { format: "Съёмка и монтаж контента", wishes: "Акция месяца — от 45 000 до 36 000 ₽/мес" },
   },
   {
@@ -126,7 +126,7 @@ export const PROMOS: Promo[] = [
     price: "36 000 ₽/мес",
     oldPrice: "45 000 ₽/мес",
     image: "/images/stock/smm-collage-phone.webp",
-    href: "/brief/smm",
+    href: "/smm/pricing",
     leadPrefill: { format: "Комьюнити-менеджмент", wishes: "Акция месяца — от 45 000 до 36 000 ₽/мес" },
   },
 ];

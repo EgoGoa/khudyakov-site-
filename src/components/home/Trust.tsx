@@ -45,6 +45,7 @@ export default function Trust({
   chapter = "03",
   title = "Именно мы",
   intro = "Продюсерский центр полного цикла: от идеи до готового ролика. Около 60% заказов — клиенты, которые возвращаются.",
+  minimal = false,
 }: {
   /** Окошко услуги внизу главы — см. ToolSpotlight. Необязательно:
    *  эту главу используют несколько страниц, и окошко есть не у всех. */
@@ -56,6 +57,9 @@ export default function Trust({
   chapter?: string;
   title?: ReactNode;
   intro?: ReactNode;
+  /** /content (Егор, 2026-10-12): без умной строки над списком, а пять
+   *  причин — без карточек и рамок, только номер и текст. */
+  minimal?: boolean;
 }) {
   const { active } = useService();
   // Человек как сервис (TeamPulse): Макс на /content, Вадим на /ai.
@@ -95,6 +99,8 @@ export default function Trust({
           (`ml-auto` in BlockAssistant.tsx, was `mx-auto`) right-aligns
           inside the same width instead of centring short of it. */}
       <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:mx-auto lg:w-[1000px] xl:w-[1080px]">
+      {/* minimal: плашку «FAQ · до старта» Егор убрал — у FAQ свой заголовок. */}
+      {!minimal && (
       <div className="max-lg:hidden mb-2 lg:flex lg:items-stretch lg:gap-3">
         <Appear from="left" delay={BEAT.content} className="hidden lg:flex lg:shrink-0">
           <span className="inline-flex h-full items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-4 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
@@ -102,10 +108,13 @@ export default function Trust({
             FAQ · до старта
           </span>
         </Appear>
+        {!minimal && (
         <Appear from="up" delay={BEAT.content} className="lg:min-w-0 lg:flex-1">
           <BlockAssistant context={`Страница /content (Создание контента), блок «${why.badge}». ${why.description}`} />
         </Appear>
+        )}
       </div>
+      )}
 
       {/* A real 2-column grid, not two independent flex columns — Egor's
           ask: PromoCard and the Telegram card (row 2) sit at the same Y in
@@ -119,7 +128,9 @@ export default function Trust({
           short of the search bar's right edge above. Fixed columns make
           this grid's own width exactly 850/890px, matching the wrapper
           above pixel for pixel. */}
-      <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:grid lg:grid-cols-[380px_540px] lg:gap-x-20 xl:grid-cols-[420px_580px]">
+      {/* minimal (/content, Егор 2026-10-12): тезисы слева в широкой колонке,
+          FAQ справа в узкой; акция — под тезисами, окошки услуг — под FAQ. */}
+      <div className={`max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:grid lg:gap-x-20 ${minimal ? "lg:grid-cols-[540px_380px] xl:grid-cols-[580px_420px]" : "lg:grid-cols-[380px_540px] xl:grid-cols-[420px_580px]"}`}>
         {/* Row 1 (FAQ, reasons) opts out of the grid's default stretch —
             row 2 (Promo, Telegram) needs it: with no lg:self-start, both
             of those cells stretch to match the row's own tallest cell, so
@@ -131,7 +142,7 @@ export default function Trust({
             directly on the film with no card of its own, which read as
             unfinished next to the reason cards and Promo/Telegram pair
             beside it. */}
-        <Appear from="left" delay={BEAT.content} className="hidden lg:block lg:self-start">
+        <Appear from="left" delay={BEAT.content} className={`hidden lg:block lg:self-start ${minimal ? "lg:order-2" : ""}`}>
           {/* `lg:h-[380px] overflow-hidden` — the actual guarantee that
               this card never grows or shrinks. The tab-collapse trick in
               FaqAside (hiding the other three category pills while an
@@ -153,7 +164,7 @@ export default function Trust({
             more breathing room per row is what makes the block "dышать",
             and left-aligning keeps it flush with the Telegram/Promo pair
             underneath instead of centered off from them. */}
-        <div className="lg:mt-8 lg:max-w-[540px] xl:max-w-[580px] lg:self-start">
+        <div className={`lg:max-w-[540px] xl:max-w-[580px] lg:self-start ${minimal ? "lg:order-1 lg:pt-4" : "lg:mt-8"}`}>
           {/* Five separate cards, one shared accent (orange, the same one
               FaqAside's own pills and "+" use right next to this) instead
               of a rainbow per card — Egor's call after the multicolour pass
@@ -166,7 +177,7 @@ export default function Trust({
               // Глава с кнопкой услуги отдаёт ей часть межстрочного воздуха
               // этого списка: пять строк по 4px — ровно та высота, которую
               // кнопка забрала, когда её увеличили.
-              footer ? "gap-[13px]" : "gap-[18px]"
+              minimal ? "gap-3 sm:gap-[22px]" : footer ? "gap-[13px]" : "gap-[18px]"
             }`}
           >
             {why.reasons.map((reason, i) => {
@@ -174,25 +185,32 @@ export default function Trust({
               return (
                 <Appear key={reason.title} from="up" delay={BEAT.content + i * STAGGER.tight}>
                   <div
-                    className="rounded-lg bg-ink/45 backdrop-blur-md transition-[border-color]"
-                    style={{ borderLeft: `3px solid ${isOpen ? REASON_ACCENT.solid : REASON_ACCENT.dim}` }}
+                    className={minimal ? "" : "rounded-lg bg-ink/45 backdrop-blur-md transition-[border-color]"}
+                    style={minimal ? undefined : { borderLeft: `3px solid ${isOpen ? REASON_ACCENT.solid : REASON_ACCENT.dim}` }}
                   >
                     <button
                       type="button"
                       onClick={() => setOpenReason(isOpen ? null : i)}
                       aria-expanded={isOpen}
-                      className="flex w-full items-center gap-3 px-3.5 py-1 text-left"
+                      className={`flex w-full items-center text-left ${minimal ? "gap-4 py-0.5" : "gap-3 px-3.5 py-1"}`}
                     >
                       <span
-                        className="shrink-0 font-display text-[10px] tracking-[0.2em]"
-                        style={{ color: isOpen ? REASON_ACCENT.solid : "rgba(220,221,239,0.45)" }}
+                        className={`shrink-0 font-display ${minimal ? "min-w-8 text-[15px] leading-none sm:min-w-11 sm:text-[22px]" : "text-[10px] tracking-[0.2em]"}`}
+                        // Номер не рвётся: у .font-display общий overflow-wrap
+                        // break-word, и «02» на телефоне вставало столбиком.
+                        style={{
+                          color: minimal ? REASON_ACCENT.solid : isOpen ? REASON_ACCENT.solid : "rgba(220,221,239,0.45)",
+                          whiteSpace: "nowrap",
+                          overflowWrap: "normal",
+                          wordBreak: "keep-all",
+                        }}
                       >
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="flex-1 font-display text-xs uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)]">
+                      <span className={`flex-1 font-display uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] ${minimal ? "text-[12.5px] sm:text-[17px]" : "text-xs"}`}>
                         {reason.title}
                       </span>
-                      <span
+                      {!minimal && <span
                         className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[11px] text-paper/60 transition-transform duration-200"
                         style={
                           isOpen
@@ -202,7 +220,7 @@ export default function Trust({
                         aria-hidden="true"
                       >
                         +
-                      </span>
+                      </span>}
                     </button>
                     <AnimatePresence initial={false}>
                       {isOpen && (
@@ -214,7 +232,7 @@ export default function Trust({
                           transition={{ duration: 0.35, ease: REASON_EASE }}
                           className="max-w-lg overflow-hidden"
                         >
-                          <p className="body-small px-3.5 pb-2.5 pl-[3rem]">
+                          <p className={`body-small pb-2.5 ${minimal ? "pl-12 pt-1.5 !text-[12px] sm:pl-[3.75rem]" : "px-3.5 pl-[3rem]"}`}>
                             {reason.description}
                           </p>
                         </motion.div>
@@ -231,7 +249,7 @@ export default function Trust({
               той же колонке 470px, над промо-карточкой. Так кнопка не
               приставлена к блоку снизу, а живёт в его сетке как ещё один
               её элемент. */}
-          {teamSwap ? (
+          {minimal ? null : teamSwap ? (
             // Отступ — чтобы окошко человека не сливалось с пятым пунктом.
             <div className="hidden lg:mt-5 lg:block">{teamCard}</div>
           ) : (
@@ -252,8 +270,9 @@ export default function Trust({
             посмотрел и попросил именно уменьшить это окно, а не растягивать
             его содержимое — self-start отпускает карточку на её собственную
             высоту, Promo рядом по-прежнему тянется на всю строку сам. */}
-        <Appear from="up" delay={BEAT.cta} className="mt-2 lg:self-start lg:max-w-[380px] xl:max-w-[420px]">
-          {teamSwap ?? teamCard}
+        <Appear from="up" delay={BEAT.cta} className={`mt-2 lg:self-start lg:max-w-[380px] xl:max-w-[420px] ${minimal ? "lg:order-4" : ""}`}>
+          {/* minimal: окошко услуги (teamSwap или footer) вместо человека. */}
+          {minimal ? (teamSwap ?? footer ?? teamCard) : (teamSwap ?? teamCard)}
         </Appear>
 
         {/* Swapped with the Telegram card above — Egor's ask. Now sits under
@@ -263,7 +282,9 @@ export default function Trust({
             adds the same slow breathing glow BlockAssistant's search bar
             has, in the card's own magenta→orange pair, since Egor asked
             for this card specifically to pulse the way that bar does. */}
-        <Appear from="up" delay={BEAT.cta + STAGGER.normal} className="hidden lg:mt-2 lg:block lg:h-full lg:max-w-[540px] xl:max-w-[580px]">
+        <Appear from="up" delay={BEAT.cta + STAGGER.normal} // minimal: акция на своей высоте, не растянута на весь ряд — пустого
+          // поля в ней было вдвое больше текста (Егор, 2026-10-12).
+          className={`hidden lg:mt-2 lg:block lg:max-w-[540px] xl:max-w-[580px] ${minimal ? "lg:order-3 lg:self-start" : "lg:h-full"}`}>
           {active === "content" && (
             <PromoCard
               glow

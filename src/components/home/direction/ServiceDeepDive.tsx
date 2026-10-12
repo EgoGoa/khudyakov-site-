@@ -83,12 +83,13 @@ export default function ServiceDeepDive({ slug }: { slug: string }) {
                 exit={WIN_DIM.exit}
                 ref={dialogRef}
                 tabIndex={-1}
-                className="fixed inset-0 z-[120] flex items-end justify-center bg-ink/80 outline-none backdrop-blur-md sm:items-center sm:p-6"
+                className="fixed inset-0 z-[120] flex items-end justify-center outline-none sm:items-center sm:p-6"
                 onClick={close}
                 role="dialog"
                 aria-modal="true"
                 aria-label={data.title}
               >
+                <div className="site-scrim" aria-hidden="true" />
                 <motion.div
                   // Общая анимация окон сайта (WIN, lib/motion).
                   initial={reduced ? false : WIN.initial}

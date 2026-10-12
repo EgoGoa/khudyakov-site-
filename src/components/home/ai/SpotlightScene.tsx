@@ -24,11 +24,16 @@ export default function SpotlightScene({
   mini = false,
   /** Сцена на карточке карусели (см. CardCtx). */
   card = false,
+  clean = false,
 }: {
   slug: string;
   step: number;
   mini?: boolean;
   card?: boolean;
+  /** Раскрытое окно (Егор, 2026-10-12): без тонких подписей и без
+   *  «было → стало» — остаются крупная цифра и жирные надписи, а
+   *  графика встаёт крупнее (вьюбокс как у карточки). */
+  clean?: boolean;
 }) {
   const reduced = useReducedMotion();
   const scenes = SCENES[slug] ?? GENERIC;
@@ -39,8 +44,10 @@ export default function SpotlightScene({
   // только тем, что подписи и цифры в нём не рисуются: на 64×44 они
   // превратились бы в грязь.
   return (
-    <CardCtx.Provider value={card}>
-    <div className={`tool-scene relative h-full w-full ${card ? "tool-scene-card" : ""}`}>
+    // Крупный вьюбокс — только в окне на компьютере; в мини-сцене телефона
+    // стрелки стоят под графикой, и обрезка подняла бы её на них.
+    <CardCtx.Provider value={card || (clean && !mini)}>
+    <div className={`tool-scene relative h-full w-full ${card ? "tool-scene-card" : ""} ${clean ? "tool-scene-clean" : ""}`}>
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={step}

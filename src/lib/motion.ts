@@ -145,10 +145,13 @@ export const WIN_SIDE = {
 
 /** Затемнение сайта за окном: проявляется вместе с окном и гаснет чуть
  *  позже него — сайт «возвращается», когда окно уже ушло. */
+// Анимирует не прозрачность обёртки, а переменную --scrim, которой
+// проявляется сама подложка .site-scrim (globals.css): при полупрозрачной
+// обёртке браузер не размывает сайт, и блюр включался рывком в конце.
 export const WIN_DIM = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.35, ease: EASE } },
-  exit: { opacity: 0, transition: { duration: 0.32, ease: EASE, delay: 0.06 } },
+  initial: { "--scrim": 0 },
+  animate: { "--scrim": 1, transition: { duration: 0.45, ease: EASE } },
+  exit: { "--scrim": 0, transition: { duration: 0.38, ease: EASE, delay: 0.06 } },
 } as const;
 
 /** Окно в два шага: холсты внутри окна (`.win-shell`) начинают рисовать

@@ -131,7 +131,9 @@ export default function TeamPulseWindow({
           animate={WIN_DIM.animate}
           exit={WIN_DIM.exit}
         >
-          <div className="absolute inset-0 bg-ink/75" onClick={onClose} aria-hidden="true" />
+          {/* Сайт за окном темнеет и уходит в расфокус — тот же слой, что у
+              вайб-окна и стартового меню (Егор, 2026-10-12). */}
+          <div className="site-scrim" onClick={onClose} aria-hidden="true" />
           <MobileClose onClick={onClose} />
 
           <motion.div
@@ -205,7 +207,9 @@ export default function TeamPulseWindow({
                       <TeamPulseChatScene visual={view.visual} chosen={view.chosen} phase={view.phase} answers={view.answers} who={data.member.nameGenitive} />
                     ) : (
                       <>
-                        {settled && <TeamPulseScenes scene={t.scene} />}
+                        {/* Сцена — сразу с окном (Егор, 2026-10-12: окно открывается
+                            уже с содержимым); settled держит только автосмену. */}
+                        <TeamPulseScenes scene={t.scene} />
                         <SceneArrows onPrev={() => go(-1)} onNext={() => go(1)} />
                       </>
                     )}

@@ -9,7 +9,7 @@ import { StepIcon, type ProcessStepItem } from "@/components/home/Process";
 export const AI_PROCESS_STEPS: ProcessStepItem[] = [
   {
     title: "Аудит процессов",
-    description: "Смотрим на продажи, контент и коммуникацию — находим 1–2 узких места с быстрым эффектом.",
+    description: "Находим 1–2 узких места с быстрым эффектом.",
     icon: (
       <StepIcon>
         <path d="M9 3.5H6a1 1 0 0 0-1 1V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4.5a1 1 0 0 0-1-1h-3" />
@@ -25,7 +25,7 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
   },
   {
     title: "Согласование пилота",
-    description: "Фиксируем задачу, метрику успеха и договор — запускаем на одном процессе, не на всём сразу.",
+    description: "Задача, метрика и договор — пилот на одном процессе.",
     icon: (
       <StepIcon>
         <path d="M6 3.5h9l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
@@ -41,7 +41,7 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
   },
   {
     title: "Настройка и интеграция",
-    description: "Настраиваем инструмент под ваш кейс и подключаем к CRM, соцсетям, сайту.",
+    description: "Настраиваем и подключаем к CRM, соцсетям, сайту.",
     icon: (
       <StepIcon>
         <path d="M14.5 6.5l3 3M4 20l5.5-5.5" />
@@ -58,7 +58,7 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
   },
   {
     title: "Тест на реальных данных",
-    description: "Проверяем на живом трафике, не в песочнице — на каждом шаге вы видите прогресс.",
+    description: "Проверяем на живом трафике, не в песочнице.",
     icon: (
       <StepIcon>
         <path d="M5 19V10M12 19V5M19 19v-7" />
@@ -73,7 +73,7 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
   },
   {
     title: "Запуск",
-    description: "Включаем инструмент в работу и передаём инструкцию команде клиента.",
+    description: "Включаем в работу и обучаем команду.",
     icon: (
       <StepIcon>
         <path d="M12 3c3 3 5 7 5 10.5a5 5 0 0 1-10 0C7 10 9 6 12 3z" />
@@ -88,7 +88,7 @@ export const AI_PROCESS_STEPS: ProcessStepItem[] = [
   },
   {
     title: "Сопровождение",
-    description: "Донастройка под новые задачи, отчётность по метрикам, расширение на другие процессы.",
+    description: "Донастройка, отчёты по метрикам, новые процессы.",
     icon: (
       <StepIcon>
         <path d="M20 6v5h-5M4 18v-5h5" />

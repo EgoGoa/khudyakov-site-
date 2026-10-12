@@ -118,7 +118,7 @@ const STEPS = [
   {
     title: "Разбор задачи",
     description:
-      "Бесплатный созвон: цель, аудитория, бюджет, референсы. Дальше — 2–3 концепции со сценарной канвой, чтобы вы увидели ролик до оплаты.",
+      "Бесплатный созвон, затем 2–3 концепции — ролик видно до оплаты.",
     icon: (
       <StepIcon>
         <path d="M6 3.5h9l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
@@ -134,7 +134,7 @@ const STEPS = [
   {
     title: "Смета и договор",
     description:
-      "Фиксируем смету по строкам и даты каждого этапа. Работа стартует после договора и ТЗ. Скрытых доплат нет: всё сверх сметы — отдельно и до, не после.",
+      "Смета по строкам и даты этапов. Без скрытых доплат.",
     icon: (
       <StepIcon>
         <path d="M4 20 15.5 8.5l3.8-3.8a1.4 1.4 0 0 1 2 2L17.5 10.5 6 22H4v-2z" />
@@ -150,7 +150,7 @@ const STEPS = [
   {
     title: "Подготовка к смене",
     description:
-      "Раскадровка, локации, реквизит, кастинг. Постановочный план расписан по часам — съёмочный день идёт по нему, не по импровизации на площадке.",
+      "Раскадровка, локации, кастинг. План смены — по часам.",
     icon: (
       <StepIcon>
         <rect x="3.5" y="4" width="17" height="16" rx="2" />
@@ -166,7 +166,7 @@ const STEPS = [
   {
     title: "Съёмочная смена",
     description:
-      "Снимаем по раскадровке, свет и оборудование — под задачу кадра. Вы можете быть на площадке и видеть материал на плейбэке сразу, не через неделю в монтаже.",
+      "Снимаем по раскадровке. Материал видно на плейбэке сразу.",
     icon: (
       <StepIcon>
         <rect x="3" y="7" width="13" height="11" rx="2" />
@@ -182,7 +182,7 @@ const STEPS = [
   {
     title: "Монтаж и постпродакшн",
     description:
-      "Собираем ролик под ритм и посыл, добавляем графику, где она усиливает историю. Цветокоррекция, диктор, музыка — сведение до уровня федеральной рекламы.",
+      "Монтаж, графика, цвет, звук — уровень федеральной рекламы.",
     icon: (
       <StepIcon>
         <rect x="3" y="4" width="18" height="16" rx="2" />
@@ -198,7 +198,7 @@ const STEPS = [
   {
     title: "Правки и передача",
     description:
-      "Показываем черновой монтаж, собираем правки — 2–3 круга включены в стоимость. Отдаём финальные файлы во всех форматах: YouTube, соцсети, ТВ, наружка.",
+      "2–3 круга правок включены. Файлы под все площадки.",
     icon: (
       <StepIcon>
         <path d="M20 6 9 17l-5-5" />
@@ -252,6 +252,7 @@ export default function Process({
       side="right"
       entrance="slide-right"
       id="process"
+      bodyTop
       intro={intro}
       spacious={spacious}
     >
@@ -284,7 +285,9 @@ export default function Process({
                 <span className="mr-1.5 text-orange">{String(i + 1).padStart(2, "0")}</span>
                 {step.title}
               </h3>
-              <p className="body-small mt-2">{step.description}</p>
+              {/* Короче вдвое и на 30% крупнее (Егор, 2026-10-12), как в карточках
+                  «Основных направлений». */}
+              <p className="body-small mt-2 !text-[11px] sm:!text-[13px]">{step.description}</p>
             </div>
           </Appear>
         ))}
@@ -303,7 +306,7 @@ export default function Process({
         // Same three-column grid the step cards above use — Egor's ask: the
         // promo card and the two team cards read as one row, same width as
         // the steps, not a wide banner plus a narrow sidebar.
-        <div className="mt-5 grid gap-4 sm:grid-cols-3">
+        <div className="mt-5 grid lg:mt-10 gap-4 sm:grid-cols-3">
           <Appear from="up" delay={BEAT.cta} className="h-full">
             <PromoCard
               palette="cyan"
@@ -318,6 +321,10 @@ export default function Process({
             />
           </Appear>
           <Appear from="up" delay={BEAT.cta + 1 * STAGGER.normal} className="h-full">
+            {/* Егор как сервис (TeamPulse) — по центру ряда (Егор, 2026-10-12). */}
+            <TeamPulse data={EGOR_CONTENT} compact fill source="/content · глава «PRO хронология»" />
+          </Appear>
+          <Appear from="up" delay={BEAT.cta + 2 * STAGGER.normal} className="h-full">
             {middleSlot ?? <TeamAskCard
               member={processPerson}
               // Compact variant only shows `question`, not `pitch` — the
@@ -330,10 +337,6 @@ export default function Process({
               glow={false}
               className="h-full"
             />}
-          </Appear>
-          <Appear from="up" delay={BEAT.cta + 2 * STAGGER.normal} className="h-full">
-            {/* Егор как сервис (TeamPulse) вместо карточки. */}
-            <TeamPulse data={EGOR_CONTENT} compact fill source="/content · глава «PRO хронология»" />
           </Appear>
         </div>
       ) : active === "ai" ? (

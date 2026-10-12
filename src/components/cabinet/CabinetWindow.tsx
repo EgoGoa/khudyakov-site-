@@ -46,7 +46,7 @@ export default function CabinetWindow() {
         <motion.div key="cab" className="cab-scope fixed inset-0 z-[90] flex items-center justify-center p-3 sm:p-8" initial={WIN_DIM.initial} animate={WIN_DIM.animate} exit={WIN_DIM.exit}>
           {/* Сайт за кабинетом темнеет и мягко размывается — Егор просил,
               чтобы фокус был только на окне. */}
-          <div className="absolute inset-0 bg-ink/75 backdrop-blur-md" onClick={() => setOpen(false)} aria-hidden="true" />
+          <div className="site-scrim" onClick={() => setOpen(false)} aria-hidden="true" />
           <motion.div
             ref={dialogRef}
             tabIndex={-1}

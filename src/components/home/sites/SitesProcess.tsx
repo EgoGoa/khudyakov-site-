@@ -97,7 +97,7 @@ export default function SitesProcess() {
                 </h3>
                 {/* Пояснение шага развёрнуто, фирменным шрифтом — мельче и серым,
                     как ответы в других блоках (Егор, 2026-09-29). */}
-                <p className="mt-1 font-display text-[11.5px] leading-snug tracking-tight text-paper/60">{step.description}</p>
+                <p className="mt-1 font-display text-[13px] leading-snug tracking-tight text-white/85">{step.description}</p>
               </div>
             </Appear>
           ))}

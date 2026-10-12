@@ -325,6 +325,16 @@ body {
     border-left: 1px solid rgba(255, 255, 255, 0.14);
   }
 }
+/* Подзаголовок под бренд-столбиком (только компьютер, Hero.tsx). Ширина —
+   по слову CREATIVE, кегль — между столбиком и кнопками. */
+.hero-brand-lead {
+  max-width: 33em;
+  margin-top: 1.4rem;
+  font-size: clamp(0.95rem, 1.15vw, 1.35rem);
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 12px rgba(0, 0, 0, 0.6);
+}
 .hero-wm {
   display: flex;
   flex-direction: column;
@@ -5818,9 +5828,8 @@ html:not([data-lite])[data-mid] .sp-pulse {
   /* Сайт за окном темнеет и уходит в расфокус — как за кабинетом
      (Егор, 2026-10-05): bg-ink/75 и блюр 12px, один слой на весь экран.
      Гаснет плавно. */
-  background: rgba(11, 11, 16, 0.75);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: rgba(11, 11, 16, var(--scrim-dim));
+  backdrop-filter: blur(var(--scrim-blur));
   /* Егор, 2026-10-03: сайт за меню читался насквозь и сливался. Размытие
      лежит на подложке, одним слоем на весь экран, а заливка окон ниже
      плотная — даже если браузер не нарисует блюр, текст под ними не
@@ -8824,7 +8833,10 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
   position: fixed;
   inset: 0;
   z-index: 64;
-  background: rgba(3, 3, 6, 0.42);
+  /* Та же подложка, что у всех окон (.site-scrim). */
+  background: rgba(11, 11, 16, var(--scrim-dim));
+  backdrop-filter: blur(var(--scrim-blur));
+  opacity: var(--scrim, 1);
 }
 @media (max-width: 1023px) {
   .block-vibe {
@@ -9589,6 +9601,9 @@ html[data-lite] .welcome-backdrop {
 @keyframes win-body-in {
   from { opacity: 0; translate: 0 8px; }
 }
+/* Окно человека команды (Егор, 2026-10-12): появляется сразу вместе с
+   содержимым, без каскада следом — текст не «выскакивает» после окна. */
+.team-win-wrap .win-shell > * { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   :where(.win-shell) > * { animation: none; }
 }
@@ -9907,13 +9922,16 @@ html[data-lite] .hero-promo-slot { filter: none; }
   margin: 0.45rem 0 0;
   width: 100%;
 }
+/* Полосу-таймер под акциями Егор убрал (2026-10-12). Сама анимация
+   осталась — по её концу карусель листает дальше, — но полоса невидима и
+   места не занимает: под лентой только точки, по центру. */
 .hero-promo-track {
-  position: relative;
-  flex: 1;
-  height: 2px;
+  position: absolute;
+  width: 1px;
+  height: 1px;
   overflow: hidden;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.14);
+  opacity: 0;
+  pointer-events: none;
 }
 .hero-promo-timer {
   position: absolute;
@@ -10646,13 +10664,24 @@ html[data-mid] :is(.welcome-window, .vibe-mode__window) {
    кабинета (bg-ink/75 + backdrop-blur-md). Отдельный слой под окном: фильтр на
    предке окна ломает его собственное стекло. На слабых устройствах блюра нет,
    только плотное затемнение. */
+/* Одна подложка для всех окон и меню сайта (Егор, 2026-10-12): сайт за
+   окном плавно уходит в размытие и темнеет на 30%. Значения — здесь, в
+   двух переменных, для всех окон сразу. Проявляется сама подложка
+   (--scrim, его анимирует WIN_DIM в lib/motion), а не обёртка окна: пока у
+   обёртки прозрачность меньше 1, браузер не размывает сайт под ней, и блюр
+   включался рывком в конце анимации. Пишем только backdrop-filter без
+   -webkit-: сборка схлопывает пару и оставляет префиксный. */
+:root {
+  --scrim-dim: 0.3;
+  --scrim-blur: 14px;
+}
 .site-scrim {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: rgba(11, 11, 16, 0.75);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: rgba(11, 11, 16, var(--scrim-dim));
+  backdrop-filter: blur(var(--scrim-blur));
+  opacity: var(--scrim, 1);
 }
 html[data-lite] .site-scrim {
   -webkit-backdrop-filter: none;
@@ -11101,4 +11130,50 @@ html[data-lite] .site-scrim {
 }
 @media (prefers-reduced-motion: reduce) {
   .site-search__panel, .site-search__dim, .bottom-island { transition: none !important; }
+}
+
+/* Слой главы (CinematicSection) прокручивается сам, но без полосы: полоса
+   появлялась, когда раскрытое окно услуги выходило за низ главы, и сдвигала
+   всю главу на 5px при каждом открытии и закрытии (Егор, 2026-10-12). */
+.chapter-layer { scrollbar-width: none; }
+.chapter-layer::-webkit-scrollbar { display: none; }
+
+/* Глава за раскрытым окном услуги (ToolSpotlight): уходит в расфокус
+   фильтром, плавно. !important — Appear держит на блоках свой inline filter. */
+.spotlight-defocus-fx {
+  transition: filter 0.45s cubic-bezier(0.32, 0.72, 0, 1) !important;
+}
+.spotlight-defocus {
+  filter: blur(var(--scrim-blur)) !important;
+}
+
+/* Затемнение за окном услуги внутри главы — те же значения, что у всех
+   окон. Проявляется своей прозрачностью (ToolSpotlight). */
+.spotlight-scrim {
+  background: rgba(11, 11, 16, var(--scrim-dim));
+  backdrop-filter: blur(var(--scrim-blur));
+}
+
+/* Сцена раскрытого окна услуги (SpotlightScene clean): только крупная
+   цифра и жирные надписи, тонкие подписи убраны (Егор, 2026-10-12). */
+.tool-scene-clean svg text:not([font-weight]):not(.sp-figure) {
+  display: none;
+}
+
+/* Название и слово-выгода на закрытой кнопке услуги (ToolSpotlight):
+   Егор, 2026-10-12: сначала втрое крупнее прежних 12px, потом вдвое
+   меньше («слишком жирные»). Без широкой разрядки. */
+.spotlight-strip-title {
+  font-size: 13px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.spotlight-strip-punch {
+  font-size: 16px;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+@media (min-width: 640px) {
+  .spotlight-strip-title { font-size: 15px; }
+  .spotlight-strip-punch { font-size: 20px; }
 }
