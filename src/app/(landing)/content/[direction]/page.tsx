@@ -97,7 +97,7 @@ export default async function DirectionPage({ params }: { params: Promise<{ dire
 
         <Reveal delay={0.14}>
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link href="/brief" className="btn-neon btn-warm btn-3d !py-3.5">
+            <Link href="/brief/content" className="btn-neon btn-warm btn-3d !py-3.5">
               Обсудить проект
             </Link>
             <Link

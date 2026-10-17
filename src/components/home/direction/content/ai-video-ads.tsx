@@ -41,7 +41,7 @@ export const aiVideoAdsContent: DirectionContent = {
       question: "Нужна линейка креативов без съёмки?",
       pitch: "Расскажите продукт и площадки — прикинем варианты.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/ai",
     },
   },
 
@@ -126,7 +126,7 @@ export const aiVideoAdsContent: DirectionContent = {
         title: "Показать то, чего ещё нет",
         text: "Изделие на стадии чертежа, интерьер до ремонта, объект на другом континенте. Ролик собирается до того, как объект появился физически.",
         accent: "до того, как объект появился физически",
-        href: "/brief",
+        href: "/brief/ai",
         linkLabel: "Обсудить задачу",
       },
       {

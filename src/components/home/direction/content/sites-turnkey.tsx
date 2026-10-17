@@ -53,7 +53,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
       question: "Сколько позиций в каталоге?",
       pitch: "Расскажите объём — прикинем структуру и срок.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/sites",
     },
   },
   stats: [
@@ -136,7 +136,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
         title: "Заявки уже есть, но обрабатываются вручную",
         text: "Формы на сайте, заведённые прямо в CRM, убирают шаг ручного переноса — самое частое место, где заявка теряется или задерживается.",
         accent: "самое частое место, где заявка теряется",
-        href: "/brief",
+        href: "/brief/sites",
         linkLabel: "Обсудить формат",
       },
       {

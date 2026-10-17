@@ -18,6 +18,8 @@ import CloseBlock from "./blocks/CloseBlock";
 import SceneBreak from "./blocks/SceneBreak";
 import InfoWindow from "./blocks/InfoWindow";
 import type { DirectionContent, SceneBreakSlot } from "./types";
+import { usePathname } from "next/navigation";
+import { briefHrefForRoute } from "@/features/brief/registry";
 
 // Страница направления внутри /content — одна на все направления.
 //
@@ -63,6 +65,7 @@ export default function DirectionPage({
   content: DirectionContent;
   headingClass?: string;
 }) {
+  const briefHref = briefHrefForRoute(usePathname() ?? "");
   const breaks = content.sceneBreaks ?? [];
   // Два вида окошек между главами из разных сессий: перебивки (SceneBreak,
   // у страниц инструментов AI/сайтов/SMM — content.sceneBreaks) и живые
@@ -110,7 +113,7 @@ export default function DirectionPage({
             start={0}
             accent={content.backdrop}
             side="left"
-            ctaHref={content.hero.teamAsk?.href ?? "/brief"}
+            ctaHref={content.hero.teamAsk?.href ?? briefHref}
           />
         )}
         <AudienceBlock audience={content.audience} />
@@ -121,7 +124,7 @@ export default function DirectionPage({
             start={1}
             accent={content.backdrop}
             side="right"
-            ctaHref={content.audience.teamAsk?.href ?? "/brief"}
+            ctaHref={content.audience.teamAsk?.href ?? briefHref}
           />
         )}
         {/* Кейсы или технический разбор — одно место в странице, два
@@ -137,7 +140,7 @@ export default function DirectionPage({
             start={2}
             accent={content.backdrop}
             side="left"
-            ctaHref={content.cases?.teamAsk?.href ?? "/brief"}
+            ctaHref={content.cases?.teamAsk?.href ?? briefHref}
           />
         )}
         <PersonaBudget media={content.budgetMedia} />
@@ -154,7 +157,7 @@ export default function DirectionPage({
             start={3}
             accent={content.backdrop}
             side="right"
-            ctaHref={content.process.teamAsk?.href ?? "/brief"}
+            ctaHref={content.process.teamAsk?.href ?? briefHref}
             ctaLabel="Получить смету"
           />
         )}

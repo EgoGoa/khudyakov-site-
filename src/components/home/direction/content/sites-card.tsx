@@ -51,7 +51,7 @@ export const sitesCardContent: CompactToolContent = {
       question: "Что сейчас представляет компанию в интернете?",
       pitch: "Расскажите — прикинем формат и срок.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/sites",
     },
   },
   stats: [
@@ -134,7 +134,7 @@ export const sitesCardContent: CompactToolContent = {
         title: "Сайт — часть личного бренда",
         text: "Портфолио, регалии, контакты в одном месте — то, на что клиент смотрит перед тем, как написать вам напрямую.",
         accent: "перед тем, как написать вам напрямую",
-        href: "/brief",
+        href: "/brief/sites",
         linkLabel: "Обсудить формат",
       },
       {

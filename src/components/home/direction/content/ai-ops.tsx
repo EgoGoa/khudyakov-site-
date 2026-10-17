@@ -46,7 +46,7 @@ export const aiOpsContent: DirectionContent = {
       question: "С какого процесса начать?",
       pitch: "Расскажите задачу — предложим, где AI даст быстрый результат.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/ai",
     },
   },
 
@@ -122,7 +122,7 @@ export const aiOpsContent: DirectionContent = {
         title: "Итог встречи вместо своей памяти",
         text: "Созвон на час превращается в короткое резюме с решениями и задачами. Не нужно ни вести конспект во время разговора, ни восстанавливать его через неделю.",
         accent: "ни восстанавливать его через неделю",
-        href: "/brief",
+        href: "/brief/ai",
         linkLabel: "Обсудить задачу",
       },
       {

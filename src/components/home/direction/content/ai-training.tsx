@@ -40,7 +40,7 @@ export const aiTrainingContent: CompactToolContent = {
       question: "Какой инструмент команда использует не в полную силу?",
       pitch: "Расскажите — прикинем формат программы.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/ai",
     },
   },
   stats: [
@@ -123,7 +123,7 @@ export const aiTrainingContent: CompactToolContent = {
         title: "Новые сотрудники учатся друг у друга",
         text: "Каждый новый человек в команде перенимает привычки у соседа, включая неправильные. Программа даёт всем одну и ту же базу с самого начала.",
         accent: "одну и ту же базу с самого начала",
-        href: "/brief",
+        href: "/brief/ai",
         linkLabel: "Обсудить задачу",
       },
       {

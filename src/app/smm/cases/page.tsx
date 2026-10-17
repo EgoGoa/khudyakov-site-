@@ -76,7 +76,7 @@ export default function SmmCasesPage() {
             <p className="mt-4 text-sm leading-relaxed text-paper/60 sm:text-base">
               Разберём ваш аккаунт бесплатно — покажем, что усилить в первую очередь.
             </p>
-            <Link href="/brief" className="btn-neon mt-6 inline-flex !py-3.5">
+            <Link href="/brief/smm" className="btn-neon mt-6 inline-flex !py-3.5">
               Получить аудит
             </Link>
           </Reveal>

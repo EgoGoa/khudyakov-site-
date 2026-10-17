@@ -54,7 +54,7 @@ export const sitesAssistantContent: CompactToolContent = {
       question: "Что должен закрывать ассистент?",
       pitch: "Расскажите задачу — прикинем формат.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/sites",
     },
   },
   stats: [
@@ -137,7 +137,7 @@ export const sitesAssistantContent: CompactToolContent = {
         title: "Посетитель теряется в вариантах",
         text: "Десятки позиций — не всегда очевидный выбор. Ассистент задаёт наводящие вопросы и сокращает выбор до нескольких подходящих.",
         accent: "сокращает выбор до нескольких подходящих",
-        href: "/brief",
+        href: "/brief/sites",
         linkLabel: "Обсудить формат",
       },
       {

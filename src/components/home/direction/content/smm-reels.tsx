@@ -49,7 +49,7 @@ export const smmReelsContent: CompactToolContent = {
       question: "Какой охват у аккаунта сейчас?",
       pitch: "Расскажите — прикинем объём съёмки.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/smm",
     },
   },
   stats: [
@@ -133,7 +133,7 @@ export const smmReelsContent: CompactToolContent = {
         title: "Экспертность есть, охвата нет",
         text: "Одно вирусное видео способно собрать в 50–100 раз больше просмотров, чем обычный пост — узнаваемость растёт скачком, а не по чуть-чуть.",
         accent: "в 50–100 раз больше просмотров",
-        href: "/brief",
+        href: "/brief/smm",
         linkLabel: "Обсудить формат",
       },
       {

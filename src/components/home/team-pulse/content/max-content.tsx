@@ -110,7 +110,7 @@ export const MAX_CONTENT: TeamPulseData = {
     },
   ],
   nextAsk: "Уже вижу пару идей ✨ Как двигаемся дальше?",
-  briefHref: "/brief",
+  briefHref: "/brief/content",
   callAsk: "Супер! Когда удобно, чтобы я набрал и рассказал идеи?",
   callOptions: ["Прямо сейчас", "Сегодня вечером", "Завтра утром", "Лучше напишите"],
   contactAsk: "Оставь имя и телефон — куда прислать концепции?",

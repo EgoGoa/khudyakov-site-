@@ -54,7 +54,7 @@ export const advertisingContent: DirectionContent = {
       question: "Нужен ролик под конкретный канал?",
       pitch: "Расскажите площадку и хронометраж — подберём формат и смету.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/content",
     },
   },
 
@@ -143,7 +143,7 @@ export const advertisingContent: DirectionContent = {
         title: "Набрать охват",
         text: "Постановочный ролик под телеэфир: точные хронометражи 30/15/6, чистые права на музыку и образы, готовность к приёмке канала.",
         accent: "готовность к приёмке канала",
-        href: "/brief",
+        href: "/brief/content",
         linkLabel: "Открыть смету и идею",
       },
       {
@@ -152,7 +152,7 @@ export const advertisingContent: DirectionContent = {
         title: "Взять продакшн на себя",
         text: "Весь путь под ключ: от идеи и съёмки до постобработки и версий под каждую площадку кампании. Одна команда вместо цепочки посредников.",
         accent: "вместо цепочки посредников",
-        href: "/brief",
+        href: "/brief/content",
         linkLabel: "Рассказать о проекте",
       },
     ],

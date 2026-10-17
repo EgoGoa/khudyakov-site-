@@ -169,7 +169,7 @@ function SpecialFormatCard() {
         className="deck-card-glow relative flex h-full min-h-0 max-sm:gap-4 sm:min-h-[190px] flex-col justify-between overflow-hidden rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
         style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
       >
-        <Link href="/brief" aria-label="Обсудить свой формат" className="absolute inset-0 z-0 rounded-2xl" />
+        <Link href="/brief/content" aria-label="Обсудить свой формат" className="absolute inset-0 z-0 rounded-2xl" />
 
         <div className="pointer-events-none relative z-10 mt-2">
           <h3 className="direction-card-title font-display text-base uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] transition-[color] sm:text-lg">
@@ -189,7 +189,7 @@ function SpecialFormatCard() {
         <div className="pointer-events-none relative z-10 mt-2 flex items-center gap-3">
           <span className="btn-neon pointer-events-none !px-3.5 !py-1.5 !text-[10px]">Обсудить формат</span>
           <Link
-            href="/brief"
+            href="/brief/content"
             aria-label="Обсудить свой формат"
             className="btn-neon pointer-events-auto grid h-8 w-8 shrink-0 !p-0 place-items-center text-paper/85 transition-colors duration-300 hover:text-orange"
             style={{ "--btn-neon-delay": "1.8s" } as React.CSSProperties}

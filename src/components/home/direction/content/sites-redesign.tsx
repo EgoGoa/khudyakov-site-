@@ -54,7 +54,7 @@ export const sitesRedesignContent: CompactToolContent = {
       question: "Что не так с текущим сайтом?",
       pitch: "Расскажите — прикинем объём переделки.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/sites",
     },
   },
   stats: [
@@ -137,7 +137,7 @@ export const sitesRedesignContent: CompactToolContent = {
         title: "Трафик приходит, но не остаётся",
         text: "Отказы выше 70% — сигнал, что дело не в трафике, а в первых секундах на сайте. Редизайн начинается с аудита, что именно отталкивает посетителя.",
         accent: "дело не в трафике, а в первых секундах",
-        href: "/brief",
+        href: "/brief/sites",
         linkLabel: "Обсудить формат",
       },
       {

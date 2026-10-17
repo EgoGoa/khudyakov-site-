@@ -354,7 +354,7 @@ export default function Works({
                   question="Не нашли похожий проект?"
                   pitch="Покажу похожие работы в портфолио и подскажу формат под вашу задачу."
                   actionLabel="Обсудить с Егором"
-                  href="/brief"
+                  href="/brief/content"
                 />
               </div>
             </Reveal>

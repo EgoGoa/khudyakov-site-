@@ -54,7 +54,7 @@ export const smmStoriesContent: CompactToolContent = {
       question: "Как часто сейчас выходят истории?",
       pitch: "Расскажите ритм — прикинем формат.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/smm",
     },
   },
   stats: [
@@ -137,7 +137,7 @@ export const smmStoriesContent: CompactToolContent = {
         title: "Аудитория хочет видеть закулисье",
         text: "Reels показывает результат, а сторис — процесс: рабочий день, мысли, реакции. Это то, что делает бренд живым человеком, а не витриной.",
         accent: "делает бренд живым человеком",
-        href: "/brief",
+        href: "/brief/smm",
         linkLabel: "Обсудить формат",
       },
       {

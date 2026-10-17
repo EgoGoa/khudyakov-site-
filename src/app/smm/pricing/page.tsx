@@ -103,7 +103,7 @@ export default function SmmPricingPage() {
                   </ul>
 
                   <Link
-                    href="/brief"
+                    href="/brief/smm"
                     className={`mt-6 w-full rounded-[14px] px-6 py-2 text-center text-[0.7rem] font-semibold transition ${
                       tier.pro ? "bg-glow text-ink hover:opacity-90" : "bg-paper text-ink hover:bg-white"
                     }`}
@@ -131,7 +131,7 @@ export default function SmmPricingPage() {
               Разберём аккаунт бесплатно и предложим формат, который подходит именно вам.
             </p>
             <Link
-              href="/brief"
+              href="/brief/smm"
               className="btn-neon mt-6 inline-flex !py-3.5"
             >
               Получить аудит

@@ -59,7 +59,7 @@ export const sitesLandingContent: CompactToolContent = {
       question: "Куда сейчас ведёт трафик?",
       pitch: "Расскажите оффер — прикинем формат и срок.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/sites",
     },
   },
   stats: [
@@ -142,7 +142,7 @@ export const sitesLandingContent: CompactToolContent = {
         title: "Нужна страница, а не весь сайт",
         text: "Полноценный сайт — это недели. Лендинг под запуск — это дни, и его можно заменить или расширить, когда продукт подтвердит спрос.",
         accent: "дни, а не недели",
-        href: "/brief",
+        href: "/brief/sites",
         linkLabel: "Обсудить формат",
       },
       {

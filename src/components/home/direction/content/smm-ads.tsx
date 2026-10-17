@@ -51,7 +51,7 @@ export const smmAdsContent: CompactToolContent = {
       question: "Куда сейчас ведёт реклама?",
       pitch: "Расскажите — прикинем воронку.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/smm",
     },
   },
   stats: [
@@ -134,7 +134,7 @@ export const smmAdsContent: CompactToolContent = {
         title: "Органика больше не работает сама",
         text: "Охват крупных каналов упал вдвое за 2025 год — таргет остаётся рабочим способом привести подписчиков туда, где вы уже публикуетесь.",
         accent: "остаётся рабочим способом",
-        href: "/brief",
+        href: "/brief/smm",
         linkLabel: "Обсудить формат",
       },
       {

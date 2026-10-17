@@ -52,7 +52,7 @@ export const presentationContent: DirectionContent = {
       question: "Готовы провести онлайн-креатив-сессию?",
       pitch: "Присоединяйтесь — обсудим задачу и структуру фильма вместе с командой.",
       actionLabel: "Присоединиться",
-      href: "/brief",
+      href: "/brief/content",
     },
   },
 
@@ -138,7 +138,7 @@ export const presentationContent: DirectionContent = {
         title: "Понимать, за что платите",
         text: "Ещё до съёмок вы получаете структуру фильма и три варианта сметы: что снимаем, сколько смен, где нужна графика. Без «доуточним по ходу».",
         accent: "Без «доуточним по ходу»",
-        href: "/brief",
+        href: "/brief/content",
         linkLabel: "Смотреть смету и структуру",
       },
       {
@@ -156,7 +156,7 @@ export const presentationContent: DirectionContent = {
         title: "Показать компанию честно",
         text: "Показываем настоящее производство, людей и условия без глянца. Соискатель знакомится с компанией ещё до первого разговора.",
         accent: "без глянца",
-        href: "/brief",
+        href: "/brief/content",
         linkLabel: "Обсудить задачу",
       },
     ],

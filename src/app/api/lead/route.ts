@@ -13,7 +13,8 @@ type LeadPayload = {
   type:
     | "call"
     | "consult"
-    | "brief"
+    | "brief-content"
+    | "brief-general"
     | "brief-ai"
     | "brief-smm"
     | "brief-sites"
@@ -33,7 +34,8 @@ type LeadPayload = {
 const TYPE_LABEL: Record<LeadPayload["type"], string> = {
   call: "Заказать звонок",
   consult: "Консультация с продюсером",
-  brief: "Бриф на видео",
+  "brief-content": "Бриф: создание контента",
+  "brief-general": "Общий бриф",
   // The three direction briefs (/brief/ai, /brief/smm, /brief/sites) — same
   // shape as the video brief, distinguished here so the subject line alone
   // tells Egor which page the lead came from.

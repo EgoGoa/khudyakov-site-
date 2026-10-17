@@ -47,7 +47,7 @@ export const imageContent: DirectionContent = {
       question: "Готовы обсудить образ бренда на созвоне?",
       pitch: "Расскажите про бренд — предложим концепцию и смету.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/content",
     },
   },
 
@@ -125,7 +125,7 @@ export const imageContent: DirectionContent = {
         title: "Визуальный язык",
         text: "Свет, цвет, ритм монтажа и музыка собираются в один узнаваемый почерк — так, чтобы следующее видео можно было снять в том же ключе, а не начинать заново.",
         accent: "узнаваемый почерк",
-        href: "/brief",
+        href: "/brief/content",
         linkLabel: "Обсудить язык бренда",
       },
       {
@@ -143,7 +143,7 @@ export const imageContent: DirectionContent = {
         title: "Доверие до первого контакта",
         text: "В медицине, образовании и сервисе решение принимают на ощущениях. Имиджевое видео снимает часть страха ещё до звонка — человек уже видел, куда идёт.",
         accent: "уже видел, куда идёт",
-        href: "/brief",
+        href: "/brief/content",
         linkLabel: "Обсудить задачу",
       },
     ],

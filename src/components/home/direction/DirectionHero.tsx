@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { briefHrefForRoute } from "@/features/brief/registry";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { EASE } from "@/lib/motion";
@@ -194,7 +195,7 @@ export default function DirectionHero({
             // Запасной вариант для гипотетической страницы без teamAsk —
             // герой не должен остаться без единого следующего шага.
             <div className="mt-10 flex flex-wrap items-center gap-3">
-              <Link href="/brief" className="btn-neon btn-warm btn-3d !py-3.5">
+              <Link href={briefHrefForRoute(pathname)} className="btn-neon btn-warm btn-3d !py-3.5">
                 Получить смету
               </Link>
               <a href={TELEGRAM_URL} target="_blank" rel="noreferrer" className="btn-neon btn-3d !py-3.5">

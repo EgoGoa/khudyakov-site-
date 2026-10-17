@@ -42,7 +42,7 @@ export const aiCommsContent: CompactToolContent = {
       question: "Сколько обращений приходит в день?",
       pitch: "Расскажите поток — прикинем, что можно отсеять.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/ai",
     },
   },
   stats: [
@@ -125,7 +125,7 @@ export const aiCommsContent: CompactToolContent = {
         title: "Очередь без приоритетов",
         text: "Срочная жалоба и вопрос о графике работы попадают в одну очередь по порядку. Фильтр сортирует по срочности до того, как обращение увидит человек.",
         accent: "сортирует по срочности до того",
-        href: "/brief",
+        href: "/brief/ai",
         linkLabel: "Обсудить задачу",
       },
       {

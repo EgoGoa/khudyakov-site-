@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import LeadModal from "@/components/home/LeadModal";
 import { OPEN_LEAD_EVENT } from "@/lib/lead";
+import { briefHrefForRoute } from "@/features/brief/registry";
 
 // Единое окно заявки. Открывается событием openLead() и любой ссылкой на
 // бриф (/brief…) на сайте: вместо прямого перехода посетитель видит выбор,
@@ -14,7 +15,7 @@ export default function GlobalLead() {
 
   useEffect(() => {
     const show = (href?: string) => {
-      setBriefHref(href || "/brief");
+      setBriefHref(href || briefHrefForRoute(window.location.pathname));
       setOpen(true);
     };
     const onEvent = (e: Event) => show((e as CustomEvent<{ briefHref?: string }>).detail?.briefHref);

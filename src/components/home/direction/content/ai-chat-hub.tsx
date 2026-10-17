@@ -51,7 +51,7 @@ export const aiChatHubContent: CompactToolContent = {
       question: "Сколько каналов нужно объединить?",
       pitch: "Расскажите, где сейчас переписка — прикинем формат.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/ai",
     },
   },
   stats: [
@@ -134,7 +134,7 @@ export const aiChatHubContent: CompactToolContent = {
         title: "Клиент пишет не в рабочее время",
         text: "Вечером и в выходные сообщения просто копятся до утра — часть клиентов уходит к тому, кто ответил первым. Ассистент отвечает сразу, в любое время.",
         accent: "отвечает сразу, в любое время",
-        href: "/brief",
+        href: "/brief/ai",
         linkLabel: "Обсудить задачу",
       },
       {

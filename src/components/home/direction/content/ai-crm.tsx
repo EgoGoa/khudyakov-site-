@@ -40,7 +40,7 @@ export const aiCrmContent: CompactToolContent = {
       question: "Какой CRM пользуетесь?",
       pitch: "Расскажите про воронку — прикинем, что автоматизировать.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/ai",
     },
   },
   stats: [
@@ -123,7 +123,7 @@ export const aiCrmContent: CompactToolContent = {
         title: "Непонятно, кому отдать сделку",
         text: "Заявка приходит новому менеджеру наугад, хотя у другого уже есть опыт с похожим клиентом. Маршрутизация учитывает загрузку и профиль сделки.",
         accent: "учитывает загрузку и профиль сделки",
-        href: "/brief",
+        href: "/brief/ai",
         linkLabel: "Обсудить задачу",
       },
       {

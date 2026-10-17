@@ -51,7 +51,7 @@ export const smmCarouselContent: CompactToolContent = {
       question: "Что должна делать карусель?",
       pitch: "Расскажите задачу — прикинем структуру.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/smm",
     },
   },
   stats: [
@@ -125,7 +125,7 @@ export const smmCarouselContent: CompactToolContent = {
         title: "Одного поста не хватает объяснить мысль",
         text: "Сложную тему проще разложить на несколько экранов, чем втиснуть в один абзац под фото — так рождается формат, который реально дочитывают.",
         accent: "реально дочитывают",
-        href: "/brief",
+        href: "/brief/smm",
         linkLabel: "Обсудить формат",
       },
       {

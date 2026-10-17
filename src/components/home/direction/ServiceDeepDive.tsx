@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { briefHrefForRoute } from "@/features/brief/registry";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { WIN, WIN_DIM } from "@/lib/motion";
@@ -25,6 +27,7 @@ import { useDialogFocus } from "@/lib/use-dialog-focus";
 const BEAT_MS = 5200;
 
 export default function ServiceDeepDive({ slug }: { slug: string }) {
+  const briefHref = briefHrefForRoute(usePathname() ?? "");
   const data = directionDeep(slug);
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -116,7 +119,7 @@ export default function ServiceDeepDive({ slug }: { slug: string }) {
                   <div className="mt-4 flex min-w-0 flex-1 flex-col lg:mt-0">
                     <SpotlightCopy data={data} step={step} setStep={setStep} onClose={close} />
                     <div className="mt-4 flex flex-wrap items-center gap-3">
-                      <Link href="/brief" onClick={close} className="btn-neon btn-warm !py-3">
+                      <Link href={briefHref} onClick={close} className="btn-neon btn-warm !py-3">
                         Обсудить проект
                       </Link>
                       <button

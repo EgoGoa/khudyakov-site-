@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { briefHrefForRoute } from "@/features/brief/registry";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { useService } from "@/lib/service-context";
@@ -223,12 +227,14 @@ function CtaButton({
     </>
   );
   const cls = buttonClass(size, flat || square, square);
+  const pathname = usePathname() ?? "";
+  const href = funnel.href === "/brief" ? briefHrefForRoute(pathname) : funnel.href;
   return funnel.external ? (
     <a href={funnel.href} target="_blank" rel="noopener noreferrer" className={cls}>
       {content}
     </a>
   ) : (
-    <Link href={funnel.href} className={cls}>
+    <Link href={href} className={cls}>
       {content}
     </Link>
   );

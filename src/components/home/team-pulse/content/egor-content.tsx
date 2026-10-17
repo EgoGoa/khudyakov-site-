@@ -95,7 +95,7 @@ export const EGOR_CONTENT: TeamPulseData = {
     },
   ],
   nextAsk: "Отлично, план уже в голове ✨ Как двигаемся дальше?",
-  briefHref: "/brief",
+  briefHref: "/brief/content",
   callAsk: "Супер! Когда удобно, чтобы я набрал и разложил съёмку по шагам?",
   callOptions: ["Прямо сейчас", "Сегодня вечером", "Завтра утром", "Лучше напишите"],
   contactAsk: "Оставь имя и телефон — наберу в это время.",

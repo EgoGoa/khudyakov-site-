@@ -51,7 +51,7 @@ export const smmBloggersContent: CompactToolContent = {
       question: "Какая задача у интеграции?",
       pitch: "Расскажите — подберём блогеров под неё.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/smm",
     },
   },
   stats: [
@@ -144,7 +144,7 @@ export const smmBloggersContent: CompactToolContent = {
         title: "Есть контент, не хватает чужого доверия",
         text: "Блогеры усиливают то, что уже снимается и публикуется, а не заменяют собственный SMM — интеграция работает лучше на фоне живого аккаунта.",
         accent: "усиливают то, что уже снимается",
-        href: "/brief",
+        href: "/brief/smm",
         linkLabel: "Обсудить формат",
       },
     ],

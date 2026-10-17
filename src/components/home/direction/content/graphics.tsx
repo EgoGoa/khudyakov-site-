@@ -50,7 +50,7 @@ export const graphicsContent: DirectionContent = {
       question: "Нужна графика под конкретный продукт?",
       pitch: "Расскажите задачу — предложим формат и смету.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/content",
     },
   },
 
@@ -137,7 +137,7 @@ export const graphicsContent: DirectionContent = {
         title: "Оживить цифры",
         text: "Инфографика превращает отчёт в понятную историю: что выросло, за счёт чего и куда идёт дальше. Те же данные, но их досматривают до конца.",
         accent: "их досматривают до конца",
-        href: "/brief",
+        href: "/brief/content",
         linkLabel: "Обсудить задачу",
       },
       {
@@ -146,7 +146,7 @@ export const graphicsContent: DirectionContent = {
         title: "Собрать фирменные элементы",
         text: "Анимация логотипа, заставки, титры и переходы — один комплект, который потом ставится в любое видео компании и держит узнаваемость.",
         accent: "держит узнаваемость",
-        href: "/brief",
+        href: "/brief/content",
         linkLabel: "Собрать комплект",
       },
     ],

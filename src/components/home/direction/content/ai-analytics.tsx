@@ -40,7 +40,7 @@ export const aiAnalyticsContent: CompactToolContent = {
       question: "Сколько источников данных нужно свести?",
       pitch: "Расскажите кабинеты — прикинем формат дашборда.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/ai",
     },
   },
   stats: [
@@ -123,7 +123,7 @@ export const aiAnalyticsContent: CompactToolContent = {
         title: "Отчёт готовит тот, у кого есть время",
         text: "Еженедельный отчёт перед руководством собирает маркетолог вручную, отвлекаясь от своей основной работы. Дашборд собирает его сам.",
         accent: "дашборд собирает его сам",
-        href: "/brief",
+        href: "/brief/ai",
         linkLabel: "Обсудить задачу",
       },
       {

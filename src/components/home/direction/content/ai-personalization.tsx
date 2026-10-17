@@ -41,7 +41,7 @@ export const aiPersonalizationContent: CompactToolContent = {
       question: "Сколько сегментов аудитории у вас сейчас?",
       pitch: "Расскажите про базу — прикинем, что персонализировать.",
       actionLabel: "Обсудить с Егором",
-      href: "/brief",
+      href: "/brief/ai",
     },
   },
   stats: [
@@ -124,7 +124,7 @@ export const aiPersonalizationContent: CompactToolContent = {
         title: "Разные сегменты — разный язык",
         text: "Малый бизнес и крупная компания читают одно и то же предложение по-разному. Персонализация меняет акценты под сегмент, а не только имя в шапке письма.",
         accent: "меняет акценты под сегмент",
-        href: "/brief",
+        href: "/brief/ai",
         linkLabel: "Обсудить задачу",
       },
       {

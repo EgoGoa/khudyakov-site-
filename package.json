@@ -4,6 +4,8 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "next dev",
+    "check:briefs": "node scripts/check-briefs.mjs",
+    "prebuild": "npm run check:briefs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
