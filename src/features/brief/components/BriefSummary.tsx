@@ -24,7 +24,7 @@ export default function BriefSummary({
                 {text ?? "— пропущено"}
               </div>
             </div>
-            <button type="button" onClick={() => onEdit(s.id)} className="shrink-0 text-sm font-semibold text-[#00d2ff] hover:underline">
+            <button type="button" onClick={() => onEdit(s.id)} className="shrink-0 text-sm font-semibold text-[color:var(--hb-a)] hover:underline">
               Изменить
             </button>
           </li>

@@ -38,7 +38,7 @@ export default function LinksStep({
         );
       })}
       {links.length < 10 && (
-        <button type="button" onClick={() => set([...links, ""])} className="text-sm font-semibold text-[#00d2ff] hover:underline">
+        <button type="button" onClick={() => set([...links, ""])} className="text-sm font-semibold text-[color:var(--hb-a)] hover:underline">
           ＋ Добавить ещё
         </button>
       )}

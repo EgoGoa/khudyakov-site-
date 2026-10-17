@@ -1,21 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import LeadModal from "@/components/home/LeadModal";
 import { OPEN_LEAD_EVENT } from "@/lib/lead";
-import { briefHrefForRoute } from "@/features/brief/registry";
+import { currentBriefHref } from "@/features/brief/registry";
 
 // Единое окно заявки. Открывается событием openLead() и любой ссылкой на
 // бриф (/brief…) на сайте: вместо прямого перехода посетитель видит выбор,
 // как удобнее обсудить проект. Ссылка с data-lead-direct (сама кнопка
 // «Заполнить бриф» в окне) и ссылки на страницах брифа ведут напрямую.
 export default function GlobalLead() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [briefHref, setBriefHref] = useState("/brief");
 
   useEffect(() => {
     const show = (href?: string) => {
-      setBriefHref(href || briefHrefForRoute(window.location.pathname));
+      setBriefHref(href || currentBriefHref());
       setOpen(true);
     };
     const onEvent = (e: Event) => show((e as CustomEvent<{ briefHref?: string }>).detail?.briefHref);
@@ -26,9 +28,14 @@ export default function GlobalLead() {
       const href = a.getAttribute("href") ?? "";
       if (!/^\/brief(\/[a-z-]+)?\/?$/.test(href)) return;
       if (window.location.pathname.startsWith("/brief")) return;
+      const bare = /^\/brief\/?$/.test(href);
+      const target = bare ? currentBriefHref() : href;
       e.preventDefault();
       e.stopPropagation();
-      show(href);
+      // Ссылка, где написано «бриф», ведёт сразу в бриф текущей категории;
+      // остальные («Обсудить проект») открывают окно выбора способа связи.
+      if (/бриф/i.test(a.textContent ?? "") || /бриф/i.test(a.getAttribute("aria-label") ?? "")) router.push(target);
+      else show(target);
     };
     window.addEventListener(OPEN_LEAD_EVENT, onEvent);
     document.addEventListener("click", onClick, true);
@@ -36,7 +43,7 @@ export default function GlobalLead() {
       window.removeEventListener(OPEN_LEAD_EVENT, onEvent);
       document.removeEventListener("click", onClick, true);
     };
-  }, []);
+  }, [router]);
 
   return <LeadModal open={open} onClose={() => setOpen(false)} briefHref={briefHref} />;
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { briefHome, getBriefConfig, getBriefIdForRoute } from "../registry";
+import { briefBackground, briefHome, getBriefConfig, getBriefIdForRoute } from "../registry";
 import { useBriefState } from "../hooks/useBriefState";
 import { canProceed } from "../lib/logic";
 import { submitBrief } from "../lib/submit";
@@ -112,7 +112,8 @@ function BriefInner({ briefId }: { briefId: AnyBriefId }) {
 
   return (
     <section data-brief-id={config.id} className="hb-root">
-      <div className="mx-auto w-full max-w-3xl px-4 pb-6 pt-36 sm:px-6 sm:pt-40">
+      <div aria-hidden className="hb-bg" style={{ backgroundImage: `url(${briefBackground[config.id]})` }} />
+      <div className="relative z-10 mx-auto w-full max-w-3xl px-4 pb-6 pt-36 sm:px-6 sm:pt-40">
         <div className="mb-6">
           <div className="flex items-baseline justify-between gap-3">
             <span className="font-display text-xs uppercase tracking-[0.15em] text-white">{config.title}</span>

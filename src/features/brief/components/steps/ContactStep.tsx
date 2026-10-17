@@ -77,7 +77,7 @@ export default function ContactStep({
       </div>
 
       <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-white">
-        <input type="checkbox" checked={Boolean(a.consent)} onChange={(e) => onChange({ consent: e.target.checked })} className="mt-1 h-5 w-5 shrink-0 accent-[#ff4fd8]" />
+        <input type="checkbox" checked={Boolean(a.consent)} onChange={(e) => onChange({ consent: e.target.checked })} className="mt-1 h-5 w-5 shrink-0 accent-[var(--hb-b)]" />
         <span>
           Согласен(на) с{" "}
           <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="underline">

@@ -24,6 +24,15 @@ export const serviceBriefMap: Record<string, BriefId> = {
   "/ai": "ai",
 };
 
+/** Фон страницы брифа — стоковая картинка по теме услуги (свой домен, не внешний хост). */
+export const briefBackground: Record<AnyBriefId, string> = {
+  content: "/images/blocks/stock-directing.jpg",
+  sites: "/images/stock/devs-night.webp",
+  smm: "/images/stock/smm-phone-bokeh.webp",
+  ai: "/images/blocks/ai-neon-desk.jpg",
+  general: "/images/blocks/stock-briefing.jpg",
+};
+
 /** Куда ведёт «Вернуться к услугам» после отправки. */
 export const briefHome: Record<AnyBriefId, string> = {
   content: "/content",
@@ -55,4 +64,19 @@ export function getBriefConfig(id: AnyBriefId): BriefConfig {
 export function briefHrefForRoute(route: string): string {
   const id = getBriefIdForRoute(route);
   return id ? `/brief/${id}` : "/brief";
+}
+
+/** Бриф «текущей» категории из браузера: по адресу страницы услуги, а на
+ *  общих страницах (главная, работы, калькулятор) — по выбранной в меню
+ *  услуге (hdkv-active-service). Спрашивать «какой бриф» не нужно. */
+export function currentBriefHref(): string {
+  const id = getBriefIdForRoute(window.location.pathname);
+  if (id) return `/brief/${id}`;
+  try {
+    const saved = window.localStorage.getItem("hdkv-active-service");
+    if (saved && saved in briefConfigs) return `/brief/${saved}`;
+  } catch {
+    /* хранилище закрыто — берём контент */
+  }
+  return "/brief/content";
 }
