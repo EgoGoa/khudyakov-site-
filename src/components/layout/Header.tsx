@@ -168,9 +168,6 @@ export default function Header() {
 
   return (
     <>
-      {/* ЗАКРЕПЛЕНО: по этой полосе Safari на iOS 26 красит зону под своей
-          адресной строкой (globals.css, «зоны под панелями Safari»). */}
-      <div className="safari-top-tint" aria-hidden="true" />
       {/* Затемнение страницы под шапкой и шторкой; сама шапка поверх него
           не тускнеет. Тап — закрыть меню. */}
       <AnimatePresence>

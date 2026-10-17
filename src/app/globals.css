@@ -10744,56 +10744,23 @@ html[data-lite] .site-scrim {
   }
 }
 
-/* ═══ ЗАКРЕПЛЕНО (Егор, 2026-10-10): зоны под панелями Safari на iOS 26 ═══
-   НЕ МЕНЯТЬ И НЕ УБИРАТЬ. Сайт не должен просвечивать ни над шапкой (за
-   адресной строкой), ни под нижней полосой (за панелью кнопок Safari).
-
-   Как Safari решает, что рисовать в этих зонах (WebKit,
+/* ═══ Зоны под панелями Safari на iOS (Егор, 2026-10-10; верх изменён 2026-10-17) ═══
+   ВЕРХ: сплошная полоса-заглушка .safari-top-tint убрана по просьбе Егора —
+   теперь за временем, батареей и островом видно сайт: это тот же стеклянный
+   слой шапки (.header-glass начинается с top: 0, blur + saturate) с мягким
+   затемнением сверху вниз (.header-glass::before), см. ниже «Стекло за
+   статус-баром». Не возвращать сплошную полосу сверху.
+   НИЗ: сайт по-прежнему не просвечивает под нижней полосой Safari.
+   Как Safari решает, что рисовать под своей панелью (WebKit,
    LocalFrameView::fixedContainerEdges): берёт точку в 8px от края экрана и
-   первый fixed-элемент под ней.
-   - У элемента сплошной background-color → продлевает этот цвет под панель.
-   - У элемента backdrop-filter (наше стекло) → рисует своё слабое размытие,
-     и сквозь него читается сайт. Так было на скрине Егора.
-   - Элементы тоньше ~10px, почти прозрачные или с pointer-events: none
-     Safari пропускает. Поэтому не сработала прежняя полоска в 1px.
-
-   Решение:
-   1. .safari-top-tint (Header.tsx) — отдельная fixed-полоса 14px у верхнего
-      края, цвета --ios-bar, ПОВЕРХ шапки и ловит нажатия. Safari продлевает
-      её цвет до верха экрана.
-   2. Шапка остаётся стеклом с размытием, но сверху её тон плавно переходит
-      в --ios-bar: полоса, зона Safari и стекло читаются одной шапкой.
-   3. .safari-bottom-tint (layout.tsx) — такая же полоса 14px у нижнего края,
-      цвета низа затемнения .bottom-fade: градиент идёт от самого низа экрана.
-   Только iOS (-webkit-touch-callout есть только там) и только стоя: боком
-   шапка прозрачная по своему решению (land:). */
-:root { --ios-bar: #16151d; }
-.safari-top-tint,
+   первый fixed-элемент под ней. Сплошной background-color → продлевает этот
+   цвет под панель; backdrop-filter → своё слабое размытие. Элементы тоньше
+   ~10px или с pointer-events: none Safari пропускает.
+   .safari-bottom-tint (layout.tsx) — fixed-полоса 14px у нижнего края цвета
+   низа затемнения .bottom-fade. Только iOS (-webkit-touch-callout есть только
+   там) и только стоя: боком шапка прозрачная по своему решению (land:). */
 .safari-bottom-tint { display: none; }
 @supports (-webkit-touch-callout: none) {
-  @media (orientation: portrait) {
-    .safari-top-tint {
-      display: block;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 14px;
-      background-color: var(--ios-bar);
-      z-index: 51;
-    }
-    html [data-site-header].header-glass {
-      background:
-        linear-gradient(to bottom, var(--ios-bar) 14px, rgba(22, 21, 29, 0) 46px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
-        rgba(14, 14, 20, 0.4);
-      /* без блика по верхней кромке — на стыке с зоной Safari он рисовал бы
-         шов; волосяная кромка снизу и тень остаются */
-      box-shadow:
-        inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
-        0 12px 32px -14px rgba(0, 0, 0, 0.65);
-    }
-  }
   @media (max-width: 1023px) and (orientation: portrait) {
     .safari-bottom-tint {
       display: block;
@@ -10806,6 +10773,36 @@ html[data-lite] .site-scrim {
       background-color: #0b0b10;
       z-index: 59;
     }
+  }
+}
+
+/* ── Стекло за статус-баром (iPhone, телефон стоя) ──────────────────────────
+   Шапка стоит от самого верха экрана (top: 0, viewport-fit=cover), её стекло
+   — то же, что у строки меню: blur + saturate, полупрозрачный тон. Зона
+   выреза (время, батарея, остров) — верхняя часть этого же стекла, поэтому
+   контент страницы виден сквозь неё при прокрутке. Поверх — отдельный слой
+   (::before) высотой с вырез: лёгкое затемнение сверху для читаемости
+   времени, плавно сходящее на нет к строке меню — без шва.
+   --sat на телефоне стоя поднят: строка меню начинается сразу под островом,
+   а не на всю высоту выреза ниже (зазор ≈ 8px вместо ~40px). Меняется одна
+   переменная — от неё считаются шапка, отступы глав и всё, что висит под
+   шапкой. Высоту строки меню и пункты не трогаем. */
+@media (max-width: 767px) and (orientation: portrait) {
+  :root { --sat: max(0px, calc(env(safe-area-inset-top, 0px) - 22px)); }
+  html [data-site-header].header-glass::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--sat) + 24px);
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgba(11, 11, 16, 0.5) 0%,
+      rgba(11, 11, 16, 0.26) 55%,
+      rgba(11, 11, 16, 0) 100%
+    );
   }
 }
 
@@ -10831,7 +10828,7 @@ html[data-lite] .site-scrim {
     border-radius: 26px;
   }
   /* Волна — в левом гнезде острова (центр гнезда: край + 5px + 30px). */
-  :root { --bi-left: max(12px, calc(50% - 280px)); --bi-right: max(12px, calc(50% - 280px)); }
+  :root { --bi-left: max(12px, calc(50% - 280px)); --bi-right: max(12px, calc(50% - 280px)); --bi-hit-w: 44px; --bi-hit-h: 52px; }
   .voice-dock-corner {
     left: calc(var(--bi-left) + 5px + 30px - var(--wave-w, 55px) / 2);
     translate: 0 0;
@@ -10844,6 +10841,38 @@ html[data-lite] .site-scrim {
   .vibe-fan__orb { scale: 0.78; }
   .vibe-fan__orb::before { display: none; }
 }
+@media (max-width: 1023px) and (orientation: portrait), (min-width: 1024px) {
+  /* Волна в гнезде острова. Рисуется шире гнезда (холст с полями под
+     размах), но нажимается и откликается на наведение ТОЛЬКО в пределах
+     гнезда: зона нажатия — невидимая подложка кнопки. Иначе её края лежали
+     поверх лупы поиска, и клик/наведение у лупы включали голос. Приглашение
+     «Включить голос» остаётся кликабельным. */
+  .voice-dock-corner,
+  .voice-dock-corner .voice-dock,
+  .voice-dock-corner .voice-sphere { pointer-events: none; }
+  .voice-dock-corner .voice-invite { pointer-events: auto; }
+  .voice-dock-corner .voice-sphere { position: relative; }
+  .voice-dock-corner .voice-sphere::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--bi-hit-w);
+    height: var(--bi-hit-h);
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    pointer-events: auto;
+  }
+  /* Лупа забирает зазор слева от себя до зоны волны: рядом с лупой всегда
+     открывается поиск. */
+  .bottom-island__search { position: relative; z-index: 2; }
+  .bottom-island__search::before {
+    content: "";
+    position: absolute;
+    inset: -4px -2px -4px -10px;
+  }
+}
+
 @media (max-width: 1023px) and (orientation: portrait), (min-width: 1024px) {
   .bottom-island {
     display: grid;
@@ -10929,7 +10958,7 @@ html[data-lite] .site-scrim {
    центру внизу, 560px. Волна в покое ужата под его высоту, сфера вайб-меню
    переехала сюда из колонки разделов (VibeRail, .vibe-island-orb). */
 @media (min-width: 1024px) {
-  :root { --bi-w: 560px; --bi-left: calc(50% - var(--bi-w) / 2); }
+  :root { --bi-w: 560px; --bi-left: calc(50% - var(--bi-w) / 2); --bi-hit-w: 56px; --bi-hit-h: 44px; }
   .bottom-island {
     --bi-h: 44px;
     position: fixed;
