@@ -66,17 +66,46 @@ export function briefHrefForRoute(route: string): string {
   return id ? `/brief/${id}` : "/brief";
 }
 
-/** Бриф «текущей» категории из браузера: по адресу страницы услуги, а на
- *  общих страницах (главная, работы, калькулятор) — по выбранной в меню
- *  услуге (hdkv-active-service). Спрашивать «какой бриф» не нужно. */
-export function currentBriefHref(): string {
-  const id = getBriefIdForRoute(window.location.pathname);
-  if (id) return `/brief/${id}`;
+const LAST_KEY = "hdkv-last-service";
+
+/** Запоминает услугу, на странице которой был посетитель: бриф и калькулятор
+ *  с общих страниц (главная, работы) открываются под неё. */
+export function rememberService(pathname: string) {
+  const id = getBriefIdForRoute(pathname);
+  if (!id) return;
   try {
-    const saved = window.localStorage.getItem("hdkv-active-service");
-    if (saved && saved in briefConfigs) return `/brief/${saved}`;
+    window.localStorage.setItem(LAST_KEY, id);
+  } catch {
+    /* хранилище закрыто — не страшно */
+  }
+}
+
+/** Текущая услуга: по адресу страницы услуги, иначе последняя посещённая,
+ *  иначе выбранная в меню, иначе контент. Спрашивать посетителя не нужно. */
+export function currentServiceId(): BriefId {
+  const fromPath = getBriefIdForRoute(window.location.pathname);
+  if (fromPath) return fromPath;
+  try {
+    for (const key of [LAST_KEY, "hdkv-active-service"]) {
+      const saved = window.localStorage.getItem(key);
+      if (saved && saved in briefConfigs) return saved as BriefId;
+    }
   } catch {
     /* хранилище закрыто — берём контент */
   }
-  return "/brief/content";
+  return "content";
 }
+
+export const currentBriefHref = () => `/brief/${currentServiceId()}`;
+export const currentCalculatorHref = () => `/calculator/${currentServiceId()}`;
+
+/** Ссылка на бриф/калькулятор для серверного рендера и меню: по адресу
+ *  страницы; на общих страницах ведёт на редирект (/brief, /calculator). */
+export function serviceHrefForRoute(base: "brief" | "calculator", route: string): string {
+  const id = getBriefIdForRoute(route);
+  return id ? `/${base}/${id}` : `/${base}`;
+}
+
+/** Все адреса брифов — для предзагрузки, чтобы бриф открывался мгновенно. */
+export const BRIEF_HREFS = BRIEF_PAGE_IDS.map((id) => `/brief/${id}`);
+export const CALCULATOR_HREFS = (["content", "sites", "smm", "ai"] as const).map((id) => `/calculator/${id}`);

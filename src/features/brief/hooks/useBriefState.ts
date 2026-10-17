@@ -30,6 +30,7 @@ export function useBriefState(config: BriefConfig) {
   const started = useRef(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage недоступен при SSR: чтение только после монтирования
     setSaved(readSaved(config.id));
   }, [config.id]);
 

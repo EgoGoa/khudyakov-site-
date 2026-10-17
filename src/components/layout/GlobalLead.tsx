@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import LeadModal from "@/components/home/LeadModal";
 import { OPEN_LEAD_EVENT } from "@/lib/lead";
-import { currentBriefHref } from "@/features/brief/registry";
+import { BRIEF_HREFS, CALCULATOR_HREFS, currentBriefHref, rememberService } from "@/features/brief/registry";
+import { openBrief } from "@/features/brief/lib/navigate";
 
 // Единое окно заявки. Открывается событием openLead() и любой ссылкой на
 // бриф (/brief…) на сайте: вместо прямого перехода посетитель видит выбор,
@@ -12,8 +13,19 @@ import { currentBriefHref } from "@/features/brief/registry";
 // «Заполнить бриф» в окне) и ссылки на страницах брифа ведут напрямую.
 export default function GlobalLead() {
   const router = useRouter();
+  const pathname = usePathname();
+  useEffect(() => rememberService(pathname ?? ""), [pathname]);
   const [open, setOpen] = useState(false);
   const [briefHref, setBriefHref] = useState("/brief");
+
+  // Бриф должен открываться мгновенно: заранее подгружаем четыре страницы
+  // брифов, как только браузер освободится.
+  useEffect(() => {
+    const warm = () => [...BRIEF_HREFS, ...CALCULATOR_HREFS].forEach((h) => router.prefetch(h));
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+    if (w.requestIdleCallback) w.requestIdleCallback(warm);
+    else setTimeout(warm, 1500);
+  }, [router]);
 
   useEffect(() => {
     const show = (href?: string) => {
@@ -34,7 +46,7 @@ export default function GlobalLead() {
       e.stopPropagation();
       // Ссылка, где написано «бриф», ведёт сразу в бриф текущей категории;
       // остальные («Обсудить проект») открывают окно выбора способа связи.
-      if (/бриф/i.test(a.textContent ?? "") || /бриф/i.test(a.getAttribute("aria-label") ?? "")) router.push(target);
+      if (/бриф/i.test(a.textContent ?? "") || /бриф/i.test(a.getAttribute("aria-label") ?? "")) openBrief(router, target);
       else show(target);
     };
     window.addEventListener(OPEN_LEAD_EVENT, onEvent);

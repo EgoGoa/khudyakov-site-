@@ -29,6 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const dynamicRoutes = [
+    ...["content", "sites", "smm", "ai"].flatMap((id) => [`/calculator/${id}`, `/brief/${id}`]),
     ...CONTENT_DIRECTIONS.map((slug) => `/content/${slug}`),
     ...AI_TOOLS.map((slug) => `/ai/${slug}`),
     ...SITES_FORMATS.map((slug) => `/sites/${slug}`),

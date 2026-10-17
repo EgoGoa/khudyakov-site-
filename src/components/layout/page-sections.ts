@@ -270,16 +270,9 @@ export const PAGE_BLOCKS: Record<string, PageBlock[]> = {
 };
 
 // Real destination pages rather than in-page anchors — always the same
-// three rows regardless of which service page the visitor is on, appended
+// two rows regardless of which service page the visitor is on, appended
 // after that page's own blocks.
 export const CROSS_PAGE_ITEMS: RailItem[] = [
-  {
-    id: "catalog",
-    label: "Все работы",
-    description: "Полный каталог — 78 работ с фильтрами по формату и сфере.",
-    href: "/works",
-    icon: "catalog",
-  },
   {
     id: "calculator",
     label: "Калькулятор",

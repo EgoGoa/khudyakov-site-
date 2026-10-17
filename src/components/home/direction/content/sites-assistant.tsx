@@ -128,7 +128,7 @@ export const sitesAssistantContent: CompactToolContent = {
         title: "Заявки приходят, когда офис закрыт",
         text: "Посетитель, зашедший в 11 вечера, либо получает ответ сейчас, либо уходит к тому, кто ответил. Ассистент не спит.",
         accent: "либо уходит к тому, кто ответил",
-        href: "/calculator",
+        href: "/calculator/sites",
         linkLabel: "Посчитать бюджет",
       },
       {

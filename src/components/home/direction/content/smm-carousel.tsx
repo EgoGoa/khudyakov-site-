@@ -143,7 +143,7 @@ export const smmCarouselContent: CompactToolContent = {
         title: "Новые люди приходят, но не задерживаются",
         text: "Reels приводит аудиторию, карусель — то, что превращает разовый просмотр в сохранённый и пересланный пост.",
         accent: "превращает разовый просмотр в сохранённый пост",
-        href: "/calculator",
+        href: "/calculator/smm",
         linkLabel: "Посчитать бюджет",
       },
     ],

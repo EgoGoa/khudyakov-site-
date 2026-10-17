@@ -124,7 +124,7 @@ export const smmReelsContent: CompactToolContent = {
         title: "Мало кто знает про точку рядом",
         text: "Reels попадает в рекомендации людям, которые ещё не подписаны — ровно та аудитория, что физически не увидит обычный пост в ленте.",
         accent: "которые ещё не подписаны",
-        href: "/calculator",
+        href: "/calculator/smm",
         linkLabel: "Посчитать бюджет",
       },
       {

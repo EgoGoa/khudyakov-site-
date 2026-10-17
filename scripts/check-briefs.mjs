@@ -99,6 +99,11 @@ for (const [dir, cat] of SCOPES) {
     if (!/\.tsx?$/.test(f)) continue;
     const rel = path.relative(root, f);
     const t = read(f);
+    for (const m of t.matchAll(/["'`](\/calculator(?:\/([a-z-]+))?)\/?["'`]/g)) {
+      const target = m[2];
+      if (!target) fail(`${rel}: голая ссылка «/calculator» — на странице услуги нужен «/calculator/<категория>»`);
+      else if (cat && target !== cat) fail(`${rel}: ссылка «${m[1]}» ведёт на калькулятор «${target}», а раздел — «${cat}»`);
+    }
     for (const m of t.matchAll(/["'`](\/brief(?:\/([a-z-]+))?)\/?["'`]/g)) {
       const target = m[2];
       if (!target) fail(`${rel}: голая ссылка «/brief» — на странице услуги нужен «/brief/<категория>» или briefHrefForRoute()`);

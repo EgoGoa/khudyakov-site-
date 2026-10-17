@@ -120,15 +120,6 @@ export default function ContentServicePage() {
             bare
             tight
             limit={4}
-            filtersAside={
-              <Link
-                href="/works"
-                className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-paper/80 transition hover:text-glow"
-              >
-                Весь каталог
-                <span aria-hidden="true">→</span>
-              </Link>
-            }
           />
         </CinematicSection>
 

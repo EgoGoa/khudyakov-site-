@@ -146,7 +146,7 @@ export const smmStoriesContent: CompactToolContent = {
         title: "Клиенты должны помнить, что вы работаете",
         text: "Анонс акции, новый товар на полке, свободное окно у мастера — сторис доносит это за час, а не ждёт следующего крупного поста.",
         accent: "доносит это за час",
-        href: "/calculator",
+        href: "/calculator/smm",
         linkLabel: "Посчитать бюджет",
       },
     ],

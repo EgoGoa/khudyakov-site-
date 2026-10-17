@@ -133,7 +133,7 @@ export const sitesLandingContent: CompactToolContent = {
         title: "Трафик уже оплачен, посадочной нет",
         text: "Каждый день без страницы — слитый рекламный бюджет. Лендинг под конкретный оффер закрывает разрыв между кликом и заявкой.",
         accent: "закрывает разрыв между кликом и заявкой",
-        href: "/calculator",
+        href: "/calculator/sites",
         linkLabel: "Посчитать бюджет",
       },
       {

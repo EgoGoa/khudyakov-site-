@@ -19,6 +19,7 @@ import VibeMode from "@/components/vibe/VibeMode";
 import BlockVibe from "@/components/vibe/BlockVibe";
 import { OPEN_BLOCK_VIBE_EVENT } from "@/lib/block-vibe";
 import { useRouter } from "next/navigation";
+import { openService } from "@/features/brief/lib/navigate";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { homeOf } from "@/components/layout/PageBar";
 import { serviceOrder } from "@/lib/service-content";
@@ -229,7 +230,9 @@ export default function VibeRail() {
     setSheetOpen(false);
     if (!pageItems.some((p) => p.id === item.id)) {
       setBlockItem(null);
-      router.push(item.href);
+      // «Бриф» — сразу бриф текущей категории, а не общая страница /brief.
+      if (item.id === "brief" || item.id === "calculator") openService(router, item.id);
+      else router.push(item.href);
       return;
     }
     if (!cinematicGoTo(item.id)) document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });

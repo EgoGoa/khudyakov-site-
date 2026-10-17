@@ -221,16 +221,6 @@ function WorksCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
               );
             })}
 
-            <Appear from="up" delay={DIRECTION_BEAT.cta}>
-              <Link
-                href="/works"
-                className="mt-8 inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-white transition hover:text-orange"
-              >
-                Весь каталог
-                <span aria-hidden="true">↗</span>
-              </Link>
-            </Appear>
-
             {cases.teamAsk ? (
               <Appear from="up" delay={DIRECTION_BEAT.cta}>
                 <div className="mt-6">

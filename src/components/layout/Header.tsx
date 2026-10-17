@@ -19,6 +19,7 @@ import { useCinematicGoTo } from "@/lib/cinematic-nav";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { openWelcome } from "@/lib/welcome-gate";
 import { CROSS_PAGE_ITEMS, PAGE_BLOCKS } from "@/components/layout/page-sections";
+import { serviceHrefForRoute } from "@/features/brief/registry";
 import SectionIcon from "@/components/ui/SectionIcon";
 import { SearchGlyph } from "@/components/layout/SiteSearch";
 import { openSearch } from "@/lib/site-search";
@@ -349,7 +350,7 @@ export default function Header() {
                 {CROSS_PAGE_ITEMS.map((p, i) => (
                   <Link
                     key={p.href}
-                    href={p.href}
+                    href={p.id === "brief" || p.id === "calculator" ? serviceHrefForRoute(p.id, pathname) : p.href}
                     onClick={() => setMenuOpen(false)}
                     className={`menu-item ${pathname === p.href ? "is-active" : ""}`}
                     style={{ "--i": sections.length + i } as React.CSSProperties}

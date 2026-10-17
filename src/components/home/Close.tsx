@@ -222,7 +222,7 @@ export default function Close({
                     Выбрать план
                   </a>
                   {showCalculator && (
-                    <Link href="/calculator" className="btn-neon btn-neon-breathe w-[70%] justify-center !py-1.5 !text-[8px]">
+                    <Link href={`/calculator/${active}`} className="btn-neon btn-neon-breathe w-[70%] justify-center !py-1.5 !text-[8px]">
                       Рассчитать
                     </Link>
                   )}

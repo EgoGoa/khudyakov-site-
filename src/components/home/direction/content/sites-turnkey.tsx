@@ -127,7 +127,7 @@ export const sitesTurnkeyContent: CompactToolContent = {
         title: "Каталог на сотни позиций",
         text: "Клиент выбирает по характеристикам, а не по картинке — фильтрация по параметрам решает задачу быстрее любого PDF-прайса.",
         accent: "быстрее любого PDF-прайса",
-        href: "/calculator",
+        href: "/calculator/sites",
         linkLabel: "Посчитать бюджет",
       },
       {

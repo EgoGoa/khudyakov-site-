@@ -125,7 +125,7 @@ export const smmAdsContent: CompactToolContent = {
         title: "Трафик идёт, заявки — нет",
         text: "Реклама приводит клики на сайт, но между кликом и заявкой аудитория теряется на самом переходе — до 90% по рынку.",
         accent: "теряется на самом переходе",
-        href: "/calculator",
+        href: "/calculator/smm",
         linkLabel: "Посчитать бюджет",
       },
       {

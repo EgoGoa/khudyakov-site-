@@ -19,7 +19,7 @@ const clean = (p: string) => p.replace(/\/+$/, "") || "/";
 
 /** Страховка для перехода, который уже запускает кто-то другой (например,
  *  <Link>): обычная загрузка, если через 5 с мы не там. */
-export function guardNavigation(href: string) {
+export function guardNavigation(href: string, ms: number = HARD_FALLBACK_MS) {
   const id = ++latest;
   const target = clean(new URL(href, location.href).pathname);
   window.setTimeout(() => {
@@ -33,10 +33,10 @@ export function guardNavigation(href: string) {
       /* без хранилища окно просто покажется */
     }
     window.location.assign(href);
-  }, HARD_FALLBACK_MS);
+  }, ms);
 }
 
-export function sureNavigate(router: Router, href: string, opts?: { scroll?: boolean }) {
-  guardNavigation(href);
+export function sureNavigate(router: Router, href: string, opts?: { scroll?: boolean; fallbackMs?: number }) {
+  guardNavigation(href, opts?.fallbackMs);
   router.push(href, opts);
 }

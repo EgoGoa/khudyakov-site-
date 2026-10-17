@@ -53,10 +53,13 @@ function BriefInner({ briefId }: { briefId: AnyBriefId }) {
   const [send, setSend] = useState<"idle" | "sending" | "error">("idle");
   const titleRef = useRef<HTMLHeadingElement>(null);
 
+  // Свежие next/state для обработчиков клавиш и отложенных переходов.
   const nextRef = useRef(s.next);
-  nextRef.current = s.next;
   const stateRef = useRef(s);
-  stateRef.current = s;
+  useEffect(() => {
+    nextRef.current = s.next;
+    stateRef.current = s;
+  });
 
   useEffect(() => {
     titleRef.current?.focus({ preventScroll: true });

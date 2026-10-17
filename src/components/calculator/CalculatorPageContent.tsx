@@ -14,6 +14,7 @@ import { withAccent } from "@/components/home/direction/Accent";
 import { TelegramIcon } from "@/components/ui/Icons";
 import { EMAIL, TELEGRAM_URL } from "@/components/home/direction/contacts";
 import Calculator from "./Calculator";
+import type { CalcConfig } from "./calcData";
 
 // Страница калькулятора — реюзает те же строительные блоки, что и страницы
 // направлений (/content/[direction]), просто без DirectionContent/реестра:
@@ -22,44 +23,18 @@ import Calculator from "./Calculator";
 // DirectionBackdrop напрямую — Егор попросил «похоже на страницы
 // направлений», а не отдельный параллельный дизайн.
 //
-// Акцент — родной магента→оранжевый /content (тот же ACCENT, что у страниц
-// направлений в этом разделе): калькулятор — общая утилита раздела
-// «Создание контента», а не отдельное направление со своим цветом.
-const ACCENT = { from: "#ff4fd8", to: "#ff6a3d" };
-
-const STATS = [
-  { value: "8 лет", label: "в видеопроизводстве" },
-  { value: "450+", label: "созданных проектов" },
-  { value: "350+", label: "довольных клиентов" },
-  { value: "5 стран", label: "международный опыт" },
-];
-
-const REASONS = [
-  {
-    anchor: "01",
-    title: "Продюсерский центр полного цикла",
-    text: "От идеи и сценария до готового ролика — без подрядчиков на стороне.",
-  },
-  {
-    anchor: "02",
-    title: "2–3 концепции бесплатно",
-    text: "Разрабатываем творческие идеи под задачу перед стартом работы.",
-  },
-  {
-    anchor: "03",
-    title: "Цены ниже, чем в Москве и СПб",
-    text: "Тот же уровень качества — заметно доступнее для регионов.",
-  },
-];
-
-export default function CalculatorPageContent() {
+export default function CalculatorPageContent({ config }: { config: CalcConfig }) {
+  const ACCENT = config.accent;
   return (
-    <div className="content-warm-headings relative [overflow-x:clip]">
+    <div
+      className={`${config.headingClass} relative [overflow-x:clip]`}
+      style={{ "--hb-a": ACCENT.from, "--hb-b": ACCENT.to } as React.CSSProperties}
+    >
       <DirectionBackdrop from={ACCENT.from} to={ACCENT.to} />
 
       <DirectionHero
         hero={{
-          parent: { href: "/content", label: "Создание контента" },
+          parent: config.parent,
           eyebrow: "Калькулятор стоимости",
           title: (
             <>
@@ -70,32 +45,28 @@ export default function CalculatorPageContent() {
           ),
           lead: (
             <>
-              HUD.SERVICE — диджитал-сервис полного цикла: снимаем рекламу,
-              имиджевые видео, контент для соцсетей и мероприятия, усиливаем
-              результат AI-инструментами.{" "}
-              <span className="font-medium text-orange">
-                Посчитайте ориентировочный бюджет ниже
-              </span>{" "}
-              — точную смету пришлём после короткого брифа.
+              HUD.SERVICE — диджитал-сервис полного цикла. {config.hero.lead}{" "}
+              <span className="font-medium text-[color:var(--hb-a)]">{config.hero.leadAccent}</span> — точную смету пришлём
+              после короткого брифа.
             </>
           ),
-          photo: "/images/stock/businesswoman-office.webp",
-          photoPosition: "70% 30%",
+          photo: config.hero.photo,
+          photoPosition: config.hero.photoPosition,
           teamAsk: {
-            memberId: "egor",
-            question: "Нужна точная смета, не вилка?",
+            memberId: config.hero.askMember,
+            question: config.hero.askQuestion,
             pitch: "Расскажите задачу — посчитаем без калькулятора, лично.",
             actionLabel: "Обсудить с Егором",
-            href: "/brief",
+            href: `/brief/${config.id}`,
           },
         }}
-        stats={STATS}
+        stats={config.stats}
       />
 
       <WhyBlock
         why={{
           media: {
-            photo: "/images/stock/design-tablet.webp",
+            photo: config.media.why,
             gradient: ACCENT,
             intensity: "medium",
             sharp: true,
@@ -114,14 +85,14 @@ export default function CalculatorPageContent() {
               смета всегда бесплатна</span> и приходит после короткого брифа.
             </>
           ),
-          items: REASONS,
+          items: config.reasons,
         }}
       />
 
       <SectionStage className="relative py-24 sm:py-32">
         <BlockMedia
           media={{
-            photo: "/images/stock/planner-desk.webp",
+            photo: config.media.calc,
             gradient: ACCENT,
             intensity: "medium",
             sharp: true,
@@ -141,8 +112,7 @@ export default function CalculatorPageContent() {
               ),
               sub: (
                 <>
-                  Итоговая стоимость складывается из типа ролика,
-                  хронометража и{" "}
+                  Итоговая стоимость складывается из {config.summary}{" "}
                   <span className="font-medium text-orange">выбранных опций</span>.
                 </>
               ),
@@ -151,7 +121,7 @@ export default function CalculatorPageContent() {
 
           <Appear from="up" delay={DIRECTION_BEAT.content}>
             <div className="mt-12">
-              <Calculator />
+              <Calculator config={config} />
             </div>
           </Appear>
         </Container>
@@ -160,7 +130,7 @@ export default function CalculatorPageContent() {
       <SectionStage className="relative py-28 sm:py-36">
         <BlockMedia
           media={{
-            photo: "/images/stock/woman-tablet-white.webp",
+            photo: config.media.close,
             gradient: ACCENT,
             intensity: "loud",
             sharp: true,
@@ -196,7 +166,7 @@ export default function CalculatorPageContent() {
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
             <Appear from="up" delay={DIRECTION_BEAT.cta}>
-              <Link href="/brief" className="btn-neon btn-warm btn-3d !py-4 !px-8">
+              <Link href={`/brief/${config.id}`} className="hb-btn">
                 Обсудить проект
               </Link>
             </Appear>
@@ -218,7 +188,7 @@ export default function CalculatorPageContent() {
               <a href={`mailto:${EMAIL}`} className="normal-case tracking-normal transition hover:text-orange">
                 {EMAIL}
               </a>
-              <Link href="/content" className="transition hover:text-orange">
+              <Link href={config.parent.href} className="transition hover:text-orange">
                 Все направления →
               </Link>
             </div>

@@ -69,7 +69,7 @@ export default function SitesOffer() {
         sub="От одностраничного лендинга до сайта под ключ с интеграциями — вёрстка на React/HTML, без привязки к конструктору."
         leftFooter={<SitesWorksDeck />}
         primary={{ href: "/brief/sites", label: "Обсудить проект" }}
-        secondary={{ href: "/calculator", label: "Рассчитать бюджет" }}
+        secondary={{ href: "/calculator/sites", label: "Рассчитать бюджет" }}
         rightFooter={
           <div className="mt-4 space-y-3">
             <TeamPulse data={SASHA_SITES} compact source="/sites · глава «Что мы делаем»" />

@@ -22,9 +22,6 @@ export default function ChoiceStep({ step, answer, onChange, onAdvance }: Props)
   const customOn = Boolean(answer?.customOn);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const advanceRef = useRef(onAdvance);
-  advanceRef.current = onAdvance;
-  const stateRef = useRef({ ids, customOn });
-  stateRef.current = { ids, customOn };
   const customInput = useRef<HTMLInputElement>(null);
 
   useEffect(
@@ -64,7 +61,10 @@ export default function ChoiceStep({ step, answer, onChange, onAdvance }: Props)
 
   // Цифры 1–9 выбирают вариант, пока фокус не в поле ввода.
   const keyRef = useRef<(e: KeyboardEvent) => void>(() => {});
-  keyRef.current = (e) => {
+  useEffect(() => {
+    advanceRef.current = onAdvance;
+  });
+  const onKey = (e: KeyboardEvent) => {
     const t = e.target as HTMLElement | null;
     if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -75,6 +75,9 @@ export default function ChoiceStep({ step, answer, onChange, onAdvance }: Props)
       pick(o.id);
     }
   };
+  useEffect(() => {
+    keyRef.current = onKey;
+  });
   useEffect(() => {
     const h = (e: KeyboardEvent) => keyRef.current(e);
     window.addEventListener("keydown", h);
