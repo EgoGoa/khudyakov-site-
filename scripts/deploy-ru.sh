@@ -12,8 +12,9 @@ REMOTE_DIR="www/hdkv-ai.ru/"  # одна папка, два имени: hud-serv
 
 "$SRC/scripts/build-static.sh"
 
-# .well-known — проверки Let's Encrypt, cgi-bin — служебная папка хостинга:
-# --delete их не трогает.
+# .well-known — проверки Let's Encrypt, cgi-bin — служебная папка хостинга,
+# /spiral и /spiral-backup-* — отдельное приложение Spiral и его резервные
+# копии, их заливают из своего проекта: --delete их не трогает никогда.
 # Файлы с правами 600 (например, скопированные из закрытой папки) rsync
 # переносит как есть, и nginx отдаёт по ним 403 — фото команды «под
 # вопросиком». Перед отправкой открываем всё на чтение.
@@ -24,6 +25,8 @@ find "$OUT" -type d -exec chmod a+rx {} +
 # прежняя страница ссылается на них, и без них она теряет стили.
 rsync -az --delete --human-readable --stats \
   --exclude '.well-known' --exclude 'cgi-bin' \
+  --exclude '/spiral/' --exclude '/spiral-backup-*/' \
+  --filter 'P /spiral/' --filter 'P /spiral-backup-*/' \
   --filter 'P _next/static/' \
   -e "ssh -i $KEY -o IdentitiesOnly=yes -o BatchMode=yes" \
   "$@" "$OUT/" "$REMOTE:$REMOTE_DIR"
