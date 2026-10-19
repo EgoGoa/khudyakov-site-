@@ -40,7 +40,7 @@ const MEDIA_MIN_MS = 2000;
 const MEDIA_MAX_MS = 3000;
 // Страницы с фоновым видео в первом экране (Hero). Адрес с .html — статика
 // на hdkv-ai.ru.
-const MEDIA_PAGES = /^\/(content|ai|sites|smm)(\/|\.html)?$/;
+const MEDIA_PAGES = /^(\/en)?\/(content|ai|sites|smm)(\/|\.html)?$/;
 
 let stage = 0;
 let started = false;

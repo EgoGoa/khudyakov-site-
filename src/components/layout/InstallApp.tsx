@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import CenterModal from "@/components/ui/CenterModal";
 import { BOOT, useBootStage } from "@/lib/boot-sequence";
 import { openLead } from "@/lib/lead";

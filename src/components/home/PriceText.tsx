@@ -1,7 +1,9 @@
+import { tr } from "@/i18n/tr";
 // Цена тарифа: цифры — градиентом в тон рамке пилюли (см. .tier-price-digits
 // в globals.css), остальной текст белый. Делит строку по группам цифр, так что
 // «от 25 000 ₽» и «50 000–150 000 ₽/мес» выглядят одинаково.
-export default function PriceText({ text }: { text: string }) {
+export default function PriceText({ text: raw }: { text: string }) {
+  const text = tr(raw);
   return (
     <>
       {text.split(/(\d[\d\s]*\d|\d)/).map((part, k) =>

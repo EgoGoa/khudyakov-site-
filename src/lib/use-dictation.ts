@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { sttLang } from "@/lib/voice/lang";
 
 // Same minimal Web Speech API wrapper as VoiceMicButton
 // (components/home/WelcomeOverlay.tsx), but for dictating into a single
@@ -52,7 +53,7 @@ export function useDictation(onResult: (transcript: string) => void) {
       return;
     }
     const recognition = new Ctor();
-    recognition.lang = "ru-RU";
+    recognition.lang = sttLang();
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     recognition.onresult = (event) => {

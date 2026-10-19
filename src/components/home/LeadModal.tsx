@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useState } from "react";
 import { OPEN_VIBE_EVENT } from "@/lib/voice/store";
 import CenterModal from "@/components/ui/CenterModal";

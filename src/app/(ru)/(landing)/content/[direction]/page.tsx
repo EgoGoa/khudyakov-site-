@@ -1,0 +1,114 @@
+import type { Metadata } from "next";
+import { Link } from "@/i18n/navigation";
+import { notFound } from "next/navigation";
+import Container from "@/components/ui/Container";
+import Reveal from "@/components/ui/Reveal";
+import Eyebrow from "@/components/ui/Eyebrow";
+import { contentDirections } from "@/lib/service-content";
+import DirectionFullPage from "@/components/home/direction/DirectionPage";
+import { directionPages } from "@/components/home/direction/registry";
+import FormatSideNav from "@/components/home/direction/FormatSideNav";
+import { assertRingCovers } from "@/components/home/direction/siblings";
+
+// Superficial on purpose — one screen of real copy per direction (pitch +
+// what's included) rather than the full ruvision-style case-study/pricing/
+// process stack.
+//
+// Exception: directions listed in components/home/direction/registry.ts
+// ("presentation", "advertising") have the full stack, built to the
+// mechanics of ruvision.ru — one shared layout, one content file per
+// direction. The rest deliberately stay on the light layout below until
+// each gets its own content.
+
+export function generateStaticParams() {
+  const slugs = contentDirections.map((d) => d.slug);
+  assertRingCovers("content", slugs);
+  return slugs.map((direction) => ({ direction }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ direction: string }>;
+}): Promise<Metadata> {
+  const { direction: slug } = await params;
+  const direction = contentDirections.find((d) => d.slug === slug);
+  if (!direction) return {};
+  return {
+    title: `${direction.title} — HUD.SERVICE`,
+    description: direction.description,
+  };
+}
+
+export default async function DirectionPage({ params }: { params: Promise<{ direction: string }> }) {
+  const { direction: slug } = await params;
+  const direction = contentDirections.find((d) => d.slug === slug);
+  if (!direction) notFound();
+
+  const fullPage = directionPages[slug];
+  if (fullPage)
+    return (
+      <>
+        <DirectionFullPage content={fullPage} />
+        {/* Кольцо соседних направлений: те же неоновые стрелки, что стоят
+            по бокам основных страниц разделов, но шагают по направлениям
+            внутри /content. Ставится только
+            на полноценные страницы — у направления-заглушки ниже соседей
+            в кольце нет. */}
+        <FormatSideNav section="content" slug={slug} />
+      </>
+    );
+
+  return (
+    <section className="py-16 sm:py-24">
+      <Container className="max-w-3xl">
+        <Reveal>
+          <Link
+            href="/content"
+            className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.15em] text-paper/50 transition-colors hover:text-glow"
+          >
+            <span aria-hidden="true">←</span>
+            Создание контента
+          </Link>
+
+          <Eyebrow label="Направление" />
+          <h1 className="font-sans text-[1.688rem] font-light uppercase tracking-[0.01em] text-paper sm:text-[2.025rem] md:text-[2.7rem]">
+            {direction.title}
+          </h1>
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-paper/70">
+            {direction.pitch}
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.08}>
+          <ul className="mt-10 divide-y divide-paper/10 border-t border-paper/10">
+            {direction.bullets.map((bullet, i) => (
+              <li key={bullet} className="flex items-baseline gap-4 py-4">
+                <span className="font-display text-xs text-paper/40">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="text-sm leading-relaxed text-paper/80 sm:text-base">
+                  {bullet}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+
+        <Reveal delay={0.14}>
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <Link href="/brief/content" className="btn-neon btn-warm btn-3d !py-3.5">
+              Обсудить проект
+            </Link>
+            <Link
+              href="/content"
+              className="font-display text-xs uppercase tracking-[0.15em] text-paper/50 transition-colors hover:text-glow"
+            >
+              Все направления →
+            </Link>
+          </div>
+        </Reveal>
+      </Container>
+    </section>
+  );
+}

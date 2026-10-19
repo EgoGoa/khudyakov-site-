@@ -38,10 +38,12 @@ export async function GET(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (rateLimited(ip)) return new Response("rate_limited", { status: 429 });
 
+  // ?lang=en — английская версия сайта: английский голос Yandex SpeechKit.
+  const en = new URL(request.url).searchParams.get("lang") === "en";
   const form = new URLSearchParams({
     text,
-    lang: "ru-RU",
-    voice: process.env.YANDEX_TTS_VOICE || "alena",
+    lang: en ? "en-US" : "ru-RU",
+    voice: en ? process.env.YANDEX_TTS_VOICE_EN || "john" : process.env.YANDEX_TTS_VOICE || "alena",
     emotion: process.env.YANDEX_TTS_EMOTION || "good",
     // Чуть медленнее обычного — спокойнее.
     speed: "0.95",

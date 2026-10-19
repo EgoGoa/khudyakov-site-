@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 // Required on every lead-capturing form (LeadModal, TeamConsultModal,
 // BriefForm) per 152-ФЗ: no personal data collection without explicit

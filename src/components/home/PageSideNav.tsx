@@ -1,11 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
 import { queueChapterHop } from "@/lib/page-hop";
 import { guardNavigation } from "@/lib/sure-nav";
 import { NeonChevron } from "@/components/home/ServicePicker";
+import { tr } from "@/i18n/tr";
 
 // Fixed side arrows for stepping between the four service pages, always on
 // screen while scrolling — a smaller echo of the hero picker's own
@@ -53,7 +54,7 @@ export default function PageSideNav() {
 function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: ServiceKey }) {
   const pathname = useCleanPathname();
   const meta = serviceMeta[targetKey];
-  const words = meta.label.split(" ");
+  const words = tr(meta.label).split(" ");
   const isLeft = side === "left";
   const gradient = PAGE_GRADIENT[targetKey];
 

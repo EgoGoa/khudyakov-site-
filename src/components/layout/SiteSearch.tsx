@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { sureNavigate } from "@/lib/sure-nav";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { useCinematicGoTo } from "@/lib/cinematic-nav";

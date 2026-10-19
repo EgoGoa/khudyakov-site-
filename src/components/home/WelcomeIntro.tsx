@@ -6,6 +6,8 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { EASE } from "@/lib/motion";
 import { getTier } from "@/lib/perf-tier";
 import LiveBrandWord from "@/components/layout/LiveBrandWord";
+import { numLocale } from "@/i18n/format";
+import { tr } from "@/i18n/tr";
 
 // Вводные окна перед стартовым меню (Егор, 2026-10-04, макет v6 —
 // docs/intro-scenes-preview.html). После заставки со знаком идут три окна:
@@ -43,7 +45,7 @@ function Reveal({ text, delay = 0, className }: { text: string; delay?: number; 
   const ref = useRef<HTMLSpanElement>(null);
   const words: { w: string; run: number }[] = [];
   let run = -1;
-  text.split(/(\*\*[^*]+\*\*)/).forEach((part) => {
+  tr(text).split(/(\*\*[^*]+\*\*)/).forEach((part) => {
     if (!part) return;
     const k = part.startsWith("**");
     if (k) run += 1;
@@ -186,7 +188,7 @@ function Count({
   }, [to, delay, dur, lite]);
   // Ширина резервируется по итоговому числу: пока цифры бегут, блок не
   // растёт и не двигает соседей (значок рядом больше не «трясёт»).
-  const final = `${prefix}${to.toLocaleString("ru-RU")}`;
+  const final = `${prefix}${to.toLocaleString(numLocale())}`;
   return (
     <span className="wi-count">
       <span className="wi-count-ghost" aria-hidden="true">
@@ -195,7 +197,7 @@ function Count({
       </span>
       <span className="wi-count-now">
         {prefix}
-        {v.toLocaleString("ru-RU")}
+        {v.toLocaleString(numLocale())}
         {suffix}
       </span>
     </span>
@@ -756,7 +758,7 @@ function S32() {
                   <span>{n.w}</span>
                 </div>
                 <div className="wi-lbl wi-lbl--soft">
-                  {n.s.split(/(\*\*[^*]+\*\*)/).map((p, j) =>
+                  {tr(n.s).split(/(\*\*[^*]+\*\*)/).map((p, j) =>
                     p.startsWith("**") ? (
                       <span key={j} className="wi-k">
                         {p.replace(/\*\*/g, "")}

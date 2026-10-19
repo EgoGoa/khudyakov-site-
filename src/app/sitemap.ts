@@ -36,10 +36,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...SMM_FORMATS.map((slug) => `/smm/${slug}`),
   ];
 
-  return [...staticRoutes, ...dynamicRoutes].map((path) => ({
-    // Со слешем на конце — как их отдаёт статичная версия (trailingSlash),
-    // иначе каждый адрес из карты сначала упирается в редирект.
-    url: `${SITE_URL}${path}/`,
-    lastModified: now,
-  }));
+  // Каждая страница — в двух языках; у обеих записей одни и те же
+  // alternates (hreflang), x-default — русская версия. Со слешем на конце —
+  // как их отдаёт статичная версия (trailingSlash), иначе каждый адрес из
+  // карты сначала упирается в редирект.
+  return [...staticRoutes, ...dynamicRoutes].flatMap((path) => {
+    const ru = `${SITE_URL}${path}/`;
+    const en = `${SITE_URL}/en${path}/`;
+    const alternates = { languages: { ru, en, "x-default": ru } };
+    return [
+      { url: ru, lastModified: now, alternates },
+      { url: en, lastModified: now, alternates },
+    ];
+  });
 }

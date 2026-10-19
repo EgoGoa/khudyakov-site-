@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { tr } from "@/i18n/tr";
 
 // Разметка цвета в текстах человека команды — Егор попросил меньше белого в
 // заголовках: несколько градиентов и местами серые слова.
@@ -8,7 +9,8 @@ import type { ReactNode } from "react";
 //            (Егор: «серый из текста убираем», «в больших заголовках иногда норм»)
 const CLS: Record<string, string> = { "*": "team-pulse-acc", "^": "team-pulse-warm", "~": "team-pulse-muted" };
 
-export function marks(text: string): ReactNode {
+export function marks(raw: string): ReactNode {
+  const text = tr(raw);
   const out: ReactNode[] = [];
   const re = /([*^~])([^*^~]+)\1/g;
   let last = 0;
@@ -27,4 +29,4 @@ export function marks(text: string): ReactNode {
 }
 
 /** Та же строка без разметки — для подсчёта букв при печати. */
-export const plain = (text: string) => text.replace(/[*^~]/g, "");
+export const plain = (text: string) => tr(text).replace(/[*^~]/g, "");

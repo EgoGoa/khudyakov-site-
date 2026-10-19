@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "check:briefs": "node scripts/check-briefs.mjs",
-    "prebuild": "npm run check:briefs",
+    "gen:en": "node scripts/gen-en-routes.mjs",
+    "prebuild": "node scripts/pack-dict.mjs && npm run gen:en && npm run check:briefs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -19,6 +20,7 @@
     "framer-motion": "^12.43.0",
     "gsap": "^3.15.0",
     "next": "^16.3.6",
+    "next-intl": "^4.14.9",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "resend": "^6.27.0"

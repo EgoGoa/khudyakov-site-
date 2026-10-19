@@ -1,4 +1,5 @@
 import data from "../../content/blog/posts.json";
+import { numLocale } from "@/i18n/format";
 
 // Витрина блога в подвале. Материалы лежат в content/blog/posts.json — файл
 // раз в неделю обновляет агент (формат в content/blog/README.md). Импорт
@@ -39,5 +40,5 @@ export function getBlogPosts(): BlogPost[] {
 export function formatBlogDate(iso: string): string {
   const d = new Date(`${iso}T00:00:00`);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" }).replace(".", "");
+  return d.toLocaleDateString(numLocale(), { day: "numeric", month: "short" }).replace(".", "");
 }

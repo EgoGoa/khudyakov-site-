@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
@@ -16,6 +16,8 @@ import { TEAM } from "@/lib/team";
 import { getWorkStats } from "@/lib/workStats";
 import type { DirectionContent } from "../types";
 import type { Work } from "@/lib/types";
+import { numLocale } from "@/i18n/format";
+import { tr } from "@/i18n/tr";
 
 // Портфолио: одна крупная работа в фокусе и список остальных рядом.
 //
@@ -89,7 +91,7 @@ function WorksCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.35, ease: EASE }}
                     src={`https://www.youtube-nocookie.com/embed/${current.youtubeId}?rel=0&modestbranding=1&playsinline=1`}
-                    title={current.title}
+                    title={tr(current.title)}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
                     allowFullScreen
                     className="absolute inset-0 h-full w-full"
@@ -259,7 +261,7 @@ function reelMeta(n: number) {
   const base = REEL_GOALS[n % REEL_GOALS.length];
   return {
     ...base,
-    budget: `${(5 + (h % 31)).toLocaleString("ru-RU")} 000 ₽`,
+    budget: `${(5 + (h % 31)).toLocaleString(numLocale())} 000 ₽`,
     timeline: `${1 + ((h >>> 8) % 5)} ${(1 + ((h >>> 8) % 5)) === 1 ? "день" : (1 + ((h >>> 8) % 5)) < 5 ? "дня" : "дней"}`,
   };
 }

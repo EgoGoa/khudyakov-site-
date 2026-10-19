@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { useSiteFreeze } from "@/lib/use-site-freeze";
 import { skipIntros } from "@/lib/skip-intro";
@@ -32,6 +32,7 @@ import {
   type VibeQuestion,
   type VibeValue,
 } from "@/lib/vibe-quiz";
+import { tr } from "@/i18n/tr";
 
 // Vibe-режим — полноэкранное окно, которое открывает сфера в вайб-баре
 // (Егор, 2026-09-26, вариант B «манифест»). Сфера — главный герой окна:
@@ -494,7 +495,7 @@ export function VibeWordmark({ className = "", hero = false }: { className?: str
 // фирменным градиентом (Егор: «в заголовках и подзаголовках одно-два слова
 // в акцентах»).
 function Accent({ text }: { text: string }) {
-  const parts = text.split(/\*([^*]+)\*/);
+  const parts = tr(text).split(/\*([^*]+)\*/);
   return (
     <>
       {parts.map((p, i) =>
@@ -554,7 +555,7 @@ function SplashLogo() {
 // размытия короткой вспышкой (Егор: «не печатать по буквам, а по слову
 // через размытие — стильнее и дороже»), затем пауза и переход к слайдам.
 function Hello({ onDone }: { onDone: () => void }) {
-  const words = HELLO_TEXT.flatMap((part, pi) => part.trim().split(" ").map((w) => ({ w, accent: pi === 1 })));
+  const words = HELLO_TEXT.flatMap((part, pi) => tr(part).trim().split(" ").map((w) => ({ w, accent: pi === 1 })));
   const doneRef = useRef(onDone);
   useEffect(() => {
     doneRef.current = onDone;

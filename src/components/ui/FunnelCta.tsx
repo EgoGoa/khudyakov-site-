@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { serviceHrefForRoute, briefHrefForRoute } from "@/features/brief/registry";
 import Image from "next/image";
 import type { ReactNode } from "react";

@@ -3,6 +3,7 @@
 import { settleAt } from "@/lib/motion";
 import { useEffect, useRef, useState } from "react";
 import { getTier, onTierChange } from "@/lib/perf-tier";
+import { tr } from "@/i18n/tr";
 
 // Инфографика трёх вводных слайдов вайб-окна (Егор, 2026-09-26: «к каждому
 // из трёх блоков — минималистичная стильная инфографика, которая показывает,
@@ -1043,13 +1044,13 @@ function label(cx: number, y: number, maxW: number, head: string, line: string, 
     const out: Line[] = [];
     let yy = 0;
     m.font = `800 ${hs}px ${FONT}`;
-    for (const t of wrap(m, head.toUpperCase(), maxW)) {
+    for (const t of wrap(m, tr(head).toUpperCase(), maxW)) {
       out.push({ text: t, y: yy, size: hs, head: true });
       yy += hs * 1.2;
     }
     yy += 3 * upx;
     m.font = `600 ${ls}px ${FONT}`;
-    for (const t of wrap(m, line, maxW)) {
+    for (const t of wrap(m, tr(line), maxW)) {
       if (yy + ls > LABEL_H) break;
       out.push({ text: t, y: yy, size: ls, head: false });
       yy += ls * 1.3;

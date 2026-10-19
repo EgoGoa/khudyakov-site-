@@ -8,6 +8,7 @@ import { InfoVoiceCan, InfoVoiceHow } from "@/components/vibe/VibeInfographics";
 import { Arrow } from "@/components/vibe/VibeMode";
 import { playUi } from "@/lib/sound";
 import { TOUR_KEY, getVoiceLevel, setVoiceState, useVoiceState, voice } from "@/lib/voice/store";
+import { tr } from "@/i18n/tr";
 
 // Знакомство с голосовым ассистентом (Егор, 2026-09-27). Первое нажатие на
 // волну открывает справа окошко в стиле слайдов Vibe-режима: два слайда с
@@ -25,7 +26,7 @@ const SLIDES: { title: string; lead: string; Info: () => ReactNode }[] = [
 const PRACTICE = ["«Следующий блок»", "«Сколько стоит ролик?»", "«Вернись наверх»"];
 
 function Accent({ text }: { text: string }) {
-  const parts = text.split(/\*([^*]+)\*/);
+  const parts = tr(text).split(/\*([^*]+)\*/);
   return <>{parts.map((p, i) => (i % 2 ? <span key={i} className="vibe-mode__iris">{p}</span> : p))}</>;
 }
 

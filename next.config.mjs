@@ -1,4 +1,8 @@
 import { execSync } from "node:child_process";
+import createNextIntlPlugin from "next-intl/plugin";
+
+// Словари RU/EN — src/i18n/request.ts (без middleware, см. src/i18n/routing.ts).
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 
@@ -41,4 +45,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

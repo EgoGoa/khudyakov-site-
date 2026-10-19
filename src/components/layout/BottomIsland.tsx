@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceMeta, serviceOrder, slugToKey } from "@/lib/service-content";

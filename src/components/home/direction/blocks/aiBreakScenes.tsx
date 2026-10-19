@@ -1,6 +1,7 @@
 "use client";
 
 import { In } from "@/components/home/ai/sceneKit";
+import { tr } from "@/i18n/tr";
 
 // Сцены блоков-перебивок (SceneBreak) для страниц AI-инструментов /ai/[tool]
 // и форматов сайтов /sites/[format] и SMM /smm/[format].
@@ -253,7 +254,7 @@ function HubScene({ inputs, knowsLabel, knows, core = "AI", caption, outTitle, o
         <In key={c} at={0.3 + i * 0.4}>
           <Card x={12} y={30 + i * 48} w={104} h={38} r={12} />
           <circle cx="31" cy={49 + i * 48} r="8" fill="url(#ab-ramp)" opacity="0.9" />
-          <text x="31" y={52.5 + i * 48} textAnchor="middle" fill={INK} fontSize="9" fontWeight="700">{c[0]}</text>
+          <text x="31" y={52.5 + i * 48} textAnchor="middle" fill={INK} fontSize="9" fontWeight="700">{tr(c)[0]}</text>
           <text x="45" y={53 + i * 48} fill="#fff" fontSize="10" fontWeight="700">{c}</text>
           <path d={`M 118 ${49 + i * 48} C 140 ${49 + i * 48} 138 160 158 160`} stroke="var(--sp-from)" strokeOpacity="0.7" strokeWidth="1.3" className="sp-flow" style={{ animationDelay: `${i * 0.35}s` }} />
         </In>

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Container from "@/components/ui/Container";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
 import { BRIEF_EMAIL, looksLikeEmail, type BriefStep } from "@/lib/brief";
 import { HOTEL_VIDEO_STEPS } from "@/lib/hotelVideoBrief";
+import { numLocale } from "@/i18n/format";
 
 type ContactValue = { email: string; phone: string };
 type AnswerValue = string | string[] | ContactValue | undefined;
@@ -38,7 +39,7 @@ function formatAnswer(step: BriefStep, answers: Answers): string | null {
     const d = new Date(`${v}T00:00:00`);
     const out = Number.isNaN(d.getTime())
       ? v
-      : d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+      : d.toLocaleDateString(numLocale(), { day: "numeric", month: "long", year: "numeric" });
     const note = answers[`${step.id}Note`];
     return typeof note === "string" && note.trim() ? `${out} — ${note.trim()}` : out;
   }

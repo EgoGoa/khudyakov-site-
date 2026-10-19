@@ -1,5 +1,6 @@
 import type { Answer, Answers, BriefConfig, ContactMethod, Step } from "../types";
 import { DEADLINE_ID } from "../configs/helpers";
+import { numLocale } from "@/i18n/format";
 
 export const STORAGE_PREFIX = "hud-brief";
 export const storageKey = (id: string) => `${STORAGE_PREFIX}:${id}:v1`;
@@ -102,7 +103,7 @@ export function formatAnswer(step: Step, a: Answer | undefined): string | null {
         const label = step.options?.find((o) => o.id === id)?.label ?? id;
         if (id === DEADLINE_ID && a.date) {
           const d = new Date(`${a.date}T00:00:00`);
-          return `${label}: ${Number.isNaN(d.getTime()) ? a.date : d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}`;
+          return `${label}: ${Number.isNaN(d.getTime()) ? a.date : d.toLocaleDateString(numLocale(), { day: "numeric", month: "long", year: "numeric" })}`;
         }
         return label;
       });

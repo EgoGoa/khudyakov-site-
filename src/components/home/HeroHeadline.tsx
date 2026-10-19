@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { tr } from "@/i18n/tr";
 import { serviceOrder, servicesByCategory, type ServiceKey } from "@/lib/service-content";
 
 // The hero H1 cycles through the site's real service names — same feed as
@@ -78,16 +79,19 @@ const ACCENT: Record<string, string> = {
   "Контент-стратегия": "стратегия",
 };
 
-function splitAccent(title: string): [string, string, string] {
-  const word = ACCENT[title];
-  const at = word ? title.indexOf(word) : -1;
-  if (at < 0) return [title, "", ""];
+function splitAccent(rawTitle: string): [string, string, string] {
+  // Английская версия: заголовок и слово переводим целиком до разбора, слово
+  // ищем без учёта регистра («Products» ↔ «products»).
+  const title = tr(rawTitle);
+  const word = ACCENT[rawTitle] ? tr(ACCENT[rawTitle]) : undefined;
+  const at = word ? title.toLowerCase().indexOf(word.toLowerCase()) : -1;
+  if (!word || at < 0) return [title, "", ""];
   const after = title.slice(at + word.length);
   // Дефис после слова уходит вместе с ним: иначе на стыке двух span браузер
   // не переносит строку после дефиса и «Комьюнити-менеджмент» вылезает за
   // колонку.
-  if (after.startsWith("-")) return [title.slice(0, at), `${word}-`, after.slice(1)];
-  return [title.slice(0, at), word, after];
+  if (after.startsWith("-")) return [title.slice(0, at), `${title.slice(at, at + word.length)}-`, after.slice(1)];
+  return [title.slice(0, at), title.slice(at, at + word.length), after];
 }
 
 function buildFeed(): { key: ServiceKey; title: string }[] {

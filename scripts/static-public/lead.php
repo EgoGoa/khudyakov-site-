@@ -44,7 +44,12 @@ $labels = [
 $type = $body['type'] ?? '';
 $label = $labels[$type] ?? 'Заявка с сайта';
 
-$lines = ["Имя: $name"];
+// Английская версия сайта (заголовок ставит клиентский код): письмо приходит
+// по-русски, но с пометкой языка — отвечать клиенту нужно по-английски.
+$isEn = ($_SERVER['HTTP_X_SITE_LOCALE'] ?? '') === 'en';
+$lines = [];
+if ($isEn) $lines[] = 'Язык сайта: EN — ответьте клиенту по-английски';
+$lines[] = "Имя: $name";
 if ($phone !== '') $lines[] = "Телефон: $phone";
 if ($email !== '') $lines[] = "Email: $email";
 if (isset($body['fields']) && is_array($body['fields'])) {
@@ -56,7 +61,7 @@ if (isset($body['fields']) && is_array($body['fields'])) {
 
 $to = 'khudyakov.yegor@gmail.com';
 $host = preg_replace('/^www\./', '', $_SERVER['HTTP_HOST'] ?? 'hud-service.ru');
-$subject = '=?UTF-8?B?' . base64_encode("$label — $name") . '?=';
+$subject = '=?UTF-8?B?' . base64_encode(($isEn ? '[EN] ' : '') . "$label — $name") . '?=';
 $headers = "From: HUD.SERVICE <no-reply@$host>\r\n";
 if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $headers .= "Reply-To: $email\r\n";

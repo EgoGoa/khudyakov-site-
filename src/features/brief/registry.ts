@@ -4,6 +4,7 @@ import { content } from "./configs/content";
 import { general } from "./configs/general";
 import { sites } from "./configs/sites";
 import { smm } from "./configs/smm";
+import { stripLocale } from "@/i18n/href";
 
 // Единственное место, где страница услуги связывается с брифом. Никакого
 // определения по тексту заголовка, глобальному состоянию или порядку блоков.
@@ -83,7 +84,7 @@ export function rememberService(pathname: string) {
 /** Текущая услуга: по адресу страницы услуги, иначе последняя посещённая,
  *  иначе выбранная в меню, иначе контент. Спрашивать посетителя не нужно. */
 export function currentServiceId(): BriefId {
-  const fromPath = getBriefIdForRoute(window.location.pathname);
+  const fromPath = getBriefIdForRoute(stripLocale(window.location.pathname));
   if (fromPath) return fromPath;
   try {
     for (const key of [LAST_KEY, "hdkv-active-service"]) {

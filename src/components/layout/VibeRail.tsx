@@ -18,7 +18,7 @@ import { canOfferInstall, openInstall, useInstallMode } from "@/lib/pwa";
 import VibeMode from "@/components/vibe/VibeMode";
 import BlockVibe from "@/components/vibe/BlockVibe";
 import { OPEN_BLOCK_VIBE_EVENT } from "@/lib/block-vibe";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { openService } from "@/features/brief/lib/navigate";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { homeOf } from "@/components/layout/PageBar";

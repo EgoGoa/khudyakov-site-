@@ -3,12 +3,13 @@
 import { useBootPreload } from "@/lib/boot-sequence";
 import { isSiteFrozen } from "@/lib/welcome-freeze";
 import { useEffect, useId, useRef, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { sureNavigate } from "@/lib/sure-nav";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import Container from "@/components/ui/Container";
 import { serviceMeta, serviceOrder, type ServiceKey } from "@/lib/service-content";
+import { tr } from "@/i18n/tr";
 
 // One word inside each service's own label picked out in that service's own
 // gradient — same "one keyword per heading" rule the service pages
@@ -57,13 +58,15 @@ export function ServiceLabel({
   serviceKey: ServiceKey;
 }) {
   const accent = LABEL_ACCENT[serviceKey];
-  if (!accent) return <>{meta.label}</>;
+  const label = tr(meta.label);
+  if (!accent) return <>{label}</>;
 
   // Градиент — только на ключевом слове («контента», «AI», «Vibe»), остальное
   // белым (Егор, 2026-09-28: «Создание», «решения», «сайты» — белым).
-  const i = meta.label.indexOf(accent.word);
-  const before = i >= 0 ? meta.label.slice(0, i) : "";
-  const after = i >= 0 ? meta.label.slice(i + accent.word.length) : meta.label;
+  const accentWord = tr(accent.word);
+  const i = label.toLowerCase().indexOf(accentWord.toLowerCase());
+  const before = i >= 0 ? label.slice(0, i) : "";
+  const after = i >= 0 ? label.slice(i + accentWord.length) : label;
   const plain = { color: "#fff", textShadow: "none" } as const;
   return (
     <span style={{ fontSize: accent.scale ? `${accent.scale}em` : undefined }}>
@@ -82,7 +85,7 @@ export function ServiceLabel({
           filter: `drop-shadow(0 0 10px ${accent.from}66) drop-shadow(0 0 26px ${accent.to}66)`,
         }}
       >
-        {i >= 0 ? accent.word : ""}
+        {i >= 0 ? label.slice(i, i + accentWord.length) : ""}
       </span>
       {after && <span style={plain}>{after}</span>}
     </span>

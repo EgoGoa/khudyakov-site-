@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Appear from "@/components/ui/Appear";
 import { BEAT } from "@/lib/motion";
 import { CHAPTER_INTRO } from "@/components/ui/CinematicSection";

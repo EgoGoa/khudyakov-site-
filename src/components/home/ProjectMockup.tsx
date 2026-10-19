@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { works } from "@/lib/data";
 import { EYEBROW } from "@/lib/typography";
+import { tr } from "@/i18n/tr";
 
 const navItems = [
   { label: "Брифы", count: 3 },
@@ -135,7 +136,7 @@ export default function ProjectMockup() {
                 </h3>
                 <div className="mt-3 flex items-center gap-2.5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-glow to-glow-deep text-xs font-semibold text-white">
-                    {active.client.charAt(0)}
+                    {tr(active.client).charAt(0)}
                   </span>
                   <span className="text-sm text-paper/70">{active.client}</span>
                   <span className="ml-auto rounded-full border border-paper/10 px-2.5 py-1 font-display text-[10px] uppercase tracking-[0.1em] text-paper/50">

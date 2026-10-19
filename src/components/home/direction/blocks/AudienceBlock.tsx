@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";
 import { DIRECTION_BEAT, STAGGER } from "@/lib/motion";

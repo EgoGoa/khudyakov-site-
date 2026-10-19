@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "title": "HUD.SERVICE — AI-диджитал сервис полного цикла",
+    "description": "Видео, фото, брендинг, SMM и AI-контент под одной крышей. HUD.SERVICE соединяет продакшн и нейросети, чтобы бренды росли быстрее рынка. 8 лет опыта, 450+ проектов, 350+ клиентов."
+  },
+  "header": {
+    "switchLanguage": "Switch language",
+    "closeMenu": "Закрыть меню",
+    "openMenu": "Открыть меню",
+    "menu": "Меню",
+    "call": "Позвонить: {phone}",
+    "search": "Поиск по сайту",
+    "searchHint": "Поиск · Ctrl+K",
+    "music": "Музыка",
+    "cabinet": "Кабинет",
+    "onThisPage": "На этой странице",
+    "pages": "Страницы",
+    "contact": "Связаться",
+    "contactLead": "Расскажите задачу — ответим в течение 15 минут и предложим 2–3 решения.",
+    "discussProject": "Обсудить проект",
+    "writeTelegram": "Написать в Telegram",
+    "writeWhatsApp": "Написать в WhatsApp"
+  }
+}

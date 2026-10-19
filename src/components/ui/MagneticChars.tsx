@@ -2,6 +2,7 @@
 
 import { getTier } from "@/lib/perf-tier";
 import { Fragment, useEffect, useRef, type CSSProperties } from "react";
+import { tr } from "@/i18n/tr";
 
 // Splits `text` into one <span> per character and nudges each one a few px
 // toward the cursor as it passes near — the letter-level sibling of
@@ -85,7 +86,7 @@ export default function MagneticChars({
   }, []);
 
   let letterIndex = 0;
-  const words = text.split(" ");
+  const words = tr(text).split(" ");
 
   return (
     <>

@@ -4,6 +4,7 @@
 // детали лежат в sceneKit.tsx.
 
 import { In, Frame, Headline, BeforeAfter, type SceneProps } from "@/components/home/ai/sceneKit";
+import { tr } from "@/i18n/tr";
 
 /* ── Персонализация ─────────────────────────────────────────────────── */
 
@@ -76,7 +77,7 @@ function PersVersions({ mini }: SceneProps) {
         <In key={seg} at={2 + i}>
           <path d={`M 86 106 C 108 106 112 ${74 + i * 34} 134 ${74 + i * 34}`} stroke="var(--sp-to)" strokeOpacity="0.6" strokeWidth="1.2" className="sp-flow" style={{ animationDelay: `${i * 0.3}s` }} />
           <rect x="138" y={60 + i * 34} width="188" height="28" rx="9" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.13)" />
-          <text x="150" y={72 + i * 34} fill="var(--sp-from)" fontSize="10.9" letterSpacing="1" fontFamily="inherit">{seg.toUpperCase()}</text>
+          <text x="150" y={72 + i * 34} fill="var(--sp-from)" fontSize="10.9" letterSpacing="1" fontFamily="inherit">{tr(seg).toUpperCase()}</text>
           <text x="150" y={83 + i * 34} fill="#fff" fontSize="12.4" fontFamily="inherit">{line}</text>
         </In>
       ))}

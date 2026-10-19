@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { queueFirstChapter, scrollToDeckStart } from "@/lib/page-hop";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { sureNavigate } from "@/lib/sure-nav";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";

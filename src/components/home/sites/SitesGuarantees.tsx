@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import { SITES_ACCENT } from "@/components/home/ai/spotlightSites";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";

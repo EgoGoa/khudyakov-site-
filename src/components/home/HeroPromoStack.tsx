@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { modIndex, useDeckDrag, useDeckSpring, wrapOffset } from "@/components/ui/deckFan";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";

@@ -7,6 +7,7 @@ import { accentVars, type TeamPulseData } from "./types";
 import TeamPulseWindow from "./TeamPulseWindow";
 import { marks, plain } from "./marks";
 import { fitValue, useRefit } from "@/lib/use-fit-text";
+import { tr } from "@/i18n/tr";
 
 // Мини-окошко человека команды, встроенное в вёрстку блока.
 //
@@ -33,7 +34,8 @@ const SPRING = { type: "spring", stiffness: 340, damping: 30, mass: 0.9 } as con
  *  marks.tsx): считает только видимые буквы, метки переключают цвет. */
 const MARK_CLS: Record<string, string> = { "*": "team-pulse-acc", "^": "team-pulse-warm", "~": "team-pulse-muted" };
 
-function segments(text: string) {
+function segments(raw: string) {
+  const text = tr(raw);
   const out: { text: string; cls?: string }[] = [];
   const re = /([*^~])([^*^~]+)\1/g;
   let last = 0;

@@ -18,7 +18,7 @@ import CloseBlock from "./blocks/CloseBlock";
 import SceneBreak from "./blocks/SceneBreak";
 import InfoWindow from "./blocks/InfoWindow";
 import type { DirectionContent, SceneBreakSlot } from "./types";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { briefHrefForRoute } from "@/features/brief/registry";
 
 // Страница направления внутри /content — одна на все направления.

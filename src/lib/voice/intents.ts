@@ -3,6 +3,8 @@ import { blocksFor, type BlockCard, type BlockRole } from "@/lib/welcome-blocks"
 import { ringOf } from "@/components/home/direction/siblings";
 import { TEAM } from "@/lib/team";
 import type { MoodId } from "@/lib/sound";
+import { isEnglishSite } from "@/lib/voice/lang";
+import { parseCommandEn } from "@/lib/voice/intents.en";
 
 // Голосовой ассистент: понимание фразы на месте, без сети и мгновенно.
 //
@@ -65,21 +67,22 @@ export function normalize(text: string) {
 // кусок фразы целиком («как было»). Тег с «=» — слово ровно целиком
 // («=пока», чтобы не ловить «покажи»).
 
-type Phrase = { text: string; words: string[] };
+export type Phrase = { text: string; words: string[] };
 
-function phrase(raw: string): Phrase {
+export function phrase(raw: string): Phrase {
   const text = normalize(raw);
   return { text, words: text.trim().split(" ").filter(Boolean) };
 }
 
 function hit(p: Phrase, tag: string) {
+  tag = tag.replace(/['’]/g, " ");
   if (tag.startsWith("=")) return p.words.includes(tag.slice(1));
   if (tag.includes(" ")) return p.text.includes(` ${tag} `) || p.text.includes(` ${tag}`);
   return p.words.some((w) => w.startsWith(tag));
 }
 
-const any = (p: Phrase, tags: string[]) => tags.some((t) => hit(p, t));
-const count = (p: Phrase, tags: string[]) => tags.reduce((n, t) => n + (hit(p, t) ? 1 : 0), 0);
+export const any = (p: Phrase, tags: string[]) => tags.some((t) => hit(p, t));
+export const count = (p: Phrase, tags: string[]) => tags.reduce((n, t) => n + (hit(p, t) ? 1 : 0), 0);
 
 const T = {
   stop: ["выключ", "отключ", "замолч", "хватит", "=стоп", "=пока", "до свидан", "не слушай", "перестань слуш"],
@@ -304,6 +307,8 @@ const blockHref = (svc: ServiceKey, b: BlockCard) => `/${serviceMeta[svc].slug}#
  *  loose — ИИ недоступен: вопрос «сколько стоит сайт?» тогда тоже ведёт
  *  на подходящий блок, а не остаётся без ответа. */
 export function parseCommand(raw: string, pathname: string, loose = false, noPress = false): VoiceReply | null {
+  // Английская версия сайта — свой набор слов и ответов (intents.en.ts).
+  if (isEnglishSite()) return parseCommandEn(raw, pathname, loose, noPress);
   const p = phrase(raw);
   if (p.words.length === 0) return null;
   const here = serviceFromPath(pathname);

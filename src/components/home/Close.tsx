@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import PriceText from "@/components/home/PriceText";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";

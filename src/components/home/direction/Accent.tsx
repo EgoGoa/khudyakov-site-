@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { tr } from "@/i18n/tr";
 
 // Один выделенный фрагмент внутри абзаца.
 //
@@ -14,7 +15,9 @@ export default function Accent({ children }: { children: ReactNode }) {
 /** Подсвечивает подстроку внутри готовой строки — чтобы копирайт оставался
  *  обычным текстом в presentationContent.ts, а не JSX. Если фрагмент не
  *  найден, строка отрисуется как есть. */
-export function withAccent(text: string, phrase?: string): ReactNode {
+export function withAccent(rawText: string, rawPhrase?: string): ReactNode {
+  const text = tr(rawText);
+  const phrase = rawPhrase ? tr(rawPhrase) : rawPhrase;
   if (!phrase) return text;
   const i = text.indexOf(phrase);
   if (i === -1) return text;

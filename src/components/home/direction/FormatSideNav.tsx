@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { CSSProperties } from "react";
 import { NeonChevron } from "@/components/home/ServicePicker";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";

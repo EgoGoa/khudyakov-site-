@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import { useService } from "@/lib/service-context";

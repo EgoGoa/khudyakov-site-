@@ -13,7 +13,7 @@ const HOLD = 0.12;
 const pages = ["content", "ai", "sites", "smm"];
 
 for (const page of pages) {
-  const tsx = readFileSync(`src/app/(landing)/${page}/page.tsx`, "utf8");
+  const tsx = readFileSync(`src/app/(ru)/(landing)/${page}/page.tsx`, "utf8");
   const block = tsx.slice(tsx.indexOf("const PHASES"));
   const body = block.slice(0, block.indexOf("];"));
   const phases = [...body.matchAll(/start:\s*([\d.]+),\s*end:\s*([\d.]+)/g)].map((m) => [+m[1], +m[2]]);

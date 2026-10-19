@@ -3,6 +3,7 @@ import { works } from "./data";
 import { pricingByCategory, type ServiceKey } from "./service-content";
 import { pickTier } from "./vibe-quiz";
 import type { PricingTier, Work } from "./types";
+import { numLocale } from "@/i18n/format";
 
 // Vibe-блок (Егор, 2026-09-27): клик по иконке вайб-бара едет к блоку и
 // открывает рядом с баром короткое окошко — 5 шагов про ЭТОТ блок (сфера,
@@ -496,7 +497,7 @@ export function estimateBlock(service: ServiceKey, a: BlockAnswers): BlockEstima
   const rounded = Math.max(5_000, Math.round(price / 5_000) * 5_000);
   const d = Math.max(3, Math.round(days));
   return {
-    price: `≈ от ${rounded.toLocaleString("ru-RU")} ₽${service === "smm" ? "/мес" : ""}`,
+    price: `≈ от ${rounded.toLocaleString(numLocale())} ₽${service === "smm" ? "/мес" : ""}`,
     days: service === "smm" ? "старт за 7 дней" : `${d} ${d % 10 === 1 && d % 100 !== 11 ? "день" : d % 10 >= 2 && d % 10 <= 4 && (d % 100 < 10 || d % 100 >= 20) ? "дня" : "дней"}`,
   };
 }

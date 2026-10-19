@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { MAX_AI, MAX_CONTENT } from "@/components/home/team-pulse/content/max-content";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import CinematicSection from "@/components/ui/CinematicSection";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import Appear from "@/components/ui/Appear";

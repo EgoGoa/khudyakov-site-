@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { serviceMeta, type ServiceKey } from "@/lib/service-content";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";

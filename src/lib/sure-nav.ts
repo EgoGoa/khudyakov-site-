@@ -7,7 +7,8 @@
 //   • Через HARD_FALLBACK_MS проверяем адрес: если мы всё ещё не там, куда
 //     шли (и это по-прежнему последний запрошенный переход), загружаем
 //     страницу заново обычным переходом браузера.
-import type { useRouter } from "next/navigation";
+import type { useRouter } from "@/i18n/navigation";
+import { localizeHref } from "@/i18n/href";
 
 type Router = ReturnType<typeof useRouter>;
 
@@ -19,7 +20,9 @@ const clean = (p: string) => p.replace(/\/+$/, "") || "/";
 
 /** Страховка для перехода, который уже запускает кто-то другой (например,
  *  <Link>): обычная загрузка, если через 5 с мы не там. */
-export function guardNavigation(href: string, ms: number = HARD_FALLBACK_MS) {
+export function guardNavigation(path: string, ms: number = HARD_FALLBACK_MS) {
+  // Роутер next-intl сам добавляет /en; страховке нужен настоящий адрес.
+  const href = localizeHref(path);
   const id = ++latest;
   const target = clean(new URL(href, location.href).pathname);
   window.setTimeout(() => {

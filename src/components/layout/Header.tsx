@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import CabinetWindow, { openCabinet } from "@/components/cabinet/CabinetWindow";
 import LiveBrandWord from "@/components/layout/LiveBrandWord";
 import SoundStation, { openSoundStation } from "@/components/layout/SoundStation";
@@ -18,7 +18,10 @@ import { useHeaderMenu } from "@/lib/header-menu";
 import { useCinematicGoTo } from "@/lib/cinematic-nav";
 import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { openWelcome } from "@/lib/welcome-gate";
-import { CROSS_PAGE_ITEMS, PAGE_BLOCKS } from "@/components/layout/page-sections";
+import { localizedCrossPageItems, localizedPageBlocks } from "@/components/layout/page-sections";
+import LocaleSwitch from "@/components/layout/LocaleSwitch";
+import { useLocale, useTranslations } from "next-intl";
+import type { Locale } from "@/i18n/routing";
 import { serviceHrefForRoute } from "@/features/brief/registry";
 import SectionIcon from "@/components/ui/SectionIcon";
 import { SearchGlyph } from "@/components/layout/SiteSearch";
@@ -47,6 +50,10 @@ function BrandLockup() {
 
 export default function Header() {
   const pathname = useCleanPathname();
+  const t = useTranslations("header");
+  const locale = useLocale() as Locale;
+  const PAGE_BLOCKS = localizedPageBlocks(locale);
+  const CROSS_PAGE_ITEMS = localizedCrossPageItems(locale);
   const isHome = pathname === "/";
   const isLanding = landingSlugs.includes(pathname.replace(/^\//, ""));
   const api = useFullpage();
@@ -175,7 +182,7 @@ export default function Header() {
           <motion.button
             key="scrim"
             type="button"
-            aria-label="Закрыть меню"
+            aria-label={t("closeMenu")}
             onClick={() => setMenuOpen(false)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -191,7 +198,7 @@ export default function Header() {
       data-site-header
       // Под вырезом телефона (режим приложения) стекло шапки продолжается:
       // полоса времени и острова — её размытое продолжение, без элементов.
-      style={{ paddingTop: "var(--sat)" }}
+      style={{ paddingTop: "var(--sat)", "--g-from": accent.from, "--g-to": accent.to } as React.CSSProperties}
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 land:pointer-events-none land:!border-transparent land:!bg-transparent land:!backdrop-blur-none land:before:pointer-events-none land:before:absolute land:before:inset-x-0 land:before:top-0 land:before:h-16 land:before:content-[''] land:before:bg-[linear-gradient(to_bottom,rgba(11,11,16,0.78),rgba(11,11,16,0.6)_30%,rgba(11,11,16,0.28)_65%,rgba(11,11,16,0))] ${
         "header-glass"
       }`}
@@ -213,7 +220,7 @@ export default function Header() {
         <div className="header-tools flex shrink-0 items-center gap-3 sm:gap-4">
           <a
             href="tel:+79925111812"
-            aria-label="Позвонить: +7 992 511-18-12"
+            aria-label={t("call", { phone: "+7 992 511-18-12" })}
             title="+7 992 511-18-12"
             // Только значок, без номера (просьба Егора): номер остаётся в
             // aria-label и всплывает подсказкой при наведении.
@@ -228,14 +235,17 @@ export default function Header() {
           {/* Станция HDKV: звук сайта и музыка по настроению (lib/sound). */}
           {/* Плеер и кабинет живут в меню (плитки сверху шторки) на всех
               экранах (Егор, 2026-10-10). */}
+          {/* Язык RU | EN — перед поиском, на всех экранах (на телефоне не
+              прячется в меню). Градиент активного языка — цвет раздела. */}
+          <LocaleSwitch className="land:pointer-events-auto" />
           <div className="hidden items-center gap-3 sm:flex sm:gap-4 land:!flex land:flex-col land:gap-0.5">
             {/* Поиск по сайту (⌘/Ctrl+K). На телефоне стоя лупа живёт в
                 острове внизу экрана, здесь — компьютер и телефон боком. */}
             <button
               type="button"
               onClick={openSearch}
-              aria-label="Поиск по сайту"
-              title="Поиск · Ctrl+K"
+              aria-label={t("search")}
+              title={t("searchHint")}
               className="hidden h-9 w-9 items-center justify-center text-paper/75 transition-colors hover:text-paper lg:inline-flex land:!inline-flex land:pointer-events-auto land:h-8 land:w-8 land:text-paper/55"
             >
               <SearchGlyph className="h-[19px] w-[19px]" />
@@ -251,7 +261,7 @@ export default function Header() {
           <div className="relative land:ml-auto land:pointer-events-auto">
             <motion.button
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+              aria-label={menuOpen ? t("closeMenu") : t("openMenu")}
               whileTap={{ scale: 0.9 }}
               // No disc behind the glyph any more (Egor's call): the circle —
               // border, translucent fill and its own backdrop-blur — was more
@@ -289,7 +299,7 @@ export default function Header() {
         {menuOpen && (
           <motion.nav
             key="drawer"
-            aria-label="Меню"
+            aria-label={t("menu")}
             initial={{ clipPath: "inset(0 0 100% 0 round 0 0 28px 28px)", opacity: 0.6 }}
             animate={{ clipPath: "inset(0 0 0% 0 round 0 0 28px 28px)", opacity: 1 }}
             exit={{ clipPath: "inset(0 0 100% 0 round 0 0 28px 28px)", opacity: 0.6 }}
@@ -308,7 +318,7 @@ export default function Header() {
                   className="menu-tile font-display"
                 >
                   <SectionIcon name="music" size={18} />
-                  Музыка
+                  {t("music")}
                 </button>
                 <button
                   type="button"
@@ -319,11 +329,11 @@ export default function Header() {
                   className="menu-tile font-display"
                 >
                   <SectionIcon name="cabinet" size={18} />
-                  Кабинет
+                  {t("cabinet")}
                 </button>
               </div>
               <div>
-                <p className="menu-kicker font-display">На этой странице</p>
+                <p className="menu-kicker font-display">{t("onThisPage")}</p>
                 <div className="grid sm:grid-cols-2 sm:gap-x-8">
                   {sections.map((s, i) => (
                     <Link
@@ -343,7 +353,7 @@ export default function Header() {
                 </div>
               </div>
               <div>
-                <p className="menu-kicker font-display">Страницы</p>
+                <p className="menu-kicker font-display">{t("pages")}</p>
                 {CROSS_PAGE_ITEMS.map((p, i) => (
                   <Link
                     key={p.href}
@@ -358,18 +368,18 @@ export default function Header() {
                 ))}
               </div>
               <div>
-                <p className="menu-kicker font-display">Связаться</p>
+                <p className="menu-kicker font-display">{t("contact")}</p>
                 <p className="text-sm leading-relaxed text-paper">
-                  Расскажите задачу — ответим в течение 15 минут и предложим 2–3 решения.
+                  {t("contactLead")}
                 </p>
                 <div className="mt-5 flex items-center gap-2.5">
                   <Link href="/brief" onClick={() => setMenuOpen(false)} className="menu-cta font-display">
-                    Обсудить проект →
+                    {t("discussProject")} →
                   </Link>
-                  <a href="https://t.me/hdkv" target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram" className="menu-round">
+                  <a href="https://t.me/hdkv" target="_blank" rel="noopener noreferrer" aria-label={t("writeTelegram")} className="menu-round">
                     <TelegramIcon className="h-[18px] w-[18px]" />
                   </a>
-                  <a href="https://wa.me/79925111812" target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp" className="menu-round">
+                  <a href="https://wa.me/79925111812" target="_blank" rel="noopener noreferrer" aria-label={t("writeWhatsApp")} className="menu-round">
                     <WhatsAppIcon className="h-[18px] w-[18px]" />
                   </a>
                 </div>

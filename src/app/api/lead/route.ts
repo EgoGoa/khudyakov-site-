@@ -85,7 +85,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "email_not_configured" }, { status: 503 });
   }
 
+  // Английская версия сайта (заголовок ставит LocaleProvider): письмо всё
+  // равно приходит по-русски, но с пометкой языка — отвечать клиенту нужно
+  // по-английски.
+  const isEn = request.headers.get("x-site-locale") === "en";
   const lines = [
+    ...(isEn ? ["Язык сайта: EN — ответьте клиенту по-английски"] : []),
     `Имя: ${name}`,
     ...(phone ? [`Телефон: ${phone}`] : []),
     ...(email ? [emailOk ? `Email: ${email}` : `Email (похоже, с опечаткой): ${email}`] : []),
@@ -106,7 +111,7 @@ export async function POST(request: Request) {
     from: "HUD.SERVICE <onboarding@resend.dev>",
     to: BRIEF_EMAIL,
     replyTo: emailOk ? email : undefined,
-    subject: `${Object.hasOwn(TYPE_LABEL, body.type) ? TYPE_LABEL[body.type] : "Заявка с сайта"} — ${name}`,
+    subject: `${isEn ? "[EN] " : ""}${Object.hasOwn(TYPE_LABEL, body.type) ? TYPE_LABEL[body.type] : "Заявка с сайта"} — ${name}`,
     text: lines.join("\n"),
     attachments: attachments.length ? attachments : undefined,
   });

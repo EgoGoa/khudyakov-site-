@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { useService } from "@/lib/service-context";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { findPulse, type PulsePage } from "@/components/home/team-pulse/registry";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useState, type ReactNode } from "react";
 import type { TeamMember } from "@/lib/team";
 import TeamConsultModal from "@/components/home/TeamConsultModal";

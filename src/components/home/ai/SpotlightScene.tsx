@@ -71,6 +71,7 @@ import { COMMS_SCENES } from "@/components/home/ai/SpotlightScenesComms";
 import { GROWTH_SCENES } from "@/components/home/ai/SpotlightScenesGrowth";
 import { SITES_SCENES } from "@/components/home/ai/SpotlightScenesSites";
 import { SMM_SCENES } from "@/components/home/ai/SpotlightScenesSmm";
+import { tr } from "@/i18n/tr";
 
 /* ── Сцены инструмента «Единый AI-чат» ──────────────────────────────── */
 
@@ -387,7 +388,7 @@ function AgentFunnel({ mini }: SceneProps) {
         <In key={name} at={1 + i}>
           <rect x={16 + i * 106} y="60" width="96" height="102" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.13)" />
           <text x={28 + i * 106} y="76" fill="rgba(255,255,255,0.45)" fontSize="10.9" letterSpacing="1.1" fontFamily="inherit">
-            {name.toUpperCase()}
+            {tr(name).toUpperCase()}
           </text>
           {[0, 1].map((j) => (
             <rect key={j} x={26 + i * 106} y={84 + j * 22} width="76" height="16" rx="5" fill="rgba(255,255,255,0.07)" />

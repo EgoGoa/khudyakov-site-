@@ -6,6 +6,8 @@ import type { TeamPulseChatVisual, TeamPulseScene } from "./types";
 import { marks } from "./marks";
 import { TEAM } from "@/lib/team";
 import { TelegramIcon } from "@/components/ui/Icons";
+import { numLocale } from "@/i18n/format";
+import { tr } from "@/i18n/tr";
 
 // Графика человека команды — «живая вёрстка»: мини-сайты, телефон с
 // формой, карточка товара, которые двигаются как интерфейс, а не схема.
@@ -220,7 +222,7 @@ function Phone({ children }: { children: ReactNode }) {
 function Typed({ text, delay }: { text: string; delay: number }) {
   return (
     <span className="inline-flex">
-      {text.split("").map((ch, k) => (
+      {tr(text).split("").map((ch, k) => (
         <motion.span key={k} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: delay + k * 0.04, duration: 0.01 }}>
           {ch === " " ? " " : ch}
         </motion.span>
@@ -1298,7 +1300,7 @@ function TanyaGrid() {
           <div>
             <p className="font-display text-[14px] font-bold uppercase text-white">твой_бренд</p>
             <p className="font-display text-[12px] font-bold uppercase text-white">
-              <span className="team-pulse-acc text-[16px]">{followers.toLocaleString("ru-RU")}</span> подписчиков
+              <span className="team-pulse-acc text-[16px]">{followers.toLocaleString(numLocale())}</span> подписчиков
             </p>
           </div>
         </div>
@@ -1332,7 +1334,7 @@ function TanyaReach() {
       <Body>
         <div className="absolute left-[60px] top-[10px] h-[260px] w-[150px] overflow-hidden rounded-[22px] shadow-[inset_0_0_0_2px_rgba(255,255,255,.2)]" style={{ background: "linear-gradient(160deg, rgba(var(--tp-from-rgb),.5), rgba(var(--tp-to-rgb),.5))" }}>
           <div className="grid h-full place-items-center text-[56px]">🎬</div>
-          <span className="absolute bottom-3 left-3 font-display text-[12px] font-bold uppercase text-white">▶ {views.toLocaleString("ru-RU")}</span>
+          <span className="absolute bottom-3 left-3 font-display text-[12px] font-bold uppercase text-white">▶ {views.toLocaleString(numLocale())}</span>
           {hearts.map((k) => (
             <motion.span
               key={k}

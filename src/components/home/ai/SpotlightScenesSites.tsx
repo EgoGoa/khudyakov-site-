@@ -9,6 +9,7 @@
 // в полосе y = 56…170: выше — крупная цифра, ниже — «было → стало».
 
 import { In, Frame, Headline, BeforeAfter, type SceneProps } from "@/components/home/ai/sceneKit";
+import { tr } from "@/i18n/tr";
 
 const W = (o: number) => `rgba(255,255,255,${o})`;
 
@@ -427,7 +428,7 @@ function TurnkeyCrm({ mini }: SceneProps) {
         <rect x={152} y={60} width={174} height={108} rx={12} fill={W(0.05)} stroke="var(--sp-to)" strokeOpacity="0.5" />
         {cols.map((c, i) => (
           <g key={c}>
-            <Txt x={160 + i * 56} y={76} size={10.1} fill={W(0.55)} ls={0.6}>{c.toUpperCase()}</Txt>
+            <Txt x={160 + i * 56} y={76} size={10.1} fill={W(0.55)} ls={0.6}>{tr(c).toUpperCase()}</Txt>
             <rect x={160 + i * 56} y={84} width={50} height={20} rx={5} fill={W(0.08)} stroke={i === 0 ? "var(--sp-from)" : "none"} className={i === 0 ? "sp-pulse" : undefined} />
             {i < 2 && <rect x={160 + i * 56} y={110} width={50} height={20} rx={5} fill={W(0.06)} />}
           </g>

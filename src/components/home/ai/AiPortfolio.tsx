@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import CinematicSection from "@/components/ui/CinematicSection";
 import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import Appear from "@/components/ui/Appear";

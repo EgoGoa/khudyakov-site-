@@ -87,11 +87,11 @@ const SCOPES = [
   ["src/components/home/sites", "sites"],
   ["src/components/home/smm", "smm"],
   ["src/components/home/ai", "ai"],
-  ["src/app/smm", "smm"],
-  ["src/app/(landing)/sites", "sites"],
-  ["src/app/(landing)/smm", "smm"],
-  ["src/app/(landing)/ai", "ai"],
-  ["src/app/(landing)/content", "content"],
+  ["src/app/(ru)/smm", "smm"],
+  ["src/app/(ru)/(landing)/sites", "sites"],
+  ["src/app/(ru)/(landing)/smm", "smm"],
+  ["src/app/(ru)/(landing)/ai", "ai"],
+  ["src/app/(ru)/(landing)/content", "content"],
   ["src/components/home/direction/content", null],
 ];
 for (const [dir, cat] of SCOPES) {

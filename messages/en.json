@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "title": "HUD.SERVICE — full-cycle AI digital service",
+    "description": "Video, photo, branding, social media and AI content under one roof. HUD.SERVICE pairs production with AI so your brand grows faster than the market. 8 years, 450+ projects, 350+ clients."
+  },
+  "header": {
+    "switchLanguage": "Switch language",
+    "closeMenu": "Close menu",
+    "openMenu": "Open menu",
+    "menu": "Menu",
+    "call": "Call {phone}",
+    "search": "Search the site",
+    "searchHint": "Search · Ctrl+K",
+    "music": "Music",
+    "cabinet": "Dashboard",
+    "onThisPage": "On this page",
+    "pages": "Pages",
+    "contact": "Get in touch",
+    "contactLead": "Tell us about your project — we'll reply within 15 minutes with 2–3 ideas.",
+    "discussProject": "Discuss your project",
+    "writeTelegram": "Message us on Telegram",
+    "writeWhatsApp": "Message us on WhatsApp"
+  }
+}

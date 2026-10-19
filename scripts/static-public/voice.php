@@ -40,12 +40,14 @@ $text = mb_substr(trim((string)($body['text'] ?? '')), 0, 600);
 if ($text === '') fail(400, 'missing_text');
 $path = mb_substr((string)($body['path'] ?? '/'), 0, 80);
 
-$messages = [['role' => 'system', 'content' => $data['system']]];
+// Английская версия сайта: отвечаем по-английски (заголовок ставит клиентский код).
+$isEn = ($_SERVER['HTTP_X_SITE_LOCALE'] ?? '') === 'en' && isset($data['systemEn']);
+$messages = [['role' => 'system', 'content' => $isEn ? $data['systemEn'] : $data['system']]];
 foreach (array_slice(is_array($body['history'] ?? null) ? $body['history'] : [], -6) as $turn) {
     if (!is_array($turn) || !in_array($turn['role'] ?? '', ['user', 'assistant'], true)) continue;
     $messages[] = ['role' => $turn['role'], 'content' => mb_substr((string)($turn['text'] ?? ''), 0, 600)];
 }
-$messages[] = ['role' => 'user', 'content' => "[страница: $path]\n$text"];
+$messages[] = ['role' => 'user', 'content' => $isEn ? "[page: $path]\n$text" : "[страница: $path]\n$text"];
 
 $ch = curl_init('https://ai-gateway.vercel.sh/v1/chat/completions');
 curl_setopt_array($ch, [

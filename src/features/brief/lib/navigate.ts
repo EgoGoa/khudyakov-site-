@@ -1,5 +1,6 @@
-import type { useRouter } from "next/navigation";
+import type { useRouter } from "@/i18n/navigation";
 import { sureNavigate } from "@/lib/sure-nav";
+import { localizeHref } from "@/i18n/href";
 import { currentServiceId } from "../registry";
 
 type Router = ReturnType<typeof useRouter>;
@@ -13,7 +14,8 @@ export function openService(router: Router, base: Base, href?: string, replace =
   if (replace) {
     router.replace(target);
     window.setTimeout(() => {
-      if (!location.pathname.startsWith(target)) window.location.replace(target);
+      const real = localizeHref(target);
+      if (!location.pathname.startsWith(real)) window.location.replace(real);
     }, 800);
     return;
   }

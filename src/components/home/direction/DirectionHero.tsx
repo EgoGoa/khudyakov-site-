@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { briefHrefForRoute } from "@/features/brief/registry";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";

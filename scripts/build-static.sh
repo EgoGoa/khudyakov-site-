@@ -9,18 +9,25 @@ DST="$SRC/../khudyakov-site-static"
 
 mkdir -p "$DST"
 rsync -a --delete \
-  --exclude node_modules --exclude .next --exclude .next-preview --exclude out --exclude .git \
+  --exclude node_modules --exclude .next --exclude '.next-*' --exclude out --exclude .git \
   --exclude _backups --exclude .claude --exclude 'hdkv-ai-static.zip' \
   "$SRC/" "$DST/"
 [ -d "$DST/node_modules" ] || cp -cR "$SRC/node_modules" "$DST/node_modules"
+# Новые зависимости (например next-intl) в уже скопированную папку доезжают
+# отдельно: существующие файлы не трогаем.
+cp -cRn "$SRC/node_modules/." "$DST/node_modules/" 2>/dev/null || true
 # Папка второго dev-сервера (превью другого чата): её типы ссылаются на
 # админку, которой в статичной версии нет, и ломают проверку TypeScript.
 rm -rf "$DST/.next-preview"
 
 cd "$DST"
-rm -rf src/app/api src/app/admin src/middleware.ts src/proxy.ts
+rm -rf src/app/api "src/app/(ru)/admin" src/middleware.ts src/proxy.ts
 
 cat > next.config.mjs <<'CFG'
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
@@ -28,7 +35,7 @@ const nextConfig = {
   images: { unoptimized: true },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
 CFG
 
 # формы: /api/lead -> lead.php
@@ -40,12 +47,14 @@ grep -rl 'fetch("/api/voice"' src | xargs perl -pi -e 's#fetch\("/api/voice"#fet
 grep -rl "/api/tts?" src | xargs perl -pi -e "s#/api/tts\\?#/tts.php?#g"
 mkdir -p src/app/voice-data.json
 cat > src/app/voice-data.json/route.ts <<'TS'
-import { VOICE_ROUTES, VOICE_SYSTEM } from "@/lib/voice/prompt";
+import { VOICE_ROUTES, VOICE_SYSTEM, voiceSystemEn } from "@/lib/voice/prompt";
+import { enableEnglishForRequest } from "@/i18n/jsx/server";
 
 export const dynamic = "force-static";
 
 export function GET() {
-  return Response.json({ system: VOICE_SYSTEM, routes: [...VOICE_ROUTES] });
+  enableEnglishForRequest();
+  return Response.json({ system: VOICE_SYSTEM, systemEn: voiceSystemEn(), routes: [...VOICE_ROUTES] });
 }
 TS
 
@@ -56,7 +65,7 @@ done
 perl -pi -e 's#disallow: \["/admin", "/api"\]#disallow: []#' src/app/robots.ts
 
 # аналитика Vercel вне Vercel даёт только 404
-perl -ni -e 'print unless /import \{ Analytics \} from "\@vercel\/analytics\/next";/ || /<Analytics \/>/' src/app/layout.tsx
+perl -ni -e 'print unless /import \{ Analytics \} from "\@vercel\/analytics\/next";/ || /<Analytics \/>/' src/components/layout/SiteShell.tsx
 
 cp "$SRC/scripts/static-public/lead.php" public/lead.php
 cp "$SRC/scripts/static-public/voice.php" public/voice.php

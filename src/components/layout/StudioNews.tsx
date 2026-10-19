@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getStudioNews, type StudioNewsItem } from "@/lib/studioNews";
 import { WIN } from "@/lib/motion";
+import { numLocale } from "@/i18n/format";
+import { tr } from "@/i18n/tr";
 
 // Новости студии — лента компактных карточек (видно сразу несколько новостей).
 // Клик по карточке раскрывает новость в большую: слева своя карусель слайдов
@@ -21,11 +23,14 @@ function longDate(iso: string): string {
   const d = new Date(`${iso}T00:00:00`);
   return Number.isNaN(d.getTime())
     ? ""
-    : d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }).replace(" г.", "");
+    : d.toLocaleDateString(numLocale(), { day: "numeric", month: "long", year: "numeric" }).replace(" г.", "");
 }
 
 // Подсвечивает во фразе нужный кусок сплошным цветом.
-function Accent({ text, accent, color }: { text: string; accent?: string; color: string }): ReactNode {
+function Accent({ text: rawText, accent: rawAccent, color }: { text: string; accent?: string; color: string }): ReactNode {
+  // Английская версия: фразу и подсвеченный кусок переводим до разбора.
+  const text = tr(rawText);
+  const accent = rawAccent ? tr(rawAccent) : rawAccent;
   if (!accent || !text.includes(accent)) return text;
   const [before, ...rest] = text.split(accent);
   return (

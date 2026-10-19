@@ -5,6 +5,8 @@
 // вели в никуда.
 
 import type { SectionIconName } from "@/components/ui/SectionIcon";
+import type { Locale } from "@/i18n/routing";
+import { CROSS_PAGE_COPY_EN, PAGE_BLOCK_COPY_EN } from "./page-sections.en";
 
 export type RailItem = {
   id: string;
@@ -288,3 +290,20 @@ export const CROSS_PAGE_ITEMS: RailItem[] = [
     icon: "brief",
   },
 ];
+
+/** Разделы страницы на нужном языке (английские тексты — page-sections.en.ts). */
+export function localizedPageBlocks(locale: Locale): Record<string, PageBlock[]> {
+  if (locale === "ru") return PAGE_BLOCKS;
+  return Object.fromEntries(
+    Object.entries(PAGE_BLOCKS).map(([page, blocks]) => [
+      page,
+      blocks.map((b) => ({ ...b, ...PAGE_BLOCK_COPY_EN[`${page}#${b.id}`] })),
+    ]),
+  );
+}
+
+/** Общие страницы (калькулятор, бриф) на нужном языке. */
+export function localizedCrossPageItems(locale: Locale): RailItem[] {
+  if (locale === "ru") return CROSS_PAGE_ITEMS;
+  return CROSS_PAGE_ITEMS.map((item) => ({ ...item, ...CROSS_PAGE_COPY_EN[item.id] }));
+}

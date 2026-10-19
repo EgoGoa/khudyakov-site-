@@ -7,6 +7,7 @@ import {
   type ServiceKey,
 } from "./service-content";
 import type { PricingTier, ProcessStep, Work } from "./types";
+import { numLocale } from "@/i18n/format";
 
 // Vibe-режим (Егор, 2026-09-26). Суть фишки: интерактивная анкета на ~3
 // минуты → автоматически собранная лендинг (/offer) в фирменном стиле
@@ -60,7 +61,7 @@ export const isOwn = (v: string) => v.startsWith(OWN_PREFIX);
 export const BUDGET_STEPS = [30_000, 50_000, 75_000, 100_000, 150_000, 200_000, 300_000, 400_000, 600_000, 800_000, 1_000_000];
 export function formatBudget(n: number): string {
   if (n >= 1_000_000) return "1 млн ₽ и больше";
-  return `${n.toLocaleString("ru-RU")} ₽`;
+  return `${n.toLocaleString(numLocale())} ₽`;
 }
 
 const listOf = (v: VibeValue | undefined): string[] => (Array.isArray(v) ? v : v ? [v] : []);

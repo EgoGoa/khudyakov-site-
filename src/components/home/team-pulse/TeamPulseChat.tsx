@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { SendIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";

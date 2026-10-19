@@ -26,7 +26,8 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "jsxImportSource": "@/i18n/jsx"
   },
   "include": [
     "next-env.d.ts",
@@ -35,7 +36,11 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     ".next-preview/types/**/*.ts",
-    ".next-preview/dev/types/**/*.ts"
+    ".next-preview/dev/types/**/*.ts",
+    ".next-dev2/types/**/*.ts",
+    ".next-dev2/dev/types/**/*.ts",
+    ".next-dbg/types/**/*.ts",
+    ".next-dbg/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

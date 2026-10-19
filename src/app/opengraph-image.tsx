@@ -1,3 +1,7 @@
+/** @jsxImportSource react */
+// Картинка для превью ссылок собирается satori, который не умеет вызывать
+// компоненты-обёртки нашего переводчика (src/i18n/jsx), поэтому здесь обычный
+// jsx-runtime React.
 import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };

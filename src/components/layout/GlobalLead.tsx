@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import LeadModal from "@/components/home/LeadModal";
 import { OPEN_LEAD_EVENT } from "@/lib/lead";
 import { BRIEF_HREFS, CALCULATOR_HREFS, currentBriefHref, rememberService } from "@/features/brief/registry";
 import { openBrief } from "@/features/brief/lib/navigate";
+import { stripLocale } from "@/i18n/href";
 
 // Единое окно заявки. Открывается событием openLead() и любой ссылкой на
 // бриф (/brief…) на сайте: вместо прямого перехода посетитель видит выбор,
@@ -39,7 +40,7 @@ export default function GlobalLead() {
       if (!a || a.hasAttribute("data-lead-direct")) return;
       const href = a.getAttribute("href") ?? "";
       if (!/^\/brief(\/[a-z-]+)?\/?$/.test(href)) return;
-      if (window.location.pathname.startsWith("/brief")) return;
+      if (stripLocale(window.location.pathname).startsWith("/brief")) return;
       const bare = /^\/brief\/?$/.test(href);
       const target = bare ? currentBriefHref() : href;
       e.preventDefault();

@@ -7,7 +7,7 @@ import Appear from "@/components/ui/Appear";
 import { BEAT, STAGGER } from "@/lib/motion";
 import SitesChapterLayout, { SITES_PANEL } from "@/components/home/sites/SitesChapterLayout";
 import SitesDecoIcon from "@/components/home/sites/SitesDecoIcon";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import SitesWorksDeck from "@/components/home/sites/SitesWorksDeck";
 import { servicesByCategory } from "@/lib/service-content";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";

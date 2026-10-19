@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import CinematicSection, { CHAPTER_INTRO } from "@/components/ui/CinematicSection";
 import { useState } from "react";
 import { useLandscapePhone } from "@/lib/use-landscape-phone";

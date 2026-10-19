@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { useChapterActive } from "@/components/ui/Appear";
+import { tr } from "@/i18n/tr";
 
 // Печатающийся заголовок — ровно один на страницу.
 //
@@ -18,7 +19,7 @@ import { useChapterActive } from "@/components/ui/Appear";
 // В `prefers-reduced-motion` строка выводится целиком без анимации: эффект
 // печати — это движение, а не содержание, и терять смысл он не должен.
 export default function Typewriter({
-  text,
+  text: rawText,
   className = "",
   /** Секунд на символ. 0.045 ≈ 22 знака в секунду — быстрее живой печати,
    *  но глаз ещё успевает читать по мере появления. */
@@ -32,6 +33,7 @@ export default function Typewriter({
   speed?: number;
   delay?: number;
 }) {
+  const text = tr(rawText);
   const active = useChapterActive();
   const reduced = useReducedMotion();
   const [count, setCount] = useState(0);

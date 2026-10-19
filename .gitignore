@@ -43,3 +43,9 @@ reference/scroll-scrub-demo/assets/
 
 # проверка наложений (npm run audit:overlaps)
 /_audit/
+
+# перевод: рабочие файлы
+/messages/_work/
+/_audit/
+/.next-dev2/
+/.next-dbg/

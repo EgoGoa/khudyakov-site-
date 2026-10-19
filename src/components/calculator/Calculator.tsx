@@ -1,15 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { CalcConfig } from "./calcData";
+import { numLocale } from "@/i18n/format";
 
 function roundTo(value: number, step: number) {
   return Math.round(value / step) * step;
 }
 
 function formatRub(value: number) {
-  return value.toLocaleString("ru-RU") + " ₽";
+  return value.toLocaleString(numLocale()) + " ₽";
 }
 
 function tierFor(tiers: CalcConfig["tiers"], midpoint: number) {

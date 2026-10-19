@@ -16,6 +16,7 @@ import IntroSplash from "./IntroSplash";
 import WelcomeIntro from "./WelcomeIntro";
 import { OPEN_VIBE_EVENT, VOICE_NAV_EVENT } from "@/lib/voice/store";
 import { isBareClick, skipIntros } from "@/lib/skip-intro";
+import { sttLang } from "@/lib/voice/lang";
 
 // shared easing across every motion in this overlay, so entrances/exits read
 // as one authored sequence instead of mismatched curves
@@ -193,7 +194,7 @@ export function VoiceMicButton({ onTranscript }: { onTranscript: (transcript: st
       return;
     }
     const recognition = new Ctor();
-    recognition.lang = "ru-RU";
+    recognition.lang = sttLang();
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 

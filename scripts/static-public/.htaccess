@@ -16,6 +16,7 @@ RewriteRule ^(.*)$ https://hud-service.ru/$1 [R=301,L]
 # версии redirect() из page.tsx срабатывает только в браузере, а робот
 # видел на главной пустую страницу-ошибку.
 RewriteRule ^$ /content/ [R=301,L]
+RewriteRule ^en/?$ /en/content/ [R=301,L]
 
 RewriteRule ^portfolio/?$ /#works [R=302,NE,L]
 ErrorDocument 404 /404.html

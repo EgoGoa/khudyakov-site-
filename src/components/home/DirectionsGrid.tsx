@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
 import { useStageActive, useStageStarted } from "@/components/ui/CinematicStage";

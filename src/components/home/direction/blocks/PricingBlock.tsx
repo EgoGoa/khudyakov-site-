@@ -1,7 +1,7 @@
 "use client";
 
 import PriceText from "@/components/home/PriceText";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Appear from "@/components/ui/Appear";

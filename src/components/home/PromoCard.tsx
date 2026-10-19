@@ -2,7 +2,7 @@
 
 import { useBootPreload } from "@/lib/boot-sequence";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import LeadModal from "@/components/home/LeadModal";
 import { fitValue, useRefit } from "@/lib/use-fit-text";
 import { discountOf } from "@/lib/promos";

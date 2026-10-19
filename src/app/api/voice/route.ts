@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateText } from "ai";
-import { VOICE_ROUTES as ROUTES, VOICE_SYSTEM as SYSTEM } from "@/lib/voice/prompt";
+import { VOICE_ROUTES as ROUTES, VOICE_SYSTEM as SYSTEM, voiceSystemEn } from "@/lib/voice/prompt";
+import { enableEnglishForRequest } from "@/i18n/jsx/server";
 
 // Голосовой ассистент (VoiceAssistant.tsx): свободные вопросы, которые не
 // разобрал локальный парсер команд (lib/voice/intents.ts). Отвечает
@@ -93,13 +94,18 @@ export async function POST(request: Request) {
         .map((t) => ({ role: t.role, text: t.text.slice(0, MAX_TEXT) }))
     : [];
 
+  // Английская версия сайта (заголовок ставит клиентский код): отвечаем
+  // по-английски.
+  const isEn = request.headers.get("x-site-locale") === "en";
+  if (isEn) enableEnglishForRequest();
+
   try {
     const { text: raw } = await generateText({
       model: "anthropic/claude-haiku-4.5",
-      system: SYSTEM,
+      system: isEn ? voiceSystemEn() : SYSTEM,
       messages: [
         ...history.map((t) => ({ role: t.role, content: t.text })),
-        { role: "user" as const, content: `[страница: ${path}]\n${text}` },
+        { role: "user" as const, content: isEn ? `[page: ${path}]\n${text}` : `[страница: ${path}]\n${text}` },
       ],
       maxOutputTokens: 300,
       // Ответы каждый раз разные и живые (Егор, 2026-10-03).

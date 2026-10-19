@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { BOOT, useBootStage } from "@/lib/boot-sequence";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import NanoWave from "@/components/ui/NanoWave";
 import { MOODS, sound } from "@/lib/sound";
@@ -32,6 +32,8 @@ import {
   voice,
   voiceLevel,
 } from "@/lib/voice/store";
+import { isEnglishSite, sttLang, voicePrefix } from "@/lib/voice/lang";
+import { tr } from "@/i18n/tr";
 
 // Голосовой ассистент сайта — «как Siri, только для сайта» (Егор, 2026-09-26).
 //
@@ -110,7 +112,7 @@ function recognitionCtor(): (new () => Rec) | null {
 // голоса Apple, облачный Google в Chrome, Milena, и только потом любой ru.
 function pickVoice(): SpeechSynthesisVoice | null {
   if (typeof speechSynthesis === "undefined") return null;
-  const ru = speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith("ru"));
+  const ru = speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith(voicePrefix()));
   const rank = (v: SpeechSynthesisVoice) => {
     const n = v.name;
     if (/(premium|enhanced|улучш)/i.test(n)) return 0;
@@ -242,7 +244,7 @@ export default function VoiceAssistant() {
       if (!st.enabled || !Ctor || rec || st.status === "speaking" || st.status === "thinking") return;
       if (document.visibilityState === "hidden") return;
       const r = new Ctor();
-      r.lang = "ru-RU";
+      r.lang = sttLang();
       r.interimResults = true;
       // Непрерывно: одна сессия ловит фразу за фразой; когда браузер её
       // всё же закрывает (пауза, минута тишины), onend открывает новую.
@@ -402,7 +404,7 @@ export default function VoiceAssistant() {
       }
       browserSpeaking = true;
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "ru-RU";
+      u.lang = sttLang();
       const v = pickVoice();
       if (v) u.voice = v;
       // Чуть медленнее обычного и без подъёма тона — спокойнее и мягче.
@@ -453,7 +455,7 @@ export default function VoiceAssistant() {
       };
       el.onended = finish;
       el.onerror = fallback;
-      el.src = `/api/tts?text=${encodeURIComponent(text)}`;
+      el.src = `/api/tts?text=${encodeURIComponent(text)}${isEnglishSite() ? "&lang=en" : ""}`;
       el.play().catch(fallback);
     };
 
@@ -516,7 +518,7 @@ export default function VoiceAssistant() {
         }
         case "undo": {
           const prev = undo.pop();
-          if (!prev) return { say: "Пока нечего отменять." };
+          if (!prev) return { say: tr("Пока нечего отменять.") };
           window.dispatchEvent(new Event(VOICE_NAV_EVENT));
           if (prev.path === path) {
             if (!(prev.chapter && go(prev.chapter))) window.scrollTo({ top: prev.scrollY, behavior: "smooth" });
@@ -526,7 +528,7 @@ export default function VoiceAssistant() {
           return {};
         }
         case "repeat":
-          return { say: lastSay || "Я пока ничего не говорила." };
+          return { say: tr(lastSay || "Я пока ничего не говорила.") };
         case "menu":
           window.dispatchEvent(new Event(VOICE_NAV_EVENT));
           openMenu(true);
@@ -890,7 +892,7 @@ function musicAct(a: Extract<VoiceAction, { type: "music" }>): { say?: string } 
     case "play": {
       if (a.mood) {
         const m = MOODS.find((x) => x.id === a.mood);
-        if (!m?.tracks.length) return { say: `Треки для настроения «${m?.label}» ещё подбираем.` };
+        if (!m?.tracks.length) return { say: tr(`Треки для настроения «${m?.label}» ещё подбираем.`) };
         s.moodPicked = true;
         s.setMood(a.mood);
       }
@@ -911,8 +913,8 @@ function musicAct(a: Extract<VoiceAction, { type: "music" }>): { say?: string } 
       return {};
     case "what": {
       const t = s.track;
-      if (!s.musicPlaying || !t) return { say: "Сейчас музыка не играет. Скажи «включи музыку»." };
-      return { say: `Играет «${t.title}», ${t.artist}. Настроение — ${s.mood.label}.` };
+      if (!s.musicPlaying || !t) return { say: tr("Сейчас музыка не играет. Скажи «включи музыку».") };
+      return { say: tr(`Играет «${t.title}», ${t.artist}. Настроение — ${s.mood.label}.`) };
     }
   }
 }
@@ -1287,7 +1289,7 @@ function VoiceTicker() {
 
 function ContactButton({ kind }: { kind: "call" | "telegram" | "whatsapp" }) {
   const map = {
-    call: { href: `tel:${CONTACTS.phone}`, label: "Позвонить продюсеру", icon: <PhoneIcon /> },
+    call: { href: `tel:${CONTACTS.phone}`, label: tr("Позвонить продюсеру"), icon: <PhoneIcon /> },
     telegram: { href: CONTACTS.telegram, label: "Открыть Телеграм", icon: <TelegramIcon /> },
     whatsapp: { href: CONTACTS.whatsapp, label: "Открыть WhatsApp", icon: <WhatsAppIcon /> },
   }[kind];

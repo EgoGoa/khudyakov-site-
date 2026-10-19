@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ConsentCheckbox from "@/components/ui/ConsentCheckbox";
@@ -23,6 +23,7 @@ import {
 } from "./store";
 import { canOfferInstall, openInstall, useInstallMode } from "@/lib/pwa";
 import { GOALS, NICHES, SERVICES, WANTS, recommendationsFor } from "./data";
+import { numLocale } from "@/i18n/format";
 
 // Демо-кабинет клиента. Стиль — по решению Егора: строго и минималистично,
 // как у Apple: нейтральное стекло, белый текст, фирменные градиенты только
@@ -265,7 +266,7 @@ function Orders({ state, compact }: { state: CabinetState; compact?: boolean }) 
                 <span className="flex items-center gap-1.5">
                   <Avatar m={m} size={20} /> {m.name}
                 </span>
-                <span>{new Date(o.createdAt).toLocaleDateString("ru-RU", { day: "numeric", month: "long" })}</span>
+                <span>{new Date(o.createdAt).toLocaleDateString(numLocale(), { day: "numeric", month: "long" })}</span>
               </div>
             </Card>
           );
@@ -427,7 +428,7 @@ function History({ state }: { state: CabinetState }) {
     <Card className="flex flex-col divide-y divide-white/[0.06] p-2">
       {state.history.map((e) => (
         <div key={e.at + e.text} className="flex gap-3 px-3 py-2.5 text-[13px] font-bold text-white">
-          <span className="team-pulse-acc shrink-0">{new Date(e.at).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" })}</span>
+          <span className="team-pulse-acc shrink-0">{new Date(e.at).toLocaleDateString(numLocale(), { day: "2-digit", month: "2-digit" })}</span>
           {e.text}
         </div>
       ))}

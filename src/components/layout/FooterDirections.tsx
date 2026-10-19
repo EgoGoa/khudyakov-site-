@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ringOf } from "@/components/home/direction/siblings";
 import { serviceMeta, serviceOrder } from "@/lib/service-content";
 import { useCleanPathname } from "@/lib/use-clean-pathname";

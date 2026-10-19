@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { CHAPTER_INTRO } from "@/lib/typography";
 import { OPEN_BLOCK_VIBE_EVENT, setTunedBlock, type TunedCopy } from "@/lib/block-vibe";
+import { tr } from "@/i18n/tr";
 
 // Блок, собранный под задачу посетителя (Vibe-блок). Встаёт вместо шапки и
 // тела главы в CinematicSection: фон главы (видео, затемнение) остаётся, а
@@ -12,7 +13,7 @@ import { OPEN_BLOCK_VIBE_EVENT, setTunedBlock, type TunedCopy } from "@/lib/bloc
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 function Accent({ text }: { text: string }) {
-  const parts = text.split(/\*([^*]+)\*/);
+  const parts = tr(text).split(/\*([^*]+)\*/);
   return <>{parts.map((p, i) => (i % 2 ? <span key={i} className="kw">{p}</span> : p))}</>;
 }
 

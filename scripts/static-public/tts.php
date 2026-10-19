@@ -22,7 +22,8 @@ if ($text === '') fail(400, 'missing_text');
 
 $cacheDir = $home . '/tts-cache';
 if (!is_dir($cacheDir)) @mkdir($cacheDir, 0700, true);
-$cacheFile = $cacheDir . '/' . md5($text) . '.mp3';
+$en = ($_GET['lang'] ?? '') === 'en';
+$cacheFile = $cacheDir . '/' . md5(($en ? 'en:' : '') . $text) . '.mp3';
 
 if (!is_file($cacheFile)) {
     // Тормоз от одного посетителя: 60 новых фраз за 10 минут.
@@ -44,8 +45,8 @@ if (!is_file($cacheFile)) {
         CURLOPT_HTTPHEADER => ['Authorization: Api-Key ' . $key],
         CURLOPT_POSTFIELDS => http_build_query([
             'text' => $text,
-            'lang' => 'ru-RU',
-            'voice' => 'alena',
+            'lang' => $en ? 'en-US' : 'ru-RU',
+            'voice' => $en ? 'john' : 'alena',
             'emotion' => 'good',
             'speed' => '0.95',
             'format' => 'mp3',

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import FlareBackground from "@/components/ui/FlareBackground";

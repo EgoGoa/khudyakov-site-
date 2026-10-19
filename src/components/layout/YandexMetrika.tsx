@@ -27,8 +27,8 @@ export default function YandexMetrika() {
       else if (/wa\.me|whatsapp/.test(href)) trackGoal("click_whatsapp");
       else if (href.startsWith("tel:")) trackGoal("click_phone");
       else if (href.startsWith("mailto:")) trackGoal("click_email");
-      else if (text.includes("выбрать план")) trackGoal("tariff_pick");
-      else if (text.includes("заказать")) trackGoal("click_order");
+      else if (text.includes("выбрать план") || text.includes("choose plan")) trackGoal("tariff_pick");
+      else if (text.includes("заказать") || text.includes("order")) trackGoal("click_order");
     };
     document.addEventListener("click", onClick, true);
 

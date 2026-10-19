@@ -25,6 +25,7 @@ import {
   useTunedProgress,
   type BlockAnswers,
 } from "@/lib/block-vibe";
+import { tr } from "@/i18n/tr";
 
 // Окошко Vibe-блока у вайб-бара (Егор, 2026-09-27, вариант A): страница уже
 // доехала до блока, окошко встаёт рядом с баром и блок остаётся виден.
@@ -38,7 +39,7 @@ const MAX_FILES = 3;
 type Shot = { name: string; data: string };
 
 function Accent({ text }: { text: string }) {
-  const parts = text.split(/\*([^*]+)\*/);
+  const parts = tr(text).split(/\*([^*]+)\*/);
   return <>{parts.map((p, i) => (i % 2 ? <span key={i} className="vibe-mode__iris">{p}</span> : p))}</>;
 }
 
