@@ -7,6 +7,33 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Заявки только с самого сайта и не чаще 8 за 10 минут с одного адреса:
+// иначе бот может завалить почту письмами.
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if ($origin !== '' && parse_url($origin, PHP_URL_HOST) !== ($_SERVER['HTTP_HOST'] ?? '')) {
+    http_response_code(403);
+    echo json_encode(['error' => 'forbidden']);
+    exit;
+}
+$bucket = sys_get_temp_dir() . '/hdkv-lead-' . md5($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+$now = time();
+$hits = array_filter(explode(',', (string)@file_get_contents($bucket)), function ($t) use ($now) {
+    return $t !== '' && $now - (int)$t < 600;
+});
+if (count($hits) >= 8) {
+    http_response_code(429);
+    echo json_encode(['error' => 'rate_limited']);
+    exit;
+}
+$hits[] = $now;
+@file_put_contents($bucket, implode(',', $hits));
+
+if ((int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 13000000) {
+    http_response_code(413);
+    echo json_encode(['error' => 'too_large']);
+    exit;
+}
+
 $body = json_decode(file_get_contents('php://input'), true);
 if (!is_array($body)) {
     http_response_code(400);

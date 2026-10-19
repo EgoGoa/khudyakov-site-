@@ -342,7 +342,7 @@ function runScene(canvas: HTMLCanvasElement, items: Item[], vw = VIEW_W, vh = VI
   // В вайб-окне сцена живёт и на low (телефон): тихий цикл 30 к/с, как на
   // mid; замирает только при системной настройке «уменьшить движение»
   // (Егор, 2026-09-29: «на моб версии нет анимации появления и цикла»).
-  let still = reduced;
+  const still = reduced;
   let lite = getTier() !== "high";
   const step = lite ? STEP.lite : STEP.high;
   const upx = vw / Math.max(160, canvas.clientWidth || vw);
