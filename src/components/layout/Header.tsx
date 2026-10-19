@@ -235,9 +235,6 @@ export default function Header() {
           {/* Станция HDKV: звук сайта и музыка по настроению (lib/sound). */}
           {/* Плеер и кабинет живут в меню (плитки сверху шторки) на всех
               экранах (Егор, 2026-10-10). */}
-          {/* Язык RU | EN — перед поиском, на всех экранах (на телефоне не
-              прячется в меню). Градиент активного языка — цвет раздела. */}
-          <LocaleSwitch className="land:pointer-events-auto" />
           <div className="hidden items-center gap-3 sm:flex sm:gap-4 land:!flex land:flex-col land:gap-0.5">
             {/* Поиск по сайту (⌘/Ctrl+K). На телефоне стоя лупа живёт в
                 острове внизу экрана, здесь — компьютер и телефон боком. */}
@@ -331,6 +328,12 @@ export default function Header() {
                   <SectionIcon name="cabinet" size={18} />
                   {t("cabinet")}
                 </button>
+                {/* Язык RU | EN живёт здесь, а не в шапке: на телефоне шапка
+                    узкая, и пилюля налезала на пункты навигации (Егор, 2026-10-19). */}
+                <div className="col-span-2 mt-1 flex items-center justify-between gap-3">
+                  <span className="menu-kicker font-display !m-0">{t("switchLanguage")}</span>
+                  <LocaleSwitch className="pointer-events-auto" />
+                </div>
               </div>
               <div>
                 <p className="menu-kicker font-display">{t("onThisPage")}</p>
