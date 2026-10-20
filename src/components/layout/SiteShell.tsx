@@ -40,14 +40,17 @@ import type { Locale } from "@/i18n/routing";
 const montserrat = Manrope({
   subsets: ["latin", "cyrillic"],
   variable: "--font-montserrat",
-  display: "swap",
+  // block, а не swap (Егор, 2026-10-20): пока файл шрифта едет, текст
+  // невидим, а не набран чужим системным шрифтом, который потом «прыгает»
+  // в наш. Файлы свои (same-origin) и предзагружаются, ждать недолго.
+  display: "block",
   weight: ["400", "500", "600", "700", "800"],
 });
 
 const bebas = Unbounded({
   subsets: ["latin", "cyrillic"],
   variable: "--font-bebas",
-  display: "swap",
+  display: "block",
   weight: ["500", "600", "700", "800", "900"],
 });
 
