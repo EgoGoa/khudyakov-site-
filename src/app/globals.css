@@ -11213,18 +11213,29 @@ html[data-lite] .site-scrim {
    Егор, 2026-10-12: сначала втрое крупнее прежних 12px, потом вдвое
    меньше («слишком жирные»). Без широкой разрядки. */
 .spotlight-strip-title {
-  font-size: calc(13 * var(--s));
+  font-size: clamp(9px, 1.1vw, 12px);
   line-height: 1.1;
   letter-spacing: -0.01em;
 }
 .spotlight-strip-punch {
-  font-size: calc(16 * var(--s));
+  font-size: clamp(13px, 1.75vw, 20px);
   line-height: 1.1;
   letter-spacing: 0.02em;
 }
-@media (min-width: 640px) {
-  .spotlight-strip-title { font-size: calc(15 * var(--s)); }
-  .spotlight-strip-punch { font-size: calc(20 * var(--s)); }
+/* Слово не рвётся посреди («УЗНАВАЕ/МОСТЬ»): перенос — только между словами,
+   без дефисов; не помещается — уменьшаем кегль (ниже). */
+.spotlight-strip-title,
+.spotlight-strip-punch {
+  white-space: nowrap;
+  overflow: hidden;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: none;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+}
+@media (max-width: 639px) {
+  .spotlight-strip-title { font-size: 10px; }
+  .spotlight-strip-punch { font-size: 14px; }
 }
 
 /* ── Интерактивные брифы (src/features/brief) ───────────────────────────

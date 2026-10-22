@@ -51,13 +51,13 @@ const BEAT_MS = 18000;
  *  собственный вертикальный ритм двух самых плотных глав (04 и 05). */
 // 120 (Егор, 2026-10-12): название кнопки втрое крупнее, превью больше —
 // кнопка заполнена, а не пустое тёмное поле вокруг мелкой строки.
-const STRIP_HEIGHT = 120;
+const STRIP_HEIGHT = 72;
 // Телефон: полоса выше, чтобы название, тезис и стрелка помещались целиком,
 // а превью сцены читалось (Егор, 2026-10-03).
-const STRIP_HEIGHT_PHONE = 128;
+const STRIP_HEIGHT_PHONE = 76;
 // Плашки без превью (глава «Именно мы» на /content): на 15% ниже, чтобы
 // список из пяти пунктов над ними дышал (Егор, 2026-10-03).
-const STRIP_HEIGHT_PHONE_COMPACT = 112;
+const STRIP_HEIGHT_PHONE_COMPACT = 68;
 
 
 /** Акцент страницы /ai — лайм→изумруд, тот же, что у заголовков глав и
@@ -89,6 +89,7 @@ export default function ToolSpotlight({
   className = "",
   fill = false,
   noPreview = false,
+  leftAlign = false,
 }: {
   slug: string;
   accent?: { from: string; to: string };
@@ -107,6 +108,8 @@ export default function ToolSpotlight({
   /** Закрытая кнопка без мини-превью сцены — для узких колонок, где
    *  название иначе ломается по буквам. */
   noPreview?: boolean;
+  /** Компактная плашка прижата вправо (по умолчанию) или влево — под сторону блока. */
+  leftAlign?: boolean;
 }) {
   const side = place !== "bottom";
   const top = place === "top-right" || place === "top-left";
@@ -311,6 +314,50 @@ export default function ToolSpotlight({
     };
   }, [measure]);
 
+  // Автоподгонка кегля: название и слово-выгода на закрытой плашке всегда в
+  // одну строку и целиком. Не влезает по ширине — кегль уменьшается ровно
+  // настолько, чтобы влезло (Егор, 2026-10-22). Слежение: размер плашки,
+  // смена тезиса (текст подменяется), загрузка шрифтов.
+  useEffect(() => {
+    if (open) return;
+    const root = wrapRef.current;
+    if (!root) return;
+    const ro = new ResizeObserver(() => fit());
+    const watched = new Set<Element>();
+    // Подгоняем только когда поменялась ширина строки или текст: иначе
+    // смена кегля, дёргая наблюдатель, зациклила бы подгонку.
+    function fit() {
+      root!.querySelectorAll<HTMLElement>(".spotlight-strip-title,.spotlight-strip-punch").forEach((el) => {
+        if (!watched.has(el)) {
+          watched.add(el);
+          ro.observe(el);
+        }
+        const cw = el.clientWidth;
+        const key = `${cw}|${el.textContent}`;
+        if (cw <= 0 || el.dataset.fk === key) return;
+        el.dataset.fk = key;
+        el.style.fontSize = "";
+        const sw = el.scrollWidth;
+        if (sw > cw) {
+          const fs = parseFloat(getComputedStyle(el).fontSize);
+          el.style.fontSize = `${Math.max(7, Math.floor(((fs * cw) / sw) * 10) / 10 - 0.3)}px`;
+        }
+      });
+    }
+    fit();
+    document.fonts?.ready.then(() => {
+      root.querySelectorAll<HTMLElement>("[data-fk]").forEach((el) => delete el.dataset.fk);
+      fit();
+    });
+    ro.observe(root);
+    const mo = new MutationObserver(fit);
+    mo.observe(root, { childList: true, subtree: true, characterData: true });
+    return () => {
+      ro.disconnect();
+      mo.disconnect();
+    };
+  }, [open, step, geom.width, geom.vw]);
+
   // Телефон — отдельная раскладка, а не сжатая настольная. «Треть экрана»
   // (300–420px) на десктопе несёт сцену слева и текст справа; на 375px
   // те же 300px должны были вместить и заголовок, и слайд, и цифры — всё
@@ -362,7 +409,7 @@ export default function ToolSpotlight({
       // поверх неё. Место и форма кнопки задаются здесь же — отсюда и
       // разное выравнивание на разных блоках.
       className={`relative w-full ${
-        side ? (right ? "flex justify-end" : "flex justify-start") : ""
+        fill ? "" : `max-w-[min(100%,calc(520*var(--s)))] ${right || (!side && !leftAlign) ? "ml-auto" : ""}`
       } ${top ? "pb-3" : "pt-3"} ${className}`}
       style={
         {
@@ -426,7 +473,7 @@ export default function ToolSpotlight({
             // (TeamAskCard, rounded-2xl): полный овал на кнопке, выровненной
             // по ширине соседнего блока, читался чужеродно рядом с его
             // прямыми углами (просьба Егора).
-            borderRadius: open ? 34 : side || shape === "card" ? 20 : 999,
+            borderRadius: open ? 24 : 16,
           }}
           // Разворот бодрый, схлопывание — мягче, дольше и с задержкой: к
           // моменту, когда едет рамка, содержимое уже растворилось в
@@ -581,7 +628,7 @@ export default function ToolSpotlight({
                   // последний рубеж). Названию отдана своя строка на всю
                   // ширину плитки — там ему хватает места на одну строку —
                   // а картинка с тезисом и стрелкой встали ниже. Egor's ask.
-                  fill ? (side ? "items-center gap-5 px-5 py-3" : "flex-col justify-center gap-3 px-5 py-4") : "items-center " + (side ? "gap-4 px-4 py-3" : "gap-6 px-5 py-3 sm:px-6")
+                  fill ? (side ? "items-center gap-5 px-5 py-3" : "flex-col justify-center gap-3 px-5 py-4") : "items-center " + (side ? "gap-4 px-4 py-3" : "gap-3 px-4 py-3 sm:gap-4")
                 }`}
               >
                 {fill && (
@@ -632,9 +679,9 @@ export default function ToolSpotlight({
                   className={`relative shrink-0 overflow-hidden rounded-xl ring-1 ring-white/15 ${
                     side
                       ? fill
-                        ? "h-[calc(84*var(--s))] w-[calc(136*var(--s))] sm:h-full sm:max-h-[calc(130*var(--s))] sm:w-auto sm:aspect-[340/210]"
-                        : "h-[calc(96*var(--s))] w-[calc(150*var(--s))] sm:h-[calc(96*var(--s))] sm:w-[42%]"
-                      : "hidden h-[calc(100*var(--s))] aspect-[340/210] sm:block"
+                        ? "hidden h-[calc(84*var(--s))] w-[calc(136*var(--s))] sm:block sm:h-full sm:max-h-[calc(96*var(--s))] sm:w-auto sm:aspect-[340/210]"
+                        : "hidden h-[calc(96*var(--s))] w-[calc(150*var(--s))] sm:block sm:h-[calc(96*var(--s))] sm:w-[42%]"
+                      : "hidden h-[calc(54*var(--s))] aspect-[340/210] sm:block"
                   }`}
                 >
                   <SpotlightScene slug={data.slug} step={step} mini />
@@ -644,7 +691,7 @@ export default function ToolSpotlight({
                     над этим рядом (см. выше) — здесь остаётся только
                     картинка и стрелка, эта колонка целиком лишняя. */}
                 {!fill && (
-                  <span className="min-w-0 flex-1">
+                  <span className="min-w-0 flex-1 pr-1">
                     <span
                       // Название переносится на вторую строку, а не режется
                       // многоточием: обрезанное на полуслове название
@@ -675,13 +722,7 @@ export default function ToolSpotlight({
                   {/* В плашке-форме (глава 04) подписи-кнопки нет: место
                       нужно названию и слову-выгоде, а плашка и так целиком
                       кликабельна. Остаётся только шеврон как намёк. */}
-                  {!side && shape !== "card" && (
-                    <span>
-                      <span className="hidden sm:inline">Почему это работает</span>
-                      <span className="sm:hidden">Подробнее</span>
-                    </span>
-                  )}
-                  <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" aria-hidden="true">
+                  <svg width="10" height="10" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" aria-hidden="true">
                     <path d="M18 15l-6-6-6 6" />
                   </svg>
                 </span>

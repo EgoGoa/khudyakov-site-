@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Link } from "@/i18n/navigation";
 import CinematicSection from "@/components/ui/CinematicSection";
 import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import Appear from "@/components/ui/Appear";
+import PhoneFrame from "@/components/ui/PhoneFrame";
 import { BEAT, STAGGER } from "@/lib/motion";
 
 // Chapter 02 — no AI case has actually shipped yet (worksByCategory.ai is
@@ -19,22 +21,18 @@ const SCENARIOS = [
   {
     format: "Чат-бот",
     title: "AI отвечает в директе и Telegram, пока менеджер занят",
-    result: "Пример пилота: первая линия ответов на вопросы по наличию и доставке.",
   },
   {
     format: "Голосовой AI",
     title: "Запись на приём вне рабочих часов",
-    result: "Пример пилота: приём заявок вечером и в выходные, синхронизация с расписанием.",
   },
   {
     format: "AI-видео",
     title: "Промо-ролик без съёмочной группы",
-    result: "Пример пилота: серия тестовых креативов под гипотезу за дни, не за производственный цикл.",
   },
   {
     format: "AI в CRM",
     title: "Автоматическая квалификация лидов",
-    result: "Пример пилота: горячие заявки — менеджеру сразу, остальные — в очередь на догрев.",
   },
 ] as const;
 
@@ -146,6 +144,48 @@ function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"]
   );
 }
 
+/** Ролик в экране телефона: вне вьюпорта — пауза, при reduced-motion не
+ *  запускается вовсе (виден постер). Файлы — с нашего домена. */
+function PortfolioLoop() {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (still) {
+      v.removeAttribute("autoplay");
+      v.pause();
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <video
+      ref={ref}
+      className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+      poster="/media/portfolio-poster.jpg"
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      tabIndex={-1}
+      aria-hidden="true"
+    >
+      <source src="/media/portfolio-loop.webm" type="video/webm" />
+      <source src="/media/portfolio-loop.mp4" type="video/mp4" />
+    </video>
+  );
+}
+
 export default function AiPortfolio() {
   return (
     <CinematicSection
@@ -159,51 +199,45 @@ export default function AiPortfolio() {
       id="portfolio"
       intro={<>Первые кейсы — в работе, показываем их по мере запуска. Пока — <span className="kw">примеры пилотов</span>, которые запускаем чаще всего.</>}
       // Узкая полоса внизу главы, разворачивающаяся в окно про инструмент.
-      // Пока одна, обкатываем логику — дальше такая же встанет под каждым
-      // блоком со своей услугой.
       footer={<ToolSpotlight slug="chat-hub" />}
     >
-      <div className="mx-auto grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 [@media(max-height:860px)]:sm:gap-4">
-        {SCENARIOS.map((s, idx) => (
-          <Appear
-            key={s.title}
-            from="up"
-            delay={BEAT.content + idx * STAGGER.normal}
-            className="glass-panel relative flex flex-col gap-4 overflow-hidden rounded-2xl p-5 sm:flex-row sm:items-stretch sm:gap-5 sm:p-6"
-          >
-            {/* Was a stock photo behind the whole card — Egor's call after
-                seeing it live: it blocked the page's own background reel
-                (CinematicStage) the same way the card's old opaque fill
-                did. Back to a plain frosted-glass tile (.glass-panel, the
-                same blurred surface the site's other windows use) so the
-                reel reads straight through. */}
-            {/* Текст слева (~58%), живая схема инструмента справа (~42%) —
-                Егор: весь текст в одну колонку, а освободившееся место
-                отдать под инфографику конкретного инструмента, не под
-                общую картинку на все четыре карточки. */}
-            <div className="relative sm:w-[58%]">
-              <span className="font-display text-[calc(10*var(--s))] uppercase tracking-[0.12em] text-emerald-300">Пример · {s.format}</span>
-              {/* Bold — Egor's ask: this line reads as the actual headline
-                  of the card and was getting lost at font-medium next to
-                  the bold eyebrow above it. */}
-              <p className="mt-2 text-base font-bold leading-snug text-paper">{s.title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-paper/60">{s.result}</p>
-              {/* Filled gradient pill + the same breathing glow AiDeck's own
-                  "Открыть инструмент" CTA uses (.ai-open-pulse) — Egor's
-                  ask: this button should read as the page's one CTA
-                  language, not the quiet outlined ghost link it was. */}
+      {/* Слева телефон с роликом и заголовком, справа четыре компактные
+          карточки в столбик. На ≤768px телефон сверху, карточки ниже. */}
+      <div className="mx-auto grid grid-cols-1 items-center gap-6 [@media(min-width:769px)]:grid-cols-[5fr_7fr] [@media(min-width:769px)]:gap-8 [@media(min-width:769px)_and_(max-height:860px)]:gap-5">
+        <Appear from="up" delay={BEAT.content} className="flex flex-col items-center gap-4 [@media(min-width:769px)]:gap-5">
+          <PhoneFrame className="w-[min(70vw,300px)] [@media(min-width:769px)]:h-[clamp(300px,50vh,500px)] [@media(min-width:769px)]:w-auto">
+            <PortfolioLoop />
+          </PhoneFrame>
+          <h3 className="max-w-[14em] text-center font-display text-[clamp(18px,2.4vw,28px)] font-bold uppercase leading-[1.1] tracking-tight text-paper [overflow-wrap:normal] [hyphens:none]">
+            AI-видео <span className="kw">за дни</span>, а не месяцы
+          </h3>
+        </Appear>
+
+        <div className="grid grid-cols-1 gap-3 sm:gap-4 [@media(max-height:860px)]:gap-2.5">
+          {SCENARIOS.map((s, idx) => (
+            <Appear key={s.title} from="up" delay={BEAT.content + idx * STAGGER.normal}>
               <Link
                 href="/brief/ai"
-                className="ai-open-pulse mt-4 inline-flex items-center gap-2 rounded-[calc(14*var(--s))] bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-3.5 py-1.5 font-display text-[calc(11*var(--s))] font-medium uppercase tracking-[0.08em] text-[#03120d] transition-[filter] duration-300 hover:brightness-110"
+                className="glass-panel group relative flex items-center gap-4 overflow-hidden rounded-2xl p-4 sm:p-5 transition-[filter] duration-300 hover:brightness-110"
               >
-                Хочу так же
+                <span className="min-w-0 flex-1">
+                  <span className="block font-display text-[calc(10*var(--s))] uppercase tracking-[0.12em] text-emerald-300">Пример · {s.format}</span>
+                  <span className="mt-1.5 block text-base font-bold leading-snug text-paper">{s.title}</span>
+                  <span className="mt-2 block font-display text-[calc(11*var(--s))] font-semibold uppercase tracking-[0.08em] text-emerald-200 transition-transform duration-300 group-hover:translate-x-0.5">
+                    Хочу так же →
+                  </span>
+                </span>
+                {/* Мини-схема вдвое меньше прежней: рисуется в полном размере
+                    и сжимается scale-50, поэтому анимации остаются теми же. */}
+                <span aria-hidden="true" className="relative h-[calc(72*var(--s))] w-[calc(104*var(--s))] shrink-0 overflow-hidden rounded-lg sm:w-[calc(116*var(--s))]">
+                  <span className="absolute left-0 top-0 block h-[200%] w-[200%] origin-top-left scale-50">
+                    <PilotGraphic format={s.format} />
+                  </span>
+                </span>
               </Link>
-            </div>
-            <div className="relative sm:w-[42%]">
-              <PilotGraphic format={s.format} />
-            </div>
-          </Appear>
-        ))}
+            </Appear>
+          ))}
+        </div>
       </div>
     </CinematicSection>
   );
