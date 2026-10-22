@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
 import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset, useDeckSpring, zFor } from "@/components/ui/deckFan";
@@ -220,6 +220,10 @@ export const PILL =
 export const ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-[color,border-color,transform] duration-300 hover:scale-110 hover:border-orange/60 hover:text-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange";
 
+/** Все тексты панели под каруселью — по ним панель берёт высоту самого
+ *  высокого кадра и не прыгает при листании (см. SpotlightCopy `sizeTo`). */
+const DECK_COPY = FORMATS.map((f) => spotlightFor(`${SMM_SPOTLIGHT_PREFIX}${f.id}`)).filter((d): d is NonNullable<typeof d> => !!d);
+
 export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | null } = {}) {
   const wide = !!panelTarget;
   const [active, setActive] = useState(0);
@@ -276,7 +280,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
     <div
       onMouseEnter={() => setHeld(true)}
       onMouseLeave={() => setHeld(false)}
-      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[210px] lg:min-h-0"}`}
+      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-7 ${wide ? "h-auto" : "mt-6 h-auto"}`}
       style={
         {
           "--card-glow-rgb": "168, 85, 247",
@@ -289,7 +293,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           каруселью /ai и /sites — один компонент на все места, чтобы
           тексты и темп не расходились. Динамическая панель: содержимое
           меняется вслед за выбранной карточкой колоды. */}
-      {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} showTitle={false} compact />}
+      {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} showTitle={false} compact sizeTo={DECK_COPY} />}
       {!data && (
         <p className="m-0 self-center font-display text-[13px] font-semibold leading-snug text-paper">
           Готовим новый инструмент для SMM: каркас собран, идёт наполнение. <span className="text-glow">Анонс — скоро.</span>

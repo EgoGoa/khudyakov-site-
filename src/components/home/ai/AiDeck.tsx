@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
 import { blurAt, fanSlots, modIndex, poseAt, useDeckDrag, wrapOffset, useDeckSpring, zFor } from "@/components/ui/deckFan";
@@ -92,6 +92,10 @@ const SERVICES = servicesByCategory.ai;
 
 /** Инструмент карточки — последний сегмент её ссылки (/ai/agent → agent). */
 const slugOf = (card: Card) => (card.href ?? "").replace("/ai/", "");
+
+/** Все тексты панели под каруселью — по ним панель берёт высоту самого
+ *  высокого кадра и не прыгает при листании (см. SpotlightCopy `sizeTo`). */
+const DECK_COPY = CARDS.map((c) => spotlightFor(slugOf(c))).filter((d): d is NonNullable<typeof d> => !!d);
 
 // Лицо карточки карусели: фото-фон, скрим и живая сцена инструмента.
 //
@@ -285,7 +289,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
     <div
       onMouseEnter={() => setHeld(true)}
       onMouseLeave={() => setHeld(false)}
-      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[250px] [@media(max-height:940px)]:mt-2 lg:[@media(max-height:940px)]:h-[240px]"}`}
+      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-7 ${wide ? "h-auto" : "mt-6 h-auto [@media(max-height:940px)]:mt-2"}`}
       style={
         {
           "--card-glow-rgb": "52, 211, 153",
@@ -296,7 +300,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
     >
       {/* Тот же правый блок, что в выдвижных окошках на блоках страницы —
           один компонент на оба места, чтобы текст и темп не расходились. */}
-      {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} compact />}
+      {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} compact sizeTo={DECK_COPY} />}
       {!data && (
         <p className="m-0 self-center font-display text-[13px] font-semibold leading-snug text-paper">
           Готовим новый AI-инструмент: каркас собран, идёт наполнение. <span className="text-glow">Анонс — скоро.</span>

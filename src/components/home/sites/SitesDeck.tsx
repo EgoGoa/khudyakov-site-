@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import SoonCardFace from "@/components/ui/SoonCardFace";
 import { createPortal } from "react-dom";
 import FanFit from "@/components/ui/FanFit";
@@ -180,6 +180,10 @@ export const PILL =
 export const ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-[color,border-color,transform] duration-300 hover:scale-110 hover:border-glow/60 hover:text-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
 
+/** Все тексты панели под каруселью — по ним панель берёт высоту самого
+ *  высокого кадра и не прыгает при листании (см. SpotlightCopy `sizeTo`). */
+const DECK_COPY = SERVICES.map((f) => spotlightFor(`${SITE_SPOTLIGHT_PREFIX}${f.id}`)).filter((d): d is NonNullable<typeof d> => !!d);
+
 export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement | null } = {}) {
   const wide = !!panelTarget;
   const [active, setActive] = useState(0);
@@ -239,7 +243,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
     <div
       onMouseEnter={() => setHeld(true)}
       onMouseLeave={() => setHeld(false)}
-      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-5 ${wide ? "h-auto" : "mt-6 h-auto lg:h-[210px] lg:min-h-0"}`}
+      className={`glass-panel deck-neon-pulse flex overflow-hidden rounded-3xl px-6 py-7 ${wide ? "h-auto" : "mt-6 h-auto"}`}
       style={
         {
           "--card-glow-rgb": "0, 210, 255",
@@ -251,7 +255,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
       {/* Тот же правый блок, что в окошках под блоками страницы и под
           каруселью /ai — один компонент на все места, чтобы тексты и темп
           не расходились. */}
-      {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} showTitle={false} compact />}
+      {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} showTitle={false} compact sizeTo={DECK_COPY} />}
       {!data && (
         <p className="m-0 self-center font-display text-[13px] font-semibold leading-snug text-paper">
           Собираем новые VIBE-сайты: каркас готов, идёт наполнение. <span className="text-glow">Анонс — скоро.</span>

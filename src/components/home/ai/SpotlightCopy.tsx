@@ -15,10 +15,35 @@ import type { Spotlight } from "@/components/home/ai/spotlightData";
 // Цвета берёт из CSS-переменных --sp-from / --sp-to родителя — тот, кто
 // его рисует, обязан их задать.
 
-/** Текст по словам — каждое слово приезжает со своей задержкой, поэтому
- *  фраза читается как титр, а не как появившийся абзац. */
-function splitWords(text: string) {
-  return text.split(/\s+/);
+/** Невидимый слепок одного кадра панели — та же разметка и те же классы,
+ *  что у живого блока ниже, только без анимаций. Все слепки раздела лежат
+ *  стопкой в одной ячейке сетки, и панель берёт высоту самого высокого
+ *  кадра: при листании карточек и шагов она больше не прыгает (Егор,
+ *  2026-10-18). Меняешь разметку живого блока — поменяй и здесь. */
+function CopyGhost({ data, step, showTitle }: { data: Spotlight; step: number; showTitle: boolean }) {
+  const benefit = data.benefits[step] ?? data.benefits[0];
+  const stat = data.stats[step % Math.max(1, data.stats.length)];
+  return (
+    <div aria-hidden="true" className="invisible flex min-w-0 flex-col justify-center [grid-area:1/1]">
+      {showTitle && <h3 className="font-display text-[15px] uppercase leading-tight tracking-tight sm:text-lg">{data.title}</h3>}
+      {data.tagline && (
+        <p className={`${showTitle ? "mt-1" : ""} font-display text-[11px] uppercase leading-snug tracking-[0.05em] sm:text-sm`}>{data.tagline}</p>
+      )}
+      <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+        <span className="h-fit shrink-0 whitespace-nowrap rounded-full border px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-[0.14em]">{benefit.label}</span>
+        <span className="font-display text-[13px] font-bold uppercase leading-tight tracking-tight sm:text-[17px]">{benefit.punch}</span>
+      </div>
+      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t pb-0.5 pt-3">
+        <div className="h-1.5" style={{ width: 26 + (data.benefits.length - 1) * 16 }} />
+        {stat && (
+          <span className="inline-flex min-w-0 flex-1 items-baseline gap-1.5">
+            <span className="shrink-0 whitespace-nowrap font-display text-sm uppercase">{stat.value}</span>
+            <span className="min-w-0 font-display text-[9px] uppercase leading-[1.15] tracking-[0.1em]">{stat.label}</span>
+          </span>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function SpotlightCopy({
@@ -29,6 +54,7 @@ export default function SpotlightCopy({
   showTitle = true,
   compact = false,
   large = false,
+  sizeTo,
 }: {
   data: Spotlight;
   step: number;
@@ -49,10 +75,13 @@ export default function SpotlightCopy({
   /** Раскрытое окно услуги на компьютере (Егор, 2026-10-12): тексты
    *  крупнее и жирнее, на всё окно — тонких строк не остаётся. */
   large?: boolean;
+  /** Все кадры раздела (панель под каруселью): высота панели = самый
+   *  высокий из них, а не текущий. Только вместе с `compact`. */
+  sizeTo?: Spotlight[];
 }) {
   const reduced = useReducedMotion();
   const benefit = data.benefits[step] ?? data.benefits[0];
-  return (
+  const body = (
     // justify-center на ВСЕХ ширинах, не только ниже 1024px: раньше на
     // десктопе средний блок растягивался на всю оставшуюся высоту
     // (`lg:flex-1`), и короткий тезис проваливался большим пустым
@@ -145,32 +174,15 @@ export default function SpotlightCopy({
                 {benefit.punch}
               </motion.span>
             </div>
-            {/* В раскрытых окнах услуг описания нет (Егор, 2026-10-12: «везде
-                убрать») — только тезис крупно. В колодах на страницах оно есть. */}
-            {!onClose && (
-            <p className="text-[12px] leading-snug text-white/90 sm:text-sm sm:leading-relaxed">
-              {splitWords(benefit.text).map((word, i) => (
-                <motion.span
-                  key={`${step}-${i}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{
-                    duration: reduced ? 0 : 0.45,
-                    delay: reduced ? 0 : 0.12 + i * 0.015,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className="inline-block"
-                >
-                  {word}&nbsp;
-                </motion.span>
-              ))}
-            </p>
-            )}
+            {/* Описание (benefit.text) больше не рисуется нигде (Егор,
+                2026-10-18: панель под каруселью — только заголовки, без
+                тонкого абзаца). Сами тексты остаются в данных — для страниц
+                услуг и SEO. */}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      <div className={`flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/12 pb-0.5 ${large ? "pt-4" : "mt-2.5 pt-2.5"}`}>
+      <div className={`flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/12 pb-0.5 ${large ? "pt-4" : compact ? "mt-4 pt-3" : "mt-2.5 pt-2.5"}`}>
         {/* Шаги — они же ручное переключение. */}
         <div className="flex items-center gap-1.5">
           {data.benefits.map((b, i) => (
@@ -233,6 +245,13 @@ export default function SpotlightCopy({
         </div>
 
       </div>
+    </div>
+  );
+  if (!sizeTo) return body;
+  return (
+    <div className="grid min-w-0 flex-1 [&>*]:[grid-area:1/1]">
+      {sizeTo.flatMap((d) => d.benefits.map((_, i) => <CopyGhost key={`${d.title}-${i}`} data={d} step={i} showTitle={showTitle} />))}
+      {body}
     </div>
   );
 }
