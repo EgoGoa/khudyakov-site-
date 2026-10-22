@@ -99,7 +99,7 @@ function SegmentedAxis({
   // one freezes it bright while .tab-neon-row's CSS dims and pauses the
   // rest (globals.css).
   const pillClass = (isActive: boolean, index: number) =>
-    `btn-neon tab-neon rounded-[14px] px-3 py-1.5 font-display text-[11px] uppercase tracking-wide leading-none transition ${
+    `btn-neon tab-neon rounded-[calc(14*var(--s))] px-3 py-1.5 font-display text-[calc(11*var(--s))] uppercase tracking-wide leading-none transition ${
       isActive ? "text-white" : "text-paper/60"
     }`;
   const pillStyle = (index: number) => ({ "--tab-delay": `${(index % 4) * 0.9}s` }) as CSSProperties;
@@ -151,7 +151,7 @@ function FilterAxis({
   return (
     <div>
       <div className="font-sans text-sm font-semibold text-white">{label}</div>
-      <div className="mt-3 font-display text-[11px] uppercase leading-[1.75] tracking-[0.1em] sm:text-xs">
+      <div className="mt-3 font-display text-[calc(11*var(--s))] uppercase leading-[1.75] tracking-[0.1em] sm:text-xs">
         {options.map((option, i) => (
           <span key={option}>
             {i > 0 && <span className="mx-1.5 text-paper/20">/</span>}
@@ -430,7 +430,7 @@ export default function Works({
               // are 16:9, so every extra pixel of width costs nine sixteenths
               // of a pixel of height on both rows at once. Capping the grid
               // — not the chapter — leaves the heading and filters full width.
-              ? "mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 [@media(max-height:860px)]:mt-2 [@media(max-height:860px)]:sm:gap-4 [@media(max-height:820px)]:mx-auto [@media(max-height:820px)]:max-w-[860px]"
+              ? "mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 [@media(max-height:860px)]:mt-2 [@media(max-height:860px)]:sm:gap-4 [@media(max-height:820px)]:mx-auto [@media(max-height:820px)]:max-w-[calc(860*var(--s))]"
               : "mt-10 grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2"}>
               {/* In chapter mode each tile carries its own two actions, so it is
                   a plain container rather than one big button — a button cannot
@@ -532,7 +532,7 @@ export default function Works({
                           </div>
                         )}
                         {formatDuration(work.duration) && (
-                          <div className={`mt-0.5 font-display tracking-[0.08em] text-paper/60 ${limit ? "text-xs" : "text-[11px]"}`}>
+                          <div className={`mt-0.5 font-display tracking-[0.08em] text-paper/60 ${limit ? "text-xs" : "text-[calc(11*var(--s))]"}`}>
                             {formatDuration(work.duration)}
                           </div>
                         )}
@@ -543,14 +543,14 @@ export default function Works({
                         {/* Сфера — нейтральным чипом, чтобы не путать оси:
                             подсвеченные чипы = формат. */}
                         {work.sphere && !limit && (
-                          <span className="rounded-full bg-paper/10 px-2.5 py-1 font-display text-[9px] uppercase tracking-[0.12em] text-paper/70 ring-1 ring-inset ring-paper/15 backdrop-blur-sm sm:text-[10px]">
+                          <span className="rounded-full bg-paper/10 px-2.5 py-1 font-display text-[calc(9*var(--s))] uppercase tracking-[0.12em] text-paper/70 ring-1 ring-inset ring-paper/15 backdrop-blur-sm sm:text-[calc(10*var(--s))]">
                             {work.sphere}
                           </span>
                         )}
                         {(limit ? [work.category] : allCategories(work)).map((c) => (
                           <span
                             key={c}
-                            className="rounded-full bg-glow/15 px-2.5 py-1 font-display text-[9px] uppercase tracking-[0.12em] text-glow ring-1 ring-inset ring-glow/30 backdrop-blur-sm sm:text-[10px]"
+                            className="rounded-full bg-glow/15 px-2.5 py-1 font-display text-[calc(9*var(--s))] uppercase tracking-[0.12em] text-glow ring-1 ring-inset ring-glow/30 backdrop-blur-sm sm:text-[calc(10*var(--s))]"
                           >
                             {c}
                           </span>
@@ -572,7 +572,7 @@ export default function Works({
                               e.stopPropagation();
                               setActiveId(work.id);
                             }}
-                            className="btn-neon inline-flex items-center gap-1.5 !px-5 !py-2.5 !text-[11px]"
+                            className="btn-neon inline-flex items-center gap-1.5 !px-5 !py-2.5 !text-[calc(11*var(--s))]"
                           >
                             <span aria-hidden="true">▶</span>
                             Смотреть
@@ -589,7 +589,7 @@ export default function Works({
                               e.stopPropagation();
                               setLeadOpen(true);
                             }}
-                            className="btn-neon inline-flex items-center !px-5 !py-2.5 !text-[11px]"
+                            className="btn-neon inline-flex items-center !px-5 !py-2.5 !text-[calc(11*var(--s))]"
                             style={{ "--btn-neon-delay": "1.8s" } as CSSProperties}
                           >
                             Обсудить
@@ -614,7 +614,7 @@ export default function Works({
                     setFilter(ALL);
                     setSphere(ALL_SPHERES);
                   }}
-                  className="rounded-[14px] border border-paper/15 px-4 py-1.5 font-display text-[11px] uppercase tracking-[0.12em] text-paper/70 transition-colors duration-300 hover:border-glow/60 hover:text-glow"
+                  className="rounded-[calc(14*var(--s))] border border-paper/15 px-4 py-1.5 font-display text-[calc(11*var(--s))] uppercase tracking-[0.12em] text-paper/70 transition-colors duration-300 hover:border-glow/60 hover:text-glow"
                 >
                   Сбросить фильтры
                 </button>
@@ -625,7 +625,7 @@ export default function Works({
               <div className="mt-8 flex justify-center">
                 <button
                   onClick={() => setVisible((v) => v + PAGE_SIZE)}
-                  className="inline-flex items-center gap-2 rounded-[14px] border border-paper/15 px-6 py-2.5 font-display text-xs uppercase tracking-[0.15em] text-paper/70 transition-all duration-300 hover:border-glow/60 hover:text-glow hover:shadow-[0_0_16px_rgba(0,210,255,0.2)]"
+                  className="inline-flex items-center gap-2 rounded-[calc(14*var(--s))] border border-paper/15 px-6 py-2.5 font-display text-xs uppercase tracking-[0.15em] text-paper/70 transition-all duration-300 hover:border-glow/60 hover:text-glow hover:shadow-[0_0_16px_rgba(0,210,255,0.2)]"
                 >
                   Показать ещё
                   <span className="font-display text-paper/40">

@@ -198,7 +198,7 @@ export default function Offer({
                     }`}
                   >
                     <span
-                      className={`font-display text-[10px] transition-colors ${
+                      className={`font-display text-[calc(10*var(--s))] transition-colors ${
                         isSelected ? "text-orange" : "text-paper/40"
                       }`}
                     >
@@ -236,7 +236,7 @@ export default function Offer({
           from="right"
           delay={BEAT.content + STAGGER.normal}
           className={`mt-10 rounded-2xl bg-ink/45 backdrop-blur-md lg:mt-0 lg:shrink-0 ${
-            interactive ? `flex flex-col p-6 ${listAside || minimal ? "lg:self-stretch" : "lg:h-full"} lg:w-1/2 ${minimal ? "lg:p-5" : footer && active === "content" ? "lg:p-3" : ""}` : "p-6 lg:w-[300px] xl:w-[320px]"
+            interactive ? `flex flex-col p-6 ${listAside || minimal ? "lg:self-stretch" : "lg:h-full"} lg:w-1/2 ${minimal ? "lg:p-5" : footer && active === "content" ? "lg:p-3" : ""}` : "p-6 lg:w-[calc(300*var(--s))] xl:w-[calc(320*var(--s))]"
           }`}
         >
           {interactive && selectedService ? (
@@ -245,7 +245,7 @@ export default function Offer({
                   it — on a phone the panel sits below the list and, scrolled
                   past, nothing said what it described. */}
               <div className={footer && active === "content" ? "mb-2" : "mb-4"}>
-                <p className="font-display text-[10px] font-bold uppercase tracking-[0.16em] text-white">
+                <p className="font-display text-[calc(10*var(--s))] font-bold uppercase tracking-[0.16em] text-white">
                   Выбранная услуга
                 </p>
                 <h3 className="mt-1 font-display text-base uppercase leading-tight tracking-tight text-white sm:text-lg">
@@ -359,7 +359,7 @@ export default function Offer({
 
               {showCalculator && (
                 <div className="mt-6 border-t border-paper/15 pt-6">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-3.5 py-1.5 font-display text-[calc(11*var(--s))] uppercase tracking-[0.18em] text-orange">
                     <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
                     Не знаете формат?
                   </span>

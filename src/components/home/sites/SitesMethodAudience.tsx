@@ -127,7 +127,7 @@ export default function SitesMethodAudience() {
         <div className="mt-10 lg:mt-0 lg:flex-1 land:mt-0 land:min-w-0 land:flex-1">
           <Appear from="right" delay={BEAT.content}>
             <div className="overflow-x-auto rounded-2xl bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150">
-              <table className="w-full min-w-[520px] border-collapse text-left text-xs">
+              <table className="w-full min-w-[calc(520*var(--s))] border-collapse text-left text-xs">
                 <thead>
                   <tr className="border-b border-paper/15">
                     <th

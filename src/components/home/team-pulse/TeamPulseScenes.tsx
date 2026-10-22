@@ -90,17 +90,17 @@ function Stage({ children }: { children: ReactNode }) {
 function Head({ title, sub }: { title: string; sub: string }) {
   return (
     <motion.div className="absolute inset-x-5 top-4" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={SPRING}>
-      <p className="font-display text-[21px] font-bold uppercase leading-[1.05] text-white">
+      <p className="font-display text-[calc(21*var(--s))] font-bold uppercase leading-[1.05] text-white">
         {marks(title)}
       </p>
-      <p className="mt-1.5 font-display text-[11px] font-bold uppercase leading-snug tracking-tight text-white">{marks(sub)}</p>
+      <p className="mt-1.5 font-display text-[calc(11*var(--s))] font-bold uppercase leading-snug tracking-tight text-white">{marks(sub)}</p>
     </motion.div>
   );
 }
 
 /** Графика под заголовком: своя область 480×360, как раньше у сцен. */
 function Body({ children }: { children: ReactNode }) {
-  return <div className="absolute left-0 top-[80px] h-[360px] w-[480px]">{children}</div>;
+  return <div className="absolute left-0 top-[calc(80*var(--s))] h-[calc(360*var(--s))] w-[calc(480*var(--s))]">{children}</div>;
 }
 
 function useTick(ms: number, enabled = true) {
@@ -118,7 +118,7 @@ function Dots({ light = false }: { light?: boolean }) {
   return (
     <>
       {[0, 1, 2].map((d) => (
-        <i key={d} className={`h-[7px] w-[7px] rounded-full ${light ? "bg-black/20" : "bg-white/30"}`} />
+        <i key={d} className={`h-[calc(7*var(--s))] w-[calc(7*var(--s))] rounded-full ${light ? "bg-black/20" : "bg-white/30"}`} />
       ))}
     </>
   );
@@ -136,7 +136,7 @@ function MiniSite({ s, active }: { s: (typeof SITES)[number]; active: boolean })
   const light = s.bg === "#f5f2ec";
   return (
     <div
-      className="w-[220px] overflow-hidden rounded-[14px]"
+      className="w-[calc(220*var(--s))] overflow-hidden rounded-[calc(14*var(--s))]"
       style={{
         background: s.bg,
         boxShadow: active
@@ -144,21 +144,21 @@ function MiniSite({ s, active }: { s: (typeof SITES)[number]; active: boolean })
           : "0 24px 50px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.12)",
       }}
     >
-      <div className="flex h-[22px] items-center gap-[5px] px-[9px]" style={{ background: s.bar }}>
+      <div className="flex h-[calc(22*var(--s))] items-center gap-[calc(5*var(--s))] px-[calc(9*var(--s))]" style={{ background: s.bar }}>
         <Dots light={light} />
       </div>
-      <div className="p-[12px]">
-        <div className="flex h-[96px] items-end rounded-[10px] p-[10px]" style={{ background: s.hero }}>
-          <span className="whitespace-pre-line font-display text-[16px] font-bold uppercase leading-[1]" style={{ color: s.titleInk }}>
+      <div className="p-[calc(12*var(--s))]">
+        <div className="flex h-[calc(96*var(--s))] items-end rounded-[calc(10*var(--s))] p-[calc(10*var(--s))]" style={{ background: s.hero }}>
+          <span className="whitespace-pre-line font-display text-[calc(16*var(--s))] font-bold uppercase leading-[1]" style={{ color: s.titleInk }}>
             {s.title}
           </span>
         </div>
-        <div className="mt-2.5 h-[7px] w-[86%] rounded-full" style={{ background: s.line }} />
-        <div className="mt-1.5 h-[7px] w-[58%] rounded-full" style={{ background: s.line }} />
-        <div className="mt-3 h-[26px] w-[104px] rounded-full" style={{ background: s.btn }} />
+        <div className="mt-2.5 h-[calc(7*var(--s))] w-[86%] rounded-full" style={{ background: s.line }} />
+        <div className="mt-1.5 h-[calc(7*var(--s))] w-[58%] rounded-full" style={{ background: s.line }} />
+        <div className="mt-3 h-[calc(26*var(--s))] w-[calc(104*var(--s))] rounded-full" style={{ background: s.btn }} />
         <div className="mt-3 grid grid-cols-3 gap-1.5">
           {[0, 1, 2].map((d) => (
-            <i key={d} className="h-[34px] rounded-[7px]" style={{ background: s.line }} />
+            <i key={d} className="h-[calc(34*var(--s))] rounded-[calc(7*var(--s))]" style={{ background: s.line }} />
           ))}
         </div>
       </div>
@@ -185,10 +185,10 @@ function ConceptsFan({ variant, once = false }: { variant?: number; once?: boole
           </motion.div>
         ))}
       </div>
-      <div className="absolute bottom-[14px] left-1/2 flex w-max -translate-x-1/2 gap-0.5 whitespace-nowrap rounded-[14px] bg-white/[0.08] p-1">
+      <div className="absolute bottom-[calc(14*var(--s))] left-1/2 flex w-max -translate-x-1/2 gap-0.5 whitespace-nowrap rounded-[calc(14*var(--s))] bg-white/[0.08] p-1">
         {SITES.map((s, i) => (
-          <span key={s.label} className="relative whitespace-nowrap rounded-[10px] px-3 py-[7px] font-display text-[11px] font-bold uppercase text-white">
-            {i === front && <motion.span layoutId="tp-seg" className="absolute inset-0 rounded-[10px]" style={{ background: ACC, opacity: 0.9 }} transition={SPRING} />}
+          <span key={s.label} className="relative whitespace-nowrap rounded-[calc(10*var(--s))] px-3 py-[calc(7*var(--s))] font-display text-[calc(11*var(--s))] font-bold uppercase text-white">
+            {i === front && <motion.span layoutId="tp-seg" className="absolute inset-0 rounded-[calc(10*var(--s))]" style={{ background: ACC, opacity: 0.9 }} transition={SPRING} />}
             <span className="relative">{s.label}</span>
           </span>
         ))}
@@ -210,9 +210,9 @@ function Concepts() {
 
 function Phone({ children }: { children: ReactNode }) {
   return (
-    <div className="h-[330px] w-[170px] rounded-[36px] bg-[#0d0d10] p-[8px] shadow-[0_0_0_2px_#2c2c32,0_0_0_6px_#111,0_40px_80px_rgba(0,0,0,0.65)]">
-      <div className="relative h-full w-full overflow-hidden rounded-[28px] bg-gradient-to-b from-[#16121c] to-[#0c0c10] px-3 pb-3 pt-10">
-        <span className="absolute left-1/2 top-2 h-5 w-[62px] -translate-x-1/2 rounded-full bg-black" />
+    <div className="h-[calc(330*var(--s))] w-[calc(170*var(--s))] rounded-[calc(36*var(--s))] bg-[#0d0d10] p-[calc(8*var(--s))] shadow-[0_0_0_2px_#2c2c32,0_0_0_6px_#111,0_40px_80px_rgba(0,0,0,0.65)]">
+      <div className="relative h-full w-full overflow-hidden rounded-[calc(28*var(--s))] bg-gradient-to-b from-[#16121c] to-[#0c0c10] px-3 pb-3 pt-10">
+        <span className="absolute left-1/2 top-2 h-5 w-[calc(62*var(--s))] -translate-x-1/2 rounded-full bg-black" />
         {children}
       </div>
     </div>
@@ -237,10 +237,10 @@ function Lead() {
       <Head title="Заявка ^в два^ *касания*" sub="Клиент оставил телефон — ^тебе пришло уведомление^" />
       <Body>
         <div className="absolute inset-0">
-          <motion.div className="absolute left-[36px] top-[4px]" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING}>
+          <motion.div className="absolute left-[calc(36*var(--s))] top-[calc(4*var(--s))]" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING}>
             <Phone>
-              <div className="mb-3 h-[64px] rounded-[12px] p-2.5" style={{ background: ACC }}>
-                <p className="font-display text-[12px] font-bold uppercase leading-[1] text-[#0b0b10]">
+              <div className="mb-3 h-[calc(64*var(--s))] rounded-[calc(12*var(--s))] p-2.5" style={{ background: ACC }}>
+                <p className="font-display text-[calc(12*var(--s))] font-bold uppercase leading-[1] text-[#0b0b10]">
                   Твой
                   <br />
                   сайт
@@ -250,12 +250,12 @@ function Lead() {
                 { v: "Анна", d: 0.6 },
                 { v: "+7 900 123-45-67", d: 1.1 },
               ].map((f) => (
-                <div key={f.v} className="mb-2 flex h-9 items-center rounded-[10px] bg-white/[0.08] px-2.5 text-[13px] font-bold text-white ring-1 ring-white/10">
+                <div key={f.v} className="mb-2 flex h-9 items-center rounded-[calc(10*var(--s))] bg-white/[0.08] px-2.5 text-[calc(13*var(--s))] font-bold text-white ring-1 ring-white/10">
                   <Typed text={f.v} delay={f.d} />
                 </div>
               ))}
               <motion.div
-                className="mt-1.5 grid h-[38px] place-items-center rounded-full font-display text-[11px] font-bold uppercase text-[#0b0b10]"
+                className="mt-1.5 grid h-[calc(38*var(--s))] place-items-center rounded-full font-display text-[calc(11*var(--s))] font-bold uppercase text-[#0b0b10]"
                 style={{ background: ACC }}
                 animate={{ scale: [1, 1, 0.92, 1] }}
                 transition={{ times: [0, 0.85, 0.92, 1], duration: 1.56 }}
@@ -265,28 +265,28 @@ function Lead() {
             </Phone>
           </motion.div>
           <motion.div
-            className="absolute left-[200px] top-[18px] z-10 flex w-[250px] items-center gap-3 rounded-[18px] bg-[rgba(58,58,66,0.8)] px-3.5 py-3 shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+            className="absolute left-[calc(200*var(--s))] top-[calc(18*var(--s))] z-10 flex w-[calc(250*var(--s))] items-center gap-3 rounded-[calc(18*var(--s))] bg-[rgba(58,58,66,0.8)] px-3.5 py-3 shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl"
             initial={{ y: -30, opacity: 0, scale: 0.94 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             transition={{ ...SPRING, delay: 1.68 }}
           >
-            <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-[10px] font-display text-[11px] font-bold text-[#0b0b10]" style={{ background: ACC }}>
+            <span className="grid h-[calc(38*var(--s))] w-[calc(38*var(--s))] shrink-0 place-items-center rounded-[calc(10*var(--s))] font-display text-[calc(11*var(--s))] font-bold text-[#0b0b10]" style={{ background: ACC }}>
               HD
             </span>
-            <span className="font-display text-[13px] font-bold uppercase leading-tight text-white">
+            <span className="font-display text-[calc(13*var(--s))] font-bold uppercase leading-tight text-white">
               Новая заявка
               <br />
               <span className="team-pulse-acc">Анна · сейчас</span>
             </span>
           </motion.div>
-          <motion.div className="absolute left-[262px] top-[130px] w-[190px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.92 }}>
-            <p className="font-display text-[40px] font-bold leading-none text-white">×2,4</p>
-            <p className="mb-3 mt-1 font-display text-[11px] font-bold uppercase text-white">заявок за месяц</p>
-            <div className="flex h-[110px] items-end gap-1.5">
+          <motion.div className="absolute left-[calc(262*var(--s))] top-[calc(130*var(--s))] w-[calc(190*var(--s))]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.92 }}>
+            <p className="font-display text-[calc(40*var(--s))] font-bold leading-none text-white">×2,4</p>
+            <p className="mb-3 mt-1 font-display text-[calc(11*var(--s))] font-bold uppercase text-white">заявок за месяц</p>
+            <div className="flex h-[calc(110*var(--s))] items-end gap-1.5">
               {[30, 38, 34, 52, 74, 100].map((h, k) => (
                 <motion.i
                   key={k}
-                  className="flex-1 rounded-[5px]"
+                  className="flex-1 rounded-[calc(5*var(--s))]"
                   style={{ background: k > 3 ? "linear-gradient(0deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,.14)" }}
                   initial={{ height: 0 }}
                   animate={{ height: `${h}%` }}
@@ -303,9 +303,9 @@ function Lead() {
 
 function Mug({ glaze = true }: { glaze?: boolean }) {
   return (
-    <span className="relative block h-[86px] w-[92px]">
-      <span className="absolute left-0 top-0 h-[86px] w-[68px] rounded-b-[22px] rounded-t-md shadow-[inset_-10px_0_18px_rgba(0,0,0,0.25)]" style={{ background: glaze ? ACC : "#8a8178" }} />
-      <span className="absolute right-0 top-[18px] h-[42px] w-[34px] rounded-r-full border-[9px] border-l-0" style={{ borderColor: glaze ? "var(--sp-to)" : "#8a8178" }} />
+    <span className="relative block h-[calc(86*var(--s))] w-[calc(92*var(--s))]">
+      <span className="absolute left-0 top-0 h-[calc(86*var(--s))] w-[calc(68*var(--s))] rounded-b-[calc(22*var(--s))] rounded-t-md shadow-[inset_-10px_0_18px_rgba(0,0,0,0.25)]" style={{ background: glaze ? ACC : "#8a8178" }} />
+      <span className="absolute right-0 top-[calc(18*var(--s))] h-[calc(42*var(--s))] w-[calc(34*var(--s))] rounded-r-full border-[9px] border-l-0" style={{ borderColor: glaze ? "var(--sp-to)" : "#8a8178" }} />
     </span>
   );
 }
@@ -316,10 +316,10 @@ function Catalog() {
       <Head title="^Одна фотка^ → *карточка*" sub="Снимок с телефона превращается в *витрину*" />
       <Body>
         <div className="absolute inset-0">
-          <motion.div className="absolute left-[22px] top-[44px]" initial={{ rotate: -10, opacity: 0, y: 20 }} animate={{ rotate: -5, opacity: 1, y: 0 }} transition={SPRING}>
-            <div className="relative h-[220px] w-[150px] overflow-hidden rounded-2xl bg-[#3b3530] shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+          <motion.div className="absolute left-[calc(22*var(--s))] top-[calc(44*var(--s))]" initial={{ rotate: -10, opacity: 0, y: 20 }} animate={{ rotate: -5, opacity: 1, y: 0 }} transition={SPRING}>
+            <div className="relative h-[calc(220*var(--s))] w-[calc(150*var(--s))] overflow-hidden rounded-2xl bg-[#3b3530] shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
               <div className="absolute inset-0 bg-[radial-gradient(80%_60%_at_40%_30%,#6b5f55,#2a2522)]" />
-              <span className="absolute left-[30px] top-[66px] opacity-80">
+              <span className="absolute left-[calc(30*var(--s))] top-[calc(66*var(--s))] opacity-80">
                 <Mug glaze={false} />
               </span>
               <motion.span
@@ -330,30 +330,30 @@ function Catalog() {
                 transition={{ duration: 0.72, delay: 0.36, ease: "easeInOut" }}
               />
             </div>
-            <p className="mt-3 text-center font-display text-[11px] font-bold uppercase text-white">Было</p>
+            <p className="mt-3 text-center font-display text-[calc(11*var(--s))] font-bold uppercase text-white">Было</p>
           </motion.div>
-          <motion.span className="absolute left-[190px] top-[140px] font-display text-[30px] font-bold" style={{ color: "var(--sp-to)" }} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.96 }}>
+          <motion.span className="absolute left-[calc(190*var(--s))] top-[calc(140*var(--s))] font-display text-[calc(30*var(--s))] font-bold" style={{ color: "var(--sp-to)" }} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.96 }}>
             →
           </motion.span>
           <motion.div
-            className="absolute left-[236px] top-[8px] w-[222px] overflow-hidden rounded-2xl bg-[#f5f2ec]"
+            className="absolute left-[calc(236*var(--s))] top-[calc(8*var(--s))] w-[calc(222*var(--s))] overflow-hidden rounded-2xl bg-[#f5f2ec]"
             style={{ boxShadow: "0 30px 60px rgba(0,0,0,.6), 0 0 44px rgba(var(--tp-from-rgb),.35)" }}
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ ...SPRING, delay: 1.14 }}
           >
-            <div className="relative grid h-[180px] place-items-center bg-[radial-gradient(70%_70%_at_50%_40%,#fff,#e6dfd3)]">
+            <div className="relative grid h-[calc(180*var(--s))] place-items-center bg-[radial-gradient(70%_70%_at_50%_40%,#fff,#e6dfd3)]">
               <motion.span initial={{ scale: 0.7, rotate: -8 }} animate={{ scale: 1, rotate: 0 }} transition={{ ...SPRING, delay: 1.32 }}>
                 <Mug />
               </motion.span>
-              <motion.span className="absolute left-3 top-3 rounded-full bg-[#111] px-2.5 py-1 font-display text-[10px] font-bold uppercase text-white" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.56 }}>
+              <motion.span className="absolute left-3 top-3 rounded-full bg-[#111] px-2.5 py-1 font-display text-[calc(10*var(--s))] font-bold uppercase text-white" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.56 }}>
                 новинка
               </motion.span>
             </div>
             <motion.div className="p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.68 }}>
-              <p className="font-display text-[15px] font-bold uppercase text-[#161616]">Кружка «Утро»</p>
-              <div className="mt-2 h-[7px] w-[80%] rounded-full bg-black/10" />
-              <div className="mt-3 grid h-9 place-items-center rounded-full bg-[#111] font-display text-[11px] font-bold uppercase text-white">В корзину</div>
+              <p className="font-display text-[calc(15*var(--s))] font-bold uppercase text-[#161616]">Кружка «Утро»</p>
+              <div className="mt-2 h-[calc(7*var(--s))] w-[80%] rounded-full bg-black/10" />
+              <div className="mt-3 grid h-9 place-items-center rounded-full bg-[#111] font-display text-[calc(11*var(--s))] font-bold uppercase text-white">В корзину</div>
             </motion.div>
           </motion.div>
         </div>
@@ -369,16 +369,16 @@ function Rebrand() {
     <Stage>
       <Head title="Было ^→^ *стало*" sub="Новый стиль ^сразу на сайте^, а не в презентации" />
       <Body>
-        <div className="absolute left-1/2 top-0 flex w-max -translate-x-1/2 gap-0.5 rounded-[14px] bg-white/[0.08] p-1">
+        <div className="absolute left-1/2 top-0 flex w-max -translate-x-1/2 gap-0.5 rounded-[calc(14*var(--s))] bg-white/[0.08] p-1">
           {["Было", "Стало"].map((l, i) => (
-            <span key={l} className="relative rounded-[10px] px-4 py-[7px] font-display text-[11px] font-bold uppercase text-white">
-              {(i === 1) === after && <motion.span layoutId="tp-ba" className="absolute inset-0 rounded-[10px]" style={{ background: after ? ACC : "rgba(255,255,255,.18)" }} transition={SPRING} />}
+            <span key={l} className="relative rounded-[calc(10*var(--s))] px-4 py-[calc(7*var(--s))] font-display text-[calc(11*var(--s))] font-bold uppercase text-white">
+              {(i === 1) === after && <motion.span layoutId="tp-ba" className="absolute inset-0 rounded-[calc(10*var(--s))]" style={{ background: after ? ACC : "rgba(255,255,255,.18)" }} transition={SPRING} />}
               <span className="relative">{l}</span>
             </span>
           ))}
         </div>
         <motion.div
-          className="absolute left-[40px] top-[52px] w-[400px] overflow-hidden rounded-[16px]"
+          className="absolute left-[calc(40*var(--s))] top-[calc(52*var(--s))] w-[calc(400*var(--s))] overflow-hidden rounded-[calc(16*var(--s))]"
           animate={{
             backgroundColor: after ? "#120d14" : "#e9e9e9",
             boxShadow: after
@@ -387,34 +387,34 @@ function Rebrand() {
           }}
           transition={{ duration: 0.36 }}
         >
-          <div className="flex h-[22px] items-center gap-[5px] px-[9px]" style={{ background: after ? "#1a141d" : "#d9d9d9" }}>
+          <div className="flex h-[calc(22*var(--s))] items-center gap-[calc(5*var(--s))] px-[calc(9*var(--s))]" style={{ background: after ? "#1a141d" : "#d9d9d9" }}>
             <Dots light={!after} />
           </div>
           <div className="p-5">
             <motion.div className="flex items-center gap-2.5" key={String(after)} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={SPRING}>
               {after ? (
                 <>
-                  <span className="grid h-10 w-10 place-items-center rounded-[12px] font-display text-[18px] font-bold text-[#0b0b10]" style={{ background: ACC }}>
+                  <span className="grid h-10 w-10 place-items-center rounded-[calc(12*var(--s))] font-display text-[calc(18*var(--s))] font-bold text-[#0b0b10]" style={{ background: ACC }}>
                     У
                   </span>
-                  <span className="font-display text-[18px] font-bold uppercase tracking-[0.08em] text-white">Утро</span>
+                  <span className="font-display text-[calc(18*var(--s))] font-bold uppercase tracking-[0.08em] text-white">Утро</span>
                 </>
               ) : (
-                <span className="font-serif text-[20px] text-[#555]">Кофейня Утро</span>
+                <span className="font-serif text-[calc(20*var(--s))] text-[#555]">Кофейня Утро</span>
               )}
             </motion.div>
             <motion.div
-              className="mt-4 flex h-[110px] items-end rounded-[12px] p-4"
+              className="mt-4 flex h-[calc(110*var(--s))] items-end rounded-[calc(12*var(--s))] p-4"
               animate={{ background: after ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "linear-gradient(135deg, #cfcfcf, #bdbdbd)" }}
               transition={{ duration: 0.36 }}
             >
-              <span className={`whitespace-pre-line text-[20px] font-bold leading-[1] ${after ? "font-display uppercase text-[#0b0b10]" : "font-serif text-[#666]"}`}>
+              <span className={`whitespace-pre-line text-[calc(20*var(--s))] font-bold leading-[1] ${after ? "font-display uppercase text-[#0b0b10]" : "font-serif text-[#666]"}`}>
                 {after ? "Кофе, который\nбудит город" : "Добро пожаловать"}
               </span>
             </motion.div>
             <div className="mt-4 flex gap-1.5">
               {(after ? ["var(--sp-from)", "var(--sp-to)", "#f5f2ec", "#1a1a22"] : ["#8a8a8a", "#b0b0b0", "#cfcfcf"]).map((c, i) => (
-                <motion.i key={`${after}-${i}`} className="h-6 w-10 rounded-[6px] ring-1 ring-white/15" style={{ background: c }} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING, delay: i * 0.05 }} />
+                <motion.i key={`${after}-${i}`} className="h-6 w-10 rounded-[calc(6*var(--s))] ring-1 ring-white/15" style={{ background: c }} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING, delay: i * 0.05 }} />
               ))}
             </div>
           </div>
@@ -436,16 +436,16 @@ function Timeline({ stages: STAGES = SITE_STAGES, doneLabel = "Сайт запу
     <Stage>
       <Head title={title} sub={sub} />
       <Body>
-        <div className="absolute left-[36px] right-[36px] top-[118px] h-[6px] rounded-full bg-white/10">
+        <div className="absolute left-[calc(36*var(--s))] right-[calc(36*var(--s))] top-[calc(118*var(--s))] h-[calc(6*var(--s))] rounded-full bg-white/10">
           <motion.div className="h-full rounded-full" style={{ background: ACC }} animate={{ width: `${(Math.max(0, done - 1) / (STAGES.length - 1)) * 100}%` }} transition={SPRING} />
         </div>
         {STAGES.map((st, i) => {
           const on = i < done;
           const x = 36 + (i * (480 - 72)) / (STAGES.length - 1);
           return (
-            <div key={st} className="absolute top-[92px] flex -translate-x-1/2 flex-col items-center" style={{ left: x }}>
+            <div key={st} className="absolute top-[calc(92*var(--s))] flex -translate-x-1/2 flex-col items-center" style={{ left: x }}>
               <motion.span
-                className="grid h-[58px] w-[58px] place-items-center rounded-full font-display text-[18px] font-bold"
+                className="grid h-[calc(58*var(--s))] w-[calc(58*var(--s))] place-items-center rounded-full font-display text-[calc(18*var(--s))] font-bold"
                 animate={{
                   scale: on ? 1 : 0.82,
                   background: on ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.08)",
@@ -456,9 +456,9 @@ function Timeline({ stages: STAGES = SITE_STAGES, doneLabel = "Сайт запу
               >
                 {on ? "✓" : i + 1}
               </motion.span>
-              <span className="mt-3 font-display text-[11px] font-bold uppercase text-white">{st}</span>
+              <span className="mt-3 font-display text-[calc(11*var(--s))] font-bold uppercase text-white">{st}</span>
               <motion.span
-                className="mt-2 rounded-full px-2.5 py-1 font-display text-[10px] font-bold uppercase text-[#0b0b10]"
+                className="mt-2 rounded-full px-2.5 py-1 font-display text-[calc(10*var(--s))] font-bold uppercase text-[#0b0b10]"
                 style={{ background: "linear-gradient(90deg,#ff6a3d,#ffc53d)" }}
                 initial={false}
                 animate={{ opacity: on ? 1 : 0, y: on ? 0 : -6 }}
@@ -470,7 +470,7 @@ function Timeline({ stages: STAGES = SITE_STAGES, doneLabel = "Сайт запу
           );
         })}
         <motion.div
-          className="absolute bottom-[40px] left-1/2 rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          className="absolute bottom-[calc(40*var(--s))] left-1/2 rounded-full px-5 py-2.5 font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: done >= STAGES.length ? 1 : 0, scale: done >= STAGES.length ? 1 : 0.8 }}
@@ -495,9 +495,9 @@ function Calendar() {
     <Stage>
       <Head title="Срок, ^который не плывёт^" sub="Этапы встают *по датам заранее*" />
       <Body>
-        <div className="absolute left-[44px] top-[4px] grid grid-cols-7 gap-[4px]">
+        <div className="absolute left-[calc(44*var(--s))] top-[calc(4*var(--s))] grid grid-cols-7 gap-[calc(4*var(--s))]">
           {Array.from({ length: 21 }, (_, d) => (
-            <div key={d} className="grid h-[52px] w-[52px] place-items-start rounded-[10px] bg-white/[0.05] p-1.5 font-display text-[11px] font-bold text-white ring-1 ring-white/10">
+            <div key={d} className="grid h-[calc(52*var(--s))] w-[calc(52*var(--s))] place-items-start rounded-[calc(10*var(--s))] bg-white/[0.05] p-1.5 font-display text-[calc(11*var(--s))] font-bold text-white ring-1 ring-white/10">
               {d + 1}
             </div>
           ))}
@@ -508,7 +508,7 @@ function Calendar() {
           return (
             <motion.div
               key={b.label}
-              className="absolute flex h-[22px] items-center rounded-full px-2.5 font-display text-[10px] font-bold uppercase text-[#0b0b10]"
+              className="absolute flex h-[calc(22*var(--s))] items-center rounded-full px-2.5 font-display text-[calc(10*var(--s))] font-bold uppercase text-[#0b0b10]"
               style={{ left: 44 + col * cell + 4, top: 4 + row * cell + 26, background: b.c, transformOrigin: "left center" }}
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: b.len * cell - 12, opacity: 1 }}
@@ -519,7 +519,7 @@ function Calendar() {
           );
         })}
         <motion.div
-          className="absolute flex items-center gap-2 rounded-full px-3.5 py-2 font-display text-[12px] font-bold uppercase text-[#0b0b10]"
+          className="absolute flex items-center gap-2 rounded-full px-3.5 py-2 font-display text-[calc(12*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ left: 44 + 3 * cell - 10, top: 4 + 2 * cell + 60, background: ACC, boxShadow: "0 0 26px rgba(var(--tp-from-rgb),.6)" }}
           initial={{ opacity: 0, y: 10, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -544,10 +544,10 @@ function Contact({ msgs = SITE_MSGS }: { msgs?: { me: boolean; t: string }[] } =
     <Stage>
       <Head title="*Один человек* ^на связи^" sub="Не нужно искать, ^кому написать^" />
       <Body>
-        <div className="absolute left-[60px] top-[4px] w-[360px] rounded-[22px] bg-white/[0.05] p-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14),0_30px_60px_rgba(0,0,0,.45)]">
+        <div className="absolute left-[calc(60*var(--s))] top-[calc(4*var(--s))] w-[calc(360*var(--s))] rounded-[calc(22*var(--s))] bg-white/[0.05] p-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14),0_30px_60px_rgba(0,0,0,.45)]">
           <div className="mb-3 flex items-center gap-3">
             <img src={TEAM.egor.photo} alt="" className="h-10 w-10 rounded-full object-cover" style={{ boxShadow: "0 0 0 2px #0b0b10, 0 0 0 3.5px var(--sp-from)" }} />
-            <span className="font-display text-[14px] font-bold uppercase text-white">
+            <span className="font-display text-[calc(14*var(--s))] font-bold uppercase text-white">
               Егор <span className="team-pulse-warm">· на связи</span>
             </span>
           </div>
@@ -555,7 +555,7 @@ function Contact({ msgs = SITE_MSGS }: { msgs?: { me: boolean; t: string }[] } =
             {msgs.map((m, i) => (
               <motion.div
                 key={m.t}
-                className={`max-w-[80%] rounded-[16px] px-3.5 py-2.5 text-[14px] font-bold leading-snug text-white ${m.me ? "self-end rounded-br-md" : "self-start rounded-bl-md bg-white/[0.1]"}`}
+                className={`max-w-[80%] rounded-[calc(16*var(--s))] px-3.5 py-2.5 text-[calc(14*var(--s))] font-bold leading-snug text-white ${m.me ? "self-end rounded-br-md" : "self-start rounded-bl-md bg-white/[0.1]"}`}
                 style={m.me ? { background: "linear-gradient(90deg, rgba(var(--tp-from-rgb),.45), rgba(var(--tp-to-rgb),.35))" } : undefined}
                 initial={{ opacity: 0, y: 12, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -604,7 +604,7 @@ function TeamAssemble({ crew: people = SITE_CREW, center = "Твой сайт", 
           </defs>
         </svg>
         <motion.div
-          className="absolute left-[160px] top-[112px] grid h-[76px] w-[160px] place-items-center rounded-[18px] font-display text-[14px] font-bold uppercase text-[#0b0b10]"
+          className="absolute left-[calc(160*var(--s))] top-[calc(112*var(--s))] grid h-[calc(76*var(--s))] w-[calc(160*var(--s))] place-items-center rounded-[calc(18*var(--s))] font-display text-[calc(14*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ background: ACC, boxShadow: "0 0 40px rgba(var(--tp-from-rgb),.55)" }}
           initial={{ scale: 0.6, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -615,15 +615,15 @@ function TeamAssemble({ crew: people = SITE_CREW, center = "Твой сайт", 
         {crew.map((c, i) => (
           <motion.div
             key={c.m.id}
-            className="absolute flex w-[120px] flex-col items-center"
+            className="absolute flex w-[calc(120*var(--s))] flex-col items-center"
             style={{ x: "-50%", left: c.x, top: c.y }}
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ ...SPRING, delay: 0.24 + i * 0.24 }}
           >
-            <img src={c.m.photo} alt="" className="h-[64px] w-[64px] rounded-full object-cover" style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 24px rgba(var(--tp-from-rgb),.5)" }} />
-            <span className="mt-2 font-display text-[12px] font-bold uppercase text-white">{c.m.name}</span>
-            <span className="team-pulse-warm font-display text-[10px] font-bold uppercase">{c.role}</span>
+            <img src={c.m.photo} alt="" className="h-[calc(64*var(--s))] w-[calc(64*var(--s))] rounded-full object-cover" style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 24px rgba(var(--tp-from-rgb),.5)" }} />
+            <span className="mt-2 font-display text-[calc(12*var(--s))] font-bold uppercase text-white">{c.m.name}</span>
+            <span className="team-pulse-warm font-display text-[calc(10*var(--s))] font-bold uppercase">{c.role}</span>
           </motion.div>
         ))}
       </Body>
@@ -646,16 +646,16 @@ function AiPilot() {
     <Stage>
       <Head title="*Пилот* ^за неделю^" sub="Сначала пробуем ^на одной задаче^" />
       <Body>
-        <div className="absolute left-[50px] right-[50px] top-[74px] h-[6px] rounded-full bg-white/10">
+        <div className="absolute left-[calc(50*var(--s))] right-[calc(50*var(--s))] top-[calc(74*var(--s))] h-[calc(6*var(--s))] rounded-full bg-white/10">
           <motion.div className="h-full rounded-full" style={{ background: ACC }} animate={{ width: `${(Math.max(0, done - 1) / (AI_STEPS.length - 1)) * 100}%` }} transition={SPRING} />
         </div>
         {AI_STEPS.map((st, i) => {
           const on = i < done;
           const x = 50 + (i * (480 - 100)) / (AI_STEPS.length - 1);
           return (
-            <div key={st} className="absolute top-[46px] flex -translate-x-1/2 flex-col items-center" style={{ left: x }}>
+            <div key={st} className="absolute top-[calc(46*var(--s))] flex -translate-x-1/2 flex-col items-center" style={{ left: x }}>
               <motion.span
-                className="grid h-[62px] w-[62px] place-items-center rounded-full font-display text-[20px] font-bold"
+                className="grid h-[calc(62*var(--s))] w-[calc(62*var(--s))] place-items-center rounded-full font-display text-[calc(20*var(--s))] font-bold"
                 animate={{
                   scale: on ? 1 : 0.82,
                   background: on ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.08)",
@@ -666,28 +666,28 @@ function AiPilot() {
               >
                 {on ? "✓" : i + 1}
               </motion.span>
-              <span className="mt-3 whitespace-nowrap font-display text-[12px] font-bold uppercase text-white">{st}</span>
+              <span className="mt-3 whitespace-nowrap font-display text-[calc(12*var(--s))] font-bold uppercase text-white">{st}</span>
             </div>
           );
         })}
         <motion.div
-          className="absolute left-[60px] right-[60px] top-[196px] flex items-center gap-4 rounded-[20px] bg-white/[0.05] p-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]"
+          className="absolute left-[calc(60*var(--s))] right-[calc(60*var(--s))] top-[calc(196*var(--s))] flex items-center gap-4 rounded-[calc(20*var(--s))] bg-white/[0.05] p-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]"
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: done >= 2 ? 1 : 0, y: done >= 2 ? 0 : 14 }}
           transition={SPRING}
         >
-          <span className="grid h-[64px] w-[64px] shrink-0 place-items-center rounded-[16px] text-[28px]" style={{ background: ACC }}>
+          <span className="grid h-[calc(64*var(--s))] w-[calc(64*var(--s))] shrink-0 place-items-center rounded-[calc(16*var(--s))] text-[calc(28*var(--s))]" style={{ background: ACC }}>
             🎬
           </span>
           <div>
-            <p className="font-display text-[15px] font-bold uppercase leading-tight text-white">
+            <p className="font-display text-[calc(15*var(--s))] font-bold uppercase leading-tight text-white">
               Первые <span className="team-pulse-warm">10 роликов</span>
             </p>
-            <p className="mt-1 font-display text-[11px] font-bold uppercase text-white">Смотришь результат — решаешь дальше</p>
+            <p className="mt-1 font-display text-[calc(11*var(--s))] font-bold uppercase text-white">Смотришь результат — решаешь дальше</p>
           </div>
         </motion.div>
         <motion.div
-          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          className="absolute bottom-[calc(26*var(--s))] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: done >= AI_STEPS.length ? 1 : 0, scale: done >= AI_STEPS.length ? 1 : 0.8 }}
@@ -710,13 +710,13 @@ function AiSavings() {
     <Stage>
       <Head title="*Было* ^→ стало^" sub="Считаю ^до старта^, сколько сэкономишь" />
       <Body>
-        <div className="absolute left-[36px] right-[36px] top-[10px] flex flex-col gap-6">
+        <div className="absolute left-[calc(36*var(--s))] right-[calc(36*var(--s))] top-[calc(10*var(--s))] flex flex-col gap-6">
           {rows.map((r, i) => (
             <div key={r.label}>
-              <p className="mb-2 font-display text-[12px] font-bold uppercase text-white">{r.label}</p>
-              <div className="relative h-[34px] rounded-[10px] bg-white/[0.06]">
+              <p className="mb-2 font-display text-[calc(12*var(--s))] font-bold uppercase text-white">{r.label}</p>
+              <div className="relative h-[calc(34*var(--s))] rounded-[calc(10*var(--s))] bg-white/[0.06]">
                 <motion.div
-                  className="absolute inset-y-0 left-0 flex items-center justify-end rounded-[10px] bg-white/[0.16] pr-3 font-display text-[11px] font-bold uppercase text-white"
+                  className="absolute inset-y-0 left-0 flex items-center justify-end rounded-[calc(10*var(--s))] bg-white/[0.16] pr-3 font-display text-[calc(11*var(--s))] font-bold uppercase text-white"
                   initial={{ width: "0%" }}
                   animate={{ width: `${r.was * 100}%` }}
                   transition={{ ...SPRING, delay: 0.12 + i * 0.21 }}
@@ -724,7 +724,7 @@ function AiSavings() {
                   {r.wasT}
                 </motion.div>
                 <motion.div
-                  className="absolute inset-y-0 left-0 flex items-center justify-end whitespace-nowrap rounded-[10px] pr-3 font-display text-[11px] font-bold uppercase text-[#0b0b10]"
+                  className="absolute inset-y-0 left-0 flex items-center justify-end whitespace-nowrap rounded-[calc(10*var(--s))] pr-3 font-display text-[calc(11*var(--s))] font-bold uppercase text-[#0b0b10]"
                   style={{ background: ACC, boxShadow: "0 0 22px rgba(var(--tp-from-rgb),.5)" }}
                   initial={{ width: "0%", opacity: 0 }}
                   animate={{ width: `${r.now * 100}%`, opacity: 1 }}
@@ -737,7 +737,7 @@ function AiSavings() {
           ))}
         </div>
         <motion.div
-          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          className="absolute bottom-[calc(26*var(--s))] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -757,7 +757,7 @@ function AiPrompts() {
       <Head title="*Без своих* ^промптов^" sub="Ты говоришь задачу — ^дальше моя работа^" />
       <Body>
         <motion.div
-          className="absolute left-[30px] top-[6px] max-w-[250px] rounded-[18px] rounded-bl-md px-4 py-3 text-[15px] font-bold leading-snug text-white"
+          className="absolute left-[calc(30*var(--s))] top-[calc(6*var(--s))] max-w-[calc(250*var(--s))] rounded-[calc(18*var(--s))] rounded-bl-md px-4 py-3 text-[calc(15*var(--s))] font-bold leading-snug text-white"
           style={{ background: "linear-gradient(90deg, rgba(var(--tp-from-rgb),.45), rgba(var(--tp-to-rgb),.35))" }}
           initial={{ opacity: 0, y: 12, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -768,17 +768,17 @@ function AiPrompts() {
         <motion.img
           src={TEAM.egor.photo}
           alt=""
-          className="absolute left-[208px] top-[112px] h-[64px] w-[64px] rounded-full object-cover"
+          className="absolute left-[calc(208*var(--s))] top-[calc(112*var(--s))] h-[calc(64*var(--s))] w-[calc(64*var(--s))] rounded-full object-cover"
           style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 30px rgba(var(--tp-from-rgb),.55)" }}
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ ...SPRING, delay: 0.6 }}
         />
-        <div className="absolute inset-x-0 top-[200px] flex justify-center gap-2.5">
+        <div className="absolute inset-x-0 top-[calc(200*var(--s))] flex justify-center gap-2.5">
           {tools.map((t, i) => (
             <motion.span
               key={t}
-              className="rounded-full bg-white/[0.08] px-3.5 py-2 font-display text-[11px] font-bold uppercase text-white ring-1 ring-white/15"
+              className="rounded-full bg-white/[0.08] px-3.5 py-2 font-display text-[calc(11*var(--s))] font-bold uppercase text-white ring-1 ring-white/15"
               initial={{ opacity: 0, y: -14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...SPRING, delay: 1.02 + i * 0.15 }}
@@ -787,11 +787,11 @@ function AiPrompts() {
             </motion.span>
           ))}
         </div>
-        <div className="absolute inset-x-0 bottom-[22px] flex justify-center gap-3">
+        <div className="absolute inset-x-0 bottom-[calc(22*var(--s))] flex justify-center gap-3">
           {[0, 1, 2, 3].map((k) => (
             <motion.span
               key={k}
-              className="grid h-[82px] w-[52px] place-items-center rounded-[12px] text-[20px]"
+              className="grid h-[calc(82*var(--s))] w-[calc(52*var(--s))] place-items-center rounded-[calc(12*var(--s))] text-[calc(20*var(--s))]"
               style={{ background: ACC, boxShadow: "0 0 20px rgba(var(--tp-from-rgb),.45)" }}
               initial={{ opacity: 0, y: 20, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -832,7 +832,7 @@ function AiCrew() {
           </defs>
         </svg>
         <motion.div
-          className="absolute left-[165px] top-[108px] grid h-[76px] w-[150px] place-items-center rounded-[18px] text-center font-display text-[14px] font-bold uppercase leading-tight text-[#0b0b10]"
+          className="absolute left-[calc(165*var(--s))] top-[calc(108*var(--s))] grid h-[calc(76*var(--s))] w-[calc(150*var(--s))] place-items-center rounded-[calc(18*var(--s))] text-center font-display text-[calc(14*var(--s))] font-bold uppercase leading-tight text-[#0b0b10]"
           style={{ background: ACC, boxShadow: "0 0 40px rgba(var(--tp-from-rgb),.55)" }}
           initial={{ scale: 0.6, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -843,15 +843,15 @@ function AiCrew() {
         {crew.map((c, i) => (
           <motion.div
             key={c.m.id}
-            className="absolute flex w-[120px] flex-col items-center"
+            className="absolute flex w-[calc(120*var(--s))] flex-col items-center"
             style={{ x: "-50%", left: c.x, top: c.y }}
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ ...SPRING, delay: 0.24 + i * 0.24 }}
           >
-            <img src={c.m.photo} alt="" className="h-[64px] w-[64px] rounded-full object-cover" style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 24px rgba(var(--tp-from-rgb),.5)" }} />
-            <span className="mt-2 font-display text-[12px] font-bold uppercase text-white">{c.m.name}</span>
-            <span className="team-pulse-warm whitespace-nowrap font-display text-[10px] font-bold uppercase">{c.role}</span>
+            <img src={c.m.photo} alt="" className="h-[calc(64*var(--s))] w-[calc(64*var(--s))] rounded-full object-cover" style={{ boxShadow: "0 0 0 3px #0b0b10, 0 0 0 5px var(--sp-from), 0 0 24px rgba(var(--tp-from-rgb),.5)" }} />
+            <span className="mt-2 font-display text-[calc(12*var(--s))] font-bold uppercase text-white">{c.m.name}</span>
+            <span className="team-pulse-warm whitespace-nowrap font-display text-[calc(10*var(--s))] font-bold uppercase">{c.role}</span>
           </motion.div>
         ))}
       </Body>
@@ -882,11 +882,11 @@ function MaxHooks() {
     <Stage>
       <Head title="*Цепляем* ^за 3 секунды^" sub="Три крючка на выбор — ^берём сильный^" />
       <Body>
-        <div className="absolute inset-x-[40px] top-[10px] flex flex-col gap-4">
+        <div className="absolute inset-x-[calc(40*var(--s))] top-[calc(10*var(--s))] flex flex-col gap-4">
           {hooks.map((h, i) => (
             <motion.div
               key={h}
-              className="flex items-center gap-4 rounded-[18px] px-5 py-4"
+              className="flex items-center gap-4 rounded-[calc(18*var(--s))] px-5 py-4"
               initial={{ opacity: 0, x: -24 }}
               animate={{
                 opacity: pick >= 0 && pick !== i ? 0.35 : i < tick + 1 ? 1 : 0,
@@ -896,14 +896,14 @@ function MaxHooks() {
               }}
               transition={SPRING}
             >
-              <span className={`font-display text-[26px] font-bold ${pick === i ? "text-[#0b0b10]" : "team-pulse-acc"}`}>{i + 1}</span>
-              <span className={`font-display text-[15px] font-bold uppercase ${pick === i ? "text-[#0b0b10]" : "text-white"}`}>{h}</span>
-              {pick === i && <span className="ml-auto font-display text-[18px] font-bold text-[#0b0b10]">✓</span>}
+              <span className={`font-display text-[calc(26*var(--s))] font-bold ${pick === i ? "text-[#0b0b10]" : "team-pulse-acc"}`}>{i + 1}</span>
+              <span className={`font-display text-[calc(15*var(--s))] font-bold uppercase ${pick === i ? "text-[#0b0b10]" : "text-white"}`}>{h}</span>
+              {pick === i && <span className="ml-auto font-display text-[calc(18*var(--s))] font-bold text-[#0b0b10]">✓</span>}
             </motion.div>
           ))}
         </div>
         <motion.div
-          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          className="absolute bottom-[calc(26*var(--s))] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: pick >= 0 ? 1 : 0, scale: pick >= 0 ? 1 : 0.8 }}
@@ -927,17 +927,17 @@ function MaxStoryboard() {
     <Stage>
       <Head title="*Раскадровка* ^до съёмки^" sub="Видишь ролик ^кадр за кадром^ заранее" />
       <Body>
-        <div className="absolute inset-x-[30px] top-[20px] grid grid-cols-2 gap-4">
+        <div className="absolute inset-x-[calc(30*var(--s))] top-[calc(20*var(--s))] grid grid-cols-2 gap-4">
           {frames.map((f, i) => (
             <motion.div
               key={f.t}
-              className="relative h-[120px] overflow-hidden rounded-[16px] bg-white/[0.05] shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]"
+              className="relative h-[calc(120*var(--s))] overflow-hidden rounded-[calc(16*var(--s))] bg-white/[0.05] shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]"
               initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ ...SPRING, delay: 0.18 + i * 0.42 }}
             >
               <motion.div
-                className="absolute inset-0 grid place-items-center text-[44px]"
+                className="absolute inset-0 grid place-items-center text-[calc(44*var(--s))]"
                 style={{ background: "linear-gradient(135deg, rgba(var(--tp-from-rgb),.35), rgba(var(--tp-to-rgb),.25))" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -945,8 +945,8 @@ function MaxStoryboard() {
               >
                 {f.e}
               </motion.div>
-              <span className="absolute left-3 top-2 font-display text-[12px] font-bold uppercase text-white">Кадр {i + 1}</span>
-              <span className="absolute bottom-2 left-3 font-display text-[12px] font-bold uppercase text-white">{f.t}</span>
+              <span className="absolute left-3 top-2 font-display text-[calc(12*var(--s))] font-bold uppercase text-white">Кадр {i + 1}</span>
+              <span className="absolute bottom-2 left-3 font-display text-[calc(12*var(--s))] font-bold uppercase text-white">{f.t}</span>
             </motion.div>
           ))}
         </div>
@@ -970,7 +970,7 @@ function MaxConcepts() {
         {cards.map((c, i) => (
           <motion.div
             key={c.t}
-            className="absolute top-[40px] flex h-[200px] w-[140px] flex-col items-center justify-center gap-3 rounded-[20px]"
+            className="absolute top-[calc(40*var(--s))] flex h-[calc(200*var(--s))] w-[calc(140*var(--s))] flex-col items-center justify-center gap-3 rounded-[calc(20*var(--s))]"
             style={{ left: c.x }}
             initial={{ opacity: 0, y: 40, rotate: 0 }}
             animate={{
@@ -982,12 +982,12 @@ function MaxConcepts() {
             }}
             transition={{ ...SPRING, delay: pick >= 0 ? 0 : 0.18 + i * 0.21 }}
           >
-            <span className="text-[44px]">{c.e}</span>
-            <span className={`font-display text-[15px] font-bold uppercase ${pick === i ? "text-[#0b0b10]" : "text-white"}`}>{c.t}</span>
+            <span className="text-[calc(44*var(--s))]">{c.e}</span>
+            <span className={`font-display text-[calc(15*var(--s))] font-bold uppercase ${pick === i ? "text-[#0b0b10]" : "text-white"}`}>{c.t}</span>
           </motion.div>
         ))}
         <motion.div
-          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          className="absolute bottom-[calc(26*var(--s))] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: pick >= 0 ? 1 : 0, scale: pick >= 0 ? 1 : 0.8 }}
@@ -1006,11 +1006,11 @@ function MaxCreative() {
     <Stage>
       <Head title="*Идея* ^важнее бюджета^" sub="Сильный сценарий ^вытягивает любой формат^" />
       <Body>
-        <div className="absolute left-[50px] right-[50px] top-[20px] rounded-[22px] bg-white/[0.05] p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]">
+        <div className="absolute left-[calc(50*var(--s))] right-[calc(50*var(--s))] top-[calc(20*var(--s))] rounded-[calc(22*var(--s))] bg-white/[0.05] p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]">
           {lines.map((l, i) => (
             <motion.p
               key={l}
-              className={`font-display text-[20px] font-bold uppercase leading-tight ${i === 2 ? "team-pulse-acc" : "text-white"}`}
+              className={`font-display text-[calc(20*var(--s))] font-bold uppercase leading-tight ${i === 2 ? "team-pulse-acc" : "text-white"}`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...SPRING, delay: 0.18 + i * 0.36 }}
@@ -1019,7 +1019,7 @@ function MaxCreative() {
             </motion.p>
           ))}
         </div>
-        <div className="absolute inset-x-0 bottom-[30px] flex justify-center gap-6">
+        <div className="absolute inset-x-0 bottom-[calc(30*var(--s))] flex justify-center gap-6">
           {[
             { v: "×3", t: "досмотры" },
             { v: "×2", t: "репосты" },
@@ -1031,8 +1031,8 @@ function MaxCreative() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ ...SPRING, delay: 1.44 + i * 0.24 }}
             >
-              <span className="team-pulse-warm font-display text-[40px] font-bold leading-none">{m.v}</span>
-              <span className="mt-1 font-display text-[12px] font-bold uppercase text-white">{m.t}</span>
+              <span className="team-pulse-warm font-display text-[calc(40*var(--s))] font-bold leading-none">{m.v}</span>
+              <span className="mt-1 font-display text-[calc(12*var(--s))] font-bold uppercase text-white">{m.t}</span>
             </motion.div>
           ))}
         </div>
@@ -1051,48 +1051,48 @@ function DimaPhotoToVideo() {
       <Head title="*Одна фотка* ^→ ролик^" sub="Съёмочный день ^не нужен^" />
       <Body>
         <motion.div
-          className="absolute left-[40px] top-[30px] h-[200px] w-[150px] overflow-hidden rounded-[18px] bg-[#f5f2ec] shadow-[0_20px_40px_rgba(0,0,0,.45)]"
+          className="absolute left-[calc(40*var(--s))] top-[calc(30*var(--s))] h-[calc(200*var(--s))] w-[calc(150*var(--s))] overflow-hidden rounded-[calc(18*var(--s))] bg-[#f5f2ec] shadow-[0_20px_40px_rgba(0,0,0,.45)]"
           animate={{ rotate: phase >= 2 ? -6 : 0, scale: phase >= 2 ? 0.9 : 1 }}
           transition={SPRING}
         >
-          <div className="grid h-full place-items-center text-[64px]">🧴</div>
+          <div className="grid h-full place-items-center text-[calc(64*var(--s))]">🧴</div>
           <motion.i
-            className="absolute inset-x-0 h-[4px]"
+            className="absolute inset-x-0 h-[calc(4*var(--s))]"
             style={{ background: ACC, boxShadow: "0 0 18px rgba(var(--tp-from-rgb),.9)" }}
             initial={{ top: 0, opacity: 0 }}
             animate={phase === 1 ? { top: ["0%", "100%"], opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.54, ease: "linear" }}
           />
-          <span className="absolute bottom-2 left-3 font-display text-[11px] font-bold uppercase text-black/70">Фото</span>
+          <span className="absolute bottom-2 left-3 font-display text-[calc(11*var(--s))] font-bold uppercase text-black/70">Фото</span>
         </motion.div>
         <motion.span
-          className="team-pulse-acc absolute left-[212px] top-[112px] font-display text-[40px] font-bold"
+          className="team-pulse-acc absolute left-[calc(212*var(--s))] top-[calc(112*var(--s))] font-display text-[calc(40*var(--s))] font-bold"
           animate={{ opacity: phase >= 1 ? 1 : 0.2, x: phase >= 1 ? 6 : 0 }}
           transition={SPRING}
         >
           →
         </motion.span>
         <motion.div
-          className="absolute right-[40px] top-[20px] h-[230px] w-[140px] overflow-hidden rounded-[22px] bg-[#0b0b10] shadow-[inset_0_0_0_2px_rgba(255,255,255,.2),0_20px_40px_rgba(0,0,0,.5)]"
+          className="absolute right-[calc(40*var(--s))] top-[calc(20*var(--s))] h-[calc(230*var(--s))] w-[calc(140*var(--s))] overflow-hidden rounded-[calc(22*var(--s))] bg-[#0b0b10] shadow-[inset_0_0_0_2px_rgba(255,255,255,.2),0_20px_40px_rgba(0,0,0,.5)]"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: phase >= 2 ? 1 : 0, x: phase >= 2 ? 0 : 20 }}
           transition={SPRING}
         >
           <motion.div
-            className="absolute inset-0 grid place-items-center text-[60px]"
+            className="absolute inset-0 grid place-items-center text-[calc(60*var(--s))]"
             style={{ background: "linear-gradient(160deg, rgba(var(--tp-from-rgb),.55), rgba(var(--tp-to-rgb),.55))" }}
             animate={{ scale: phase >= 3 ? [1, 1.12, 1] : 1, rotate: phase >= 3 ? [0, 8, -4, 0] : 0 }}
             transition={{ duration: 1.44, repeat: phase >= 3 ? Infinity : 0 }}
           >
             🧴
           </motion.div>
-          <span className="absolute left-3 top-2 font-display text-[11px] font-bold uppercase text-white">Reels · 9:16</span>
-          <div className="absolute inset-x-3 bottom-3 h-[5px] rounded-full bg-white/20">
+          <span className="absolute left-3 top-2 font-display text-[calc(11*var(--s))] font-bold uppercase text-white">Reels · 9:16</span>
+          <div className="absolute inset-x-3 bottom-3 h-[calc(5*var(--s))] rounded-full bg-white/20">
             <motion.div className="h-full rounded-full bg-white" animate={{ width: phase >= 3 ? "100%" : "0%" }} transition={{ duration: 1.08, ease: "linear" }} />
           </div>
         </motion.div>
         <motion.div
-          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          className="absolute bottom-[calc(26*var(--s))] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: phase >= 4 ? 1 : 0, scale: phase >= 4 ? 1 : 0.8 }}
@@ -1116,7 +1116,7 @@ function DimaFormats() {
       <Head title="*Один ролик* ^→ все площадки^" sub="Нарезаю под каждую ^без пересъёмки^" />
       <Body>
         <motion.div
-          className="absolute left-1/2 top-[6px] flex h-[70px] w-[200px] items-center justify-center gap-2 rounded-[14px] font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          className="absolute left-1/2 top-[calc(6*var(--s))] flex h-[calc(70*var(--s))] w-[calc(200*var(--s))] items-center justify-center gap-2 rounded-[calc(14*var(--s))] font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ x: "-50%", background: ACC, boxShadow: "0 0 30px rgba(var(--tp-from-rgb),.5)" }}
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -1133,11 +1133,11 @@ function DimaFormats() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ ...SPRING, delay: 0.54 + i * 0.36 }}
           >
-            <div className="grid place-items-center rounded-[12px] bg-white/[0.07] text-[22px] shadow-[inset_0_0_0_2px_rgba(var(--tp-to-rgb),.7)]" style={{ width: f.w, height: f.h }}>
+            <div className="grid place-items-center rounded-[calc(12*var(--s))] bg-white/[0.07] text-[calc(22*var(--s))] shadow-[inset_0_0_0_2px_rgba(var(--tp-to-rgb),.7)]" style={{ width: f.w, height: f.h }}>
               ▶
             </div>
-            <span className="mt-2 font-display text-[12px] font-bold uppercase text-white">{f.t}</span>
-            <span className="team-pulse-warm font-display text-[11px] font-bold uppercase">{f.r}</span>
+            <span className="mt-2 font-display text-[calc(12*var(--s))] font-bold uppercase text-white">{f.t}</span>
+            <span className="team-pulse-warm font-display text-[calc(11*var(--s))] font-bold uppercase">{f.r}</span>
           </motion.div>
         ))}
       </Body>
@@ -1154,9 +1154,9 @@ function DimaAvatar() {
     <Stage>
       <Head title="*AI-аватар* ^вместо съёмок^" sub="Говорит за тебя ^на любом языке^" />
       <Body>
-        <div className="absolute left-1/2 top-[6px] -translate-x-1/2">
+        <div className="absolute left-1/2 top-[calc(6*var(--s))] -translate-x-1/2">
           <motion.div
-            className="grid h-[120px] w-[120px] place-items-center rounded-full text-[64px]"
+            className="grid h-[calc(120*var(--s))] w-[calc(120*var(--s))] place-items-center rounded-full text-[calc(64*var(--s))]"
             style={{ background: ACC, boxShadow: "0 0 40px rgba(var(--tp-from-rgb),.55)" }}
             animate={{ scale: [1, 1.04, 1] }}
             transition={{ duration: 0.6, repeat: Infinity }}
@@ -1164,11 +1164,11 @@ function DimaAvatar() {
             🧑‍💼
           </motion.div>
         </div>
-        <div className="absolute left-1/2 top-[140px] flex h-[40px] -translate-x-1/2 items-center gap-[5px]">
+        <div className="absolute left-1/2 top-[calc(140*var(--s))] flex h-[calc(40*var(--s))] -translate-x-1/2 items-center gap-[calc(5*var(--s))]">
           {Array.from({ length: 16 }, (_, k) => (
             <motion.i
               key={k}
-              className="w-[6px] rounded-full"
+              className="w-[calc(6*var(--s))] rounded-full"
               style={{ background: ACC }}
               animate={{ height: [8, 12 + ((k * 7) % 26), 8] }}
               transition={{ duration: 0.36 + (k % 2.4) * 0.09, repeat: Infinity, delay: k * 0.03 }}
@@ -1177,18 +1177,18 @@ function DimaAvatar() {
         </div>
         <motion.p
           key={lang}
-          className="absolute inset-x-[30px] top-[196px] text-center text-[16px] font-bold text-white"
+          className="absolute inset-x-[calc(30*var(--s))] top-[calc(196*var(--s))] text-center text-[calc(16*var(--s))] font-bold text-white"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={SPRING}
         >
           «{lines[lang]}»
         </motion.p>
-        <div className="absolute inset-x-0 bottom-[24px] flex justify-center gap-2.5">
+        <div className="absolute inset-x-0 bottom-[calc(24*var(--s))] flex justify-center gap-2.5">
           {langs.map((l, i) => (
             <motion.span
               key={l}
-              className="rounded-full px-3.5 py-1.5 font-display text-[12px] font-bold"
+              className="rounded-full px-3.5 py-1.5 font-display text-[calc(12*var(--s))] font-bold"
               animate={{
                 background: i === lang ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.08)",
                 color: i === lang ? "#0b0b10" : "#fff",
@@ -1221,11 +1221,11 @@ function DimaModels() {
     <Stage>
       <Head title="*Подбираю модель* ^под задачу^" sub="Не для галочки — ^под твой результат^" />
       <Body>
-        <div className="absolute inset-x-[50px] top-[10px] grid grid-cols-3 gap-3">
+        <div className="absolute inset-x-[calc(50*var(--s))] top-[calc(10*var(--s))] grid grid-cols-3 gap-3">
           {models.map((m, i) => (
             <motion.div
               key={m.t}
-              className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[16px]"
+              className="flex h-[calc(92*var(--s))] flex-col items-center justify-center gap-1.5 rounded-[calc(16*var(--s))]"
               animate={{
                 background: i === cur ? "linear-gradient(135deg, var(--sp-from), var(--sp-to))" : "rgba(255,255,255,0.06)",
                 scale: i === cur ? 1.06 : 1,
@@ -1233,13 +1233,13 @@ function DimaModels() {
               }}
               transition={{ duration: 0.15 }}
             >
-              <span className="text-[30px]">{m.e}</span>
-              <span className={`font-display text-[12px] font-bold uppercase ${i === cur ? "text-[#0b0b10]" : "text-white"}`}>{m.t}</span>
+              <span className="text-[calc(30*var(--s))]">{m.e}</span>
+              <span className={`font-display text-[calc(12*var(--s))] font-bold uppercase ${i === cur ? "text-[#0b0b10]" : "text-white"}`}>{m.t}</span>
             </motion.div>
           ))}
         </div>
         <motion.div
-          className="absolute bottom-[26px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          className="absolute bottom-[calc(26*var(--s))] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: done ? 1 : 0, scale: done ? 1 : 0.8 }}
@@ -1253,7 +1253,7 @@ function DimaModels() {
 }
 
 function ChatDimaFormat({ chosen }: { chosen?: number }) {
-  const frame = (w: number, h: number) => <i className="block rounded-[8px]" style={{ width: w, height: h, background: ACC }} />;
+  const frame = (w: number, h: number) => <i className="block rounded-[calc(8*var(--s))]" style={{ width: w, height: h, background: ACC }} />;
   return (
     <ChatTiles
       chosen={chosen}
@@ -1293,22 +1293,22 @@ function TanyaGrid() {
     <Stage>
       <Head title="*Профиль,* ^который растёт^" sub="Каждый пост — ^в одном стиле и по плану^" />
       <Body>
-        <div className="absolute left-[40px] top-[6px] flex items-center gap-3">
-          <span className="grid h-[52px] w-[52px] place-items-center rounded-full text-[24px]" style={{ background: ACC }}>
+        <div className="absolute left-[calc(40*var(--s))] top-[calc(6*var(--s))] flex items-center gap-3">
+          <span className="grid h-[calc(52*var(--s))] w-[calc(52*var(--s))] place-items-center rounded-full text-[calc(24*var(--s))]" style={{ background: ACC }}>
             ☕
           </span>
           <div>
-            <p className="font-display text-[14px] font-bold uppercase text-white">твой_бренд</p>
-            <p className="font-display text-[12px] font-bold uppercase text-white">
-              <span className="team-pulse-acc text-[16px]">{followers.toLocaleString(numLocale())}</span> подписчиков
+            <p className="font-display text-[calc(14*var(--s))] font-bold uppercase text-white">твой_бренд</p>
+            <p className="font-display text-[calc(12*var(--s))] font-bold uppercase text-white">
+              <span className="team-pulse-acc text-[calc(16*var(--s))]">{followers.toLocaleString(numLocale())}</span> подписчиков
             </p>
           </div>
         </div>
-        <div className="absolute left-[40px] top-[74px] grid grid-cols-3 gap-[6px]">
+        <div className="absolute left-[calc(40*var(--s))] top-[calc(74*var(--s))] grid grid-cols-3 gap-[calc(6*var(--s))]">
           {tiles.map((t, i) => (
             <motion.div
               key={i}
-              className="grid h-[84px] w-[128px] place-items-center rounded-[10px] text-[28px]"
+              className="grid h-[calc(84*var(--s))] w-[calc(128*var(--s))] place-items-center rounded-[calc(10*var(--s))] text-[calc(28*var(--s))]"
               animate={{
                 background: i < filled ? "linear-gradient(135deg, rgba(var(--tp-from-rgb),.55), rgba(var(--tp-to-rgb),.45))" : "rgba(255,255,255,0.05)",
                 scale: i === filled - 1 ? [0.8, 1.06, 1] : 1,
@@ -1332,13 +1332,13 @@ function TanyaReach() {
     <Stage>
       <Head title="*Рилсы,* ^которые смотрят^" sub="Охват растёт ^без покупки подписчиков^" />
       <Body>
-        <div className="absolute left-[60px] top-[10px] h-[260px] w-[150px] overflow-hidden rounded-[22px] shadow-[inset_0_0_0_2px_rgba(255,255,255,.2)]" style={{ background: "linear-gradient(160deg, rgba(var(--tp-from-rgb),.5), rgba(var(--tp-to-rgb),.5))" }}>
-          <div className="grid h-full place-items-center text-[56px]">🎬</div>
-          <span className="absolute bottom-3 left-3 font-display text-[12px] font-bold uppercase text-white">▶ {views.toLocaleString(numLocale())}</span>
+        <div className="absolute left-[calc(60*var(--s))] top-[calc(10*var(--s))] h-[calc(260*var(--s))] w-[calc(150*var(--s))] overflow-hidden rounded-[calc(22*var(--s))] shadow-[inset_0_0_0_2px_rgba(255,255,255,.2)]" style={{ background: "linear-gradient(160deg, rgba(var(--tp-from-rgb),.5), rgba(var(--tp-to-rgb),.5))" }}>
+          <div className="grid h-full place-items-center text-[calc(56*var(--s))]">🎬</div>
+          <span className="absolute bottom-3 left-3 font-display text-[calc(12*var(--s))] font-bold uppercase text-white">▶ {views.toLocaleString(numLocale())}</span>
           {hearts.map((k) => (
             <motion.span
               key={k}
-              className="absolute right-3 text-[20px]"
+              className="absolute right-3 text-[calc(20*var(--s))]"
               initial={{ bottom: 20, opacity: 0 }}
               animate={{ bottom: [20, 240], opacity: [0, 1, 0], x: [0, k % 2 ? -14 : 10, 0] }}
               transition={{ duration: 1.32, repeat: Infinity, delay: k * 0.21 }}
@@ -1347,7 +1347,7 @@ function TanyaReach() {
             </motion.span>
           ))}
         </div>
-        <div className="absolute right-[50px] top-[20px] flex w-[190px] flex-col gap-4">
+        <div className="absolute right-[calc(50*var(--s))] top-[calc(20*var(--s))] flex w-[calc(190*var(--s))] flex-col gap-4">
           {[
             { t: "Просмотры", v: "×5" },
             { t: "Сохранения", v: "×3" },
@@ -1355,13 +1355,13 @@ function TanyaReach() {
           ].map((m, i) => (
             <motion.div
               key={m.t}
-              className="rounded-[16px] bg-white/[0.06] px-4 py-3"
+              className="rounded-[calc(16*var(--s))] bg-white/[0.06] px-4 py-3"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ ...SPRING, delay: 0.48 + i * 0.42 }}
             >
-              <p className="team-pulse-acc font-display text-[28px] font-bold leading-none">{m.v}</p>
-              <p className="mt-1 font-display text-[11px] font-bold uppercase text-white">{m.t}</p>
+              <p className="team-pulse-acc font-display text-[calc(28*var(--s))] font-bold leading-none">{m.v}</p>
+              <p className="mt-1 font-display text-[calc(11*var(--s))] font-bold uppercase text-white">{m.t}</p>
             </motion.div>
           ))}
         </div>
@@ -1387,17 +1387,17 @@ function TanyaPlan() {
     <Stage>
       <Head title="*Контент-план* ^на месяц^" sub="Знаешь заранее, ^что и когда выйдет^" />
       <Body>
-        <div className="absolute inset-x-[22px] top-[10px] grid grid-cols-7 gap-[6px]">
+        <div className="absolute inset-x-[calc(22*var(--s))] top-[calc(10*var(--s))] grid grid-cols-7 gap-[calc(6*var(--s))]">
           {days.map((d) => (
-            <div key={d} className="flex h-[180px] flex-col items-center rounded-[12px] bg-white/[0.05] pt-2 ring-1 ring-white/10">
-              <span className="font-display text-[12px] font-bold uppercase text-white">{d}</span>
+            <div key={d} className="flex h-[calc(180*var(--s))] flex-col items-center rounded-[calc(12*var(--s))] bg-white/[0.05] pt-2 ring-1 ring-white/10">
+              <span className="font-display text-[calc(12*var(--s))] font-bold uppercase text-white">{d}</span>
             </div>
           ))}
         </div>
         {posts.map((p, i) => (
           <motion.span
             key={i}
-            className="absolute grid h-[44px] place-items-center rounded-[12px] text-[20px] font-bold text-[#0b0b10]"
+            className="absolute grid h-[calc(44*var(--s))] place-items-center rounded-[calc(12*var(--s))] text-[calc(20*var(--s))] font-bold text-[#0b0b10]"
             style={{ left: 22 + p.d * (col + 6) + 4, width: col - 8, background: ACC, boxShadow: "0 0 16px rgba(var(--tp-from-rgb),.45)" }}
             initial={{ top: -40, opacity: 0 }}
             animate={{ top: 50 + (i % 2) * 60, opacity: 1 }}
@@ -1406,16 +1406,16 @@ function TanyaPlan() {
             {kinds[p.k].i}
           </motion.span>
         ))}
-        <div className="absolute inset-x-0 top-[204px] flex justify-center gap-4">
+        <div className="absolute inset-x-0 top-[calc(204*var(--s))] flex justify-center gap-4">
           {Object.values(kinds).map((k) => (
-            <span key={k.t} className="flex items-center gap-1.5 font-display text-[11px] font-bold uppercase text-white">
-              <span className="team-pulse-acc text-[14px]">{k.i}</span>
+            <span key={k.t} className="flex items-center gap-1.5 font-display text-[calc(11*var(--s))] font-bold uppercase text-white">
+              <span className="team-pulse-acc text-[calc(14*var(--s))]">{k.i}</span>
               {k.t}
             </span>
           ))}
         </div>
         <motion.div
-          className="absolute bottom-[28px] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[13px] font-bold uppercase text-[#0b0b10]"
+          className="absolute bottom-[calc(28*var(--s))] left-1/2 whitespace-nowrap rounded-full px-5 py-2.5 font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]"
           style={{ x: "-50%", background: ACC }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -1438,23 +1438,23 @@ function TanyaReport() {
     <Stage>
       <Head title="*Отчёт* ^каждый месяц^" sub="Видишь в цифрах, ^что сработало^" />
       <Body>
-        <div className="absolute inset-x-[40px] top-[10px] rounded-[20px] bg-white/[0.05] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]">
-          <p className="mb-4 font-display text-[13px] font-bold uppercase text-white">
+        <div className="absolute inset-x-[calc(40*var(--s))] top-[calc(10*var(--s))] rounded-[calc(20*var(--s))] bg-white/[0.05] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14)]">
+          <p className="mb-4 font-display text-[calc(13*var(--s))] font-bold uppercase text-white">
             Отчёт · <span className="team-pulse-warm">сентябрь</span>
           </p>
-          <div className="flex h-[170px] items-end justify-around">
+          <div className="flex h-[calc(170*var(--s))] items-end justify-around">
             {bars.map((b, i) => (
               <div key={b.t} className="flex flex-col items-center">
-                <div className="flex h-[140px] items-end gap-2">
-                  <motion.i className="block w-[26px] rounded-t-[8px] bg-white/20" initial={{ height: 0 }} animate={{ height: b.was * 140 }} transition={{ ...SPRING, delay: 0.18 + i * 0.12 }} />
-                  <motion.i className="block w-[26px] rounded-t-[8px]" style={{ background: ACC, boxShadow: "0 0 18px rgba(var(--tp-from-rgb),.5)" }} initial={{ height: 0 }} animate={{ height: b.now * 140 }} transition={{ ...SPRING, delay: 0.84 + i * 0.21 }} />
+                <div className="flex h-[calc(140*var(--s))] items-end gap-2">
+                  <motion.i className="block w-[calc(26*var(--s))] rounded-t-[calc(8*var(--s))] bg-white/20" initial={{ height: 0 }} animate={{ height: b.was * 140 }} transition={{ ...SPRING, delay: 0.18 + i * 0.12 }} />
+                  <motion.i className="block w-[calc(26*var(--s))] rounded-t-[calc(8*var(--s))]" style={{ background: ACC, boxShadow: "0 0 18px rgba(var(--tp-from-rgb),.5)" }} initial={{ height: 0 }} animate={{ height: b.now * 140 }} transition={{ ...SPRING, delay: 0.84 + i * 0.21 }} />
                 </div>
-                <span className="mt-2 font-display text-[11px] font-bold uppercase text-white">{b.t}</span>
+                <span className="mt-2 font-display text-[calc(11*var(--s))] font-bold uppercase text-white">{b.t}</span>
               </div>
             ))}
           </div>
         </div>
-        <div className="absolute inset-x-0 bottom-[22px] flex justify-center gap-5 font-display text-[11px] font-bold uppercase text-white">
+        <div className="absolute inset-x-0 bottom-[calc(22*var(--s))] flex justify-center gap-5 font-display text-[calc(11*var(--s))] font-bold uppercase text-white">
           <span className="flex items-center gap-2"><i className="h-3 w-3 rounded-sm bg-white/20" /> было</span>
           <span className="flex items-center gap-2"><i className="h-3 w-3 rounded-sm" style={{ background: ACC }} /> стало</span>
         </div>
@@ -1554,7 +1554,7 @@ function Tile({ label, lit, dim, w, children }: { label: string; lit: boolean; d
       transition={SPRING}
     >
       <div
-        className="relative grid h-[104px] w-full place-items-center overflow-hidden rounded-[18px] bg-white/[0.05]"
+        className="relative grid h-[calc(104*var(--s))] w-full place-items-center overflow-hidden rounded-[calc(18*var(--s))] bg-white/[0.05]"
         style={{
           boxShadow: lit
             ? "0 0 0 1.5px rgba(var(--tp-to-rgb),.95), 0 0 34px rgba(var(--tp-from-rgb),.5), 0 20px 40px rgba(0,0,0,.45)"
@@ -1563,7 +1563,7 @@ function Tile({ label, lit, dim, w, children }: { label: string; lit: boolean; d
       >
         {children}
       </div>
-      <span className={`text-center font-display text-[11px] font-bold uppercase leading-tight ${lit ? "team-pulse-acc" : "text-white"}`}>{label}</span>
+      <span className={`text-center font-display text-[calc(11*var(--s))] font-bold uppercase leading-tight ${lit ? "team-pulse-acc" : "text-white"}`}>{label}</span>
     </motion.div>
   );
 }
@@ -1574,13 +1574,13 @@ function useLit(count: number, chosen?: number) {
 }
 
 const Browser = ({ children, w = 96, light = false }: { children?: ReactNode; w?: number; light?: boolean }) => (
-  <div className="overflow-hidden rounded-[9px]" style={{ width: w, background: light ? "#f5f2ec" : "#101118", boxShadow: "0 0 0 1px rgba(255,255,255,.14)" }}>
-    <div className="flex h-[14px] items-center gap-[3px] px-[6px]" style={{ background: light ? "#e7e2d8" : "#1a1c24" }}>
+  <div className="overflow-hidden rounded-[calc(9*var(--s))]" style={{ width: w, background: light ? "#f5f2ec" : "#101118", boxShadow: "0 0 0 1px rgba(255,255,255,.14)" }}>
+    <div className="flex h-[calc(14*var(--s))] items-center gap-[calc(3*var(--s))] px-[calc(6*var(--s))]" style={{ background: light ? "#e7e2d8" : "#1a1c24" }}>
       {[0, 1, 2].map((d) => (
-        <i key={d} className="h-[4px] w-[4px] rounded-full bg-[rgba(127,127,127,.6)]" />
+        <i key={d} className="h-[calc(4*var(--s))] w-[calc(4*var(--s))] rounded-full bg-[rgba(127,127,127,.6)]" />
       ))}
     </div>
-    <div className="p-[7px]">{children}</div>
+    <div className="p-[calc(7*var(--s))]">{children}</div>
   </div>
 );
 
@@ -1592,8 +1592,8 @@ function ChatWhat({ chosen }: { chosen?: number }) {
       label: "Новый сайт",
       art: (
         <Browser>
-          <div className="grid h-[44px] place-items-center rounded-[6px] bg-white/[0.06]">
-            <span className="grid h-7 w-7 place-items-center rounded-full font-display text-[18px] font-bold text-[#0b0b10]" style={{ background: ACC }}>+</span>
+          <div className="grid h-[calc(44*var(--s))] place-items-center rounded-[calc(6*var(--s))] bg-white/[0.06]">
+            <span className="grid h-7 w-7 place-items-center rounded-full font-display text-[calc(18*var(--s))] font-bold text-[#0b0b10]" style={{ background: ACC }}>+</span>
           </div>
         </Browser>
       ),
@@ -1602,9 +1602,9 @@ function ChatWhat({ chosen }: { chosen?: number }) {
       label: "Редизайн",
       art: (
         <div className="flex items-center gap-1.5">
-          <div className="h-[46px] w-[38px] rounded-[7px] bg-white/25" />
-          <span className="font-display text-[16px] font-bold" style={{ color: "var(--sp-to)" }}>→</span>
-          <div className="h-[46px] w-[38px] rounded-[7px]" style={{ background: ACC }} />
+          <div className="h-[calc(46*var(--s))] w-[calc(38*var(--s))] rounded-[calc(7*var(--s))] bg-white/25" />
+          <span className="font-display text-[calc(16*var(--s))] font-bold" style={{ color: "var(--sp-to)" }}>→</span>
+          <div className="h-[calc(46*var(--s))] w-[calc(38*var(--s))] rounded-[calc(7*var(--s))]" style={{ background: ACC }} />
         </div>
       ),
     },
@@ -1612,10 +1612,10 @@ function ChatWhat({ chosen }: { chosen?: number }) {
       label: "Ребрендинг",
       art: (
         <div className="flex flex-col items-center gap-2">
-          <span className="grid h-10 w-10 place-items-center rounded-[12px] font-display text-[17px] font-bold text-[#0b0b10]" style={{ background: ACC }}>У</span>
+          <span className="grid h-10 w-10 place-items-center rounded-[calc(12*var(--s))] font-display text-[calc(17*var(--s))] font-bold text-[#0b0b10]" style={{ background: ACC }}>У</span>
           <span className="flex gap-1">
             {["var(--sp-from)", "var(--sp-to)", "#f5f2ec"].map((c) => (
-              <i key={c} className="h-3 w-5 rounded-[3px]" style={{ background: c }} />
+              <i key={c} className="h-3 w-5 rounded-[calc(3*var(--s))]" style={{ background: c }} />
             ))}
           </span>
         </div>
@@ -1626,8 +1626,8 @@ function ChatWhat({ chosen }: { chosen?: number }) {
       art: (
         <div className="grid grid-cols-2 gap-1.5">
           {[0, 1, 2, 3].map((k) => (
-            <div key={k} className="grid h-[34px] w-[38px] place-items-center rounded-[7px] bg-[#f5f2ec]">
-              <i className="h-4 w-4 rounded-[4px]" style={{ background: ACC }} />
+            <div key={k} className="grid h-[calc(34*var(--s))] w-[calc(38*var(--s))] place-items-center rounded-[calc(7*var(--s))] bg-[#f5f2ec]">
+              <i className="h-4 w-4 rounded-[calc(4*var(--s))]" style={{ background: ACC }} />
             </div>
           ))}
         </div>
@@ -1635,14 +1635,14 @@ function ChatWhat({ chosen }: { chosen?: number }) {
     },
     {
       label: "Пока не знаю",
-      art: <span className="team-pulse-acc font-display text-[44px] font-bold leading-none">?</span>,
+      art: <span className="team-pulse-acc font-display text-[calc(44*var(--s))] font-bold leading-none">?</span>,
     },
   ];
   return (
     <Stage>
       <Head title="Что *собираем*^?^" sub="Выбери вариант — ^покажу, как это будет выглядеть^" />
       <Body>
-        <div className="absolute inset-x-6 top-[10px] flex flex-wrap justify-center gap-x-4 gap-y-5">
+        <div className="absolute inset-x-6 top-[calc(10*var(--s))] flex flex-wrap justify-center gap-x-4 gap-y-5">
           {tiles.map((t, i) => (
             <Tile key={t.label} label={t.label} lit={i === lit} dim={pickedAll && i !== lit} w={128}>
               {t.art}
@@ -1660,34 +1660,34 @@ function ChatRef({ chosen }: { chosen?: number }) {
     <Stage>
       <Head title="Твой ^референс^" sub="Скинь сайт, который нравится, — *я пойму стиль*" />
       <Body>
-        <div className="absolute left-[40px] top-[10px] w-[400px] overflow-hidden rounded-[16px] bg-[#101118] shadow-[0_30px_60px_rgba(0,0,0,.55),0_0_0_1px_rgba(255,255,255,.14)]">
-          <div className="flex h-[30px] items-center gap-[5px] bg-[#1a1c24] px-3">
+        <div className="absolute left-[calc(40*var(--s))] top-[calc(10*var(--s))] w-[calc(400*var(--s))] overflow-hidden rounded-[calc(16*var(--s))] bg-[#101118] shadow-[0_30px_60px_rgba(0,0,0,.55),0_0_0_1px_rgba(255,255,255,.14)]">
+          <div className="flex h-[calc(30*var(--s))] items-center gap-[calc(5*var(--s))] bg-[#1a1c24] px-3">
             <Dots />
-            <span className="ml-3 flex h-[18px] flex-1 items-center rounded-full bg-white/[0.08] px-3 font-display text-[10px] font-bold uppercase text-white">
+            <span className="ml-3 flex h-[calc(18*var(--s))] flex-1 items-center rounded-full bg-white/[0.08] px-3 font-display text-[calc(10*var(--s))] font-bold uppercase text-white">
               {chosen === 0 ? <span className="team-pulse-acc">твой-любимый-сайт.ru</span> : ""}
             </span>
           </div>
-          <div className="relative m-4 grid h-[200px] place-items-center rounded-[14px]" style={{ boxShadow: "inset 0 0 0 2px rgba(var(--tp-to-rgb),.55)", borderRadius: 14 }}>
+          <div className="relative m-4 grid h-[calc(200*var(--s))] place-items-center rounded-[calc(14*var(--s))]" style={{ boxShadow: "inset 0 0 0 2px rgba(var(--tp-to-rgb),.55)", borderRadius: 14 }}>
             {chosen === 1 ? (
               <motion.div className="flex flex-col items-center gap-3" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING}>
-                <span className="team-pulse-acc font-display text-[46px] font-bold leading-none">✦</span>
-                <span className="font-display text-[15px] font-bold uppercase text-white">Алиса подберёт стиль сама</span>
+                <span className="team-pulse-acc font-display text-[calc(46*var(--s))] font-bold leading-none">✦</span>
+                <span className="font-display text-[calc(15*var(--s))] font-bold uppercase text-white">Алиса подберёт стиль сама</span>
               </motion.div>
             ) : (
               <>
-                <span className="font-display text-[14px] font-bold uppercase text-white">Перетащи скрин сюда</span>
+                <span className="font-display text-[calc(14*var(--s))] font-bold uppercase text-white">Перетащи скрин сюда</span>
                 <motion.div
                   key={tick}
-                  className="absolute h-[92px] w-[128px] overflow-hidden rounded-[10px]"
+                  className="absolute h-[calc(92*var(--s))] w-[calc(128*var(--s))] overflow-hidden rounded-[calc(10*var(--s))]"
                   style={{ boxShadow: "0 20px 40px rgba(0,0,0,.5), 0 0 0 1.5px rgba(var(--tp-from-rgb),.8)" }}
                   initial={{ x: 180, y: -120, rotate: 12, opacity: 0 }}
                   animate={{ x: 0, y: 0, rotate: -4, opacity: 1 }}
                   transition={{ ...SPRING, delay: 0.4 }}
                 >
                   <div className="h-full w-full p-2" style={{ background: "#f5f2ec" }}>
-                    <div className="h-[46px] rounded-[6px]" style={{ background: "linear-gradient(160deg, #e3d8c6, #b7a37f)" }} />
-                    <div className="mt-2 h-[6px] w-[70%] rounded-full bg-black/15" />
-                    <div className="mt-1.5 h-[12px] w-[50px] rounded-full bg-[#111]" />
+                    <div className="h-[calc(46*var(--s))] rounded-[calc(6*var(--s))]" style={{ background: "linear-gradient(160deg, #e3d8c6, #b7a37f)" }} />
+                    <div className="mt-2 h-[calc(6*var(--s))] w-[70%] rounded-full bg-black/15" />
+                    <div className="mt-1.5 h-[calc(12*var(--s))] w-[calc(50*var(--s))] rounded-full bg-[#111]" />
                   </div>
                 </motion.div>
               </>
@@ -1717,10 +1717,10 @@ function ChatGoal({ chosen }: { chosen?: number }) {
     {
       label: "Собирать заявки",
       art: (
-        <div className="flex w-[84px] flex-col gap-1.5">
-          <i className="h-[12px] rounded-[4px] bg-white/20" />
-          <i className="h-[12px] rounded-[4px] bg-white/20" />
-          <i className="h-[16px] rounded-full" style={{ background: ACC }} />
+        <div className="flex w-[calc(84*var(--s))] flex-col gap-1.5">
+          <i className="h-[calc(12*var(--s))] rounded-[calc(4*var(--s))] bg-white/20" />
+          <i className="h-[calc(12*var(--s))] rounded-[calc(4*var(--s))] bg-white/20" />
+          <i className="h-[calc(16*var(--s))] rounded-full" style={{ background: ACC }} />
         </div>
       ),
     },
@@ -1728,10 +1728,10 @@ function ChatGoal({ chosen }: { chosen?: number }) {
       label: "Продавать товары",
       art: (
         <div className="flex items-end gap-2">
-          <div className="grid h-[52px] w-[40px] place-items-center rounded-[8px] bg-[#f5f2ec]">
-            <i className="h-5 w-5 rounded-[5px]" style={{ background: ACC }} />
+          <div className="grid h-[calc(52*var(--s))] w-[calc(40*var(--s))] place-items-center rounded-[calc(8*var(--s))] bg-[#f5f2ec]">
+            <i className="h-5 w-5 rounded-[calc(5*var(--s))]" style={{ background: ACC }} />
           </div>
-          <span className="grid h-9 w-9 place-items-center rounded-full font-display text-[16px] font-bold text-[#0b0b10]" style={{ background: ACC }}>
+          <span className="grid h-9 w-9 place-items-center rounded-full font-display text-[calc(16*var(--s))] font-bold text-[#0b0b10]" style={{ background: ACC }}>
             ₽
           </span>
         </div>
@@ -1742,18 +1742,18 @@ function ChatGoal({ chosen }: { chosen?: number }) {
       art: (
         <div className="grid grid-cols-3 gap-1">
           {[0, 1, 2, 3, 4, 5].map((k) => (
-            <i key={k} className="h-[26px] w-[28px] rounded-[5px]" style={{ background: k % 2 ? "rgba(255,255,255,.2)" : ACC }} />
+            <i key={k} className="h-[calc(26*var(--s))] w-[calc(28*var(--s))] rounded-[calc(5*var(--s))]" style={{ background: k % 2 ? "rgba(255,255,255,.2)" : ACC }} />
           ))}
         </div>
       ),
     },
-    { label: "Другое", art: <span className="team-pulse-acc font-display text-[40px] font-bold leading-none">…</span> },
+    { label: "Другое", art: <span className="team-pulse-acc font-display text-[calc(40*var(--s))] font-bold leading-none">…</span> },
   ];
   return (
     <Stage>
       <Head title="Главная ^задача^ *сайта*" sub="От этого зависит ^первый экран^" />
       <Body>
-        <div className="absolute inset-x-10 top-[10px] grid grid-cols-2 gap-x-6 gap-y-5">
+        <div className="absolute inset-x-10 top-[calc(10*var(--s))] grid grid-cols-2 gap-x-6 gap-y-5">
           {tiles.map((t, i) => (
             <Tile key={t.label} label={t.label} lit={i === lit} dim={picked && i !== lit} w={180}>
               {t.art}
@@ -1786,11 +1786,11 @@ function ChatSpeed({
     <Stage>
       <Head title={title} sub={sub} />
       <Body>
-        <div className="absolute inset-x-8 top-[20px] flex flex-col gap-5">
+        <div className="absolute inset-x-8 top-[calc(20*var(--s))] flex flex-col gap-5">
           {rows.map((r, i) => (
             <motion.div
               key={r.label}
-              className="rounded-[16px] bg-white/[0.05] px-5 py-4"
+              className="rounded-[calc(16*var(--s))] bg-white/[0.05] px-5 py-4"
               animate={{ scale: i === lit ? 1.03 : 1, opacity: picked && i !== lit ? 0.35 : 1 }}
               transition={SPRING}
               style={{
@@ -1801,10 +1801,10 @@ function ChatSpeed({
               }}
             >
               <div className="flex items-baseline justify-between">
-                <span className={`font-display text-[15px] font-bold uppercase ${i === lit ? "team-pulse-acc" : "text-white"}`}>{r.label}</span>
-                <span className="font-display text-[11px] font-bold uppercase text-white">{r.time}</span>
+                <span className={`font-display text-[calc(15*var(--s))] font-bold uppercase ${i === lit ? "team-pulse-acc" : "text-white"}`}>{r.label}</span>
+                <span className="font-display text-[calc(11*var(--s))] font-bold uppercase text-white">{r.time}</span>
               </div>
-              <div className="mt-3 h-[10px] overflow-hidden rounded-full bg-white/10">
+              <div className="mt-3 h-[calc(10*var(--s))] overflow-hidden rounded-full bg-white/10">
                 <motion.div className="h-full rounded-full" style={{ background: ACC }} initial={{ width: 0 }} animate={{ width: `${r.fill * 100}%` }} transition={{ duration: 1.2 - i * 0.2, delay: 0.2 + i * 0.15, ease: [0.22, 1, 0.36, 1] }} />
               </div>
             </motion.div>
@@ -1823,7 +1823,7 @@ function ChatTiles({ chosen, title, sub, tiles, w = 128 }: { chosen?: number; ti
     <Stage>
       <Head title={title} sub={sub} />
       <Body>
-        <div className="absolute inset-x-6 top-[10px] flex flex-wrap justify-center gap-x-4 gap-y-5">
+        <div className="absolute inset-x-6 top-[calc(10*var(--s))] flex flex-wrap justify-center gap-x-4 gap-y-5">
           {tiles.map((t, i) => (
             <Tile key={t.label} label={t.label} lit={i === lit} dim={picked && i !== lit} w={w}>
               {t.art}
@@ -1836,7 +1836,7 @@ function ChatTiles({ chosen, title, sub, tiles, w = 128 }: { chosen?: number; ti
 }
 
 const Glyph = ({ children }: { children: ReactNode }) => (
-  <span className="grid h-14 w-14 place-items-center rounded-[16px] font-display text-[24px] font-bold text-[#0b0b10]" style={{ background: ACC }}>
+  <span className="grid h-14 w-14 place-items-center rounded-[calc(16*var(--s))] font-display text-[calc(24*var(--s))] font-bold text-[#0b0b10]" style={{ background: ACC }}>
     {children}
   </span>
 );
@@ -1853,9 +1853,9 @@ function ChatStage({ chosen }: { chosen?: number }) {
         {
           label: "Есть ТЗ",
           art: (
-            <div className="flex w-[70px] flex-col gap-1.5 rounded-[10px] bg-[#f5f2ec] p-2.5">
+            <div className="flex w-[calc(70*var(--s))] flex-col gap-1.5 rounded-[calc(10*var(--s))] bg-[#f5f2ec] p-2.5">
               {[90, 70, 80, 50].map((w, k) => (
-                <i key={k} className="h-[6px] rounded-full bg-black/25" style={{ width: `${w}%` }} />
+                <i key={k} className="h-[calc(6*var(--s))] rounded-full bg-black/25" style={{ width: `${w}%` }} />
               ))}
             </div>
           ),
@@ -1864,7 +1864,7 @@ function ChatStage({ chosen }: { chosen?: number }) {
           label: "Есть сайт, нужно лучше",
           art: (
             <Browser>
-              <div className="h-[34px] rounded-[6px]" style={{ background: ACC }} />
+              <div className="h-[calc(34*var(--s))] rounded-[calc(6*var(--s))]" style={{ background: ACC }} />
             </Browser>
           ),
         },
@@ -1884,7 +1884,7 @@ function ChatApprover({ chosen }: { chosen?: number }) {
       tiles={[
         { label: "Я сам", art: <span className="flex">{dot(0)}</span> },
         { label: "Команда", art: <span className="flex -space-x-3">{[0, 1, 2].map(dot)}</span> },
-        { label: "Пока не знаю", art: <span className="team-pulse-acc font-display text-[44px] font-bold leading-none">?</span> },
+        { label: "Пока не знаю", art: <span className="team-pulse-acc font-display text-[calc(44*var(--s))] font-bold leading-none">?</span> },
       ]}
     />
   );
@@ -1923,7 +1923,7 @@ function ChatAiTask({ chosen }: { chosen?: number }) {
         { label: "Ролики и рилсы", art: <Glyph>▶</Glyph> },
         { label: "AI-аватар", art: <Glyph>☺</Glyph> },
         { label: "Соцсети целиком", art: <Glyph>#</Glyph> },
-        { label: "Пока не знаю", art: <span className="team-pulse-acc font-display text-[44px] font-bold leading-none">?</span> },
+        { label: "Пока не знаю", art: <span className="team-pulse-acc font-display text-[calc(44*var(--s))] font-bold leading-none">?</span> },
       ]}
     />
   );
@@ -1984,19 +1984,19 @@ function ChatBrief({ answers, done, who }: { answers: string[]; done: boolean; w
     <Stage>
       <Head title={done ? `Заявка ^у ${who}^` : "*Бриф* ^собран^"} sub={done ? "Напишу ^в течение дня^ — можно продолжить в мессенджере" : "Выбирай: ^полный бриф^ или *сразу заказ*"} />
       <Body>
-        <div className="absolute left-[50px] top-[6px] w-[380px] rounded-[20px] bg-white/[0.05] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14),0_30px_60px_rgba(0,0,0,.45)]">
+        <div className="absolute left-[calc(50*var(--s))] top-[calc(6*var(--s))] w-[calc(380*var(--s))] rounded-[calc(20*var(--s))] bg-white/[0.05] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,.14),0_30px_60px_rgba(0,0,0,.45)]">
           <div className="flex flex-col gap-2.5">
             {answers.map((a, i) => (
               <motion.div key={a + i} className="flex items-center gap-3" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ ...SPRING, delay: 0.1 + i * 0.12 }}>
-                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full font-display text-[12px] font-bold text-[#0b0b10]" style={{ background: ACC }}>
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full font-display text-[calc(12*var(--s))] font-bold text-[#0b0b10]" style={{ background: ACC }}>
                   ✓
                 </span>
-                <span className="font-display text-[14px] font-bold uppercase text-white">{a}</span>
+                <span className="font-display text-[calc(14*var(--s))] font-bold uppercase text-white">{a}</span>
               </motion.div>
             ))}
           </div>
           {done && (
-            <motion.div className="mt-5 grid h-12 place-items-center rounded-full font-display text-[13px] font-bold uppercase text-[#0b0b10]" style={{ background: ACC }} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING, delay: 0.6 }}>
+            <motion.div className="mt-5 grid h-12 place-items-center rounded-full font-display text-[calc(13*var(--s))] font-bold uppercase text-[#0b0b10]" style={{ background: ACC }} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING, delay: 0.6 }}>
               Отправлено ✓
             </motion.div>
           )}

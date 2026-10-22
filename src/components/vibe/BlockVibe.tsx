@@ -242,16 +242,16 @@ export default function BlockVibe({
       <header className="relative flex items-center gap-4 pl-1">
         <DustyOrb><NanoSphere size={50} from={ORB_FROM} to={ORB_TO} hot pulse={pulse} glow={0.35} /></DustyOrb>
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] uppercase tracking-[0.16em]">
+          <div className="text-[calc(10*var(--s))] uppercase tracking-[0.16em]">
             <span className="vibe-mode__wordmark-vibe">Vibe</span>-блок
           </div>
-          <div className="mt-0.5 truncate text-[15px] uppercase leading-tight">{label}</div>
+          <div className="mt-0.5 truncate text-[calc(15*var(--s))] uppercase leading-tight">{label}</div>
         </div>
       </header>
 
       {step < DONE - 1 && (
         <div className="relative mt-4">
-          <div className="flex items-baseline justify-between text-[10px] uppercase tracking-[0.12em]">
+          <div className="flex items-baseline justify-between text-[calc(10*var(--s))] uppercase tracking-[0.12em]">
             <span>Шаг {shown + 1} из {TOTAL}</span>
             <span className="vibe-mode__iris">{["Сфера", "Задача", "Детали", "Примеры", "Контакт"][shown]}</span>
           </div>
@@ -331,7 +331,7 @@ export default function BlockVibe({
                   ))}
                   {shots.length < MAX_FILES && (
                     <button type="button" onClick={() => fileRef.current?.click()} className="block-vibe__drop">
-                      <span className="text-[18px] leading-none">+</span>
+                      <span className="text-[calc(18*var(--s))] leading-none">+</span>
                       <span>Свой скрин</span>
                     </button>
                   )}
@@ -359,7 +359,7 @@ export default function BlockVibe({
                 <div className="mt-4 flex flex-col gap-2">
                   <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Как к тебе обращаться" autoComplete="name" className="vibe-mode__field block-vibe__field" />
                   <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="Telegram или телефон" autoComplete="tel" className="vibe-mode__field block-vibe__field" />
-                  <div className="mt-1 [&_label]:text-[11px] [&_label]:text-white">
+                  <div className="mt-1 [&_label]:text-[calc(11*var(--s))] [&_label]:text-white">
                     <ConsentCheckbox checked={consent} onChange={setConsent} accent="glow" />
                   </div>
                 </div>
@@ -421,15 +421,15 @@ export default function BlockVibe({
                   {/* eslint-disable-next-line @next/next/no-img-element -- фото команды из public */}
                   <img src={producer.photo} alt={producer.name} />
                   <div className="min-w-0 flex-1">
-                    <div className="text-[13px] uppercase">{producer.name}</div>
-                    <div className="text-[11px]">{producer.role}</div>
+                    <div className="text-[calc(13*var(--s))] uppercase">{producer.name}</div>
+                    <div className="text-[calc(11*var(--s))]">{producer.role}</div>
                   </div>
                   <span className="block-vibe__online">онлайн · ~15 мин</span>
                 </div>
                 {/* Прогресс по странице: собранные блоки ведут к большому
                     вайб-режиму — вся страница под задачу. */}
                 <div className="block-vibe__progress mt-3">
-                  <div className="flex items-baseline justify-between text-[11px] uppercase">
+                  <div className="flex items-baseline justify-between text-[calc(11*var(--s))] uppercase">
                     <span>
                       Собрано {progress.done} из {progress.total} блоков
                     </span>
@@ -459,7 +459,7 @@ export default function BlockVibe({
       {/* Живое превью блока — пока идут вопросы. */}
       {preview && step <= questions.length + 1 && (
         <div className="block-vibe__preview relative mt-3">
-          <div className="text-[9px] uppercase tracking-[0.14em]">Твой блок сейчас</div>
+          <div className="text-[calc(9*var(--s))] uppercase tracking-[0.14em]">Твой блок сейчас</div>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={preview.title}
@@ -467,7 +467,7 @@ export default function BlockVibe({
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -6, filter: "blur(6px)" }}
               transition={{ duration: 0.35 }}
-              className="mt-1 truncate text-[13px] uppercase"
+              className="mt-1 truncate text-[calc(13*var(--s))] uppercase"
             >
               <Accent text={preview.title} />
             </motion.div>

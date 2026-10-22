@@ -136,7 +136,7 @@ function BriefInner({ briefId }: { briefId: AnyBriefId }) {
               <div>
                 {s.saved && (
                   <div className="mb-8 rounded-2xl border border-white/20 bg-white/[0.05] p-4">
-                    <p className="text-[15px] font-semibold text-white">
+                    <p className="text-[calc(15*var(--s))] font-semibold text-white">
                       У вас есть незаконченный бриф — продолжить с шага{" "}
                       {Math.max(1, s.saved && config.steps.findIndex((x) => x.id === s.saved!.stepId) + 1)}?
                     </p>

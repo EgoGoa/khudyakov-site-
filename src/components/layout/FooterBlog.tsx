@@ -108,7 +108,7 @@ export default function FooterBlog() {
     <div className="border-b border-paper/10">
       <Container className="py-14 sm:py-20">
         <StudioNews />
-        <div className="font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-[#c8f169]">
+        <div className="font-display text-[calc(11*var(--s))] font-semibold uppercase tracking-[0.2em] text-[#c8f169]">
           Блог · обновляем каждую неделю
         </div>
         <h2 className="mt-2 font-display text-[1.7rem] font-bold uppercase leading-none tracking-tight text-paper sm:text-4xl">
@@ -148,7 +148,7 @@ export default function FooterBlog() {
                     boxShadow: on ? undefined : `inset 0 0 0 1px ${r.tone}44`,
                   } as CSSProperties
                 }
-                className={`${on ? "spotlight-strip " : ""}relative flex h-[104px] flex-col justify-between overflow-hidden rounded-[22px] p-4 text-left transition-transform duration-300 hover:-translate-y-0.5 sm:h-[116px]`}
+                className={`${on ? "spotlight-strip " : ""}relative flex h-[calc(104*var(--s))] flex-col justify-between overflow-hidden rounded-[calc(22*var(--s))] p-4 text-left transition-transform duration-300 hover:-translate-y-0.5 sm:h-[calc(116*var(--s))]`}
               >
                 <span className="flex items-center justify-between">
                   <Tile k={r.key} tone={r.tone} size={32} />
@@ -156,7 +156,7 @@ export default function FooterBlog() {
                     {count}
                   </b>
                 </span>
-                <span className="font-display text-[11px] font-bold uppercase tracking-wide text-white sm:text-[12px]">
+                <span className="font-display text-[calc(11*var(--s))] font-bold uppercase tracking-wide text-white sm:text-[calc(12*var(--s))]">
                   {r.label}
                 </span>
               </button>
@@ -171,7 +171,7 @@ export default function FooterBlog() {
             return (
               <Row key={p.id} post={p} tone={rubric.tone}>
                 <span
-                  className="hidden w-16 shrink-0 font-display text-[11px] font-semibold uppercase tracking-wider sm:block"
+                  className="hidden w-16 shrink-0 font-display text-[calc(11*var(--s))] font-semibold uppercase tracking-wider sm:block"
                   style={{ color: rubric.tone }}
                 >
                   {date}
@@ -180,11 +180,11 @@ export default function FooterBlog() {
                   <span className="block font-display text-[0.95rem] font-bold leading-snug text-white">
                     {p.title}
                   </span>
-                  <span className="mt-0.5 block text-[13px] font-semibold leading-snug text-white/70 sm:truncate">
+                  <span className="mt-0.5 block text-[calc(13*var(--s))] font-semibold leading-snug text-white/70 sm:truncate">
                     {p.excerpt}
                   </span>
                   <span
-                    className="mt-1 block font-display text-[10.5px] font-semibold uppercase tracking-wider sm:hidden"
+                    className="mt-1 block font-display text-[calc(10.5*var(--s))] font-semibold uppercase tracking-wider sm:hidden"
                     style={{ color: rubric.tone }}
                   >
                     {date}
@@ -192,7 +192,7 @@ export default function FooterBlog() {
                 </span>
                 {metric && (
                   <b
-                    className="hidden shrink-0 rounded-full px-3 py-1 font-display text-[11px] sm:block"
+                    className="hidden shrink-0 rounded-full px-3 py-1 font-display text-[calc(11*var(--s))] sm:block"
                     style={{ background: `${rubric.tone}26`, color: rubric.tone }}
                   >
                     {metric.value}

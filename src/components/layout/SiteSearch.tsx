@@ -57,7 +57,7 @@ const KEY_IDS = new Set(["price", "lead"]);
 
 const grad = (c: { from: string; to: string }, a = "") => `linear-gradient(90deg, ${c.from}${a}, ${c.to}${a})`;
 
-export function SearchGlyph({ className = "h-[18px] w-[18px]" }: { className?: string }) {
+export function SearchGlyph({ className = "h-[calc(18*var(--s))] w-[calc(18*var(--s))]" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" className={className}>
       <circle cx="11" cy="11" r="6.5" />
@@ -67,9 +67,9 @@ export function SearchGlyph({ className = "h-[18px] w-[18px]" }: { className?: s
 }
 
 function EntryIcon({ icon }: { icon: SearchEntry["icon"] }) {
-  if (icon === "telegram") return <TelegramIcon className="h-[18px] w-[18px]" />;
-  if (icon === "whatsapp") return <WhatsAppIcon className="h-[18px] w-[18px]" />;
-  if (icon === "phone") return <PhoneIcon className="h-[18px] w-[18px]" />;
+  if (icon === "telegram") return <TelegramIcon className="h-[calc(18*var(--s))] w-[calc(18*var(--s))]" />;
+  if (icon === "whatsapp") return <WhatsAppIcon className="h-[calc(18*var(--s))] w-[calc(18*var(--s))]" />;
+  if (icon === "phone") return <PhoneIcon className="h-[calc(18*var(--s))] w-[calc(18*var(--s))]" />;
   return <SectionIcon name={icon} size={20} />;
 }
 
@@ -255,13 +255,13 @@ export default function SiteSearch() {
             <EntryIcon icon={e.icon} />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="flex min-w-0 items-center gap-2 text-[15px] font-bold leading-snug text-paper">
+            <span className="flex min-w-0 items-center gap-2 text-[calc(15*var(--s))] font-bold leading-snug text-paper">
               <span className="truncate"><Title text={e.title} query={q} /></span>
               {KEY_IDS.has(e.id) && <span aria-hidden="true" className="ss-key-dot" />}
             </span>
-            <span className="block truncate text-[12.5px] font-semibold leading-snug text-paper/70">{e.sub}</span>
+            <span className="block truncate text-[calc(12.5*var(--s))] font-semibold leading-snug text-paper/70">{e.sub}</span>
           </span>
-          <span aria-hidden="true" className="ss-row__go shrink-0 pr-1 text-[15px] font-bold">
+          <span aria-hidden="true" className="ss-row__go shrink-0 pr-1 text-[calc(15*var(--s))] font-bold">
             {external ? "↗" : "›"}
           </span>
         </button>
@@ -278,10 +278,10 @@ export default function SiteSearch() {
         <div className="flex items-center justify-between gap-3 px-4 pt-3.5 lg:px-5 lg:pt-4">
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot" />
-            <span className="whitespace-nowrap font-display text-[17px] uppercase leading-none tracking-tight text-paper">
+            <span className="whitespace-nowrap font-display text-[calc(17*var(--s))] uppercase leading-none tracking-tight text-paper">
               HUD<LiveBrandWord>.SERVICE</LiveBrandWord>
             </span>
-            <span className="ss-kicker whitespace-nowrap font-display text-[10px] uppercase leading-none tracking-[0.12em]">поиск</span>
+            <span className="ss-kicker whitespace-nowrap font-display text-[calc(10*var(--s))] uppercase leading-none tracking-[0.12em]">поиск</span>
           </div>
           <button
             type="button"
@@ -294,7 +294,7 @@ export default function SiteSearch() {
         </div>
         <div className="px-3.5 pt-3 lg:px-4">
           <label className="ss-field flex h-12 items-center gap-2.5 rounded-full pl-4 pr-1.5">
-            <SearchGlyph className="h-[18px] w-[18px] shrink-0 text-[#5eead4]" />
+            <SearchGlyph className="h-[calc(18*var(--s))] w-[calc(18*var(--s))] shrink-0 text-[#5eead4]" />
             <input
               ref={inputRef}
               type="search"
@@ -313,7 +313,7 @@ export default function SiteSearch() {
                 setQuery(ev.target.value);
                 setActive(0);
               }}
-              className="site-search__input h-full min-w-0 flex-1 bg-transparent text-[16px] font-semibold text-paper placeholder:text-paper/40 focus:outline-none"
+              className="site-search__input h-full min-w-0 flex-1 bg-transparent text-[calc(16*var(--s))] font-semibold text-paper placeholder:text-paper/40 focus:outline-none"
             />
             {query && (
               <button
@@ -322,12 +322,12 @@ export default function SiteSearch() {
                   setQuery("");
                   inputRef.current?.focus();
                 }}
-                className="shrink-0 px-2 text-[12px] font-semibold text-paper/50 hover:text-paper"
+                className="shrink-0 px-2 text-[calc(12*var(--s))] font-semibold text-paper/50 hover:text-paper"
               >
                 Стереть
               </button>
             )}
-            <kbd className="mr-2 hidden shrink-0 rounded-md border border-white/15 px-1.5 py-0.5 font-sans text-[11px] text-paper/60 lg:block">Esc</kbd>
+            <kbd className="mr-2 hidden shrink-0 rounded-md border border-white/15 px-1.5 py-0.5 font-sans text-[calc(11*var(--s))] text-paper/60 lg:block">Esc</kbd>
           </label>
         </div>
 
@@ -349,11 +349,11 @@ export default function SiteSearch() {
                 }}
                 aria-pressed={on}
                 style={{ "--ss-from": col.from, "--ss-to": col.to } as React.CSSProperties}
-                className="ss-chip inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 font-display text-[10.5px] uppercase leading-none tracking-[0.04em] text-paper"
+                className="ss-chip inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 font-display text-[calc(10.5*var(--s))] uppercase leading-none tracking-[0.04em] text-paper"
               >
                 <span aria-hidden="true" className="ss-chip__dot" />
                 {c === "all" ? "Все" : GROUP_LABEL[c]}
-                {q ? <span className="font-sans text-[11px] font-bold opacity-70">{count}</span> : null}
+                {q ? <span className="font-sans text-[calc(11*var(--s))] font-bold opacity-70">{count}</span> : null}
               </button>
             );
           })}
@@ -363,7 +363,7 @@ export default function SiteSearch() {
           {sections.map((s, si) => (
             <div key={`${s.title}-${si}`} className="mt-2 first:mt-1">
               {s.title && (
-                <div className="ss-section flex items-center gap-2 px-2 pb-1.5 pt-1.5 font-display text-[10.5px] uppercase leading-none tracking-[0.1em] text-paper/90">
+                <div className="ss-section flex items-center gap-2 px-2 pb-1.5 pt-1.5 font-display text-[calc(10.5*var(--s))] uppercase leading-none tracking-[0.1em] text-paper/90">
                   {s.title}
                 </div>
               )}

@@ -25,20 +25,20 @@ function CopyGhost({ data, step, showTitle }: { data: Spotlight; step: number; s
   const stat = data.stats[step % Math.max(1, data.stats.length)];
   return (
     <div aria-hidden="true" className="invisible flex min-w-0 flex-col justify-center [grid-area:1/1]">
-      {showTitle && <h3 className="font-display text-[15px] uppercase leading-tight tracking-tight sm:text-lg">{data.title}</h3>}
+      {showTitle && <h3 className="font-display text-[calc(15*var(--s))] uppercase leading-tight tracking-tight sm:text-lg">{data.title}</h3>}
       {data.tagline && (
-        <p className={`${showTitle ? "mt-1" : ""} font-display text-[11px] uppercase leading-snug tracking-[0.05em] sm:text-sm`}>{data.tagline}</p>
+        <p className={`${showTitle ? "mt-1" : ""} font-display text-[calc(11*var(--s))] uppercase leading-snug tracking-[0.05em] sm:text-sm`}>{data.tagline}</p>
       )}
       <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <span className="h-fit shrink-0 whitespace-nowrap rounded-full border px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-[0.14em]">{benefit.label}</span>
-        <span className="font-display text-[13px] font-bold uppercase leading-tight tracking-tight sm:text-[17px]">{benefit.punch}</span>
+        <span className="h-fit shrink-0 whitespace-nowrap rounded-full border px-2.5 py-1 font-display text-[calc(9*var(--s))] font-bold uppercase tracking-[0.14em]">{benefit.label}</span>
+        <span className="font-display text-[calc(13*var(--s))] font-bold uppercase leading-tight tracking-tight sm:text-[calc(17*var(--s))]">{benefit.punch}</span>
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t pb-0.5 pt-3">
         <div className="h-1.5" style={{ width: 26 + (data.benefits.length - 1) * 16 }} />
         {stat && (
           <span className="inline-flex min-w-0 flex-1 items-baseline gap-1.5">
             <span className="shrink-0 whitespace-nowrap font-display text-sm uppercase">{stat.value}</span>
-            <span className="min-w-0 font-display text-[9px] uppercase leading-[1.15] tracking-[0.1em]">{stat.label}</span>
+            <span className="min-w-0 font-display text-[calc(9*var(--s))] uppercase leading-[1.15] tracking-[0.1em]">{stat.label}</span>
           </span>
         )}
       </div>
@@ -95,7 +95,7 @@ export default function SpotlightCopy({
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           {showTitle && (
-            <h3 className={`font-display text-[15px] uppercase leading-tight tracking-tight text-white ${large ? "sm:text-2xl" : "sm:text-lg"}`}>
+            <h3 className={`font-display text-[calc(15*var(--s))] uppercase leading-tight tracking-tight text-white ${large ? "sm:text-2xl" : "sm:text-lg"}`}>
               {data.title}
             </h3>
           )}
@@ -109,7 +109,7 @@ export default function SpotlightCopy({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: reduced ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className={`spotlight-accent spotlight-sheen ${showTitle ? "mt-1" : ""} font-display text-[11px] uppercase leading-snug tracking-[0.05em] ${large ? "sm:text-base" : "sm:text-sm"}`}
+                className={`spotlight-accent spotlight-sheen ${showTitle ? "mt-1" : ""} font-display text-[calc(11*var(--s))] uppercase leading-snug tracking-[0.05em] ${large ? "sm:text-base" : "sm:text-sm"}`}
               >
                 {data.tagline}
               </motion.p>
@@ -153,7 +153,7 @@ export default function SpotlightCopy({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: reduced ? 0 : 0.35 }}
-                className={`h-fit shrink-0 whitespace-nowrap rounded-full border border-white/20 bg-white/[0.06] px-2.5 py-1 font-display font-bold uppercase tracking-[0.14em] text-white ${large ? "text-[9px] sm:text-[11px]" : "text-[9px]"}`}
+                className={`h-fit shrink-0 whitespace-nowrap rounded-full border border-white/20 bg-white/[0.06] px-2.5 py-1 font-display font-bold uppercase tracking-[0.14em] text-white ${large ? "text-[calc(9*var(--s))] sm:text-[calc(11*var(--s))]" : "text-[calc(9*var(--s))]"}`}
               >
                 {benefit.label}
               </motion.span>
@@ -169,7 +169,7 @@ export default function SpotlightCopy({
                 animate={{ opacity: 1, filter: "blur(0px)" }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: reduced ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className={`spotlight-accent spotlight-sheen font-display text-[13px] font-bold uppercase leading-tight tracking-tight ${large ? "sm:text-[24px]" : "sm:text-[17px]"}`}
+                className={`spotlight-accent spotlight-sheen font-display text-[calc(13*var(--s))] font-bold uppercase leading-tight tracking-tight ${large ? "sm:text-[calc(24*var(--s))]" : "sm:text-[calc(17*var(--s))]"}`}
               >
                 {benefit.punch}
               </motion.span>
@@ -235,7 +235,7 @@ export default function SpotlightCopy({
                 <span // Слова не рвутся посередине (overflowWrap: normal): «автоматизаци-и»
                 // на границе колонки Егор назвал неприемлемым. Колонка
                 // достаточно широка, чтобы длинное слово целиком поместилось.
-                className={`min-w-0 font-display uppercase leading-[1.15] tracking-[0.1em] ${large ? "text-[9px] text-white sm:text-[11px]" : "text-[9px] text-white/55"}`}
+                className={`min-w-0 font-display uppercase leading-[1.15] tracking-[0.1em] ${large ? "text-[calc(9*var(--s))] text-white sm:text-[calc(11*var(--s))]" : "text-[calc(9*var(--s))] text-white/55"}`}
                 style={{ overflowWrap: "normal", wordBreak: "normal", hyphens: "none" }}>
                   {stat.label}
                 </span>

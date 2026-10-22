@@ -142,7 +142,7 @@ export default function TeamPulseWindow({
             role="dialog"
             aria-modal="true"
             aria-label={`${data.member.name}: ${data.windowCta}`}
-            className="win-shell relative outline-none h-[min(640px,calc(100dvh-6.5rem))] w-full max-w-[1200px] sm:h-[min(580px,calc(100dvh-9rem))]"
+            className="win-shell relative outline-none h-[min(640px,calc(100dvh-6.5rem))] w-full max-w-[calc(1200*var(--s))] sm:h-[min(580px,calc(100dvh-9rem))]"
             style={{ ...accentVars(data.accent), willChange: "transform, opacity" }}
             // Общая анимация окон сайта (WIN, lib/motion).
             initial={reduced ? false : WIN.initial}
@@ -153,10 +153,10 @@ export default function TeamPulseWindow({
           >
             <div className="spotlight-tab-wrap">
               <button type="button" className="spotlight-tab spotlight-tab--mini" onClick={() => setChat((c) => !c)}>
-                <span className="font-display text-[8px] uppercase tracking-[0.1em] sm:text-[9px]">
+                <span className="font-display text-[calc(8*var(--s))] uppercase tracking-[0.1em] sm:text-[calc(9*var(--s))]">
                   {chat ? "Назад к рассказу" : data.windowCta}
                 </span>
-                <span className="text-[10px] leading-none opacity-80">{chat ? "←" : "→"}</span>
+                <span className="text-[calc(10*var(--s))] leading-none opacity-80">{chat ? "←" : "→"}</span>
               </button>
             </div>
 
@@ -175,8 +175,8 @@ export default function TeamPulseWindow({
                 overflow-hidden, и собственную тень она бы обрезала. Пульс —
                 это прозрачность слоя, а не анимация box-shadow: так дыхание
                 идёт на композиторе и не перерисовывает видео под окном. */}
-            <span aria-hidden="true" className="team-pulse-halo pointer-events-none absolute inset-0 rounded-[28px] sm:rounded-[32px]" />
-            <div className="glass-panel deck-neon-pulse !absolute inset-0 overflow-hidden rounded-[28px] sm:rounded-[32px]">
+            <span aria-hidden="true" className="team-pulse-halo pointer-events-none absolute inset-0 rounded-[calc(28*var(--s))] sm:rounded-[calc(32*var(--s))]" />
+            <div className="glass-panel deck-neon-pulse !absolute inset-0 overflow-hidden rounded-[calc(28*var(--s))] sm:rounded-[calc(32*var(--s))]">
               <span aria-hidden="true" className="pointer-events-none absolute inset-0">
                 <img src={data.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30 [filter:grayscale(0.2)_contrast(1.05)]" />
                 <span className="absolute inset-0 bg-[linear-gradient(270deg,rgba(10,12,16,0.92)_0%,rgba(10,12,16,0.7)_55%,rgba(10,12,16,0.5)_100%)]" />
@@ -225,8 +225,8 @@ export default function TeamPulseWindow({
                             <Image unoptimized src={data.member.photo} alt={data.member.name} fill sizes="48px" className="object-cover" />
                           </span>
                           <span>
-                            <span className="block font-display text-[14px] uppercase tracking-tight text-white">{data.member.name}</span>
-                            <span className="mt-0.5 flex items-center gap-1.5 font-display text-[10px] uppercase tracking-[0.12em] text-white">
+                            <span className="block font-display text-[calc(14*var(--s))] uppercase tracking-tight text-white">{data.member.name}</span>
+                            <span className="mt-0.5 flex items-center gap-1.5 font-display text-[calc(10*var(--s))] uppercase tracking-[0.12em] text-white">
                               <span className="team-pulse-dot" /> {data.member.role} · <span className="team-pulse-warm">на связи</span>
                             </span>
                           </span>
@@ -244,18 +244,18 @@ export default function TeamPulseWindow({
                             <h3 className="mt-4 font-display text-[1.3rem] uppercase leading-[1.17] tracking-tight text-white sm:mt-6 sm:text-[1.75rem] lg:text-[2.2rem]">
                               {marks(t.title)}
                             </h3>
-                            <p className="mt-2 font-display text-[12px] uppercase tracking-[0.04em] text-white sm:text-[14px]">{marks(t.sub)}</p>
-                            <p className="mt-3 max-w-[40em] font-display text-[12px] uppercase leading-snug tracking-tight text-white sm:mt-4 sm:text-[14px] lg:text-[15px]">
+                            <p className="mt-2 font-display text-[calc(12*var(--s))] uppercase tracking-[0.04em] text-white sm:text-[calc(14*var(--s))]">{marks(t.sub)}</p>
+                            <p className="mt-3 max-w-[40em] font-display text-[calc(12*var(--s))] uppercase leading-snug tracking-tight text-white sm:mt-4 sm:text-[calc(14*var(--s))] lg:text-[calc(15*var(--s))]">
                               {t.desc}
                             </p>
                             <div className="mt-auto pt-3">
                               <div className="flex items-center gap-3">
-                                <span className="rounded-[14px] border border-white/35 px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.14em] text-white">
+                                <span className="rounded-[calc(14*var(--s))] border border-white/35 px-3 py-1.5 font-display text-[calc(10*var(--s))] uppercase tracking-[0.14em] text-white">
                                   {t.chip}
                                 </span>
-                                <span className="font-display text-[16px] uppercase sm:text-[20px]">{marks(t.chipWord)}</span>
+                                <span className="font-display text-[calc(16*var(--s))] uppercase sm:text-[calc(20*var(--s))]">{marks(t.chipWord)}</span>
                               </div>
-                              <p className="mt-2 hidden font-display text-[12px] uppercase leading-snug tracking-tight text-white sm:block sm:text-[13px]">
+                              <p className="mt-2 hidden font-display text-[calc(12*var(--s))] uppercase leading-snug tracking-tight text-white sm:block sm:text-[calc(13*var(--s))]">
                                 {t.chipText}
                               </p>
                             </div>
@@ -275,14 +275,14 @@ export default function TeamPulseWindow({
                           type="button"
                           aria-label={`Тезис ${k + 1}`}
                           onClick={() => setStep(k)}
-                          className={`h-[5px] rounded-full transition-all duration-300 ${k === step ? "team-pulse-bar w-8" : "w-2.5 bg-white/30 hover:bg-white/60"}`}
+                          className={`h-[calc(5*var(--s))] rounded-full transition-all duration-300 ${k === step ? "team-pulse-bar w-8" : "w-2.5 bg-white/30 hover:bg-white/60"}`}
                         />
                       ))}
                     </div>
                     {data.stats.map((s, k) => (
                       <div key={s.label} className={k === 0 ? "" : "hidden md:block"}>
-                        <p className="font-display text-[20px] leading-none text-white sm:text-[26px]">{marks(s.value)}</p>
-                        <p className="mt-1 font-display text-[9px] uppercase tracking-[0.1em] text-white sm:text-[10px]">{s.label}</p>
+                        <p className="font-display text-[calc(20*var(--s))] leading-none text-white sm:text-[calc(26*var(--s))]">{marks(s.value)}</p>
+                        <p className="mt-1 font-display text-[calc(9*var(--s))] uppercase tracking-[0.1em] text-white sm:text-[calc(10*var(--s))]">{s.label}</p>
                       </div>
                     ))}
                     {/* Как связаться — статично внизу окна (Егор, 2026-09-29),

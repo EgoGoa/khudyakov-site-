@@ -163,7 +163,7 @@ export default function ChapterRail({
       // Fixed px rather than an svh fraction on purpose: this spacing is the
       // whole point of the shape, and a viewport-relative height would
       // re-scatter the dots on every other screen size.
-      className="pointer-events-none absolute left-6 top-1/2 z-0 hidden h-[210px] -translate-y-1/2 lg:block xl:left-9"
+      className="pointer-events-none absolute left-6 top-1/2 z-0 hidden h-[calc(210*var(--s))] -translate-y-1/2 lg:block xl:left-9"
       aria-hidden="true"
       style={{ opacity: started ? 1 : 0, transition: "opacity 600ms ease-out" }}
     >
@@ -186,7 +186,7 @@ export default function ChapterRail({
           return (
             <span key={i} className="flex flex-1 items-center justify-center">
               <span
-                className="block h-[5px] w-[5px] rounded-full"
+                className="block h-[calc(5*var(--s))] w-[calc(5*var(--s))] rounded-full"
                 // 0.45, not the segments' old 0.3: a 5px dot has a fraction
                 // of a 45px bar's area, so the same alpha that read as a
                 // present-but-quiet line reads as almost nothing as a dot.
@@ -208,7 +208,7 @@ export default function ChapterRail({
         // stays the same size whether the page has six chapters or eight.
         // Centred on the column's midline (left-1/2) so it sits squarely on
         // the dot it marks.
-        className="absolute left-1/2 h-[10px] w-[10px] -translate-x-1/2 -translate-y-1/2 rounded-full transition-[top,background] duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+        className="absolute left-1/2 h-[calc(10*var(--s))] w-[calc(10*var(--s))] -translate-x-1/2 -translate-y-1/2 rounded-full transition-[top,background] duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
         style={{
           top: `${(activeIndex + 0.5) * slotPct}%`,
           background: `rgb(${coreRgb})`,

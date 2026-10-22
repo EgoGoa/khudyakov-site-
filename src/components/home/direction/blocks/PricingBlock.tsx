@@ -121,7 +121,7 @@ export default function PricingBlock({
               // одинаково.
               <div key={tier.id} className={`relative isolate ${tier.badge ? "pt-9" : ""}`}>
                 {tier.badge ? (
-                  <span style={{ background: BADGE_GRADIENTS[i % BADGE_GRADIENTS.length], boxShadow: `0 0 22px 2px ${BADGE_GLOWS[i % BADGE_GLOWS.length]}` }} className="pointer-events-none absolute left-0 right-0 top-0 z-30 mx-auto w-fit rounded-full px-4 py-1.5 font-display text-[10px] uppercase tracking-[0.16em] text-white">
+                  <span style={{ background: BADGE_GRADIENTS[i % BADGE_GRADIENTS.length], boxShadow: `0 0 22px 2px ${BADGE_GLOWS[i % BADGE_GLOWS.length]}` }} className="pointer-events-none absolute left-0 right-0 top-0 z-30 mx-auto w-fit rounded-full px-4 py-1.5 font-display text-[calc(10*var(--s))] uppercase tracking-[0.16em] text-white">
                     {tier.badge}
                   </span>
                 ) : null}
@@ -139,7 +139,7 @@ export default function PricingBlock({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -6 }}
                       transition={{ duration: 0.35, ease: EASE }}
-                      className="absolute -top-3 left-8 z-10 rounded-full bg-orange px-3 py-1 font-display text-[9px] uppercase tracking-[0.16em] text-white"
+                      className="absolute -top-3 left-8 z-10 rounded-full bg-orange px-3 py-1 font-display text-[calc(9*var(--s))] uppercase tracking-[0.16em] text-white"
                     >
                       Под вашу задачу
                     </motion.span>

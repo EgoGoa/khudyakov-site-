@@ -70,7 +70,7 @@ export default function ServiceDeepDive({ slug }: { slug: string }) {
           setStep(0);
           setOpen(true);
         }}
-        className="btn-neon !px-3.5 !py-1.5 !text-[10px]"
+        className="btn-neon !px-3.5 !py-1.5 !text-[calc(10*var(--s))]"
       >
         Почему это работает — {steps} сцен
       </button>

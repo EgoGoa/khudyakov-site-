@@ -59,7 +59,7 @@ export default function HeroDeepInline({ slug }: { slug: string }) {
             className="min-w-0"
           >
             {benefit.label.toLowerCase() !== benefit.punch.toLowerCase() && (
-              <span className="block font-display text-[9px] uppercase tracking-[0.14em] text-white">{benefit.label}</span>
+              <span className="block font-display text-[calc(9*var(--s))] uppercase tracking-[0.14em] text-white">{benefit.label}</span>
             )}
             <span className="spotlight-accent spotlight-sheen block font-display text-sm uppercase leading-tight tracking-tight">
               {benefit.punch}

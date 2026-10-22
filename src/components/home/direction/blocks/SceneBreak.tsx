@@ -156,7 +156,7 @@ export default function SceneBreak({
               </Appear>
 
               <Appear from="up" delay={DIRECTION_BEAT.content}>
-                <p className="mt-4 max-w-[34em] font-display text-[13px] leading-snug tracking-tight text-white/65 sm:text-sm">
+                <p className="mt-4 max-w-[34em] font-display text-[calc(13*var(--s))] leading-snug tracking-tight text-white/65 sm:text-sm">
                   {withAccent(benefit.text, benefit.accent)}
                 </p>
               </Appear>
@@ -167,7 +167,7 @@ export default function SceneBreak({
                 {spec.facts.map((f, i) => (
                   <Appear key={f.label} from="up" delay={DIRECTION_BEAT.content + 0.15 + i * STAGGER.normal}>
                     <div className="relative pl-3">
-                      <span className="absolute left-0 top-0.5 h-[calc(100%-0.25rem)] w-[3px] animate-pulse rounded-full bg-gradient-to-b from-[var(--sp-from)] via-[var(--sp-to)] to-transparent shadow-[0_0_10px_-1px_var(--sp-from)]" />
+                      <span className="absolute left-0 top-0.5 h-[calc(100%-0.25rem)] w-[calc(3*var(--s))] animate-pulse rounded-full bg-gradient-to-b from-[var(--sp-from)] via-[var(--sp-to)] to-transparent shadow-[0_0_10px_-1px_var(--sp-from)]" />
                       {/* Слова не рвутся посередине — то же правило, что у
                           цифр в SpotlightCopy: капслок на узкой колонке
                           обязан переноситься только между словами. Значение
@@ -182,7 +182,7 @@ export default function SceneBreak({
                         {f.value}
                       </div>
                       <div
-                        className="mt-1.5 font-display text-[10px] uppercase leading-snug tracking-[0.06em] text-white sm:text-[11px]"
+                        className="mt-1.5 font-display text-[calc(10*var(--s))] uppercase leading-snug tracking-[0.06em] text-white sm:text-[calc(11*var(--s))]"
                         style={{ overflowWrap: "normal", wordBreak: "normal", hyphens: "none" }}
                       >
                         {f.label}

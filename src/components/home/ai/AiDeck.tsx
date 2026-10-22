@@ -145,7 +145,7 @@ function AiCardFace({
           обрезает размытый слой по прямоугольнику, а не по скруглению
           карточки, и за углом торчал ровный край (Егор, 2026-10-08). */}
       <span
-        className="pointer-events-none absolute -right-16 -top-[72px] h-44 w-44"
+        className="pointer-events-none absolute -right-16 -top-[calc(72*var(--s))] h-44 w-44"
         style={{
           background: hit
             ? "radial-gradient(circle, rgba(255,106,61,0.25) 0%, rgba(255,106,61,0.138) 28%, transparent 62%)"
@@ -206,7 +206,7 @@ const DECK_BEAT_MS = 4200;
 // site's orange: /ai's whole icon set and accent is emerald, and an orange
 // key here read as borrowed from the neighbouring page.
 export const AI_PILL =
-  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-[14px] bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#03120d] shadow-[0_12px_30px_-8px_rgba(16,185,129,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
+  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-[calc(14*var(--s))] bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-7 py-3.5 font-display text-[calc(11*var(--s))] font-medium uppercase tracking-[0.16em] text-[#03120d] shadow-[0_12px_30px_-8px_rgba(16,185,129,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
 
 export const AI_ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-[color,border-color,transform] duration-300 hover:scale-110 hover:border-emerald-300/70 hover:text-emerald-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300";
@@ -302,7 +302,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           один компонент на оба места, чтобы текст и темп не расходились. */}
       {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} compact sizeTo={DECK_COPY} />}
       {!data && (
-        <p className="m-0 self-center font-display text-[13px] font-semibold leading-snug text-paper">
+        <p className="m-0 self-center font-display text-[calc(13*var(--s))] font-semibold leading-snug text-paper">
           Готовим новый AI-инструмент: каркас собран, идёт наполнение. <span className="text-glow">Анонс — скоро.</span>
         </p>
       )}
@@ -310,7 +310,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
   );
 
   return (
-    <div className="w-full max-w-[728px]">
+    <div className="w-full max-w-[calc(728*var(--s))]">
       {/* Paging runs off the pointer drag now (useDeckDrag), so FanFit's
           own swipe handler is left unwired — otherwise one flick paged the
           rail twice. */}
@@ -343,7 +343,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
             emerald glow, well behind every card (z-0). */}
         <span
           aria-hidden="true"
-          className="ai-deck-ambient-glow pointer-events-none absolute left-1/2 top-1/2 z-0 h-[560px] w-[560px] rounded-full"
+          className="ai-deck-ambient-glow pointer-events-none absolute left-1/2 top-1/2 z-0 h-[calc(560*var(--s))] w-[calc(560*var(--s))] rounded-full"
           style={{
             background:
               "radial-gradient(circle, rgba(52,211,153,0.38) 0%, rgba(52,211,153,0.14) 45%, rgba(52,211,153,0) 72%)",
@@ -397,13 +397,13 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                     {card.href && (
                       <span
                         // ~30% smaller than the first pass (px-4 py-2.5
-                        // text-[11px]) — Егор: the pill was outweighing the
+                        // text-[calc(11*var(--s))]) — Егор: the pill was outweighing the
                         // card title above it.
                         // Transparent glass with a lit outline, not a solid
                         // colour plate, and a fifth smaller again — Егор:
                         // кнопка забирала на себя слишком много внимания и
                         // светилась слишком сильно.
-                        className={`deck-open-pill inline-flex items-center gap-1.5 rounded-[14px] px-2.5 py-1 font-display text-[7px] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
+                        className={`deck-open-pill inline-flex items-center gap-1.5 rounded-[calc(14*var(--s))] px-2.5 py-1 font-display text-[calc(7*var(--s))] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
                           isFront ? "" : "deck-open-pill-still"
                         }`}
                         style={{ "--pill-rgb": card.hit ? "255, 138, 92" : "92, 230, 176" } as React.CSSProperties}
@@ -417,7 +417,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
           );
 
           const counter = (
-            <span style={{ opacity: captionOpacity }} className="absolute right-3.5 top-3.5 rounded-full bg-ink/70 px-2.5 py-1 font-display text-[10px] tracking-[0.12em] text-paper/70">
+            <span style={{ opacity: captionOpacity }} className="absolute right-3.5 top-3.5 rounded-full bg-ink/70 px-2.5 py-1 font-display text-[calc(10*var(--s))] tracking-[0.12em] text-paper/70">
               {String(idx + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
           );
@@ -442,7 +442,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
               key={key}
               // Лёгкий веер на телефоне: дальше 1,5 карточки от центра карточка не рисуется (CSS .deck-pose[data-far]).
               data-far={Math.abs(offset) > 1.5 ? "" : undefined}
-              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[348px] w-[265px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
+              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[calc(348*var(--s))] w-[calc(265*var(--s))] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
                 // No transition while the hand holds the rail: the cards
                 // have to sit exactly where the finger is, on the frame it
                 // is there.
@@ -530,7 +530,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   moves/blurs with the card like the glow above it. */}
               {card.hit && (
                 <span
-                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3.5 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3.5 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[calc(8*var(--s))] uppercase tracking-[0.14em] text-white"
                   aria-hidden="true"
                   style={{ opacity: captionOpacity }}
                 >
@@ -541,7 +541,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
 
               {card.soon && (
                 <span
-                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3.5 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3.5 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[calc(8*var(--s))] uppercase tracking-[0.14em] text-white"
                   aria-hidden="true"
                   style={{ opacity: captionOpacity }}
                 >
@@ -571,7 +571,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
               {isFront && card.soon ? (
                 <div
                   aria-current="true"
-                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)]"
+                  className="absolute inset-0 overflow-hidden rounded-[calc(26*var(--s))] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)]"
                 >
                   <SoonCardFace percent={card.soon} accent="16, 185, 129" image={card.image} live={settled === 0 && !live} />
                   {caption}
@@ -581,7 +581,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                 <Link
                   href={card.href ?? "#"}
                   aria-current="true"
-                  className="deck-card-glow deck-neon-pulse absolute inset-0 overflow-hidden rounded-[26px] text-left"
+                  className="deck-card-glow deck-neon-pulse absolute inset-0 overflow-hidden rounded-[calc(26*var(--s))] text-left"
                   style={{ "--card-glow-rgb": card.hit ? "255, 106, 61" : "16, 185, 129" } as React.CSSProperties}
                 >
                   <AiCardFace slug={slugOf(card)} image={card.image} hit={card.hit} step={settled ? sceneStep : 0} />
@@ -616,7 +616,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   onMouseDown={(e) => e.preventDefault()}
                   tabIndex={0}
                   aria-label={`Показать: ${SERVICES[i]?.title ?? card.short}`}
-                  className="absolute inset-0 overflow-hidden rounded-[26px] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] cursor-pointer transition-[box-shadow] duration-[760ms] motion-reduce:transition-none"
+                  className="absolute inset-0 overflow-hidden rounded-[calc(26*var(--s))] text-left shadow-[0_38px_90px_-28px_rgba(0,0,0,0.9)] cursor-pointer transition-[box-shadow] duration-[760ms] motion-reduce:transition-none"
                 >
                   {card.soon ? (
                     <SoonCardFace percent={card.soon} accent="16, 185, 129" image={card.image} live={false} />
@@ -634,7 +634,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                   друг сквозь друга на перекрытии. */}
               <span
                 aria-hidden="true"
-                className={`pointer-events-none absolute inset-0 z-10 rounded-[26px] bg-[#08090e] ${
+                className={`pointer-events-none absolute inset-0 z-10 rounded-[calc(26*var(--s))] bg-[#08090e] ${
                   live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: pose.veil }}
@@ -650,7 +650,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
       {/* The lit track. Ten nodes would crowd at 32px each, so these are bare
           dots with the active one stretched into a capsule — same idea as
           /sites' numbered rail, sized for twice as many items. */}
-      <div className="mx-auto mt-6 flex max-w-[360px] items-center gap-3">
+      <div className="mx-auto mt-6 flex max-w-[calc(360*var(--s))] items-center gap-3">
         <div className="relative flex flex-1 items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
@@ -679,7 +679,7 @@ export default function AiDeck({ panelTarget }: { panelTarget?: HTMLElement | nu
                 boxShadow: on ? "0 0 12px rgba(52,211,153,0.9), 0 0 34px rgba(52,211,153,0.45)" : "none",
               }}
             >
-              <span className="font-display text-[9px] text-emerald-100" style={{ opacity: on ? 1 : 0 }}>
+              <span className="font-display text-[calc(9*var(--s))] text-emerald-100" style={{ opacity: on ? 1 : 0 }}>
                 {String(i + 1).padStart(2, "0")}
               </span>
             </button>

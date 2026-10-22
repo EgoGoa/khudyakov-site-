@@ -85,9 +85,9 @@ export default function OrderMenu({
 
   const canSend = name.trim() && phone.trim() && consent && (kind === "call" || (day && time));
   const item =
-    "flex w-full items-center justify-between gap-3 rounded-2xl bg-white/[0.06] px-4 py-3 text-left font-display text-[13px] uppercase tracking-tight text-white ring-1 ring-white/15 transition hover:bg-white/[0.12] hover:ring-white/35";
+    "flex w-full items-center justify-between gap-3 rounded-2xl bg-white/[0.06] px-4 py-3 text-left font-display text-[calc(13*var(--s))] uppercase tracking-tight text-white ring-1 ring-white/15 transition hover:bg-white/[0.12] hover:ring-white/35";
   const chip = (on: boolean) =>
-    `rounded-[14px] px-3 py-1.5 font-display text-[11px] uppercase tracking-tight ring-1 transition ${
+    `rounded-[calc(14*var(--s))] px-3 py-1.5 font-display text-[calc(11*var(--s))] uppercase tracking-tight ring-1 transition ${
       on ? "bg-white/15 text-white ring-white/60" : "text-white/70 ring-white/15 hover:text-white hover:ring-white/35"
     }`;
 
@@ -100,11 +100,11 @@ export default function OrderMenu({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 6, transition: { duration: 0.15 } }}
           transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-          className={`glass-panel flex min-w-[280px] flex-col gap-2 rounded-[24px] p-4 text-left shadow-[0_24px_60px_-20px_rgba(0,0,0,0.8)] sm:p-5 ${className}`}
+          className={`glass-panel flex min-w-[calc(280*var(--s))] flex-col gap-2 rounded-[calc(24*var(--s))] p-4 text-left shadow-[0_24px_60px_-20px_rgba(0,0,0,0.8)] sm:p-5 ${className}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="mb-1 flex items-center justify-between gap-3">
-            <span className="font-display text-[11px] uppercase tracking-[0.14em] text-white">
+            <span className="font-display text-[calc(11*var(--s))] uppercase tracking-[0.14em] text-white">
               {view === "menu"
                 ? `Как удобнее — ${data.member.name}`
                 : kind === "call"
@@ -142,7 +142,7 @@ export default function OrderMenu({
 
           {(view === "call" || view === "session" || view === "sending") && (
             <>
-              <p className="font-display text-[12px] leading-snug tracking-tight text-white/65">
+              <p className="font-display text-[calc(12*var(--s))] leading-snug tracking-tight text-white/65">
                 {kind === "call"
                   ? `Оставьте имя и номер — ${data.member.name} перезвонит и за 15 минут разберёт задачу.`
                   : "Видеосозвон с командой: придумаем идею и формат вместе. Выберите, когда удобно."}
@@ -175,14 +175,14 @@ export default function OrderMenu({
           )}
 
           {view === "done" && (
-            <p className="font-display text-[13px] uppercase leading-snug tracking-tight text-white">
+            <p className="font-display text-[calc(13*var(--s))] uppercase leading-snug tracking-tight text-white">
               {kind === "call"
                 ? `Готово! ${data.member.name} перезвонит вам в ближайшее время.`
                 : "Готово! Мы свяжемся и подтвердим время креатив-сессии."}
             </p>
           )}
           {view === "error" && (
-            <p className="font-display text-[13px] uppercase leading-snug tracking-tight text-white">
+            <p className="font-display text-[calc(13*var(--s))] uppercase leading-snug tracking-tight text-white">
               Не отправилось. Позвоните нам: <a href="tel:+79925111812" className="team-pulse-warm">+7 992 511-18-12</a>
             </p>
           )}

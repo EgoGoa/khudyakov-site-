@@ -42,7 +42,7 @@ export default function SeoAccordion({
       className="mx-auto mt-5 w-full max-w-4xl rounded-2xl px-4 py-2.5 backdrop-blur-[5px] sm:px-5 [@media(max-height:860px)]:mt-3 [@media(max-height:860px)]:py-1.5"
       style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015))" }}
     >
-      <span className="font-display text-[9px] uppercase tracking-[0.2em] text-paper/45">
+      <span className="font-display text-[calc(9*var(--s))] uppercase tracking-[0.2em] text-paper/45">
         {eyebrow}
       </span>
 
@@ -55,18 +55,18 @@ export default function SeoAccordion({
                 type="button"
                 onClick={() => setOpenIndex(isOpen ? null : i)}
                 aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-4 py-2 text-left [@media(max-height:860px)]:py-1.5 [@media(pointer:coarse)]:min-h-[44px]"
+                className="flex w-full items-center justify-between gap-4 py-2 text-left [@media(max-height:860px)]:py-1.5 [@media(pointer:coarse)]:min-h-[calc(44*var(--s))]"
               >
                 <span className="flex items-baseline gap-2.5">
-                  <span className="font-display text-[9px] text-glow/70">
+                  <span className="font-display text-[calc(9*var(--s))] text-glow/70">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="text-xs font-medium leading-snug text-paper sm:text-[13px]">
+                  <span className="text-xs font-medium leading-snug text-paper sm:text-[calc(13*var(--s))]">
                     {section.title}
                   </span>
                 </span>
                 <span
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-paper/20 text-[11px] leading-none text-paper/60 transition-transform duration-200 ${
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-paper/20 text-[calc(11*var(--s))] leading-none text-paper/60 transition-transform duration-200 ${
                     isOpen ? "rotate-45 border-glow/50 text-glow" : ""
                   }`}
                   aria-hidden="true"
@@ -90,7 +90,7 @@ export default function SeoAccordion({
                 aria-hidden={!isOpen}
               >
                 <div className="overflow-hidden">
-                  <p className="max-w-2xl pb-3 pl-5 text-[11px] leading-relaxed text-paper/60 sm:text-xs">
+                  <p className="max-w-2xl pb-3 pl-5 text-[calc(11*var(--s))] leading-relaxed text-paper/60 sm:text-xs">
                     {section.body}
                   </p>
                 </div>

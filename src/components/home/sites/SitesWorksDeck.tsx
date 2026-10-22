@@ -59,7 +59,7 @@ export default function SitesWorksDeck() {
 
   return (
     <div className="mt-12" onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)}>
-      <span className="inline-block rounded-full border border-white/30 px-3 py-1 font-display text-[10px] uppercase tracking-[0.18em] text-white">
+      <span className="inline-block rounded-full border border-white/30 px-3 py-1 font-display text-[calc(10*var(--s))] uppercase tracking-[0.18em] text-white">
         Референсы
       </span>
       <p className="mt-2 font-display text-[1.9rem] uppercase leading-tight tracking-tight text-white sm:text-3xl">
@@ -98,7 +98,7 @@ export default function SitesWorksDeck() {
                 {/* Размытие — прямо на карточке: общее правило .deck-pose-blur
                     целит в вложенные <a>/<button>, а здесь их нет. */}
                 <div
-                  className="relative h-full w-full overflow-hidden rounded-[16px] bg-black shadow-[0_14px_40px_rgba(0,0,0,0.5)] transition-[filter] duration-500"
+                  className="relative h-full w-full overflow-hidden rounded-[calc(16*var(--s))] bg-black shadow-[0_14px_40px_rgba(0,0,0,0.5)] transition-[filter] duration-500"
                   style={{ filter: blurPx > 0 ? `blur(${blurPx}px)` : undefined }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -131,7 +131,7 @@ export default function SitesWorksDeck() {
           Пример {idx + 1} из {count}
         </span>
       </div>
-      <p className="mt-2 text-[10px] font-semibold leading-snug text-white/50">
+      <p className="mt-2 text-[calc(10*var(--s))] font-semibold leading-snug text-white/50">
         Референсы с Pinterest — работы их авторов, не наши. Такой уровень делаем и для вас.
       </p>
     </div>

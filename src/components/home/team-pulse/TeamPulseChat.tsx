@@ -161,8 +161,8 @@ export default function TeamPulseChat({
           <Image unoptimized src={data.member.photo} alt={data.member.name} fill sizes="40px" className="object-cover" />
         </span>
         <span className="min-w-0">
-          <span className="block font-display text-[13px] uppercase text-white">{data.member.name}</span>
-          <span className="flex items-center gap-1.5 font-display text-[9.5px] uppercase tracking-[0.1em] text-[#30d158]">
+          <span className="block font-display text-[calc(13*var(--s))] uppercase text-white">{data.member.name}</span>
+          <span className="flex items-center gap-1.5 font-display text-[calc(9.5*var(--s))] uppercase tracking-[0.1em] text-[#30d158]">
             <span className="team-pulse-dot" /> {typing ? "печатает…" : "на связи · отвечаю сразу"}
           </span>
         </span>
@@ -184,7 +184,7 @@ export default function TeamPulseChat({
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className={`max-w-[82%] px-3.5 py-2.5 text-[14px] font-semibold leading-snug text-white sm:text-[15px] ${
+              className={`max-w-[82%] px-3.5 py-2.5 text-[calc(14*var(--s))] font-semibold leading-snug text-white sm:text-[calc(15*var(--s))] ${
                 m.from === "me" ? "team-pulse-me self-end rounded-2xl rounded-br-md" : "self-start rounded-2xl rounded-bl-md bg-white/[0.09]"
               }`}
             >
@@ -246,14 +246,14 @@ export default function TeamPulseChat({
         {(phase === "done" || phase === "error") && !typing && (
           <div className="flex flex-wrap gap-1.5">
             {phase === "done" && (
-              <button type="button" onClick={openCabinet} className="team-pulse-send !px-4 !py-2 !text-[12.5px]">
+              <button type="button" onClick={openCabinet} className="team-pulse-send !px-4 !py-2 !text-[calc(12.5*var(--s))]">
                 Заявка в кабинете → открыть
               </button>
             )}
-            <a href={TELEGRAM_URL} target="_blank" rel="noreferrer" className="team-pulse-messenger !py-2 !text-[12.5px]">
+            <a href={TELEGRAM_URL} target="_blank" rel="noreferrer" className="team-pulse-messenger !py-2 !text-[calc(12.5*var(--s))]">
               <TelegramIcon className="h-4 w-4" /> Продолжить в Telegram
             </a>
-            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="team-pulse-messenger !py-2 !text-[12.5px]">
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="team-pulse-messenger !py-2 !text-[calc(12.5*var(--s))]">
               <WhatsAppIcon className="h-4 w-4" /> WhatsApp
             </a>
           </div>
@@ -270,7 +270,7 @@ export default function TeamPulseChat({
         >
           {current?.attach && (
             <>
-              <button type="button" aria-label="Прикрепить референс" onClick={() => file.current?.click()} className="text-[17px] text-white">
+              <button type="button" aria-label="Прикрепить референс" onClick={() => file.current?.click()} className="text-[calc(17*var(--s))] text-white">
                 📎
               </button>
               {/* Сам файл по заявке не уходит — письмо собирается из
@@ -293,7 +293,7 @@ export default function TeamPulseChat({
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Напиши или выбери вариант…"
-            className="min-w-0 flex-1 bg-transparent py-1.5 text-[14px] font-semibold text-white outline-none placeholder:text-white/70"
+            className="min-w-0 flex-1 bg-transparent py-1.5 text-[calc(14*var(--s))] font-semibold text-white outline-none placeholder:text-white/70"
           />
           <button
             type="submit"

@@ -95,7 +95,7 @@ export default function SitesOffer() {
                 href={HREFS[i]}
                 className="flex items-baseline gap-3 py-3 transition-colors hover:bg-white/[0.04]"
               >
-              <span className="font-display text-[10px] text-paper/40">
+              <span className="font-display text-[calc(10*var(--s))] text-paper/40">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <div className="min-w-0">

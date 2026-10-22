@@ -140,7 +140,7 @@ function SideArrow({
         }`}
       >
         <span
-          className="format-nav-pulse font-display text-[10px] uppercase leading-[1.15] tracking-tight land:whitespace-nowrap land:text-[9px]"
+          className="format-nav-pulse font-display text-[calc(10*var(--s))] uppercase leading-[1.15] tracking-tight land:whitespace-nowrap land:text-[calc(9*var(--s))]"
           style={gradientStyle}
         >
           {label}

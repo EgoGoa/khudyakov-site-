@@ -104,7 +104,7 @@ export default function AiPitch() {
               {STATS.map((stat) => (
                 <span key={stat.label} className="inline-flex items-baseline gap-1.5">
                   <span className="font-display text-base uppercase tabular-nums text-paper">{stat.value}</span>
-                  <span className="font-display text-[10px] uppercase tracking-[0.1em] text-paper/45">{stat.label}</span>
+                  <span className="font-display text-[calc(10*var(--s))] uppercase tracking-[0.1em] text-paper/45">{stat.label}</span>
                 </span>
               ))}
             </div>

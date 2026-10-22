@@ -170,7 +170,7 @@ export default function HotelVideoBriefForm() {
                 <span className="text-base font-medium text-white">
                   {step.title}
                   {!step.required && (
-                    <span className="ml-2 font-display text-[10px] uppercase tracking-[0.1em] text-white/50">
+                    <span className="ml-2 font-display text-[calc(10*var(--s))] uppercase tracking-[0.1em] text-white/50">
                       необязательно
                     </span>
                   )}

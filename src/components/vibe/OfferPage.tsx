@@ -50,7 +50,7 @@ function Reveal({ children, delay = 0, className = "" }: { children: ReactNode; 
 
 function Chapter({ n, eyebrow, title, accent, children }: { n: string; eyebrow: string; title: string; accent: string; children: ReactNode }) {
   return (
-    <section className="offer-chapter mx-auto w-full max-w-[1120px] px-4 py-16 sm:px-8 sm:py-24">
+    <section className="offer-chapter mx-auto w-full max-w-[calc(1120*var(--s))] px-4 py-16 sm:px-8 sm:py-24">
       <Reveal>
         <span className="offer-eyebrow">
           {n} · {eyebrow}
@@ -85,7 +85,7 @@ export default function OfferPage() {
       <main className="offer flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
         <DustyOrb><NanoSphere size={120} from={ORB_FROM} to={ORB_TO} glow={0.35} /></DustyOrb>
         <h1 className="offer-h2 mt-8">Лендинг не найден</h1>
-        <p className="offer-lead mt-4 max-w-[480px]">Ссылка неполная. Пройди вайб-режим заново — это три минуты.</p>
+        <p className="offer-lead mt-4 max-w-[calc(480*var(--s))]">Ссылка неполная. Пройди вайб-режим заново — это три минуты.</p>
         <Link href="/?vibe=1" className="vibe-mode__cta mt-8">
           Собрать лендинг
           <Arrow />
@@ -124,12 +124,12 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
             <span className="offer-eyebrow mt-6 block">
               Персональный лендинг · HUD.SERVICE{contact ? ` · для ${contact.name}` : ""}
             </span>
-            <h1 className="offer-h1 mx-auto mt-5 max-w-[1000px]">
+            <h1 className="offer-h1 mx-auto mt-5 max-w-[calc(1000*var(--s))]">
               <span className="offer-kw">{offer.product}</span>
               <br />
               {offer.company ? `для «${offer.company}»` : offer.sphere ? `для сферы «${offer.sphere}»` : "под твою задачу"}
             </h1>
-            {offer.goalLine && <p className="offer-lead mx-auto mt-6 max-w-[640px]">{offer.goalLine}</p>}
+            {offer.goalLine && <p className="offer-lead mx-auto mt-6 max-w-[calc(640*var(--s))]">{offer.goalLine}</p>}
             <div className="mt-7 flex flex-wrap justify-center gap-2">
               {[offer.sphere, offer.budget ? `Бюджет: ${formatBudget(offer.budget)}` : null, `Тариф «${offer.tier.name}»`]
                 .filter(Boolean)
@@ -158,7 +158,7 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
           {offer.brief.map((b, i) => (
             <Reveal key={b.label} delay={i * 0.05} className="offer-card">
               <span className="offer-label">{b.label}</span>
-              <p className="mt-2 text-[17px] font-semibold leading-snug">{b.value}</p>
+              <p className="mt-2 text-[calc(17*var(--s))] font-semibold leading-snug">{b.value}</p>
             </Reveal>
           ))}
         </div>
@@ -172,7 +172,7 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
               {offer.solution.map((s, i) => (
                 <li key={s} className="flex gap-4">
                   <span className="offer-num">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="text-[17px] font-medium leading-snug">{s}</span>
+                  <span className="text-[calc(17*var(--s))] font-medium leading-snug">{s}</span>
                 </li>
               ))}
             </ol>
@@ -180,11 +180,11 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
           <Reveal delay={0.1} className="offer-card flex flex-col justify-between">
             <div>
               <span className="offer-label">Рекомендуем</span>
-              <p className="mt-2 font-display text-[26px] uppercase leading-tight">{offer.tier.name}</p>
-              <p className="mt-1 text-[18px] font-semibold">{offer.tier.price}</p>
-              <p className="mt-3 text-[15px]">{offer.tier.tagline}</p>
+              <p className="mt-2 font-display text-[calc(26*var(--s))] uppercase leading-tight">{offer.tier.name}</p>
+              <p className="mt-1 text-[calc(18*var(--s))] font-semibold">{offer.tier.price}</p>
+              <p className="mt-3 text-[calc(15*var(--s))]">{offer.tier.tagline}</p>
             </div>
-            {offer.deadlineLine && <p className="mt-6 text-[15px] font-medium">{offer.deadlineLine}</p>}
+            {offer.deadlineLine && <p className="mt-6 text-[calc(15*var(--s))] font-medium">{offer.deadlineLine}</p>}
           </Reveal>
         </div>
       </Chapter>
@@ -195,7 +195,7 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
           {offer.cases.map((w, i) => (
             <Reveal key={w.id} delay={i * 0.06}>
               <Link href="/works" className="offer-case group block">
-                <span className="relative block aspect-video overflow-hidden rounded-[18px]">
+                <span className="relative block aspect-video overflow-hidden rounded-[calc(18*var(--s))]">
                   <Image
                     unoptimized
                     src={`/images/works/${w.youtubeId ?? w.id}.jpg`}
@@ -205,8 +205,8 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
                     className="object-cover transition duration-500 group-hover:scale-[1.04]"
                   />
                 </span>
-                <span className="mt-3 block text-[16px] font-semibold leading-snug">{w.title}</span>
-                <span className="mt-0.5 block text-[13px]">
+                <span className="mt-3 block text-[calc(16*var(--s))] font-semibold leading-snug">{w.title}</span>
+                <span className="mt-0.5 block text-[calc(13*var(--s))]">
                   {w.client}
                   {w.sphere ? ` · ${w.sphere}` : ""}
                 </span>
@@ -222,8 +222,8 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
           {offer.process.map((s, i) => (
             <Reveal key={s.title} delay={i * 0.06} className="offer-card">
               <span className="offer-num">{String(i + 1).padStart(2, "0")}</span>
-              <h3 className="mt-3 text-[17px] font-semibold leading-snug">{s.title}</h3>
-              <p className="mt-2 text-[14px] leading-relaxed">{s.description}</p>
+              <h3 className="mt-3 text-[calc(17*var(--s))] font-semibold leading-snug">{s.title}</h3>
+              <p className="mt-2 text-[calc(14*var(--s))] leading-relaxed">{s.description}</p>
             </Reveal>
           ))}
         </div>
@@ -238,14 +238,14 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
             return (
               <Reveal key={t.name} delay={i * 0.08} className={`offer-tier ${rec ? "is-rec" : ""}`}>
                 {rec && <span className="offer-badge">Под твой бюджет</span>}
-                <span className="text-[13px] font-semibold uppercase tracking-[0.12em]">{t.tagline}</span>
+                <span className="text-[calc(13*var(--s))] font-semibold uppercase tracking-[0.12em]">{t.tagline}</span>
                 <p className="mt-3 font-display text-[clamp(17px,1.3vw,20px)] uppercase leading-tight">{t.name}</p>
-                <p className="mt-3 text-[20px] font-semibold">{t.price}</p>
-                <p className="mt-1 text-[14px]">{t.team}</p>
+                <p className="mt-3 text-[calc(20*var(--s))] font-semibold">{t.price}</p>
+                <p className="mt-1 text-[calc(14*var(--s))]">{t.team}</p>
                 <ul className="mt-6 space-y-2.5">
                   {(t.benefits ?? t.features).map((f) => (
-                    <li key={f} className="flex gap-2.5 text-[15px] font-semibold leading-snug">
-                      <span className="vibe-mode__assist-dot mt-[7px]" aria-hidden="true" />
+                    <li key={f} className="flex gap-2.5 text-[calc(15*var(--s))] font-semibold leading-snug">
+                      <span className="vibe-mode__assist-dot mt-[calc(7*var(--s))]" aria-hidden="true" />
                       {f}
                     </li>
                   ))}
@@ -268,20 +268,20 @@ function Offer({ answers, contact, onContact }: { answers: VibeAnswers; contact:
         <div className="grid gap-3 sm:grid-cols-2">
           {offer.why.map((r, i) => (
             <Reveal key={r.title} delay={i * 0.06} className="offer-card">
-              <h3 className="text-[18px] font-semibold leading-snug">{r.title}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed">{r.description}</p>
+              <h3 className="text-[calc(18*var(--s))] font-semibold leading-snug">{r.title}</h3>
+              <p className="mt-2 text-[calc(15*var(--s))] leading-relaxed">{r.description}</p>
             </Reveal>
           ))}
         </div>
       </Chapter>
 
       {/* ---------- Финал ---------- */}
-      <section className="mx-auto flex max-w-[860px] flex-col items-center px-4 pb-28 pt-10 text-center">
+      <section className="mx-auto flex max-w-[calc(860*var(--s))] flex-col items-center px-4 pb-28 pt-10 text-center">
         <DustyOrb><NanoSphere size={96} from={ORB_FROM} to={ORB_TO} glow={0.35} hot /></DustyOrb>
         <h2 className="offer-h2 mt-8">
           Запускаем <span className="offer-kw">твой проект?</span>
         </h2>
-        <p className="offer-lead mt-4 max-w-[560px]">Выбери план — продюсер свяжется в течение часа и уточнит детали.</p>
+        <p className="offer-lead mt-4 max-w-[calc(560*var(--s))]">Выбери план — продюсер свяжется в течение часа и уточнит детали.</p>
         <div className="mt-8 flex flex-wrap justify-center gap-2.5">
           <button type="button" onClick={() => setOrderTier(offer.tier)} className="vibe-mode__cta">
             Заказать «{offer.tier.name}»
@@ -398,12 +398,12 @@ function OrderSheet({
               <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Как к тебе обращаться" autoComplete="name" className="vibe-mode__field" />
               <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Telegram или телефон" autoComplete="tel" className="vibe-mode__field" />
               {!contact && (
-                <div className="mt-1 px-1 [&_label]:text-[13px] [&_label]:text-white">
+                <div className="mt-1 px-1 [&_label]:text-[calc(13*var(--s))] [&_label]:text-white">
                   <ConsentCheckbox checked={consent} onChange={setConsent} accent="glow" />
                 </div>
               )}
               {state === "error" && (
-                <p className="px-1 text-[14px]">
+                <p className="px-1 text-[calc(14*var(--s))]">
                   Не получилось отправить.{" "}
                   <a href={TELEGRAM} target="_blank" rel="noopener noreferrer" className="underline">
                     Напиши нам в Telegram

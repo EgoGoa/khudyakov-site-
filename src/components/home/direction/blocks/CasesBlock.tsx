@@ -105,7 +105,7 @@ function WorksCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                 <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl">
                   {current.title}
                 </h3>
-                <span className="font-display text-[11px] uppercase tracking-[0.18em] text-white">
+                <span className="font-display text-[calc(11*var(--s))] uppercase tracking-[0.18em] text-white">
                   {[current.client, current.sphere, formatDuration(current.duration)]
                     .filter(Boolean)
                     .join(" · ")}
@@ -152,7 +152,7 @@ function WorksCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                           >
                             {stat.value}
                           </div>
-                          <div className="mt-1.5 break-words font-display text-[9px] uppercase leading-relaxed tracking-[0.08em] text-white/70">
+                          <div className="mt-1.5 break-words font-display text-[calc(9*var(--s))] uppercase leading-relaxed tracking-[0.08em] text-white/70">
                             {stat.label}
                           </div>
                         </div>
@@ -197,11 +197,11 @@ function WorksCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
 
                     <span className="min-w-0 flex-1 break-words">
                       <span className="flex items-center gap-2">
-                        <span className="font-display text-[10px] uppercase tracking-[0.18em] text-white">
+                        <span className="font-display text-[calc(10*var(--s))] uppercase tracking-[0.18em] text-white">
                           {work.sphere ?? work.category}
                         </span>
                         {suggested ? (
-                          <span className="rounded-full bg-orange/20 px-2 py-0.5 font-display text-[9px] uppercase tracking-[0.14em] text-orange">
+                          <span className="rounded-full bg-orange/20 px-2 py-0.5 font-display text-[calc(9*var(--s))] uppercase tracking-[0.14em] text-orange">
                             под вашу задачу
                           </span>
                         ) : null}
@@ -215,7 +215,7 @@ function WorksCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                       </span>
                     </span>
 
-                    <span className="shrink-0 font-display text-[10px] text-white">
+                    <span className="shrink-0 font-display text-[calc(10*var(--s))] text-white">
                       {formatDuration(work.duration)}
                     </span>
                   </button>
@@ -284,7 +284,7 @@ function ReelsCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
 
         <div className="mt-16 lg:grid lg:grid-cols-[1fr_1.1fr] lg:items-start lg:gap-12">
           <Appear from="left" delay={DIRECTION_BEAT.content}>
-            <div className="mx-auto w-full max-w-[210px] overflow-hidden rounded-3xl bg-ink shadow-[0_0_60px_-20px_rgba(255,120,60,0.45)]">
+            <div className="mx-auto w-full max-w-[calc(210*var(--s))] overflow-hidden rounded-3xl bg-ink shadow-[0_0_60px_-20px_rgba(255,120,60,0.45)]">
               <div className="relative aspect-[9/16]">
                 <AnimatePresence mode="wait">
                   {openN ? (
@@ -321,7 +321,7 @@ function ReelsCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                     <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl">
                       Рилс {pad(openN)}
                     </h3>
-                    <span className="font-display text-[11px] uppercase tracking-[0.18em] text-white">
+                    <span className="font-display text-[calc(11*var(--s))] uppercase tracking-[0.18em] text-white">
                       сгенерировано нейросетями
                     </span>
                   </div>
@@ -348,7 +348,7 @@ function ReelsCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                         >
                           {stat.value}
                         </div>
-                        <div className="mt-1.5 font-display text-[9px] uppercase leading-relaxed tracking-[0.08em] text-white/70">
+                        <div className="mt-1.5 font-display text-[calc(9*var(--s))] uppercase leading-relaxed tracking-[0.08em] text-white/70">
                           {stat.label}
                         </div>
                       </div>
@@ -374,7 +374,7 @@ function ReelsCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                     onClick={() => setPick(n)}
                     aria-pressed={on}
                     aria-label={`Рилс ${pad(n)}`}
-                    className={`group relative block aspect-[9/16] w-[90px] overflow-hidden rounded-xl bg-ink transition ${
+                    className={`group relative block aspect-[9/16] w-[calc(90*var(--s))] overflow-hidden rounded-xl bg-ink transition ${
                       on ? "ring-2 ring-orange" : "ring-1 ring-white/10 hover:ring-white/40"
                     }`}
                   >

@@ -81,7 +81,7 @@ export default function PersonaAssets({ media }: { media?: BlockMediaSpec }) {
               {/* Полный текст показан до отправки: человек должен видеть,
                   что именно уходит от его имени, — иначе кнопка «написать»
                   превращается в кота в мешке. */}
-              <pre className="glass-panel mx-auto mt-6 max-w-[38em] whitespace-pre-wrap rounded-2xl p-5 text-left text-[13px] leading-relaxed text-white">
+              <pre className="glass-panel mx-auto mt-6 max-w-[38em] whitespace-pre-wrap rounded-2xl p-5 text-left text-[calc(13*var(--s))] leading-relaxed text-white">
                 {summary()}
               </pre>
 
@@ -128,7 +128,7 @@ export default function PersonaAssets({ media }: { media?: BlockMediaSpec }) {
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="site.ru — нужен ролик к выставке в ноябре"
-            className="glass-panel mt-3 w-full rounded-2xl px-5 py-4 text-[15px] text-white outline-none transition placeholder:text-white/40 focus:ring-1 focus:ring-orange/60"
+            className="glass-panel mt-3 w-full rounded-2xl px-5 py-4 text-[calc(15*var(--s))] text-white outline-none transition placeholder:text-white/40 focus:ring-1 focus:ring-orange/60"
           />
         </label>
       </Appear>

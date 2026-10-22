@@ -21,7 +21,7 @@ export default function CabinetButton() {
         <path d="M4.5 20c1.4-3.6 4.2-5.4 7.5-5.4s6.1 1.8 7.5 5.4" />
       </svg>
       {count > 0 && (
-        <span className="absolute right-0.5 top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-gradient-to-r from-[#ff4fd8] to-[#00d2ff] px-1 text-[10px] font-extrabold text-ink">
+        <span className="absolute right-0.5 top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-gradient-to-r from-[#ff4fd8] to-[#00d2ff] px-1 text-[calc(10*var(--s))] font-extrabold text-ink">
           {count}
         </span>
       )}

@@ -152,7 +152,7 @@ export default function SmmMethod() {
       >
         <Appear from="right" delay={BEAT.content} blurPx={18}>
           <div className="overflow-x-auto rounded-2xl bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150">
-            <table className="w-full min-w-[520px] border-collapse text-left text-xs">
+            <table className="w-full min-w-[calc(520*var(--s))] border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-paper/15">
                   <th
@@ -209,11 +209,11 @@ export default function SmmMethod() {
               blurPx={8}
             >
               <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-3.5 py-2 backdrop-blur-md">
-                <span className="font-display text-[9px] uppercase tracking-[0.15em] text-[#c4a0ff]">
+                <span className="font-display text-[calc(9*var(--s))] uppercase tracking-[0.15em] text-[#c4a0ff]">
                   {s.tag}
                 </span>
                 <span className="h-1 w-1 shrink-0 rounded-full bg-paper/30" />
-                <span className="font-display text-[11px] uppercase leading-tight tracking-tight text-white">
+                <span className="font-display text-[calc(11*var(--s))] uppercase leading-tight tracking-tight text-white">
                   {s.title}
                 </span>
               </span>

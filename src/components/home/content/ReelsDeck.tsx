@@ -138,7 +138,7 @@ export default function ReelsDeck({ running }: { running: boolean }) {
 
   return (
     <div
-      className="relative h-full min-h-[360px] w-full"
+      className="relative h-full min-h-[calc(360*var(--s))] w-full"
       onMouseEnter={() => setHeld(true)}
       onMouseLeave={() => setHeld(false)}
     >
@@ -163,7 +163,7 @@ export default function ReelsDeck({ running }: { running: boolean }) {
           return (
             <div
               key={key}
-              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[290px] w-[163px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
+              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[calc(290*var(--s))] w-[calc(163*var(--s))] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
                 live ? "transition-[filter] duration-[420ms]" : "transition-[transform,opacity,filter] duration-[500ms]"
               }`}
               style={{
@@ -175,7 +175,7 @@ export default function ReelsDeck({ running }: { running: boolean }) {
                 willChange: "transform, opacity",
               }}
             >
-              <div className="relative h-full w-full overflow-hidden rounded-[16px] bg-black shadow-[0_14px_40px_rgba(0,0,0,0.5)]">
+              <div className="relative h-full w-full overflow-hidden rounded-[calc(16*var(--s))] bg-black shadow-[0_14px_40px_rgba(0,0,0,0.5)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`/video/reels/r${REELS[i]}.jpg`}
@@ -199,7 +199,7 @@ export default function ReelsDeck({ running }: { running: boolean }) {
         })}
       </div>
       <div className="absolute inset-x-0 bottom-0 z-[200] flex items-center justify-center gap-3">
-        <button type="button" onClick={() => setLeadOpen(true)} className="btn-neon inline-flex !px-3.5 !py-1.5 !text-[10px]">
+        <button type="button" onClick={() => setLeadOpen(true)} className="btn-neon inline-flex !px-3.5 !py-1.5 !text-[calc(10*var(--s))]">
           Хочу так же →
         </button>
         <button

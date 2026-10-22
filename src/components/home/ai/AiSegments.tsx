@@ -93,10 +93,10 @@ const CASES = [
 function SegmentThumb({ shape }: { shape: "reply" | "catalog" | "queue" | "reel" }) {
   const d = (s: number): React.CSSProperties => ({ animationDelay: `${s}s` });
   return (
-    <div className="ai-thumb-live relative mt-3 h-[70px] w-full overflow-hidden rounded-lg bg-white/[0.03] ring-1 ring-white/[0.07]">
+    <div className="ai-thumb-live relative mt-3 h-[calc(70*var(--s))] w-full overflow-hidden rounded-lg bg-white/[0.03] ring-1 ring-white/[0.07]">
       {shape === "reply" && (
         <div className="flex h-full flex-col justify-center gap-1.5 px-2.5">
-          <span className="ai-a-blink flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[6px] tracking-[0.08em] text-emerald-200 ring-1 ring-emerald-300/30">
+          <span className="ai-a-blink flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[calc(6*var(--s))] tracking-[0.08em] text-emerald-200 ring-1 ring-emerald-300/30">
             <span className="h-1 w-1 rounded-full bg-emerald-300" />
             24/7
           </span>
@@ -117,7 +117,7 @@ function SegmentThumb({ shape }: { shape: "reply" | "catalog" | "queue" | "reel"
             {[0, 1, 2, 3].map((i) => (
               <span
                 key={i}
-                className="ai-a-seq relative block aspect-square overflow-hidden rounded-[3px] bg-white/[0.07] ring-1 ring-white/[0.08]"
+                className="ai-a-seq relative block aspect-square overflow-hidden rounded-[calc(3*var(--s))] bg-white/[0.07] ring-1 ring-white/[0.08]"
                 style={d(i * 0.25)}
               >
                 <span
@@ -128,7 +128,7 @@ function SegmentThumb({ shape }: { shape: "reply" | "catalog" | "queue" | "reel"
             ))}
           </div>
           <span
-            className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30"
+            className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[calc(6*var(--s))] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30"
             style={d(1.2)}
           >
             <span className="h-1 w-1 rounded-full bg-emerald-300" />В наличии ✓
@@ -144,9 +144,9 @@ function SegmentThumb({ shape }: { shape: "reply" | "catalog" | "queue" | "reel"
           ].map((row, i) => (
             <span key={row.label} className="ai-a-seq flex items-center gap-1.5" style={d(i * 0.4)}>
               <span className={`ai-a-blink block h-1.5 w-1.5 shrink-0 rounded-full ${row.c}`} style={d(i * 0.3)} />
-              <span className="font-display text-[6px] tracking-[0.03em] text-paper/55">{row.label}</span>
+              <span className="font-display text-[calc(6*var(--s))] tracking-[0.03em] text-paper/55">{row.label}</span>
               {i === 2 && (
-                <span className="ml-auto font-display text-[6px] tracking-[0.03em] text-emerald-300">отвечено</span>
+                <span className="ml-auto font-display text-[calc(6*var(--s))] tracking-[0.03em] text-emerald-300">отвечено</span>
               )}
             </span>
           ))}
@@ -155,11 +155,11 @@ function SegmentThumb({ shape }: { shape: "reply" | "catalog" | "queue" | "reel"
       {shape === "reel" && (
         <div className="relative h-full px-2.5 py-2">
           <span className="relative block h-full w-full overflow-hidden rounded-md bg-[linear-gradient(135deg,rgba(52,211,153,0.4),rgba(0,210,255,0.22))]">
-            <span className="absolute left-1.5 top-1.5 rounded-[3px] bg-ink/60 px-1.5 py-0.5 font-display text-[6px] tracking-[0.1em] text-emerald-100/90">
+            <span className="absolute left-1.5 top-1.5 rounded-[calc(3*var(--s))] bg-ink/60 px-1.5 py-0.5 font-display text-[calc(6*var(--s))] tracking-[0.1em] text-emerald-100/90">
               AI
             </span>
             <span className="absolute inset-0 grid place-items-center">
-              <span className="ai-a-blink grid h-6 w-6 place-items-center rounded-full bg-ink/70 text-[8px] text-emerald-200 ring-1 ring-emerald-300/40">
+              <span className="ai-a-blink grid h-6 w-6 place-items-center rounded-full bg-ink/70 text-[calc(8*var(--s))] text-emerald-200 ring-1 ring-emerald-300/40">
                 ▶
               </span>
             </span>
@@ -200,7 +200,7 @@ export default function AiSegments() {
             delay={BEAT.content + i * STAGGER.tight}
             className="rounded-2xl bg-ink/45 p-3.5 backdrop-blur-md"
           >
-            <span className="font-display text-[9px] uppercase tracking-[0.15em] text-emerald-300">{s.tag}</span>
+            <span className="font-display text-[calc(9*var(--s))] uppercase tracking-[0.15em] text-emerald-300">{s.tag}</span>
             <h3 className="mt-2 font-display text-base uppercase leading-tight tracking-tight text-white">
               {s.title}
             </h3>
@@ -249,29 +249,29 @@ export default function AiSegments() {
                 }}
               />
               <div className="relative">
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 font-display text-[9px] uppercase tracking-[0.1em] text-emerald-200 ring-1 ring-emerald-300/30">
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 font-display text-[calc(9*var(--s))] uppercase tracking-[0.1em] text-emerald-200 ring-1 ring-emerald-300/30">
                   {c.industry}
                 </span>
                 <p className="mt-1.5 text-sm font-medium leading-snug text-white">{c.title}</p>
                 <p className="mt-2 text-white/75">
-                  <span className="font-display text-[9px] font-bold uppercase tracking-[0.1em] text-emerald-300/90">
+                  <span className="font-display text-[calc(9*var(--s))] font-bold uppercase tracking-[0.1em] text-emerald-300/90">
                     Задача{" "}
                   </span>
                   {c.task}
                 </p>
                 <p className="mt-1.5 text-white/75">
-                  <span className="font-display text-[9px] font-bold uppercase tracking-[0.1em] text-emerald-300/90">
+                  <span className="font-display text-[calc(9*var(--s))] font-bold uppercase tracking-[0.1em] text-emerald-300/90">
                     Состав{" "}
                   </span>
                   {c.stack}
                 </p>
                 <p className="mt-1.5 text-white/75">
-                  <span className="font-display text-[9px] font-bold uppercase tracking-[0.1em] text-emerald-300/90">
+                  <span className="font-display text-[calc(9*var(--s))] font-bold uppercase tracking-[0.1em] text-emerald-300/90">
                     Где работает{" "}
                   </span>
                   {c.where}
                 </p>
-                <span className="mt-2.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 font-display text-[10px] tracking-[0.03em] text-white ring-1 ring-white/15">
+                <span className="mt-2.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 font-display text-[calc(10*var(--s))] tracking-[0.03em] text-white ring-1 ring-white/15">
                   {c.budget}
                 </span>
               </div>

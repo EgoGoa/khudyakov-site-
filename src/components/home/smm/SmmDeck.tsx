@@ -148,14 +148,14 @@ function SmmCardFace({ id, image, step }: { id: string; image: string; step: num
       {/* Сияние в углу — мягкий радиальный градиент, а не blur-2xl: Safari
           обрезает размытый слой по прямоугольнику, а не по скруглению
           карточки, и за углом торчал ровный край (Егор, 2026-10-08). */}
-      <span className="pointer-events-none absolute -right-16 -top-[72px] h-44 w-44" style={{ background: "radial-gradient(circle, rgba(168,85,247,0.2) 0%, rgba(168,85,247,0.11) 28%, transparent 62%)" }} />
+      <span className="pointer-events-none absolute -right-16 -top-[calc(72*var(--s))] h-44 w-44" style={{ background: "radial-gradient(circle, rgba(168,85,247,0.2) 0%, rgba(168,85,247,0.11) 28%, transparent 62%)" }} />
 
       {/* Stories-style progress strip along the top — the one cue every
           vertical-video surface shares, so it reads as "phone" instantly. */}
       <div className="relative flex gap-1 px-2.5 pt-2.5">
-        <span className="h-[3px] flex-1 rounded-full bg-paper/55" />
-        <span className="h-[3px] flex-1 rounded-full bg-paper/18" />
-        <span className="h-[3px] flex-1 rounded-full bg-paper/18" />
+        <span className="h-[calc(3*var(--s))] flex-1 rounded-full bg-paper/55" />
+        <span className="h-[calc(3*var(--s))] flex-1 rounded-full bg-paper/18" />
+        <span className="h-[calc(3*var(--s))] flex-1 rounded-full bg-paper/18" />
       </div>
 
       {/* Сцена растянута почти до подписи — тот же фикс, что на SitesDeck:
@@ -200,7 +200,7 @@ const DECK_BEAT_MS = 4200;
 // Front card only keeps the backdrop blur — see the same split in
 // SitesDeck for why five animated backdrop-filters is what stuttered.
 const CARD_SHELL =
-  "rounded-[20px] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.16)]";
+  "rounded-[calc(20*var(--s))] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.16)]";
 const CARD_SHELL_FRONT = `${CARD_SHELL} backdrop-blur-2xl backdrop-saturate-150`;
 
 // The page's button language: the flat gradient pill plus a glass
@@ -215,7 +215,7 @@ const CARD_SHELL_FRONT = `${CARD_SHELL} backdrop-blur-2xl backdrop-saturate-150`
 // to press. The violet stays where it belongs, on the heading keywords, the
 // chapter numbers and the rail, which are type rather than controls.
 export const PILL =
-  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-[14px] bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange";
+  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-[calc(14*var(--s))] bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-display text-[calc(11*var(--s))] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange";
 
 export const ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-[color,border-color,transform] duration-300 hover:scale-110 hover:border-orange/60 hover:text-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange";
@@ -295,7 +295,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           меняется вслед за выбранной карточкой колоды. */}
       {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} showTitle={false} compact sizeTo={DECK_COPY} />}
       {!data && (
-        <p className="m-0 self-center font-display text-[13px] font-semibold leading-snug text-paper">
+        <p className="m-0 self-center font-display text-[calc(13*var(--s))] font-semibold leading-snug text-paper">
           Готовим новый инструмент для SMM: каркас собран, идёт наполнение. <span className="text-glow">Анонс — скоро.</span>
         </p>
       )}
@@ -303,7 +303,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
   );
 
   return (
-    <div className="w-full max-w-[560px]">
+    <div className="w-full max-w-[calc(560*var(--s))]">
       {/* Fixed height so the chapter's layout doesn't shift as the description
           under it changes length — grown from 300 to fit the front card's
           new +30% size (250px tall × 1.3 = 325px) plus its upward y-nudge. */}
@@ -360,10 +360,10 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                 }}
               />
               <span className="absolute inset-x-3.5 bottom-4 flex flex-col items-start gap-2">
-                <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
+                <span className="block font-display text-[calc(15*var(--s))] uppercase leading-none tracking-tight text-paper">
                   {format.name}
                 </span>
-                <span className="block font-display text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
+                <span className="block font-display text-[calc(9*var(--s))] uppercase tracking-[0.12em] text-[#c4a0ff]">
                   {format.meta}
                 </span>
                 {/* Same pattern as /ai and /sites: a small, pulsing pill
@@ -371,7 +371,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                     below the deck. */}
                 {hasPage && (
                   <span
-                    className={`deck-open-pill inline-flex items-center gap-1.5 rounded-[14px] px-2.5 py-1 font-display text-[7px] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
+                    className={`deck-open-pill inline-flex items-center gap-1.5 rounded-[calc(14*var(--s))] px-2.5 py-1 font-display text-[calc(7*var(--s))] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
                       isFront ? "" : "deck-open-pill-still"
                     }`}
                     style={{ "--pill-rgb": "192, 132, 252" } as CSSProperties}
@@ -388,7 +388,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           // card. The caption above is on every card now (Egor: название и
           // кнопка должны быть видны всегда, и во время перетаскивания).
           const counter = (
-            <span style={{ opacity: captionOpacity }} className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+            <span style={{ opacity: captionOpacity }} className="absolute right-2.5 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[calc(9*var(--s))] tracking-[0.12em] text-paper/70 backdrop-blur-md">
               {String(idx + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
           );
@@ -408,7 +408,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
               key={key}
               // Лёгкий веер на телефоне: дальше 1,5 карточки от центра карточка не рисуется (CSS .deck-pose[data-far]).
               data-far={Math.abs(offset) > 1.5 ? "" : undefined}
-              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[250px] w-[150px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
+              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[calc(250*var(--s))] w-[calc(150*var(--s))] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
                 live ? "transition-[filter] duration-[420ms]" : "transition-[transform,opacity,filter] duration-[760ms]"
               }`}
               style={{
@@ -447,7 +447,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
               </span>
                             {format.soon && (
                 <span
-                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[calc(8*var(--s))] uppercase tracking-[0.14em] text-white"
                   aria-hidden="true"
                   style={{ opacity: captionOpacity }}
                 >
@@ -506,7 +506,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
                   набирает и отдаёт плотность вместе с движением. */}
               <span
                 aria-hidden="true"
-                className={`pointer-events-none absolute inset-0 z-10 rounded-[20px] bg-[#08090e] ${
+                className={`pointer-events-none absolute inset-0 z-10 rounded-[calc(20*var(--s))] bg-[#08090e] ${
                   live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: pose.veil }}
@@ -523,7 +523,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
           violet. It looks like the chapter rail down the left edge on purpose,
           but the two never share state — that one walks chapters, this one
           walks formats. */}
-      <div className="mx-auto mt-6 flex max-w-[340px] items-center gap-3">
+      <div className="mx-auto mt-6 flex max-w-[calc(340*var(--s))] items-center gap-3">
       <div className="relative flex flex-1 items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
@@ -541,7 +541,7 @@ export default function SmmDeck({ panelTarget }: { panelTarget?: HTMLElement | n
               onClick={() => goTo(i)}
               aria-label={format.name}
               aria-current={on ? "true" : undefined}
-              className="relative grid h-8 w-8 place-items-center rounded-full border bg-ink font-display text-[9px] transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a855f7] motion-reduce:transition-none"
+              className="relative grid h-8 w-8 place-items-center rounded-full border bg-ink font-display text-[calc(9*var(--s))] transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a855f7] motion-reduce:transition-none"
               style={{
                 borderColor: on ? "#a855f7" : "rgba(168,85,247,0.28)",
                 color: on ? "#e4d0ff" : "rgba(220,221,239,0.45)",

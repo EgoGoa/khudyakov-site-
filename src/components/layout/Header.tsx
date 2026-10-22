@@ -204,7 +204,7 @@ export default function Header() {
       }`}
     >
       <span className="header-top-mask" aria-hidden="true" />
-      <Container className="relative z-10 flex h-14 items-center justify-between sm:h-[70px] land:h-10">
+      <Container className="relative z-10 flex h-14 items-center justify-between sm:h-[calc(70*var(--s))] land:h-10">
         <Link
           href="/"
           onClick={navigateHome}
@@ -245,7 +245,7 @@ export default function Header() {
               title={t("searchHint")}
               className="hidden h-9 w-9 items-center justify-center text-paper/75 transition-colors hover:text-paper lg:inline-flex land:!inline-flex land:pointer-events-auto land:h-8 land:w-8 land:text-paper/55"
             >
-              <SearchGlyph className="h-[19px] w-[19px]" />
+              <SearchGlyph className="h-[calc(19*var(--s))] w-[calc(19*var(--s))]" />
             </button>
             {/* Плеер и кабинет — только в меню (Егор, 2026-10-10); здесь
                 смонтированы скрыто ради окна плеера (оно порталом в body). */}
@@ -301,7 +301,7 @@ export default function Header() {
             animate={{ clipPath: "inset(0 0 0% 0 round 0 0 28px 28px)", opacity: 1 }}
             exit={{ clipPath: "inset(0 0 100% 0 round 0 0 28px 28px)", opacity: 0.6 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="header-glass fixed inset-x-0 z-[49] overflow-y-auto rounded-b-[28px]"
+            className="header-glass fixed inset-x-0 z-[49] overflow-y-auto rounded-b-[calc(28*var(--s))]"
             style={{ top: headerH, maxHeight: `calc(100dvh - ${headerH}px - 1rem)`, "--g-from": accent.from, "--g-to": accent.to } as React.CSSProperties}
           >
             <Container className="grid gap-8 py-7 sm:py-8 lg:grid-cols-[1.25fr_1fr_1fr] lg:gap-14">
@@ -380,10 +380,10 @@ export default function Header() {
                     {t("discussProject")} →
                   </Link>
                   <a href="https://t.me/hdkv" target="_blank" rel="noopener noreferrer" aria-label={t("writeTelegram")} className="menu-round">
-                    <TelegramIcon className="h-[18px] w-[18px]" />
+                    <TelegramIcon className="h-[calc(18*var(--s))] w-[calc(18*var(--s))]" />
                   </a>
                   <a href="https://wa.me/79925111812" target="_blank" rel="noopener noreferrer" aria-label={t("writeWhatsApp")} className="menu-round">
-                    <WhatsAppIcon className="h-[18px] w-[18px]" />
+                    <WhatsAppIcon className="h-[calc(18*var(--s))] w-[calc(18*var(--s))]" />
                   </a>
                 </div>
               </div>

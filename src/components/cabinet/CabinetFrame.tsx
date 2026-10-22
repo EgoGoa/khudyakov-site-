@@ -9,7 +9,7 @@ export default function CabinetFrame() {
   const state = useCabinet();
   const gate = !state.registered || !state.onboarded;
   return (
-    <div className={gate ? "relative mx-auto flex min-h-[calc(100dvh-8rem)] max-w-[440px] items-center" : "relative mx-auto h-[min(820px,calc(100dvh-7rem))] max-w-[1320px]"}>
+    <div className={gate ? "relative mx-auto flex min-h-[calc(100dvh-8rem)] max-w-[calc(440*var(--s))] items-center" : "relative mx-auto h-[min(820px,calc(100dvh-7rem))] max-w-[calc(1320*var(--s))]"}>
       <Cabinet />
     </div>
   );

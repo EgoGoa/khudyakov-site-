@@ -258,7 +258,7 @@ export default function TaskAssistant({
               <button
                 type="button"
                 onClick={() => setScreen("ask")}
-                className="mt-4 font-display text-[11px] uppercase tracking-[0.16em] text-paper/50 transition hover:text-paper"
+                className="mt-4 font-display text-[calc(11*var(--s))] uppercase tracking-[0.16em] text-paper/50 transition hover:text-paper"
               >
                 ← Назад
               </button>

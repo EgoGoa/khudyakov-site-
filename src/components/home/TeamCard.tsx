@@ -37,10 +37,10 @@ export default function TeamCard({ member, decor }: { member: TeamMember; decor?
         </span>
 
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-display text-[13px] font-semibold tracking-tight text-paper sm:text-sm">
+          <span className="block truncate font-display text-[calc(13*var(--s))] font-semibold tracking-tight text-paper sm:text-sm">
             {member.name}
           </span>
-          <span className="block truncate text-[11px] leading-tight text-paper/55 sm:text-[12px]">
+          <span className="block truncate text-[calc(11*var(--s))] leading-tight text-paper/55 sm:text-[calc(12*var(--s))]">
             {member.role}
           </span>
         </span>

@@ -146,7 +146,7 @@ function useActiveRailId(anchorIds: string[]): string {
 //      is what separates the text from the footage now, which is what a
 //      backdrop is for; the label no longer needs to carry its own.
 const RAIL_LABEL_CLASS =
-  "shrink-0 whitespace-nowrap font-sans text-[12px] font-medium uppercase leading-none tracking-[0.08em] text-white subpixel-antialiased transition-[opacity,text-shadow] duration-200";
+  "shrink-0 whitespace-nowrap font-sans text-[calc(12*var(--s))] font-medium uppercase leading-none tracking-[0.08em] text-white subpixel-antialiased transition-[opacity,text-shadow] duration-200";
 
 // Hover: the word lights along its own outline. Tight radii (1/3/7px) rather
 // than a wide bloom — Egor asked for the glow to trace the lettering itself

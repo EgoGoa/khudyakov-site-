@@ -147,7 +147,7 @@ export default function BottomIsland() {
           aria-label="Поиск по сайту"
           className={`bottom-island__btn bottom-island__search${voiceOn ? " is-on" : ""}`}
         >
-          <SearchGlyph className="h-[18px] w-[18px]" />
+          <SearchGlyph className="h-[calc(18*var(--s))] w-[calc(18*var(--s))]" />
         </button>
       </div>
       <div className="bottom-island__center">

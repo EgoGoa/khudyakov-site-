@@ -98,7 +98,7 @@ export default function LoopingWords({
       <div
         ref={edgeRef}
         aria-hidden="true"
-        className="absolute bottom-0 left-0 h-[2px] bg-glow"
+        className="absolute bottom-0 left-0 h-[calc(2*var(--s))] bg-glow"
         style={{ boxShadow: "0 0 8px rgba(0,210,255,0.7)" }}
       />
     </span>

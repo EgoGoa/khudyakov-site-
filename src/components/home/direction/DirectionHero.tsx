@@ -165,7 +165,7 @@ export default function DirectionHero({
             // рядом — окошко Егора (просьба Егора для «Презентационных
             // фильмов»). Кнопка «Обсудить», а не «Заказать»: окошко
             // предлагает созвон и план, и кнопка отвечает на это (2026-10-08).
-            <div className="mt-8 grid max-w-[880px] items-stretch gap-4 sm:grid-cols-[1.3fr_1fr]">
+            <div className="mt-8 grid max-w-[calc(880*var(--s))] items-stretch gap-4 sm:grid-cols-[1.3fr_1fr]">
               {/* Окошко с графикой на 30% шире окошка человека, чтобы сцена
                   помещалась свободно; окошко человека прежней ширины (Егор). */}
               <HeroDeepInline slug={spotKey!} />
@@ -224,7 +224,7 @@ export default function DirectionHero({
                   <div className="break-words font-display text-xl uppercase leading-none text-white sm:text-2xl">
                     {stat.value}
                   </div>
-                  <div className="mt-1.5 break-words font-display text-[9px] uppercase leading-relaxed tracking-[0.08em] text-white/70">
+                  <div className="mt-1.5 break-words font-display text-[calc(9*var(--s))] uppercase leading-relaxed tracking-[0.08em] text-white/70">
                     {stat.label}
                   </div>
                 </div>

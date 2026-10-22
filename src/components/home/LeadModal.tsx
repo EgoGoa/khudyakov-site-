@@ -106,7 +106,7 @@ function ChoiceField({
                 setCustomMode(false);
                 onChange(opt);
               }}
-              className={`rounded-[14px] border px-3.5 py-2 text-xs transition ${
+              className={`rounded-[calc(14*var(--s))] border px-3.5 py-2 text-xs transition ${
                 on ? selectedClass : "border-paper/15 text-paper/65 hover:border-paper/40 hover:text-paper"
               }`}
             >
@@ -265,7 +265,7 @@ export default function LeadModal({
             <p className="mt-3 text-sm text-paper/60">
               Выберите вариант — ответим в течение одного рабочего дня.
             </p>
-            <div className="mx-auto mt-8 flex w-full max-w-[260px] flex-col gap-3">
+            <div className="mx-auto mt-8 flex w-full max-w-[calc(260*var(--s))] flex-col gap-3">
               <Link href={briefHref} data-lead-direct onClick={close} className="lead-choice-btn lead-choice-call">
                 <DocumentIcon className="h-4 w-4" />
                 Заполнить бриф
@@ -316,7 +316,7 @@ export default function LeadModal({
               </div>
               {fieldsFor.map((f) => (
                 <div key={f.id}>
-                  <label className="mb-1.5 block font-display text-[11px] uppercase tracking-[0.1em] text-paper/45">
+                  <label className="mb-1.5 block font-display text-[calc(11*var(--s))] uppercase tracking-[0.1em] text-paper/45">
                     {f.label}
                   </label>
                   <ChoiceField
@@ -338,7 +338,7 @@ export default function LeadModal({
               <button
                 type="button"
                 onClick={() => setScreen("choice")}
-                className="rounded-[14px] border border-paper/20 px-6 py-3 text-sm font-medium text-paper transition hover:border-paper/50"
+                className="rounded-[calc(14*var(--s))] border border-paper/20 px-6 py-3 text-sm font-medium text-paper transition hover:border-paper/50"
               >
                 ← Назад
               </button>
@@ -346,7 +346,7 @@ export default function LeadModal({
                 type="button"
                 disabled={!canSend}
                 onClick={() => submit(formType)}
-                className={`rounded-[14px] bg-rec px-7 py-3 text-sm font-medium text-white transition ${
+                className={`rounded-[calc(14*var(--s))] bg-rec px-7 py-3 text-sm font-medium text-white transition ${
                   canSend ? "hover:bg-rec-light active:scale-95" : "pointer-events-none opacity-40"
                 }`}
               >
@@ -375,7 +375,7 @@ export default function LeadModal({
             <button
               type="button"
               onClick={close}
-              className="mx-auto mt-7 rounded-[14px] bg-rec px-7 py-3 text-sm font-medium text-white transition hover:bg-rec-light"
+              className="mx-auto mt-7 rounded-[calc(14*var(--s))] bg-rec px-7 py-3 text-sm font-medium text-white transition hover:bg-rec-light"
             >
               Закрыть
             </button>
@@ -397,7 +397,7 @@ export default function LeadModal({
             <button
               type="button"
               onClick={() => setScreen("choice")}
-              className="mx-auto mt-7 rounded-[14px] border border-paper/20 px-6 py-3 text-sm font-medium text-paper transition hover:border-paper/50"
+              className="mx-auto mt-7 rounded-[calc(14*var(--s))] border border-paper/20 px-6 py-3 text-sm font-medium text-paper transition hover:border-paper/50"
             >
               ← Назад
             </button>

@@ -58,7 +58,7 @@ export default function InteractiveTierCard({
       <div className="relative mt-auto flex flex-col items-center gap-2 self-stretch">
         <a
           href="/brief/ai"
-          className={`btn-neon btn-neon-breathe w-[70%] justify-center !py-1 !text-[8px] !font-bold tier-glow-btn-${index}`}
+          className={`btn-neon btn-neon-breathe w-[70%] justify-center !py-1 !text-[calc(8*var(--s))] !font-bold tier-glow-btn-${index}`}
         >
           Выбрать план
         </a>

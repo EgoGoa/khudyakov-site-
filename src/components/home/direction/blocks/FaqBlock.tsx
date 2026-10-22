@@ -42,7 +42,7 @@ export default function FaqBlock({ faq }: { faq: DirectionContent["faq"] }) {
                       className="group flex w-full items-center gap-4 py-4 text-left"
                     >
                       <span
-                        className={`font-display text-[10px] tracking-[0.18em] transition-colors ${
+                        className={`font-display text-[calc(10*var(--s))] tracking-[0.18em] transition-colors ${
                           on ? "text-orange" : "text-white"
                         }`}
                       >
@@ -79,7 +79,7 @@ export default function FaqBlock({ faq }: { faq: DirectionContent["faq"] }) {
                           transition={{ duration: 0.35, ease: EASE }}
                           className="overflow-hidden lg:hidden"
                         >
-                          <p className="py-5 pl-8 pr-6 text-[15px] leading-relaxed text-white">
+                          <p className="py-5 pl-8 pr-6 text-[calc(15*var(--s))] leading-relaxed text-white">
                             {item.a}
                           </p>
                         </motion.div>
@@ -111,7 +111,7 @@ export default function FaqBlock({ faq }: { faq: DirectionContent["faq"] }) {
                   <h3 className="mt-5 font-display text-xl uppercase leading-tight tracking-tight text-white">
                     {answer.q}
                   </h3>
-                  <p className="mt-5 text-[15px] leading-relaxed text-white">{answer.a}</p>
+                  <p className="mt-5 text-[calc(15*var(--s))] leading-relaxed text-white">{answer.a}</p>
                 </motion.div>
               ) : null}
             </AnimatePresence>

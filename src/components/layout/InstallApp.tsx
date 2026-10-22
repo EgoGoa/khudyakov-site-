@@ -75,9 +75,9 @@ function Steps({ mode }: { mode: InstallMode }) {
   return (
     <ol className="mt-4 space-y-2.5">
       {rows.map((r, i) => (
-        <li key={r} className="flex items-start gap-3 text-[15px] font-bold leading-snug text-white">
+        <li key={r} className="flex items-start gap-3 text-[calc(15*var(--s))] font-bold leading-snug text-white">
           <span
-            className="mt-px grid h-6 w-6 shrink-0 place-items-center rounded-full text-[13px] font-extrabold text-white"
+            className="mt-px grid h-6 w-6 shrink-0 place-items-center rounded-full text-[calc(13*var(--s))] font-extrabold text-white"
             style={{ background: GRAD }}
           >
             {i + 1}
@@ -132,22 +132,22 @@ function InstallWindow({ open, mode, onClose }: { open: boolean; mode: InstallMo
   return (
     <CenterModal open={open} onClose={onClose} ariaLabel="Приложение на экран" compact>
       <div className="px-1 pb-1 pt-1 text-white">
-        <h2 className="font-display text-[22px] font-extrabold leading-tight sm:text-[26px]">
+        <h2 className="font-display text-[calc(22*var(--s))] font-extrabold leading-tight sm:text-[calc(26*var(--s))]">
           HUD на <span className="kw">экране</span>
         </h2>
-        <p className="mt-2 text-[15px] font-bold leading-snug text-white">
+        <p className="mt-2 text-[calc(15*var(--s))] font-bold leading-snug text-white">
           Креативный сервис в один тап: без браузера, с личным кабинетом и голосовым помощником под рукой.
         </p>
 
         <div className="mt-5 flex items-center gap-4">
           <IconTile id={icon} size={84} />
           <div className="min-w-0">
-            <div className="font-display text-[15px] font-extrabold">{label}</div>
-            <div className="text-[13px] font-bold text-white">Так значок выглядит на экране</div>
+            <div className="font-display text-[calc(15*var(--s))] font-extrabold">{label}</div>
+            <div className="text-[calc(13*var(--s))] font-bold text-white">Так значок выглядит на экране</div>
           </div>
         </div>
 
-        <p className="mt-5 text-[13px] font-extrabold uppercase tracking-[0.08em] text-[#A4F4FD]">Выбери иконку</p>
+        <p className="mt-5 text-[calc(13*var(--s))] font-extrabold uppercase tracking-[0.08em] text-[#A4F4FD]">Выбери иконку</p>
         <div
           role="radiogroup"
           aria-label="Иконка приложения"
@@ -163,13 +163,13 @@ function InstallWindow({ open, mode, onClose }: { open: boolean; mode: InstallMo
                 aria-checked={on}
                 aria-label={i.label}
                 onClick={() => pick(i.id)}
-                className="rounded-[18px] p-[3px] transition-transform duration-200 active:scale-95"
+                className="rounded-[calc(18*var(--s))] p-[calc(3*var(--s))] transition-transform duration-200 active:scale-95"
                 style={{
                   background: on ? GRAD : "transparent",
                   transform: on ? "scale(1.06)" : undefined,
                 }}
               >
-                <span className="block rounded-[15px] bg-[#0B0B10] p-[2px]">
+                <span className="block rounded-[calc(15*var(--s))] bg-[#0B0B10] p-[calc(2*var(--s))]">
                   <IconTile id={i.id} size={62} />
                 </span>
               </button>
@@ -182,7 +182,7 @@ function InstallWindow({ open, mode, onClose }: { open: boolean; mode: InstallMo
             type="button"
             onClick={install}
             disabled={busy}
-            className="mt-4 w-full rounded-full px-6 py-3.5 font-display text-[15px] font-extrabold text-white transition-[filter,transform] active:scale-[0.98]"
+            className="mt-4 w-full rounded-full px-6 py-3.5 font-display text-[calc(15*var(--s))] font-extrabold text-white transition-[filter,transform] active:scale-[0.98]"
             style={{ background: "linear-gradient(90deg,#F5310B,#FF6A3D)" }}
           >
             Поставить на экран
@@ -190,9 +190,9 @@ function InstallWindow({ open, mode, onClose }: { open: boolean; mode: InstallMo
         ) : mode ? (
           <Steps mode={mode} />
         ) : null}
-        {note && <p className="mt-3 text-[14px] font-bold text-[#A4F4FD]">{note}</p>}
+        {note && <p className="mt-3 text-[calc(14*var(--s))] font-bold text-[#A4F4FD]">{note}</p>}
         {mode === "ios" && (
-          <p className="mt-3 text-[13px] font-bold text-[#A4F4FD]">
+          <p className="mt-3 text-[calc(13*var(--s))] font-bold text-[#A4F4FD]">
             Apple не даёт сайтам ставить значок сам — поэтому два нажатия руками. Выбранная иконка подтянется.
           </p>
         )}
@@ -287,7 +287,7 @@ export default function InstallApp() {
             aria-label="Поставить HUD на экран"
           >
             <IconTile id="hud" size={36} />
-            <span className="font-display text-[13px] font-extrabold leading-tight">
+            <span className="font-display text-[calc(13*var(--s))] font-extrabold leading-tight">
               Поставить HUD
               <br />
               на экран

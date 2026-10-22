@@ -25,7 +25,7 @@ export const CHAPTER_INTRO =
 export const HERO_LEAD =
   // Тень под буквами: на светлых кадрах видео (Имидж) оранжевый акцент
   // сливался с серым фоном (2026-10-08).
-  "font-display text-[9px] uppercase !leading-relaxed tracking-normal text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.9),0_0_12px_rgba(0,0,0,0.6)] sm:text-[10px]";
+  "font-display text-[calc(9*var(--s))] uppercase !leading-relaxed tracking-normal text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.9),0_0_12px_rgba(0,0,0,0.6)] sm:text-[calc(10*var(--s))]";
 
 /** Надзаголовок блока — короткая строка капсом над заголовком («НАШИ
  *  РАБОТЫ», «ЗАДАЧА В ЦЕНТРЕ ВНИМАНИЯ», «ПЕРСОНАЛИЗАЦИЯ»).
@@ -46,4 +46,4 @@ export const HERO_LEAD =
  *  Цвет не задан намеренно: у надзаголовков он разный по страницам
  *  (text-rec на направлениях, text-glow на /sites и /smm). */
 export const EYEBROW =
-  "font-sans text-[11px] font-bold uppercase tracking-[0.24em]";
+  "font-sans text-[calc(11*var(--s))] font-bold uppercase tracking-[0.24em]";

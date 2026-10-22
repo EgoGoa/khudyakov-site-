@@ -98,12 +98,12 @@ export default function Trust({
           this wrapper's width is exactly their sum, and the search bar
           (`ml-auto` in BlockAssistant.tsx, was `mx-auto`) right-aligns
           inside the same width instead of centring short of it. */}
-      <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:mx-auto lg:w-[1000px] xl:w-[1080px]">
+      <div className="max-lg:flex max-lg:flex-1 max-lg:flex-col max-lg:justify-evenly lg:mx-auto lg:w-[calc(1000*var(--s))] xl:w-[calc(1080*var(--s))]">
       {/* minimal: плашку «FAQ · до старта» Егор убрал — у FAQ свой заголовок. */}
       {!minimal && (
       <div className="max-lg:hidden mb-2 lg:flex lg:items-stretch lg:gap-3">
         <Appear from="left" delay={BEAT.content} className="hidden lg:flex lg:shrink-0">
-          <span className="inline-flex h-full items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-4 font-display text-[11px] uppercase tracking-[0.18em] text-orange">
+          <span className="inline-flex h-full items-center gap-2 rounded-full border border-orange/35 bg-orange/10 px-4 font-display text-[calc(11*var(--s))] uppercase tracking-[0.18em] text-orange">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
             FAQ · до старта
           </span>
@@ -143,7 +143,7 @@ export default function Trust({
             unfinished next to the reason cards and Promo/Telegram pair
             beside it. */}
         <Appear from="left" delay={BEAT.content} className={`hidden lg:block lg:self-start ${minimal ? "lg:order-2" : ""}`}>
-          {/* `lg:h-[380px] overflow-hidden` — the actual guarantee that
+          {/* `lg:h-[calc(380*var(--s))] overflow-hidden` — the actual guarantee that
               this card never grows or shrinks. The tab-collapse trick in
               FaqAside (hiding the other three category pills while an
               answer is open) gets most of the way there on its own, but
@@ -153,7 +153,7 @@ export default function Trust({
               Promo/Telegram row underneath it. 380px is that measured max
               plus a few px of headroom; overflow-hidden clips the rare
               case that isn't accounted for instead of growing past it. */}
-          <div className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md sm:p-5 lg:h-[380px] lg:overflow-hidden">
+          <div className="rounded-2xl bg-ink/45 p-4 backdrop-blur-md sm:p-5 lg:h-[calc(380*var(--s))] lg:overflow-hidden">
             <FaqAside set={active === "ai" ? "ai" : "content"} />
           </div>
         </Appear>
@@ -164,7 +164,7 @@ export default function Trust({
             more breathing room per row is what makes the block "dышать",
             and left-aligning keeps it flush with the Telegram/Promo pair
             underneath instead of centered off from them. */}
-        <div className={`lg:max-w-[540px] xl:max-w-[580px] lg:self-start ${minimal ? "lg:order-1 lg:pt-4" : "lg:mt-8"}`}>
+        <div className={`lg:max-w-[calc(540*var(--s))] xl:max-w-[calc(580*var(--s))] lg:self-start ${minimal ? "lg:order-1 lg:pt-4" : "lg:mt-8"}`}>
           {/* Five separate cards, one shared accent (orange, the same one
               FaqAside's own pills and "+" use right next to this) instead
               of a rainbow per card — Egor's call after the multicolour pass
@@ -173,11 +173,11 @@ export default function Trust({
               fallback scaled the same way (gap-1.5/6px -> 9px) — Egor's ask
               for more air between rows. */}
           <div
-            className={`flex flex-col [@media(max-height:760px)]:gap-[9px] ${
+            className={`flex flex-col [@media(max-height:760px)]:gap-[calc(9*var(--s))] ${
               // Глава с кнопкой услуги отдаёт ей часть межстрочного воздуха
               // этого списка: пять строк по 4px — ровно та высота, которую
               // кнопка забрала, когда её увеличили.
-              minimal ? "gap-3 sm:gap-[22px]" : footer ? "gap-[13px]" : "gap-[18px]"
+              minimal ? "gap-3 sm:gap-[calc(22*var(--s))]" : footer ? "gap-[calc(13*var(--s))]" : "gap-[calc(18*var(--s))]"
             }`}
           >
             {why.reasons.map((reason, i) => {
@@ -195,7 +195,7 @@ export default function Trust({
                       className={`flex w-full items-center text-left ${minimal ? "gap-4 py-0.5" : "gap-3 px-3.5 py-1"}`}
                     >
                       <span
-                        className={`shrink-0 font-display ${minimal ? "min-w-8 text-[15px] leading-none sm:min-w-11 sm:text-[22px]" : "text-[10px] tracking-[0.2em]"}`}
+                        className={`shrink-0 font-display ${minimal ? "min-w-8 text-[calc(15*var(--s))] leading-none sm:min-w-11 sm:text-[calc(22*var(--s))]" : "text-[calc(10*var(--s))] tracking-[0.2em]"}`}
                         // Номер не рвётся: у .font-display общий overflow-wrap
                         // break-word, и «02» на телефоне вставало столбиком.
                         style={{
@@ -207,11 +207,11 @@ export default function Trust({
                       >
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className={`flex-1 font-display uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] ${minimal ? "text-[12.5px] sm:text-[17px]" : "text-xs"}`}>
+                      <span className={`flex-1 font-display uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] ${minimal ? "text-[calc(12.5*var(--s))] sm:text-[calc(17*var(--s))]" : "text-xs"}`}>
                         {reason.title}
                       </span>
                       {!minimal && <span
-                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[11px] text-paper/60 transition-transform duration-200"
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[calc(11*var(--s))] text-paper/60 transition-transform duration-200"
                         style={
                           isOpen
                             ? { transform: "rotate(45deg)", borderColor: `${REASON_ACCENT.solid}80`, color: REASON_ACCENT.solid }
@@ -232,7 +232,7 @@ export default function Trust({
                           transition={{ duration: 0.35, ease: REASON_EASE }}
                           className="max-w-lg overflow-hidden"
                         >
-                          <p className={`body-small pb-2.5 ${minimal ? "pl-12 pt-1.5 !text-[12px] sm:pl-[3.75rem]" : "px-3.5 pl-[3rem]"}`}>
+                          <p className={`body-small pb-2.5 ${minimal ? "pl-12 pt-1.5 !text-[calc(12*var(--s))] sm:pl-[3.75rem]" : "px-3.5 pl-[3rem]"}`}>
                             {reason.description}
                           </p>
                         </motion.div>
@@ -270,7 +270,7 @@ export default function Trust({
             посмотрел и попросил именно уменьшить это окно, а не растягивать
             его содержимое — self-start отпускает карточку на её собственную
             высоту, Promo рядом по-прежнему тянется на всю строку сам. */}
-        <Appear from="up" delay={BEAT.cta} className={`mt-2 lg:self-start lg:max-w-[380px] xl:max-w-[420px] ${minimal ? "lg:order-4" : ""}`}>
+        <Appear from="up" delay={BEAT.cta} className={`mt-2 lg:self-start lg:max-w-[calc(380*var(--s))] xl:max-w-[calc(420*var(--s))] ${minimal ? "lg:order-4" : ""}`}>
           {/* minimal: окошко услуги (teamSwap или footer) вместо человека. */}
           {minimal ? (teamSwap ?? footer ?? teamCard) : (teamSwap ?? teamCard)}
         </Appear>
@@ -284,7 +284,7 @@ export default function Trust({
             for this card specifically to pulse the way that bar does. */}
         <Appear from="up" delay={BEAT.cta + STAGGER.normal} // minimal: акция на своей высоте, не растянута на весь ряд — пустого
           // поля в ней было вдвое больше текста (Егор, 2026-10-12).
-          className={`hidden lg:mt-2 lg:block lg:max-w-[540px] xl:max-w-[580px] ${minimal ? "lg:order-3 lg:self-start" : "lg:h-full"}`}>
+          className={`hidden lg:mt-2 lg:block lg:max-w-[calc(540*var(--s))] xl:max-w-[calc(580*var(--s))] ${minimal ? "lg:order-3 lg:self-start" : "lg:h-full"}`}>
           {active === "content" && (
             <PromoCard
               glow

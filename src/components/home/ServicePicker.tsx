@@ -396,8 +396,8 @@ export default function ServicePicker() {
             up or down every time the arrow was clicked. Reserved for two
             lines at the largest breakpoint's line-height, which is enough
             for every description in service-content.ts. */}
-        <div className="mt-3.5 flex h-[38px] max-w-[440px] items-center sm:h-[44px]">
-          <p className="service-sub-glow font-display text-[11px] uppercase leading-snug tracking-tight text-paper/75 sm:text-[13px]">
+        <div className="mt-3.5 flex h-[calc(38*var(--s))] max-w-[calc(440*var(--s))] items-center sm:h-[calc(44*var(--s))]">
+          <p className="service-sub-glow font-display text-[calc(11*var(--s))] uppercase leading-snug tracking-tight text-paper/75 sm:text-[calc(13*var(--s))]">
             {previewMeta.description}
           </p>
         </div>
@@ -447,7 +447,7 @@ export default function ServicePicker() {
 
         <Link
           href={`/${previewMeta.slug}`}
-          className="grad-border mt-6 inline-flex items-center gap-2 rounded-[14px] border px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
+          className="grad-border mt-6 inline-flex items-center gap-2 rounded-[calc(14*var(--s))] border px-6 py-3 text-sm font-medium text-paper transition hover:border-glow hover:bg-glow/10"
         >
           Подробнее об услуге →
         </Link>

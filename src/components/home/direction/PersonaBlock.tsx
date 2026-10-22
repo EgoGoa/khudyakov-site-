@@ -93,7 +93,7 @@ export function PersonaShell({
               {steps.map((n) => (
                 <span
                   key={n}
-                  className={`h-[3px] w-6 rounded-full transition-colors duration-300 ${
+                  className={`h-[calc(3*var(--s))] w-6 rounded-full transition-colors duration-300 ${
                     n <= step ? "bg-[linear-gradient(90deg,#ff4fd8,#ff6a3d)]" : "bg-paper/20"
                   }`}
                 />
@@ -183,12 +183,12 @@ export function PersonaChip({
         >
           {label}
         </span>
-        <span className="mt-2 block text-[13px] leading-snug text-white">{hint}</span>
+        <span className="mt-2 block text-[calc(13*var(--s))] leading-snug text-white">{hint}</span>
 
         {/* Явная метка состояния: одного цвета обводки мало, чтобы понять,
             какой именно ответ сейчас применён. */}
         <span
-          className={`mt-3 flex items-center gap-1.5 font-display text-[10px] uppercase tracking-[0.16em] transition ${
+          className={`mt-3 flex items-center gap-1.5 font-display text-[calc(10*var(--s))] uppercase tracking-[0.16em] transition ${
             on ? "text-orange" : "text-white/70 group-hover:text-orange"
           }`}
         >
@@ -223,7 +223,7 @@ export function PersonaResult({
       transition={{ duration: 0.5, ease: EASE }}
       className="mx-auto mt-10 max-w-[42em]"
     >
-      <p className="text-[15px] leading-relaxed text-white">{lead}</p>
+      <p className="text-[calc(15*var(--s))] leading-relaxed text-white">{lead}</p>
 
       <ul className="mt-4 flex flex-wrap items-center justify-center gap-2">
         {changed.map((label, i) => (
@@ -232,7 +232,7 @@ export function PersonaResult({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.15 + i * 0.08, duration: 0.35, ease: EASE }}
-            className="rounded-full border border-orange/40 bg-orange/10 px-3 py-1 font-display text-[10px] uppercase tracking-[0.16em] text-orange"
+            className="rounded-full border border-orange/40 bg-orange/10 px-3 py-1 font-display text-[calc(10*var(--s))] uppercase tracking-[0.16em] text-orange"
           >
             {label}
           </motion.li>
@@ -245,7 +245,7 @@ export function PersonaResult({
         <button
           type="button"
           onClick={onReset}
-          className="mt-6 font-display text-[10px] uppercase tracking-[0.18em] text-white/70 underline-offset-4 transition hover:text-orange hover:underline"
+          className="mt-6 font-display text-[calc(10*var(--s))] uppercase tracking-[0.18em] text-white/70 underline-offset-4 transition hover:text-orange hover:underline"
         >
           {resetLabel}
         </button>

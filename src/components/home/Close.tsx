@@ -216,13 +216,13 @@ export default function Close({
                   <a
                     href={briefHrefFor(active)}
                     className={`btn-neon btn-neon-breathe w-[70%] justify-center !font-bold tier-glow-btn-${i} ${
-                      dense ? "!py-1 !text-[8px]" : "!py-1.5 !text-[10px]"
+                      dense ? "!py-1 !text-[calc(8*var(--s))]" : "!py-1.5 !text-[calc(10*var(--s))]"
                     }`}
                   >
                     Выбрать план
                   </a>
                   {showCalculator && (
-                    <Link href={`/calculator/${active}`} className="btn-neon btn-neon-breathe w-[70%] justify-center !py-1.5 !text-[8px]">
+                    <Link href={`/calculator/${active}`} className="btn-neon btn-neon-breathe w-[70%] justify-center !py-1.5 !text-[calc(8*var(--s))]">
                       Рассчитать
                     </Link>
                   )}

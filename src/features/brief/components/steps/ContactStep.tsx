@@ -42,7 +42,7 @@ export default function ContactStep({
               aria-checked={method === m}
               data-on={method === m}
               onClick={() => onChange({ method: m, contact: "" })}
-              className="hb-card justify-center !py-3 text-[15px] font-semibold text-white"
+              className="hb-card justify-center !py-3 text-[calc(15*var(--s))] font-semibold text-white"
             >
               {METHOD_LABEL[m]}
             </button>

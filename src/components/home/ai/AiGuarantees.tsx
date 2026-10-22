@@ -72,14 +72,14 @@ const TERM_SCENES: { icon: string; render: () => React.ReactNode }[] = [
               className={
                 i === 0
                   ? "ai-a-blink block h-10 w-10 rounded-lg bg-emerald-400/70 ring-1 ring-emerald-200/70"
-                  : "block h-5 w-5 rounded-[4px] bg-white/10"
+                  : "block h-5 w-5 rounded-[calc(4*var(--s))] bg-white/10"
               }
             />
           ))}
         </div>
-        <p className="mt-3 text-center text-[11px] text-paper/55">Один процесс — узкое место найдено</p>
+        <p className="mt-3 text-center text-[calc(11*var(--s))] text-paper/55">Один процесс — узкое место найдено</p>
         {/* Второй бит, 4s хватает показать вывод, а не только завязку. */}
-        <p className="ai-a-seq mt-1 text-center text-[11px] text-emerald-300" style={{ animationDelay: "1.7s" }}>
+        <p className="ai-a-seq mt-1 text-center text-[calc(11*var(--s))] text-emerald-300" style={{ animationDelay: "1.7s" }}>
           Результат есть → масштабируем дальше
         </p>
       </>
@@ -94,11 +94,11 @@ const TERM_SCENES: { icon: string; render: () => React.ReactNode }[] = [
           <span className="ai-a-blink text-lg text-emerald-300">→</span>
           <span className="ai-a-node grid h-11 w-11 place-items-center rounded-full bg-emerald-400/20 text-xl ring-1 ring-emerald-300/45">🙋</span>
         </div>
-        <p className="mt-3 text-center text-[11px] text-paper/55">
+        <p className="mt-3 text-center text-[calc(11*var(--s))] text-paper/55">
           Права переходят вам — <span className="text-paper/35 line-through">доплата</span>
         </p>
         <span
-          className="ai-a-seq mx-auto mt-1.5 flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[10px] text-emerald-200 ring-1 ring-emerald-300/30"
+          className="ai-a-seq mx-auto mt-1.5 flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[calc(10*var(--s))] text-emerald-200 ring-1 ring-emerald-300/30"
           style={{ animationDelay: "1.8s" }}
         >
           ✓ Система и контент — ваши
@@ -122,8 +122,8 @@ const TERM_SCENES: { icon: string; render: () => React.ReactNode }[] = [
           ))}
           <span className="ai-a-node text-xl">⏱</span>
         </div>
-        <p className="mt-3 text-center text-[11px] text-paper/55">2 раунда правок включены в пилот</p>
-        <p className="ai-a-seq mt-1 text-center text-[11px] text-emerald-300" style={{ animationDelay: "2.1s" }}>
+        <p className="mt-3 text-center text-[calc(11*var(--s))] text-paper/55">2 раунда правок включены в пилот</p>
+        <p className="ai-a-seq mt-1 text-center text-[calc(11*var(--s))] text-emerald-300" style={{ animationDelay: "2.1s" }}>
           Дальше — по регламенту сопровождения
         </p>
       </>
@@ -134,14 +134,14 @@ const TERM_SCENES: { icon: string; render: () => React.ReactNode }[] = [
     render: () => (
       <>
         <div className="flex items-center justify-center gap-2">
-          <span className="ai-a-seq rounded-full bg-white/10 px-2.5 py-1 font-display text-[10px] uppercase tracking-[0.06em] text-paper/60" style={{ animationDelay: "0s" }}>
+          <span className="ai-a-seq rounded-full bg-white/10 px-2.5 py-1 font-display text-[calc(10*var(--s))] uppercase tracking-[0.06em] text-paper/60" style={{ animationDelay: "0s" }}>
             Ваши данные
           </span>
           <span className="ai-a-progress relative block h-px w-5 origin-left bg-emerald-300/60" style={{ animationDelay: "0.6s" }} />
           <span className="ai-a-node text-2xl">🔒</span>
         </div>
-        <p className="mt-3 text-center text-[11px] text-paper/55">Конфиденциальность — до передачи данных</p>
-        <p className="ai-a-seq mt-1 text-center text-[11px] text-emerald-300" style={{ animationDelay: "1.9s" }}>
+        <p className="mt-3 text-center text-[calc(11*var(--s))] text-paper/55">Конфиденциальность — до передачи данных</p>
+        <p className="ai-a-seq mt-1 text-center text-[calc(11*var(--s))] text-emerald-300" style={{ animationDelay: "1.9s" }}>
           Подписываем NDA раньше брифа
         </p>
       </>
@@ -154,12 +154,12 @@ const TERM_SCENES: { icon: string; render: () => React.ReactNode }[] = [
         {["Аудит", "Пилот", "Запуск"].map((label, i) => (
           <span
             key={label}
-            className="ai-a-seq flex w-[150px] items-center gap-2 rounded-full bg-white/[0.06] px-2.5 py-1"
+            className="ai-a-seq flex w-[calc(150*var(--s))] items-center gap-2 rounded-full bg-white/[0.06] px-2.5 py-1"
             style={{ animationDelay: `${i * 1.1}s` }}
           >
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
-            <span className="font-display text-[10px] uppercase tracking-[0.05em] text-paper/70">{label}</span>
-            <span className="ml-auto text-[9px] text-paper/35">дата в договоре</span>
+            <span className="font-display text-[calc(10*var(--s))] uppercase tracking-[0.05em] text-paper/70">{label}</span>
+            <span className="ml-auto text-[calc(9*var(--s))] text-paper/35">дата в договоре</span>
           </span>
         ))}
       </div>
@@ -173,14 +173,14 @@ const TERM_SCENES: { icon: string; render: () => React.ReactNode }[] = [
           {[40, 65, 50, 80].map((h, i) => (
             <span
               key={i}
-              className="ai-a-bar block w-3 rounded-t-[3px] bg-[linear-gradient(180deg,rgba(200,241,105,0.85),rgba(16,185,129,0.2))]"
+              className="ai-a-bar block w-3 rounded-t-[calc(3*var(--s))] bg-[linear-gradient(180deg,rgba(200,241,105,0.85),rgba(16,185,129,0.2))]"
               style={{ height: `${h}%`, animationDelay: `${i * 0.25}s` }}
             />
           ))}
-          <span className="ai-a-node ml-2 grid h-6 w-6 place-items-center self-center rounded-full bg-emerald-400/25 text-[10px] text-emerald-200 ring-1 ring-emerald-300/40">✓</span>
+          <span className="ai-a-node ml-2 grid h-6 w-6 place-items-center self-center rounded-full bg-emerald-400/25 text-[calc(10*var(--s))] text-emerald-200 ring-1 ring-emerald-300/40">✓</span>
         </div>
-        <p className="mt-3 text-center text-[11px] text-paper/55">Отчёт после каждого этапа</p>
-        <p className="ai-a-seq mt-1 text-center text-[11px] text-emerald-300" style={{ animationDelay: "2s" }}>
+        <p className="mt-3 text-center text-[calc(11*var(--s))] text-paper/55">Отчёт после каждого этапа</p>
+        <p className="ai-a-seq mt-1 text-center text-[calc(11*var(--s))] text-emerald-300" style={{ animationDelay: "2s" }}>
           Что сработало — фактами, не на словах
         </p>
       </>
@@ -191,15 +191,15 @@ const TERM_SCENES: { icon: string; render: () => React.ReactNode }[] = [
     render: () => (
       <>
         <div className="relative flex h-10 items-center justify-between px-2">
-          <span className="font-display text-[10px] uppercase tracking-[0.06em] text-paper/50">Мы</span>
+          <span className="font-display text-[calc(10*var(--s))] uppercase tracking-[0.06em] text-paper/50">Мы</span>
           <span className="relative mx-2 h-px flex-1 bg-emerald-300/30">
             <span className="ai-a-travel absolute -top-2.5 text-base">🔑</span>
           </span>
-          <span className="font-display text-[10px] uppercase tracking-[0.06em] text-emerald-300">Вы</span>
+          <span className="font-display text-[calc(10*var(--s))] uppercase tracking-[0.06em] text-emerald-300">Вы</span>
         </div>
-        <p className="mt-3 text-center text-[11px] text-paper/55">Ключи и доступы — на вашем имени</p>
+        <p className="mt-3 text-center text-[calc(11*var(--s))] text-paper/55">Ключи и доступы — на вашем имени</p>
         <span
-          className="ai-a-seq mx-auto mt-1.5 flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[10px] text-emerald-200 ring-1 ring-emerald-300/30"
+          className="ai-a-seq mx-auto mt-1.5 flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[calc(10*var(--s))] text-emerald-200 ring-1 ring-emerald-300/30"
           style={{ animationDelay: "2.2s" }}
         >
           ✓ Система не привязана к нам
@@ -219,7 +219,7 @@ const TERM_SCENES: { icon: string; render: () => React.ReactNode }[] = [
  *  line — instead of just sitting there for the extra time. */
 function GuaranteeInfographic() {
   return (
-    <div className="ai-thumb-live relative h-full w-full overflow-hidden rounded-[20px] border border-emerald-300/15 bg-white/[0.025]">
+    <div className="ai-thumb-live relative h-full w-full overflow-hidden rounded-[calc(20*var(--s))] border border-emerald-300/15 bg-white/[0.025]">
       <span
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
@@ -232,7 +232,7 @@ function GuaranteeInfographic() {
           style={{ animationDelay: `${i * 4}s` }}
         >
           <div className="flex items-center gap-2.5">
-            <span className="text-[28px] leading-none">{TERM_SCENES[i].icon}</span>
+            <span className="text-[calc(28*var(--s))] leading-none">{TERM_SCENES[i].icon}</span>
             <h3 className="kw min-w-0 max-w-[18em] text-left font-display text-sm uppercase leading-[1.15] tracking-tight xl:text-base">
               {term.title}
             </h3>
@@ -292,7 +292,7 @@ export default function AiGuarantees() {
               className="border-t border-paper/20 py-3"
             >
               <div className="flex items-baseline gap-3">
-                <span className="font-display text-[10px] text-paper/40">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-display text-[calc(10*var(--s))] text-paper/40">{String(i + 1).padStart(2, "0")}</span>
                 <div>
                   {/* Page's own lime→emerald gradient (`.kw`, scoped to this
                       gradient by `.ai-cool-headings` further up the page) —
@@ -314,13 +314,13 @@ export default function AiGuarantees() {
               8.75rem — сверху и снизу по ~31px пустоты. На десктопе её
               съедают отрицательные поля, чтобы верх плашки встал ровно по
               верхней линии списка слева (Егор: «выровняй выше»). */}
-          <Appear from="right" delay={BEAT.content + TERMS.length * STAGGER.tight} className="lg:-my-[31px]">
+          <Appear from="right" delay={BEAT.content + TERMS.length * STAGGER.tight} className="lg:-my-[calc(31*var(--s))]">
             <TeamPulse data={EGOR_AI} />
           </Appear>
           <Appear
             from="right"
             delay={BEAT.content + TERMS.length * STAGGER.tight + STAGGER.tight}
-            className="h-[250px]"
+            className="h-[calc(250*var(--s))]"
           >
             <GuaranteeInfographic />
           </Appear>

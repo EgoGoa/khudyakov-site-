@@ -257,7 +257,7 @@ export default function TeamPulse({
             key="card"
             type="button"
             onClick={openOrder}
-            className={`team-pulse-card group absolute flex items-center gap-4 rounded-[24px] px-4 text-left sm:gap-5 sm:px-5 ${
+            className={`team-pulse-card group absolute flex items-center gap-4 rounded-[calc(24*var(--s))] px-4 text-left sm:gap-5 sm:px-5 ${
               fill ? "inset-0 py-4" : compact ? "inset-x-0 bottom-0 z-30 min-h-[9.5rem] py-4" : "inset-0"
             }`}
             initial={reduced ? false : { opacity: 0, scale: 0.95, y: 6 }}
@@ -274,7 +274,7 @@ export default function TeamPulse({
               <span className="team-pulse-online absolute bottom-0 right-0 h-3 w-3 rounded-full" />
             </span>
             <span className={`min-w-0 flex-1 ${fill ? "flex h-full flex-col" : ""}`}>
-              <span className="flex items-center gap-2 font-display text-[9.5px] uppercase tracking-[0.14em] sm:text-[10.5px]">
+              <span className="flex items-center gap-2 font-display text-[calc(9.5*var(--s))] uppercase tracking-[0.14em] sm:text-[calc(10.5*var(--s))]">
                 <span className="team-pulse-acc">
                   {member.name} — {data.role}
                 </span>
@@ -287,7 +287,7 @@ export default function TeamPulse({
                   </span>
                 </FitArea>
               ) : (
-                <span className={`mt-1.5 block font-display uppercase leading-[1.38] tracking-tight text-white ${compact ? "h-[5.6em] text-[12px] sm:text-[13px]" : "h-[4.15em] text-[13px] sm:text-[15px]"}`}>
+                <span className={`mt-1.5 block font-display uppercase leading-[1.38] tracking-tight text-white ${compact ? "h-[5.6em] text-[calc(12*var(--s))] sm:text-[calc(13*var(--s))]" : "h-[4.15em] text-[calc(13*var(--s))] sm:text-[calc(15*var(--s))]"}`}>
                   <TypedOffer text={text} count={count} />
                 </span>
               )}
@@ -317,7 +317,7 @@ export default function TeamPulse({
                 действие одно — кнопка «Пообщаться» внутри, без кнопки в кнопке. */}
             <div
               onClick={reveal}
-              className={`team-pulse-note flex w-full cursor-pointer rounded-[22px] text-left ${
+              className={`team-pulse-note flex w-full cursor-pointer rounded-[calc(22*var(--s))] text-left ${
                 fill
                   ? "h-full items-center gap-4 px-4 py-4 sm:gap-5 sm:px-5"
                   : "items-center gap-3 px-3.5 py-3 sm:gap-3.5"
@@ -335,7 +335,7 @@ export default function TeamPulse({
                     <span className="team-pulse-online absolute bottom-0 right-0 h-3 w-3 rounded-full" />
                   </span>
                   <span className="flex h-full min-w-0 flex-1 flex-col">
-                    <span className="flex items-baseline gap-2 font-display text-[9.5px] uppercase tracking-[0.14em] sm:text-[10.5px]">
+                    <span className="flex items-baseline gap-2 font-display text-[calc(9.5*var(--s))] uppercase tracking-[0.14em] sm:text-[calc(10.5*var(--s))]">
                       <span className="text-white">
                         {member.name} — {data.role}
                       </span>
@@ -379,14 +379,14 @@ export default function TeamPulse({
                 <span className="flex items-baseline gap-2">
                   {/* Имя белым, рядом — кто это (Егор: слово «сейчас» и
                       градиентное имя смотрелись некрасиво). */}
-                  <span className="font-display text-[11px] uppercase tracking-[0.1em] text-white">{member.name}</span>
-                  <span aria-hidden="true" className="font-display text-[11px] text-white">—</span>
-                  <span className="truncate font-display text-[10px] uppercase tracking-[0.1em] text-white">{member.role}</span>
+                  <span className="font-display text-[calc(11*var(--s))] uppercase tracking-[0.1em] text-white">{member.name}</span>
+                  <span aria-hidden="true" className="font-display text-[calc(11*var(--s))] text-white">—</span>
+                  <span className="truncate font-display text-[calc(10*var(--s))] uppercase tracking-[0.1em] text-white">{member.role}</span>
                 </span>
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
                     key={note}
-                    className="mt-1 line-clamp-2 font-display text-[12px] uppercase leading-snug tracking-tight text-white sm:text-[13px]"
+                    className="mt-1 line-clamp-2 font-display text-[calc(12*var(--s))] uppercase leading-snug tracking-tight text-white sm:text-[calc(13*var(--s))]"
                     initial={reduced ? false : { opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}

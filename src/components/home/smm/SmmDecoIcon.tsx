@@ -34,7 +34,7 @@ export default function SmmDecoIcon({
           loading="lazy"
           width={size}
           height={size}
-          className="smm-deco-icon rounded-[26px]"
+          className="smm-deco-icon rounded-[calc(26*var(--s))]"
           style={{ width: size, height: size, "--r": `${rotate}deg` } as React.CSSProperties}
         />
       </Reveal>

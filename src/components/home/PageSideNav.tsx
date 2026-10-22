@@ -71,7 +71,7 @@ function SideArrow({ side, targetKey }: { side: "left" | "right"; targetKey: Ser
 
   const label = (
     <span
-      className={`font-display text-[8px] uppercase leading-[1.21] tracking-tight sm:text-[10px] land:flex land:gap-1 land:whitespace-nowrap land:text-[9px] ${
+      className={`font-display text-[calc(8*var(--s))] uppercase leading-[1.21] tracking-tight sm:text-[calc(10*var(--s))] land:flex land:gap-1 land:whitespace-nowrap land:text-[calc(9*var(--s))] ${
         isLeft ? "text-left" : "text-right"
       }`}
     >

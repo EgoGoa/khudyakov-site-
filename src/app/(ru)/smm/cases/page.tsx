@@ -58,7 +58,7 @@ export default function SmmCasesPage() {
                 <span className={`${EYEBROW} text-paper/40`}>
                   {item.category}
                 </span>
-                <span className="rounded-full border border-paper/15 px-3 py-1 font-display text-[10px] uppercase tracking-[0.15em] text-paper/50">
+                <span className="rounded-full border border-paper/15 px-3 py-1 font-display text-[calc(10*var(--s))] uppercase tracking-[0.15em] text-paper/50">
                   Кейс в работе
                 </span>
               </div>

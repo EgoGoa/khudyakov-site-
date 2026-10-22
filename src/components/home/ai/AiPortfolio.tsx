@@ -48,7 +48,7 @@ function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"]
   const dot = (cls = "bg-emerald-300/80", extra = "") => <span className={`block h-1.5 w-1.5 shrink-0 rounded-full ${cls} ${extra}`} />;
 
   return (
-    <div className="ai-thumb-live relative flex h-full min-h-[132px] w-full flex-col justify-center gap-2 overflow-hidden rounded-xl bg-paper/[0.03] p-3">
+    <div className="ai-thumb-live relative flex h-full min-h-[calc(132*var(--s))] w-full flex-col justify-center gap-2 overflow-hidden rounded-xl bg-paper/[0.03] p-3">
       {format === "Чат-бот" && (
         <>
           {/* Директ и Telegram отвечают сами, пока менеджер занят — та же
@@ -57,7 +57,7 @@ function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"]
           <div className="ai-a-seq flex items-start gap-1.5" style={d(0)}>
             <span className="mt-0.5 block h-4 w-4 shrink-0 rounded-full bg-paper/15" />
             <span className="block w-[70%] rounded-lg rounded-bl-sm bg-paper/10 p-1.5">
-              <span className="block h-1.5 w-[85%] rounded-[2px] bg-paper/22" />
+              <span className="block h-1.5 w-[85%] rounded-[calc(2*var(--s))] bg-paper/22" />
             </span>
           </div>
           <span className="ai-a-seq ml-auto flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-1.5 ring-1 ring-emerald-300/25" style={d(0.8)}>
@@ -69,7 +69,7 @@ function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"]
             className="ai-a-seq ml-auto block w-[74%] rounded-lg rounded-br-sm bg-emerald-400/20 p-1.5 ring-1 ring-emerald-300/30"
             style={d(1.5)}
           >
-            <span className="block h-1.5 w-[80%] rounded-[2px] bg-emerald-200/60" />
+            <span className="block h-1.5 w-[80%] rounded-[calc(2*var(--s))] bg-emerald-200/60" />
           </span>
         </>
       )}
@@ -79,9 +79,9 @@ function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"]
           {/* Запись на приём вечером — волна принимает звонок, затем слот в
               расписании подсвечивается вне рабочих часов. */}
           <span className="relative block h-9 w-full">
-            <span className="absolute inset-0 flex items-center justify-center gap-[3px]">
+            <span className="absolute inset-0 flex items-center justify-center gap-[calc(3*var(--s))]">
               {[10, 22, 34, 44, 30, 40, 20, 14].map((h, i) => (
-                <span key={i} className="ai-a-wave block w-[3px] rounded-full bg-emerald-300" style={{ height: `${h}%`, ...d((i % 4) * 0.16) }} />
+                <span key={i} className="ai-a-wave block w-[calc(3*var(--s))] rounded-full bg-emerald-300" style={{ height: `${h}%`, ...d((i % 4) * 0.16) }} />
               ))}
             </span>
           </span>
@@ -89,13 +89,13 @@ function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"]
             {["Пн", "Вт", "Ср", "Чт"].map((day, i) => (
               <span
                 key={day}
-                className={`grid h-5 w-5 place-items-center rounded-[3px] font-display text-[6px] ${i === 2 ? "ai-a-blink bg-emerald-400/30 text-emerald-100 ring-1 ring-emerald-300/40" : "bg-paper/[0.07] text-paper/40"}`}
+                className={`grid h-5 w-5 place-items-center rounded-[calc(3*var(--s))] font-display text-[calc(6*var(--s))] ${i === 2 ? "ai-a-blink bg-emerald-400/30 text-emerald-100 ring-1 ring-emerald-300/40" : "bg-paper/[0.07] text-paper/40"}`}
               >
                 {day}
               </span>
             ))}
           </div>
-          <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(1.6)}>
+          <span className="ai-a-seq flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[calc(6*var(--s))] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(1.6)}>
             <span aria-hidden="true">🕗</span>Ср, 21:40
           </span>
         </>
@@ -107,15 +107,15 @@ function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"]
               бежит, и в конце цикла падает бейдж "готово". */}
           <span className="relative block aspect-[16/10] w-full overflow-hidden rounded-md bg-[linear-gradient(135deg,rgba(52,211,153,0.4),rgba(0,210,255,0.22))]">
             <span className="absolute inset-0 grid place-items-center">
-              <span className="ai-a-blink grid h-7 w-7 place-items-center rounded-full bg-ink/70 text-[8px] text-emerald-200 ring-1 ring-emerald-300/40">▶</span>
+              <span className="ai-a-blink grid h-7 w-7 place-items-center rounded-full bg-ink/70 text-[calc(8*var(--s))] text-emerald-200 ring-1 ring-emerald-300/40">▶</span>
             </span>
           </span>
           <div className="flex gap-1">
             {[0, 1, 2, 3, 4].map((i) => (
-              <span key={i} className={`ai-a-blink block h-3 flex-1 rounded-[2px] ${i === 2 ? "bg-emerald-400/45" : "bg-paper/[0.08]"}`} style={d(i * 0.25)} />
+              <span key={i} className={`ai-a-blink block h-3 flex-1 rounded-[calc(2*var(--s))] ${i === 2 ? "bg-emerald-400/45" : "bg-paper/[0.08]"}`} style={d(i * 0.25)} />
             ))}
           </div>
-          <span className="ai-a-node flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[6px] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(1.8)}>
+          <span className="ai-a-node flex w-fit items-center gap-1 rounded-full bg-emerald-400/15 px-1.5 py-0.5 font-display text-[calc(6*var(--s))] tracking-[0.06em] text-emerald-200 ring-1 ring-emerald-300/30" style={d(1.8)}>
             <span aria-hidden="true" className="ai-a-blink block h-1 w-1 rounded-full bg-emerald-300" />Креатив готов
           </span>
         </>
@@ -127,18 +127,18 @@ function PilotGraphic({ format }: { format: (typeof SCENARIOS)[number]["format"]
               колонку "менеджеру", остальные остаются ждать очереди. */}
           <div className="grid grid-cols-2 gap-1.5">
             <span className="grid gap-1 rounded-md bg-emerald-400/15 p-1.5 ring-1 ring-emerald-300/35">
-              <span className="block font-display text-[6px] uppercase tracking-[0.04em] text-emerald-200">Менеджеру</span>
-              <span className="ai-a-lift block h-5 rounded-[3px] bg-emerald-400/30 ring-1 ring-emerald-300/40" />
+              <span className="block font-display text-[calc(6*var(--s))] uppercase tracking-[0.04em] text-emerald-200">Менеджеру</span>
+              <span className="ai-a-lift block h-5 rounded-[calc(3*var(--s))] bg-emerald-400/30 ring-1 ring-emerald-300/40" />
             </span>
             <span className="grid gap-1 rounded-md bg-paper/[0.06] p-1.5">
-              <span className="block font-display text-[6px] uppercase tracking-[0.04em] text-paper/35">На догрев</span>
-              <span className="block h-5 rounded-[3px] bg-paper/[0.08]" />
-              <span className="block h-5 rounded-[3px] bg-paper/[0.05]" />
+              <span className="block font-display text-[calc(6*var(--s))] uppercase tracking-[0.04em] text-paper/35">На догрев</span>
+              <span className="block h-5 rounded-[calc(3*var(--s))] bg-paper/[0.08]" />
+              <span className="block h-5 rounded-[calc(3*var(--s))] bg-paper/[0.05]" />
             </span>
           </div>
           <span className="ai-a-seq flex items-center gap-1.5" style={d(1.2)}>
-            <span className="ai-a-blink rounded-full bg-emerald-400/25 px-1.5 py-0.5 font-display text-[7px] tracking-[0.06em] text-emerald-100 ring-1 ring-emerald-300/40">92</span>
-            <span className="font-display text-[6px] tracking-[0.04em] text-paper/45">score → горячий</span>
+            <span className="ai-a-blink rounded-full bg-emerald-400/25 px-1.5 py-0.5 font-display text-[calc(7*var(--s))] tracking-[0.06em] text-emerald-100 ring-1 ring-emerald-300/40">92</span>
+            <span className="font-display text-[calc(6*var(--s))] tracking-[0.04em] text-paper/45">score → горячий</span>
           </span>
         </>
       )}
@@ -182,7 +182,7 @@ export default function AiPortfolio() {
                 отдать под инфографику конкретного инструмента, не под
                 общую картинку на все четыре карточки. */}
             <div className="relative sm:w-[58%]">
-              <span className="font-display text-[10px] uppercase tracking-[0.12em] text-emerald-300">Пример · {s.format}</span>
+              <span className="font-display text-[calc(10*var(--s))] uppercase tracking-[0.12em] text-emerald-300">Пример · {s.format}</span>
               {/* Bold — Egor's ask: this line reads as the actual headline
                   of the card and was getting lost at font-medium next to
                   the bold eyebrow above it. */}
@@ -194,7 +194,7 @@ export default function AiPortfolio() {
                   language, not the quiet outlined ghost link it was. */}
               <Link
                 href="/brief/ai"
-                className="ai-open-pulse mt-4 inline-flex items-center gap-2 rounded-[14px] bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-3.5 py-1.5 font-display text-[11px] font-medium uppercase tracking-[0.08em] text-[#03120d] transition-[filter] duration-300 hover:brightness-110"
+                className="ai-open-pulse mt-4 inline-flex items-center gap-2 rounded-[calc(14*var(--s))] bg-gradient-to-b from-[#5ce6b0] to-[#0fa47a] px-3.5 py-1.5 font-display text-[calc(11*var(--s))] font-medium uppercase tracking-[0.08em] text-[#03120d] transition-[filter] duration-300 hover:brightness-110"
               >
                 Хочу так же
               </Link>

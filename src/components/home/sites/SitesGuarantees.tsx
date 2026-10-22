@@ -120,7 +120,7 @@ export default function SitesGuarantees() {
       {/* Гарантии и FAQ — друг под другом в едином стиле (Егор, 2026-09-29):
           одинаковые подписи, линии, фирменный шрифт и белый текст. */}
       <div className="mt-10 lg:mt-0 lg:min-w-0 lg:flex-1 land:mt-0 land:min-w-0 land:flex-1">
-        <Appear from="up" delay={BEAT.content} className="font-display text-[13px] uppercase tracking-[0.14em] sm:text-[15px]">
+        <Appear from="up" delay={BEAT.content} className="font-display text-[calc(13*var(--s))] uppercase tracking-[0.14em] sm:text-[calc(15*var(--s))]">
           <span className="kw">Гарантии</span>
         </Appear>
         <ul className="mt-2 grid gap-x-8 sm:grid-cols-2">
@@ -133,19 +133,19 @@ export default function SitesGuarantees() {
               className="border-t border-paper/15 py-2.5"
             >
               <div className="flex items-baseline gap-3">
-                <span className="font-display text-[11px] text-white">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-display text-[calc(11*var(--s))] text-white">{String(i + 1).padStart(2, "0")}</span>
                 <div>
-                  <h3 className="font-display text-[12.5px] uppercase leading-tight tracking-tight text-white">
+                  <h3 className="font-display text-[calc(12.5*var(--s))] uppercase leading-tight tracking-tight text-white">
                     {reason.title}
                   </h3>
-                  <p className="mt-0.5 font-display text-[12px] leading-snug tracking-tight text-white">{reason.description}</p>
+                  <p className="mt-0.5 font-display text-[calc(12*var(--s))] leading-snug tracking-tight text-white">{reason.description}</p>
                 </div>
               </div>
             </Appear>
           ))}
         </ul>
 
-        <Appear from="up" delay={BEAT.cta} className="mt-7 font-display text-[13px] uppercase tracking-[0.14em] sm:text-[15px]">
+        <Appear from="up" delay={BEAT.cta} className="mt-7 font-display text-[calc(13*var(--s))] uppercase tracking-[0.14em] sm:text-[calc(15*var(--s))]">
           <span className="kw">Частые вопросы</span>
         </Appear>
         <Appear from="up" delay={BEAT.cta} className="mt-2">
@@ -159,10 +159,10 @@ export default function SitesGuarantees() {
                   aria-expanded={isOpen}
                   className="flex w-full items-baseline gap-3 py-2.5 text-left"
                 >
-                  <span className="font-display text-[11px] text-white">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="flex-1 font-display text-[12.5px] uppercase leading-tight tracking-tight text-white">{item.q}</span>
+                  <span className="font-display text-[calc(11*var(--s))] text-white">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="flex-1 font-display text-[calc(12.5*var(--s))] uppercase leading-tight tracking-tight text-white">{item.q}</span>
                   <span
-                    className={`flex h-5 w-5 shrink-0 text-[12px] items-center justify-center self-center rounded-full border border-paper/25 text-white transition-transform duration-200 ${
+                    className={`flex h-5 w-5 shrink-0 text-[calc(12*var(--s))] items-center justify-center self-center rounded-full border border-paper/25 text-white transition-transform duration-200 ${
                       isOpen ? "rotate-45 border-orange/60 text-orange" : ""
                     }`}
                     aria-hidden="true"
@@ -172,7 +172,7 @@ export default function SitesGuarantees() {
                 </button>
                 {/* Ответы всегда в разметке (для поисковиков — бывший SEO-текст),
                     закрытые просто скрыты. */}
-                <p hidden={!isOpen} className="-mt-1 max-w-[46em] pb-3 pl-[1.9rem] font-display text-[12px] leading-snug tracking-tight text-white">{item.a}</p>
+                <p hidden={!isOpen} className="-mt-1 max-w-[46em] pb-3 pl-[1.9rem] font-display text-[calc(12*var(--s))] leading-snug tracking-tight text-white">{item.a}</p>
               </div>
             );
           })}

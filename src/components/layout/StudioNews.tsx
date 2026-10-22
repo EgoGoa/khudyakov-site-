@@ -94,7 +94,7 @@ function Slides({ item }: { item: StudioNewsItem }) {
   };
 
   return (
-    <div ref={wrap} className="relative mx-auto w-full max-w-[420px]">
+    <div ref={wrap} className="relative mx-auto w-full max-w-[calc(420*var(--s))]">
       <div
         ref={ref}
         onScroll={onScroll}
@@ -175,7 +175,7 @@ function Text({ item }: { item: StudioNewsItem }) {
       type="button"
       onClick={() => setOpen((v) => !v)}
       aria-expanded={open}
-      className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-display text-[12px] font-bold uppercase tracking-wider text-[#0b0b10] transition hover:brightness-110 active:scale-[0.98]"
+      className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-display text-[calc(12*var(--s))] font-bold uppercase tracking-wider text-[#0b0b10] transition hover:brightness-110 active:scale-[0.98]"
       style={{ background: open ? "rgba(255,255,255,0.92)" : ORANGE }}
     >
       {open ? "Свернуть" : "Читать полностью"}
@@ -188,36 +188,36 @@ function Text({ item }: { item: StudioNewsItem }) {
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <time
           dateTime={item.date}
-          className="rounded-full px-3 py-1 font-display text-[13px] font-bold text-[#0b0b10]"
+          className="rounded-full px-3 py-1 font-display text-[calc(13*var(--s))] font-bold text-[#0b0b10]"
           style={{ background: LIME }}
         >
           {longDate(item.date)}
         </time>
-        <span className="text-[13px] font-semibold text-white/60">Новости студии</span>
+        <span className="text-[calc(13*var(--s))] font-semibold text-white/60">Новости студии</span>
       </div>
-      <div className="mt-4 font-display text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: ORANGE }}>
+      <div className="mt-4 font-display text-[calc(11*var(--s))] font-bold uppercase tracking-[0.18em]" style={{ color: ORANGE }}>
         {item.eyebrow}
       </div>
       <h3 className="mt-2 font-display text-[1.5rem] font-extrabold leading-[1.15] tracking-tight text-white sm:text-[2.1rem]">
         <Accent text={item.title} accent={item.titleAccent} color={ORANGE} />
       </h3>
-      <p className="mt-4 text-[16px] font-semibold leading-relaxed text-white">
+      <p className="mt-4 text-[calc(16*var(--s))] font-semibold leading-relaxed text-white">
         <Accent text={item.lead} accent={item.leadAccent} color={LIME} />
       </p>
 
       <div
-        className={`mt-4 space-y-5 overflow-hidden text-[14px] font-medium leading-relaxed text-white/85 transition-[max-height] duration-500 ${
-          open ? "max-h-[4000px]" : "max-h-[7.5rem] [mask-image:linear-gradient(#000_55%,transparent)]"
+        className={`mt-4 space-y-5 overflow-hidden text-[calc(14*var(--s))] font-medium leading-relaxed text-white/85 transition-[max-height] duration-500 ${
+          open ? "max-h-[calc(4000*var(--s))]" : "max-h-[7.5rem] [mask-image:linear-gradient(#000_55%,transparent)]"
         }`}
       >
         {item.body.map((s, k) => (
           <section key={k} className="space-y-2">
             {s.h && (
-              <h4 className="flex items-center gap-3 font-display text-[15px] font-extrabold text-white">
-                <span className="font-display text-[12px] font-bold" style={{ color: ORANGE }}>
+              <h4 className="flex items-center gap-3 font-display text-[calc(15*var(--s))] font-extrabold text-white">
+                <span className="font-display text-[calc(12*var(--s))] font-bold" style={{ color: ORANGE }}>
                   {String(k + 1).padStart(2, "0")}
                 </span>
-                <span className="h-[3px] w-6 rounded-full" style={{ background: ORANGE }} />
+                <span className="h-[calc(3*var(--s))] w-6 rounded-full" style={{ background: ORANGE }} />
                 {s.h}
               </h4>
             )}
@@ -236,7 +236,7 @@ function Text({ item }: { item: StudioNewsItem }) {
               <ol className="space-y-1.5">
                 {s.ol.map((t, j) => (
                   <li key={t} className="flex gap-2.5">
-                    <b className="font-display text-[13px]" style={{ color: LIME }}>{j + 1}</b>
+                    <b className="font-display text-[calc(13*var(--s))]" style={{ color: LIME }}>{j + 1}</b>
                     {t}
                   </li>
                 ))}
@@ -253,7 +253,7 @@ function Text({ item }: { item: StudioNewsItem }) {
         {item.cta && (
           <Link
             href={item.cta.href}
-            className="text-[14px] font-bold text-white underline decoration-white/30 underline-offset-4 transition hover:decoration-white"
+            className="text-[calc(14*var(--s))] font-bold text-white underline decoration-white/30 underline-offset-4 transition hover:decoration-white"
           >
             {item.cta.label}
           </Link>
@@ -271,7 +271,7 @@ function NewsCard({ item, active, onOpen }: { item: StudioNewsItem; active: bool
       type="button"
       onClick={onOpen}
       aria-expanded={active}
-      className="group flex w-[calc(50%-8px)] shrink-0 snap-start flex-col overflow-hidden rounded-2xl text-left transition duration-300 hover:-translate-y-1 sm:w-[260px]"
+      className="group flex w-[calc(50%-8px)] shrink-0 snap-start flex-col overflow-hidden rounded-2xl text-left transition duration-300 hover:-translate-y-1 sm:w-[calc(260*var(--s))]"
       style={{
         background: "rgba(255,255,255,0.04)",
         boxShadow: active
@@ -289,18 +289,18 @@ function NewsCard({ item, active, onOpen }: { item: StudioNewsItem; active: bool
       <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
         <time
           dateTime={item.date}
-          className="self-start rounded-full px-2.5 py-0.5 font-display text-[11px] font-bold text-[#0b0b10] sm:text-[12px]"
+          className="self-start rounded-full px-2.5 py-0.5 font-display text-[calc(11*var(--s))] font-bold text-[#0b0b10] sm:text-[calc(12*var(--s))]"
           style={{ background: LIME }}
         >
           {longDate(item.date)}
         </time>
-        <h3 className="font-display text-[14px] font-extrabold leading-[1.2] text-white sm:text-[16px]">
+        <h3 className="font-display text-[calc(14*var(--s))] font-extrabold leading-[1.2] text-white sm:text-[calc(16*var(--s))]">
           <Accent text={item.title} accent={item.titleAccent} color={ORANGE} />
         </h3>
-        <p className="hidden text-[13px] font-semibold leading-snug text-white sm:block">
+        <p className="hidden text-[calc(13*var(--s))] font-semibold leading-snug text-white sm:block">
           <Accent text={item.lead} accent={item.leadAccent} color={LIME} />
         </p>
-        <span className="mt-auto pt-1 font-display text-[11px] font-bold uppercase tracking-wider" style={{ color: ORANGE }}>
+        <span className="mt-auto pt-1 font-display text-[calc(11*var(--s))] font-bold uppercase tracking-wider" style={{ color: ORANGE }}>
           {active ? "Свернуть ↑" : "Открыть ↓"}
         </span>
       </div>

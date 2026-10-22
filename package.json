@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "build:static": "./scripts/build-static.sh",
     "deploy:ru": "./scripts/deploy-ru.sh",
-    "audit:overlaps": "node scripts/audit-overlaps.mjs"
+    "audit:overlaps": "node scripts/audit-overlaps.mjs",
+    "audit:big": "node scripts/audit-big-screens.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

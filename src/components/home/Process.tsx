@@ -61,7 +61,7 @@ function StepStory({ beats }: { beats: ProcessStepItem["beats"] }) {
               }}
             />
           )}
-          {/* px-1.5/gap-0.5/text-[6px], down from px-2/gap-1/text-[7px] — the
+          {/* px-1.5/gap-0.5/text-[calc(6*var(--s))], down from px-2/gap-1/text-[calc(7*var(--s))] — the
               three chips plus connecting lines and the closing checkmark
               were overflowing the card's own top panel at the original
               size (worst case ~338px of content in a ~295px box, clipped
@@ -73,15 +73,15 @@ function StepStory({ beats }: { beats: ProcessStepItem["beats"] }) {
             className="step-story-chip inline-flex min-w-0 items-center gap-0.5 rounded-full bg-white/[0.07] px-1.5 py-0.5 ring-1 ring-white/[0.12]"
             style={{ animationDelay: `${i * stagger}s` }}
           >
-            <span className="shrink-0 text-[9px] leading-none">{beat.icon}</span>
-            <span className="truncate font-display text-[6px] uppercase leading-none tracking-[0.04em] text-white/80">
+            <span className="shrink-0 text-[calc(9*var(--s))] leading-none">{beat.icon}</span>
+            <span className="truncate font-display text-[calc(6*var(--s))] uppercase leading-none tracking-[0.04em] text-white/80">
               {beat.label}
             </span>
           </span>
         </div>
       ))}
       <span
-        className="step-story-check ml-0.5 grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full text-[6px] text-ink"
+        className="step-story-check ml-0.5 grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full text-[calc(6*var(--s))] text-ink"
         style={{
           background: "var(--process-glow-border, rgba(52,211,153,0.9))",
           animationDelay: `${beats.length * stagger}s`,
@@ -287,7 +287,7 @@ export default function Process({
               </h3>
               {/* Короче вдвое и на 30% крупнее (Егор, 2026-10-12), как в карточках
                   «Основных направлений». */}
-              <p className="body-small mt-2 !text-[11px] sm:!text-[13px]">{step.description}</p>
+              <p className="body-small mt-2 !text-[calc(11*var(--s))] sm:!text-[calc(13*var(--s))]">{step.description}</p>
             </div>
           </Appear>
         ))}

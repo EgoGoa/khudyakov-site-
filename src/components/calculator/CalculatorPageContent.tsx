@@ -184,7 +184,7 @@ export default function CalculatorPageContent({ config }: { config: CalcConfig }
           </div>
 
           <Appear from="up" delay={DIRECTION_BEAT.cta + STAGGER.normal * 2}>
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-display text-[11px] uppercase tracking-[0.15em] text-white">
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-display text-[calc(11*var(--s))] uppercase tracking-[0.15em] text-white">
               <a href={`mailto:${EMAIL}`} className="normal-case tracking-normal transition hover:text-orange">
                 {EMAIL}
               </a>

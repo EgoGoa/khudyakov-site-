@@ -49,7 +49,7 @@ export default function CloseBlock({ close }: { close: DirectionContent["close"]
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.4, ease: EASE }}
-              className="mx-auto mt-6 max-w-[34em] text-[15px] leading-relaxed text-white"
+              className="mx-auto mt-6 max-w-[34em] text-[calc(15*var(--s))] leading-relaxed text-white"
             >
               Ваша задача: <span className="font-medium text-orange">{active.label}</span> —{" "}
               {active.promise}.
@@ -77,7 +77,7 @@ export default function CloseBlock({ close }: { close: DirectionContent["close"]
         </div>
 
         <Appear from="up" delay={DIRECTION_BEAT.cta + STAGGER.normal * 2}>
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-display text-[11px] uppercase tracking-[0.15em] text-white">
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-display text-[calc(11*var(--s))] uppercase tracking-[0.15em] text-white">
             <a href={`mailto:${EMAIL}`} className="normal-case tracking-normal transition hover:text-orange">
               {EMAIL}
             </a>

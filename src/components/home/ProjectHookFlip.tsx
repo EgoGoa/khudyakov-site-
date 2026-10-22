@@ -92,7 +92,7 @@ export default function ProjectHookFlip({
             {v}
             <small>%</small>
           </div>
-          <span className="font-display text-[9px] uppercase tracking-[0.16em] text-paper/70">готовность</span>
+          <span className="font-display text-[calc(9*var(--s))] uppercase tracking-[0.16em] text-paper/70">готовность</span>
         </div>
         <div className="min-w-0 flex-1">
           <p className="m-0 font-display text-sm uppercase leading-[1.15] tracking-tight text-white sm:text-base">

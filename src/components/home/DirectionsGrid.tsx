@@ -71,7 +71,7 @@ const DIRECTION_BG: Record<string, string> = {
 function DirectionCard({ direction }: { direction: ContentDirection; work?: Work; active: boolean }) {
   return (
     <div
-      className="deck-card-glow relative flex h-full min-h-0 max-sm:gap-4 sm:min-h-[190px] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
+      className="deck-card-glow relative flex h-full min-h-0 max-sm:gap-4 sm:min-h-[calc(190*var(--s))] flex-col justify-between rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
       style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
     >
       {/* Фон окошка — стоковый кадр по смыслу направления вместо круглого
@@ -97,7 +97,7 @@ function DirectionCard({ direction }: { direction: ContentDirection; work?: Work
               обычного тела, а не мелкий текст на общих основаниях —
               читается сразу, а не угадывается. */}
           {/* +30% к body-small (Егор, 2026-10-12): 8.5→11px, 10→13px. */}
-          <p className="body-small mt-1.5 line-clamp-4 !text-[11px] sm:line-clamp-3 sm:!text-[13px]">
+          <p className="body-small mt-1.5 line-clamp-4 !text-[calc(11*var(--s))] sm:line-clamp-3 sm:!text-[calc(13*var(--s))]">
             {direction.cardLine ?? direction.description}
           </p>
         </div>
@@ -105,7 +105,7 @@ function DirectionCard({ direction }: { direction: ContentDirection; work?: Work
       </div>
 
       <div className="pointer-events-none relative z-10 mt-2 flex items-center gap-3">
-        <span className="btn-neon pointer-events-none !px-3.5 !py-1.5 !text-[10px]">
+        <span className="btn-neon pointer-events-none !px-3.5 !py-1.5 !text-[calc(10*var(--s))]">
           Узнать больше
         </span>
         <Link
@@ -158,7 +158,7 @@ function SpecialFormatCard() {
           lift in globals.css) — this page's own warm gradient, breathing
           instead of static, bolder than a caption. */}
       <span
-        className="promo-card-badge-lift format-badge-soft-blink absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-[0.14em] text-white"
+        className="promo-card-badge-lift format-badge-soft-blink absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[calc(9*var(--s))] font-bold uppercase tracking-[0.14em] text-white"
         aria-hidden="true"
       >
         <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
@@ -166,7 +166,7 @@ function SpecialFormatCard() {
       </span>
 
       <div
-        className="deck-card-glow relative flex h-full min-h-0 max-sm:gap-4 sm:min-h-[190px] flex-col justify-between overflow-hidden rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
+        className="deck-card-glow relative flex h-full min-h-0 max-sm:gap-4 sm:min-h-[calc(190*var(--s))] flex-col justify-between overflow-hidden rounded-2xl border border-transparent bg-ink/45 p-4 backdrop-blur-md sm:p-5"
         style={{ "--card-glow-rgb": "0, 210, 255" } as React.CSSProperties}
       >
         <Link href="/brief/content" aria-label="Обсудить свой формат" className="absolute inset-0 z-0 rounded-2xl" />
@@ -187,7 +187,7 @@ function SpecialFormatCard() {
         </div>
 
         <div className="pointer-events-none relative z-10 mt-2 flex items-center gap-3">
-          <span className="btn-neon pointer-events-none !px-3.5 !py-1.5 !text-[10px]">Обсудить формат</span>
+          <span className="btn-neon pointer-events-none !px-3.5 !py-1.5 !text-[calc(10*var(--s))]">Обсудить формат</span>
           <Link
             href="/brief/content"
             aria-label="Обсудить свой формат"

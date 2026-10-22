@@ -20,7 +20,7 @@ export default function BriefSummary({
           <li key={s.id} className="flex items-start gap-4 p-4">
             <div className="min-w-0 flex-1">
               <div className="text-xs font-semibold text-white/70">{s.title}</div>
-              <div className="mt-1 whitespace-pre-line break-words text-[15px] font-semibold text-white">
+              <div className="mt-1 whitespace-pre-line break-words text-[calc(15*var(--s))] font-semibold text-white">
                 {text ?? "— пропущено"}
               </div>
             </div>

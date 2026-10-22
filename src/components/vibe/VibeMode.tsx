@@ -333,7 +333,7 @@ function VibeWindow({ onClose }: { onClose: () => void }) {
           сборке сферы на заставке и сливается в кольцо. */}
 
       {/* Тонкая полоса прогресса по верхнему краю окна — в анкете. */}
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 z-[2] h-[2px]">
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 z-[2] h-[calc(2*var(--s))]">
         <motion.div
           className="vibe-mode__progress h-full"
           animate={{ width: `${progress * 100}%`, opacity: stage === "quiz" || stage === "contact" || stage === "building" ? 1 : 0 }}
@@ -565,7 +565,7 @@ function Hello({ onDone }: { onDone: () => void }) {
     return () => window.clearTimeout(t);
   }, [words.length]);
   return (
-    <h2 className="vibe-mode__title mt-1 max-w-[520px]" aria-label={HELLO_TEXT.join("")}>
+    <h2 className="vibe-mode__title mt-1 max-w-[calc(520*var(--s))]" aria-label={HELLO_TEXT.join("")}>
       {words.map((x, i) => [
         i > 0 ? " " : null,
         <motion.span
@@ -751,7 +751,7 @@ function Question({
         aria-label={q.kind === "text" ? plainAccent(q.title) : "Свой вариант"}
         className="w-full bg-transparent outline-none placeholder:text-white/70"
       />
-      <span aria-hidden="true" className="whitespace-nowrap text-[11px]">
+      <span aria-hidden="true" className="whitespace-nowrap text-[calc(11*var(--s))]">
         Enter ↵
       </span>
     </div>
@@ -830,7 +830,7 @@ function Question({
             className="vibe-mode__range mt-6 w-full"
             style={{ ["--fill" as string]: `${(budgetIdx / (BUDGET_STEPS.length - 1)) * 100}%` }}
           />
-          <div className="mt-2 flex justify-between text-[11px]">
+          <div className="mt-2 flex justify-between text-[calc(11*var(--s))]">
             <span>30 тыс.</span>
             <span>150 тыс.</span>
             <span>400 тыс.</span>
@@ -842,7 +842,7 @@ function Question({
       {q.kind === "text" && <div className="mt-5 flex w-full justify-center">{ownInput(q.placeholder ?? "")}</div>}
       {q.own && q.kind !== "text" && ownInput(q.kind === "multi" || q.many ? "Добавить своё…" : "Свой вариант…")}
 
-      <div className="mt-3 min-h-[22px]">
+      <div className="mt-3 min-h-[calc(22*var(--s))]">
         <AnimatePresence mode="wait">
           {reaction && (
             <motion.p
@@ -936,7 +936,7 @@ function Contact({
           e.preventDefault();
           void submit();
         }}
-        className="mt-7 flex w-full max-w-[520px] flex-col gap-2.5 text-left"
+        className="mt-7 flex w-full max-w-[calc(520*var(--s))] flex-col gap-2.5 text-left"
       >
         <input
           value={name}
@@ -956,11 +956,11 @@ function Contact({
           autoComplete="tel"
           className="vibe-mode__field"
         />
-        <div className="mt-1 px-1 [&_label]:text-[13px] [&_label]:text-white">
+        <div className="mt-1 px-1 [&_label]:text-[calc(13*var(--s))] [&_label]:text-white">
           <ConsentCheckbox checked={consent} onChange={setConsent} accent="glow" />
         </div>
         {error && (
-          <p className="px-1 text-[14px]">
+          <p className="px-1 text-[calc(14*var(--s))]">
             Не получилось отправить.{" "}
             <a href={TELEGRAM} target="_blank" rel="noopener noreferrer" className="underline">
               Напиши нам в Telegram
@@ -994,7 +994,7 @@ function Building({ answers }: { answers: VibeAnswers }) {
   return (
     <>
       <span className="vibe-mode__eyebrow">Собираю твой лендинг</span>
-      <h2 className="vibe-mode__title vibe-mode__title--q mt-3 max-w-[760px]">{offer.title}</h2>
+      <h2 className="vibe-mode__title vibe-mode__title--q mt-3 max-w-[calc(760*var(--s))]">{offer.title}</h2>
       <div className="mt-6 flex flex-col items-center gap-2">
         {lines.map((l, i) => (
           <motion.p

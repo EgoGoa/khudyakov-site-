@@ -65,8 +65,8 @@ export default function TunedBlock({
               // eslint-disable-next-line @next/next/no-img-element -- обложки работ уже лежат готовыми jpg в public
               <img src={card.image} alt="" loading="lazy" className="mb-3 aspect-video w-full rounded-xl object-cover" />
             )}
-            <div className="font-display text-[13px] uppercase leading-tight tracking-tight text-white">{card.title}</div>
-            <p className="mt-1.5 text-[13px] font-semibold leading-snug text-white">{card.text}</p>
+            <div className="font-display text-[calc(13*var(--s))] uppercase leading-tight tracking-tight text-white">{card.title}</div>
+            <p className="mt-1.5 text-[calc(13*var(--s))] font-semibold leading-snug text-white">{card.text}</p>
           </motion.div>
         ))}
       </div>
@@ -75,7 +75,7 @@ export default function TunedBlock({
         <button
           type="button"
           onClick={() => window.dispatchEvent(new CustomEvent(OPEN_BLOCK_VIBE_EVENT, { detail: id }))}
-          className="btn-neon !py-2.5 !text-[11px]"
+          className="btn-neon !py-2.5 !text-[calc(11*var(--s))]"
         >
           Обсудить этот блок
         </button>

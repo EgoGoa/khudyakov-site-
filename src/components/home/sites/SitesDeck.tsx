@@ -117,7 +117,7 @@ function SitesCardFace({ id, image, step }: { id: string; image: string; step: n
       {/* Сияние в углу — мягкий радиальный градиент, а не blur-2xl: Safari
           обрезает размытый слой по прямоугольнику, а не по скруглению
           карточки, и за углом торчал ровный край (Егор, 2026-10-08). */}
-      <span className="pointer-events-none absolute -right-16 -top-[72px] h-44 w-44" style={{ background: "radial-gradient(circle, rgba(255,79,216,0.2) 0%, rgba(255,79,216,0.11) 28%, transparent 62%)" }} />
+      <span className="pointer-events-none absolute -right-16 -top-[calc(72*var(--s))] h-44 w-44" style={{ background: "radial-gradient(circle, rgba(255,79,216,0.2) 0%, rgba(255,79,216,0.11) 28%, transparent 62%)" }} />
       {/* Сцена растянута почти до подписи — Егор: раньше графика занимала
           половину карточки и читалась мелкой на фоне пустого затемнённого
           низа. Теперь сцена доходит до самого имени формата; собственный
@@ -166,7 +166,7 @@ const DECK_BEAT_MS = 4200;
 // actually read as glass — keeps it; the four behind it get a flat tint,
 // which at their size and dimming is indistinguishable.
 const CARD_SHELL =
-  "rounded-[20px] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.16)]";
+  "rounded-[calc(20*var(--s))] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.16)]";
 const CARD_SHELL_FRONT = `${CARD_SHELL} backdrop-blur-2xl backdrop-saturate-150`;
 
 // The chapter's button language, matching the minimalism of the references
@@ -175,7 +175,7 @@ const CARD_SHELL_FRONT = `${CARD_SHELL} backdrop-blur-2xl backdrop-saturate-150`
 // he flagged as unfinished here, since a pressed-key button fights the flat
 // glass everything else in this chapter is made of.
 export const PILL =
-  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-[14px] bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-display text-[11px] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
+  "inline-flex items-center gap-2.5 whitespace-nowrap rounded-[calc(14*var(--s))] bg-gradient-to-b from-[#ff8a5f] to-[#f0512a] px-7 py-3.5 font-display text-[calc(11*var(--s))] font-medium uppercase tracking-[0.16em] text-[#1a0a04] shadow-[0_12px_30px_-8px_rgba(255,106,61,0.7)] transition-[filter,transform] duration-300 hover:brightness-110 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
 
 export const ROUND =
   "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-paper/25 bg-white/[0.06] text-paper/85 backdrop-blur-md transition-[color,border-color,transform] duration-300 hover:scale-110 hover:border-glow/60 hover:text-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow";
@@ -257,7 +257,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           не расходились. */}
       {data && <SpotlightCopy data={data} step={sceneStep} setStep={setSceneStep} showSub={false} showTitle={false} compact sizeTo={DECK_COPY} />}
       {!data && (
-        <p className="m-0 self-center font-display text-[13px] font-semibold leading-snug text-paper">
+        <p className="m-0 self-center font-display text-[calc(13*var(--s))] font-semibold leading-snug text-paper">
           Собираем новые VIBE-сайты: каркас готов, идёт наполнение. <span className="text-glow">Анонс — скоро.</span>
         </p>
       )}
@@ -266,7 +266,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
   );
 
   return (
-    <div className="w-full max-w-[560px]">
+    <div className="w-full max-w-[calc(560*var(--s))]">
       {/* The fan. Fixed height so the chapter's layout doesn't shift as the
           description under it changes length — grown from 290 to fit the
           front card's new +20% size (240px tall × 1.2 ≈ 288px) plus its
@@ -332,7 +332,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                 }}
               />
               <span className="absolute inset-x-4 bottom-4 flex flex-col items-start gap-2">
-                <span className="block font-display text-[15px] uppercase leading-none tracking-tight text-paper">
+                <span className="block font-display text-[calc(15*var(--s))] uppercase leading-none tracking-tight text-paper">
                   {service.name}
                 </span>
                 {/* Same pattern as /ai's front-card pill, and the same
@@ -342,7 +342,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                     above it. Smaller too (px-3 py-1.5 → px-2.5 py-1). */}
                 {hasPage && (
                   <span
-                    className={`deck-open-pill inline-flex items-center gap-1.5 rounded-[14px] px-2.5 py-1 font-display text-[7px] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
+                    className={`deck-open-pill inline-flex items-center gap-1.5 rounded-[calc(14*var(--s))] px-2.5 py-1 font-display text-[calc(7*var(--s))] font-semibold uppercase tracking-[0.12em] motion-reduce:animate-none ${
                       isFront ? "" : "deck-open-pill-still"
                     }`}
                     style={{ "--pill-rgb": service.hit ? "255, 138, 92" : "79, 224, 255" } as CSSProperties}
@@ -356,7 +356,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           );
 
           const counter = (
-            <span style={{ opacity: captionOpacity }} className="absolute right-3 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[9px] tracking-[0.12em] text-paper/70 backdrop-blur-md">
+            <span style={{ opacity: captionOpacity }} className="absolute right-3 top-3 rounded-full bg-ink/70 px-2 py-1 font-display text-[calc(9*var(--s))] tracking-[0.12em] text-paper/70 backdrop-blur-md">
               {String(idx + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
           );
@@ -376,7 +376,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
               // here, and a blur filter re-runs on every frame for every
               // card — the depth it bought is now carried by the dark veil
               // inside the card instead, which costs nothing to move.
-              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[272px] w-[212px] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
+              className={`deck-pose ${blurPx > 0 ? "deck-pose-blur" : ""} absolute left-1/2 top-1/2 h-[calc(272*var(--s))] w-[calc(212*var(--s))] ease-[cubic-bezier(0.45,0.05,0.2,1)] motion-reduce:transition-none ${
                 // While the hand holds the deck the cards must track it on
                 // the same frame — a transition here would make them lag
                 // behind the finger by half a second.
@@ -425,7 +425,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                   front. */}
               {service.hit && (
                 <span
-                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[calc(8*var(--s))] uppercase tracking-[0.14em] text-white"
                   aria-hidden="true"
                   style={{ opacity: captionOpacity }}
                 >
@@ -436,7 +436,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
 
               {service.soon && (
                 <span
-                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+                  className="promo-card-badge-lift pointer-events-none absolute -top-2.5 left-3 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[calc(8*var(--s))] uppercase tracking-[0.14em] text-white"
                   aria-hidden="true"
                   style={{ opacity: captionOpacity }}
                 >
@@ -491,7 +491,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
                   набирает и отдаёт плотность вместе с движением. */}
               <span
                 aria-hidden="true"
-                className={`pointer-events-none absolute inset-0 z-10 rounded-[20px] bg-[#08090e] ${
+                className={`pointer-events-none absolute inset-0 z-10 rounded-[calc(20*var(--s))] bg-[#08090e] ${
                   live ? "" : "transition-opacity duration-[760ms] ease-[cubic-bezier(0.45,0.05,0.2,1)]"
                 }`}
                 style={{ opacity: pose.veil }}
@@ -511,7 +511,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
           same orange as the chapter rail down the left edge. The rail
           navigates chapters, this navigates services — they look alike on
           purpose but never share state. */}
-      <div className="mx-auto mt-6 flex max-w-[360px] items-center gap-3">
+      <div className="mx-auto mt-6 flex max-w-[calc(360*var(--s))] items-center gap-3">
         <div className="relative flex flex-1 items-center justify-between">
         <span
           className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
@@ -529,7 +529,7 @@ export default function SitesDeck({ panelTarget }: { panelTarget?: HTMLElement |
               onClick={() => goTo(i)}
               aria-label={service.name}
               aria-current={on ? "true" : undefined}
-              className="relative grid h-8 w-8 place-items-center rounded-full border bg-ink font-display text-[9px] transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow motion-reduce:transition-none"
+              className="relative grid h-8 w-8 place-items-center rounded-full border bg-ink font-display text-[calc(9*var(--s))] transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glow motion-reduce:transition-none"
               style={{
                 borderColor: on ? "#ff6a3d" : "rgba(255,106,61,0.28)",
                 color: on ? "#ffd0bd" : "rgba(220,221,239,0.45)",

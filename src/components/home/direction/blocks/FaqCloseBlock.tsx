@@ -57,7 +57,7 @@ export default function FaqCloseBlock({
                       className="group flex w-full items-center gap-4 py-4 text-left"
                     >
                       <span
-                        className={`font-display text-[10px] tracking-[0.18em] transition-colors ${
+                        className={`font-display text-[calc(10*var(--s))] tracking-[0.18em] transition-colors ${
                           on ? "text-orange" : "text-white"
                         }`}
                       >
@@ -91,7 +91,7 @@ export default function FaqCloseBlock({
                           transition={{ duration: 0.35, ease: EASE }}
                           className="overflow-hidden"
                         >
-                          <p className="py-5 pl-8 pr-6 text-[15px] leading-relaxed text-white">
+                          <p className="py-5 pl-8 pr-6 text-[calc(15*var(--s))] leading-relaxed text-white">
                             {item.a}
                           </p>
                         </motion.div>
@@ -113,7 +113,7 @@ export default function FaqCloseBlock({
               <h3 className="mt-4 font-display text-[1.35rem] uppercase leading-[1.13] tracking-tight text-white sm:text-[1.688rem]">
                 {close.title}
               </h3>
-              <p className="mt-5 text-[15px] leading-relaxed text-white">{close.sub}</p>
+              <p className="mt-5 text-[calc(15*var(--s))] leading-relaxed text-white">{close.sub}</p>
 
               <AnimatePresence mode="wait">
                 {task ? (
@@ -123,7 +123,7 @@ export default function FaqCloseBlock({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.35, ease: EASE }}
-                    className="mt-4 text-[13px] leading-relaxed text-white/70"
+                    className="mt-4 text-[calc(13*var(--s))] leading-relaxed text-white/70"
                   >
                     Ваша задача: <span className="font-medium text-orange">{task.label}</span> — {task.promise}.
                   </motion.p>

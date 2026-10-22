@@ -51,7 +51,7 @@ const NAV: { id: Section; label: string; icon: string }[] = [
 ];
 
 const Card = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
-  <div className={`rounded-[18px] bg-white/[0.06] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] ${className}`}>{children}</div>
+  <div className={`rounded-[calc(18*var(--s))] bg-white/[0.06] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] ${className}`}>{children}</div>
 );
 const Chip = ({ children, primary, onClick, disabled }: { children: ReactNode; primary?: boolean; onClick?: () => void; disabled?: boolean }) => (
   <button type="button" onClick={onClick} disabled={disabled} className={`cab-chip ${primary ? "cab-chip-primary" : ""}`}>
@@ -59,7 +59,7 @@ const Chip = ({ children, primary, onClick, disabled }: { children: ReactNode; p
   </button>
 );
 const Sect = ({ children }: { children: ReactNode }) => (
-  <p className="mb-2.5 flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white">
+  <p className="mb-2.5 flex items-center gap-2 text-[calc(12*var(--s))] font-extrabold uppercase tracking-[0.08em] text-white">
     <span className="cab-dot" />
     {children}
   </p>
@@ -82,8 +82,8 @@ function Register({ state }: { state: CabinetState }) {
   const ok = name.trim() && phone.trim() && terms && consent;
   return (
     <div className="flex flex-col">
-      <p className="font-display text-[22px] font-bold uppercase leading-[1.05] text-white sm:text-[24px]">{marks("Вход в *кабинет*")}</p>
-      <p className="mt-2.5 text-[14px] font-semibold leading-relaxed text-white">
+      <p className="font-display text-[calc(22*var(--s))] font-bold uppercase leading-[1.05] text-white sm:text-[calc(24*var(--s))]">{marks("Вход в *кабинет*")}</p>
+      <p className="mt-2.5 text-[calc(14*var(--s))] font-semibold leading-relaxed text-white">
         Регистрация за 10 секунд — и {marks(`^${gens(WELCOME_GIFTS)} изображения^`)} в подарок на самых свежих нейросетях.
       </p>
       <div className="mt-5 flex flex-col gap-2.5">
@@ -152,14 +152,14 @@ function Onboarding() {
             <i key={i} className={`h-1 rounded-full transition-all ${i === step ? "cab-bar w-7" : "w-3 bg-white/25"}`} />
           ))}
         </span>
-        <button type="button" onClick={() => saveProfile({ niche, goals, want }, true)} className="text-[13px] font-bold text-white underline-offset-4 hover:underline">
+        <button type="button" onClick={() => saveProfile({ niche, goals, want }, true)} className="text-[calc(13*var(--s))] font-bold text-white underline-offset-4 hover:underline">
           Заполню потом
         </button>
       </div>
       <AnimatePresence mode="wait">
         <motion.div key={step} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
-          <p className="mt-5 font-display text-[21px] font-bold uppercase leading-[1.08] text-white">{marks(cur.title)}</p>
-          <p className="mt-2 text-[14px] font-semibold text-white">{cur.sub}</p>
+          <p className="mt-5 font-display text-[calc(21*var(--s))] font-bold uppercase leading-[1.08] text-white">{marks(cur.title)}</p>
+          <p className="mt-2 text-[calc(14*var(--s))] font-semibold text-white">{cur.sub}</p>
           <div className="mt-4 flex flex-wrap gap-1.5">
             {cur.options.map((o) => (
               <Chip key={o} primary={cur.picked.includes(o)} onClick={() => cur.pick(o)}>
@@ -190,13 +190,13 @@ function InstallCard() {
     <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
       <div className="flex flex-1 items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element -- значок из public/pwa */}
-        <img src="/pwa/hud-192.png" alt="" width={42} height={42} className="rounded-[10px]" draggable={false} />
+        <img src="/pwa/hud-192.png" alt="" width={42} height={42} className="rounded-[calc(10*var(--s))]" draggable={false} />
         <div>
-          <p className="text-[15px] font-extrabold text-white">Следи за проектом с экрана телефона</p>
-          <p className="text-[13px] font-bold text-white">Поставь HUD приложением — кабинет откроется в один тап.</p>
+          <p className="text-[calc(15*var(--s))] font-extrabold text-white">Следи за проектом с экрана телефона</p>
+          <p className="text-[calc(13*var(--s))] font-bold text-white">Поставь HUD приложением — кабинет откроется в один тап.</p>
         </div>
       </div>
-      <button type="button" onClick={openInstall} className="shrink-0 rounded-full px-5 py-2.5 text-[14px] font-extrabold text-white" style={{ background: "linear-gradient(90deg,#F5310B,#FF6A3D)" }}>
+      <button type="button" onClick={openInstall} className="shrink-0 rounded-full px-5 py-2.5 text-[calc(14*var(--s))] font-extrabold text-white" style={{ background: "linear-gradient(90deg,#F5310B,#FF6A3D)" }}>
         Поставить на экран
       </button>
     </Card>
@@ -216,12 +216,12 @@ function TeamQuestion({ state }: { state: CabinetState }) {
         <div className="flex flex-1 items-center gap-3">
           <Avatar m={m} size={42} />
           <div>
-            <p className="text-[12px] font-bold">{marks(`*${m.name}* · только что`)}</p>
-            <p className="text-[15px] font-bold text-white">{q.ask}</p>
+            <p className="text-[calc(12*var(--s))] font-bold">{marks(`*${m.name}* · только что`)}</p>
+            <p className="text-[calc(15*var(--s))] font-bold text-white">{q.ask}</p>
           </div>
         </div>
         {state.answeredQuestion ? (
-          <p className="text-[13px] font-bold text-white">{marks(`^✓ ${state.answeredQuestion}^ — команда видит ответ`)}</p>
+          <p className="text-[calc(13*var(--s))] font-bold text-white">{marks(`^✓ ${state.answeredQuestion}^ — команда видит ответ`)}</p>
         ) : (
           <div className="flex flex-wrap gap-1.5">
             {q.options.map((o) => (
@@ -241,7 +241,7 @@ function Orders({ state, compact }: { state: CabinetState; compact?: boolean }) 
     return (
       <div>
         <Sect>Заказы</Sect>
-        <Card className="p-5 text-[14px] font-semibold text-white">
+        <Card className="p-5 text-[calc(14*var(--s))] font-semibold text-white">
           Пока пусто. Напиши Алисе или Егору на странице — заявка из чата сразу появится здесь.
         </Card>
       </div>
@@ -256,13 +256,13 @@ function Orders({ state, compact }: { state: CabinetState; compact?: boolean }) 
           return (
             <Card key={o.id} className="p-4">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-[16px] font-extrabold text-white">{o.title}</p>
-                <p className="shrink-0 text-[12px] font-bold">{marks(`^${ORDER_STAGES[o.stage]}^`)}</p>
+                <p className="text-[calc(16*var(--s))] font-extrabold text-white">{o.title}</p>
+                <p className="shrink-0 text-[calc(12*var(--s))] font-bold">{marks(`^${ORDER_STAGES[o.stage]}^`)}</p>
               </div>
-              <div className="mb-2 mt-3.5 h-[5px] overflow-hidden rounded-full bg-white/10">
+              <div className="mb-2 mt-3.5 h-[calc(5*var(--s))] overflow-hidden rounded-full bg-white/10">
                 <motion.i className="cab-bar block h-full rounded-full" initial={{ width: 0 }} animate={{ width: `${((o.stage + 1) / ORDER_STAGES.length) * 100}%` }} transition={SPRING} />
               </div>
-              <div className="flex items-center justify-between text-[12.5px] font-bold text-white">
+              <div className="flex items-center justify-between text-[calc(12.5*var(--s))] font-bold text-white">
                 <span className="flex items-center gap-1.5">
                   <Avatar m={m} size={20} /> {m.name}
                 </span>
@@ -282,7 +282,7 @@ function Recs({ state }: { state: CabinetState }) {
     return (
       <div>
         <Sect>Команда рекомендует</Sect>
-        <Card className="p-5 text-[14px] font-semibold text-white">Все предложения разобраны — новые появятся после следующего заказа.</Card>
+        <Card className="p-5 text-[calc(14*var(--s))] font-semibold text-white">Все предложения разобраны — новые появятся после следующего заказа.</Card>
       </div>
     );
   return (
@@ -295,11 +295,11 @@ function Recs({ state }: { state: CabinetState }) {
             return (
               <motion.div key={r.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }} transition={SPRING}>
                 <Card className="flex h-full flex-col gap-2 p-4">
-                  <p className="flex items-center gap-2 text-[12px] font-bold text-white">
+                  <p className="flex items-center gap-2 text-[calc(12*var(--s))] font-bold text-white">
                     <Avatar m={m} size={24} /> {m.name} · {m.role}
                   </p>
-                  <p className="text-[15px] font-extrabold leading-snug text-white">{marks(r.title)}</p>
-                  <p className="text-[13px] font-semibold leading-relaxed text-white">{r.text}</p>
+                  <p className="text-[calc(15*var(--s))] font-extrabold leading-snug text-white">{marks(r.title)}</p>
+                  <p className="text-[calc(13*var(--s))] font-semibold leading-relaxed text-white">{r.text}</p>
                   <div className="mt-auto flex gap-1.5 pt-1">
                     <Chip primary onClick={() => requestService(r.id, r.title.replace(/[*^~]/g, ""), r.memberId)}>
                       Интересно
@@ -320,7 +320,7 @@ function Catalog({ state, only }: { state: CabinetState; only?: "favorites" | "c
   const list = only ? SERVICES.filter((s) => state[only].includes(s.id)) : SERVICES;
   const [sent, setSent] = useState(false);
   if (only && !list.length)
-    return <Card className="p-5 text-[14px] font-semibold text-white">{only === "cart" ? "Корзина пуста — загляни в каталог." : "Здесь будет то, что ты отложил на потом."}</Card>;
+    return <Card className="p-5 text-[calc(14*var(--s))] font-semibold text-white">{only === "cart" ? "Корзина пуста — загляни в каталог." : "Здесь будет то, что ты отложил на потом."}</Card>;
   return (
     <div className="flex flex-col gap-3">
       <div className="grid gap-3 sm:grid-cols-2">
@@ -331,15 +331,15 @@ function Catalog({ state, only }: { state: CabinetState; only?: "favorites" | "c
           return (
             <Card key={s.id} className="flex flex-col gap-2 p-4">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-[15px] font-extrabold text-white">{s.title}</p>
+                <p className="text-[calc(15*var(--s))] font-extrabold text-white">{s.title}</p>
               </div>
-              <p className="text-[13px] font-semibold leading-relaxed text-white">{s.desc}</p>
+              <p className="text-[calc(13*var(--s))] font-semibold leading-relaxed text-white">{s.desc}</p>
               <div className="mt-1 flex items-center gap-1.5">
                 <Chip primary={!inCart} onClick={() => toggleList("cart", s.id, s.title)}>
                   {inCart ? "✓ В корзине" : "В корзину"}
                 </Chip>
                 <Chip onClick={() => toggleList("favorites", s.id, s.title)}>{fav ? "♥" : "♡"}</Chip>
-                <span className="ml-auto flex items-center gap-1.5 text-[12px] font-bold text-white">
+                <span className="ml-auto flex items-center gap-1.5 text-[calc(12*var(--s))] font-bold text-white">
                   <Avatar m={m} size={20} /> {m.name}
                 </span>
               </div>
@@ -375,8 +375,8 @@ function Kp({ state }: { state: CabinetState }) {
   return (
     <div className="flex flex-col gap-3">
       <Card className="p-5">
-        <p className="text-[16px] font-extrabold text-white">{marks("КП и *концепции* — в любой момент")}</p>
-        <p className="mt-2 text-[14px] font-semibold leading-relaxed text-white">
+        <p className="text-[calc(16*var(--s))] font-extrabold text-white">{marks("КП и *концепции* — в любой момент")}</p>
+        <p className="mt-2 text-[calc(14*var(--s))] font-semibold leading-relaxed text-white">
           Опиши задачу в одном сообщении — пришлём коммерческое предложение и несколько концепций сюда, в кабинет.
         </p>
         <div className="mt-3">
@@ -398,8 +398,8 @@ function Kp({ state }: { state: CabinetState }) {
       </Card>
       {state.orders.map((o) => (
         <Card key={o.id} className="flex items-center justify-between p-4">
-          <p className="text-[14px] font-bold text-white">{o.title}</p>
-          <p className="text-[12px] font-bold">{marks("^готовим материалы^")}</p>
+          <p className="text-[calc(14*var(--s))] font-bold text-white">{o.title}</p>
+          <p className="text-[calc(12*var(--s))] font-bold">{marks("^готовим материалы^")}</p>
         </Card>
       ))}
     </div>
@@ -410,8 +410,8 @@ const INTERESTS = ["Кофейни и рестораны", "Красота", "Э
 function Personal({ state }: { state: CabinetState }) {
   return (
     <Card className="p-5">
-      <p className="text-[16px] font-extrabold text-white">{marks("Сайт *под тебя*")}</p>
-      <p className="mt-2 text-[14px] font-semibold leading-relaxed text-white">Отметь, чем занимаешься, — блоки и примеры на сайте подстроятся под твою нишу.</p>
+      <p className="text-[calc(16*var(--s))] font-extrabold text-white">{marks("Сайт *под тебя*")}</p>
+      <p className="mt-2 text-[calc(14*var(--s))] font-semibold leading-relaxed text-white">Отметь, чем занимаешься, — блоки и примеры на сайте подстроятся под твою нишу.</p>
       <div className="mt-3 flex flex-wrap gap-1.5">
         {INTERESTS.map((i) => (
           <Chip key={i} primary={state.interests.includes(i)} onClick={() => toggleList("interests", i, i)}>
@@ -427,7 +427,7 @@ function History({ state }: { state: CabinetState }) {
   return (
     <Card className="flex flex-col divide-y divide-white/[0.06] p-2">
       {state.history.map((e) => (
-        <div key={e.at + e.text} className="flex gap-3 px-3 py-2.5 text-[13px] font-bold text-white">
+        <div key={e.at + e.text} className="flex gap-3 px-3 py-2.5 text-[calc(13*var(--s))] font-bold text-white">
           <span className="team-pulse-acc shrink-0">{new Date(e.at).toLocaleDateString(numLocale(), { day: "2-digit", month: "2-digit" })}</span>
           {e.text}
         </div>
@@ -453,7 +453,7 @@ function Business({ state }: { state: CabinetState }) {
           {state.profile.goals.length ? (
             state.profile.goals.map((g) => <span key={g} className="cab-chip cab-chip-primary">{g}</span>)
           ) : (
-            <p className="text-[14px] font-semibold text-white">Цели не выбраны — отметь их в анкете, и мы будем мерить результат по ним.</p>
+            <p className="text-[calc(14*var(--s))] font-semibold text-white">Цели не выбраны — отметь их в анкете, и мы будем мерить результат по ним.</p>
           )}
           {state.profile.niche && <span className="cab-chip">{state.profile.niche}</span>}
         </Card>
@@ -467,14 +467,14 @@ function Business({ state }: { state: CabinetState }) {
             ["Охват соцсетей", "за неделю"],
           ].map(([t, n]) => (
             <Card key={t} className="p-4">
-              <p className="font-display text-[26px] font-bold">{marks("*—*")}</p>
-              <p className="mt-1 text-[13px] font-extrabold text-white">{t}</p>
-              <p className="text-[12px] font-semibold text-white">{n}</p>
+              <p className="font-display text-[calc(26*var(--s))] font-bold">{marks("*—*")}</p>
+              <p className="mt-1 text-[calc(13*var(--s))] font-extrabold text-white">{t}</p>
+              <p className="text-[calc(12*var(--s))] font-semibold text-white">{n}</p>
             </Card>
           ))}
         </div>
         <Card className="mt-3 flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-          <p className="flex-1 text-[14px] font-semibold leading-relaxed text-white">
+          <p className="flex-1 text-[calc(14*var(--s))] font-semibold leading-relaxed text-white">
             Цифры появятся после запуска: подключим аналитику сайта и соцсетей — и здесь будет видно, сколько заявок и продаж приносит каждая услуга.
           </p>
           <Chip
@@ -498,14 +498,14 @@ function Business({ state }: { state: CabinetState }) {
         <Card className="flex flex-col divide-y divide-white/[0.06] p-2">
           {tasks.length ? (
             tasks.map(({ o, next }) => (
-              <div key={o.id} className="flex items-center gap-3 px-3 py-2.5 text-[13.5px] font-bold text-white">
+              <div key={o.id} className="flex items-center gap-3 px-3 py-2.5 text-[calc(13.5*var(--s))] font-bold text-white">
                 <Avatar m={member(o.memberId)} size={22} />
                 <span className="flex-1">{o.title}</span>
                 <span>{marks(`следующий шаг: ^${next}^`)}</span>
               </div>
             ))
           ) : (
-            <p className="px-3 py-2.5 text-[14px] font-semibold text-white">Задач пока нет — закажи услугу, и здесь появится её план.</p>
+            <p className="px-3 py-2.5 text-[calc(14*var(--s))] font-semibold text-white">Задач пока нет — закажи услугу, и здесь появится её план.</p>
           )}
         </Card>
       </div>
@@ -513,16 +513,16 @@ function Business({ state }: { state: CabinetState }) {
         <Sect>Усилить эффект кабинета</Sect>
         <div className="grid gap-3 sm:grid-cols-3">
           <Card className="p-4">
-            <p className="text-[14px] font-extrabold text-white">{marks(`Профиль ^${Math.round((filled / 3) * 100)}%^`)}</p>
-            <p className="mt-1 text-[13px] font-semibold text-white">Чем полнее анкета, тем точнее рекомендации команды.</p>
+            <p className="text-[calc(14*var(--s))] font-extrabold text-white">{marks(`Профиль ^${Math.round((filled / 3) * 100)}%^`)}</p>
+            <p className="mt-1 text-[calc(13*var(--s))] font-semibold text-white">Чем полнее анкета, тем точнее рекомендации команды.</p>
           </Card>
           <Card className="p-4">
-            <p className="text-[14px] font-extrabold text-white">{marks("*Аналитика*")}</p>
-            <p className="mt-1 text-[13px] font-semibold text-white">Подключим сайт и соцсети — увидишь заявки и конверсию здесь.</p>
+            <p className="text-[calc(14*var(--s))] font-extrabold text-white">{marks("*Аналитика*")}</p>
+            <p className="mt-1 text-[calc(13*var(--s))] font-semibold text-white">Подключим сайт и соцсети — увидишь заявки и конверсию здесь.</p>
           </Card>
           <Card className="p-4">
-            <p className="text-[14px] font-extrabold text-white">{marks("^Подарок^ в работу")}</p>
-            <p className="mt-1 text-[13px] font-semibold text-white">{state.gifts ? `Осталось ${gens(state.gifts)} изображения — опиши картинку справа.` : "Подарочные генерации использованы — результаты пришлём в течение дня."}</p>
+            <p className="text-[calc(14*var(--s))] font-extrabold text-white">{marks("^Подарок^ в работу")}</p>
+            <p className="mt-1 text-[calc(13*var(--s))] font-semibold text-white">{state.gifts ? `Осталось ${gens(state.gifts)} изображения — опиши картинку справа.` : "Подарочные генерации использованы — результаты пришлём в течение дня."}</p>
           </Card>
         </div>
       </div>
@@ -554,9 +554,9 @@ function Gift({ state }: { state: CabinetState }) {
   };
   return (
     <Card className="p-4">
-      <p className="text-[12px] font-extrabold uppercase tracking-[0.08em] text-white">Подарок</p>
-      <p className="mt-1 font-display text-[26px] font-bold leading-tight">{marks(`^${gens(state.gifts)}^`)}</p>
-      <p className="mt-1 text-[13px] font-bold text-white">изображения на самых свежих нейросетях — опиши, что нарисовать</p>
+      <p className="text-[calc(12*var(--s))] font-extrabold uppercase tracking-[0.08em] text-white">Подарок</p>
+      <p className="mt-1 font-display text-[calc(26*var(--s))] font-bold leading-tight">{marks(`^${gens(state.gifts)}^`)}</p>
+      <p className="mt-1 text-[calc(13*var(--s))] font-bold text-white">изображения на самых свежих нейросетях — опиши, что нарисовать</p>
       <div className="mt-2.5 flex gap-1" aria-hidden>
         {Array.from({ length: WELCOME_GIFTS }, (_, i) => (
           <span key={i} className={`h-1.5 flex-1 rounded-full ${i < state.gifts ? "bg-white" : "bg-white/15"}`} />
@@ -575,20 +575,20 @@ function Gift({ state }: { state: CabinetState }) {
             onChange={(e) => setPrompt(e.target.value)}
             rows={2}
             placeholder="Например: кофейня на рассвете, тёплый свет"
-            className="cab-input resize-none text-[13px]"
+            className="cab-input resize-none text-[calc(13*var(--s))]"
           />
           <Chip primary onClick={send} disabled={!prompt.trim() || busy}>
             {busy ? "Отправляю…" : "Сгенерировать"}
           </Chip>
         </form>
       ) : (
-        <p className="mt-3 text-[13px] font-semibold text-white">Все три заказаны — результаты придут сюда и на почту.</p>
+        <p className="mt-3 text-[calc(13*var(--s))] font-semibold text-white">Все три заказаны — результаты придут сюда и на почту.</p>
       )}
-      {note && <p className="mt-2 text-[12.5px] font-bold text-white">{note}</p>}
+      {note && <p className="mt-2 text-[calc(12.5*var(--s))] font-bold text-white">{note}</p>}
       {!!state.giftRequests.length && (
         <ul className="mt-3 flex flex-col gap-1 border-t border-white/[0.07] pt-2.5">
           {state.giftRequests.map((g) => (
-            <li key={g.at} className="text-[12.5px] font-semibold text-white">
+            <li key={g.at} className="text-[calc(12.5*var(--s))] font-semibold text-white">
               {marks("*В работе*")} · {g.prompt}
             </li>
           ))}
@@ -616,7 +616,7 @@ function TeamChat({ state }: { state: CabinetState }) {
     }
   };
   return (
-    <Card className="flex min-h-[260px] flex-1 flex-col gap-2 p-3.5">
+    <Card className="flex min-h-[calc(260*var(--s))] flex-1 flex-col gap-2 p-3.5">
       <Sect>Команда на связи</Sect>
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto">
         {msgs.map((m, i) => (
@@ -624,21 +624,21 @@ function TeamChat({ state }: { state: CabinetState }) {
             key={i}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`max-w-[90%] px-3 py-2 text-[13px] font-bold leading-snug text-white ${m.me ? "self-end rounded-2xl rounded-br-md bg-white/20" : "self-start rounded-2xl rounded-bl-md bg-white/10"}`}
+            className={`max-w-[90%] px-3 py-2 text-[calc(13*var(--s))] font-bold leading-snug text-white ${m.me ? "self-end rounded-2xl rounded-br-md bg-white/20" : "self-start rounded-2xl rounded-bl-md bg-white/10"}`}
           >
-            {!m.me && <span className="mb-0.5 block text-[11px] font-extrabold">{marks("*Егор*")}</span>}
+            {!m.me && <span className="mb-0.5 block text-[calc(11*var(--s))] font-extrabold">{marks("*Егор*")}</span>}
             {m.t}
           </motion.div>
         ))}
       </div>
       <form
-        className="flex items-center gap-2 rounded-[14px] bg-white/[0.08] px-3 py-1.5"
+        className="flex items-center gap-2 rounded-[calc(14*var(--s))] bg-white/[0.08] px-3 py-1.5"
         onSubmit={(e) => {
           e.preventDefault();
           send();
         }}
       >
-        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Написать команде…" className="min-w-0 flex-1 bg-transparent py-1.5 text-[13px] font-semibold text-white outline-none placeholder:text-white/70" />
+        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Написать команде…" className="min-w-0 flex-1 bg-transparent py-1.5 text-[calc(13*var(--s))] font-semibold text-white outline-none placeholder:text-white/70" />
         <button type="submit" aria-label="Отправить" className="cab-send" />
       </form>
     </Card>
@@ -661,9 +661,9 @@ export default function Cabinet({ onClose }: { onClose?: () => void }) {
   // (Егор: «регистрация как положено, с маленьким окошком»).
   if (!state.registered || !state.onboarded)
     return (
-      <div className="cab-glass relative w-full rounded-[26px] p-6 text-white sm:p-7">
+      <div className="cab-glass relative w-full rounded-[calc(26*var(--s))] p-6 text-white sm:p-7">
         {onClose && (
-          <button type="button" onClick={onClose} aria-label="Закрыть" className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full mobile-hide bg-white/10 text-[14px] text-white transition hover:bg-white/20">
+          <button type="button" onClick={onClose} aria-label="Закрыть" className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full mobile-hide bg-white/10 text-[calc(14*var(--s))] text-white transition hover:bg-white/20">
             ✕
           </button>
         )}
@@ -672,15 +672,15 @@ export default function Cabinet({ onClose }: { onClose?: () => void }) {
     );
 
   return (
-    <div className="cab-glass relative flex h-full w-full flex-col overflow-hidden rounded-[26px] text-white sm:rounded-[30px] lg:grid lg:grid-cols-[210px_1fr_300px]">
+    <div className="cab-glass relative flex h-full w-full flex-col overflow-hidden rounded-[calc(26*var(--s))] text-white sm:rounded-[calc(30*var(--s))] lg:grid lg:grid-cols-[210px_1fr_300px]">
       {onClose && (
-        <button type="button" onClick={onClose} aria-label="Закрыть кабинет" className="absolute right-3 top-3 z-20 grid h-9 w-9 place-items-center rounded-full mobile-hide bg-white/10 text-[15px] text-white transition hover:bg-white/20">
+        <button type="button" onClick={onClose} aria-label="Закрыть кабинет" className="absolute right-3 top-3 z-20 grid h-9 w-9 place-items-center rounded-full mobile-hide bg-white/10 text-[calc(15*var(--s))] text-white transition hover:bg-white/20">
           ✕
         </button>
       )}
         <>
           <nav className="flex shrink-0 gap-1 overflow-x-auto border-b border-white/[0.07] px-3 py-3 lg:flex-col lg:overflow-visible lg:border-b-0 lg:border-r lg:px-3.5 lg:py-6">
-            <p className="mb-5 hidden px-2.5 font-display text-[14px] font-bold lg:block">
+            <p className="mb-5 hidden px-2.5 font-display text-[calc(14*var(--s))] font-bold lg:block">
               HUD<span className="team-pulse-acc">.SERVICE</span>
             </p>
             {NAV.map((n) => (
@@ -691,27 +691,27 @@ export default function Cabinet({ onClose }: { onClose?: () => void }) {
                   setSection(n.id);
                   addEvent(`Открыт раздел «${n.label}»`);
                 }}
-                className={`flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-[11px] px-3 py-2.5 text-[14px] font-bold transition ${section === n.id ? "bg-white/10" : "hover:bg-white/[0.05]"}`}
+                className={`flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-[calc(11*var(--s))] px-3 py-2.5 text-[calc(14*var(--s))] font-bold transition ${section === n.id ? "bg-white/10" : "hover:bg-white/[0.05]"}`}
               >
                 <span className="w-4 text-center">{n.icon}</span>
                 {n.label}
-                {!!counts[n.id] && <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-white/15 px-1.5 text-[11px] font-extrabold">{counts[n.id]}</span>}
+                {!!counts[n.id] && <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-white/15 px-1.5 text-[calc(11*var(--s))] font-extrabold">{counts[n.id]}</span>}
               </button>
             ))}
-            <p className="mt-auto hidden px-3 pt-4 text-[13px] font-bold lg:block">
+            <p className="mt-auto hidden px-3 pt-4 text-[calc(13*var(--s))] font-bold lg:block">
               {state.name}
-              <span className="block text-[12px] font-semibold">{state.phone}</span>
+              <span className="block text-[calc(12*var(--s))] font-semibold">{state.phone}</span>
             </p>
           </nav>
 
           <main className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 py-6 sm:px-7 lg:py-8">
             <div className="pr-10">
-              <p className="font-display text-[22px] font-bold leading-[1.08] sm:text-[28px]">
+              <p className="font-display text-[calc(22*var(--s))] font-bold leading-[1.08] sm:text-[calc(28*var(--s))]">
                 {hello}
                 {firstName ? `, ${firstName}.` : "."}{" "}
                 {marks(state.orders.length ? "*Команда уже в работе*" : "*Кабинет готов*")}
               </p>
-              <p className="mt-2 text-[14px] font-semibold text-white sm:text-[15px]">
+              <p className="mt-2 text-[calc(14*var(--s))] font-semibold text-white sm:text-[calc(15*var(--s))]">
                 {state.orders.length
                   ? "Один вопрос ждёт твоего решения — остальное команда держит в работе."
                   : state.gifts

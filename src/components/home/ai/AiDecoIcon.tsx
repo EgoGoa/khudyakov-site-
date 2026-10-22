@@ -53,7 +53,7 @@ export default function AiDecoIcon({
         alt=""
         loading="lazy"
         width={size}
-        className={`rounded-[26px] ${animClass}`}
+        className={`rounded-[calc(26*var(--s))] ${animClass}`}
         style={{ width: size, height: "auto", "--r": `${rotate}deg` } as React.CSSProperties}
       />
     </div>

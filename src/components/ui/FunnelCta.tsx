@@ -171,7 +171,7 @@ function EyebrowPill({
   return (
     <span
       className={`inline-flex items-center gap-2 rounded-full border font-display uppercase tracking-[0.18em] ${skin} ${
-        dense ? "px-3 py-1 text-[10px]" : "px-3.5 py-1.5 text-[11px]"
+        dense ? "px-3 py-1 text-[calc(10*var(--s))]" : "px-3.5 py-1.5 text-[calc(11*var(--s))]"
       }`}
     >
       <span
@@ -194,10 +194,10 @@ export function PersonBadge({ person }: { person: TeamMember }) {
           <Image unoptimized src={person.photo} alt={person.name} fill sizes="24px" className="object-cover" />
         </span>
         <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-ink">
-          <span className="team-online-dot h-[7px] w-[7px] rounded-full bg-emerald-400" />
+          <span className="team-online-dot h-[calc(7*var(--s))] w-[calc(7*var(--s))] rounded-full bg-emerald-400" />
         </span>
       </span>
-      <span className="text-[11px] text-paper/70">
+      <span className="text-[calc(11*var(--s))] text-paper/70">
         Ответит {person.name} <span className="text-paper/45">· {person.role}</span>
       </span>
     </span>
@@ -463,7 +463,7 @@ export default function FunnelCta({
 // page is the quieter default .btn-neon. Sized down a step for "sm" so it
 // doesn't outweigh a compact card.
 function buttonClass(size: FunnelSize, flat = false, square = false) {
-  const scale = size === "sm" ? "!px-6 !py-3 !text-[12px]" : "!px-8 !py-4 !text-[13px]";
+  const scale = size === "sm" ? "!px-6 !py-3 !text-[calc(12*var(--s))]" : "!px-8 !py-4 !text-[calc(13*var(--s))]";
   const dimension = flat ? "" : "btn-3d";
   // Square corners + the display font instead of the pill/sans everywhere
   // else uses — /ai's own button language (see `square` above). `!` on

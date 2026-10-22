@@ -101,7 +101,7 @@ export default function InfoWindow({
           <Appear
             from={reverse ? "left" : "right"}
             delay={DIRECTION_BEAT.eyebrow + STAGGER.normal}
-            className="min-w-0 flex-1 lg:min-h-[230px]"
+            className="min-w-0 flex-1 lg:min-h-[calc(230*var(--s))]"
           >
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
@@ -117,7 +117,7 @@ export default function InfoWindow({
                 <h3 className="mt-3 break-words font-display text-xl uppercase leading-tight tracking-tight text-white sm:text-2xl">
                   {benefit.punch}
                 </h3>
-                <p className="mt-4 max-w-xl font-display text-[13px] leading-snug tracking-tight text-white/65 sm:text-sm">
+                <p className="mt-4 max-w-xl font-display text-[calc(13*var(--s))] leading-snug tracking-tight text-white/65 sm:text-sm">
                   {withAccent(benefit.text, benefit.accent)}
                 </p>
               </motion.div>
@@ -147,7 +147,7 @@ export default function InfoWindow({
 
             <Link
               href={ctaHref}
-              className="mt-6 inline-flex items-center gap-2 font-display text-[11px] uppercase tracking-[0.15em] text-white transition hover:text-orange"
+              className="mt-6 inline-flex items-center gap-2 font-display text-[calc(11*var(--s))] uppercase tracking-[0.15em] text-white transition hover:text-orange"
             >
               {ctaLabel}
               <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">

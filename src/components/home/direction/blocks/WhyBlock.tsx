@@ -42,7 +42,7 @@ export default function WhyBlock({ why }: { why: NonNullable<DirectionContent["w
                   <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl">
                     {item.title}
                   </h3>
-                  <p className="mt-3.5 text-[15px] leading-relaxed text-white">
+                  <p className="mt-3.5 text-[calc(15*var(--s))] leading-relaxed text-white">
                     {withAccent(item.text, item.accent)}
                   </p>
                 </div>

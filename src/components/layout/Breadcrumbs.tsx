@@ -80,7 +80,7 @@ export default function Breadcrumbs() {
   return (
     <nav aria-label="Навигация по сайту" className={`crumbs pointer-events-none fixed inset-x-0 ${scrolled ? "is-scrolled" : ""} top-[calc(68px+var(--sat))] z-40 sm:top-[calc(70px+3.5rem+14px+var(--sat))] lg:top-[calc(84px+var(--sat))] land:top-12`}>
       <Container>
-        <ol className="pointer-events-auto inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 font-display text-[10px] font-bold uppercase tracking-[0.08em] sm:text-[11px]">
+        <ol className="pointer-events-auto inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 font-display text-[calc(10*var(--s))] font-bold uppercase tracking-[0.08em] sm:text-[calc(11*var(--s))]">
           <li>
             <Link href={parent.href} aria-label={`Назад: ${parent.label}`} className="crumbs-back">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

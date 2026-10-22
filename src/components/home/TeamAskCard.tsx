@@ -108,7 +108,7 @@ export default function TeamAskCard({
   // карточка — просто контейнер.
   if (compact && secondaryHref && secondaryIcon) {
     const primaryClass =
-      "btn-neon btn-warm mt-1 inline-flex w-fit !px-3.5 !py-1.5 !text-[9px] transition group-hover:brightness-110";
+      "btn-neon btn-warm mt-1 inline-flex w-fit !px-3.5 !py-1.5 !text-[calc(9*var(--s))] transition group-hover:brightness-110";
     return (
       <>
         <div
@@ -121,7 +121,7 @@ export default function TeamAskCard({
               </span>
             </span>
             <div className="min-w-0">
-              <span className="block font-display text-[9px] uppercase tracking-[0.16em] text-orange">
+              <span className="block font-display text-[calc(9*var(--s))] uppercase tracking-[0.16em] text-orange">
                 {member.name} — {member.role}
               </span>
               <span className="mt-1 block font-display text-sm uppercase leading-tight tracking-tight text-white">
@@ -165,7 +165,7 @@ export default function TeamAskCard({
           </span>
         </span>
         <div className="min-w-0">
-          <span className="block font-display text-[9px] uppercase tracking-[0.16em] text-orange">
+          <span className="block font-display text-[calc(9*var(--s))] uppercase tracking-[0.16em] text-orange">
             {member.name} — {member.role}
           </span>
           <span className="mt-1 block font-display text-sm uppercase leading-tight tracking-tight text-white">
@@ -173,7 +173,7 @@ export default function TeamAskCard({
           </span>
         </div>
       </div>
-      <span className="btn-neon btn-warm mt-1 inline-flex w-fit !px-3.5 !py-1.5 !text-[9px] transition group-hover:brightness-110">
+      <span className="btn-neon btn-warm mt-1 inline-flex w-fit !px-3.5 !py-1.5 !text-[calc(9*var(--s))] transition group-hover:brightness-110">
         {actionLabel} →
       </span>
     </div>
@@ -214,14 +214,14 @@ export default function TeamAskCard({
           {/* Три ярусa, как в соседних плитках: подпись сверху, вопрос по
               центру, кнопка внизу — а не всё в одной куче. */}
           <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
-            <p className="font-display text-[10px] uppercase leading-tight tracking-[0.14em]">
+            <p className="font-display text-[calc(10*var(--s))] uppercase leading-tight tracking-[0.14em]">
               <span className="text-orange">{member.name}</span>
               <span className="text-paper/55"> · {member.role}</span>
             </p>
             <h3 className="font-display text-sm uppercase leading-[1.15] tracking-tight text-white [text-shadow:0_2px_16px_rgba(11,11,16,0.9)] sm:text-base">
               {question}
             </h3>
-            <span className="btn-neon w-fit !px-3.5 !py-1.5 !text-[10px] transition group-hover:brightness-110">
+            <span className="btn-neon w-fit !px-3.5 !py-1.5 !text-[calc(10*var(--s))] transition group-hover:brightness-110">
               {actionLabel} <span aria-hidden="true">→</span>
             </span>
           </div>
@@ -234,7 +234,7 @@ export default function TeamAskCard({
             </span>
           </span>
   
-          <p className={`font-display uppercase tracking-tight text-paper/70 ${dense ? "mt-2 text-[11px]" : "mt-3 text-[13px]"}`}>
+          <p className={`font-display uppercase tracking-tight text-paper/70 ${dense ? "mt-2 text-[calc(11*var(--s))]" : "mt-3 text-[calc(13*var(--s))]"}`}>
             {member.name} <span className="text-paper/40">· {member.role}</span>
           </p>
   
@@ -247,7 +247,7 @@ export default function TeamAskCard({
           </h3>
           <p
             className={`mx-auto max-w-sm leading-relaxed text-paper/70 ${
-              dense ? "mt-2 max-w-[24em] text-xs" : "mt-3 text-sm sm:text-[15px]"
+              dense ? "mt-2 max-w-[24em] text-xs" : "mt-3 text-sm sm:text-[calc(15*var(--s))]"
             }`}
           >
             {pitch}
@@ -255,7 +255,7 @@ export default function TeamAskCard({
   
           <span
             className={`btn-neon btn-warm inline-flex transition group-hover:brightness-110 ${
-              dense ? "mt-3 !px-4 !py-2 !text-[10px]" : "mt-5"
+              dense ? "mt-3 !px-4 !py-2 !text-[calc(10*var(--s))]" : "mt-5"
             }`}
           >
             {actionLabel} →

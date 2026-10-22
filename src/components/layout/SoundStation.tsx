@@ -330,7 +330,7 @@ function Artwork({ moodId }: { moodId: MoodId }) {
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
   }, [from, to]);
-  return <canvas ref={ref} className="block h-[96px] w-full" aria-hidden="true" />;
+  return <canvas ref={ref} className="block h-[calc(96*var(--s))] w-full" aria-hidden="true" />;
 }
 
 function TransportIcon({ kind }: { kind: "play" | "pause" | "prev" | "next" }) {
@@ -530,10 +530,10 @@ export default function SoundStation() {
 
               <div className="flex items-end justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="truncate text-[18px] font-bold leading-tight text-white">
+                  <div className="truncate text-[calc(18*var(--s))] font-bold leading-tight text-white">
                     {track?.title ?? "Скоро здесь"}
                   </div>
-                  <div className="music-grad-text truncate text-[14px] font-semibold leading-snug">
+                  <div className="music-grad-text truncate text-[calc(14*var(--s))] font-semibold leading-snug">
                     {track ? `${track.artist} · ${mood.label}` : `${mood.label} · треки подбираем`}
                   </div>
                 </div>
@@ -563,7 +563,7 @@ export default function SoundStation() {
                     background: `linear-gradient(90deg, ${from}, ${to}) 0 / ${pct}% 100% no-repeat, rgba(255,255,255,0.18)`,
                   }}
                 />
-                <div className="mt-1.5 flex justify-between text-[11px] font-bold tabular-nums text-white">
+                <div className="mt-1.5 flex justify-between text-[calc(11*var(--s))] font-bold tabular-nums text-white">
                   <span>{fmt(shownTime)}</span>
                   <span>−{fmt(Math.max(0, duration - shownTime))}</span>
                 </div>
@@ -635,8 +635,8 @@ export default function SoundStation() {
                         <span className="music-mood__dot">
                           <Glyph size={14}>{MOOD_GLYPH[m.id]}</Glyph>
                         </span>
-                        <span className="text-[12px] font-bold leading-none">{m.label}</span>
-                        <span className="text-[10px] font-semibold leading-none">{soon ? "скоро" : m.genre}</span>
+                        <span className="text-[calc(12*var(--s))] font-bold leading-none">{m.label}</span>
+                        <span className="text-[calc(10*var(--s))] font-semibold leading-none">{soon ? "скоро" : m.genre}</span>
                         {m.id === pageMood && !soon && <span className="music-mood__page">к странице</span>}
                       </button>
                     );
@@ -645,7 +645,7 @@ export default function SoundStation() {
               </div>
 
               <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-3">
-                <span className="text-[13px] font-bold text-white">Звуки сайта</span>
+                <span className="text-[calc(13*var(--s))] font-bold text-white">Звуки сайта</span>
                 <button
                   type="button"
                   role="switch"
@@ -694,8 +694,8 @@ export default function SoundStation() {
               перечёркнут). Пока играет музыка, пульсирует в ритм. */}
           <PulseNote playing={playing} muted={!sfx && !playing} />
         </button>
-        <div className="hidden w-0 overflow-hidden opacity-0 transition-[width,opacity] duration-300 ease-out group-hover/vol:w-[76px] group-hover/vol:opacity-100 group-focus-within/vol:w-[76px] group-focus-within/vol:opacity-100 lg:flex">
-          <VolumeSlider value={volume} className="mx-1 w-[68px]" />
+        <div className="hidden w-0 overflow-hidden opacity-0 transition-[width,opacity] duration-300 ease-out group-hover/vol:w-[calc(76*var(--s))] group-hover/vol:opacity-100 group-focus-within/vol:w-[calc(76*var(--s))] group-focus-within/vol:opacity-100 lg:flex">
+          <VolumeSlider value={volume} className="mx-1 w-[calc(68*var(--s))]" />
         </div>
       </div>
       {typeof document !== "undefined" && createPortal(panel, document.body)}

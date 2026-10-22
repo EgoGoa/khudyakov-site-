@@ -48,7 +48,7 @@ export default function TechBlock({ tech }: { tech: NonNullable<DirectionContent
                 <span className="font-display text-sm uppercase leading-none tracking-tight text-orange sm:pt-1 sm:text-base">
                   {item.label}
                 </span>
-                <p className="text-[15px] leading-relaxed text-white">
+                <p className="text-[calc(15*var(--s))] leading-relaxed text-white">
                   {withAccent(item.text, item.accent)}
                 </p>
               </div>

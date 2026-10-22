@@ -67,8 +67,8 @@ function TermSlide() {
       <div className="mt-[7cqw] flex items-center">
         {[0, 1, 2, 3, 4].map((i) => (
           <span key={i} className="contents">
-            <span className="h-[3cqw] min-h-[9px] w-[3cqw] min-w-[9px] shrink-0 rounded-full bg-gradient-to-br from-[#ff7a45] to-[#ff4fa3]" />
-            {i < 4 && <span className="h-[2px] flex-1 bg-gradient-to-r from-[#ff4fa3] to-[#8a8cff] opacity-80" />}
+            <span className="h-[3cqw] min-h-[calc(9*var(--s))] w-[3cqw] min-w-[calc(9*var(--s))] shrink-0 rounded-full bg-gradient-to-br from-[#ff7a45] to-[#ff4fa3]" />
+            {i < 4 && <span className="h-[calc(2*var(--s))] flex-1 bg-gradient-to-r from-[#ff4fa3] to-[#8a8cff] opacity-80" />}
           </span>
         ))}
       </div>

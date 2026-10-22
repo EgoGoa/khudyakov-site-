@@ -99,7 +99,7 @@ export default function SitesPitch() {
               широком экране прижат вниз колонки на высоту окошка под
               каруселью (210px), так что его верх стоит вровень с верхом
               этого окошка справа — просьба Егора. */}
-          <Appear from="up" delay={BEAT.cta} className="lg:mt-auto lg:h-[210px]">
+          <Appear from="up" delay={BEAT.cta} className="lg:mt-auto lg:h-[calc(210*var(--s))]">
             <div className="mt-4 lg:mt-0">
               <TeamPulse data={EGOR_SITES} compact source="/sites · глава «Сайты на AI»" />
             </div>

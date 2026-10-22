@@ -509,7 +509,7 @@ export default function ToolSpotlight({
                     название услуги фирменным Bebas в градиенте страницы —
                     возвращает графике заголовок, не залезая внутрь неё. */}
                 {phone && (
-                  <p className="spotlight-accent shrink-0 text-center font-display text-[13px] uppercase leading-tight tracking-[0.08em] sm:text-sm">
+                  <p className="spotlight-accent shrink-0 text-center font-display text-[calc(13*var(--s))] uppercase leading-tight tracking-[0.08em] sm:text-sm">
                     {data.title}
                   </p>
                 )}
@@ -632,9 +632,9 @@ export default function ToolSpotlight({
                   className={`relative shrink-0 overflow-hidden rounded-xl ring-1 ring-white/15 ${
                     side
                       ? fill
-                        ? "h-[84px] w-[136px] sm:h-full sm:max-h-[130px] sm:w-auto sm:aspect-[340/210]"
-                        : "h-[96px] w-[150px] sm:h-[96px] sm:w-[42%]"
-                      : "hidden h-[100px] aspect-[340/210] sm:block"
+                        ? "h-[calc(84*var(--s))] w-[calc(136*var(--s))] sm:h-full sm:max-h-[calc(130*var(--s))] sm:w-auto sm:aspect-[340/210]"
+                        : "h-[calc(96*var(--s))] w-[calc(150*var(--s))] sm:h-[calc(96*var(--s))] sm:w-[42%]"
+                      : "hidden h-[calc(100*var(--s))] aspect-[340/210] sm:block"
                   }`}
                 >
                   <SpotlightScene slug={data.slug} step={step} mini />

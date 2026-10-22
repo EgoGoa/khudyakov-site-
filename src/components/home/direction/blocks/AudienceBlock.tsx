@@ -76,13 +76,13 @@ export default function AudienceBlock({
                   <h3 className="mt-5 font-display text-xl uppercase leading-tight tracking-tight text-white sm:text-[1.35rem]">
                     {item.title}
                   </h3>
-                  <p className="mt-4 max-w-[38em] text-[15px] leading-relaxed text-white">
+                  <p className="mt-4 max-w-[38em] text-[calc(15*var(--s))] leading-relaxed text-white">
                     {withAccent(item.text, item.accent)}
                   </p>
 
                   <Link
                     href={item.href}
-                    className="mt-7 inline-flex items-center gap-2 font-display text-[11px] uppercase tracking-[0.15em] text-white transition group-hover:text-orange"
+                    className="mt-7 inline-flex items-center gap-2 font-display text-[calc(11*var(--s))] uppercase tracking-[0.15em] text-white transition group-hover:text-orange"
                   >
                     {item.linkLabel}
                     <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">

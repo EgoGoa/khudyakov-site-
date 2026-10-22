@@ -128,13 +128,13 @@ export default function PromoCard({
     const prices = (
       <span className="flex flex-col">
         <span className="font-display text-lg leading-none text-white">{price}</span>
-        <span className="mt-1 font-display text-[10px] leading-none text-white/50 line-through">{oldPrice}</span>
+        <span className="mt-1 font-display text-[calc(10*var(--s))] leading-none text-white/50 line-through">{oldPrice}</span>
       </span>
     );
     const buttons = (
       <span className="flex flex-wrap items-center gap-2">
-        <Link href={href} className="btn-neon !px-3.5 !py-1.5 !text-[9px]">Подробнее</Link>
-        <button type="button" onClick={() => setOpen(true)} className="btn-neon !px-3.5 !py-1.5 !text-[9px]" style={{ "--btn-neon-delay": "1.8s" } as CSSProperties}>
+        <Link href={href} className="btn-neon !px-3.5 !py-1.5 !text-[calc(9*var(--s))]">Подробнее</Link>
+        <button type="button" onClick={() => setOpen(true)} className="btn-neon !px-3.5 !py-1.5 !text-[calc(9*var(--s))]" style={{ "--btn-neon-delay": "1.8s" } as CSSProperties}>
           Заказать <span aria-hidden="true">→</span>
         </button>
       </span>
@@ -142,7 +142,7 @@ export default function PromoCard({
     return (
       <>
         <div className="late-window relative h-full w-full">
-          <span className="promo-card-badge-lift absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white" aria-hidden="true">
+          <span className="promo-card-badge-lift absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[calc(8*var(--s))] uppercase tracking-[0.14em] text-white" aria-hidden="true">
             <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
             {badge}
           </span>
@@ -194,7 +194,7 @@ export default function PromoCard({
           video and border-flow animation still clip to the rounded corners. */}
       <div className="late-window relative h-full w-full">
         <span
-          className="promo-card-badge-lift absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[8px] uppercase tracking-[0.14em] text-white"
+          className="promo-card-badge-lift absolute -top-3 left-4 z-20 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[calc(8*var(--s))] uppercase tracking-[0.14em] text-white"
           aria-hidden="true"
         >
           <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-white" />
@@ -299,13 +299,13 @@ export default function PromoCard({
                 <span className="font-display text-sm leading-none text-white/50 line-through">{oldPrice}</span>
               </span>
               <span className="mt-2 flex flex-wrap items-center gap-2">
-                <Link href={href} className="btn-neon !px-3.5 !py-1.5 !text-[9px]">
+                <Link href={href} className="btn-neon !px-3.5 !py-1.5 !text-[calc(9*var(--s))]">
                   Подробнее
                 </Link>
                 <button
                   type="button"
                   onClick={() => setOpen(true)}
-                  className="btn-neon !px-3.5 !py-1.5 !text-[9px]"
+                  className="btn-neon !px-3.5 !py-1.5 !text-[calc(9*var(--s))]"
                   style={{ "--btn-neon-delay": "1.8s" } as CSSProperties}
                 >
                   Заказать

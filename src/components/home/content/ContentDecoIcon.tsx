@@ -43,7 +43,7 @@ export default function ContentDecoIcon({
         loading="lazy"
         width={size}
         height={size}
-        className={`rounded-[26px] opacity-90 content-deco-icon-${variant}`}
+        className={`rounded-[calc(26*var(--s))] opacity-90 content-deco-icon-${variant}`}
         style={{ width: size, height: size, "--r": `${rotate}deg` } as React.CSSProperties}
       />
     </div>

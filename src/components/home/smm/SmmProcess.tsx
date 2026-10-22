@@ -57,7 +57,7 @@ export default function SmmProcess() {
           src="/images/icons/smm/strategy.webp"
           size={185}
           rotate={-8}
-          className="right-[18px] -top-[118px]"
+          className="right-[calc(18*var(--s))] -top-[calc(118*var(--s))]"
         />
       }
     >
@@ -102,7 +102,7 @@ export default function SmmProcess() {
               className="flex items-start gap-4 py-3.5"
             >
               <span
-                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-display text-[10px]"
+                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-display text-[calc(10*var(--s))]"
                 style={{
                   borderColor: "rgba(168,85,247,0.35)",
                   color: "#e4d0ff",
@@ -116,7 +116,7 @@ export default function SmmProcess() {
                   {step.title}
                 </h3>
                 {/* Фирменным шрифтом и чуть крупнее (Егор, 2026-09-29). */}
-                <p className="mt-1 font-display text-[13px] leading-snug tracking-tight text-white/85">{step.description}</p>
+                <p className="mt-1 font-display text-[calc(13*var(--s))] leading-snug tracking-tight text-white/85">{step.description}</p>
               </div>
             </Appear>
           ))}
@@ -137,7 +137,7 @@ export default function SmmProcess() {
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-5">
             <Link
               href="/smm/cases"
-              className="group inline-flex items-center gap-2 font-display text-[11px] uppercase tracking-[0.14em] text-paper/60 transition-colors hover:text-[#c4a0ff]"
+              className="group inline-flex items-center gap-2 font-display text-[calc(11*var(--s))] uppercase tracking-[0.14em] text-paper/60 transition-colors hover:text-[#c4a0ff]"
             >
               Кейсы SMM
               <span className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">
@@ -149,7 +149,7 @@ export default function SmmProcess() {
 
             <Link
               href="/smm/pricing"
-              className="group inline-flex items-center gap-2 font-display text-[11px] uppercase tracking-[0.14em] text-paper/60 transition-colors hover:text-[#c4a0ff]"
+              className="group inline-flex items-center gap-2 font-display text-[calc(11*var(--s))] uppercase tracking-[0.14em] text-paper/60 transition-colors hover:text-[#c4a0ff]"
             >
               Все пакеты подробно
               <span className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">

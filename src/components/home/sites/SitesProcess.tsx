@@ -82,7 +82,7 @@ export default function SitesProcess() {
               className="flex items-start gap-4 py-3.5"
             >
               <span
-                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-display text-[10px]"
+                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border font-display text-[calc(10*var(--s))]"
                 style={{
                   borderColor: "rgba(255,106,61,0.35)",
                   color: "#ffd0bd",
@@ -97,7 +97,7 @@ export default function SitesProcess() {
                 </h3>
                 {/* Пояснение шага развёрнуто, фирменным шрифтом — мельче и серым,
                     как ответы в других блоках (Егор, 2026-09-29). */}
-                <p className="mt-1 font-display text-[13px] leading-snug tracking-tight text-white/85">{step.description}</p>
+                <p className="mt-1 font-display text-[calc(13*var(--s))] leading-snug tracking-tight text-white/85">{step.description}</p>
               </div>
             </Appear>
           ))}

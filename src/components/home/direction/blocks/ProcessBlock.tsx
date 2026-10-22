@@ -95,21 +95,21 @@ export default function ProcessBlock({
                   {/* Линия и точка. Линия обрывается на последнем шаге,
                       иначе она уходит в пустоту под блоком. */}
                   <span
-                    className={`absolute left-[7px] top-3 w-px bg-gradient-to-b from-orange/50 to-orange/10 lg:left-[11px] ${
+                    className={`absolute left-[calc(7*var(--s))] top-3 w-px bg-gradient-to-b from-orange/50 to-orange/10 lg:left-[calc(11*var(--s))] ${
                       i === process.steps.length - 1 ? "h-0" : "h-full"
                     }`}
                   />
                   <span className="absolute left-0 top-2 h-3.5 w-3.5 rounded-full border-2 border-orange bg-ink lg:left-1" />
 
                   <div className="flex items-baseline gap-4">
-                    <span className="font-display text-[11px] tracking-[0.18em] text-orange">
+                    <span className="font-display text-[calc(11*var(--s))] tracking-[0.18em] text-orange">
                       {step.number}
                     </span>
                     <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-white sm:text-xl">
                       {step.title}
                     </h3>
                   </div>
-                  <p className="mt-2 max-w-[44em] text-[15px] leading-relaxed text-white">
+                  <p className="mt-2 max-w-[44em] text-[calc(15*var(--s))] leading-relaxed text-white">
                     {withAccent(step.text, step.accent)}
                   </p>
                 </div>

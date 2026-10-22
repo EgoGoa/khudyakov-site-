@@ -104,7 +104,7 @@ export default function SmmPricingPage() {
 
                   <Link
                     href="/brief/smm"
-                    className={`mt-6 w-full rounded-[14px] px-6 py-2 text-center text-[0.7rem] font-semibold transition ${
+                    className={`mt-6 w-full rounded-[calc(14*var(--s))] px-6 py-2 text-center text-[0.7rem] font-semibold transition ${
                       tier.pro ? "bg-glow text-ink hover:opacity-90" : "bg-paper text-ink hover:bg-white"
                     }`}
                   >

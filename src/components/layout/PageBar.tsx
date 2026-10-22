@@ -109,7 +109,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
     // выше (z-10) — без этого он перехватывал бы мышь и палец.
     <nav
       aria-label="Страницы услуг"
-      className={`pointer-events-auto absolute left-[calc(1.5rem+4.4rem)] right-[calc(1.5rem+2.5rem+2px)] top-[var(--sat)] z-20 flex h-14 items-center justify-center transition-opacity duration-300 sm:relative sm:left-auto sm:right-auto sm:top-auto sm:w-full lg:absolute lg:left-1/2 lg:top-[var(--sat)] lg:h-[70px] lg:w-auto lg:-translate-x-1/2 land:absolute land:left-1/2 land:right-auto land:top-0 land:h-10 land:w-auto land:-translate-x-1/2 ${
+      className={`pointer-events-auto absolute left-[calc(1.5rem+4.4rem)] right-[calc(1.5rem+2.5rem+2px)] top-[var(--sat)] z-20 flex h-14 items-center justify-center transition-opacity duration-300 sm:relative sm:left-auto sm:right-auto sm:top-auto sm:w-full lg:absolute lg:left-1/2 lg:top-[var(--sat)] lg:h-[calc(70*var(--s))] lg:w-auto lg:-translate-x-1/2 land:absolute land:left-1/2 land:right-auto land:top-0 land:h-10 land:w-auto land:-translate-x-1/2 ${
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
@@ -143,7 +143,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
                 // Не может застрять: на долгом переходе — сфера, через 5 с — обычная загрузка.
                 sureNavigate(router, href, { scroll: !fromDeck });
               }}
-              className={`group/pb relative flex h-8 items-center px-[clamp(4px,1.6vw,8px)] font-display text-[clamp(10.5px,3.1vw,12px)] uppercase leading-none tracking-tight text-white transition-opacity duration-200 sm:h-10 sm:px-3 sm:text-[13px] land:h-8 land:text-[12px] ${
+              className={`group/pb relative flex h-8 items-center px-[clamp(4px,1.6vw,8px)] font-display text-[clamp(10.5px,3.1vw,12px)] uppercase leading-none tracking-tight text-white transition-opacity duration-200 sm:h-10 sm:px-3 sm:text-[calc(13*var(--s))] land:h-8 land:text-[calc(12*var(--s))] ${
                 isCurrent ? "opacity-100" : "opacity-90 hover:opacity-100"
               }`}
             >
@@ -168,7 +168,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
         {/* Одна общая линия со светом — переезжает под выбранное название. */}
         <span
           aria-hidden="true"
-          className={`pointer-events-none absolute bottom-[-14px] left-0 h-[18px] ${
+          className={`pointer-events-none absolute bottom-[calc(-14*var(--s))] left-0 h-[calc(18*var(--s))] ${
             animate ? "transition-[transform,width,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]" : ""
           } motion-reduce:transition-none ${line ? "opacity-100" : "opacity-0"}`}
           style={{
@@ -187,7 +187,7 @@ export default function PageBar({ hidden = false }: { hidden?: boolean }) {
             }}
           />
           <span
-            className="absolute inset-x-0 top-0 h-[1.5px]"
+            className="absolute inset-x-0 top-0 h-[calc(1.5*var(--s))]"
             style={{ background: pageGrad, WebkitMaskImage: LINE_MASK, maskImage: LINE_MASK }}
           />
         </span>

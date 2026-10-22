@@ -111,7 +111,7 @@ export default function SmmGuarantees() {
           src="/images/icons/smm/handshake.webp"
           size={160}
           rotate={7}
-          className="left-[148px] -top-[42px]"
+          className="left-[calc(148*var(--s))] -top-[calc(42*var(--s))]"
         />
       }
     >
@@ -161,7 +161,7 @@ export default function SmmGuarantees() {
                 className="border-t border-paper/20 py-3"
               >
                 <div className="flex items-baseline gap-3">
-                  <span className="font-display text-[10px] text-paper/40">
+                  <span className="font-display text-[calc(10*var(--s))] text-paper/40">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
@@ -175,7 +175,7 @@ export default function SmmGuarantees() {
             ))}
           </ul>
 
-          <div className="mt-8 lg:mt-0 lg:w-[320px] lg:shrink-0 xl:w-[360px]">
+          <div className="mt-8 lg:mt-0 lg:w-[calc(320*var(--s))] lg:shrink-0 xl:w-[calc(360*var(--s))]">
             <span className={`${EYEBROW} text-paper/45`}>FAQ</span>
             <div className="mt-3 border-t border-paper/10">
               {FAQ.map((item, i) => {

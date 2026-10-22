@@ -110,7 +110,7 @@ export default function ChoiceStep({ step, answer, onChange, onAdvance }: Props)
             >
               {o.icon && <span aria-hidden className="text-xl">{o.icon}</span>}
               <span className="min-w-0 flex-1 text-left">
-                <span className="block text-[15px] font-semibold leading-snug text-white">{o.label}</span>
+                <span className="block text-[calc(15*var(--s))] font-semibold leading-snug text-white">{o.label}</span>
                 {o.hint && <span className="mt-0.5 block text-xs text-white/70">{o.hint}</span>}
               </span>
               <span className="hb-mark" aria-hidden>{multi && on ? "✓" : i < 9 ? i + 1 : ""}</span>
@@ -140,7 +140,7 @@ export default function ChoiceStep({ step, answer, onChange, onAdvance }: Props)
                 <button type="button" onClick={toggleCustom} aria-label="Убрать свой вариант" className="hb-x">×</button>
               </div>
             ) : (
-              <button type="button" onClick={toggleCustom} className="flex w-full items-center gap-2 text-left text-[15px] font-semibold text-white">
+              <button type="button" onClick={toggleCustom} className="flex w-full items-center gap-2 text-left text-[calc(15*var(--s))] font-semibold text-white">
                 <span aria-hidden>＋</span> Свой вариант
               </button>
             )}
@@ -165,7 +165,7 @@ export default function ChoiceStep({ step, answer, onChange, onAdvance }: Props)
             min={todayISO()}
             value={answer?.date ?? ""}
             onChange={(e) => onChange({ date: e.target.value })}
-            className="hb-input max-w-[240px]"
+            className="hb-input max-w-[calc(240*var(--s))]"
           />
         </div>
       )}
