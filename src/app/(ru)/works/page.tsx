@@ -20,6 +20,7 @@ export default function WorksPage() {
           Works's own BlockMedia gradient just tinted it instead of reading
           as a deliberate backdrop. Same firменный gradient the nav/CTAs use. */}
       <DirectionBackdrop from="#ff4fd8" to="#00d2ff" />
+      <h1 className="sr-only">Портфолио</h1>
       <div className="pt-24 sm:pt-28">
         <Works />
       </div>

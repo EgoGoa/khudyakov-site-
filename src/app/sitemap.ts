@@ -15,6 +15,8 @@ const SMM_FORMATS = Object.keys(smmFormatPages);
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
+  // /brief и /calculator не входят: это заглушки-редиректы на /<раздел>/<услуга>,
+  // страницы с содержимым перечислены ниже.
   // "/" не входит: корень отдаёт 301 на /content/ (.htaccess), а в карте
   // сайта должны стоять только адреса, которые открываются сами.
   const staticRoutes = [
@@ -23,8 +25,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/sites",
     "/smm",
     "/works",
-    "/calculator",
-    "/brief",
     "/smm/pricing",
   ];
 
