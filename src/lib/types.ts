@@ -29,6 +29,15 @@ export type Work = {
   /** Дата публикации, ISO YYYY-MM-DD — выводится на карточке как ДД/ММ/ГГГГ. */
   date?: string;
   youtubeId?: string;
+  /** Работа из вкладки «Новые»: во вкладке она одна, с разбором на карточке. */
+  isNew?: boolean;
+  /** Разбор кейса — выводится на карточке во вкладке «Новые». */
+  caseStudy?: {
+    production: string;
+    budget: string;
+    /** Особенности проекта, 3–4 коротких пункта. */
+    features: string[];
+  };
 };
 
 export type ProcessStep = {

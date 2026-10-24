@@ -63,10 +63,13 @@ const WORK_VIDEO: Record<string, string> = {
   LJI_uG5nKEQ: "rosalyans", // Проморолик · «Росальянс»
   FtwaFzYvwkc: "rustech", // РУСТЕХ · 3D-трекинг и инфографика
   C6LmeiF9taA: "infographics", // Инфографика · школа иностранных языков
+  o4BJlevuewU: "turbina", // Презентационный фильм «ТУРБИНА»
 };
 const workVideo = (id: string) => (WORK_VIDEO[id] ? `/video/works/${WORK_VIDEO[id]}.mp4` : null);
 
 const ALL = "Все работы";
+// Первая вкладка формата: в ней одна свежая работа с разбором на карточке.
+const NEW = "Новые";
 const ALL_SPHERES = "Все сферы";
 
 // Segmented pill version of a filter axis, used inside a cinematic chapter.
@@ -80,11 +83,13 @@ function SegmentedAxis({
   options,
   value,
   onChange,
+  featured,
 }: {
   label: string;
   options: string[];
   value: string;
   onChange: (next: string) => void;
+  featured?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
   // Keep the selected option on screen even when it lives in the overflow.
@@ -98,9 +103,9 @@ function SegmentedAxis({
   // --tab-delay stagger them so they don't spin in unison), and hovering
   // one freezes it bright while .tab-neon-row's CSS dims and pauses the
   // rest (globals.css).
-  const pillClass = (isActive: boolean, index: number) =>
+  const pillClass = (isActive: boolean, index: number, isFeatured = false) =>
     `btn-neon tab-neon rounded-[calc(14*var(--s))] px-3 py-1.5 font-display text-[calc(11*var(--s))] uppercase tracking-wide leading-none transition ${
-      isActive ? "text-white" : "text-paper/60"
+      isFeatured ? "new-tab text-white" : isActive ? "text-white" : "text-paper/60"
     }`;
   const pillStyle = (index: number) => ({ "--tab-delay": `${(index % 4) * 0.9}s` }) as CSSProperties;
 
@@ -114,9 +119,10 @@ function SegmentedAxis({
             type="button"
             onClick={() => onChange(option)}
             aria-pressed={value === option}
-            className={pillClass(value === option, i)}
+            className={pillClass(value === option, i, option === featured)}
             style={pillStyle(i)}
           >
+            {option === featured && <span className="new-tab-dot" aria-hidden="true" />}
             {option}
           </button>
         ))}
@@ -142,11 +148,13 @@ function FilterAxis({
   options,
   value,
   onChange,
+  featured,
 }: {
   label: string;
   options: string[];
   value: string;
   onChange: (next: string) => void;
+  featured?: string;
 }) {
   return (
     <div>
@@ -160,9 +168,12 @@ function FilterAxis({
               className={`transition-colors duration-300 ${
                 value === option
                   ? "text-glow [text-shadow:0_0_14px_rgba(0,210,255,0.5)]"
-                  : "text-paper/55 hover:text-paper"
+                  : option === featured
+                    ? "font-bold text-[#ff6a3d] [text-shadow:0_0_14px_rgba(255,79,216,0.55)]"
+                    : "text-paper/55 hover:text-paper"
               }`}
             >
+              {option === featured && <span className="new-tab-dot mr-1.5" aria-hidden="true" />}
               {option}
             </button>
           </span>
@@ -201,6 +212,113 @@ function plural(count: number) {
   return "РАБОТ";
 }
 
+
+// Карточка вкладки «Новые»: слева окошко видео — точь-в-точь как плитки
+// шоурилов под ним (тот же размер, пропорции и скругление), справа — коротко
+// о проекте. Без рамки, подложки и свечения: чистый минимализм.
+function FeaturedCase({
+  work,
+  tight,
+  limit,
+  withVideo,
+  preload,
+  onWatch,
+  onTalk,
+}: {
+  work: Work;
+  tight: boolean;
+  limit: boolean;
+  withVideo: boolean;
+  preload: "auto" | "none" | "metadata";
+  onWatch: () => void;
+  onTalk: () => void;
+}) {
+  const cs = work.caseStudy!;
+  const video = withVideo ? workVideo(work.id) : null;
+  const stats = [
+    { label: "Производство", value: cs.production },
+    { label: "Стоимость", value: cs.budget },
+  ];
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: MOTION_EASE }}
+      className="mb-5 mt-3 grid grid-cols-1 items-center gap-5 sm:gap-6 lg:grid-cols-2"
+    >
+      <button
+        type="button"
+        onClick={onWatch}
+        aria-label={`Смотреть: ${work.title}`}
+        className={`group relative w-full cursor-pointer overflow-hidden rounded-2xl bg-ink-soft ${
+          !limit
+            ? "aspect-[16/10]"
+            : `aspect-[4/3] sm:aspect-video ${tight ? "lg:aspect-auto lg:h-[max(200px,calc((100svh-400px)*0.45))]" : "lg:aspect-[16/7]"}`
+        }`}
+      >
+        {video ? (
+          <video
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+            src={video}
+            poster={workThumb(work.youtubeId!)}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload={preload}
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={workThumb(work.youtubeId!)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        )}
+        <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink/60 text-paper backdrop-blur-sm">▶</span>
+        </span>
+      </button>
+
+      <div className="flex min-w-0 flex-col gap-4 sm:gap-5">
+        <div>
+          <div className="kw font-display text-[calc(10*var(--s))] uppercase tracking-[0.18em]">Новый кейс</div>
+          <h3 className="mt-2 font-display text-lg uppercase leading-[1.1] tracking-tight text-white sm:text-xl">
+            {work.title.replace(/\s\S+$/, "")} <span className="kw">{work.title.split(" ").pop()}</span>
+          </h3>
+        </div>
+        <div className="flex gap-8">
+          {stats.map((s) => (
+            <div key={s.label}>
+              <div className="font-display text-[calc(9*var(--s))] uppercase tracking-[0.14em] text-white">{s.label}</div>
+              <div className="mt-1 bg-gradient-to-r from-[#ff4fd8] to-[#ff6a3d] bg-clip-text font-display text-base text-transparent sm:text-lg">
+                {s.value}
+              </div>
+            </div>
+          ))}
+        </div>
+        <ul className="grid gap-1 font-sans text-[calc(13*var(--s))] font-bold leading-snug text-white">
+          {cs.features.slice(0, 3).map((f) => (
+            <li key={f}>{f}</li>
+          ))}
+        </ul>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+          <button type="button" onClick={onWatch} className="btn-neon inline-flex items-center gap-1.5 !px-5 !py-2.5 !text-[calc(11*var(--s))]">
+            <span aria-hidden="true">▶</span>
+            Смотреть
+          </button>
+          <button
+            type="button"
+            onClick={onTalk}
+            className="btn-neon inline-flex items-center !px-5 !py-2.5 !text-[calc(11*var(--s))]"
+            style={{ "--btn-neon-delay": "1.8s" } as CSSProperties}
+          >
+            Хочу так же
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // `bare` drops the section's own eyebrow/heading and outer padding: on the
 // service pages this block is rendered inside a CinematicSection that already
 // supplies the chapter number and title, so its own would be a duplicate.
@@ -221,6 +339,7 @@ export default function Works({
   const bootPreload = useBootPreload();
   const { active: activeService } = useService();
   const works = worksByCategory[activeService];
+  const hasNew = works.some((w) => w.isNew);
   // Основные рубрики идут в том порядке, в котором сгруппированы работы в
   // data.ts; рубрики, встречающиеся только как доп. тег, добавляются в конец,
   // чтобы тег на одной карточке не выдёргивал рубрику в начало списка.
@@ -235,8 +354,8 @@ export default function Works({
         if (!primary.includes(t) && !extra.includes(t)) extra.push(t);
       })
     );
-    return [ALL, ...primary, ...extra];
-  }, [works]);
+    return [...(hasNew ? [NEW] : []), ALL, ...primary, ...extra];
+  }, [works, hasNew]);
   // Сферы упорядочены по числу работ: сначала то, чем агентство занимается
   // чаще всего, — в data.ts порядок задан форматами, и сферы там перемешаны.
   const spheres = useMemo(() => {
@@ -249,7 +368,7 @@ export default function Works({
       .map(([name]) => name);
     return sorted.length ? [ALL_SPHERES, ...sorted] : [];
   }, [works]);
-  const [filter, setFilter] = useState(ALL);
+  const [filter, setFilter] = useState(hasNew ? NEW : ALL);
   const [sphere, setSphere] = useState(ALL_SPHERES);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [visible, setVisible] = useState(PAGE_SIZE);
@@ -285,16 +404,16 @@ export default function Works({
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- resets filters when the active service changes, not derivable during this render
-    setFilter(ALL);
+    setFilter(hasNew ? NEW : ALL);
     setSphere(ALL_SPHERES);
-  }, [activeService]);
+  }, [activeService, hasNew]);
 
   // Две оси независимы и складываются: формат И сфера.
   const filtered = useMemo(
     () =>
       works.filter(
         (w) =>
-          (filter === ALL || allCategories(w).includes(filter)) &&
+          (filter === ALL || (filter === NEW ? w.isNew : allCategories(w).includes(filter))) &&
           (sphere === ALL_SPHERES || w.sphere === sphere)
       ),
     [filter, sphere, works]
@@ -308,6 +427,11 @@ export default function Works({
   }, [filter, sphere, activeService]);
 
   const shown = filtered.slice(0, limit ?? visible);
+  // Во вкладке «Новые» под кейсом идут два шоурила — как раньше в сетке.
+  const isNewTab = filter === NEW && !!shown[0]?.caseStudy;
+  const tiles = isNewTab
+    ? works.filter((w) => w.category === "Шоурилы" && workVideo(w.id)).slice(0, 2)
+    : shown;
   const hasMore = !limit && filtered.length > shown.length;
 
   const active = works.find((w) => w.id === activeId) ?? null;
@@ -342,7 +466,7 @@ export default function Works({
                 Всё, что мы <span className="kw">уже сняли</span>
               </h2>
               <p className={`mt-5 max-w-2xl ${CHAPTER_INTRO}`}>
-                Реклама, шоурилы, 3D и моушн — <Accent>78 работ с фильтром по формату и сфере</Accent>,
+                Реклама, шоурилы, 3D и моушн — <Accent>79 работ с фильтром по формату и сфере</Accent>,
                 а не общий каталог на глаз.
               </p>
             </Reveal>
@@ -395,6 +519,7 @@ export default function Works({
                     options={categories}
                     value={filter}
                     onChange={setFilter}
+                    featured={hasNew ? NEW : undefined}
                   />
                   </Appear>
                 ) : (
@@ -404,6 +529,7 @@ export default function Works({
                       options={categories}
                       value={filter}
                       onChange={setFilter}
+                      featured={hasNew ? NEW : undefined}
                     />
                     {spheres.length > 0 && (
                       <FilterAxis
@@ -424,6 +550,17 @@ export default function Works({
                 back rather than letting the bottom row be cropped by the fold.
                 The full /works catalogue below has a whole page to run down
                 and needs no such thing. */}
+            {isNewTab && shown[0]?.caseStudy && (
+              <FeaturedCase
+                work={shown[0]}
+                tight={tight}
+                limit={!!limit}
+                withVideo={chapterEverActive}
+                preload={bootPreload}
+                onWatch={() => setActiveId(shown[0].id)}
+                onTalk={() => setLeadOpen(true)}
+              />
+            )}
             <div className={limit
               // The width cap is what keeps the bottom row on screen on a
               // wide-but-short laptop (1366x768 is the usual one): the tiles
@@ -436,7 +573,7 @@ export default function Works({
                   a plain container rather than one big button — a button cannot
                   legally contain other buttons or links. */}
               <AnimatePresence mode="popLayout">
-                {shown.map((work, index) => (
+                {tiles.map((work, index) => (
                   <motion.div
                     key={work.id}
                     layout
@@ -472,7 +609,7 @@ export default function Works({
                           // scroll internally on desktop). Wider/shorter on
                           // lg+ keeps both rows on screen without shrinking
                           // the grid itself.
-                          `aspect-[4/3] sm:aspect-video ${tight ? "lg:aspect-auto lg:h-[max(200px,calc((100svh-400px)/2))]" : "lg:aspect-[16/7]"}`
+                          `aspect-[4/3] sm:aspect-video ${tight ? (isNewTab ? "lg:aspect-auto lg:h-[max(200px,calc((100svh-400px)*0.45))]" : "lg:aspect-auto lg:h-[max(224px,calc((100svh-400px)*0.56))]") : "lg:aspect-[16/7]"}`
                         : "aspect-[16/10]"
                     } cursor-pointer`}
                   >

@@ -11330,3 +11330,28 @@ html[data-lite] .site-scrim {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   cursor: default;
 }
+
+/* Вкладка «Новые» в блоке работ — яркая, с мигающей точкой (просьба Егора). */
+.new-tab {
+  background: linear-gradient(90deg, rgba(255, 79, 216, 0.28), rgba(255, 106, 61, 0.28)) !important;
+  font-weight: 700;
+}
+.new-tab-dot {
+  display: inline-block;
+  width: calc(7 * var(--s));
+  height: calc(7 * var(--s));
+  margin-right: calc(6 * var(--s));
+  border-radius: 9999px;
+  background: #ff6a3d;
+  animation: new-tab-blink 1.2s ease-in-out infinite;
+}
+@keyframes new-tab-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .new-tab-dot {
+    animation: none;
+  }
+}

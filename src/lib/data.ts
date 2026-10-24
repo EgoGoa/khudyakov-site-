@@ -178,6 +178,29 @@ export const works: Work[] = [
   { id: "U4eC0MxLHe8", title: "Презентационный ролик · ОАО «УралТрубоДеталь»", client: "ОАО «УралТрубоДеталь»", category: "Имиджевые и презентации", sphere: "Промышленность и B2B", duration: 181, date: "2019-04-22", youtubeId: "U4eC0MxLHe8" },
   { id: "eitwwderUxs", title: "Институт агротехники", client: "Институт агротехники", category: "Имиджевые и презентации", sphere: "Образование", duration: 64, date: "2019-04-24", youtubeId: "eitwwderUxs" },
 
+  // Свежая работа из вкладки «Новые» — в конце группы, чтобы не менять
+  // выбор обложек в DirectionsGrid (он берёт первую работу рубрики).
+  {
+    id: "o4BJlevuewU",
+    title: "Презентационный фильм «ТУРБИНА»",
+    client: "ТУРБИНА",
+    category: "Имиджевые и презентации",
+    sphere: "Промышленность и B2B",
+    duration: 375,
+    date: "2026-10-23",
+    youtubeId: "o4BJlevuewU",
+    isNew: true,
+    caseStudy: {
+      production: "3 недели",
+      budget: "1 600 000 ₽",
+      features: [
+        "Съёмка на действующем заводе",
+        "Архив и 3D-графика в одном фильме",
+        "Герои — реальные сотрудники",
+      ],
+    },
+  },
+
   // ---------- Корпоративные ----------
   { id: "pOV5EnAB05U", title: "Федеральная школа вождения VEKTOR", client: "VEKTOR", category: "Корпоративные", sphere: "Образование", duration: 186, date: "2026-02-04", youtubeId: "pOV5EnAB05U" },
   { id: "qCMME_ZRnu0", title: "Имиджевый фильм «Ивелла»", client: "Ивелла", category: "Корпоративные", tags: ["Имиджевые и презентации"], sphere: "Промышленность и B2B", duration: 206, date: "2026-01-28", youtubeId: "qCMME_ZRnu0" },
