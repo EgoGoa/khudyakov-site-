@@ -45,10 +45,8 @@ export function frozenFor(el: Element): () => boolean {
   const inOverlay = !!el.closest(".vibe-mode, .vibe-live");
   return () => {
     const html = document.documentElement;
-    return (
-      (!inWelcome && html.hasAttribute(WELCOME_OPEN_ATTR)) ||
-      (!inOverlay && html.hasAttribute(OVERLAY_OPEN_ATTR)) ||
-      html.hasAttribute(CALM_ATTR)
-    );
+    // Спокойный режим сюда не входит: он гасит видео и дым, а волна и сфера —
+    // маленькие знаки бренда, и без первого кадра они бы просто не появились.
+    return (!inWelcome && html.hasAttribute(WELCOME_OPEN_ATTR)) || (!inOverlay && html.hasAttribute(OVERLAY_OPEN_ATTR));
   };
 }

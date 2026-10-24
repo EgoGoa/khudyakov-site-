@@ -10837,21 +10837,45 @@ html[data-lite] .site-scrim {
    --bi-left — левый край острова, --bi-right — правый (от правого края экрана),
    --bi-h — высота. Волна и сфера считаются от них. */
 .bottom-island { display: none; }
+/* Появление острова (Егор, 2026-10-24): сначала только страница со
+   стрелками, по центру и узкая; когда очередь загрузки доходит до волны
+   (BOOT.voice, data-boot 6), остров плавно раздвигается в стороны, а волна,
+   лупа и сфера встают на свои места. Всё считается от трёх анимируемых
+   переменных: --bi-w (ширина), --bi-side (0 → 1, ширина гнёзд по краям) и
+   --bi-open (сдвиг страницы при раскрытом поиске). */
+@property --bi-w { syntax: "<length>"; inherits: true; initial-value: 190px; }
+@property --bi-open { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --bi-side { syntax: "<number>"; inherits: true; initial-value: 0; }
+@media (max-width: 1023px) and (orientation: portrait), (min-width: 1024px) {
+  :root {
+    --bi-side: 0;
+    --bi-ease: cubic-bezier(0.45, 0, 0.15, 1);
+    transition:
+      --bi-w 1s var(--bi-ease),
+      --bi-side 1s var(--bi-ease),
+      --bi-open 0.85s var(--bi-ease) 0.1s;
+  }
+  html:is([data-boot="6"], [data-boot="7"]) { --bi-side: 1; }
+  /* Пока первый экран не сложился — острова нет; потом он проявляется
+     узким, со стрелками. */
+  html:is(:not([data-boot]), [data-boot="0"], [data-boot="1"]) .bottom-island { opacity: 0; pointer-events: none; }
+}
 @media (max-width: 1023px) and (orientation: portrait) {
   .bottom-island {
     --bi-h: 52px;
     position: fixed;
-    left: calc(12 * var(--s));
-    right: calc(12 * var(--s));
+    left: var(--bi-left);
+    width: var(--bi-w);
     bottom: calc(var(--wave-cy, calc(1.25rem + calc(16 * var(--s)) + env(safe-area-inset-bottom))) - var(--bi-h) / 2);
     z-index: 60;
     height: var(--bi-h);
-    max-width: calc(560 * var(--s));
-    margin: 0 auto;
     border-radius: calc(26 * var(--s));
   }
   /* Волна — в левом гнезде острова (центр гнезда: край + 5px + 30px). */
-  :root { --bi-left: max(12px, calc(50% - 280px)); --bi-right: max(12px, calc(50% - 280px)); --bi-hit-w: 44px; --bi-hit-h: 52px; }
+  :root { --bi-w: calc(190 * var(--s)); --bi-left: calc(50% - var(--bi-w) / 2); --bi-right: var(--bi-left); --bi-hit-w: 44px; --bi-hit-h: 52px; }
+  html:is([data-boot="6"], [data-boot="7"]) { --bi-w: min(calc(100vw - 24px), calc(560 * var(--s))); }
+  /* Сфера встаёт вместе с раздвижением острова, а не раньше него. */
+  html:is(:not([data-boot]), [data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [data-boot="4"], [data-boot="5"]) .vibe-fan { opacity: 0; pointer-events: none; }
   .voice-dock-corner {
     left: calc(var(--bi-left) + calc(5 * var(--s)) + calc(30 * var(--s)) - var(--wave-w, calc(55 * var(--s))) / 2);
     translate: 0 0;
@@ -10909,11 +10933,11 @@ html[data-lite] .site-scrim {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     -webkit-backdrop-filter: blur(18px) saturate(1.2);
     backdrop-filter: blur(18px) saturate(1.2);
-    transition: opacity 0.3s ease;
+    transition: opacity 0.7s ease;
   }
-  .bottom-island__side { display: flex; align-items: center; min-width: 0; }
+  .bottom-island__side { display: flex; align-items: center; min-width: 0; width: calc(100 * var(--s) * var(--bi-side)); overflow: hidden; }
   .bottom-island__slot { width: calc(60 * var(--s)); flex: none; align-self: stretch; }
-  .bottom-island__slot--orb { width: calc(48 * var(--s)); justify-self: end; }
+  .bottom-island__slot--orb { width: calc(48 * var(--s) * var(--bi-side)); justify-self: end; }
   .bottom-island__center { display: flex; align-items: center; justify-content: center; min-width: 0; }
   .bottom-island__btn {
     display: grid;
@@ -10932,7 +10956,7 @@ html[data-lite] .site-scrim {
   .bottom-island__search.is-on { opacity: 1; pointer-events: auto; }
   /* Правый поиск — только на компьютере (см. блок min-width: 1024px). */
   .bottom-island__search--end { display: none; }
-  .bottom-island__tail { display: flex; align-items: center; justify-self: end; }
+  .bottom-island__tail { display: flex; align-items: center; justify-self: end; overflow: hidden; }
   .bottom-island__btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.1); color: #fff; }
   .bottom-island__label {
     display: flex;
@@ -10985,7 +11009,8 @@ html[data-lite] .site-scrim {
 @media (min-width: 1024px) {
   /* Ширина 320px вместо 560 (Егор, 2026-10-24: остров занимает слишком много
      места): гнёзда и стрелки чуть ужаты, механика та же. */
-  :root { --bi-w: calc(312 * var(--s)); --bi-left: calc(50% - var(--bi-w) / 2); --bi-hit-w: 52px; --bi-hit-h: 44px; }
+  :root { --bi-w: calc(190 * var(--s)); --bi-left: calc(50% - var(--bi-w) / 2); --bi-hit-w: 52px; --bi-hit-h: 44px; }
+  html:is([data-boot="6"], [data-boot="7"]) { --bi-w: calc(312 * var(--s)); }
   .bottom-island {
     --bi-h: 44px;
     position: fixed;
@@ -10996,12 +11021,13 @@ html[data-lite] .site-scrim {
     height: var(--bi-h);
     border-radius: calc(22 * var(--s));
   }
+  .bottom-island__side { width: calc(72 * var(--s) * var(--bi-side)); }
   .bottom-island__slot { width: calc(72 * var(--s)); }
   .bottom-island__btn { width: calc(36 * var(--s)); height: calc(36 * var(--s)); }
   /* Сфера ушла в колонку Vibe: поиск стоит справа в гнезде, равном гнезду
      волны, — края острова одинаковые, страница ровно по центру. */
   .bottom-island__search--start, .bottom-island__slot--orb { display: none; }
-  .bottom-island__tail { width: calc(72 * var(--s)); justify-content: center; }
+  .bottom-island__tail { width: calc(72 * var(--s) * var(--bi-side)); justify-content: center; }
   .bottom-island__search--end { display: grid; }
   .bottom-island__label b { font-size: calc(14 * var(--s)); }
   .bottom-island__arrow { width: calc(32 * var(--s)); height: calc(32 * var(--s)); }
@@ -11185,14 +11211,7 @@ html[data-lite] .site-scrim {
    анимируемая переменная --bi-w (@property), от неё считаются и сам остров,
    и волна, и окно поиска, поэтому всё едет синхронно. Окно (SiteSearch) —
    лишь строка ввода поверх острова и слой результатов над ним. */
-@property --bi-w { syntax: "<length>"; inherits: true; initial-value: 312px; }
-@property --bi-open { syntax: "<number>"; inherits: true; initial-value: 0; }
 @media (min-width: 1024px) {
-  :root {
-    transition:
-      --bi-w 0.85s cubic-bezier(0.45, 0, 0.15, 1) 0.1s,
-      --bi-open 0.85s cubic-bezier(0.45, 0, 0.15, 1) 0.1s;
-  }
   html:has(.site-search[data-open]) {
     --bi-w: min(calc(700 * var(--s)), calc(100vw - 2rem));
     --bi-open: 1;
