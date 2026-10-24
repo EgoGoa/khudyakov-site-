@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Works from "@/components/home/Works";
 import DirectionBackdrop from "@/components/home/direction/DirectionBackdrop";
 import { ServiceProvider } from "@/lib/service-context";
 
-export const metadata: Metadata = {
-  title: "Портфолио — HUD.SERVICE",
-  description: "Реклама, шоурилы, 3D и моушн, документальные и обучающие форматы.",
-};
+export const metadata: Metadata = pageMetadata(
+  "Портфолио — HUD.SERVICE",
+  "Реклама, шоурилы, 3D и моушн, документальные и обучающие форматы.",
+);
 
 // The full catalogue with both filter axes, moved off the service page so
 // that page's Works chapter can stay a six-item showcase (see WorksShowcase).

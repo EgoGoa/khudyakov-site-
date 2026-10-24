@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CinematicStage, { type ChapterMeta, type Phase } from "@/components/ui/CinematicStage";
 import ChapterRail from "@/components/ui/ChapterRail";
 import SmmPitch from "@/components/home/smm/SmmPitch";
@@ -9,10 +10,10 @@ import SmmGuarantees from "@/components/home/smm/SmmGuarantees";
 import SmmClose from "@/components/home/smm/SmmClose";
 import { ServiceProvider } from "@/lib/service-context";
 
-export const metadata: Metadata = {
-  title: "SMM и ведение соцсетей — HUD.SERVICE",
-  description: "Съёмка, монтаж, публикации и продвижение одной командой, без подрядчиков.",
-};
+export const metadata: Metadata = pageMetadata(
+  "SMM и ведение соцсетей — HUD.SERVICE",
+  "Съёмка, монтаж, публикации и продвижение одной командой, без подрядчиков.",
+);
 
 // public/video/smm-reel.mp4 is Egor's delivery for this page (bg-smm.mp4 was
 // only ever the 10s preview loop used in DirectionsGrid/ServicePicker),

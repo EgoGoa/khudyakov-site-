@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CinematicStage, { type ChapterMeta, type Phase } from "@/components/ui/CinematicStage";
 import ChapterRail from "@/components/ui/ChapterRail";
 import AiPitch from "@/components/home/ai/AiPitch";
@@ -15,10 +16,10 @@ import { AI_SEO_SECTIONS } from "@/components/home/ai/aiSeoSections";
 import { ServiceProvider } from "@/lib/service-context";
 import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 
-export const metadata: Metadata = {
-  title: "AI-решения для бизнеса — HUD.SERVICE",
-  description: "Чат-боты, AI-ассистенты и нейросети в продакшене и общении с клиентами.",
-};
+export const metadata: Metadata = pageMetadata(
+  "AI-решения для бизнеса — HUD.SERVICE",
+  "Чат-боты, AI-ассистенты и нейросети в продакшене и общении с клиентами.",
+);
 
 // Same deck as /content: one continuous film pinned behind chapters that step
 // one per gesture, each phase playing out and then holding — defocused — on

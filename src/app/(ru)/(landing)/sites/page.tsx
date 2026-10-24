@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CinematicStage, { type ChapterMeta, type Phase } from "@/components/ui/CinematicStage";
 import SitesPitch from "@/components/home/sites/SitesPitch";
 import ChapterRail from "@/components/ui/ChapterRail";
@@ -9,10 +10,10 @@ import SitesGuarantees from "@/components/home/sites/SitesGuarantees";
 import SitesClose from "@/components/home/sites/SitesClose";
 import { ServiceProvider } from "@/lib/service-context";
 
-export const metadata: Metadata = {
-  title: "Сайты под ключ — HUD.SERVICE",
-  description: "Лендинги, визитки и магазины: AI ускоряет работу, опытная команда отвечает за результат.",
-};
+export const metadata: Metadata = pageMetadata(
+  "Сайты под ключ — HUD.SERVICE",
+  "Лендинги, визитки и магазины: AI ускоряет работу, опытная команда отвечает за результат.",
+);
 
 // public/video/sites-reel.mp4 is Egor's second delivery for this page (his
 // first, bg-sites.mp4, was only ever the small preview loop used in

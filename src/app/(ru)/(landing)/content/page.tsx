@@ -13,13 +13,18 @@ import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
 import ContentDecoIcon from "@/components/home/content/ContentDecoIcon";
 import { ServiceProvider } from "@/lib/service-context";
 
+const TITLE = "HUD.SERVICE — видеопродакшн, сайты, SMM и AI для бизнеса";
+const DESCRIPTION =
+  "Съёмка и монтаж рекламных, имиджевых и продающих роликов, фото и AI-контент под любую площадку. Сайты под ключ, ведение соцсетей и AI-решения — одной командой.";
+
 export const metadata: Metadata = {
   // Корень сайта ведёт сюда (301), поэтому по запросу «худ сервис» эта
   // страница — главная ссылка в выдаче: заголовок про весь бренд, а
   // разделы-услуги Google подставит под ней дополнительными ссылками.
-  title: { absolute: "HUD.SERVICE — видеопродакшн, сайты, SMM и AI для бизнеса" },
-  description:
-    "Съёмка и монтаж рекламных, имиджевых и продающих роликов, фото и AI-контент под любую площадку. Сайты под ключ, ведение соцсетей и AI-решения — одной командой.",
+  title: { absolute: TITLE },
+  description: DESCRIPTION,
+  openGraph: { title: TITLE, description: DESCRIPTION },
+  twitter: { title: TITLE, description: DESCRIPTION },
 };
 
 // public/video/content-reel.mp4 is the source reel whole and unedited — no
