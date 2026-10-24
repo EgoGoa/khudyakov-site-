@@ -427,7 +427,7 @@ export default function CinematicSection({
           // при ней уже не нужно в прежнем размере — иначе плотные главы
           // (04, 05) начинают прокручиваться внутри себя.
           ? `chapter-layer absolute inset-0 flex flex-col overflow-y-auto overflow-x-hidden px-6 ${
-              footer ? "pb-[var(--voice-safe)] pt-[calc(4.5rem+var(--sat))] lg:pt-[4.75rem]" : "pb-[var(--voice-safe)] pt-[calc(5.5rem+var(--sat))] lg:pt-[5.5rem]"
+              footer ? "pb-[var(--voice-safe)] pt-[calc(4.5rem+var(--sat))] sm:pt-[calc(70*var(--s)+1.5rem)]" : "pb-[var(--voice-safe)] pt-[calc(5.5rem+var(--sat))] sm:pt-[calc(70*var(--s)+2rem)]"
             } lg:px-10 land:pb-[var(--voice-safe)] land:pt-8 land:pl-[max(2rem,calc(env(safe-area-inset-left)+1rem))] land:pr-[max(2rem,calc(env(safe-area-inset-right)+1rem))] ${
               active ? "" : "pointer-events-none"
             }`

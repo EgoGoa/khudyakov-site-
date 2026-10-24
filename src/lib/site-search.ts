@@ -372,3 +372,5 @@ export const OPEN_SEARCH_EVENT = "hdkv:open-search";
 /** Открыть поиск. Вызывать прямо из обработчика нажатия: на iPhone
  *  клавиатура выезжает, только если поле получило фокус в том же жесте. */
 export const openSearch = () => window.dispatchEvent(new Event(OPEN_SEARCH_EVENT));
+export const CLOSE_SEARCH_EVENT = "hdkv:close-search";
+export const closeSearch = () => window.dispatchEvent(new Event(CLOSE_SEARCH_EVENT));

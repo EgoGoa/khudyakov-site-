@@ -8728,6 +8728,9 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
 .voice-tour__task.is-done { background: rgba(176, 124, 255, 0.14); }
 .voice-stage-close {
   position: absolute;
+  /* Над слайдом: он идёт следом и тоже position: relative, из-за чего
+     перекрывал крестик, и клик по нему не закрывал окно. */
+  z-index: 5;
   top: 0.9rem;
   right: 0.9rem;
   display: grid;
@@ -10927,6 +10930,9 @@ html[data-lite] .site-scrim {
   /* Поиск проявляется следом за волной (BOOT.voice) — не раньше неё. */
   .bottom-island__search { opacity: 0; pointer-events: none; transition: opacity 0.5s ease 0.6s, background-color 0.2s ease, color 0.2s ease, transform 0.15s ease; }
   .bottom-island__search.is-on { opacity: 1; pointer-events: auto; }
+  /* Правый поиск — только на компьютере (см. блок min-width: 1024px). */
+  .bottom-island__search--end { display: none; }
+  .bottom-island__tail { display: flex; align-items: center; justify-self: end; }
   .bottom-island__btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.1); color: #fff; }
   .bottom-island__label {
     display: flex;
@@ -10967,18 +10973,19 @@ html[data-lite] .site-scrim {
   /* Прячется, пока открыто окошко услуги, поиск и стартовое окно. При
      прокрутке остаётся (Егор, 2026-10-10). */
   html[data-spotlight-open] .bottom-island,
-  html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .bottom-island,
-  html:has(.site-search[data-open]) .bottom-island {
+  html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .bottom-island {
     opacity: 0;
     pointer-events: none;
   }
 }
 
 /* Компьютер (Егор, 2026-10-10): тот же остров, но тонкий — 44px — и по
-   центру внизу, 560px. Волна в покое ужата под его высоту, сфера вайб-меню
-   переехала сюда из колонки разделов (VibeRail, .vibe-island-orb). */
+   центру внизу. Волна в покое ужата под его высоту; сфера вайб-меню — снова
+   первой в колонке Vibe справа (VibeRail), поиск — в правом краю острова. */
 @media (min-width: 1024px) {
-  :root { --bi-w: 560px; --bi-left: calc(50% - var(--bi-w) / 2); --bi-hit-w: 56px; --bi-hit-h: 44px; }
+  /* Ширина 320px вместо 560 (Егор, 2026-10-24: остров занимает слишком много
+     места): гнёзда и стрелки чуть ужаты, механика та же. */
+  :root { --bi-w: calc(312 * var(--s)); --bi-left: calc(50% - var(--bi-w) / 2); --bi-hit-w: 52px; --bi-hit-h: 44px; }
   .bottom-island {
     --bi-h: 44px;
     position: fixed;
@@ -10989,41 +10996,33 @@ html[data-lite] .site-scrim {
     height: var(--bi-h);
     border-radius: calc(22 * var(--s));
   }
-  .bottom-island__slot { width: calc(64 * var(--s)); }
-  .bottom-island__slot--orb { width: calc(40 * var(--s)); }
+  .bottom-island__slot { width: calc(72 * var(--s)); }
+  .bottom-island__btn { width: calc(36 * var(--s)); height: calc(36 * var(--s)); }
+  /* Сфера ушла в колонку Vibe: поиск стоит справа в гнезде, равном гнезду
+     волны, — края острова одинаковые, страница ровно по центру. */
+  .bottom-island__search--start, .bottom-island__slot--orb { display: none; }
+  .bottom-island__tail { width: calc(72 * var(--s)); justify-content: center; }
+  .bottom-island__search--end { display: grid; }
   .bottom-island__label b { font-size: calc(14 * var(--s)); }
-  .bottom-island__arrow { width: calc(36 * var(--s)); height: calc(36 * var(--s)); }
+  .bottom-island__arrow { width: calc(32 * var(--s)); height: calc(32 * var(--s)); }
   .voice-dock-corner {
-    left: calc(var(--bi-left) + calc(5 * var(--s)) + calc(32 * var(--s)) - var(--wave-w, calc(109 * var(--s))) / 2);
+    left: calc(var(--bi-left) + calc(5 * var(--s)) + calc(36 * var(--s)) - var(--wave-w, calc(109 * var(--s))) / 2);
     translate: 0 0;
   }
   .voice-dock-corner .voice-sphere-core { transform: scale(0.52); }
   .voice-dock-corner .voice-sphere:hover .voice-sphere-core { transform: scale(0.55); }
   .voice-dock-corner .voice-sphere.is-active .voice-sphere-core { transform: scale(0.62); }
-  .vibe-island-orb {
-    position: fixed;
-    left: calc(var(--bi-left) + var(--bi-w) - calc(5 * var(--s)) - calc(40 * var(--s)));
-    bottom: calc(var(--wave-cy, calc(51 * var(--s))) - calc(20 * var(--s)));
-    z-index: 66;
-  }
-  .vibe-island-orb .vibe-bubble--crown { width: calc(40 * var(--s)); height: calc(40 * var(--s)); }
-  /* Подпись «Vibe» — над сферой, а не слева на острове. */
-  .vibe-island-orb .vibe-tip {
-    right: 50%;
-    top: auto;
-    bottom: calc(100% + calc(10 * var(--s)));
-    transform: translate(50%, 4px);
-  }
-  .vibe-island-orb .vibe-bubble:hover .vibe-tip,
-  .vibe-island-orb .vibe-bubble:focus-visible .vibe-tip { transform: translate(50%, 0); }
   a.page-side-arrow { display: none !important; }
   .scroll-hint { display: none !important; }
-  html[data-spotlight-open] :is(.bottom-island, .vibe-island-orb),
-  html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) :is(.bottom-island, .vibe-island-orb),
-  html:has(.site-search[data-open]) .bottom-island {
+  html[data-spotlight-open] .bottom-island,
+  html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .bottom-island {
     opacity: 0;
     pointer-events: none;
   }
+}
+/* На телефоне поиск — шторка во весь экран, остров под ней прячется. */
+@media (max-width: 1023px) {
+  html:has(.site-search[data-open]) .bottom-island { opacity: 0; pointer-events: none; }
 }
 
 /* Окно поиска: шторка снизу на телефоне, окно по центру на компьютере.
@@ -11177,6 +11176,111 @@ html[data-lite] .site-scrim {
 @media (orientation: landscape) and (max-height: 500px) {
   .site-search__panel { top: 4vh; max-height: 92vh; }
 }
+
+/* ── Остров-поиск на компьютере (Егор, 2026-10-24) ────────────────────────
+   Лупа (наведение или нажатие) раскрывает сам остров в ширину: волна уходит
+   к левому краю, страница со стрелками — следом за ней, справа освобождается
+   место под ввод, лупа остаётся на правом краю. Вторым движением над
+   островом выезжает слой вкладок и вариантов. Ширина острова — одна
+   анимируемая переменная --bi-w (@property), от неё считаются и сам остров,
+   и волна, и окно поиска, поэтому всё едет синхронно. Окно (SiteSearch) —
+   лишь строка ввода поверх острова и слой результатов над ним. */
+@property --bi-w { syntax: "<length>"; inherits: true; initial-value: 312px; }
+@property --bi-open { syntax: "<number>"; inherits: true; initial-value: 0; }
+@media (min-width: 1024px) {
+  :root {
+    transition:
+      --bi-w 0.85s cubic-bezier(0.45, 0, 0.15, 1) 0.1s,
+      --bi-open 0.85s cubic-bezier(0.45, 0, 0.15, 1) 0.1s;
+  }
+  html:has(.site-search[data-open]) {
+    --bi-w: min(calc(700 * var(--s)), calc(100vw - 2rem));
+    --bi-open: 1;
+    transition-delay: 0s, 0s;
+  }
+  /* Остров и волна остаются над затемнением и открытым поиском. */
+  html:has(.site-search[data-open]) .bottom-island { z-index: 125; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 26px -8px rgba(0, 210, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08); }
+  html:has(.site-search[data-open]) .voice-dock-corner { z-index: 126; }
+  /* Страница со стрелками отъезжает к волне, освобождая строку ввода. */
+  .bottom-island__center {
+    transform: translateX(calc(var(--bi-open) * (var(--bi-w) / -2 + 154 * var(--s))));
+  }
+  html:has(.site-search[data-open]) .bottom-island__search--end { color: #fff; background: rgba(255, 255, 255, 0.1); }
+
+  /* Слой поиска не образует своего контекста наложения: затемнение (120)
+     лежит под островом (125), а строка ввода (130) — над ним. */
+  .site-search { display: contents; transition-duration: 0s; transition-delay: 1s; }
+  .site-search[data-open] { transition-delay: 0s; }
+  .site-search__dim { position: fixed; z-index: 120; }
+  .site-search__panel {
+    position: fixed;
+    z-index: 130;
+    --ss-bottom: calc(var(--wave-cy, calc(51 * var(--s))) - calc(22 * var(--s)));
+    top: auto;
+    bottom: var(--ss-bottom);
+    width: var(--bi-w);
+    max-height: none;
+    flex-direction: column-reverse;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    opacity: 1;
+    transform: translateX(-50%);
+    transition: none;
+    pointer-events: none;
+  }
+  .site-search[data-open] .site-search__panel { transform: translateX(-50%); }
+  .site-search__head { display: none; }
+  /* Строка ввода лежит поверх острова, между страницей и лупой. */
+  .site-search__panel .site-search__bar {
+    flex: none;
+    height: calc(44 * var(--s));
+    display: flex;
+    align-items: center;
+    padding: 0 calc(76 * var(--s)) 0 calc(244 * var(--s));
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .site-search[data-open] .site-search__panel .site-search__bar { opacity: 1; transition: opacity 0.4s ease 0.5s; }
+  .site-search__panel .ss-field,
+  .site-search__panel .site-search__results { pointer-events: auto; }
+  .site-search__panel .ss-field {
+    width: 100%;
+    height: calc(34 * var(--s));
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  .site-search__panel .ss-field:focus-within {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(0, 210, 255, 0.55);
+    box-shadow: 0 0 16px -6px rgba(0, 210, 255, 0.6);
+  }
+  .site-search__panel .ss-field kbd { display: none; }
+  /* Второе движение: слой вариантов выезжает вверх над островом. */
+  .site-search__results {
+    margin-bottom: calc(8 * var(--s));
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: calc(22 * var(--s));
+    background: rgba(20, 19, 28, 0.92);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    backdrop-filter: blur(18px) saturate(1.2);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+  }
+  .site-search[data-open] .site-search__results {
+    max-height: min(70vh, calc(100dvh - var(--ss-bottom) - 8rem));
+    opacity: 1;
+    transition: max-height 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.7s, opacity 0.4s ease 0.7s;
+  }
+  .site-search__chips { flex: none; padding-top: calc(12 * var(--s)); }
+  .site-search__list { min-height: 0; padding-bottom: calc(8 * var(--s)); }
+}
 @media (prefers-reduced-motion: reduce) {
   .site-search__panel, .site-search__dim, .bottom-island { transition: none !important; }
 }
@@ -11329,6 +11433,39 @@ html[data-lite] .site-scrim {
   box-shadow: 0 0 14px -4px var(--g-from, #00d2ff);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   cursor: default;
+}
+
+/* Переключатель «Спокойный режим» в меню: та же пилюля, что RU | EN;
+   активна половина, соответствующая состоянию. */
+.calm-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(2 * var(--s));
+  padding: calc(2 * var(--s));
+  border-radius: calc(999 * var(--s));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  line-height: 1;
+}
+.calm-toggle__item {
+  display: grid;
+  place-items: center;
+  min-width: calc(38 * var(--s));
+  height: calc(24 * var(--s));
+  padding: 0 calc(8 * var(--s));
+  border-radius: calc(999 * var(--s));
+  font-size: calc(11 * var(--s));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+.calm-toggle:not(.is-on) .calm-toggle__item:first-child,
+.calm-toggle.is-on .calm-toggle__item:last-child {
+  color: #fff;
+  background: linear-gradient(90deg, var(--g-from, #00d2ff), var(--g-to, #a4f4fd));
+  box-shadow: 0 0 14px -4px var(--g-from, #00d2ff);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 /* Вкладка «Новые» в блоке работ — яркая, с мигающей точкой (просьба Егора). */

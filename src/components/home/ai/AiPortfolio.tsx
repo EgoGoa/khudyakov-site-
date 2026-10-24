@@ -205,7 +205,7 @@ export default function AiPortfolio() {
           карточки в столбик. На ≤768px телефон сверху, карточки ниже. */}
       <div className="mx-auto grid grid-cols-1 items-center gap-6 [@media(min-width:769px)]:grid-cols-[5fr_7fr] [@media(min-width:769px)]:gap-8 [@media(min-width:769px)_and_(max-height:860px)]:gap-5">
         <Appear from="up" delay={BEAT.content} className="flex flex-col items-center gap-4 [@media(min-width:769px)]:gap-5">
-          <PhoneFrame className="w-[min(70vw,300px)] [@media(min-width:769px)]:h-[clamp(300px,50vh,500px)] [@media(min-width:769px)]:w-auto">
+          <PhoneFrame className="w-[min(70vw,300px)] [@media(min-width:769px)]:h-[clamp(280px,42vh,500px)] [@media(min-width:769px)]:w-auto">
             <PortfolioLoop />
           </PhoneFrame>
           <h3 className="max-w-[14em] text-center font-display text-[clamp(18px,2.4vw,28px)] font-bold uppercase leading-[1.1] tracking-tight text-paper [overflow-wrap:normal] [hyphens:none]">

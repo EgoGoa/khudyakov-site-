@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCleanPathname } from "@/lib/use-clean-pathname";
 import { serviceMeta, serviceOrder, slugToKey } from "@/lib/service-content";
 import { ringOf, siblingsOf } from "@/components/home/direction/siblings";
@@ -9,16 +9,17 @@ import { NeonChevron } from "@/components/home/ServicePicker";
 import { queueChapterHop } from "@/lib/page-hop";
 import { guardNavigation } from "@/lib/sure-nav";
 import { SHORT } from "@/components/layout/PageBar";
-import { openSearch } from "@/lib/site-search";
+import { closeSearch, openSearch } from "@/lib/site-search";
 import { SearchGlyph } from "@/components/layout/SiteSearch";
 import { BOOT, useBootStage } from "@/lib/boot-sequence";
 
-// Остров внизу экрана (Егор, 2026-10-10): волна · 🔍 · ‹ SMM 2/4 › · сфера.
-// Волна голосового ассистента встроена в левый край, сфера вайб-меню — в
-// правый, по центру — страница и стрелки к соседним. На телефоне стоя —
-// полоса на всю ширину, на компьютере — тонкий остров по центру внизу.
-// Волна и сфера остаются своими элементами (VoiceAssistant, VibeRail) и
-// встают в гнёзда острова через CSS. Стрелки остров рисует сам, с той же логикой, что PageSideNav и
+// Остров внизу экрана (Егор, 2026-10-10): на телефоне волна · 🔍 · ‹ SMM 2/4 ›
+// · сфера; на компьютере (2026-10-24) сфера вернулась в колонку Vibe, а поиск
+// встал справа от страницы: волна · ‹ SMM 2/4 › · 🔍 — края одной ширины.
+// Волна голосового ассистента встроена в левый край, по центру — страница и
+// стрелки к соседним. На телефоне стоя — полоса на всю ширину, на компьютере —
+// тонкий остров по центру внизу. Волна и сфера остаются своими элементами
+// (VoiceAssistant, VibeRail) и встают в гнёзда острова через CSS. Стрелки остров рисует сам, с той же логикой, что PageSideNav и
 // FormatSideNav (те живут внутри слоя страницы и не могут встать поверх
 // острова) — на телефоне стоя прежние стрелки спрятаны (globals.css).
 //
@@ -125,6 +126,39 @@ function labelFor(path: string): { name: string; pos?: string } | null {
   return { name: SHORT[key], pos: `${i + 1}/${ring.length}` };
 }
 
+// Задержка наведения: остров раскрывается сразу, но не от случайного
+// пролёта курсора мимо лупы.
+const HOVER_OPEN_MS = 120;
+
+function SearchButton({ on, place }: { on: boolean; place: "start" | "end" }) {
+  const timer = useRef(0);
+  const cancel = () => window.clearTimeout(timer.current);
+  useEffect(() => cancel, []);
+  const searchOpen = () => !!document.querySelector(".site-search[data-open]");
+  return (
+    <button
+      type="button"
+      // Правая лупа (компьютер) на раскрытом поиске закрывает его.
+      onClick={() => {
+        cancel();
+        if (place === "end" && searchOpen()) closeSearch();
+        else openSearch();
+      }}
+      // Наведение на лупу в острове (мышь) сразу раскрывает остров в строку.
+      onPointerEnter={(e) => {
+        if (place !== "end" || e.pointerType !== "mouse") return;
+        cancel();
+        timer.current = window.setTimeout(() => !searchOpen() && openSearch(), HOVER_OPEN_MS);
+      }}
+      onPointerLeave={cancel}
+      aria-label="Поиск по сайту"
+      className={`bottom-island__btn bottom-island__search bottom-island__search--${place}${on ? " is-on" : ""}`}
+    >
+      <SearchGlyph className="h-[calc(18*var(--s))] w-[calc(18*var(--s))]" />
+    </button>
+  );
+}
+
 export default function BottomIsland() {
   const pathname = useCleanPathname();
   const hasWave = useDockMetrics();
@@ -141,14 +175,8 @@ export default function BottomIsland() {
         {/* Гнездо волны: сама волна — своим элементом (VoiceAssistant),
             CSS ставит её ровно сюда. */}
         <span className="bottom-island__slot" aria-hidden="true" />
-        <button
-          type="button"
-          onClick={openSearch}
-          aria-label="Поиск по сайту"
-          className={`bottom-island__btn bottom-island__search${voiceOn ? " is-on" : ""}`}
-        >
-          <SearchGlyph className="h-[calc(18*var(--s))] w-[calc(18*var(--s))]" />
-        </button>
+        {/* Телефон: поиск рядом с волной. */}
+        <SearchButton on={voiceOn} place="start" />
       </div>
       <div className="bottom-island__center">
         {hops && <Arrow hop={hops.prev} side="prev" kind={hops.kind} />}
@@ -160,8 +188,12 @@ export default function BottomIsland() {
         )}
         {hops && <Arrow hop={hops.next} side="next" kind={hops.kind} />}
       </div>
-      {/* Гнездо сферы вайб-меню (VibeRail ставит её сюда через CSS). */}
-      <span className="bottom-island__slot bottom-island__slot--orb" aria-hidden="true" />
+      <div className="bottom-island__tail">
+        {/* Телефон: гнездо сферы вайб-меню (VibeRail ставит её сюда через CSS). */}
+        <span className="bottom-island__slot bottom-island__slot--orb" aria-hidden="true" />
+        {/* Компьютер: поиск в правом краю, зеркально волне. */}
+        <SearchButton on={voiceOn} place="end" />
+      </div>
     </div>
   );
 }

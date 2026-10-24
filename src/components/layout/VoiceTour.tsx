@@ -51,8 +51,19 @@ export default function VoiceTour({ from, to }: { from: string; to: string }) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
+    // Клик мимо окошка закрывает его, как и остальные окна сайта (Егор,
+    // 2026-10-24). Волна в острове и окно ассистента не в счёт: на шаге
+    // «Попробуем» с ними как раз и работают.
+    const onDown = (e: PointerEvent) => {
+      const t = e.target;
+      if (t instanceof Element && !t.closest(".voice-tour, .voice-dock-corner, [data-voice-ui]")) close();
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onDown, true);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onDown, true);
+    };
   }, []);
 
   const go = (n: number) => {

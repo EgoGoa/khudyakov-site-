@@ -245,7 +245,6 @@ function Text({ item }: { item: StudioNewsItem }) {
             {s.after?.map((t, j) => <p key={`a${j}`}>{t}</p>)}
           </section>
         ))}
-        {open && <div className="pt-1">{toggle}</div>}
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">

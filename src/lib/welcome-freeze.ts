@@ -20,11 +20,20 @@ export const OVERLAY_OPEN_ATTR = "data-overlay-open";
 /** Окна, внутри которых анимация продолжается, пока сайт заморожен. */
 export const LIVE_HOSTS = ".welcome-shell, .vibe-mode, .block-vibe";
 
-/** Сайт за окном заморожен: открыто стартовое окно или вайб-окно. */
+/** «Спокойный режим» (lib/calm): посетитель сам попросил убрать движение
+ *  фона — видео стоит кадром, дым и холсты не рисуют. */
+export const CALM_ATTR = "data-calm";
+
+export function isCalm(): boolean {
+  return typeof document !== "undefined" && document.documentElement.hasAttribute(CALM_ATTR);
+}
+
+/** Сайт за окном заморожен: открыто стартовое окно или вайб-окно, либо
+ *  включён спокойный режим. */
 export function isSiteFrozen(): boolean {
   if (typeof document === "undefined") return false;
   const html = document.documentElement;
-  return html.hasAttribute(WELCOME_OPEN_ATTR) || html.hasAttribute(OVERLAY_OPEN_ATTR);
+  return html.hasAttribute(WELCOME_OPEN_ATTR) || html.hasAttribute(OVERLAY_OPEN_ATTR) || html.hasAttribute(CALM_ATTR);
 }
 
 /** Проверка заморозки для конкретного холста. За стартовым окном стоит всё,
@@ -36,6 +45,10 @@ export function frozenFor(el: Element): () => boolean {
   const inOverlay = !!el.closest(".vibe-mode, .vibe-live");
   return () => {
     const html = document.documentElement;
-    return (!inWelcome && html.hasAttribute(WELCOME_OPEN_ATTR)) || (!inOverlay && html.hasAttribute(OVERLAY_OPEN_ATTR));
+    return (
+      (!inWelcome && html.hasAttribute(WELCOME_OPEN_ATTR)) ||
+      (!inOverlay && html.hasAttribute(OVERLAY_OPEN_ATTR)) ||
+      html.hasAttribute(CALM_ATTR)
+    );
   };
 }

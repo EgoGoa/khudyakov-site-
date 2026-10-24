@@ -16,6 +16,7 @@ import LiveBrandWord from "@/components/layout/LiveBrandWord";
 import { PAGE_GRADIENT } from "@/components/home/PageSideNav";
 import { CloseIcon, PhoneIcon, TelegramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import {
+  CLOSE_SEARCH_EVENT,
   GROUP_LABEL,
   OPEN_SEARCH_EVENT,
   PHONE_HREF,
@@ -34,6 +35,9 @@ import {
 // Окно поиска (Егор, 2026-10-09, по образцу Higgsfield). На телефоне —
 // шторка снизу во весь экран, на компьютере — окно по центру. Открывается
 // лупой в острове внизу (телефон), лупой в шапке и сочетанием ⌘/Ctrl+K.
+// На компьютере (2026-10-24) окно — это сам нижний остров: он раскрывается
+// в ширину строкой поиска, а вкладки и варианты вырастают над ней (CSS,
+// блок «Остров-поиск» в globals.css; разметка и логика те же).
 //
 // Окно смонтировано всегда и только прячется: на iPhone клавиатура выезжает,
 // лишь если поле получило фокус в том же нажатии, — поэтому открытие
@@ -131,6 +135,16 @@ export default function SiteSearch() {
     const opener = openerRef.current;
     if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
   };
+  const closeRef = useRef(close);
+  useEffect(() => {
+    closeRef.current = close;
+  });
+  // Закрытие извне: лупа острова на раскрытом поиске работает как переключатель.
+  useEffect(() => {
+    const hide = () => closeRef.current();
+    window.addEventListener(CLOSE_SEARCH_EVENT, hide);
+    return () => window.removeEventListener(CLOSE_SEARCH_EVENT, hide);
+  }, []);
 
   // Сменилась страница (например, назад в браузере) — окно закрывается.
   const [seenPath, setSeenPath] = useState(pathname);
@@ -275,7 +289,7 @@ export default function SiteSearch() {
       <div role="dialog" aria-modal="true" aria-label="Поиск по сайту" className="site-search__panel" onKeyDown={onKeyDown}>
         {/* Фирменная шапка окна: логотип как в шапке сайта, подпись,
             крестик. Под ней — поле с градиентной окантовкой. */}
-        <div className="flex items-center justify-between gap-3 px-4 pt-3.5 lg:px-5 lg:pt-4">
+        <div className="site-search__head flex items-center justify-between gap-3 px-4 pt-3.5 lg:px-5 lg:pt-4">
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="h-2 w-2 shrink-0 animate-pulse-rec rounded-full brand-dot" />
             <span className="whitespace-nowrap font-display text-[calc(17*var(--s))] uppercase leading-none tracking-tight text-paper">
@@ -292,7 +306,7 @@ export default function SiteSearch() {
             <CloseIcon />
           </button>
         </div>
-        <div className="px-3.5 pt-3 lg:px-4">
+        <div className="site-search__bar px-3.5 pt-3 lg:px-4">
           <label className="ss-field flex h-12 items-center gap-2.5 rounded-full pl-4 pr-1.5">
             <SearchGlyph className="h-[calc(18*var(--s))] w-[calc(18*var(--s))] shrink-0 text-[#5eead4]" />
             <input
@@ -331,6 +345,9 @@ export default function SiteSearch() {
           </label>
         </div>
 
+        {/* Вкладки и варианты — одним слоем: на компьютере он выезжает
+            вверх над раскрывшимся островом вторым движением. */}
+        <div className="site-search__results flex min-h-0 flex-1 flex-col">
         {/* Вкладки переносятся на вторую строку, а не уезжают за край:
             ни одна не обрезается краем окна. */}
         <div className="site-search__chips flex flex-wrap gap-1.5 px-3.5 pb-1 pt-3 lg:px-4">
@@ -372,6 +389,7 @@ export default function SiteSearch() {
               </ul>
             </div>
           ))}
+        </div>
         </div>
       </div>
     </div>

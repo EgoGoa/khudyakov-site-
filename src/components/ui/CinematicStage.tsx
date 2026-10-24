@@ -94,6 +94,14 @@ export const StageContext = createContext<StageApi>({
 // Seeking is only accurate to the nearest keyframe; the reel carries one per
 // second (-g 25), so land slightly inside the phase rather than exactly on its
 // boundary, where the previous scene's last frame can still surface.
+/** Фон идёт чуть медленнее: медленное движение меньше цепляет взгляд
+ *  (Егор, 2026-10-24). Не ниже 0,5 — иначе кадры идут рывками. */
+const CALM_RATE = 0.75;
+const slow = (v: HTMLVideoElement) => {
+  v.defaultPlaybackRate = CALM_RATE;
+  v.playbackRate = CALM_RATE;
+};
+
 const SEEK_EPSILON = 0.04;
 
 // How far behind a phase's start the playhead may sit and still count as
@@ -1175,6 +1183,7 @@ export default function CinematicStage({
         /* metadata not ready yet — onLoadedMetadata seeks instead */
       }
     }
+    slow(video);
     video.play().catch(() => {});
     if (soundPage) sound()?.enterChapter(soundPage, activeIndex);
     let soundHeld = false;
@@ -1200,8 +1209,14 @@ export default function CinematicStage({
     // read here rather than inside the tick because the effect already
     // re-runs on `activeIndex`, so the prefix is recomputed exactly when the
     // chapter — and therefore the fragment being graded — changes.
-    const phaseBrightness = phases[activeIndex]?.brightness ?? brightness;
-    const brightnessPrefix = phaseBrightness !== 1 ? `brightness(${phaseBrightness}) ` : "";
+    // Общий множитель 0,64 (дважды по −20%): видеофон четырёх основных
+    // страниц темнее (Егор, 2026-10-24) — поверх яркости страницы и фрагмента.
+    // Потолок 0,9: светлый фрагмент (в /smm множитель 1,8) не должен
+    // вспыхивать на фоне остальных — резкий перепад яркости бьёт по глазам.
+    // saturate(0,8) приглушает цвета, чтобы фон не спорил с текстом; на
+    // телефоне фильтр с видео снят (iOS) — там фон темнит слой поверх.
+    const phaseBrightness = Math.min(0.9, +((phases[activeIndex]?.brightness ?? brightness) * 0.64).toFixed(3));
+    const brightnessPrefix = `brightness(${phaseBrightness}) saturate(0.8) `;
     const applyPush = () => {
       const frame = frameRef.current;
       if (!push || reelEnd <= 0 || !frame) return;
@@ -1257,7 +1272,7 @@ export default function CinematicStage({
       // resume it — the effect that called play() only reruns on the next
       // chapter change. Checking every frame here means any such stall
       // corrects itself well before the visitor scrolls to see it.
-      if (video.paused) video.play().catch(() => {});
+      if (video.paused && !isSiteFrozen()) video.play().catch(() => {});
 
       if (lite) {
         if (frame && !revealed) {
@@ -1472,7 +1487,11 @@ export default function CinematicStage({
                     data-force-play=""
                     aria-hidden="true"
                     preload={started && i >= activeIndex - 1 && i <= activeIndex + 1 ? "auto" : bootPreload}
-                    onPlaying={() => promoteClip(i)}
+                    onLoadedMetadata={(e) => slow(e.currentTarget)}
+                    onPlaying={(e) => {
+                      slow(e.currentTarget);
+                      promoteClip(i);
+                    }}
                     onCanPlay={(e) => {
                       const v = e.currentTarget;
                       if (started && i === activeIndexRef.current && v.paused && !v.ended && !isSiteFrozen()) {
@@ -1516,6 +1535,7 @@ export default function CinematicStage({
               onLoadedMetadata={() => {
                 const video = videoRef.current;
                 const phase = phases[activeIndexRef.current];
+                if (video) slow(video);
                 if (video && phase) video.currentTime = phase.start + SEEK_EPSILON;
               }}
               // `relative` purely for paint order: the still above is
@@ -1535,7 +1555,7 @@ export default function CinematicStage({
                 header and the copy actually sit. Kept as a wash rather than a
                 heavier blur so the picture is still legibly a picture. */}
             <div
-              className="pointer-events-none absolute inset-0 bg-ink/[0.24] lg:hidden"
+              className="pointer-events-none absolute inset-0 bg-ink/[0.5] lg:hidden"
               style={{ opacity: introClear ? 0.12 : 1, transition: "opacity 1.1s ease" }}
             />
             <div

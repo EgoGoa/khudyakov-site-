@@ -27,6 +27,7 @@ import { SITE_URL, BRAND } from "@/lib/site";
 import { BRIEF_EMAIL } from "@/lib/brief";
 import OffscreenAnimationPause from "@/components/layout/OffscreenAnimationPause";
 import FluidSmoke from "@/components/layout/FluidSmoke";
+import CalmMode from "@/components/layout/CalmMode";
 import { FullpageProvider } from "@/lib/fullpage";
 import { HeaderMenuProvider } from "@/lib/header-menu";
 import { CinematicNavProvider } from "@/lib/cinematic-nav";
@@ -255,6 +256,7 @@ export default async function SiteShell({
             он сам решает, запускаться ли (только мышь, без reduced-motion),
             и паркует свой цикл, пока курсор стоит. */}
         <FluidSmoke />
+        <CalmMode />
         <Analytics />
         <YandexMetrika />
         </NextIntlClientProvider>

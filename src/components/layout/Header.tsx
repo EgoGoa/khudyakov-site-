@@ -20,6 +20,7 @@ import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { openWelcome } from "@/lib/welcome-gate";
 import { localizedCrossPageItems, localizedPageBlocks } from "@/components/layout/page-sections";
 import LocaleSwitch from "@/components/layout/LocaleSwitch";
+import { setCalm, useCalm } from "@/lib/calm";
 import { useLocale, useTranslations } from "next-intl";
 import type { Locale } from "@/i18n/routing";
 import { serviceHrefForRoute } from "@/features/brief/registry";
@@ -52,6 +53,7 @@ export default function Header() {
   const pathname = useCleanPathname();
   const t = useTranslations("header");
   const locale = useLocale() as Locale;
+  const calm = useCalm();
   const PAGE_BLOCKS = localizedPageBlocks(locale);
   const CROSS_PAGE_ITEMS = localizedCrossPageItems(locale);
   const isHome = pathname === "/";
@@ -333,6 +335,21 @@ export default function Header() {
                 <div className="col-span-2 mt-1 flex items-center justify-between gap-3">
                   <span className="menu-kicker font-display !m-0">{t("switchLanguage")}</span>
                   <LocaleSwitch className="pointer-events-auto" />
+                </div>
+                {/* Спокойный режим: видео-фон встаёт кадром (Егор, 2026-10-24). */}
+                <div className="col-span-2 flex items-center justify-between gap-3">
+                  <span className="menu-kicker font-display !m-0">{locale === "en" ? "Calm mode" : "Спокойный режим"}</span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={calm}
+                    aria-label={locale === "en" ? "Calm mode: stop the moving background" : "Спокойный режим: остановить движение фона"}
+                    onClick={() => setCalm(!calm)}
+                    className={`calm-toggle font-display pointer-events-auto${calm ? " is-on" : ""}`}
+                  >
+                    <span className="calm-toggle__item">{locale === "en" ? "Off" : "Выкл"}</span>
+                    <span className="calm-toggle__item">{locale === "en" ? "On" : "Вкл"}</span>
+                  </button>
                 </div>
               </div>
               <div>

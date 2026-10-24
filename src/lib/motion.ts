@@ -31,7 +31,7 @@ export const EASE = [0.22, 1, 0.36, 1] as const;
  *  время его проявления + эта пауза, и при смене любого из чисел пауза не
  *  уедет. */
 const INTRO_DUR = 1.05; // = DUR.text, ниже
-const WATCH_VIDEO = 2; // компьютер; на телефоне 1,5 с — см. ниже
+const WATCH_VIDEO = 0.5; // компьютер; на телефоне 0 с — см. ниже (Егор, 2026-10-24: на 1,5 с быстрее)
 
 // Ритм «хронология»: заголовок и подзаголовок вместе → пауза на ролик
 // → первый блок, дальше карточки по одной (STAGGER.normal = 0.5 с) и сразу
@@ -56,7 +56,7 @@ export const BEAT = {
 // Значения подменяются один раз при загрузке модуля в браузере (до первого
 // рендера любого блока).
 if (typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches) {
-  const phoneContent = 0.1 + INTRO_DUR + 1.5;
+  const phoneContent = 0.1 + INTRO_DUR;
   Object.assign(BEAT, {
     eyebrow: 0.05,
     title: 0.1,
