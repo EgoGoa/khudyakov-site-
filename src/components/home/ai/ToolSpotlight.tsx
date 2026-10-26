@@ -409,7 +409,10 @@ export default function ToolSpotlight({
       // поверх неё. Место и форма кнопки задаются здесь же — отсюда и
       // разное выравнивание на разных блоках.
       className={`relative w-full ${
-        fill ? "" : `max-w-[min(100%,calc(520*var(--s)))] ${right || (!side && !leftAlign) ? "ml-auto" : ""}`
+        // Плашка-карточка (`shape="card"`) стоит на всю ширину своей
+        // колонки: края совпадают с боковыми краями соседних блоков, а не
+        // прижаты к одному краю узким окошком.
+        fill || shape === "card" ? "" : `max-w-[min(100%,calc(520*var(--s)))] ${right || (!side && !leftAlign) ? "ml-auto" : ""}`
       } ${top ? "pb-3" : "pt-3"} ${className}`}
       style={
         {

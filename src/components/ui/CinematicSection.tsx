@@ -140,6 +140,7 @@ const DECOR = (instant: boolean): Variants => ({
 function useFitBodyToPane(enabled: boolean) {
   const paneRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const pane = paneRef.current;
     const body = bodyRef.current;
@@ -153,6 +154,11 @@ function useFitBodyToPane(enabled: boolean) {
         const h = body.offsetHeight;
         const z = over > 0 && h > 0 ? Math.max(0.85, (h - over - 2) / h) : 1;
         body.style.zoom = z < 1 ? z.toFixed(3) : "";
+        // Плашка услуги под телом главы стоит вне zoom: при сжатом теле
+        // она оставалась шире и торчала за его боковые края. Берём ширину
+        // уже сжатого тела, чтобы края плашки и вёрстки совпадали.
+        const footer = footerRef.current;
+        if (footer) footer.style.maxWidth = z < 1 ? `${body.getBoundingClientRect().width}px` : "";
       });
     };
     fit();
@@ -163,9 +169,10 @@ function useFitBodyToPane(enabled: boolean) {
       cancelAnimationFrame(raf);
       ro.disconnect();
       body.style.zoom = "";
+      if (footerRef.current) footerRef.current.style.maxWidth = "";
     };
   }, [enabled]);
-  return { paneRef, bodyRef };
+  return { paneRef, bodyRef, footerRef };
 }
 
 export default function CinematicSection({
@@ -330,7 +337,7 @@ export default function CinematicSection({
   // `spacious` chapters (01, 03, 04, 06) are all fixed at once and the prop
   // keeps working unchanged on the plain-scroll pages that still pass it.
   const roomy = spacious && !staged;
-  const { paneRef, bodyRef } = useFitBodyToPane(staged && ready);
+  const { paneRef, bodyRef, footerRef } = useFitBodyToPane(staged && ready);
   const reduced = useReducedMotion();
   // «Первый заход в главу»: запоминаем в момент, когда она встала на сцену, и
   // держим до ухода. Сама `instant` включается уже во время показа (глава
@@ -575,7 +582,7 @@ export default function CinematicSection({
         // перекрывает то карточки, то заголовок. Теперь кнопка — обычный
         // последний блок главы и занимает своё место честно; поверх
         // всплывает только развёрнутое окно.
-        <div className="relative z-20 mx-auto w-full max-w-7xl shrink-0">
+        <div ref={footerRef} className="relative z-20 mx-auto w-full max-w-7xl shrink-0">
           {/* Плашка внизу главы приходит последней, вместе с призывом
               (Егор, 2026-10-03): свой вход по BEAT.cta у неё внутри
               (ToolSpotlight), чтобы так же вели себя плашки в слотах. */}
