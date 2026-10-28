@@ -166,7 +166,7 @@ const DECK_BEAT_MS = 4200;
 // actually read as glass — keeps it; the four behind it get a flat tint,
 // which at their size and dimming is indistinguishable.
 const CARD_SHELL =
-  "rounded-[calc(20*var(--s))] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.16)]";
+  "rounded-[calc(20*var(--s))] bg-white/[0.055] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)]";
 const CARD_SHELL_FRONT = `${CARD_SHELL} backdrop-blur-2xl backdrop-saturate-150`;
 
 // The chapter's button language, matching the minimalism of the references

@@ -57,6 +57,8 @@ export default function ChapterLayout({
   askCard,
   leftFooter,
   rightFooter,
+  leftMedia,
+  subRight = false,
   children,
 }: {
   accent: ChapterAccent;
@@ -92,6 +94,10 @@ export default function ChapterLayout({
    *  transformed ancestor would turn it into a box the size of the column. */
   leftFooter?: ReactNode;
   rightFooter?: ReactNode;
+  /** Media under the heading in the left column (e.g. a phone carousel). */
+  leftMedia?: ReactNode;
+  /** Move the supporting line to the top of the right column. */
+  subRight?: boolean;
   /** The right column. */
   children: ReactNode;
 }) {
@@ -107,13 +113,21 @@ export default function ChapterLayout({
           </h2>
         </Appear>
 
-        <Appear from="up" delay={BEAT.intro}>
-          <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>{sub}</p>
-        </Appear>
+        {!subRight && (
+          <Appear from="up" delay={BEAT.intro}>
+            <p className={`mt-6 max-w-[30em] ${CHAPTER_INTRO}`}>{sub}</p>
+          </Appear>
+        )}
+
+        {leftMedia && (
+          <Appear from="up" delay={BEAT.intro}>
+            {leftMedia}
+          </Appear>
+        )}
 
         <Appear from="up" delay={BEAT.cta}>
           {askCard ? (
-            <div className="mt-8 land:mt-3">{askCard}</div>
+            <div className={leftMedia ? "mt-6 land:mt-3" : "mt-8 land:mt-3"}>{askCard}</div>
           ) : (
             <>
               {person && <PersonBadge person={person} />}
@@ -144,6 +158,11 @@ export default function ChapterLayout({
       </div>
 
       <div className="mt-10 lg:mt-0 lg:flex-1 lg:min-w-0 land:mt-0 land:min-w-0 land:flex-1">
+        {subRight && (
+          <Appear from="up" delay={BEAT.intro}>
+            <p className={`mb-5 max-w-[34em] ${CHAPTER_INTRO}`}>{sub}</p>
+          </Appear>
+        )}
         {children}
         {rightFooter}
       </div>
@@ -155,4 +174,4 @@ export default function ChapterLayout({
  *  carousel cards, so the right-hand column reads as one material across
  *  every page that uses this skeleton. */
 export const CHAPTER_PANEL =
-  "rounded-2xl bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl backdrop-saturate-150";
+  "rounded-2xl bg-white/[0.045] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)] backdrop-blur-2xl backdrop-saturate-150";

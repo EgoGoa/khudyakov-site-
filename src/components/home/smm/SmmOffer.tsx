@@ -3,13 +3,12 @@
 import CinematicSection from "@/components/ui/CinematicSection";
 import Appear from "@/components/ui/Appear";
 import { BEAT, DUR, STAGGER } from "@/lib/motion";
-import ToolSpotlight from "@/components/home/ai/ToolSpotlight";
-import { SMM_ACCENT } from "@/components/home/ai/spotlightSmm";
 import SmmChapterLayout, { SMM_PANEL } from "@/components/home/smm/SmmChapterLayout";
 import SmmDecoIcon from "@/components/home/smm/SmmDecoIcon";
 import { servicesByCategory } from "@/lib/service-content";
 import TeamPulse from "@/components/home/team-pulse/TeamPulse";
 import { TANYA_SMM } from "@/components/home/team-pulse/content/tanya-smm";
+import SmmReelsPhones from "@/components/home/smm/SmmReelsPhones";
 import PromoCard from "@/components/home/PromoCard";
 import { promo } from "@/lib/promos";
 
@@ -66,28 +65,21 @@ export default function SmmOffer() {
         }
         primary={{ href: "/brief/smm", label: "Обсудить формат" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
-        leftFooter={<ToolSpotlight slug="smm-stories" accent={SMM_ACCENT} place="left" />}
-        askCard={
+        leftMedia={
           <>
-            <TeamPulse data={TANYA_SMM} compact source="/smm · глава «Форматы»" />
-            {/* /smm's second September offer — sits under Таня's card
-                (Egor's ask, same fix as chapter 02). Photo swapped for the
-                site's stock library — a hand on a phone with like/comment
-                bubbles, the closest match to community management, instead
-                of the generic service-smm.jpg (Egor's ask, applied
-                site-wide). PRICE STILL PENDING: Egor flagged that reusing
-                the page's cheapest tariff floor here is wrong — this needs
-                комьюнити-менеджмент's own real monthly price, which isn't
-                published anywhere in the codebase (pricingByCategory.smm's
-                tiers are packages, not per-service prices). 36 000/45 000 ₽
-                below is the old placeholder, kept only until Egor gives the
-                real number. */}
-            <div className="mt-8">
-              <PromoCard
-                {...promo("community")}
-              />
-            </div>
+            <SmmReelsPhones />
+            <h3 className="mx-auto mt-4 max-w-[14em] text-center font-display text-[clamp(18px,2.2vw,26px)] font-bold uppercase leading-[1.1] tracking-tight text-paper [overflow-wrap:normal] [hyphens:none]">
+              Рилсы <span className="kw">под ключ</span>
+            </h3>
           </>
+        }
+        askCard={
+          <TeamPulse data={TANYA_SMM} compact source="/smm · глава «Форматы»" />
+        }
+        rightFooter={
+          <div className="mt-6">
+            <PromoCard {...promo("community")} />
+          </div>
         }
       >
         {/* The glass panel (SMM_PANEL) used to render statically, popping in

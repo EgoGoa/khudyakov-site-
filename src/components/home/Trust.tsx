@@ -186,7 +186,7 @@ export default function Trust({
                 <Appear key={reason.title} from="up" delay={BEAT.content + i * STAGGER.tight}>
                   <div
                     className={minimal ? "" : "rounded-lg bg-ink/45 backdrop-blur-md transition-[border-color]"}
-                    style={minimal ? undefined : { borderLeft: `3px solid ${isOpen ? REASON_ACCENT.solid : REASON_ACCENT.dim}` }}
+                    
                   >
                     <button
                       type="button"

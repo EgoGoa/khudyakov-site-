@@ -219,8 +219,7 @@ export default function DirectionHero({
             // уже несёт видео за собой, второй фон здесь был бы лишним.
             <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 sm:gap-x-8">
               {stats.map((stat) => (
-                <div key={stat.label} className="relative pl-3 sm:pl-4">
-                  <span className="absolute left-0 top-1 h-[calc(100%-0.4rem)] w-px bg-gradient-to-b from-orange via-orange/40 to-transparent" />
+                <div key={stat.label} className="relative">
                   <div className="break-words font-display text-xl uppercase leading-none text-white sm:text-2xl">
                     {stat.value}
                   </div>

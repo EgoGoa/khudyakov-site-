@@ -74,10 +74,8 @@ function Frame({ children }: { children: React.ReactNode }) {
 function Card({ x, y, w, h, r = 14, hot = false }: { x: number; y: number; w: number; h: number; r?: number; hot?: boolean }) {
   return (
     <>
-      <rect x={x + 5} y={y + 9} width={w} height={h} rx={r} fill="#000" opacity="0.3" filter="url(#ab-shadow)" />
       <rect x={x} y={y} width={w} height={h} rx={r} fill="#0d100e" />
-      <rect x={x} y={y} width={w} height={h} rx={r} fill={hot ? "url(#ab-ramp)" : "url(#ab-glass)"} fillOpacity={hot ? 0.16 : 1} stroke={hot ? "var(--sp-from)" : `${W}0.18)`} strokeOpacity={hot ? 0.75 : 1} />
-      <path d={`M ${x + r} ${y + 0.6} H ${x + w - r}`} stroke="#fff" strokeOpacity="0.35" strokeWidth="1" />
+      <rect x={x} y={y} width={w} height={h} rx={r} fill={hot ? "url(#ab-ramp)" : "#fff"} fillOpacity={hot ? 0.12 : 0.04} stroke={hot ? "var(--sp-from)" : `${W}0.12)`} strokeOpacity={hot ? 0.6 : 1} />
     </>
   );
 }
@@ -136,8 +134,7 @@ function PhoneShell({ time, header }: { time: string; header: string }) {
   return (
     <In at={0}>
       <g transform="rotate(-5 200 195)">
-        <rect x="124" y="30" width="170" height="330" rx="30" fill="#000" opacity="0.35" filter="url(#ab-shadow)" transform="translate(6 10)" />
-        <rect x="112" y="20" width="170" height="330" rx="30" fill="url(#ab-body)" stroke="url(#ab-ramp)" strokeWidth="1.4" />
+        <rect x="112" y="20" width="170" height="330" rx="30" fill="url(#ab-body)" stroke={`${W}0.18)`} strokeWidth="1.2" />
         <rect x="121" y="29" width="152" height="312" rx="23" fill="url(#ab-screen)" />
         <rect x="176" y="35" width="42" height="10" rx="5" fill="#000" />
         <text x="133" y="62" fill={`${W}0.85)`} fontSize="10" fontWeight="700">{time}</text>
@@ -741,7 +738,6 @@ function BrowserScene({ url, hero, sub, btn, sections, left, ring, dest }: Brows
       <circle cx="180" cy="170" r="185" fill="url(#ab-glow)" opacity="0.6" />
 
       <In at={0}>
-        <rect x="42" y="30" width="276" height="270" rx="18" fill="#000" opacity="0.3" filter="url(#ab-shadow)" />
         <rect x="36" y="22" width="276" height="270" rx="18" fill="url(#ab-screen)" stroke="url(#ab-ramp)" strokeWidth="1.4" />
         <path d="M 36 52 H 312" stroke={`${W}0.1)`} />
         {[0, 1, 2].map((i) => (

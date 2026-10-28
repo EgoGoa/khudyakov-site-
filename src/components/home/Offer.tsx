@@ -335,7 +335,7 @@ export default function Offer({
             </>
           ) : (
             <>
-              <div id="ai" className="flex items-start gap-3 border-l-2 border-glow/60 pl-4">
+              <div id="ai" className="flex items-start gap-3">
                 <div>
                   {active === "ai" ? (
                     // The site's own "AI-agent coming soon" teaser reads oddly

@@ -166,8 +166,7 @@ export default function SceneBreak({
               <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/12 pt-4 sm:grid-cols-3 [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
                 {spec.facts.map((f, i) => (
                   <Appear key={f.label} from="up" delay={DIRECTION_BEAT.content + 0.15 + i * STAGGER.normal}>
-                    <div className="relative pl-3">
-                      <span className="absolute left-0 top-0.5 h-[calc(100%-0.25rem)] w-[calc(3*var(--s))] animate-pulse rounded-full bg-gradient-to-b from-[var(--sp-from)] via-[var(--sp-to)] to-transparent shadow-[0_0_10px_-1px_var(--sp-from)]" />
+                    <div className="relative">
                       {/* Слова не рвутся посередине — то же правило, что у
                           цифр в SpotlightCopy: капслок на узкой колонке
                           обязан переноситься только между словами. Значение

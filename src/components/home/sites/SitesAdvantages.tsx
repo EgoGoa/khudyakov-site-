@@ -38,7 +38,7 @@ function WordsSlide() {
   return (
     <div className="space-y-[5cqw]">
       {BIG_WORDS.map((w) => (
-        <div key={w.word} className="border-l-2 pl-[5cqw]" style={{ borderColor: w.line }}>
+        <div key={w.word} className="">
           <div className={`font-display text-[clamp(1.1rem,11.5cqw,1.75rem)] font-extrabold uppercase leading-[1.05] tracking-tight ${GRAD}`}>
             {w.word}
           </div>
@@ -86,7 +86,7 @@ function PlatesSlide() {
       {PLATES.map((p) => (
         <div
           key={p.title}
-          className="flex items-center gap-[4cqw] rounded-2xl bg-white/[0.06] px-[4cqw] py-[3cqw] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]"
+          className="flex items-center gap-[4cqw] rounded-2xl bg-white/[0.06] px-[4cqw] py-[3cqw] shadow-none"
         >
           <span className="grid h-[11cqw] min-h-8 w-[11cqw] min-w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#ff7a45] via-[#ff4fa3] to-[#8a8cff]">
             <svg viewBox="0 0 24 24" className="h-[50%] w-[50%] fill-white" aria-hidden="true">

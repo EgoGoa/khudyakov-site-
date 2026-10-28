@@ -85,7 +85,7 @@ body {
   background-blend-mode: luminosity;
   backdrop-filter: blur(5px);
   border: none;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
 }
@@ -3209,7 +3209,7 @@ html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [dat
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2),
     0 10px 30px -10px rgba(0, 0, 0, 0.6);
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease,
     transform 0.2s ease;
@@ -3218,7 +3218,7 @@ html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [dat
 .btn-glass:hover {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08));
   border-color: rgba(0, 210, 255, 0.6);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2),
     0 12px 34px -10px rgba(0, 0, 0, 0.65), 0 0 26px -4px rgba(0, 210, 255, 0.5);
   transform: translateY(-2px);
 }
@@ -3268,8 +3268,7 @@ html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [dat
   );
   backdrop-filter: blur(6px) saturate(165%) brightness(1.06);
   box-shadow:
-    /* specular line along the top bevel */ inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    /* light bouncing back off the bottom bevel */ inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    /* specular line along the top bevel */ /* light bouncing back off the bottom bevel */ inset 0 -1px 0 rgba(255, 255, 255, 0.1),
     /* glow just inside the top face */ inset 0 10px 26px -14px rgba(255, 255, 255, 0.5),
     /* shade pooling in the lower half — this is what gives it depth */
       inset 0 -16px 28px -18px rgba(0, 0, 0, 0.85),
@@ -3441,7 +3440,7 @@ html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [dat
     rgba(255, 255, 255, 0.02) 55%,
     rgba(0, 0, 0, 0.16) 100%
   );
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.35),
     0 1px 0 rgba(0, 0, 0, 0.4), 0 4px 12px -6px rgba(0, 0, 0, 0.7);
   transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease,
     color 0.18s ease;
@@ -3459,7 +3458,7 @@ html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [dat
 .seg-pill:hover {
   color: #dcddef;
   transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.35),
     0 2px 0 rgba(0, 0, 0, 0.4), 0 10px 20px -8px rgba(0, 0, 0, 0.8);
 }
 
@@ -3471,7 +3470,7 @@ html:is([data-boot="0"], [data-boot="1"], [data-boot="2"], [data-boot="3"], [dat
 .seg-pill[aria-pressed="true"] {
   color: #0b0b10;
   background-image: linear-gradient(180deg, #a4f4fd 0%, #00d2ff 58%, #00a8cc 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3),
     0 1px 0 rgba(0, 0, 0, 0.45), 0 8px 20px -8px rgba(0, 0, 0, 0.8),
     0 0 22px -4px rgba(0, 210, 255, 0.75);
 }
@@ -4689,64 +4688,25 @@ html[data-mid] .guar-term-slide:first-of-type {
    .btn-glass, .glass-tile, .c3-card, .glass-strip). */
 .glass-panel {
   position: relative;
-  background:
-    linear-gradient(155deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.012) 55%),
-    /* 0.7, было 0.56. Тот же кадр за карточкой рендерится и слева (лицо в
-       мягком свете), и справа (контурная мультяшная иллюстрация), и оба
-       сайда несут одинаковый blur(25px) — но контурная графика после
-       размытия держит форму заметно упрямее мягкого фото, читаясь как
-       «блюра нет». Радиус блюра оставлен как есть (Егор уже откалибровал
-       его на фото), а гасить контраст под карточкой независимо от того,
-       что там за картинка, — работа плотности самой заливки, а не blur:
-       она глушит и то, что блюр не добивает. */
-    rgba(11, 11, 16, 0.7);
-  backdrop-filter: blur(7px) saturate(125%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.13),
-    0 28px 70px -34px rgba(0, 0, 0, 0.95);
+  /* Егор, 2026-10-28: никакого стекла, градиентной кромки и верхнего канта —
+     плоская тёмная плашка с тонкой рамкой. Заливка плотная, чтобы текст
+     читался поверх видео без блюра. */
+  background: rgba(13, 13, 18, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition:
     background 0.4s ease,
-    box-shadow 0.4s ease;
+    border-color 0.4s ease;
 }
 
-/* Фирменная кромка. border-radius наследуется, чтобы полоса повторяла
-   скругление панели на любом радиусе. */
 .glass-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding-top: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 79, 216, 0.55),
-    rgba(255, 106, 61, 0.55),
-    transparent
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0.65;
-  pointer-events: none;
+  content: none;
 }
 
 /* Активное состояние — выбранный тариф, раскрытый вопрос. Стекло становится
    плотнее и берёт тёплый акцент: «это сейчас про вас». */
 .glass-panel-on {
-  background:
-    linear-gradient(155deg, rgba(255, 106, 61, 0.14), rgba(255, 79, 216, 0.05) 60%),
-    rgba(11, 11, 16, 0.68);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 0 0 1px rgba(255, 106, 61, 0.4),
-    0 30px 80px -34px rgba(0, 0, 0, 0.95);
-}
-
-.glass-panel-on::before {
-  opacity: 1;
+  background: rgba(13, 13, 18, 0.86);
+  border-color: rgba(255, 106, 61, 0.45);
 }
 
 /* Тихий вариант — широкие полосы вроде строки цифр, где подложка должна
@@ -4991,7 +4951,6 @@ html[data-mid] .guar-term-slide:first-of-type {
    channel on the compositor and nothing else. */
 .deck-neon-pulse {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.13),
     0 0 18px 0 rgba(var(--card-glow-rgb), 0.3),
     0 0 44px -6px rgba(var(--card-glow-rgb), 0.18),
     0 28px 70px -34px rgba(0, 0, 0, 0.95);
@@ -5167,8 +5126,7 @@ html[data-lite] .deck-pose-blur > button {
   .hero-media {
     filter: none !important;
   }
-  [class*="backdrop-blur"],
-  .glass-panel {
+  [class*="backdrop-blur"] {
     -webkit-backdrop-filter: blur(6px) !important;
     backdrop-filter: blur(6px) !important;
   }
@@ -5199,8 +5157,7 @@ html[data-lite] *::after {
    purely-decorative bits — the endless glows/gradients that never carry
    meaning — stop running so a mid-range phone isn't asked to composite them
    forever. Never applies together with data-lite (lite always wins). */
-html:not([data-lite])[data-mid] [class*="backdrop-blur"],
-html:not([data-lite])[data-mid] .glass-panel {
+html:not([data-lite])[data-mid] [class*="backdrop-blur"] {
   -webkit-backdrop-filter: blur(7px) !important;
   backdrop-filter: blur(7px) !important;
 }
@@ -5840,7 +5797,6 @@ html:not([data-lite])[data-mid] .sp-pulse {
      префиксный вариант, и Chrome размытие не рисует вовсе. */
   backdrop-filter: blur(34px) saturate(1.7) brightness(1.04);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
     inset 0 0 0 1px rgba(255, 255, 255, 0.06),
     0 40px 120px -24px rgba(0, 0, 0, 0.85);
@@ -6021,7 +5977,7 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
   position: relative; overflow: hidden; border-radius: calc(18 * var(--s)); padding: calc(12 * var(--s)) calc(14 * var(--s)); min-height: 0;
   background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.025));
   border: 1px solid rgba(255,255,255,.08);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+  box-shadow: none;
 }
 .wi-hot { background: radial-gradient(80% 70% at 0% 0%, rgba(245,49,11,.32), transparent 62%), radial-gradient(70% 70% at 100% 100%, rgba(0,210,255,.16), transparent 65%), radial-gradient(60% 60% at 45% 30%, rgba(236,72,153,.14), transparent 70%), linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); }
 .wi-hotb { background: radial-gradient(70% 60% at 20% 120%, rgba(245,49,11,.3), transparent 65%), radial-gradient(70% 60% at 85% 120%, rgba(0,210,255,.22), transparent 65%), radial-gradient(60% 50% at 50% 115%, rgba(236,72,153,.26), transparent 65%), linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); }
@@ -6032,7 +5988,7 @@ html:not([data-welcome-snoozed]) body:has(.welcome-shell:not(.is-leaving)) .page
 .wi-center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 .wi-row { display: flex; align-items: center; justify-content: space-between; gap: calc(8 * var(--s)); }
 .wi-stack { display: grid; gap: calc(8 * var(--s)); grid-template-rows: 1fr 1fr; }
-.wi-glass { background: rgba(40,40,44,.55); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(14px); box-shadow: 0 14px 30px -10px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.14); }
+.wi-glass { background: rgba(40,40,44,.55); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(14px); box-shadow: 0 14px 30px -10px rgba(0,0,0,.6); }
 .wi-title-tile { padding: calc(14 * var(--s)) calc(16 * var(--s)) calc(14 * var(--s)); }
 .wi-d3 { display: flex; gap: calc(4 * var(--s)); margin-bottom: calc(10 * var(--s)); }
 .wi-d3 i { width: calc(5 * var(--s)); height: calc(5 * var(--s)); border-radius: 50%; background: rgba(255,255,255,.3); }
@@ -6373,20 +6329,17 @@ html[data-lite] .wi *, html[data-mid] .wi * { will-change: auto; }
    этого меню: общий .deck-neon-pulse на сайте не трогается. */
 .welcome-card.deck-neon-pulse {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 0 12px 0 rgba(var(--card-glow-rgb), 0.1),
     0 28px 70px -34px rgba(0, 0, 0, 0.95);
 }
 .welcome-card-vibe.deck-neon-pulse {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 0 16px 0 rgba(var(--card-glow-rgb), 0.2),
     0 28px 70px -34px rgba(0, 0, 0, 0.95);
 }
 .welcome-card.deck-neon-pulse:hover,
 .welcome-card.deck-neon-pulse:focus-visible {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
     0 0 26px 0 rgba(var(--card-glow-rgb), 0.5),
     0 0 64px -6px rgba(var(--card-glow-rgb), 0.32),
     0 28px 70px -34px rgba(0, 0, 0, 0.95);
@@ -6460,7 +6413,6 @@ html[data-lite] .wi *, html[data-mid] .wi * { will-change: auto; }
      поверх него в тот же transform, на той же кривой (0.45s выше). */
   transform: translateY(-2px) scale(1.025);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
     0 0 26px 0 rgba(var(--card-glow-rgb), 0.5),
     0 0 64px -6px rgba(var(--card-glow-rgb), 0.32),
     0 28px 70px -34px rgba(0, 0, 0, 0.95);
@@ -7018,7 +6970,6 @@ html[data-lite] .welcome-card-graphic svg circle {
     rgba(11, 11, 16, 0.78);
   backdrop-filter: blur(18px) saturate(125%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
     inset 0 0 0 1px rgba(var(--tp-from-rgb), 0.35);
 }
 .team-pulse-card::after,
@@ -7100,7 +7051,6 @@ html[data-lite] .welcome-card-graphic svg circle {
     rgba(22, 22, 30, 0.55);
   backdrop-filter: blur(24px) saturate(180%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
     0 18px 40px -18px rgba(0, 0, 0, 0.8);
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -7437,7 +7387,6 @@ html[data-lite] .welcome-card-graphic svg circle {
   background: rgba(24, 24, 32, 0.55);
   backdrop-filter: blur(40px) saturate(180%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08),
     0 40px 120px rgba(0, 0, 0, 0.6);
 }
@@ -7542,7 +7491,6 @@ html[data-lite] .welcome-card-graphic svg circle {
     rgba(14, 14, 20, 0.4);
   backdrop-filter: blur(24px) saturate(1.7) brightness(1.04);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
     0 12px 32px -14px rgba(0, 0, 0, 0.65);
 }
@@ -7685,7 +7633,7 @@ html[data-lite] [data-site-header].header-glass {
   /* Прозрачнее шапки (Егор: «меньше, ближе к краю, прозрачнее»). */
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)), rgba(14, 14, 20, 0.18);
   backdrop-filter: blur(18px) saturate(1.6);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 22px -12px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 22px -12px rgba(0, 0, 0, 0.7);
   transition: width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
 }
 .vibe-bubble svg { width: calc(13 * var(--s)); height: calc(13 * var(--s)); }
@@ -7694,7 +7642,6 @@ html[data-lite] [data-site-header].header-glass {
   width: calc(34 * var(--s));
   height: calc(34 * var(--s));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 0 0 1px color-mix(in srgb, var(--g-to) 55%, transparent),
     0 8px 26px -6px color-mix(in srgb, var(--g-from) 65%, transparent);
 }
@@ -7722,7 +7669,7 @@ html[data-lite] [data-site-header].header-glass {
   color: #fff;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)), rgba(14, 14, 20, 0.55);
   backdrop-filter: blur(18px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  box-shadow: none;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -7921,7 +7868,6 @@ html[data-lite] .vibe-mode__wordmark { animation: none; }
     rgba(14, 14, 20, 0.46);
   backdrop-filter: blur(34px) saturate(1.7) brightness(1.04);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
     inset 0 0 0 1px rgba(255, 255, 255, 0.06),
     0 40px 120px -24px rgba(0, 0, 0, 0.85);
@@ -8625,7 +8571,6 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
     rgba(11, 11, 16, 0.7);
   backdrop-filter: blur(7px) saturate(125%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.13),
     0 28px 70px -34px rgba(0, 0, 0, 0.95);
   overflow: hidden;
 }
@@ -8780,7 +8725,6 @@ html[data-lite] .vibe-mode__window { backdrop-filter: blur(12px); }
      читаться (Егор: «очень важно»). */
   backdrop-filter: blur(40px) saturate(1.5);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
     0 30px 90px -24px rgba(0, 0, 0, 0.85);
   /* clip, а не hidden (как у .vibe-mode__window): сияние шире окошка, и при
@@ -9159,7 +9103,7 @@ html[data-lite] .block-vibe__online::before { animation: none; }
   border-radius: calc(999 * var(--s));
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)), rgba(14, 14, 20, 0.7);
   backdrop-filter: blur(24px) saturate(1.5);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 30px -12px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
 }
 .before-after button {
   position: relative;
@@ -9288,12 +9232,11 @@ body:has(.vibe-fan__list) .voice-dock-corner {
   color: #fff;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)), rgba(14, 14, 20, 0.45);
   backdrop-filter: blur(14px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 6px 16px -8px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.8);
 }
 .vibe-fan__dot svg { width: 46%; height: 46%; }
 .vibe-fan__btn.is-active .vibe-fan__dot {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 0 0 1px color-mix(in srgb, var(--g-to) 60%, transparent),
     0 0 12px -2px color-mix(in srgb, var(--g-from) 70%, transparent);
 }
@@ -9358,7 +9301,6 @@ body:has(.vibe-fan__list) .voice-dock-corner {
     rgba(16, 16, 24, 0.8);
   backdrop-filter: blur(40px) saturate(1.5);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -0.5px 0 rgba(255, 255, 255, 0.16),
     0 30px 90px -24px rgba(0, 0, 0, 0.85);
 }
@@ -10083,7 +10025,6 @@ html[data-mid] .hero-promo { transition: none; }
   }
   .deck-neon-pulse {
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
       0 0 9px 0 rgba(var(--card-glow-rgb), 0.15),
       0 0 22px -6px rgba(var(--card-glow-rgb), 0.09);
   }
@@ -10222,7 +10163,7 @@ html[data-mid] .hero-promo { transition: none; }
     isolation: isolate;
     -webkit-mask-image: linear-gradient(#000, #000);
     mask-image: linear-gradient(#000, #000);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: none;
   }
   .win-shell > .team-pulse-halo {
     box-shadow:
@@ -10879,7 +10820,7 @@ html[data-lite] .site-scrim {
     padding: 0 calc(4 * var(--s));
     background: rgba(20, 19, 28, 0.72);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     -webkit-backdrop-filter: blur(18px) saturate(1.2);
     backdrop-filter: blur(18px) saturate(1.2);
     transition: opacity 0.7s ease;
@@ -11167,7 +11108,7 @@ html[data-lite] .site-scrim {
     transition-delay: 0s, 0s;
   }
   /* Остров и волна остаются над затемнением и открытым поиском. */
-  html:has(.site-search[data-open]) .bottom-island { z-index: 125; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 26px -8px rgba(0, 210, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08); }
+  html:has(.site-search[data-open]) .bottom-island { z-index: 125; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 26px -8px rgba(0, 210, 255, 0.4); }
   html:has(.site-search[data-open]) .voice-dock-corner { z-index: 126; }
   /* Страница со стрелками отъезжает к волне, освобождая строку ввода. */
   .bottom-island__center {
@@ -11488,4 +11429,31 @@ html[data-lite] .site-scrim {
     color-mix(in srgb, var(--sp-to) 10%, transparent) 220deg,
     color-mix(in srgb, var(--sp-to) 10%, transparent) 360deg
   );
+}
+
+/* ── Плоский минимализм (Егор, 2026-10-28) ────────────────────────────────
+   Карточки, ячейки и окошки: сплошной фон + одна 1px нейтральная граница.
+   Без стекла (backdrop-filter), без бликов и градиентных рамок сверху,
+   без свечения. Шапка, нижний остров, поиск и меню оставлены как были —
+   они лежат поверх прокручиваемого контента и нуждаются в подложке. */
+:root {
+  --flat-card-bg: #101015;
+  --flat-card-border: 1px solid rgba(255, 255, 255, 0.1);
+}
+:is(.liquid-glass, .glass-tile, .glass-panel, .glass-strip, .c3-card, .wi-glass, .cab-glass, .team-pulse-card) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+:is(.liquid-glass, .glass-tile, .glass-panel, .c3-card, .wi-glass, .cab-glass) {
+  background: var(--flat-card-bg) !important;
+  background-image: none !important;
+  border: var(--flat-card-border) !important;
+  box-shadow: none !important;
+}
+:is(.liquid-glass, .glass-tile, .glass-panel, .c3-card, .cab-glass)::before,
+:is(.liquid-glass, .glass-tile, .glass-panel, .c3-card, .cab-glass)::after {
+  content: none !important;
+}
+.glass-strip {
+  background: none !important;
 }

@@ -139,13 +139,8 @@ function WorksCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                         { label: stats.resultLabel, value: stats.resultValue, accent: true },
                       ];
                       return rows.map((stat) => (
-                        <div key={stat.label} className="relative pl-3 sm:pl-4">
-                          <span
-                            className={`absolute left-0 top-1 h-[calc(100%-0.4rem)] w-px bg-gradient-to-b to-transparent ${
-                              stat.accent ? "from-orange via-orange/40" : "from-white/50 via-white/15"
-                            }`}
-                          />
-                          <div
+                        <div key={stat.label} className="relative">
+                                                    <div
                             className={`break-words font-display text-xl uppercase leading-none sm:text-2xl ${
                               stat.accent ? "text-orange" : "text-white"
                             }`}
@@ -332,13 +327,8 @@ function ReelsCases({ cases }: { cases: NonNullable<DirectionContent["cases"]> }
                       { label: "Стоимость", value: reelMeta(openN).budget, accent: true },
                       { label: "Срок", value: reelMeta(openN).timeline },
                     ].map((stat) => (
-                      <div key={stat.label} className="relative pl-3">
-                        <span
-                          className={`absolute left-0 top-1 h-[calc(100%-0.4rem)] w-px bg-gradient-to-b to-transparent ${
-                            stat.accent ? "from-orange via-orange/40" : "from-white/50 via-white/15"
-                          }`}
-                        />
-                        {/* Слова не рвутся посередине («КАРТОЧ-КА»): длинное
+                      <div key={stat.label} className="relative">
+                                                {/* Слова не рвутся посередине («КАРТОЧ-КА»): длинное
                             значение на телефоне — ступенью мельче. */}
                         <div
                           className={`font-display uppercase leading-none sm:text-lg ${

@@ -41,8 +41,7 @@ export default function StatsBand({
         <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-8 sm:gap-y-12 lg:grid-cols-4">
           {stats.map((stat, i) => (
             <Appear key={stat.label} from="up" delay={DIRECTION_BEAT.eyebrow + i * STAGGER.normal}>
-              <div className="relative pl-3 sm:pl-5">
-                <span className="absolute left-0 top-1 h-[calc(100%-0.5rem)] w-px bg-gradient-to-b from-orange via-orange/40 to-transparent" />
+              <div className="relative">
                 <div className="break-words font-display text-[1.6rem] uppercase leading-none text-white sm:text-5xl">
                   {stat.value}
                 </div>

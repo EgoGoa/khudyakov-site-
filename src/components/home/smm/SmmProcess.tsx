@@ -81,6 +81,7 @@ export default function SmmProcess() {
         }
         primary={{ href: "/brief/smm", label: "Обсудить проект" }}
         secondary={{ href: "/smm/pricing", label: "Смотреть цены" }}
+        leftFooter={<ToolSpotlight slug="smm-stories" accent={SMM_ACCENT} place="left" />}
         rightFooter={<ToolSpotlight slug="smm-carousel" accent={SMM_ACCENT} shape="card" />}
         askCard={
           <TeamPulse data={EGOR_SMM} source="/smm · глава «Как проходит работа»" />
